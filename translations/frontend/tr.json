@@ -609,6 +609,11 @@
             },
             "service-picker": {
                 "service": "Servis"
+            },
+            "user-picker": {
+                "add_user": "Kullanıcı Ekle",
+                "no_user": "Kullanıcı yok",
+                "remove_user": "Kullanıcıyı kaldır"
             }
         },
         "dialogs": {
@@ -693,6 +698,7 @@
                 "dismiss": "İletişim kutusunu kapat",
                 "edit": "Varlığı düzenle",
                 "history": "Geçmiş",
+                "last_changed": "Son değişiklik",
                 "person": {
                     "create_zone": "Geçerli konumdan bölge oluşturma"
                 },
@@ -745,6 +751,15 @@
                 },
                 "success": {
                     "description": "Seçenekler başarıyla kaydedildi."
+                }
+            },
+            "quick-bar": {
+                "commands": {
+                    "server_control": {
+                        "perform_action": "{action} Sunucu",
+                        "restart": "Yeniden Başlat",
+                        "stop": "Durdur"
+                    }
                 }
             },
             "voice_command": {
@@ -805,6 +820,7 @@
         },
         "notification_toast": {
             "connection_lost": "Bağlantı koptu. Yeniden bağlanıyor ...",
+            "dismiss": "Yoksay",
             "service_call_failed": "{service} çağrı yapılamadı.",
             "started": "Home Assistant başladı!",
             "starting": "Home Assistant başlıyor, arayüzün yüklenmesi için bekleyiniz",
@@ -1042,6 +1058,9 @@
                                     "trigger": "tetik"
                                 },
                                 "event": {
+                                    "context_user_pick": "Kullanıcı Ekle",
+                                    "context_user_picked": "Kullanıcı tarafından tetiklenmiş olay",
+                                    "context_users": "Tarafından tetiklenen olaylarla sınırla",
                                     "event_data": "Etkinlik Verisi",
                                     "event_type": "Olay Türü",
                                     "label": "Olay:"
@@ -1678,6 +1697,15 @@
                         },
                         "starting": "Başlatılıyor",
                         "unknown": "Bilinmeyen"
+                    },
+                    "node_config": {
+                        "wakeup_help": "Pille çalışan nodlar, yapılandırmalarını değiştirmek için uyanık olmalıdır. Nodlar uyanık değilse OpenZWave, bir sonraki uyanışında düğümün yapılandırmasını güncellemeye çalışacaktır, bu birkaç saat (veya gün) sonra olabilir. Cihazınızı uyandırmak için şu adımları izleyin:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Ürün kılavuzu"
+                    },
+                    "services": {
+                        "cancel_command": "Komutu İptal Et"
                     }
                 },
                 "person": {
@@ -2133,7 +2161,9 @@
                         "jinja_documentation": "Jinja2 taslak dökümantasyonu",
                         "listeners": "Bu şablon, takip edilen durumu değişen olayları dinler:",
                         "no_listeners": "Bu şablon, durum değiştirilen olayları dinlemez ve otomatik olarak güncelleştirilmez.",
+                        "result_type": "Sonuç türü",
                         "template_extensions": "Home Assistant taslak eklentileri",
+                        "time": "Bu şablon her dakika güncellenir.",
                         "title": "Taslaklar",
                         "unknown_error_template": "Bilinmeyen taslak gösterim hatası"
                     }
@@ -2252,6 +2282,7 @@
                             "secondary_info_values": {
                                 "last-changed": "Son değiştirilen",
                                 "last-triggered": "Son Tetiklenen",
+                                "last-updated": "Son güncelleme",
                                 "position": "Pozisyon"
                             },
                             "show_header_toggle": "Başlık Değiştirme Gösterilsin mi?",
@@ -2307,6 +2338,10 @@
                             "columns": "Sütunlar",
                             "description": "Bakış kartı, birden fazla sensörü kompakt bir genel bakışta gruplamak için kullanışlıdır.",
                             "name": "Glance"
+                        },
+                        "grid": {
+                            "description": "Izgara kartı, ızgarada birden çok kart göstermenizi sağlar.",
+                            "name": "Izgara"
                         },
                         "history-graph": {
                             "description": "Geçmiş Grafiği kartı, listelenen varlıkların her biri için bir grafik görüntülemenizi sağlar.",
@@ -2491,7 +2526,8 @@
                     "exit_edit_mode": "UI düzenleme modundan çık",
                     "help": "Yardım",
                     "refresh": "Yenile",
-                    "reload_resources": "Kaynakları yeniden yükle"
+                    "reload_resources": "Kaynakları yeniden yükle",
+                    "start_conversation": "Konuşmayı başlatın"
                 },
                 "reload_lovelace": "Arayüzü yeniden yükle",
                 "reload_resources": {
@@ -2723,6 +2759,10 @@
                     "dropdown_label": "Gösterge Paneli",
                     "header": "Gösterge Paneli"
                 },
+                "enable_shortcuts": {
+                    "description": "Kullanıcı arayüzünde çeşitli eylemler gerçekleştirmek için klavye kısayollarını etkinleştirin veya devre dışı bırakın.",
+                    "header": "Klavye kısayolları"
+                },
                 "force_narrow": {
                     "description": "Bu, mobil deneyimi benzer kenar çubuğunu varsayılan olarak gizler.",
                     "header": "Kenar çubuğunu her zaman gizle"
@@ -2767,6 +2807,10 @@
                     "header": "Çok Faktörlü Kimlik Doğrulama Modülleri"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Cihaz adı",
+                        "title": "Bu cihaz ne olarak adlandırılmalı?"
+                    },
                     "description": "Bu cihaza bildirimler gönder",
                     "error_load_platform": "Notify.html5 'i yapılandırın.",
                     "error_use_https": "Önyüz için SSL'nin etkinleştirilmesini gerektirir.",

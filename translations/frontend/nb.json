@@ -59,7 +59,7 @@
                 "comfort": "Komfort",
                 "eco": "Øko",
                 "home": "Hjem",
-                "normal": "",
+                "normal": "Normal",
                 "sleep": "Sove"
             }
         }
@@ -111,11 +111,11 @@
         },
         "binary_sensor": {
             "battery": {
-                "off": "Normalt",
+                "off": "Normal",
                 "on": "Lavt"
             },
             "cold": {
-                "off": "",
+                "off": "Normal",
                 "on": "Kald"
             },
             "connectivity": {
@@ -167,7 +167,7 @@
                 "on": "Hjemme"
             },
             "problem": {
-                "off": "",
+                "off": "OK",
                 "on": ""
             },
             "safety": {
@@ -239,7 +239,7 @@
             "locked": "Låst",
             "not_home": "Borte",
             "off": "Av",
-            "ok": "",
+            "ok": "OK",
             "on": "På",
             "open": "Åpen",
             "opening": "Åpner",
@@ -271,7 +271,7 @@
             "home": "Hjemme"
         },
         "plant": {
-            "ok": "",
+            "ok": "OK",
             "problem": "Problem"
         },
         "remote": {
@@ -520,6 +520,7 @@
             "previous": "Forrige",
             "refresh": "Oppdater",
             "save": "Lagre",
+            "skip": "Hopp over",
             "successfully_deleted": "Sletting vellykket",
             "successfully_saved": "Lagring vellykket",
             "undo": "Angre",
@@ -739,7 +740,7 @@
                 "cancel": "Avbryt",
                 "close": "Lukk",
                 "default_confirmation_title": "Er du sikker?",
-                "ok": ""
+                "ok": "OK"
             },
             "helper_settings": {
                 "counter": {
@@ -795,9 +796,10 @@
             "more_info_control": {
                 "controls": "Kontroller",
                 "details": "Detaljer",
-                "dismiss": "Avvis dialogboksen",
+                "dismiss": "Avvis dialog",
                 "edit": "Redigér entitet",
                 "history": "Historie",
+                "last_changed": "Sist endret",
                 "last_updated": "Sist oppdatert",
                 "person": {
                     "create_zone": "Opprett sone fra gjeldende plassering"
@@ -890,7 +892,7 @@
                         "zone": "Last inn soner på nytt"
                     },
                     "server_control": {
-                        "perform_action": "{action} Server",
+                        "perform_action": "{action} server",
                         "restart": "Omstart",
                         "stop": "Stopp"
                     }
@@ -1211,7 +1213,7 @@
                                     "trigger": "Utløser"
                                 },
                                 "event": {
-                                    "context_user_pick": "Legg til bruker",
+                                    "context_user_pick": "Velg bruker",
                                     "context_user_picked": "Bruker avfyrer hendelse",
                                     "context_users": "Begrens til hendelser utløst av",
                                     "event_data": "Hendelse data",
@@ -1310,6 +1312,22 @@
                         "only_editable": "Bare automasjoner definert i automations.yaml kan redigeres.",
                         "pick_automation": "Velg automasjon for å redigere",
                         "show_info_automation": "Vis informasjon om automasjon"
+                    },
+                    "thingtalk": {
+                        "create": "Opprett automatisering",
+                        "link_devices": {
+                            "ambiguous_entities": "En eller flere enheter har mer enn en samsvarende entitet. Velg den du vil bruke.",
+                            "header": "Flott! Nå må vi koble til noen enheter",
+                            "unknown_placeholder": "Ukjent plassholder"
+                        },
+                        "task_selection": {
+                            "error_empty": "Skriv inn en kommando, eller trykk hopp over.",
+                            "error_unsupported": "Vi kunne ikke lage en automatisering for det (ennå?)",
+                            "for_example": "For eksempel:",
+                            "header": "Opprette en ny automatisering",
+                            "introduction": "Skriv nedenfor hva denne automasjonen skal gjøre, og vi vil prøve å konvertere den til en Home Assistant-automatisering.",
+                            "language_note": "Merk: Bare engelsk støttes foreløpig."
+                        }
                     }
                 },
                 "cloud": {
@@ -1371,11 +1389,11 @@
                             "link_learn_more": "Finn ut mer om hvordan du oppretter webhook-drevne automasjoner.",
                             "loading": "Laster inn ...",
                             "manage": "Administrer",
-                            "no_hooks_yet": "Ser ut som du ikke har noen webhooks ennå. Kom i gang ved å konfigurere en ",
+                            "no_hooks_yet": "Ser ut som du ikke har noen webhook'er ennå. Kom i gang ved å konfigurere en ",
                             "no_hooks_yet_link_automation": "webhook-automasjon",
                             "no_hooks_yet_link_integration": "webhook-basert integrasjon",
                             "no_hooks_yet2": " eller ved å opprette en ",
-                            "title": ""
+                            "title": "Webhook'er"
                         }
                     },
                     "alexa": {
@@ -1405,11 +1423,11 @@
                     "dialog_cloudhook": {
                         "available_at": "Webhook er tilgjengelig på følgende URL:",
                         "close": "Lukk",
-                        "confirm_disable": "Er du sikker på at du vil deaktivere denne webhook?",
+                        "confirm_disable": "Er du sikker på at du vil deaktivere denne webhook'en?",
                         "copied_to_clipboard": "Kopiert til utklippstavle",
-                        "info_disable_webhook": "Hvis du ikke lenger ønsker å bruke denne webhook, kan du",
+                        "info_disable_webhook": "Hvis du ikke lenger ønsker å bruke denne webhook'en, kan du",
                         "link_disable_webhook": "deaktiver den",
-                        "managed_by_integration": "Denne webhook administreres av en integrasjon og kan ikke deaktiveres.",
+                        "managed_by_integration": "Denne webhook'en administreres av en integrasjon og kan ikke deaktiveres.",
                         "view_documentation": "Vis dokumentasjon",
                         "webhook_for": "Webhook for {name}"
                     },
@@ -1464,7 +1482,7 @@
                         "feature_amazon_alexa": "Integrasjon med Amazon Alexa",
                         "feature_google_home": "Integrasjon med Google Assistant",
                         "feature_remote_control": "Kontroller Home Assistent når du er borte fra hjemmet",
-                        "feature_webhook_apps": "Enkel integrasjon med nettbaserte apper som OwnTracks",
+                        "feature_webhook_apps": "Enkel integrasjon med webhookbaserte apper som OwnTracks",
                         "headline": "Start prøveversjon",
                         "information": "Opprett en konto for å starte en gratis prøveperiode på en måned med Home Assistant Cloud. Ingen betalingsinformasjon nødvendig.",
                         "information2": "Prøveperioden vil gi deg tilgang til alle fordelene med Home Assistant Cloud, inkludert:",
@@ -1618,7 +1636,7 @@
                         },
                         "filter": {
                             "filter": "",
-                            "hidden_entities": "{number} skjult {number, plural,\n  one {entitet}\n  other {entiteter}\n}",
+                            "hidden_entities": "{number} {number, plural,\n  one {skjult entitet}\n  other {skjulte entiteter}\n}",
                             "show_all": "Vis alle",
                             "show_disabled": "Vis deaktiverte entiteter",
                             "show_readonly": "Vis skrivebeskyttede entiteter",
@@ -1644,7 +1662,7 @@
                         "selected": "{number} valgte",
                         "status": {
                             "disabled": "Deaktivert",
-                            "ok": "",
+                            "ok": "OK",
                             "readonly": "Skrivebeskyttet",
                             "restored": "Gjennopprettet",
                             "unavailable": "Utilgjengelig"
@@ -2118,7 +2136,7 @@
                         "sequence_sentence": "Sekvensen av handlingene til dette skriptet."
                     },
                     "picker": {
-                        "add_script": "Opprett nytt skript",
+                        "add_script": "Legg til skript",
                         "edit_script": "Rediger skript",
                         "header": "Skriptredigering",
                         "headers": {
@@ -2758,6 +2776,10 @@
                             "description": "Glance-kortet er nyttig for å gruppere flere sensorer i en kompakt oversikt.",
                             "name": "Blikk"
                         },
+                        "grid": {
+                            "description": "Med Rutenett-kortet kan du vise flere kort i et rutenett",
+                            "name": "Rutenettet"
+                        },
                         "history-graph": {
                             "description": "Med History Graph-kortet kan du vise en graf for hver av enhetene som er oppført.",
                             "name": "Historikk graf"
@@ -3296,6 +3318,9 @@
                     "description": "Aktiver eller deaktiver vibrasjoner på denne enheten når du kontrollerer enheter.",
                     "header": "Vibrere"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Start samtale"
             },
             "shopping-list": {
                 "add_item": "Legg til",

@@ -39,6 +39,7 @@ class HassLoadingScreen extends LitElement {
                 `
               : html`
                   <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
                     @click=${this._handleBack}
                   ></ha-icon-button-arrow-prev>
                 `}

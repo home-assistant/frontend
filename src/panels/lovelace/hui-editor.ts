@@ -173,8 +173,8 @@ class LovelaceFullConfigEditor extends LitElement {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
         ),
-        dismissText: this.hass!.localize("ui.common.no"),
-        confirmText: this.hass!.localize("ui.common.yes"),
+        dismissText: this.hass!.localize("ui.common.leave"),
+        confirmText: this.hass!.localize("ui.common.stay"),
       }))
     ) {
       return;
@@ -217,8 +217,8 @@ class LovelaceFullConfigEditor extends LitElement {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_text"
         ),
-        confirmText: this.hass.localize("ui.common.yes"),
-        dismissText: this.hass.localize("ui.common.no"),
+        confirmText: this.hass.localize("ui.common.remove"),
+        dismissText: this.hass.localize("ui.common.cancel"),
         confirm: () => this._removeConfig(),
       });
       return;

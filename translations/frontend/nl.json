@@ -520,6 +520,7 @@
             "previous": "Vorige",
             "refresh": "Vernieuwen",
             "save": "Opslaan",
+            "skip": "Overslaan",
             "successfully_deleted": "Succesvol verwijderd",
             "successfully_saved": "Succesvol opgeslagen",
             "undo": "Ongedaan maken",
@@ -579,7 +580,7 @@
                     "changed_to_state": "gewijzigd in {state}",
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
                     "detected_device_class": "gedetecteerd {device_class}",
-                    "rose": "roos",
+                    "rose": "opkomst",
                     "set": "stel  in",
                     "turned_off": "is uitgeschakeld",
                     "turned_on": "is ingeschakeld",
@@ -798,6 +799,7 @@
                 "dismiss": "Dialoogvenster sluiten",
                 "edit": "Entiteit bewerken",
                 "history": "Geschiedenis",
+                "last_changed": "Laatst gewijzigd",
                 "last_updated": "Laatst bijgewerkt",
                 "person": {
                     "create_zone": "Creëer zone van huidige locatie"
@@ -888,6 +890,11 @@
                         "trend": "Herlaad trend entiteiten",
                         "universal": "Herlaad universele mediaplayer entiteiten",
                         "zone": "Herlaad zones"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Server",
+                        "restart": "Herstarten",
+                        "stop": "Stop"
                     }
                 },
                 "filter_placeholder": "Entiteitsfilter"
@@ -1206,7 +1213,7 @@
                                     "trigger": "Trigger"
                                 },
                                 "event": {
-                                    "context_user_pick": "Gebruiker toevoegen",
+                                    "context_user_pick": "Selecteer gebruiker",
                                     "context_user_picked": "Gebeurtenis door gebruiker",
                                     "context_users": "Limiet voor gebeurtenissen die zijn geactiveerd door",
                                     "event_data": "Gebeurtenisdata",
@@ -1305,6 +1312,22 @@
                         "only_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "pick_automation": "Kies te bewerken automatisering",
                         "show_info_automation": "Informatie weergeven over automatisering"
+                    },
+                    "thingtalk": {
+                        "create": "Creëer automatisering",
+                        "link_devices": {
+                            "ambiguous_entities": "Een of meer apparaten hebben meer dan één overeenkomende entiteit. Kies het apparaat dat u wilt gebruiken.",
+                            "header": "Geweldig! Nu moeten we enkele apparaten koppelen",
+                            "unknown_placeholder": "Onbekende tijdelijke aanduiding"
+                        },
+                        "task_selection": {
+                            "error_empty": "Voer een commando in of druk op overslaan.",
+                            "error_unsupported": "Daar konden we (nog) geen automatisering voor maken.",
+                            "for_example": "Bijvoorbeeld:",
+                            "header": "Creëer een nieuwe automatisering",
+                            "introduction": "Typ hieronder wat deze automatisering zou moeten doen, en we zullen proberen om het om te zetten in een Home Assistant automatisering.",
+                            "language_note": "Opmerking: voorlopig wordt alleen Engels ondersteund."
+                        }
                     }
                 },
                 "cloud": {
@@ -1998,6 +2021,7 @@
                     },
                     "services": {
                         "add_node": "Knooppunt toevoegen",
+                        "cancel_command": "Opdracht annuleren",
                         "remove_node": "Knooppunt verwijderen"
                     }
                 },
@@ -2112,7 +2136,7 @@
                         "sequence_sentence": "De reeks van acties in dit script."
                     },
                     "picker": {
-                        "add_script": "Maak een nieuw script",
+                        "add_script": "Voeg script toe",
                         "edit_script": "Bewerk script",
                         "header": "Script Editor",
                         "headers": {
@@ -2752,6 +2776,10 @@
                             "description": "De Glance-kaart is handig om meerdere sensoren in een compact overzicht te groeperen.",
                             "name": "Oogopslag"
                         },
+                        "grid": {
+                            "description": "Met de rasterkaart kun je meerdere kaarten in een raster tonen.",
+                            "name": "Raster"
+                        },
                         "history-graph": {
                             "description": "Met de History Graph-kaart kunt u een grafiek weergeven voor elk van de vermelde entiteiten.",
                             "name": "Geschiedenis grafiek"
@@ -3198,6 +3226,10 @@
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
                 },
+                "enable_shortcuts": {
+                    "description": "Schakel sneltoetsen in of uit voor het uitvoeren van verschillende acties in de UI.",
+                    "header": "Toetsenbord sneltoetsen"
+                },
                 "force_narrow": {
                     "description": "De zijbalk standaard verbergen, vergelijkbaar met de mobiele ervaring.",
                     "header": "Zijbalk altijd verbergen"
@@ -3242,6 +3274,10 @@
                     "header": "Twee-factor-authenticatie modules"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Apparaatnaam",
+                        "title": "Hoe moet dit apparaat genoemd worden?"
+                    },
                     "description": "Verstuur meldingen naar dit apparaat.",
                     "error_load_platform": "Configureer notify.html5.",
                     "error_use_https": "Vereist SSL voor de frontend",
@@ -3282,6 +3318,9 @@
                     "description": "Schakel trillingen op dit apparaat in of uit wanneer u apparaten bestuurt.",
                     "header": "Trillen"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Gesprek starten"
             },
             "shopping-list": {
                 "add_item": "Item toevoegen",

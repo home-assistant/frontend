@@ -19,6 +19,7 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 import "./state-badge";
+import { formatAttributeName } from "../../util/hass-attributes-util";
 import "@material/mwc-icon-button/mwc-icon-button";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
@@ -35,7 +36,9 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: string }) => {
       <paper-item></paper-item>
     `;
   }
-  root.querySelector("paper-item")!.textContent = model.item;
+  root.querySelector("paper-item")!.textContent = formatAttributeName(
+    model.item
+  );
 };
 
 @customElement("ha-entity-attribute-picker")
@@ -92,7 +95,7 @@ class HaEntityAttributePicker extends LitElement {
           this.hass.localize(
             "ui.components.entity.entity-attribute-picker.attribute"
           )}
-          .value=${this._value}
+          .value=${this._value ? formatAttributeName(this._value) : ""}
           .disabled=${this.disabled || !this.entityId}
           class="input"
           autocapitalize="none"
@@ -140,7 +143,7 @@ class HaEntityAttributePicker extends LitElement {
   }
 
   private get _value() {
-    return this.value || "";
+    return this.value;
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {

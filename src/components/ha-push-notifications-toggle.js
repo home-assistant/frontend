@@ -90,8 +90,12 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       }
 
       const name = await showPromptDialog(this, {
-        title: this.hass.localize("ui.panel.profile.push_notifications.add_device_prompt.title"),
-        inputLabel: this.hass.localize("ui.panel.profile.push_notifications.add_device_prompt.input_label"),
+        title: this.hass.localize(
+          "ui.panel.profile.push_notifications.add_device_prompt.title"
+        ),
+        inputLabel: this.hass.localize(
+          "ui.panel.profile.push_notifications.add_device_prompt.input_label"
+        ),
       });
       if (name == null) {
         this.pushChecked = false;

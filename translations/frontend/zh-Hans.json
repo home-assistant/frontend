@@ -520,6 +520,7 @@
             "previous": "上一步",
             "refresh": "刷新",
             "save": "保存",
+            "skip": "跳过",
             "successfully_deleted": "已成功删除",
             "successfully_saved": "保存成功",
             "undo": "撤消",
@@ -798,6 +799,7 @@
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
                 "history": "历史",
+                "last_changed": "上次变化",
                 "last_updated": "上次更新",
                 "person": {
                     "create_zone": "从当前位置创建地点"
@@ -873,7 +875,7 @@
                         "input_select": "重载多项选择器",
                         "input_text": "重载文字输入",
                         "min_max": "重载最小值/最大值实体",
-                        "mqtt": "重载 mqtt 实体",
+                        "mqtt": "重载手动配置的 mqtt 实体",
                         "person": "重载人员",
                         "ping": "重载 ping 二元传感器实体",
                         "reload": "重载{domain}",
@@ -888,6 +890,11 @@
                         "trend": "重载 trend 实体",
                         "universal": "重载通用媒体播放器实体",
                         "zone": "重载地点"
+                    },
+                    "server_control": {
+                        "perform_action": "{action}服务",
+                        "restart": "重启",
+                        "stop": "停止"
                     }
                 },
                 "filter_placeholder": "实体筛选"
@@ -1206,7 +1213,7 @@
                                     "trigger": "触发条件"
                                 },
                                 "event": {
-                                    "context_user_pick": "添加用户",
+                                    "context_user_pick": "选择用户",
                                     "context_user_picked": "用户触发事件",
                                     "context_users": "仅限以下用户触发事件",
                                     "event_data": "事件数据",
@@ -1305,6 +1312,22 @@
                         "only_editable": "只能编辑 automations.yaml 中的自动化。",
                         "pick_automation": "选择要编辑的自动化",
                         "show_info_automation": "显示有关自动化的信息"
+                    },
+                    "thingtalk": {
+                        "create": "创建自动化",
+                        "link_devices": {
+                            "ambiguous_entities": "有些设备有多个匹配的实体，请选择要使用的实体。",
+                            "header": "很好！现在我们需要链接设备",
+                            "unknown_placeholder": "未知占位符"
+                        },
+                        "task_selection": {
+                            "error_empty": "请输入命令或点击“跳过”。",
+                            "error_unsupported": "目前无法创建这样的自动化。",
+                            "for_example": "例如：",
+                            "header": "创建新的自动化",
+                            "introduction": "请在下方输入这个自动化要实现什么功能，Home Assistant 会尝试将其转换为自动化。",
+                            "language_note": "注意：目前只支持英文。"
+                        }
                     }
                 },
                 "cloud": {
@@ -1648,7 +1671,7 @@
                 },
                 "filtering": {
                     "clear": "清除",
-                    "filtering_by": "筛选方式"
+                    "filtering_by": "正在筛选:"
                 },
                 "header": "配置 Home Assistant",
                 "helpers": {
@@ -1768,7 +1791,7 @@
                         "show_ignored": "显示忽略的集成",
                         "stop_ignore": "不再忽略"
                     },
-                    "integration": "个集成",
+                    "integration": "集成",
                     "integration_not_found": "未找到集成。",
                     "new": "设置新集成",
                     "no_integrations": "您好像还没有配置任何集成。点击下面的按钮来添加第一个集成！",
@@ -1998,6 +2021,7 @@
                     },
                     "services": {
                         "add_node": "添加节点",
+                        "cancel_command": "取消命令",
                         "remove_node": "删除节点"
                     }
                 },
@@ -2149,7 +2173,7 @@
                             "input_text": "重载文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
                             "min_max": "重载最小值/最大值实体",
-                            "mqtt": "重载 mqtt 实体",
+                            "mqtt": "重载手动配置的 mqtt 实体",
                             "person": "重载人员",
                             "ping": "重载 ping 二元传感器实体",
                             "reload": "重载{domain}",
@@ -2752,6 +2776,10 @@
                             "description": "“概览”卡片用于将多个传感器汇聚成一个紧凑的概览。",
                             "name": "概览"
                         },
+                        "grid": {
+                            "description": "“网格”卡片用于将多个卡片显示在一个网格。",
+                            "name": "网格"
+                        },
                         "history-graph": {
                             "description": "“历史图表”卡片用于为每一个列出的实体显示图表。",
                             "name": "历史图表"
@@ -3198,6 +3226,10 @@
                     "dropdown_label": "仪表盘",
                     "header": "仪表盘"
                 },
+                "enable_shortcuts": {
+                    "description": "启用或禁用可在 UI 中执行各种操作的键盘快捷键。",
+                    "header": "键盘快捷键"
+                },
                 "force_narrow": {
                     "description": "这将默认隐藏侧边栏，体验与手机版类似。",
                     "header": "始终隐藏侧边栏"
@@ -3242,6 +3274,10 @@
                     "header": "多因素身份验证模块"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "设备名称",
+                        "title": "如何称呼这台设备？"
+                    },
                     "description": "向本设备发送通知",
                     "error_load_platform": "请配置 notify.html5。",
                     "error_use_https": "需要为前端启用 SSL。",
@@ -3282,6 +3318,9 @@
                     "description": "控制设备时，在此设备上启用或禁用振动。",
                     "header": "振动"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "开始对话"
             },
             "shopping-list": {
                 "add_item": "添加项目",

@@ -520,6 +520,7 @@
             "previous": "Poprzedni",
             "refresh": "Odśwież",
             "save": "Zapisz",
+            "skip": "Pomiń",
             "successfully_deleted": "Pomyślnie usunięto",
             "successfully_saved": "Pomyślnie zapisano",
             "undo": "Cofnij",
@@ -575,29 +576,29 @@
                 "by_service": "przez usługę",
                 "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
                 "messages": {
-                    "became_unavailable": "- encja stała się niedostępna",
-                    "changed_to_state": "- stan encji zmienił się na {state}",
-                    "cleared_device_class": "- encja przestała wykrywać {device_class}",
-                    "detected_device_class": "- encja wykryła {device_class}",
+                    "became_unavailable": "encja stała się niedostępna",
+                    "changed_to_state": "nastąpiła zmiana stanu na {state}",
+                    "cleared_device_class": "brak",
+                    "detected_device_class": "wykryto",
                     "rose": "wzeszło",
                     "set": "zaszło",
-                    "turned_off": "- encja została wyłączona",
-                    "turned_on": "- encja została włączona",
-                    "was_at_home": "- stan encji zmienił się na \"w domu\"",
-                    "was_at_state": "- stan encji zmienił się na {state}",
-                    "was_away": "- stan encji zmienił się na \"poza domem\"",
+                    "turned_off": "nastąpiło wyłączenie",
+                    "turned_on": "nastąpiło włączenie",
+                    "was_at_home": "nastąpiła zmiana stanu na \"w domu\"",
+                    "was_at_state": "nastąpiła zmiana stanu na {state}",
+                    "was_away": "nastąpiła zmiana stanu na \"poza domem\"",
                     "was_closed": "nastąpiło zamknięcie",
                     "was_connected": "nastąpiło podłączenie",
                     "was_disconnected": "nastąpiło odłączenie",
                     "was_locked": "nastąpiło zamknięcie",
-                    "was_low": "- stan encji zmienił się na niski",
-                    "was_normal": "- stan encji zmienił się na normalny",
+                    "was_low": "nastąpiła zmiana stanu na niski",
+                    "was_normal": "nastąpiła zmiana stanu na normalny",
                     "was_opened": "nastąpiło otwarcie",
                     "was_plugged_in": "nastąpiło podłączenie",
-                    "was_safe": "- encja przestała wykrywać zagrożenie",
+                    "was_safe": "brak zagrożenia",
                     "was_unlocked": "nastąpiło otwarcie",
                     "was_unplugged": "nastąpiło odłączenie",
-                    "was_unsafe": "- encja wykryła zagrożenie"
+                    "was_unsafe": "wykryto zagrożenie"
                 }
             },
             "media-browser": {
@@ -798,6 +799,7 @@
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
                 "history": "Historia",
+                "last_changed": "Ostatnia zmiana",
                 "last_updated": "Ostatnio zaktualizowano",
                 "person": {
                     "create_zone": "Utwórz strefę z bieżącej lokalizacji"
@@ -1211,7 +1213,7 @@
                                     "trigger": "Wyzwalacz"
                                 },
                                 "event": {
-                                    "context_user_pick": "Dodaj użytkownika",
+                                    "context_user_pick": "Wybierz użytkownika",
                                     "context_user_picked": "Użytkownik wywołujący zdarzenie",
                                     "context_users": "Tylko zdarzenia wywołane przez",
                                     "event_data": "Dane zdarzenia",
@@ -1310,6 +1312,22 @@
                         "only_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "pick_automation": "Wybierz automatyzację do edycji",
                         "show_info_automation": "Pokaż informacje o automatyzacji"
+                    },
+                    "thingtalk": {
+                        "create": "Utwórz automatyzację",
+                        "link_devices": {
+                            "ambiguous_entities": "Co najmniej jedno urządzenie ma więcej niż jedną pasującą encję. Wybierz tę, której chcesz użyć.",
+                            "header": "Wspaniale! Teraz musimy podłączyć jakieś urządzenia",
+                            "unknown_placeholder": "Nieznany symbol zastępczy"
+                        },
+                        "task_selection": {
+                            "error_empty": "Wprowadź polecenie lub naciśnij \"Pomiń\"",
+                            "error_unsupported": "Nie mogliśmy (jeszcze?) utworzyć takiej automatyzacji",
+                            "for_example": "Na przykład:",
+                            "header": "Utwórz nową automatyzację",
+                            "introduction": "Wpisz poniżej, co ma robić ta automatyzacja, a my spróbujemy przekształcić ją w automatyzację Home Assistant.",
+                            "language_note": "Uwaga: obecnie obsługiwany jest tylko język angielski."
+                        }
                     }
                 },
                 "cloud": {
@@ -1677,7 +1695,7 @@
                     "types": {
                         "counter": "Licznik",
                         "input_boolean": "Przełącznik",
-                        "input_datetime": "Data i/lub czas",
+                        "input_datetime": "Data/czas",
                         "input_number": "Numer",
                         "input_select": "Pole wyboru",
                         "input_text": "Tekst",
@@ -2118,7 +2136,7 @@
                         "sequence_sentence": "Sekwencja akcji tego skryptu."
                     },
                     "picker": {
-                        "add_script": "Utwórz nowy skrypt",
+                        "add_script": "Dodaj skrypt",
                         "edit_script": "Edytuj skrypt",
                         "header": "Edytor skryptów",
                         "headers": {
@@ -2758,6 +2776,10 @@
                             "description": "Karta glance umożliwia grupowanie wielu sensorów w kompaktowym przeglądzie.",
                             "name": "Glance"
                         },
+                        "grid": {
+                            "description": "Karta siatka umożliwia wyświetlanie wielu kart w siatce.",
+                            "name": "Siatka"
+                        },
                         "history-graph": {
                             "description": "Karta wykres historii umożliwia wyświetlenie wykresu dla każdej z wymienionych encji.",
                             "name": "Wykres historii"
@@ -3296,6 +3318,9 @@
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",
                     "header": "Wibracja"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Rozpocznij rozmowę"
             },
             "shopping-list": {
                 "add_item": "Dodaj element",

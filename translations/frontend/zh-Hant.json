@@ -520,6 +520,7 @@
             "previous": "上一步",
             "refresh": "更新",
             "save": "儲存",
+            "skip": "略過",
             "successfully_deleted": "成功刪除",
             "successfully_saved": "成功儲存",
             "undo": "撤消",
@@ -798,6 +799,7 @@
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
                 "history": "歷史",
+                "last_changed": "上次變更",
                 "last_updated": "最後更新",
                 "person": {
                     "create_zone": "使用目前位置新增區域"
@@ -1211,7 +1213,7 @@
                                     "trigger": "觸發自動化"
                                 },
                                 "event": {
-                                    "context_user_pick": "新增用戶",
+                                    "context_user_pick": "選擇用戶",
                                     "context_user_picked": "用戶觸發事件",
                                     "context_users": "限制觸發事件",
                                     "event_data": "事件資料",
@@ -1310,6 +1312,22 @@
                         "only_editable": "僅有於 automations.yaml 內定義的自動化、方能進行編輯。",
                         "pick_automation": "選擇欲編輯的自動化",
                         "show_info_automation": "顯示關於自動化資訊"
+                    },
+                    "thingtalk": {
+                        "create": "新增自動化",
+                        "link_devices": {
+                            "ambiguous_entities": "相符的實體具有一個以上的實體，請選擇所要使用的實體。",
+                            "header": "太好了！現在我們需要連結一些設備",
+                            "unknown_placeholder": "未知 Placeholder"
+                        },
+                        "task_selection": {
+                            "error_empty": "輸入命令或點選忽略。",
+                            "error_unsupported": "（尚）無法為此新增自動化。",
+                            "for_example": "範例；",
+                            "header": "新增自動化",
+                            "introduction": "於下方輸入自動化內容，Home Assistant 將會試著將其轉換成自動化。",
+                            "language_note": "注意：目前僅支援英文。"
+                        }
                     }
                 },
                 "cloud": {
@@ -1732,7 +1750,7 @@
                         "options": "選項",
                         "reload": "重新載入",
                         "reload_confirm": "整合已重新載入",
-                        "reload_restart_confirm": "重啟 Home Assistant 以為重整合重新載入",
+                        "reload_restart_confirm": "重啟 Home Assistant 以完成整合重新載入",
                         "rename": "重新命名",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "services": "{count} {count, plural,\n  one {項服務}\n  other {項服務}\n}",
@@ -2758,6 +2776,10 @@
                             "description": "簡略式面板以緊致群組方式顯示多個傳感器狀態。",
                             "name": "簡略式面板"
                         },
+                        "grid": {
+                            "description": "方格排列面板可於方格內顯示多個面板。",
+                            "name": "方格排列面板"
+                        },
                         "history-graph": {
                             "description": "歷史圖表式面板可供顯示每個列表實體圖表。",
                             "name": "歷史圖表式面板"
@@ -3296,6 +3318,9 @@
                     "description": "當控制裝置時、開啟或關閉此裝置震動。",
                     "header": "震動"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "開始對話"
             },
             "shopping-list": {
                 "add_item": "新加入清單",

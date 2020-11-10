@@ -41,7 +41,7 @@ class HaPanelDevMqtt extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage>
+      <hass-subpage .hass=${this.hass}>
         <div class="content">
           <ha-card header="MQTT settings">
             <div class="card-actions">

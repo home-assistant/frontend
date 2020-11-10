@@ -1,26 +1,28 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "../../components/ha-dialog";
+import "../../components/ha-area-picker";
+
 import {
-  css,
   CSSResult,
+  LitElement,
+  TemplateResult,
+  css,
   customElement,
   html,
-  LitElement,
-  property,
   internalProperty,
-  TemplateResult,
+  property,
 } from "lit-element";
-import "../../components/dialog/ha-paper-dialog";
-import "../../components/ha-area-picker";
-import { computeDeviceName } from "../../data/device_registry";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+
 import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
+import { HomeAssistant } from "../../types";
+import { PolymerChangedEvent } from "../../polymer-types";
+import { computeDeviceName } from "../../data/device_registry";
+import { fireEvent } from "../../common/dom/fire_event";
+import { haStyleDialog } from "../../resources/styles";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
@@ -34,7 +36,7 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   @internalProperty() private _areaId?: string;
 
-  private _submitting?: boolean;
+  @internalProperty() private _submitting?: boolean;
 
   public async showDialog(
     params: DeviceRegistryDetailDialogParams
@@ -46,22 +48,24 @@ class DialogDeviceRegistryDetail extends LitElement {
     await this.updateComplete;
   }
 
+  public closeDialog(): void {
+    this._error = "";
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
     const device = this._params.device;
-
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        @opened-changed="${this._openedChanged}"
+      <ha-dialog
+        open
+        @closed=${this.closeDialog}
+        .heading=${computeDeviceName(device, this.hass)}
       >
-        <h2>
-          ${computeDeviceName(device, this.hass)}
-        </h2>
-        <paper-dialog-scrollable>
+        <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
@@ -77,13 +81,22 @@ class DialogDeviceRegistryDetail extends LitElement {
               @value-changed=${this._areaPicked}
             ></ha-area-picker>
           </div>
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._updateEntry}">
-            ${this.hass.localize("ui.panel.config.devices.update")}
-          </mwc-button>
         </div>
-      </ha-paper-dialog>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          .disabled=${this._submitting}
+        >
+          ${this.hass.localize("ui.common.cancel")}
+        </mwc-button>
+        <mwc-button
+          slot="primaryAction"
+          @click="${this._updateEntry}"
+          .disabled=${this._submitting}
+        >
+          ${this.hass.localize("ui.panel.config.devices.update")}
+        </mwc-button>
+      </ha-dialog>
     `;
   }
 
@@ -113,19 +126,10 @@ class DialogDeviceRegistryDetail extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
-      this._params = undefined;
-    }
-  }
-
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
       css`
-        ha-paper-dialog {
-          min-width: 400px;
-        }
         .form {
           padding-bottom: 24px;
         }

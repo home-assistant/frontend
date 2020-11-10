@@ -45,6 +45,7 @@ import { configSections } from "../ha-panel-config";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
+import { brandsUrl } from "../../../util/brands-url";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -143,9 +144,10 @@ export class HaConfigDevicePage extends LitElement {
     if (!device) {
       return html`
         <hass-error-screen
-          error="${this.hass.localize(
+          .hass=${this.hass}
+          .error=${this.hass.localize(
             "ui.panel.config.devices.device_not_found"
-          )}"
+          )}
         ></hass-error-screen>
       `;
     }
@@ -223,9 +225,7 @@ export class HaConfigDevicePage extends LitElement {
                       : ""
                   }
                   <img
-                    src="https://brands.home-assistant.io/${
-                      integrations[0]
-                    }/logo.png"
+                    src="${brandsUrl(integrations[0], "logo")}"
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
                     @error=${this._onImageError}
@@ -587,7 +587,7 @@ export class HaConfigDevicePage extends LitElement {
             text: this.hass.localize(
               "ui.panel.config.devices.confirm_rename_entity_ids_warning"
             ),
-            confirmText: this.hass.localize("ui.common.yes"),
+            confirmText: this.hass.localize("ui.common.rename"),
             dismissText: this.hass.localize("ui.common.no"),
             warning: true,
           }));
