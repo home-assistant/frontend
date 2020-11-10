@@ -543,7 +543,7 @@
                 "device": "מכשיר",
                 "no_area": "אין אזור",
                 "show_devices": "הצג התקנים",
-                "toggle": "החלף מצב"
+                "toggle": "בורר מצבים"
             },
             "entity": {
                 "entity-picker": {
@@ -1523,7 +1523,7 @@
                         "no_helpers": "נראה שאין לך עדיין עזרים!"
                     },
                     "types": {
-                        "input_boolean": "החלף מצב",
+                        "input_boolean": "בורר מצבים",
                         "input_datetime": "תאריך ו/או שעה",
                         "input_number": "מספר",
                         "input_select": "תיבת בחירה",
@@ -2591,7 +2591,7 @@
                         "pick_card_view_title": "איזה כרטיס ברצונך להוסיף לתצוגת {name}?",
                         "show_code_editor": "הצג עורך קוד",
                         "show_visual_editor": "הצג עורך ויזואלי",
-                        "toggle_editor": "החלף מצב עורך",
+                        "toggle_editor": "עורך בורר מצבים",
                         "typed_header": "תצורת כרטיס {type}",
                         "unsaved_changes": "יש לך שינויים שלא נשמרו"
                     },

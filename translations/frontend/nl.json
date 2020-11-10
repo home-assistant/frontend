@@ -2136,7 +2136,7 @@
                         "sequence_sentence": "De reeks van acties in dit script."
                     },
                     "picker": {
-                        "add_script": "Maak een nieuw script",
+                        "add_script": "Voeg script toe",
                         "edit_script": "Bewerk script",
                         "header": "Script Editor",
                         "headers": {

@@ -1314,12 +1314,18 @@
                         "show_info_automation": "Afficher des informations sur l'automatisation"
                     },
                     "thingtalk": {
+                        "create": "Créer l’automatisation",
                         "link_devices": {
+                            "ambiguous_entities": "Un ou plusieurs appareils ont plus d’une entrée correspondante, veuillez choisir celle que vous souhaitez utiliser.",
                             "header": "Super ! Maintenant nous allons lier quelques appareils",
                             "unknown_placeholder": "Espace réservé introuvable"
                         },
                         "task_selection": {
+                            "error_empty": "Entrez une commande ou appuyez sur ignorer.",
+                            "error_unsupported": "Nous n'avons pas pu créer une automatisation pour cela (pour le moment ?).",
                             "for_example": "Par exemple : ",
+                            "header": "Créer une nouvelle automatisation",
+                            "introduction": "Tapez ci-dessous ce que cette automatisation devrait faire, et nous allons essayer de la convertir en une automatisation Home Assistant.",
                             "language_note": "Remarque: pour l'instant, seul l'anglais est pris en charge."
                         }
                     }
@@ -2769,6 +2775,10 @@
                             "columns": "Colonnes",
                             "description": "La carte Coup d'œil est utile pour regrouper plusieurs capteurs dans une vue d'ensemble compacte.",
                             "name": "Coup d'œil"
+                        },
+                        "grid": {
+                            "description": "La carte Grille vous permet d’afficher plusieurs cartes dans une grille.",
+                            "name": "Grille"
                         },
                         "history-graph": {
                             "description": "La carte Graphique historique vous permet d'afficher un graphique pour chacune des entités répertoriées.",
