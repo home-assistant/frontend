@@ -114,6 +114,7 @@ documentContainer.innerHTML = `<custom-style>
       -webkit-overflow-scrolling: touch !important;
     }
 
+    /* for paper-dialog */
     iron-overlay-backdrop {
       backdrop-filter: var(--dialog-backdrop-filter, none);
     }
