@@ -17,7 +17,6 @@ import { throttle } from "../../../common/util/throttle";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import { getLogbookData, LogbookEntry } from "../../../data/logbook";
-import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import { findEntities } from "../common/find-entites";
@@ -198,7 +197,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
                   narrow
                   relative-time
                   virtualize
-                  class="ha-scrollbar"
                   .hass=${this.hass}
                   .entries=${this._logbookEntries}
                   .userIdToName=${this._persons}
@@ -268,7 +266,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResultArray {
     return [
-      haStyleScrollbar,
       css`
         ha-card {
           height: 100%;
