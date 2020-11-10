@@ -98,7 +98,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${stateObj.state !== "playing" && !supportsFeature(stateObj, SUPPORT_PLAY)
+      ${(stateObj.state === "playing" &&
+        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
+          supportsFeature(stateObj, SUPPORT_STOP))) ||
+      ((stateObj.state === "paused" || stateObj.state === "idle") &&
+        supportsFeature(stateObj, SUPPORT_PLAY))
         ? ""
         : html`
             <ha-icon-button

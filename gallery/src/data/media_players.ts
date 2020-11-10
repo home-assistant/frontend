@@ -51,8 +51,8 @@ export const createMediaPlayerEntities = () => [
     // Pause + Next Track + Play
     supported_features: 16417,
   }),
-  getEntity("media_player", "stream_playing_back", "playing", {
-    friendly_name: "Playing the Stream (only back)",
+  getEntity("media_player", "stream_playing_previous", "playing", {
+    friendly_name: "Playing the Stream (with Previous support)",
     media_content_type: "movie",
     media_title: "Epic sax guy 10 hours",
     app_name: "YouTube",

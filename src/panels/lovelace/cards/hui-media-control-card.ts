@@ -566,7 +566,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       (state === "playing" &&
         (supportsFeature(stateObj, SUPPORT_PAUSE) ||
           supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORT_PLAY))
+      ((state === "paused" || state === "idle") &&
+        supportsFeature(stateObj, SUPPORT_PLAY))
     ) {
       buttons.push({
         icon:

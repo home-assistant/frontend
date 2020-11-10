@@ -287,7 +287,10 @@ class MoreInfoMediaPlayer extends LitElement {
       });
     }
 
-    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
+    if (
+      (state === "playing" || state === "paused") &&
+      supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+    ) {
       buttons.push({
         icon: "hass:skip-previous",
         action: "media_previous_track",
@@ -312,7 +315,10 @@ class MoreInfoMediaPlayer extends LitElement {
       });
     }
 
-    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
+    if (
+      (state === "playing" || state === "paused") &&
+      supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+    ) {
       buttons.push({
         icon: "hass:skip-next",
         action: "media_next_track",

@@ -35,10 +35,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Playing Stream (only back)",
+    heading: "Playing Stream (with Previous support)",
     config: `
   - type: media-control
-    entity: media_player.stream_playing_back
+    entity: media_player.stream_playing_previous
     `,
   },
   {
