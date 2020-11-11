@@ -1931,7 +1931,8 @@
               "name": "Name",
               "group": "Group",
               "system": "System"
-            }
+            },
+            "add_user": "Add user"
           },
           "editor": {
             "caption": "View user",
