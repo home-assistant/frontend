@@ -264,9 +264,9 @@ class OZWNodeConfig extends LitElement {
 
       this._config.forEach((item) => {
         if (item.type === "List") {
-          this._configData[item.parameter] = Object.values(
-            item.schema[0].options
-          ).find((opt) => opt[1] === item.value)[0];
+          this._configData[item.parameter] = item.schema[0].options.find(
+            (opt: (number | string)[]) => opt[1] === item.value
+          )[0];
         } else {
           this._configData[item.parameter] = item.value;
         }

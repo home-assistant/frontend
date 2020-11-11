@@ -1,3 +1,4 @@
+import { HaFormSchema } from "../components/ha-form/ha-form";
 import { HomeAssistant } from "../types";
 import { DeviceRegistryEntry } from "./device_registry";
 
@@ -71,6 +72,7 @@ export interface OZWDeviceConfig {
   min: number;
   max: number;
   help: string;
+  schema: HaFormSchema;
 }
 
 export const nodeQueryStages = [
