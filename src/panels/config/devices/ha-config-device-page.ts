@@ -224,12 +224,19 @@ export class HaConfigDevicePage extends LitElement {
                         `
                       : ""
                   }
-                  <img
-                    src=${brandsUrl(integrations[0], "logo")}
-                    referrerpolicy="no-referrer"
-                    @load=${this._onImageLoad}
-                    @error=${this._onImageError}
-                  />
+                  ${
+                    integrations.length
+                      ? html`
+                          <img
+                            src=${brandsUrl(integrations[0], "logo")}
+                            referrerpolicy="no-referrer"
+                            @load=${this._onImageLoad}
+                            @error=${this._onImageError}
+                          />
+                        `
+                      : ""
+                  }
+
                 </div>
           </div>
           <div class="column">
