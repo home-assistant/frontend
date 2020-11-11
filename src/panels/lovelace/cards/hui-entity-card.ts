@@ -31,6 +31,9 @@ import {
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
 import { computeCardSize } from "../common/compute-card-size";
+import { styleMap } from "lit-html/directives/style-map";
+import { severityMap } from "../../../common/style/severity_map";
+import { computeSeverity } from "../common/compute-severity";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -122,7 +125,15 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="info">
-          <span class="value"
+          <span
+            class="value"
+            style=${styleMap({
+              color: this._computeColor(
+                "attribute" in this._config
+                  ? stateObj.attributes[this._config.attribute!]
+                  : stateObj.state
+              ),
+            })}
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] ??
                 this.hass.localize("state.default.unknown")
@@ -181,6 +192,16 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  }
+
+  private _computeColor(numberValue: number | string): string {
+    const sections = this._config!.severity;
+
+    if (!sections || isNaN(+numberValue)) {
+      return severityMap.undefined;
+    }
+
+    return computeSeverity(sections, numberValue as number);
   }
 
   static get styles(): CSSResult {

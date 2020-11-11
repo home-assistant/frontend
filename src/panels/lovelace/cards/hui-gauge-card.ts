@@ -15,21 +15,16 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { severityMap } from "../../../common/style/severity_map";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
 import type { HomeAssistant } from "../../../types";
+import { computeSeverity } from "../common/compute-severity";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
-
-export const severityMap = {
-  red: "var(--label-badge-red)",
-  green: "var(--label-badge-green)",
-  yellow: "var(--label-badge-yellow)",
-  normal: "var(--label-badge-blue)",
-};
 
 @customElement("hui-gauge-card")
 class HuiGaugeCard extends LitElement implements LovelaceCard {
@@ -163,29 +158,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       return severityMap.normal;
     }
 
-    const sectionsArray = Object.keys(sections);
-    const sortable = sectionsArray.map((severity) => [
-      severity,
-      sections[severity],
-    ]);
-
-    for (const severity of sortable) {
-      if (severityMap[severity[0]] == null || isNaN(severity[1])) {
-        return severityMap.normal;
-      }
-    }
-    sortable.sort((a, b) => a[1] - b[1]);
-
-    if (numberValue >= sortable[0][1] && numberValue < sortable[1][1]) {
-      return severityMap[sortable[0][0]];
-    }
-    if (numberValue >= sortable[1][1] && numberValue < sortable[2][1]) {
-      return severityMap[sortable[1][0]];
-    }
-    if (numberValue >= sortable[2][1]) {
-      return severityMap[sortable[2][0]];
-    }
-    return severityMap.normal;
+    return computeSeverity(sections, numberValue);
   }
 
   private _handleClick(): void {

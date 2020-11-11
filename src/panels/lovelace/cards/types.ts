@@ -37,6 +37,7 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
 export interface EntityCardConfig extends LovelaceCardConfig {
   attribute?: string;
   unit?: string;
+  severity?: SeverityConfig;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -283,6 +284,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   detail?: number;
   theme?: string;
   hours_to_show?: number;
+  severity?: SeverityConfig;
 }
 
 export interface ShoppingListCardConfig extends LovelaceCardConfig {
