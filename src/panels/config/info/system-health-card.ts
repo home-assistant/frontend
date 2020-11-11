@@ -232,9 +232,6 @@ class SystemHealthCard extends LitElement {
       `System Health\n\n${haContent}\n\n${domainParts.join("\n\n")}`
     );
 
-    // Remove temporary heading again
-    copyElement.removeChild(tempTitle);
-
     this._toolTip!.show();
     setTimeout(() => this._toolTip?.hide(), 3000);
   }
