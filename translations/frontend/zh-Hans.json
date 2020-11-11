@@ -511,16 +511,23 @@
             "continue": "继续",
             "copied": "已复制",
             "delete": "删除",
+            "disable": "禁用",
+            "enable": "启用",
             "error_required": "必填",
+            "leave": "离开",
             "loading": "加载中",
             "menu": "菜单",
             "next": "下一步",
             "no": "否",
+            "not_now": "暂时不要",
             "overflow_menu": "Overflow 菜单",
             "previous": "上一步",
             "refresh": "刷新",
+            "remove": "删除",
+            "rename": "重命名",
             "save": "保存",
             "skip": "跳过",
+            "stay": "留下",
             "successfully_deleted": "已成功删除",
             "successfully_saved": "保存成功",
             "undo": "撤消",
@@ -721,8 +728,10 @@
                     "confirm_delete": "您确定要删除此条目吗？",
                     "delete": "删除",
                     "enabled_cause": "由于 {cause} 而被禁用",
+                    "enabled_delay_confirm": "已启用的实体将在 {delay} 秒后添加到 Home Assistant",
                     "enabled_description": "已禁用的实体不再添加到 Home Assistant。",
                     "enabled_label": "启用实体",
+                    "enabled_restart_confirm": "重启 Home Assistant 以完成实体的启用",
                     "entity_id": "实体 ID",
                     "icon": "图标",
                     "icon_error": "图标的格式应为 prefix:iconname，例如：mdi:home",
@@ -1421,7 +1430,7 @@
                         "will_be_auto_renewed": "将自动续订"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "Webhook可从以下URL获得：",
+                        "available_at": "Webhook 可从以下 URL 获得：",
                         "close": "关闭",
                         "confirm_disable": "您确定要禁用此Webhook吗？",
                         "copied_to_clipboard": "复制到剪贴板",
@@ -1720,6 +1729,42 @@
                     "server": "服务器",
                     "source": "源：",
                     "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "已启用 Alexa",
+                                "can_reach_cert_server": "可访问证书服务器",
+                                "can_reach_cloud": "可访问 Home Assistant Cloud",
+                                "can_reach_cloud_auth": "可访问认证服务器",
+                                "google_enabled": "已启用 Google",
+                                "logged_in": "已登录",
+                                "relayer_connected": "通过代理连接",
+                                "remote_connected": "远程连接",
+                                "remote_enabled": "已启用远程控制",
+                                "subscription_expiration": "订阅到期时间"
+                            },
+                            "homeassistant": {
+                                "arch": "CPU 架构",
+                                "dev": "开发版",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "安装类型",
+                                "os_name": "操作系统名称",
+                                "os_version": "操作系统版本",
+                                "python_version": "Python 版本",
+                                "timezone": "时区",
+                                "version": "版本",
+                                "virtualenv": "虚拟环境"
+                            },
+                            "lovelace": {
+                                "dashboards": "仪表盘",
+                                "mode": "模式",
+                                "resources": "资源"
+                            }
+                        },
+                        "manage": "管理",
+                        "more_info": "更多信息"
+                    },
                     "title": "信息"
                 },
                 "integration_panel_move": {
@@ -1886,7 +1931,7 @@
                             },
                             "no_resources": "没有资源"
                         },
-                        "refresh_body": "您必须刷新页面才能完成删除，是否要立即刷新？",
+                        "refresh_body": "必须刷新页面才能完成删除，是否要立即刷新？",
                         "refresh_header": "要刷新吗？",
                         "types": {
                             "css": "样式表",
@@ -2210,6 +2255,8 @@
                     "add_tag": "添加标签",
                     "automation_title": "扫描到标签 {name}",
                     "caption": "标签",
+                    "confirm_remove": "您确定要删除标签 {tag} 吗？",
+                    "confirm_remove_title": "删除标签？",
                     "create_automation": "通过标签创建自动化",
                     "description": "管理标签",
                     "detail": {
@@ -2635,7 +2682,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace 配置已更新，您想刷新吗？",
+                    "message": "此仪表盘的 Lovelace 配置已更新。刷新页面以查看更改？",
                     "refresh": "刷新"
                 },
                 "editor": {
@@ -2872,11 +2919,18 @@
                         "entity": "实体",
                         "no_description": "没有描述。"
                     },
+                    "common": {
+                        "add": "添加",
+                        "clear": "清除",
+                        "edit": "编辑",
+                        "none": "无"
+                    },
                     "edit_badges": {
                         "panel_mode": "这些徽章将不会显示，因为此视图处于面板模式。"
                     },
                     "edit_card": {
                         "add": "添加卡片",
+                        "clear": "清除",
                         "confirm_cancel": "确实要取消吗？",
                         "delete": "删除卡片",
                         "duplicate": "复制卡片",
@@ -2917,6 +2971,22 @@
                         }
                     },
                     "header": "编辑 UI",
+                    "header-footer": {
+                        "choose_header_footer": "请选择{type}",
+                        "footer": "页脚",
+                        "header": "页眉",
+                        "types": {
+                            "buttons": {
+                                "name": "按钮"
+                            },
+                            "graph": {
+                                "name": "图表"
+                            },
+                            "picture": {
+                                "name": "图片"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "打开 Lovelace UI 菜单",
                         "raw_editor": "原始配置编辑器"
@@ -2960,6 +3030,13 @@
                     "select_view": {
                         "dashboard_label": "仪表盘",
                         "header": "选择视图"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "页脚编辑器",
+                            "header": "页眉编辑器",
+                            "row": "实体行编辑器"
+                        }
                     },
                     "suggest_card": {
                         "add": "添加至 Lovelace UI",

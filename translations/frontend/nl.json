@@ -511,16 +511,23 @@
             "continue": "Ga verder",
             "copied": "Gekopieerd",
             "delete": "Verwijderen",
+            "disable": "Uitschakelen",
+            "enable": "Inschakelen",
             "error_required": "Verplicht",
+            "leave": "Verlaten",
             "loading": "Bezig met laden",
             "menu": "Menu",
             "next": "Volgende",
             "no": "Nee",
+            "not_now": "Niet nu",
             "overflow_menu": "Overloopmenu",
             "previous": "Vorige",
             "refresh": "Vernieuwen",
+            "remove": "Verwijderen",
+            "rename": "Naam wijzigen",
             "save": "Opslaan",
             "skip": "Overslaan",
+            "stay": "Blijf",
             "successfully_deleted": "Succesvol verwijderd",
             "successfully_saved": "Succesvol opgeslagen",
             "undo": "Ongedaan maken",
@@ -624,7 +631,7 @@
                     "season": "Seizoen",
                     "track": "Nummer",
                     "tv_show": "TV-programma",
-                    "url": "Url",
+                    "url": "URL",
                     "video": "Video"
                 },
                 "content-type": {
@@ -721,8 +728,10 @@
                     "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
                     "delete": "Verwijderen",
                     "enabled_cause": "Uitgeschakeld vanwege {cause}",
+                    "enabled_delay_confirm": "De ingeschakelde entiteiten worden over {delay} seconden aan Home Assistant toegevoegd",
                     "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
                     "enabled_label": "Schakel entiteit in",
+                    "enabled_restart_confirm": "Start Home Assistant opnieuw om het inschakelen van de entiteiten te voltooien",
                     "entity_id": "Entiteits-ID",
                     "icon": "Pictogram",
                     "icon_error": "Pictogrammen moeten de notatie 'prefix:pictogramnaam' hebben, bijvoorbeeld 'mdi:home'",
@@ -1627,12 +1636,12 @@
                         "disable_selected": {
                             "button": "Geselecteerde uitschakelen",
                             "confirm_text": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
-                            "confirm_title": "Wilt je {number} entiteiten uitschakelen?"
+                            "confirm_title": "Wilt u het volgende uitschakelen {number} {number, plural,\n  one {entiteit}\n  other {entiteiten}\n}?"
                         },
                         "enable_selected": {
                             "button": "Geselecteerde inschakelen",
                             "confirm_text": "Dit maakt ze weer beschikbaar in Home Assistant als ze nu zijn uitgeschakeld.",
-                            "confirm_title": "Wilt je {number} entiteiten inschakelen?"
+                            "confirm_title": "Wilt u het volgende inschakelen {number} {number, plural,\n  one {entiteit}\n  other {entiteiten}\n}?"
                         },
                         "filter": {
                             "filter": "filter",
@@ -1654,9 +1663,9 @@
                         "remove_selected": {
                             "button": "Verwijder geselecteerde",
                             "confirm_partly_text": "U kunt alleen {removable} van de geselecteerde {selected} entiteiten verwijderen. Entiteiten kunnen alleen worden verwijderd als de integratie de entiteiten niet meer levert. Soms moet u Home Assistant opnieuw opstarten voordat u de entiteiten van een verwijderde integratie kunt verwijderen. Weet u zeker dat u de verwijderbare entiteiten wilt verwijderen?",
-                            "confirm_partly_title": "Alleen {number} geselecteerde entiteiten kunnen worden verwijderd.",
+                            "confirm_partly_title": "Alleen {number} {number, plural,\n  one {geselecteerde entiteit}\n  other {geselecteerde entiteiten}\n} kunnen worden verwijderd.",
                             "confirm_text": "Je moet ze zelf nog verwijderen uit je Lovelace-configuratie en automatiseringen als ze deze entiteiten bevatten.",
-                            "confirm_title": "Wilt je {number} entiteiten verwijderen?"
+                            "confirm_title": "Wilt u het volgende verwijderen {number} {number, plural,\n  one {entiteit}\n  other {entiteiten}\n}?"
                         },
                         "search": "Zoek entiteiten",
                         "selected": "{number} geselecteerd",
@@ -1720,6 +1729,33 @@
                     "server": "Server",
                     "source": "Bron:",
                     "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa ingeschakeld",
+                                "can_reach_cert_server": "Bereik de certificaatserver",
+                                "can_reach_cloud": "Bereik Home Assistant Cloud",
+                                "can_reach_cloud_auth": "Bereik authenticatieserver",
+                                "remote_connected": "Op afstand verbonden",
+                                "remote_enabled": "Op afstand ingeschakeld"
+                            },
+                            "homeassistant": {
+                                "arch": "CPU-architectuur",
+                                "dev": "Ontwikkeling",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Type installatie",
+                                "os_name": "Naam besturingssysteem",
+                                "os_version": "Versie van het besturingssysteem",
+                                "python_version": "Python-versie",
+                                "timezone": "Tijdzone",
+                                "version": "Versie",
+                                "virtualenv": "Virtuele omgeving"
+                            }
+                        },
+                        "manage": "Beheer",
+                        "more_info": "meer informatie"
+                    },
                     "title": "Info"
                 },
                 "integration_panel_move": {
@@ -1845,7 +1881,7 @@
                             "title": "Titel",
                             "title_required": "Titel is vereist.",
                             "update": "Bijwerken",
-                            "url": "Url",
+                            "url": "URL",
                             "url_error_msg": "De URL moet een - bevatten en mag geen spaties of speciale tekens bevatten, behalve _ en -"
                         },
                         "picker": {
@@ -1873,8 +1909,8 @@
                             "new_resource": "Voeg nieuwe bron toe",
                             "type": "Type bron",
                             "update": "Bijwerken",
-                            "url": "Url",
-                            "url_error_msg": "Url is een verplicht veld",
+                            "url": "URL",
+                            "url_error_msg": "URL is een verplicht veld",
                             "warning_header": "Wees voorzichtig!",
                             "warning_text": "Het toevoegen van bronnen kan gevaarlijk zijn, zorg ervoor dat u de bron van de bron kent en vertrouw ze. Slechte bronnen kunnen uw systeem ernstig beschadigen."
                         },
@@ -1882,11 +1918,11 @@
                             "add_resource": "Voeg bron toe",
                             "headers": {
                                 "type": "Type",
-                                "url": "Url"
+                                "url": "URL"
                             },
                             "no_resources": "Geen bronnen"
                         },
-                        "refresh_body": "Je moet de pagina vernieuwen om de verwijdering te voltooien. Wil je nu vernieuwen?",
+                        "refresh_body": "U moet de pagina vernieuwen om de verwijdering te voltooien. Wilt u nu vernieuwen?",
                         "refresh_header": "Wil je verversen?",
                         "types": {
                             "css": "Stylesheet",
@@ -2210,6 +2246,8 @@
                     "add_tag": "Tag toevoegen",
                     "automation_title": "Tag {name} is gescand",
                     "caption": "Tags",
+                    "confirm_remove": "Weet u zeker dat u tag {tag} wilt verwijderen?",
+                    "confirm_remove_title": "Tag verwijderen?",
                     "create_automation": "Creëer automatisering met tag",
                     "description": "Beheer tags",
                     "detail": {
@@ -2635,7 +2673,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "De Lovelace configuratie van dit dashboard is bijgewerkt. Wil je de pagina vernieuwen?",
+                    "message": "De Lovelace UI-configuratie voor dit dashboard is bijgewerkt. Vernieuwen om wijzigingen te zien?",
                     "refresh": "Vernieuwen"
                 },
                 "editor": {
@@ -2647,7 +2685,7 @@
                             "navigate": "Navigeer",
                             "none": "Geen actie",
                             "toggle": "Schakelaar",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "editor_service_data": "Servicegegevens kunnen alleen worden ingevoerd in de code-editor",
                         "navigation_path": "Navigatiepad",
@@ -2769,7 +2807,7 @@
                             "theme": "Thema",
                             "title": "Titel",
                             "unit": "Maat",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Kolommen",
@@ -2917,6 +2955,17 @@
                         }
                     },
                     "header": "Bewerk UI",
+                    "header-footer": {
+                        "header": "Header",
+                        "types": {
+                            "buttons": {
+                                "name": "Knoppen"
+                            },
+                            "picture": {
+                                "name": "Afbeelding"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Open het Lovelace-menu",
                         "raw_editor": "Ruwe configuratie-editor"
@@ -2961,6 +3010,13 @@
                         "dashboard_label": "Dashboard",
                         "header": "Kies een weergave"
                     },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Voettekst Editor",
+                            "header": "Header Editor",
+                            "row": "Entiteitsrij Editor"
+                        }
+                    },
                     "suggest_card": {
                         "add": "Voeg toe aan de Lovelace gebruikersinterface",
                         "create_own": "Kies een andere kaart",
@@ -2985,7 +3041,7 @@
                 },
                 "reload_lovelace": "Lovelace herladen",
                 "reload_resources": {
-                    "refresh_body": "Je moet de pagina vernieuwen om het herladen te voltooien, wil je nu vernieuwen?",
+                    "refresh_body": "U moet de pagina vernieuwen om het herladen te voltooien. Wilt u nu vernieuwen?",
                     "refresh_header": "Wil je de gegevens vernieuwen?"
                 },
                 "unused_entities": {

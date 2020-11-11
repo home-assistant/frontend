@@ -511,7 +511,10 @@
             "continue": "Weiter",
             "copied": "Kopiert",
             "delete": "Löschen",
+            "disable": "Deaktivieren",
+            "enable": "Aktivieren",
             "error_required": "Benötigt",
+            "leave": "Verlassen",
             "loading": "Laden",
             "menu": "Menü",
             "next": "Weiter",
@@ -519,6 +522,8 @@
             "overflow_menu": "Überlauf-Menü",
             "previous": "Vorher",
             "refresh": "Aktualisieren",
+            "remove": "Entfernen",
+            "rename": "Umbenennen",
             "save": "Speichern",
             "skip": "Überspringen",
             "successfully_deleted": "Erfolgreich gelöscht",
@@ -723,6 +728,7 @@
                     "enabled_cause": "Deaktiviert durch {cause}.",
                     "enabled_description": "Deaktivierte Entitäten werden nicht zu Home Assistant hinzugefügt.",
                     "enabled_label": "Entität aktivieren",
+                    "enabled_restart_confirm": "Starte Home Assistant neu, um die Aktivierung der Entitäten abzuschließen",
                     "entity_id": "Entitäts-ID",
                     "icon": "Symbol",
                     "icon_error": "Symbole sollten das Format 'Präfix:iconname' haben, z. B. 'mdi:home'",
@@ -1317,6 +1323,7 @@
                             "error_unsupported": "Dafür konnten wir (noch?) keine Automatisierung erstellen.",
                             "for_example": "Zum Beispiel:",
                             "header": "Eine neue Automatisierung erstellen",
+                            "introduction": "Gib unten ein, was diese Automatisierung tun soll und wir werden versuchen, dies in eine Home Assistant-Automatisierung umzuwandeln.",
                             "language_note": "Hinweis: Im Moment wird nur Englisch unterstützt."
                         }
                     }
@@ -1711,6 +1718,33 @@
                     "server": "Server",
                     "source": "Quelle:",
                     "system_health_error": "System Health-Komponente wird nicht geladen. Füge 'system_health:' zu configuration.yaml hinzu",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa aktiviert",
+                                "google_enabled": "Google aktiviert",
+                                "logged_in": "Eingeloggt"
+                            },
+                            "homeassistant": {
+                                "arch": "CPU-Architektur",
+                                "dev": "Entwicklung",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Installationstyp",
+                                "os_name": "Betriebssystemname",
+                                "os_version": "Betriebssystemversion",
+                                "python_version": "Python Version",
+                                "timezone": "Zeitzone",
+                                "version": "Version",
+                                "virtualenv": "Virtuelle Umgebung"
+                            },
+                            "lovelace": {
+                                "mode": "Modus",
+                                "resources": "Ressourcen"
+                            }
+                        },
+                        "more_info": "Mehr Info"
+                    },
                     "title": "Info"
                 },
                 "integration_panel_move": {
@@ -2171,6 +2205,8 @@
                     "add_tag": "Tag hinzufügen",
                     "automation_title": "NFC Tag {name} ist gescannt",
                     "caption": "NFC Tags",
+                    "confirm_remove": "Möchtest du den Tag {tag} wirklich entfernen?",
+                    "confirm_remove_title": "Tag entfernen?",
                     "create_automation": "Automatisierung mit NFC Tag erstellen",
                     "description": "NFC Tags verwalten",
                     "detail": {
@@ -2832,11 +2868,17 @@
                         "entity": "Entität",
                         "no_description": "Keine Beschreibung verfügbar."
                     },
+                    "common": {
+                        "add": "Hinzufügen",
+                        "clear": "Löschen",
+                        "edit": "Bearbeiten"
+                    },
                     "edit_badges": {
                         "panel_mode": "Diese Badges werden nicht angezeigt, da sich diese Ansicht im \"Panel-Modus\" befindet."
                     },
                     "edit_card": {
                         "add": "Karte hinzufügen",
+                        "clear": "Löschen",
                         "confirm_cancel": "Bist du sicher, dass du Abbrechen willst?",
                         "delete": "Karte löschen",
                         "duplicate": "Karte duplizieren",
@@ -2877,6 +2919,22 @@
                         }
                     },
                     "header": "Benutzeroberfläche bearbeiten",
+                    "header-footer": {
+                        "choose_header_footer": "Wähle einen {type}",
+                        "footer": "Fußzeile",
+                        "header": "Kopfzeile",
+                        "types": {
+                            "buttons": {
+                                "name": "Tasten"
+                            },
+                            "graph": {
+                                "name": "Graph"
+                            },
+                            "picture": {
+                                "name": "Bild"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Lovelace-Menü öffnen",
                         "raw_editor": "Raw-Konfigurationseditor"
@@ -2920,6 +2978,12 @@
                     "select_view": {
                         "dashboard_label": "Dashboard",
                         "header": "Wähle eine Ansicht"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Fußzeilen-Editor",
+                            "header": "Kopfzeilen-Editor"
+                        }
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",

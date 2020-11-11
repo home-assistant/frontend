@@ -511,16 +511,23 @@
             "continue": "Pokračovat",
             "copied": "Zkopírováno",
             "delete": "Smazat",
+            "disable": "Zakázat",
+            "enable": "Povolit",
             "error_required": "Povinné",
+            "leave": "Opustit",
             "loading": "Načítání",
             "menu": "Menu",
             "next": "Další",
             "no": "Ne",
+            "not_now": "Nyní ne",
             "overflow_menu": "Přesah menu",
             "previous": "Předchozí",
             "refresh": "Obnovit",
+            "remove": "Odebrat",
+            "rename": "Přejmenovat",
             "save": "Uložit",
             "skip": "Přeskočit",
+            "stay": "Zůstat",
             "successfully_deleted": "Úspěšně smazáno",
             "successfully_saved": "Úspěšně uloženo",
             "undo": "Zpět",
@@ -580,8 +587,8 @@
                     "changed_to_state": "změněno na {state}",
                     "cleared_device_class": "zrušeno (nebylo zjištěno {device_class})",
                     "detected_device_class": "zjištěno {device_class}",
-                    "rose": "vzrostlo",
-                    "set": "nastaveno",
+                    "rose": "vyšlo",
+                    "set": "zapadlo",
                     "turned_off": "vypnuto",
                     "turned_on": "zapnuto",
                     "was_at_home": "byl doma",
@@ -624,7 +631,7 @@
                     "season": "Sezóna",
                     "track": "Stopa",
                     "tv_show": "Televizní pořad",
-                    "url": "Url adresa",
+                    "url": "URL adresa",
                     "video": "Video"
                 },
                 "content-type": {
@@ -721,8 +728,10 @@
                     "confirm_delete": "Opravdu chcete tuto položku smazat?",
                     "delete": "Odstranit",
                     "enabled_cause": "Zakázáno {cause}.",
+                    "enabled_delay_confirm": "Povolené entity budou přidány do Home Assistant za {delay} sekund",
                     "enabled_description": "Zakázané entity nebudou přidány do Home Assistant.",
                     "enabled_label": "Povolit entitu",
+                    "enabled_restart_confirm": "Restartujte Home Assistant a dokončete povolení entit",
                     "entity_id": "Entity ID",
                     "icon": "Ikona",
                     "icon_error": "Ikony by měly být ve formátu 'prefix:nazevikony', např. 'mdi:home'",
@@ -795,6 +804,11 @@
             },
             "more_info_control": {
                 "controls": "Ovládací prvky",
+                "cover": {
+                    "close_tile_cover": "Snížit náklon",
+                    "open_tilt_cover": "Zvýšit náklon",
+                    "stop_cover": "Zastavit pohyb"
+                },
                 "details": "Podrobnosti",
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
@@ -1421,7 +1435,7 @@
                         "will_be_auto_renewed": "Bude automaticky obnoveno"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "Webhook je k dispozici na následující adrese URL:",
+                        "available_at": "Webhook je k dispozici na následující URL adrese:",
                         "close": "Zavřít",
                         "confirm_disable": "Opravdu chcete deaktivovat tento webhook?",
                         "copied_to_clipboard": "Zkopírováno do schránky",
@@ -1627,12 +1641,12 @@
                         "disable_selected": {
                             "button": "Zakázat vybrané",
                             "confirm_text": "Zakázané entity nebudou přidány do Home Assistant.",
-                            "confirm_title": "Chcete zakázat {number} entit?"
+                            "confirm_title": "Chcete zakázat {number} {number, plural,\n  one {entitu}\n  few {entity}\n  other {entit}\n}?"
                         },
                         "enable_selected": {
                             "button": "Povolit vybrané",
                             "confirm_text": "Pokud budou nyní deaktivovány, budou opět k dispozici v Home Assistant.",
-                            "confirm_title": "Chcete povolit {number} entit?"
+                            "confirm_title": "Chcete povolit {number} {number, plural,\n  one {entitu}\n  few {entity}\n  other {entit}\n}?"
                         },
                         "filter": {
                             "filter": "Filtr",
@@ -1654,9 +1668,9 @@
                         "remove_selected": {
                             "button": "Odstranit vybrané",
                             "confirm_partly_text": "Můžete odebrat pouze {removable} z vybraných {selected} entit. Entity lze odebrat pouze v případě, že integrace již entity neposkytuje. Občas je třeba restartovat Home Assistant před tím, než je možné odstranit entity ze smazané integrace. Opravdu chcete odebrat odstranitelné entity?",
-                            "confirm_partly_title": "Lze odebrat pouze {number} vybraných entit.",
+                            "confirm_partly_title": "Lze odebrat pouze {number} {number, plural,\n  one {vybraná entita}\n  few {vybrané entity}\n  other {vybraných entit}\n}.",
                             "confirm_text": "Entity lze odebrat pouze v případě, že integrace již entity neposkytuje.",
-                            "confirm_title": "Chcete odstranit {number} entit?"
+                            "confirm_title": "Chcete odstranit {number} {number, plural,\n  one {entitu}\n  few {entity}\n  other {entit}\n}?"
                         },
                         "search": "Hledat entitu",
                         "selected": "{number} vybraných",
@@ -1720,6 +1734,42 @@
                     "server": "server",
                     "source": "Zdroj:",
                     "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa povolena",
+                                "can_reach_cert_server": "Certifikační server dosažen",
+                                "can_reach_cloud": "Home Assistant Cloud dosažen",
+                                "can_reach_cloud_auth": "Ověřovací server dosažen",
+                                "google_enabled": "Google povolen",
+                                "logged_in": "Přihlášen",
+                                "relayer_connected": "Relayer připojen",
+                                "remote_connected": "Vzdálená správa připojena",
+                                "remote_enabled": "Vzdálená správa povolena",
+                                "subscription_expiration": "Platnost předplatného"
+                            },
+                            "homeassistant": {
+                                "arch": "Architektura CPU",
+                                "dev": "Vývoj",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Typ instalace",
+                                "os_name": "Jméno operačního systému",
+                                "os_version": "Verze operačního systému",
+                                "python_version": "Verze Pythonu",
+                                "timezone": "Časové pásmo",
+                                "version": "Verze",
+                                "virtualenv": "Virtuální prostředí"
+                            },
+                            "lovelace": {
+                                "dashboards": "Dashboardy",
+                                "mode": "Režim",
+                                "resources": "Zdroje"
+                            }
+                        },
+                        "manage": "Spravovat",
+                        "more_info": "více informací"
+                    },
                     "title": "Informace"
                 },
                 "integration_panel_move": {
@@ -1845,7 +1895,7 @@
                             "title": "Název",
                             "title_required": "Název je povinný.",
                             "update": "Aktualizovat",
-                            "url": "Url",
+                            "url": "URL adresa",
                             "url_error_msg": "Adresa URL by měla obsahovat - a nesmí obsahovat mezery ani speciální znaky, s výjimkou _ a -"
                         },
                         "picker": {
@@ -1873,8 +1923,8 @@
                             "new_resource": "Přidat nový zdroj",
                             "type": "Typ zdroje",
                             "update": "Aktualizovat",
-                            "url": "Url",
-                            "url_error_msg": "Url je povinné pole.",
+                            "url": "URL adresa",
+                            "url_error_msg": "URL adresa je povinné pole.",
                             "warning_header": "Buďte opatrní!",
                             "warning_text": "Přidávání zdrojů může být nebezpečné, ujistěte se, že znáte původ zdroje a důvěřujete jim. Špatné zdroje mohou vážně poškodit váš systém."
                         },
@@ -1882,11 +1932,11 @@
                             "add_resource": "Přidat zdroj",
                             "headers": {
                                 "type": "Typ",
-                                "url": "Url"
+                                "url": "URL adresa"
                             },
                             "no_resources": "Žádné zdroje"
                         },
-                        "refresh_body": "Chcete-li dokončit odebrání, musíte stránku obnovit, chcete ji obnovit nyní?",
+                        "refresh_body": "Chcete-li dokončit odebrání, musíte stránku obnovit. Chcete ji nyní obnovit?",
                         "refresh_header": "Chcete provést obnovení?",
                         "types": {
                             "css": "Stylesheet",
@@ -2210,6 +2260,8 @@
                     "add_tag": "Přidat značku",
                     "automation_title": "Značka {name} je naskenována",
                     "caption": "Značky",
+                    "confirm_remove": "Opravdu chcete odebrat značku {tag}?",
+                    "confirm_remove_title": "Odebrat značku?",
                     "create_automation": "Vytvořit automatizaci se značkou",
                     "description": "Správa značek",
                     "detail": {
@@ -2635,7 +2687,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Nastavení Lovelace pro tento dashboard bylo aktualizováno, chcete obnovit stránku?",
+                    "message": "Nastavení Lovelace pro tento dashboard bylo aktualizováno. Chcete obnovit stránku?",
                     "refresh": "Obnovit"
                 },
                 "editor": {
@@ -2647,11 +2699,11 @@
                             "navigate": "Přechod na jinou stránku",
                             "none": "Žádná akce",
                             "toggle": "Přepínač",
-                            "url": "Url adresa"
+                            "url": "URL adresa"
                         },
                         "editor_service_data": "Data služby lze zadat pouze v editoru kódu",
                         "navigation_path": "Cesta stránky",
-                        "url_path": "Url adresa"
+                        "url_path": "Cesta URL"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2769,7 +2821,7 @@
                             "theme": "Motiv",
                             "title": "Název",
                             "unit": "Jednotka",
-                            "url": "Url"
+                            "url": "URL adresa"
                         },
                         "glance": {
                             "columns": "Sloupce",
@@ -2872,11 +2924,18 @@
                         "entity": "Entita",
                         "no_description": "Žádný popis není k dispozici."
                     },
+                    "common": {
+                        "add": "Přidat",
+                        "clear": "Vymazat",
+                        "edit": "Upravit",
+                        "none": "Žádný"
+                    },
                     "edit_badges": {
                         "panel_mode": "Tyto odznaky se nebudou zobrazovat, protože pohled má nastaven režim \"Panel\"."
                     },
                     "edit_card": {
                         "add": "Přidat kartu",
+                        "clear": "Vymazat",
                         "confirm_cancel": "Opravdu chcete zahodit změny?",
                         "delete": "Smazat kartu",
                         "duplicate": "Duplikovat kartu",
@@ -2917,6 +2976,22 @@
                         }
                     },
                     "header": "Upravit UI",
+                    "header-footer": {
+                        "choose_header_footer": "Vyberte {type}",
+                        "footer": "Zápatí",
+                        "header": "Záhlaví",
+                        "types": {
+                            "buttons": {
+                                "name": "Tlačítka"
+                            },
+                            "graph": {
+                                "name": "Graf"
+                            },
+                            "picture": {
+                                "name": "Obrázek"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Otevřít Lovelace menu",
                         "raw_editor": "Editor kódu konfigurace"
@@ -2961,6 +3036,13 @@
                         "dashboard_label": "Dashboard",
                         "header": "Vyberte pohled"
                     },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Editor zápatí",
+                            "header": "Editor záhlaví",
+                            "row": "Editor řádku entity"
+                        }
+                    },
                     "suggest_card": {
                         "add": "Přidat do Lovelance",
                         "create_own": "Vytvořit vlastní",
@@ -2985,7 +3067,7 @@
                 },
                 "reload_lovelace": "Nově načíst Lovelace",
                 "reload_resources": {
-                    "refresh_body": "Chcete-li dokončit nové načtení, musíte stránku aktualizovat. Chcete ji nyní aktualizovat?",
+                    "refresh_body": "Chcete-li dokončit nové načtení, musíte stránku onovit. Chcete ji nyní obnovit?",
                     "refresh_header": "Chcete aktualizovat stránku?"
                 },
                 "unused_entities": {
