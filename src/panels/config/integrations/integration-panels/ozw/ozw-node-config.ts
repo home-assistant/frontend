@@ -34,6 +34,8 @@ import {
 import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
 import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
 import { ozwNodeTabs } from "./ozw-node-router";
+import { HaForm } from "../../../../../components/ha-form/ha-form";
+import { Button } from "@material/mwc-button/mwc-button";
 
 @customElement("ozw-node-config")
 class OZWNodeConfig extends LitElement {
@@ -222,7 +224,10 @@ class OZWNodeConfig extends LitElement {
       </div>
       ${["Byte", "Short", "Int", "List"].includes(item.type)
         ? html` <div class="card-actions">
-            <mwc-button @click=${this._updateConfigOption}>
+            <mwc-button
+              @click=${this._updateConfigOption}
+              .parameter=${item.parameter}
+            >
               ${this.hass.localize("ui.panel.config.ozw.node_config.update")}
             </mwc-button>
           </div>`
@@ -276,27 +281,27 @@ class OZWNodeConfig extends LitElement {
   }
 
   private _configValueChanged(ev: CustomEvent) {
-    this._configData[ev.currentTarget.parameter] =
+    this._configData[(<OzwConfigFormButton>ev.currentTarget)!.parameter] =
       ev.detail.value[Object.keys(ev.detail.value)[0]];
   }
 
   private async _updateConfigOption(ev: CustomEvent) {
-    const parameter = ev.currentTarget.parameter;
+    const parameter = (<OzwConfigFormButton>ev.currentTarget)!.parameter;
     const value = this._configData[parameter];
-    /*
+
     try {
       await this.hass.callWS({
         type: "ozw/set_config_parameter",
         node_id: this.nodeId,
         ozw_instance: this.ozwInstance,
-        parameter: el.parameter,
-        value: el.value,
+        parameter: parameter,
+        value: value,
       });
     } catch (e) {
-      el.errorMessage = e.message;
+      console.log("error", e);
     }
-    */
-    console.log(ev.currentTarget, value);
+
+    console.log(parameter, value);
   }
 
   private async _refreshNodeClicked() {
@@ -360,6 +365,14 @@ class OZWNodeConfig extends LitElement {
       `,
     ];
   }
+}
+
+export interface OzwHaForm extends HaForm {
+  parameter: number;
+}
+
+export interface OzwConfigFormButton extends Button {
+  parameter: number;
 }
 
 export interface ChangeEvent {
