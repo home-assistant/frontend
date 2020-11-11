@@ -101,11 +101,10 @@ export class HaTab extends LitElement {
         text-align: center;
         align-items: center;
         justify-content: center;
-        height: 64px;
+        height: var(--header-height);
         cursor: pointer;
         position: relative;
         outline: none;
-        box-sizing: border-box;
       }
 
       .name {
