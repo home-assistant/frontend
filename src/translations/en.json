@@ -499,6 +499,28 @@
             "perform_action": "{action} Server",
             "restart": "[%key:ui::panel::config::server_control::section::server_management::restart%]",
             "stop": "[%key:ui::panel::config::server_control::section::server_management::stop%]"
+          },
+          "navigation": {
+            "navigate_to": "Navigate to {panel}",
+            "navigate_to_config": "Navigate to {panel} configuration",
+            "logs": "[%key:ui::panel::config::logs::caption%]",
+            "automation": "[%key:ui::panel::config::automation::caption%]",
+            "script": "[%key:ui::panel::config::script::caption%]",
+            "integrations": "[%key:ui::panel::config::integrations::caption%]",
+            "areas": "[%key:ui::panel::config::areas::caption%]",
+            "scene": "[%key:ui::panel::config::scene::caption%]",
+            "helpers": "[%key:ui::panel::config::helpers::caption%]",
+            "tags": "[%key:ui::panel::config::tags::caption%]",
+            "person": "[%key:ui::panel::config::person::caption%]",
+            "devices": "[%key:ui::panel::config::devices::caption%]",
+            "entities": "[%key:ui::panel::config::entities::caption%]",
+            "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
+            "core": "[%key:ui::panel::config::core::caption%]",
+            "zone": "[%key:ui::panel::config::zone::caption%]",
+            "users": "[%key:ui::panel::config::users::caption%]",
+            "info": "[%key:ui::panel::config::info::caption%]",
+            "customize": "[%key:ui::panel::config::customize::caption%]",
+            "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
         },
         "filter_placeholder": "Entity Filter"
