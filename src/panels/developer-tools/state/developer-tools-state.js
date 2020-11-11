@@ -141,8 +141,16 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         </div>
         <div class="info">
           <template is="dom-if" if="[[_entity]]">
-            <p><b>Last changed:</b><br />[[lastChangedString(_entity)]]</p>
-            <p><b>Last updated:</b><br />[[lastUpdatedString(_entity)]]</p>
+            <p>
+              <b
+                >[[localize('ui.panel.developer-tools.tabs.states.last_changed')]]:</b
+              ><br />[[lastChangedString(_entity)]]
+            </p>
+            <p>
+              <b
+                >[[localize('ui.panel.developer-tools.tabs.states.last_updated')]]:</b
+              ><br />[[lastUpdatedString(_entity)]]
+            </p>
           </template>
         </div>
       </div>
