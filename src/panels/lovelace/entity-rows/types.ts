@@ -88,4 +88,5 @@ export interface AttributeRowConfig extends EntityConfig {
   attribute: string;
   prefix?: string;
   suffix?: string;
+  format?: "relative" | "date" | "time" | "datetime";
 }

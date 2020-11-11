@@ -9,11 +9,14 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
 import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+
+import "../components/hui-timestamp-display";
+import "../components/hui-generic-entity-row";
 
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {
@@ -57,7 +60,17 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div>
-          ${this._config.prefix} ${attribute || "-"} ${this._config.suffix}
+          ${this._config.prefix}
+          ${this._config.format
+            ? html`
+                <hui-timestamp-display
+                  .hass=${this.hass}
+                  .ts=${new Date(attribute)}
+                  .format=${this._config.format}
+                ></hui-timestamp-display>
+              `
+            : attribute || "-"}
+          ${this._config.suffix}
         </div>
       </hui-generic-entity-row>
     `;
