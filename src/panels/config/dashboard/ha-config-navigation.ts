@@ -9,7 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
@@ -27,10 +27,7 @@ class HaConfigNavigation extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this.pages.map((page) =>
-        (!page.component ||
-          page.core ||
-          isComponentLoaded(this.hass, page.component)) &&
-        (!page.advancedOnly || this.showAdvanced)
+        canShowPage(this.hass, page)
           ? html`
               <a
                 href=${`/config/${page.component}`}
