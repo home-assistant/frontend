@@ -1,9 +1,6 @@
 import "../../../../../components/ha-switch";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import type { Button } from "@material/mwc-button/mwc-button";
-import type { PaperDropdownMenuElement } from "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@material/mwc-button/mwc-button";
