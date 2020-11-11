@@ -71,7 +71,10 @@ class SystemHealthCard extends LitElement {
         for (const key of Object.keys(domainInfo.info)) {
           let value: unknown;
 
-          if (typeof domainInfo.info[key] === "object") {
+          if (
+            domainInfo.info[key] &&
+            typeof domainInfo.info[key] === "object"
+          ) {
             const info = domainInfo.info[key] as SystemCheckValueObject;
 
             if (info.type === "pending") {
