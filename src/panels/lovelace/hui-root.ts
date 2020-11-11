@@ -102,16 +102,13 @@ class HUIRoot extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-app-layout id="layout">
-        <app-header
-          slot="header"
-          effects="waterfall"
-          class=${classMap({
-            "edit-mode": this._editMode,
-          })}
-          fixed
-          condenses
-        >
+      <ha-app-layout
+        class=${classMap({
+          "edit-mode": this._editMode,
+        })}
+        id="layout"
+      >
+        <app-header slot="header" effects="waterfall" fixed condenses>
           ${this._editMode
             ? html`
                 <app-toolbar class="edit-mode">
@@ -819,7 +816,8 @@ class HUIRoot extends LitElement {
           text-transform: uppercase;
         }
 
-        .edit-mode {
+        .edit-mode app-header,
+        .edit-mode app-toolbar {
           background-color: var(--dark-color, #455a64);
           color: var(--text-dark-color);
         }
@@ -863,6 +861,12 @@ class HUIRoot extends LitElement {
           */
           position: relative;
           display: flex;
+        }
+        /**
+         * In edit mode we have the tab bar on a new line *
+         */
+        .edit-mode #view {
+          min-height: calc(100vh - var(--header-height) - 48px);
         }
         #view > * {
           /**
