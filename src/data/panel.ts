@@ -1,5 +1,5 @@
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant, PanelInfo, Panels } from "../types";
+import { HomeAssistant, PanelInfo } from "../types";
 
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = "lovelace";
@@ -21,22 +21,16 @@ export const getDefaultPanel = (hass: HomeAssistant): PanelInfo =>
     ? hass.panels[hass.defaultPanel]
     : hass.panels[DEFAULT_PANEL];
 
-const getPanelNameTranslationKey = (
-  panelName: string | null
-): string | undefined => {
-  if (!panelName) {
-    return undefined;
-  }
-
-  if (panelName === "lovelace") {
+export const getPanelNameTranslationKey = (panel: PanelInfo): string => {
+  if (panel.url_path === "lovelace") {
     return "panel.states";
   }
 
-  if (panelName === "profile") {
+  if (panel.url_path === "profile") {
     return "panel.profile";
   }
 
-  return `panel.${panelName}`;
+  return `panel.${panel.title}`;
 };
 
 export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
@@ -52,32 +46,12 @@ export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
     return undefined;
   }
 
-  const translationKey = getPanelNameTranslationKey(panel?.url_path);
+  const translationKey = getPanelNameTranslationKey(panel);
 
-  return (
-    (translationKey && hass.localize(translationKey)) ||
-    panel.title ||
-    undefined
-  );
+  return hass.localize(translationKey) || panel.title || undefined;
 };
 
-export const getPanelText = (panel: Panels["panel"]) => {
-  if (!panel) {
-    return undefined;
-  }
-
-  const panelNameTranslationKey =
-    getPanelNameTranslationKey(panel.title) ||
-    getPanelNameTranslationKey(panel.component_name);
-
-  if (!panelNameTranslationKey) {
-    return undefined;
-  }
-
-  return panelNameTranslationKey;
-};
-
-export const getPanelIcon = (panel: Panels["panel"]): string | null => {
+export const getPanelIcon = (panel: PanelInfo): string | null => {
   if (!panel.icon) {
     switch (panel.component_name) {
       case "profile":

@@ -45,7 +45,7 @@ import { navigate } from "../../common/navigate";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { canShowPage } from "../../common/config/can_show_page";
-import { getPanelIcon, getPanelText } from "../../data/panel";
+import { getPanelIcon, getPanelNameTranslationKey } from "../../data/panel";
 
 const DEFAULT_NAVIGATION_ICON = "hass:arrow-right-circle";
 const DEFAULT_SERVER_ICON = "hass:server";
@@ -380,12 +380,12 @@ export class QuickBar extends LitElement {
   >[] {
     return Object.keys(this.hass.panels).map((panelKey) => {
       const panel = this.hass.panels[panelKey];
-      const translationKey = getPanelText(panel) || "";
+      const translationKey = getPanelNameTranslationKey(panel);
 
       const text = this.hass.localize(
         "ui.dialogs.quick-bar.commands.navigation.navigate_to",
         "panel",
-        this.hass.localize(translationKey) || panel.title
+        this.hass.localize(translationKey) || panel.title || panel.url_path
       );
 
       return {
