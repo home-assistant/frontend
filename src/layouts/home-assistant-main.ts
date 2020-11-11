@@ -192,7 +192,7 @@ class HomeAssistantMain extends LitElement {
         color: var(--primary-text-color);
         /* remove the grey tap highlights in iOS on the fullscreen touch targets */
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        --app-drawer-width: 64px;
+        --app-drawer-width: 56px;
       }
       :host([expanded]) {
         --app-drawer-width: calc(256px + env(safe-area-inset-left));

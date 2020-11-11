@@ -320,13 +320,11 @@ class HaSidebar extends LitElement {
             </mwc-icon-button>
           `
         : ""}
-      <div class="title">
-        ${this.editMode
-          ? html`<mwc-button outlined @click=${this._closeEditMode}>
-              ${this.hass.localize("ui.sidebar.done")}
-            </mwc-button>`
-          : "Home Assistant"}
-      </div>
+      ${this.editMode
+        ? html`<mwc-button outlined @click=${this._closeEditMode}>
+            ${this.hass.localize("ui.sidebar.done")}
+          </mwc-button>`
+        : html`<div class="title">Home Assistant</div>`}
     </div>`;
   }
 
@@ -756,7 +754,7 @@ class HaSidebar extends LitElement {
           -moz-user-select: none;
           border-right: 1px solid var(--divider-color);
           background-color: var(--sidebar-background-color);
-          width: 64px;
+          width: 56px;
         }
         :host([expanded]) {
           width: 256px;
@@ -768,8 +766,9 @@ class HaSidebar extends LitElement {
         }
         .menu {
           height: var(--header-height);
+          box-sizing: border-box;
           display: flex;
-          padding: 0 8.5px;
+          padding: 0 4px;
           border-bottom: 1px solid transparent;
           white-space: nowrap;
           font-weight: 400;
@@ -778,11 +777,11 @@ class HaSidebar extends LitElement {
           background-color: var(--primary-background-color);
           font-size: 20px;
           align-items: center;
-          padding-left: calc(8.5px + env(safe-area-inset-left));
+          padding-left: calc(4px + env(safe-area-inset-left));
         }
         :host([rtl]) .menu {
-          padding-left: 8.5px;
-          padding-right: calc(8.5px + env(safe-area-inset-right));
+          padding-left: 4px;
+          padding-right: calc(4px + env(safe-area-inset-right));
         }
         :host([expanded]) .menu {
           width: calc(256px + env(safe-area-inset-left));
@@ -793,26 +792,27 @@ class HaSidebar extends LitElement {
         .menu mwc-icon-button {
           color: var(--sidebar-icon-color);
         }
-        :host([expanded]) .menu mwc-icon-button {
-          margin-right: 23px;
-        }
-        :host([expanded][rtl]) .menu mwc-icon-button {
-          margin-right: 0px;
-          margin-left: 23px;
-        }
-
         .title {
+          margin-left: 19px;
           width: 100%;
           display: none;
         }
+        :host([rtl]) .title {
+          margin-left: 0;
+          margin-right: 19px;
+        }
         :host([narrow]) .title {
+          margin: 0;
           padding: 0 16px;
         }
         :host([expanded]) .title {
           display: initial;
         }
-        .title mwc-button {
-          width: 90%;
+        :host([expanded]) .menu mwc-button {
+          margin: 0 8px;
+        }
+        .menu mwc-button {
+          width: 100%;
         }
         #sortable,
         .hidden-panel {
@@ -850,14 +850,14 @@ class HaSidebar extends LitElement {
 
         paper-icon-item {
           box-sizing: border-box;
-          margin: 4px 8px;
+          margin: 4px;
           padding-left: 12px;
           border-radius: 4px;
           --paper-item-min-height: 40px;
           width: 48px;
         }
         :host([expanded]) paper-icon-item {
-          width: 240px;
+          width: 248px;
         }
         :host([rtl]) paper-icon-item {
           padding-left: auto;
@@ -874,9 +874,9 @@ class HaSidebar extends LitElement {
           border-radius: 4px;
           position: absolute;
           top: 0;
-          right: 0;
+          right: 2px;
           bottom: 0;
-          left: 0;
+          left: 2px;
           pointer-events: none;
           content: "";
           transition: opacity 15ms linear;
