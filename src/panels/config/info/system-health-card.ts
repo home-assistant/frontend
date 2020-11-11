@@ -4,7 +4,6 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import type { PaperTooltipElement } from "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
@@ -12,7 +11,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -50,8 +48,6 @@ class SystemHealthCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _info?: SystemHealthInfo;
-
-  @query("paper-tooltip", true) private _toolTip?: PaperTooltipElement;
 
   protected render(): TemplateResult {
     if (!this.hass) {
