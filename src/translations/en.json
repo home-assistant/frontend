@@ -3061,7 +3061,9 @@
             "filter_attributes": "Filter attributes",
             "no_entities": "No entities",
             "more_info": "More Info",
-            "alert_entity_field": "Entity is a mandatory field"
+            "alert_entity_field": "Entity is a mandatory field",
+            "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
+            "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]"
           },
           "templates": {
             "title": "Template",
