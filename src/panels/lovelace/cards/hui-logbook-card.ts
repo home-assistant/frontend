@@ -51,7 +51,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     );
 
     return {
-      entity: foundEntities,
+      entities: foundEntities,
     };
   }
 
