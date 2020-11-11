@@ -208,7 +208,7 @@ class HaSceneDashboard extends LitElement {
       haStyle,
       css`
         a {
-          color: var(--primary-color);
+          text-decoration: none;
         }
       `,
     ];
