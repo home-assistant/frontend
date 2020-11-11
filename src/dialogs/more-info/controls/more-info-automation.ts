@@ -59,10 +59,6 @@ class MoreInfoAutomation extends LitElement {
         margin: 8px 0;
         text-align: right;
       }
-
-      mwc-button {
-        margin-right: -8px;
-      }
     `;
   }
 }
