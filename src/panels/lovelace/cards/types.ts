@@ -71,6 +71,14 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   header?: LovelaceHeaderFooterConfig;
   footer?: LovelaceHeaderFooterConfig;
   state_color?: boolean;
+  secondary_info?:
+    | "entity-id"
+    | "last-changed"
+    | "last-triggered"
+    | "last-updated"
+    | "position"
+    | "tilt-position"
+    | "brightness";
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {

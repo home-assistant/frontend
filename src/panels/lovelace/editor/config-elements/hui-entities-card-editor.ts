@@ -55,6 +55,7 @@ const cardConfigStruct = object({
   entities: array(entitiesConfigStruct),
   header: optional(headerFooterConfigStructs),
   footer: optional(headerFooterConfigStructs),
+  secondary_info: optional(string()),
 });
 
 @customElement("hui-entities-card-editor")
