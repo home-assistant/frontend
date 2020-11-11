@@ -2573,6 +2573,10 @@
               "name": "Grid",
               "description": "The Grid card allows you to show multiple cards in a grid."
             },
+            "logbook": {
+              "name": "Logbook",
+              "description": "The Logbook card shows a list of events for entities."
+            },
             "history-graph": {
               "name": "History Graph",
               "description": "The History Graph card allows you to display a graph for each of the entities listed."
