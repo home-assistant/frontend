@@ -520,6 +520,7 @@
             "previous": "上一步",
             "refresh": "更新",
             "save": "儲存",
+            "skip": "略過",
             "successfully_deleted": "成功刪除",
             "successfully_saved": "成功儲存",
             "undo": "撤消",
@@ -695,6 +696,11 @@
             },
             "service-picker": {
                 "service": "服務"
+            },
+            "user-picker": {
+                "add_user": "新增用戶",
+                "no_user": "沒有用戶",
+                "remove_user": "移除用戶"
             }
         },
         "dialogs": {
@@ -706,7 +712,7 @@
             },
             "domain_toggler": {
                 "reset_entities": "重置實體",
-                "title": "切換區域"
+                "title": "實體類群開關"
             },
             "entity_registry": {
                 "control": "控制",
@@ -793,6 +799,7 @@
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
                 "history": "歷史",
+                "last_changed": "上次變更",
                 "last_updated": "最後更新",
                 "person": {
                     "create_zone": "使用目前位置新增區域"
@@ -868,7 +875,7 @@
                         "input_select": "重新載入輸入選擇",
                         "input_text": "重新載入輸入文字",
                         "min_max": "重新載入最低/最高實體",
-                        "mqtt": "重新載入 MQTT 實體",
+                        "mqtt": "手動重新載入 MQTT 實體",
                         "person": "重新載入人員",
                         "ping": "重新載入 Ping 二進位傳感器實體",
                         "reload": "重新載入{domain}",
@@ -883,6 +890,11 @@
                         "trend": "重新載入趨勢實體",
                         "universal": "重新載入通用媒體播放器實體",
                         "zone": "重新載入區域"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} 伺服器",
+                        "restart": "重啟",
+                        "stop": "停止"
                     }
                 },
                 "filter_placeholder": "實體過濾"
@@ -947,6 +959,7 @@
         },
         "notification_toast": {
             "connection_lost": "連線中斷。重新連線中...",
+            "dismiss": "關閉",
             "service_call_failed": "服務 {service} 執行失敗。",
             "started": "Home Assistant 已啟動！",
             "starting": "Home Assistant 正在啟動，在完成載入前、可能無法顯示所有功能。",
@@ -1200,6 +1213,9 @@
                                     "trigger": "觸發自動化"
                                 },
                                 "event": {
+                                    "context_user_pick": "選擇用戶",
+                                    "context_user_picked": "用戶觸發事件",
+                                    "context_users": "限制觸發事件",
                                     "event_data": "事件資料",
                                     "event_type": "事件類別",
                                     "label": "事件"
@@ -1296,6 +1312,22 @@
                         "only_editable": "僅有於 automations.yaml 內定義的自動化、方能進行編輯。",
                         "pick_automation": "選擇欲編輯的自動化",
                         "show_info_automation": "顯示關於自動化資訊"
+                    },
+                    "thingtalk": {
+                        "create": "新增自動化",
+                        "link_devices": {
+                            "ambiguous_entities": "相符的實體具有一個以上的實體，請選擇所要使用的實體。",
+                            "header": "太好了！現在我們需要連結一些設備",
+                            "unknown_placeholder": "未知 Placeholder"
+                        },
+                        "task_selection": {
+                            "error_empty": "輸入命令或點選忽略。",
+                            "error_unsupported": "（尚）無法為此新增自動化。",
+                            "for_example": "範例；",
+                            "header": "新增自動化",
+                            "introduction": "於下方輸入自動化內容，Home Assistant 將會試著將其轉換成自動化。",
+                            "language_note": "注意：目前僅支援英文。"
+                        }
                     }
                 },
                 "cloud": {
@@ -1371,8 +1403,8 @@
                         "expose_entity": "公開實體",
                         "exposed": "{selected} 已公開",
                         "exposed_entities": "已公開實體",
-                        "follow_domain": "跟隨區域",
-                        "manage_domains": "管理區域",
+                        "follow_domain": "跟隨實體類群",
+                        "manage_domains": "管理實體類群",
                         "not_exposed": "{selected} 未公開",
                         "not_exposed_entities": "未公開實體",
                         "title": "Alexa"
@@ -1416,8 +1448,8 @@
                         "expose_entity": "公開實體",
                         "exposed": "{selected} 已公開",
                         "exposed_entities": "已公開實體",
-                        "follow_domain": "跟隨區域",
-                        "manage_domains": "管理區域",
+                        "follow_domain": "跟隨實體類群",
+                        "manage_domains": "管理實體類群",
                         "not_exposed": "{selected} 未公開",
                         "not_exposed_entities": "未公開實體",
                         "sync_to_google": "正與 Google 同步變更。",
@@ -1506,7 +1538,7 @@
                     "attributes_set": "以下實體屬性為可程式化設定。",
                     "caption": "自訂化",
                     "description": "自訂化元件內容與中文化",
-                    "different_include": "可能透過區域、全局或不同的包含。",
+                    "different_include": "可能透過實體類群、全局或不同的包含。",
                     "pick_attribute": "選擇欲覆寫屬性",
                     "picker": {
                         "documentation": "自訂化文件",
@@ -1718,7 +1750,7 @@
                         "options": "選項",
                         "reload": "重新載入",
                         "reload_confirm": "整合已重新載入",
-                        "reload_restart_confirm": "重啟 Home Assistant 以為重整合重新載入",
+                        "reload_restart_confirm": "重啟 Home Assistant 以完成整合重新載入",
                         "rename": "重新命名",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "services": "{count} {count, plural,\n  one {項服務}\n  other {項服務}\n}",
@@ -1989,6 +2021,7 @@
                     },
                     "services": {
                         "add_node": "新增節點",
+                        "cancel_command": "取消命令",
                         "remove_node": "移除節點"
                     }
                 },
@@ -2140,7 +2173,7 @@
                             "input_text": "重新載入輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
                             "min_max": "重新載入最低/最高實體",
-                            "mqtt": "重新載入 MQTT 實體",
+                            "mqtt": "手動重新載入 MQTT 實體",
                             "person": "重新載入人員",
                             "ping": "重新載入 Ping 二進位傳感器實體",
                             "reload": "重新載入{domain}",
@@ -2526,15 +2559,16 @@
                     "templates": {
                         "all_listeners": "此模板監聽所有狀態變更事件。",
                         "description": "模版使用 Jinja2 模板引擎及 Home Assistant 特殊擴充進行模板渲染。",
-                        "domain": "區域",
+                        "domain": "實體類群",
                         "editor": "模板編輯器",
                         "entity": "實體",
                         "jinja_documentation": "Jinja2 模版文件",
                         "listeners": "此模板監聽以下狀態變更事件：",
-                        "no_listeners": "此模板不監聽任何狀態變更事件，將不會自動更新。",
+                        "no_listeners": "此模板不監聽任何狀態變更事件，將不自動更新。",
                         "reset": "重置示範範模板",
+                        "result_type": "結果類型",
                         "template_extensions": "Home Assistant 模板擴充",
-                        "time": "此模板於上次狀態變更事件後每 60 秒更新一次。",
+                        "time": "此模板於上次狀態變更事件後每分鐘更新一次。",
                         "title": "模板",
                         "unknown_error_template": "未知渲染模版錯誤"
                     }
@@ -2677,6 +2711,7 @@
                                 "entity-id": "實體 ID",
                                 "last-changed": "上次變更",
                                 "last-triggered": "上次觸發",
+                                "last-updated": "最後更新",
                                 "none": "無次要資訊",
                                 "position": "位置",
                                 "tilt-position": "標題位置"
@@ -2740,6 +2775,10 @@
                             "columns": "列",
                             "description": "簡略式面板以緊致群組方式顯示多個傳感器狀態。",
                             "name": "簡略式面板"
+                        },
+                        "grid": {
+                            "description": "方格排列面板可於方格內顯示多個面板。",
+                            "name": "方格排列面板"
                         },
                         "history-graph": {
                             "description": "歷史圖表式面板可供顯示每個列表實體圖表。",
@@ -2829,7 +2868,7 @@
                         "by_card": "以面板",
                         "by_entity": "以實體",
                         "custom_card": "自訂面板",
-                        "domain": "區域",
+                        "domain": "實體類群",
                         "entity": "實體",
                         "no_description": "無描述可使用。"
                     },
@@ -2941,7 +2980,8 @@
                     "exit_edit_mode": "退出 UI 編輯模式",
                     "help": "說明",
                     "refresh": "更新",
-                    "reload_resources": "重新載入資源"
+                    "reload_resources": "重新載入資源",
+                    "start_conversation": "開始對話"
                 },
                 "reload_lovelace": "重新載入 UI",
                 "reload_resources": {
@@ -2950,7 +2990,7 @@
                 },
                 "unused_entities": {
                     "available_entities": "此些為尚未於 Lovelace 介面中、可供使用的實體。",
-                    "domain": "區域",
+                    "domain": "實體類群",
                     "entity": "實體",
                     "entity_id": "實體 ID",
                     "last_changed": "上次變更",
@@ -3186,6 +3226,10 @@
                     "dropdown_label": "主面板",
                     "header": "主面板"
                 },
+                "enable_shortcuts": {
+                    "description": "開啟或關閉鍵盤捷徑以於 UI 執行各種操作。",
+                    "header": "鍵盤捷徑"
+                },
                 "force_narrow": {
                     "description": "將預設隱藏側邊列，類似於手機 App 使用方式。",
                     "header": "總是隱藏側邊列"
@@ -3230,6 +3274,10 @@
                     "header": "多步驟驗證模組"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "設備名稱",
+                        "title": "為該設備命名？"
+                    },
                     "description": "傳送通知推送至此設備。",
                     "error_load_platform": "設定 notify.html5。",
                     "error_use_https": "需要啟用前端 SSL 加密。",
@@ -3270,6 +3318,9 @@
                     "description": "當控制裝置時、開啟或關閉此裝置震動。",
                     "header": "震動"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "開始對話"
             },
             "shopping-list": {
                 "add_item": "新加入清單",

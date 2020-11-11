@@ -520,6 +520,7 @@
             "previous": "Précédent",
             "refresh": "Rafraîchir",
             "save": "Enregistrer",
+            "skip": "Passer",
             "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
             "undo": "Annuler",
@@ -675,12 +676,31 @@
                     "week": "{count} {count, plural,\nzero {semaine}\none {semaine}\nother {semaines}\n}"
                 },
                 "future": "Dans {time}",
+                "future_duration": {
+                    "day": "Dans {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "Dans {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "Dans {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "Dans {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "Dans {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                },
                 "just_now": "Juste maintenant",
                 "never": "Jamais",
-                "past": "Il y a {time}"
+                "past": "Il y a {time}",
+                "past_duration": {
+                    "day": "Il y a {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "Il y a {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "Il y a {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "Il y a {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "Il y a {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                }
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "user-picker": {
+                "add_user": "Ajouter un utilisateur",
+                "no_user": "Aucun utilisateur",
+                "remove_user": "Supprimer l'utilisateur"
             }
         },
         "dialogs": {
@@ -704,9 +724,9 @@
                     "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
                     "enabled_label": "Activer l'entité",
                     "entity_id": "ID d'entité",
-                    "icon": "Remplacer l'icône",
+                    "icon": "Icône",
                     "icon_error": "Les icônes doivent être au format «préfixe: iconname», par exemple «mdi: home»",
-                    "name": "Remplacement de nom",
+                    "name": "Nom",
                     "note": "Remarque: cela peut ne pas encore fonctionner avec toutes les intégrations.",
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
                     "update": "Mise à jour"
@@ -723,6 +743,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Valeur initiale",
+                    "maximum": "Valeur maximum",
+                    "minimum": "Valeur minimum",
+                    "restore": "Restaurer la dernière valeur connue au démarrage de Home Assistant",
+                    "step": "Taille de pas"
+                },
                 "generic": {
                     "icon": "Icône",
                     "name": "Nom"
@@ -758,6 +785,9 @@
                 },
                 "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Ce champ est requis",
+                "timer": {
+                    "duration": "Durée"
+                },
                 "yaml_not_editable": "Les paramètres de cette entité ne peuvent pas être modifiés à partir de l'interface utilisateur. Seules les entités configurées à partir de l'interface utilisateur sont configurables à partir de l'interface utilisateur."
             },
             "image_cropper": {
@@ -769,6 +799,7 @@
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
                 "history": "Historique",
+                "last_changed": "Dernière modification",
                 "last_updated": "Dernière mise à jour",
                 "person": {
                     "create_zone": "Créer une zone à partir de l'emplacement actuel"
@@ -826,6 +857,46 @@
                 }
             },
             "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Recharger les automatisations",
+                        "command_line": "Recharger les entités de ligne de commande",
+                        "core": "Recharger les emplacements et personnalisations",
+                        "filesize": "Recharger les entités de taille de fichier",
+                        "filter": "Recharger les entités de filtre",
+                        "generic": "Recharger les entités de caméra IP générique",
+                        "generic_thermostat": "Recharger les entités de thermostat générique",
+                        "group": "Recharger les groupes, les entités de groupe et notifier les services",
+                        "history_stats": "Recharger les entités des statistiques historiques",
+                        "homekit": "Recharger HomeKit",
+                        "input_boolean": "Recharger les entrées booléennes (input boolean)",
+                        "input_datetime": "Recharger les entrées de date et heure (input date time)",
+                        "input_number": "Recharger les entrées numériques (input number)",
+                        "input_select": "Recharger les listes de sélection (input select)",
+                        "input_text": "Recharger les entrées de texte (input text)",
+                        "min_max": "Recharger les entités min/max",
+                        "mqtt": "Recharger les entités mqtt configurées manuellement",
+                        "person": "Recharger les personnes",
+                        "ping": "Recharger les entités de capteur binaire ping",
+                        "reload": "Recharger {domain}",
+                        "rest": "Recharger les entités REST et notifier les services",
+                        "rpi_gpio": "Recharger les entités GPIO du Raspberry Pi",
+                        "scene": "Recharger les scènes",
+                        "script": "Recharger les scripts",
+                        "smtp": "Recharger les services de notification smtp",
+                        "statistics": "Recharger les entités de statistiques",
+                        "telegram": "Recharger les services de notification de telegram",
+                        "template": "Recharger les entités modèles",
+                        "trend": "Recharger les entités de tendance",
+                        "universal": "Recharger les entités de lecteur média universel",
+                        "zone": "Recharger les zones"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Serveur",
+                        "restart": "Redémarrer",
+                        "stop": "Arrêter"
+                    }
+                },
                 "filter_placeholder": "Filtre d'entité"
             },
             "voice_command": {
@@ -882,11 +953,13 @@
         "notification_drawer": {
             "click_to_configure": "Cliquez sur le bouton pour configurer {entity}",
             "close": "Fermer",
+            "dismiss_all": "Tout ignorer",
             "empty": "Aucune notification",
             "title": "Notifications"
         },
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
+            "dismiss": "Ignorer",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
             "started": "Home Assistant a démarré !",
             "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",
@@ -1091,6 +1164,7 @@
                             },
                             "unsupported_condition": "Pas d'interface utilisateur pour la condition : {condition}"
                         },
+                        "copy_to_clipboard": "Copier dans le presse-papier",
                         "default_name": "Nouvelle automatisation",
                         "description": {
                             "label": "Description",
@@ -1139,6 +1213,9 @@
                                     "trigger": "Déclencheur"
                                 },
                                 "event": {
+                                    "context_user_pick": "Ajouter un utilisateur",
+                                    "context_user_picked": "Événement déclenché par l'utilisateur",
+                                    "context_users": "Limiter aux événements déclenchés par",
                                     "event_data": "Données de l'événement",
                                     "event_type": "Type d'événement",
                                     "label": "Événement :"
@@ -1235,6 +1312,22 @@
                         "only_editable": "Seules les automatisations définies dans automations.yaml sont modifiables.",
                         "pick_automation": "Choisissez l'automatisation à modifier",
                         "show_info_automation": "Afficher des informations sur l'automatisation"
+                    },
+                    "thingtalk": {
+                        "create": "Créer l’automatisation",
+                        "link_devices": {
+                            "ambiguous_entities": "Un ou plusieurs appareils ont plus d’une entrée correspondante, veuillez choisir celle que vous souhaitez utiliser.",
+                            "header": "Super ! Maintenant nous allons lier quelques appareils",
+                            "unknown_placeholder": "Espace réservé introuvable"
+                        },
+                        "task_selection": {
+                            "error_empty": "Entrez une commande ou appuyez sur ignorer.",
+                            "error_unsupported": "Nous n'avons pas pu créer une automatisation pour cela (pour le moment ?).",
+                            "for_example": "Par exemple : ",
+                            "header": "Créer une nouvelle automatisation",
+                            "introduction": "Tapez ci-dessous ce que cette automatisation devrait faire, et nous allons essayer de la convertir en une automatisation Home Assistant.",
+                            "language_note": "Remarque: pour l'instant, seul l'anglais est pris en charge."
+                        }
                     }
                 },
                 "cloud": {
@@ -1448,6 +1541,7 @@
                     "different_include": "Peut-être via un domaine, un glob ou un autre include.",
                     "pick_attribute": "Sélectionnez un attribut à remplacer",
                     "picker": {
+                        "documentation": "Documentation sur la personnalisation",
                         "entity": "Entité",
                         "header": "Personnalisations",
                         "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées / modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
@@ -1462,24 +1556,31 @@
                     "add_prompt": "Aucun {name} n'a encore été ajouté à l'aide de cet appareil. Vous pouvez en ajouter un en cliquant sur le bouton + ci-dessus.",
                     "automation": {
                         "actions": {
-                            "caption": "Quand quelque chose est déclenché ..."
+                            "caption": "Quand quelque chose est déclenché ...",
+                            "no_actions": "Aucune action",
+                            "unknown_action": "Action inconnue"
                         },
                         "automations": "Automatisations",
                         "conditions": {
-                            "caption": "Ne faire quelque chose que si ..."
+                            "caption": "Ne faire quelque chose que si ...",
+                            "no_conditions": "Aucune condition",
+                            "unknown_condition": "Condition inconnue"
                         },
                         "create": "Créer une automatisation avec l'appareil",
                         "no_automations": "Aucune automatisation",
                         "no_device_automations": "Aucune automatisation n'est disponible pour cet appareil.",
                         "triggers": {
-                            "caption": "Faire quelque chose quand ..."
-                        }
+                            "caption": "Faire quelque chose quand ...",
+                            "no_triggers": "Pas de déclencheur",
+                            "unknown_trigger": "Déclencheur inconnu"
+                        },
+                        "unknown_automation": "Automatisation inconnue"
                     },
                     "cant_edit": "Vous ne pouvez modifier que les éléments créés dans l'interface utilisateur.",
                     "caption": "Appareils",
                     "confirm_delete": "Voulez-vous vraiment supprimer cet appareil ?",
                     "confirm_rename_entity_ids": "Voulez-vous aussi renommer les ID de vos entités?",
-                    "confirm_rename_entity_ids_warning": "Cela ne changera aucune configuration (comme les automatismes, les scripts, les scènes, Lovelace) qui utilise actuellement ces entités, vous devrez les mettre à jour vous-même.",
+                    "confirm_rename_entity_ids_warning": "Cela ne changera aucune configuration (comme les automatismes, les scripts, les scènes, Lovelace) qui utilisent actuellement ces entités, vous devrez les mettre à jour vous-même.",
                     "data_table": {
                         "area": "Zone",
                         "battery": "Batterie",
@@ -1535,6 +1636,8 @@
                         },
                         "filter": {
                             "filter": "Filtre",
+                            "hidden_entities": "{number} caché {number, plural,\n  one {entity}\n  other {entities}\n}",
+                            "show_all": "Afficher tout",
                             "show_disabled": "Afficher les entités désactivées",
                             "show_readonly": "Afficher les entités en lecture seule",
                             "show_unavailable": "Afficher les entités non disponibles"
@@ -1587,14 +1690,16 @@
                             "name": "Nom",
                             "type": "Type"
                         },
-                        "no_helpers": "On dirait que vous n'avez pas encore d'aide!"
+                        "no_helpers": "On dirait que vous n'avez pas encore d'entrée!"
                     },
                     "types": {
+                        "counter": "Compteur",
                         "input_boolean": "Interrupteur",
                         "input_datetime": "Date et/ou heure",
                         "input_number": "Nombre",
                         "input_select": "Liste déroulante",
-                        "input_text": "Texte"
+                        "input_text": "Texte",
+                        "timer": "Minuteur"
                     }
                 },
                 "info": {
@@ -1813,6 +1918,8 @@
                         "network": "Réseau",
                         "node_id": "ID du nœud",
                         "ozw_instance": "Instance Z-Wave",
+                        "query_stage": "Étape de requête",
+                        "wakeup_instructions": "Instructions de réveil",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1822,6 +1929,10 @@
                     },
                     "navigation": {
                         "network": "Réseau",
+                        "node": {
+                            "config": "Config",
+                            "dashboard": "Tableau de bord"
+                        },
                         "nodes": "Nœuds",
                         "select_instance": "Sélectionnez une instance"
                     },
@@ -1849,6 +1960,15 @@
                         "header": "Gestion du réseau",
                         "introduction": "Gérer les fonctions de niveau réseau.",
                         "node_count": "{count} nœuds"
+                    },
+                    "node_config": {
+                        "header": "Configuration du nœud",
+                        "help_source": "Les descriptions des paramètres de configuration et le texte d'aide sont fournis par le projet OpenZWave.",
+                        "introduction": "Gérez les différents paramètres de configuration d'un nœud Z-Wave.",
+                        "wakeup_help": "Les nœuds alimentés par batterie doivent être éveillés pour modifier leur configuration. Si le nœud n'est pas réveillé, OpenZWave tentera de mettre à jour la configuration du nœud la prochaine fois qu'il se réveillera, ce qui pourrait être plusieurs heures (ou jours) plus tard. Suivez ces étapes pour réactiver votre appareil:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Manuel du produit"
                     },
                     "node_query_stages": {
                         "associations": "Rafraîchissement les associations et les membres",
@@ -1901,6 +2021,7 @@
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
+                        "cancel_command": "Annuler la commande",
                         "remove_node": "Supprimer le nœud"
                     }
                 },
@@ -1930,6 +2051,7 @@
                         "update": "Mettre à jour"
                     },
                     "introduction": "Ici, vous pouvez définir chaque personne d'intérêt dans Home Assistant.",
+                    "learn_more": "En savoir plus sur les personnes",
                     "no_persons_created_yet": "Il semble que vous n’avez encore créé personne.",
                     "note_about_persons_configured_in_yaml": "Remarque: les personnes configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
                     "person_not_found": "Nous n'avons pas trouvé la personne que vous tentiez de modifier.",
@@ -2051,7 +2173,7 @@
                             "input_text": "Recharger les entrées de texte (input text)",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
                             "min_max": "Recharger les entités min/max",
-                            "mqtt": "Recharger les entités mqtt",
+                            "mqtt": "Recharger les entités mqtt configurées manuellement",
                             "person": "Recharger les personnes",
                             "ping": "Recharger les entités de capteur binaire ping",
                             "reload": "Recharger {domain}",
@@ -2108,6 +2230,7 @@
                         "last_scanned": "Dernière analyse",
                         "name": "Nom"
                     },
+                    "learn_more": "En savoir plus sur les balises",
                     "never_scanned": "Jamais scanné",
                     "no_tags": "Aucunes balises",
                     "write": "Écrire"
@@ -2443,7 +2566,9 @@
                         "listeners": "Ce modèle écoute les événements de changement d'état suivants:",
                         "no_listeners": "Ce modèle n'écoute aucun événement de changement d'état et ne sera pas mis à jour automatiquement.",
                         "reset": "Réinitialiser au modèle de démonstration",
+                        "result_type": "Type de résultat",
                         "template_extensions": "Extensions de modèles de Home Assistant",
+                        "time": "Ce modèle est mis à jour au début de chaque minute.",
                         "title": "Modèle",
                         "unknown_error_template": "Erreur inconnue lors du rendu du modèle"
                     }
@@ -2586,6 +2711,7 @@
                                 "entity-id": "ID de l'entité",
                                 "last-changed": "Dernière modification",
                                 "last-triggered": "Dernier déclenchement",
+                                "last-updated": "Dernière mise à jour",
                                 "none": "Pas d'informations secondaires",
                                 "position": "Position",
                                 "tilt-position": "position d'inclinaison"
@@ -2649,6 +2775,10 @@
                             "columns": "Colonnes",
                             "description": "La carte Coup d'œil est utile pour regrouper plusieurs capteurs dans une vue d'ensemble compacte.",
                             "name": "Coup d'œil"
+                        },
+                        "grid": {
+                            "description": "La carte Grille vous permet d’afficher plusieurs cartes dans une grille.",
+                            "name": "Grille"
                         },
                         "history-graph": {
                             "description": "La carte Graphique historique vous permet d'afficher un graphique pour chacune des entités répertoriées.",
@@ -2741,6 +2871,9 @@
                         "domain": "Domaine",
                         "entity": "Entité",
                         "no_description": "Aucune description disponible."
+                    },
+                    "edit_badges": {
+                        "panel_mode": "Ces badges ne seront pas affichés car cette vue est en \"Mode Panneau\"."
                     },
                     "edit_card": {
                         "add": "Ajouter une action",
@@ -2847,7 +2980,8 @@
                     "exit_edit_mode": "Quitter le mode d'édition de l'interface utilisateur",
                     "help": "Aide",
                     "refresh": "Actualiser",
-                    "reload_resources": "Recharger les ressources"
+                    "reload_resources": "Recharger les ressources",
+                    "start_conversation": "Démarrer la conversation"
                 },
                 "reload_lovelace": "Recharger UI",
                 "reload_resources": {
@@ -3092,6 +3226,10 @@
                     "dropdown_label": "Tableau de bord",
                     "header": "Tableau de bord"
                 },
+                "enable_shortcuts": {
+                    "description": "Activez ou désactivez les raccourcis clavier pour effectuer diverses actions dans l'interface utilisateur.",
+                    "header": "Raccourcis clavier"
+                },
                 "force_narrow": {
                     "description": "Cela masquera la barre latérale par défaut, semblable à l'expérience mobile.",
                     "header": "Toujours cacher la barre latérale"
@@ -3136,6 +3274,10 @@
                     "header": "Modules d'authentification multi-facteurs"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nom de l'appareil",
+                        "title": "Comment doit-on appeler cet appareil?"
+                    },
                     "description": "Envoyer des notifications à cet appareil.",
                     "error_load_platform": "Configurer notify.html5.",
                     "error_use_https": "Nécessite l'activation SSL pour l'interface utilisateur.",
@@ -3176,6 +3318,9 @@
                     "description": "Activer ou désactiver les vibrations sur cet appareil lors du contrôle des périphériques.",
                     "header": "Vibrer"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Démarrer la conversation"
             },
             "shopping-list": {
                 "add_item": "Ajouter un élément",

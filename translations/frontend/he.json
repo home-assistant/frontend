@@ -543,7 +543,7 @@
                 "device": "מכשיר",
                 "no_area": "אין אזור",
                 "show_devices": "הצג התקנים",
-                "toggle": "החלף מצב"
+                "toggle": "בורר מצבים"
             },
             "entity": {
                 "entity-picker": {
@@ -590,7 +590,7 @@
                     "video": "וידאו"
                 },
                 "documentation": "תיעוד",
-                "learn_adding_local_media": "למד עוד אודות הוספת מדיה ב{תיעוד}."
+                "learn_adding_local_media": "למד עוד אודות הוספת מדיה ב-{documentation}."
             },
             "picture-upload": {
                 "label": "תמונה",
@@ -615,9 +615,16 @@
                     "second": "{count} {count, plural,\n  one {שנייה}\n  other {שניות}\n}",
                     "week": "{count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
                 },
-                "future": "ב{time}",
+                "future": "בעוד {time}",
                 "never": "אף פעם לא",
-                "past": "מלפני {time}"
+                "past": "לפני {time}",
+                "past_duration": {
+                    "day": "לפני {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "לפני {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "לפני {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "לפני {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "לפני {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                }
             },
             "service-picker": {
                 "service": "שירות"
@@ -707,6 +714,7 @@
                 "dismiss": "סגור",
                 "edit": "ערוך יישות",
                 "history": "היסטוריה",
+                "last_changed": "שונה לאחרונה",
                 "person": {
                     "create_zone": "צור אזור מהמיקום הנוכחי"
                 },
@@ -763,6 +771,13 @@
                 }
             },
             "quick-bar": {
+                "commands": {
+                    "server_control": {
+                        "perform_action": "{action} שרת",
+                        "restart": "הפעל מחדש",
+                        "stop": "עצור"
+                    }
+                },
                 "filter_placeholder": "מסנן ישויות"
             },
             "voice_command": {
@@ -784,7 +799,7 @@
                 "confirmations": {
                     "remove": "האם אתה בטוח שברצונך למחוק מכשיר זה?"
                 },
-                "device_signature": "חתימת מכשיר Zigbee",
+                "device_signature": "חתימת התקן Zigbee",
                 "last_seen": "נראה לאחרונה",
                 "manuf": "לפי {manufacturer}",
                 "no_area": "ללא אזור",
@@ -794,7 +809,7 @@
                     "reconfigure": "הגדר מחדש את המכשיר ה- ZHA (ריפוי מכשיר). השתמש בזה אם אתה נתקל בבעיות במכשיר. אם המכשיר המדובר הוא מכשיר המונע על ידי סוללה, אנא וודא שהוא דלוק ומקבל פקודות בעת השימוש בשירות זה.",
                     "remove": "הסר מכשיר מרשת ה-Zigbee",
                     "updateDeviceName": "הגדר שם מותאם אישית עבור מכשיר זה במאגר ההתקנים.",
-                    "zigbee_information": "הצגת מידע Zigbee עבור המכשיר."
+                    "zigbee_information": "הצגת מידע Zigbee עבור ההתקן."
                 },
                 "unknown": "לא ידוע",
                 "zha_device_card": {
@@ -1393,7 +1408,7 @@
                     },
                     "cant_edit": "באפשרותך לערוך פריטים שנוצרו בממשק המשתמש בלבד.",
                     "caption": "התקנים",
-                    "confirm_delete": "האם אתה בטוח שברצונך למחוק מכשיר זה?",
+                    "confirm_delete": "האם אתה בטוח שברצונך למחוק התקן זה?",
                     "confirm_rename_entity_ids": "האם אתה רוצה גם לשנות את המזהים של הישויות שלך?",
                     "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי Script, סצנות, Lovelace) המשתמשת כעת בישויות אלה, יהיה עליך לעדכן אותן בעצמך.",
                     "data_table": {
@@ -1408,7 +1423,7 @@
                     },
                     "delete": "מחיקה",
                     "description": "ניהול התקנים מחוברים",
-                    "device_info": "פרטי מכשיר",
+                    "device_info": "פרטי התקן",
                     "device_not_found": "המכשיר לא נמצא.",
                     "entities": {
                         "add_entities_lovelace": "הוסף לממשק Lovelace",
@@ -1471,7 +1486,7 @@
                             "confirm_partly_text": "אתה יכול להסיר רק את {removable} מהישויות שנבחרו {selected}. ניתן להסיר ישויות רק כאשר האינטגרציה כבר לא מספקת את הישויות. לפעמים אתה צריך להפעיל מחדש את עוזר הבית לפני שתוכל להסיר את הישויות של אינטגרציה שהוסרה. האם אתה בטוח שברצונך להסיר את הישויות הניתנות להסרה?",
                             "confirm_partly_title": "ניתן להסיר רק {number} ישויות שנבחרו.",
                             "confirm_text": "עליך להסיר אותם מתצורת ה- Lovelace ומהאוטומציות שלך אם הם מכילים ישויות אלה.",
-                            "confirm_title": "האם ברצונך להסיר {מספר} ישויות?"
+                            "confirm_title": "האם ברצונך להסיר {number} ישויות?"
                         },
                         "search": "חיפוש ישויות",
                         "selected": "{number} נבחרו",
@@ -1508,7 +1523,7 @@
                         "no_helpers": "נראה שאין לך עדיין עזרים!"
                     },
                     "types": {
-                        "input_boolean": "החלף מצב",
+                        "input_boolean": "בורר מצבים",
                         "input_datetime": "תאריך ו/או שעה",
                         "input_number": "מספר",
                         "input_select": "תיבת בחירה",
@@ -1612,7 +1627,7 @@
                     "rename_input_label": "שם ישות",
                     "search": "חיפוש אינטגרציות"
                 },
-                "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה Home Assistant. לא הכל ניתן להגדיר את ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
+                "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה-Home Assistant. לא הכל ניתן להגדיר עם ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
                 "logs": {
                     "caption": "יומנים",
                     "clear": "נקה",
@@ -1912,7 +1927,7 @@
                             "confirm_restart": "האם אתה בטוח שברצונך להפעיל מחדש את Home Assistant?",
                             "confirm_stop": "האם אתה בטוח שברצונך לעצור את Home Assistant?",
                             "heading": "ניהול שרת",
-                            "introduction": "לשלוט על שרת הHome Assistant שלך... מHome Assistant.",
+                            "introduction": "לשלוט על שרת Home Assistant שלך... מ-Home Assistant.",
                             "restart": "אתחל",
                             "stop": "עצור"
                         },
@@ -1983,7 +1998,7 @@
                     },
                     "picker": {
                         "headers": {
-                            "group": "קְבוּצָה",
+                            "group": "קבוצה",
                             "name": "שם",
                             "system": "מערכת"
                         }
@@ -1992,11 +2007,11 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovered_text": "מכשירים יופיעו כאן לאחר שהתגלו.",
+                        "discovered_text": "התקנים יופיעו כאן לאחר שהתגלו.",
                         "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום.",
                         "header": "אוטומציית Zigbee - הוספת התקנים",
                         "no_devices_found": "לא נמצאו התקנים כלשהם, וודא שהם במצב צימוד והקפד שיהיו פעילים בזמן החיפוש.",
-                        "pairing_mode": "ודא שהמכשירים שלך במצב צימוד. בדוק את הוראות המכשיר שלך כיצד לבצע זאת.",
+                        "pairing_mode": "ודא שההתקנים שלך נמצאים במצב צימוד. בדוק את הוראות ההתקן כיצד לבצע זאת.",
                         "search_again": "חפש שוב",
                         "spinner": "מחפש מכשירי ZHA Zigbee..."
                     },
@@ -2163,7 +2178,7 @@
                         "entities": "ישויות היחידה",
                         "entity_info": "מידע על הישות",
                         "exclude_entity": "אל תכלול ישות זו ב Home Assistant",
-                        "group": "קְבוּצָה",
+                        "group": "קבוצה",
                         "header": "ניהול יחידות Z-Wave",
                         "introduction": "הפעל פקודות Z-Wave המשפיעות על יחידה בודדת. בחר יחידה כדי לראות רשימה של פקודות זמינות.",
                         "max_associations": "כמות קישורים מקסימלי:",
@@ -2369,6 +2384,7 @@
                         "calendar": {
                             "calendar_entities": "ישויות לוח שנה",
                             "inital_view": "תצוגה ראשונית",
+                            "name": "לוח שנה",
                             "views": {
                                 "dayGridDay": "יום",
                                 "dayGridMonth": "חודש",
@@ -2466,6 +2482,9 @@
                             "columns": "עמודות",
                             "description": "כרטיס ה־Glance שימושי עבור קיבוץ מספר חיישנים לסקירה קומפקטית.",
                             "name": "Glance"
+                        },
+                        "grid": {
+                            "name": "רשת"
                         },
                         "history-graph": {
                             "description": "הכרטיס History Graph מאפשר לך להציג גרף עבור כל אחת מהישויות המפורטות.",
@@ -2572,7 +2591,7 @@
                         "pick_card_view_title": "איזה כרטיס ברצונך להוסיף לתצוגת {name}?",
                         "show_code_editor": "הצג עורך קוד",
                         "show_visual_editor": "הצג עורך ויזואלי",
-                        "toggle_editor": "החלף מצב עורך",
+                        "toggle_editor": "עורך בורר מצבים",
                         "typed_header": "תצורת כרטיס {type}",
                         "unsaved_changes": "יש לך שינויים שלא נשמרו"
                     },
@@ -2896,7 +2915,7 @@
                 },
                 "current_user": "אתה מחובר כעת כ- {fullName} .",
                 "dashboard": {
-                    "description": "בחר לוח בקרה ברירת מחדל עבור מכשיר זה.",
+                    "description": "בחר לוח בקרה ברירת מחדל עבור התקן זה.",
                     "dropdown_label": "לוח בקרה",
                     "header": "לוח בקרה"
                 },
@@ -2942,6 +2961,10 @@
                     "header": "מודלי אימות מרובה גורמים"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "שם התקן",
+                        "title": "איך לקרוא להתקן זה?"
+                    },
                     "description": "שלח התראות למכשיר זה.",
                     "error_load_platform": "הגדר את notify.html5.",
                     "error_use_https": "נדרש SSL מופעל עבור הממשק.",

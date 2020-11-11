@@ -29,12 +29,10 @@ import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
-import "../hui-element-editor";
-import type {
-  ConfigChangedEvent,
-  HuiElementEditor,
-} from "../hui-element-editor";
+import type { ConfigChangedEvent } from "../hui-element-editor";
 import type { GUIModeChangedEvent } from "../types";
+import "./hui-card-element-editor";
+import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
@@ -54,6 +52,8 @@ export class HuiDialogEditCard extends LitElement
   implements HassDialog<EditCardDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean, reflect: true }) public large = false;
+
   @internalProperty() private _params?: EditCardDialogParams;
 
   @internalProperty() private _cardConfig?: LovelaceCardConfig;
@@ -66,7 +66,8 @@ export class HuiDialogEditCard extends LitElement
 
   @internalProperty() private _guiModeAvailable? = true;
 
-  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
+  @query("hui-card-element-editor")
+  private _cardEditorEl?: HuiCardElementEditor;
 
   @internalProperty() private _GUImode = true;
 
@@ -82,6 +83,7 @@ export class HuiDialogEditCard extends LitElement
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
+    this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
@@ -162,7 +164,7 @@ export class HuiDialogEditCard extends LitElement
       >
         <div slot="heading">
           <ha-header-bar>
-            <div slot="title">${heading}</div>
+            <div slot="title" @click=${this._enlarge}>${heading}</div>
             ${this._documentationURL !== undefined
               ? html`
                   <a
@@ -184,14 +186,14 @@ export class HuiDialogEditCard extends LitElement
         </div>
         <div class="content">
           <div class="element-editor">
-            <hui-element-editor
+            <hui-card-element-editor
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
-            ></hui-element-editor>
+            ></hui-card-element-editor>
           </div>
           <div class="element-preview">
             <hui-card-preview
@@ -254,6 +256,10 @@ export class HuiDialogEditCard extends LitElement
     `;
   }
 
+  private _enlarge() {
+    this.large = !this.large;
+  }
+
   private _ignoreKeydown(ev: KeyboardEvent) {
     ev.stopPropagation();
   }
@@ -302,8 +308,8 @@ export class HuiDialogEditCard extends LitElement
       text: this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.confirm_cancel"
       ),
-      dismissText: this.hass!.localize("ui.common.no"),
-      confirmText: this.hass!.localize("ui.common.yes"),
+      dismissText: this.hass!.localize("ui.common.stay"),
+      confirmText: this.hass!.localize("ui.common.leave"),
     });
     if (confirm) {
       this._cancel();
@@ -372,6 +378,15 @@ export class HuiDialogEditCard extends LitElement
         ha-dialog {
           --mdc-dialog-max-width: 845px;
           --dialog-z-index: 5;
+        }
+
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          ha-dialog {
+            --mdc-dialog-max-width: 90vw;
+          }
+          :host([large]) .content {
+            width: calc(90vw - 48px);
+          }
         }
 
         ha-header-bar {

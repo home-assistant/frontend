@@ -32,18 +32,12 @@ import { showMediaBrowserDialog } from "../../../components/media-player/show-me
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   computeMediaDescription,
+  computeMediaControls,
   CONTRAST_RATIO,
-  ControlButton,
   getCurrentProgress,
   MediaPickedEvent,
-  SUPPORTS_PLAY,
   SUPPORT_BROWSE_MEDIA,
-  SUPPORT_NEXT_TRACK,
-  SUPPORT_PAUSE,
-  SUPPORT_PREVIOUS_TRACK,
   SUPPORT_SEEK,
-  SUPPORT_STOP,
-  SUPPORT_TURN_OFF,
   SUPPORT_TURN_ON,
 } from "../../../data/media-player";
 import type { HomeAssistant, MediaEntity } from "../../../types";
@@ -297,7 +291,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       UNAVAILABLE_STATES.includes(state) ||
       (state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
-    const controls = this._getControls();
+    const controls = computeMediaControls(stateObj);
     const showControls =
       controls &&
       (!this._veryNarrow || isOffState || state === "idle" || state === "on");
@@ -361,9 +355,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ></ha-icon-button>
             </div>
           </div>
-          ${isUnavailable
-            ? ""
-            : html`
+          ${!isUnavailable &&
+          (mediaDescription || stateObj.attributes.media_title || showControls)
+            ? html`
                 <div
                   class="title-controls"
                   style=${styleMap({
@@ -436,7 +430,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         @click=${this._handleSeek}
                       ></paper-progress>
                     `}
-              `}
+              `
+            : ""}
         </div>
       </ha-card>
     `;
@@ -516,88 +511,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     if (this._image !== oldImage) {
       this._setColors();
     }
-  }
-
-  private _getControls(): ControlButton[] | undefined {
-    const stateObj = this._stateObj;
-
-    if (!stateObj) {
-      return undefined;
-    }
-
-    const state = stateObj.state;
-
-    if (UNAVAILABLE_STATES.includes(state)) {
-      return undefined;
-    }
-
-    if (state === "off") {
-      return supportsFeature(stateObj, SUPPORT_TURN_ON)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_on",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "on") {
-      return supportsFeature(stateObj, SUPPORT_TURN_OFF)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_off",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "idle") {
-      return supportsFeature(stateObj, SUPPORTS_PLAY)
-        ? [
-            {
-              icon: "hass:play",
-              action: "media_play",
-            },
-          ]
-        : undefined;
-    }
-
-    const buttons: ControlButton[] = [];
-
-    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-previous",
-        action: "media_previous_track",
-      });
-    }
-
-    if (
-      (state === "playing" &&
-        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-          supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
-    ) {
-      buttons.push({
-        icon:
-          state !== "playing"
-            ? "hass:play"
-            : supportsFeature(stateObj, SUPPORT_PAUSE)
-            ? "hass:pause"
-            : "hass:stop",
-        action: "media_play_pause",
-      });
-    }
-
-    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-next",
-        action: "media_next_track",
-      });
-    }
-
-    return buttons.length > 0 ? buttons : undefined;
   }
 
   private get _image() {
@@ -866,6 +779,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       ha-icon-button[action="media_play"],
       ha-icon-button[action="media_play_pause"],
+      ha-icon-button[action="media_stop"],
       ha-icon-button[action="turn_on"],
       ha-icon-button[action="turn_off"] {
         --mdc-icon-button-size: 56px;

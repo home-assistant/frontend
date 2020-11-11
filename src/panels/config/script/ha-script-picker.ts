@@ -2,6 +2,7 @@ import "@material/mwc-icon-button";
 import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
   CSSResult,
   customElement,
   html,
@@ -149,9 +150,10 @@ class HaScriptPicker extends LitElement {
           <mwc-fab
             ?is-wide=${this.isWide}
             ?narrow=${this.narrow}
-            title="${this.hass.localize(
-              "ui.panel.config.script.picker.create_new_script"
-            )}"
+            .label=${this.hass.localize(
+              "ui.panel.config.script.picker.add_script"
+            )}
+            extended
             ?rtl=${computeRTL(this.hass)}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -198,8 +200,15 @@ class HaScriptPicker extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return haStyle;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        a {
+          text-decoration: none;
+        }
+      `,
+    ];
   }
 }
 

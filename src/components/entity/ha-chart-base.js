@@ -88,6 +88,7 @@ class HaChartBase extends mixinBehaviors(
         .chartTooltip .beforeBody {
           text-align: center;
           font-weight: 300;
+          word-break: break-all;
         }
         .chartLegend li {
           display: inline-block;

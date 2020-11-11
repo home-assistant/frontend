@@ -28,8 +28,8 @@
         "climate": {
             "fan_mode": {
                 "auto": "automatyczny",
-                "off": "wyłączony",
-                "on": "włączony"
+                "off": "wył.",
+                "on": "wł."
             },
             "hvac_action": {
                 "cooling": "chłodzenie",
@@ -37,7 +37,7 @@
                 "fan": "wentylator",
                 "heating": "grzanie",
                 "idle": "nieaktywny",
-                "off": "wyłączony"
+                "off": "wył."
             },
             "preset_mode": {
                 "activity": "aktywność",
@@ -106,8 +106,8 @@
             "triggered": "wyzwolony"
         },
         "automation": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "binary_sensor": {
             "battery": {
@@ -123,8 +123,8 @@
                 "on": "online"
             },
             "default": {
-                "off": "wyłączony",
-                "on": "włączony"
+                "off": "wył.",
+                "on": "wł."
             },
             "door": {
                 "off": "zamknięte",
@@ -192,8 +192,8 @@
             }
         },
         "calendar": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "camera": {
             "idle": "nieaktywna",
@@ -206,10 +206,10 @@
             "fan_only": "tylko wentylator",
             "heat": "grzanie",
             "heat_cool": "grzanie/chłodzenie",
-            "off": "wyłączony"
+            "off": "wył."
         },
         "configurator": {
-            "configure": "Konfiguruj",
+            "configure": "konfiguruj",
             "configured": "skonfigurowany"
         },
         "cover": {
@@ -220,8 +220,8 @@
             "stopped": "zatrzymanie"
         },
         "default": {
-            "off": "wyłączony",
-            "on": "włączony",
+            "off": "wył.",
+            "on": "wł.",
             "unavailable": "niedostępny",
             "unknown": "nieznany"
         },
@@ -229,8 +229,8 @@
             "not_home": "poza domem"
         },
         "fan": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "group": {
             "closed": "zamknięte",
@@ -238,9 +238,9 @@
             "home": "w domu",
             "locked": "zamknięty",
             "not_home": "poza domem",
-            "off": "wyłączony",
+            "off": "wył.",
             "ok": "ok",
-            "on": "włączony",
+            "on": "wł.",
             "open": "otwarte",
             "opening": "otwieranie",
             "problem": "problem",
@@ -248,12 +248,12 @@
             "unlocked": "otwarty"
         },
         "input_boolean": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "light": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "lock": {
             "locked": "zamknięty",
@@ -261,8 +261,8 @@
         },
         "media_player": {
             "idle": "nieaktywny",
-            "off": "wyłączony",
-            "on": "włączony",
+            "off": "wył.",
+            "on": "wł.",
             "paused": "wstrzymany",
             "playing": "odtwarzanie",
             "standby": "tryb czuwania"
@@ -275,27 +275,27 @@
             "problem": "problem"
         },
         "remote": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "scene": {
             "scening": "sceny"
         },
         "script": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "sensor": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "sun": {
             "above_horizon": "powyżej horyzontu",
             "below_horizon": "poniżej horyzontu"
         },
         "switch": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "timer": {
             "active": "aktywny",
@@ -307,8 +307,8 @@
             "docked": "w stacji dokującej",
             "error": "błąd",
             "idle": "nieaktywny",
-            "off": "wyłączony",
-            "on": "włączony",
+            "off": "wył.",
+            "on": "wł.",
             "paused": "wstrzymany",
             "returning": "powrót do stacji dokującej"
         },
@@ -375,7 +375,7 @@
                 "heating": "{name} grzanie",
                 "high": "wysoka",
                 "low": "niska",
-                "on_off": "Wł. / wył.",
+                "on_off": "wł. / wył.",
                 "operation": "Tryb pracy",
                 "preset_mode": "Ustawienia",
                 "swing_mode": "Tryb ruchu łopatek",
@@ -465,7 +465,7 @@
             "water_heater": {
                 "away_mode": "Tryb poza domem",
                 "currently": "Obecnie",
-                "on_off": "Wł. / wył.",
+                "on_off": "wł. / wył.",
                 "operation": "Tryb pracy",
                 "target_temperature": "Temperatura docelowa"
             },
@@ -511,15 +511,23 @@
             "continue": "Kontynuuj",
             "copied": "Skopiowano",
             "delete": "Usuń",
+            "disable": "Wyłącz",
+            "enable": "Włącz",
             "error_required": "To pole jest wymagane",
+            "leave": "Wyjdź",
             "loading": "Ładowanie",
             "menu": "Menu",
             "next": "Dalej",
             "no": "Nie",
+            "not_now": "Nie teraz",
             "overflow_menu": "Menu",
             "previous": "Poprzedni",
             "refresh": "Odśwież",
+            "remove": "Usuń",
+            "rename": "Zmień nazwę",
             "save": "Zapisz",
+            "skip": "Pomiń",
+            "stay": "Zostań",
             "successfully_deleted": "Pomyślnie usunięto",
             "successfully_saved": "Pomyślnie zapisano",
             "undo": "Cofnij",
@@ -575,29 +583,29 @@
                 "by_service": "przez usługę",
                 "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
                 "messages": {
-                    "became_unavailable": "jest niedostępny(-a)",
-                    "changed_to_state": "zmienił(-a) się na {state}",
-                    "cleared_device_class": "brak (nie {device_class} ruchu)",
-                    "detected_device_class": "wykryto {device_class}",
+                    "became_unavailable": "encja stała się niedostępna",
+                    "changed_to_state": "nastąpiła zmiana stanu na {state}",
+                    "cleared_device_class": "brak",
+                    "detected_device_class": "wykryto",
                     "rose": "wzeszło",
                     "set": "zaszło",
-                    "turned_off": "wyłączony(-a)",
-                    "turned_on": "włączony(-a)",
-                    "was_at_home": "był w domu",
-                    "was_at_state": "był w {state}",
-                    "was_away": "był poza domem",
-                    "was_closed": "zostały(-o) zamknięte(-a)",
-                    "was_connected": "został podłączony",
-                    "was_disconnected": "został odłączony",
-                    "was_locked": "został zamknięty",
-                    "was_low": "był niski",
-                    "was_normal": "był normalny",
-                    "was_opened": "zostały(-o) otwarte(-a)",
-                    "was_plugged_in": "został(-a) podłączony(-a)",
-                    "was_safe": "nie było zagrożenia",
-                    "was_unlocked": "został otwarty",
-                    "was_unplugged": "został(-a) odłączony(-a)",
-                    "was_unsafe": "było zagrożenie"
+                    "turned_off": "nastąpiło wyłączenie",
+                    "turned_on": "nastąpiło włączenie",
+                    "was_at_home": "nastąpiła zmiana stanu na \"w domu\"",
+                    "was_at_state": "nastąpiła zmiana stanu na {state}",
+                    "was_away": "nastąpiła zmiana stanu na \"poza domem\"",
+                    "was_closed": "nastąpiło zamknięcie",
+                    "was_connected": "nastąpiło podłączenie",
+                    "was_disconnected": "nastąpiło odłączenie",
+                    "was_locked": "nastąpiło zamknięcie",
+                    "was_low": "nastąpiła zmiana stanu na niski",
+                    "was_normal": "nastąpiła zmiana stanu na normalny",
+                    "was_opened": "nastąpiło otwarcie",
+                    "was_plugged_in": "nastąpiło podłączenie",
+                    "was_safe": "brak zagrożenia",
+                    "was_unlocked": "nastąpiło otwarcie",
+                    "was_unplugged": "nastąpiło odłączenie",
+                    "was_unsafe": "wykryto zagrożenie"
                 }
             },
             "media-browser": {
@@ -695,6 +703,11 @@
             },
             "service-picker": {
                 "service": "Usługa"
+            },
+            "user-picker": {
+                "add_user": "Dodaj użytkownika",
+                "no_user": "Brak użytkownika",
+                "remove_user": "Usuń użytkownika"
             }
         },
         "dialogs": {
@@ -713,17 +726,19 @@
                 "dismiss": "Odrzuć",
                 "editor": {
                     "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
-                    "delete": "USUŃ",
+                    "delete": "Usuń",
                     "enabled_cause": "Wyłączone przez {cause}.",
+                    "enabled_delay_confirm": "Włączone encje zostaną dodane do Home Assistant po {delay} sekundach",
                     "enabled_description": "Wyłączone encje nie będą dostępne w Home Assistant.",
                     "enabled_label": "Włącz encję",
+                    "enabled_restart_confirm": "Uruchom ponownie Home Assistant, aby zakończyć włączanie encji",
                     "entity_id": "Identyfikator encji",
                     "icon": "Ikona",
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nazwa",
                     "note": "Uwaga: to może jeszcze nie działać ze wszystkimi integracjami.",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
-                    "update": "AKTUALIZUJ"
+                    "update": "Aktualizuj"
                 },
                 "faq": "dokumentacja",
                 "no_unique_id": "Ta encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami. Więcej szczegółów znajdziesz w {faq_link}.",
@@ -789,10 +804,16 @@
             },
             "more_info_control": {
                 "controls": "Sterowanie",
+                "cover": {
+                    "close_tile_cover": "Przechylenie zamkniętej rolety",
+                    "open_tilt_cover": "Przechylenie otwartej rolety",
+                    "stop_cover": "Wstrzymanie rolety"
+                },
                 "details": "Szczegóły",
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
                 "history": "Historia",
+                "last_changed": "Ostatnia zmiana",
                 "last_updated": "Ostatnio zaktualizowano",
                 "person": {
                     "create_zone": "Utwórz strefę z bieżącej lokalizacji"
@@ -883,6 +904,11 @@
                         "trend": "Encje komponentu trend",
                         "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
                         "zone": "Strefy"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} serwer",
+                        "restart": "Uruchom ponownie",
+                        "stop": "Zatrzymaj"
                     }
                 },
                 "filter_placeholder": "Filtr encji"
@@ -947,6 +973,7 @@
         },
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
+            "dismiss": "Ukryj",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
             "started": "Home Assistant uruchomił się!",
             "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
@@ -1072,13 +1099,13 @@
                                     "wait_template": "Szablon czekania"
                                 }
                             },
-                            "unsupported_action": "Nieobsługiwane działanie: {action}"
+                            "unsupported_action": "Brak w interfejsie użytkownika wsparcia dla akcji: {action}"
                         },
                         "alias": "Nazwa",
                         "conditions": {
                             "add": "Dodaj warunek",
                             "delete": "Usuń",
-                            "delete_confirm": "Czy chcesz usunąć?",
+                            "delete_confirm": "Czy na pewno chcesz to usunąć?",
                             "duplicate": "Duplikuj",
                             "header": "Warunki",
                             "introduction": "Warunki nie są wymagane w automatyzacji, ale zastosowanie ich wykluczy jej potencjalnie niechciane uruchomienia, póki logika każdego z nich przyjmuje wartość pozytywną.",
@@ -1149,7 +1176,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_condition": "Nieobsługiwany warunek: {condition}"
+                            "unsupported_condition": "Brak w interfejsie użytkownika wsparcia dla warunku: {condition}"
                         },
                         "copy_to_clipboard": "Skopiuj do schowka",
                         "default_name": "Nowa automatyzacja",
@@ -1200,6 +1227,9 @@
                                     "trigger": "Wyzwalacz"
                                 },
                                 "event": {
+                                    "context_user_pick": "Wybierz użytkownika",
+                                    "context_user_picked": "Użytkownik wywołujący zdarzenie",
+                                    "context_users": "Tylko zdarzenia wywołane przez",
                                     "event_data": "Dane zdarzenia",
                                     "event_type": "Typ zdarzenia",
                                     "label": "Zdarzenie"
@@ -1275,7 +1305,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_platform": "Nieobsługiwana platforma: {platform}"
+                            "unsupported_platform": "Brak w interfejsie użytkownika wsparcia dla platformy: {platform}"
                         },
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
                     },
@@ -1296,6 +1326,22 @@
                         "only_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "pick_automation": "Wybierz automatyzację do edycji",
                         "show_info_automation": "Pokaż informacje o automatyzacji"
+                    },
+                    "thingtalk": {
+                        "create": "Utwórz automatyzację",
+                        "link_devices": {
+                            "ambiguous_entities": "Co najmniej jedno urządzenie ma więcej niż jedną pasującą encję. Wybierz tę, której chcesz użyć.",
+                            "header": "Wspaniale! Teraz musimy podłączyć jakieś urządzenia",
+                            "unknown_placeholder": "Nieznany symbol zastępczy"
+                        },
+                        "task_selection": {
+                            "error_empty": "Wprowadź polecenie lub naciśnij \"Pomiń\"",
+                            "error_unsupported": "Nie mogliśmy (jeszcze?) utworzyć takiej automatyzacji",
+                            "for_example": "Na przykład:",
+                            "header": "Utwórz nową automatyzację",
+                            "introduction": "Wpisz poniżej, co ma robić ta automatyzacja, a my spróbujemy przekształcić ją w automatyzację Home Assistant.",
+                            "language_note": "Uwaga: obecnie obsługiwany jest tylko język angielski."
+                        }
                     }
                 },
                 "cloud": {
@@ -1548,7 +1594,7 @@
                     "caption": "Urządzenia",
                     "confirm_delete": "Czy na pewno chcesz usunąć to urządzenie?",
                     "confirm_rename_entity_ids": "Czy chcesz także zmienić identyfikatory encji?",
-                    "confirm_rename_entity_ids_warning": "Nie zmieni to żadnej konfiguracji (jak automatyzacje, skrypty, sceny, Lovelace), która obecnie używa tych encji, będziesz musiał je zaktualizować samodzielnie.",
+                    "confirm_rename_entity_ids_warning": "Nie zmieni to konfiguracji (automatyzacji, skryptów, scen, dashboardów), które obecnie używają tych encji. Będziesz musiał je zaktualizować samemu, by używać nowych identyfikatorów encji!",
                     "data_table": {
                         "area": "Obszar",
                         "battery": "Bateria",
@@ -1595,12 +1641,12 @@
                         "disable_selected": {
                             "button": "Wyłącz wybrane",
                             "confirm_text": "Wyłączone encje nie będą dostępne w Home Assistant.",
-                            "confirm_title": "Czy chcesz wyłączyć encje: {number}?"
+                            "confirm_title": "Czy chcesz wyłączyć {number} {number, plural,\n  one {encję}\n  few {encje}\n  many {encji}\n  other {encji}\n}?"
                         },
                         "enable_selected": {
                             "button": "Włącz wybrane",
                             "confirm_text": "Dzięki temu będą ponownie dostępne w Home Assistant, jeśli są teraz wyłączone.",
-                            "confirm_title": "Czy chcesz włączyć encje: {number}?"
+                            "confirm_title": "Czy chcesz włączyć {number} {number, plural,\n  one {encję}\n  few {encje}\n  many {encji}\n  other {encji}\n}?"
                         },
                         "filter": {
                             "filter": "Filtr",
@@ -1622,9 +1668,9 @@
                         "remove_selected": {
                             "button": "Usuń wybrane",
                             "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taką możliwość. Czasami trzeba ponownie uruchomić Home Assistant, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
-                            "confirm_partly_title": "Wybrane encje możliwe do usunięcia: {number}",
+                            "confirm_partly_title": "Można usunąć tylko {number} {number, plural,\n  one {encję}\n  few {encje}\n  many {encji}\n  other {encji}\n}.",
                             "confirm_text": "Powinieneś uprzednio usunąć integrację z automatyzacji i konfiguracji Lovelace, jeśli encje w niej występują.",
-                            "confirm_title": "Czy chcesz usunąć encje: {number}?"
+                            "confirm_title": "Czy chcesz usunąć {number} {number, plural,\n  one {encję}\n  few {encje}\n  many {encji}\n  other {encji}\n}?"
                         },
                         "search": "Szukaj encji",
                         "selected": "wybrano {number}",
@@ -1663,7 +1709,7 @@
                     "types": {
                         "counter": "Licznik",
                         "input_boolean": "Przełącznik",
-                        "input_datetime": "Data i/lub czas",
+                        "input_datetime": "Data/czas",
                         "input_number": "Numer",
                         "input_select": "Pole wyboru",
                         "input_text": "Tekst",
@@ -1688,6 +1734,39 @@
                     "server": "serwer",
                     "source": "Źródło:",
                     "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa włączona",
+                                "can_reach_cert_server": "Dostęp do serwera certyfikatów",
+                                "can_reach_cloud": "Dostęp do chmury Home Assistant",
+                                "can_reach_cloud_auth": "Dostęp do serwera uwierzytelniania",
+                                "google_enabled": "Asystent Google włączony",
+                                "logged_in": "Zalogowany",
+                                "subscription_expiration": "Wygaśnięcie subskrypcji"
+                            },
+                            "homeassistant": {
+                                "arch": "Architektura procesora",
+                                "dev": "Rozwój",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Typ instalacji",
+                                "os_name": "Nazwa systemu operacyjnego",
+                                "os_version": "Wersja systemu operacyjnego",
+                                "python_version": "Wersja Pythona",
+                                "timezone": "Strefa czasowa",
+                                "version": "Wersja",
+                                "virtualenv": "Środowisko wirtualne"
+                            },
+                            "lovelace": {
+                                "dashboards": "Dashboardy",
+                                "mode": "Tryb",
+                                "resources": "Zasoby"
+                            }
+                        },
+                        "manage": "Zarządzanie",
+                        "more_info": "więcej info"
+                    },
                     "title": "Informacje"
                 },
                 "integration_panel_move": {
@@ -1814,7 +1893,7 @@
                             "title_required": "Tytuł jest wymagany",
                             "update": "Aktualizuj",
                             "url": "URL",
-                            "url_error_msg": "Adres URL nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
+                            "url_error_msg": "Adres URL powinien zawierać -, a nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
                         },
                         "picker": {
                             "add_dashboard": "Dodaj dashboard",
@@ -1829,7 +1908,7 @@
                             "open": "Otwórz"
                         }
                     },
-                    "description": "Konfiguruj dashboardy interfejsu użytkownika Lovelace",
+                    "description": "Zarządzaj dashboardami interfejsu użytkownika Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Korzystasz z interfejsu użytkownika Lovelace w trybie YAML, dlatego nie możesz zarządzać zasobami za pomocą interfejsu użytkownika. Zarządzaj nimi w pliku configuration.yaml.",
                         "caption": "Zasoby",
@@ -1854,7 +1933,7 @@
                             },
                             "no_resources": "Brak zasobów"
                         },
-                        "refresh_body": "Musisz odświeżyć stronę, aby zakończyć usuwanie, czy chcesz teraz odświeżyć?",
+                        "refresh_body": "Musisz odświeżyć stronę, aby zakończyć usuwanie. Odświeżyć teraz?",
                         "refresh_header": "Czy chcesz odświeżyć?",
                         "types": {
                             "css": "Arkusz stylów",
@@ -1989,6 +2068,7 @@
                     },
                     "services": {
                         "add_node": "Dodaj węzeł",
+                        "cancel_command": "Anuluj polecenie",
                         "remove_node": "Usuń węzeł"
                     }
                 },
@@ -2103,7 +2183,7 @@
                         "sequence_sentence": "Sekwencja akcji tego skryptu."
                     },
                     "picker": {
-                        "add_script": "Utwórz nowy skrypt",
+                        "add_script": "Dodaj skrypt",
                         "edit_script": "Edytuj skrypt",
                         "header": "Edytor skryptów",
                         "headers": {
@@ -2177,6 +2257,8 @@
                     "add_tag": "Dodaj tag",
                     "automation_title": "Tag {name} jest skanowany",
                     "caption": "Tagi",
+                    "confirm_remove": "Czy na pewno chcesz usunąć tag {tag}?",
+                    "confirm_remove_title": "Usunąć tag?",
                     "create_automation": "Utwórz automatyzację z tagiem",
                     "description": "Zarządzaj tagami",
                     "detail": {
@@ -2312,7 +2394,7 @@
                         "create_group": "Zigbee Home Automation - utwórz grupę",
                         "create_group_details": "Wprowadź wymagane dane, aby utworzyć nową grupę Zigbee",
                         "creating_group": "Tworzenie grupy",
-                        "description": "Twórz i modyfikuj grupy Zigbee",
+                        "description": "Zarządzaj grupami Zigbee",
                         "group_details": "Oto wszystkie szczegóły dotyczące zaznaczonej grupy Zigbee.",
                         "group_id": "Identyfikator grupy",
                         "group_info": "Informacje o grupie",
@@ -2531,10 +2613,11 @@
                         "entity": "Encja",
                         "jinja_documentation": "Dokumentacja szablonów Jinja2",
                         "listeners": "Ten szablon nasłuchuje następujących zdarzeń zmiany stanu:",
-                        "no_listeners": "Ten szablon nie nasłuchuje żadnych zdarzeń zmiany stanu i nie zostanie zaktualizowany automatycznie.",
+                        "no_listeners": "Ten szablon nie nasłuchuje żadnych zdarzeń i nie zostanie zaktualizowany automatycznie.",
                         "reset": "Zresetuj do szablonu demonstracyjnego",
+                        "result_type": "Rodzaj wyniku",
                         "template_extensions": "Rozszerzenia szablonów Home Assistant",
-                        "time": "Ten szablon aktualizuje się co 60 sekund po ostatniej zmianie stanu.",
+                        "time": "Ten szablon aktualizuje się z rozpoczęciem każdej minuty.",
                         "title": "Szablon",
                         "unknown_error_template": "Nieznany błąd podczas renderowania szablonu"
                     }
@@ -2601,7 +2684,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Zaktualizowano konfigurację interfejsu Lovelace, czy wczytać ją ponownie?",
+                    "message": "Zaktualizowano konfigurację interfejsu Lovelace. Odświeżyć teraz?",
                     "refresh": "Wczytaj ponownie"
                 },
                 "editor": {
@@ -2633,7 +2716,7 @@
                         "calendar": {
                             "calendar_entities": "Encje kalendarza",
                             "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy",
-                            "inital_view": "Wstępny widok",
+                            "inital_view": "Widok początkowy",
                             "name": "Kalendarz",
                             "views": {
                                 "dayGridDay": "Dzień",
@@ -2677,6 +2760,7 @@
                                 "entity-id": "Identyfikator encji",
                                 "last-changed": "Ostatnia zmiana",
                                 "last-triggered": "Ostatnie uruchomienie",
+                                "last-updated": "Ostatnia aktualizacja",
                                 "none": "Brak dodatkowych informacji",
                                 "position": "Pozycja",
                                 "tilt-position": "Pochylenie"
@@ -2716,8 +2800,8 @@
                             "icon": "Ikona",
                             "icon_height": "Wysokość ikony",
                             "image": "Ścieżka obrazu",
-                            "manual": "Manualny edytor konfiguracji",
-                            "manual_description": "Chcesz dodać niestandardową kartę lub po prostu manualnie edytować konfiguracji?",
+                            "manual": "Edytor konfiguracji YAML",
+                            "manual_description": "Chcesz dodać niestandardową kartę lub po prostu edytować konfigurację YAML?",
                             "maximum": "Maksimum",
                             "minimum": "Minimum",
                             "name": "Nazwa",
@@ -2740,6 +2824,10 @@
                             "columns": "Kolumny",
                             "description": "Karta glance umożliwia grupowanie wielu sensorów w kompaktowym przeglądzie.",
                             "name": "Glance"
+                        },
+                        "grid": {
+                            "description": "Karta siatka umożliwia wyświetlanie wielu kart w siatce.",
+                            "name": "Siatka"
                         },
                         "history-graph": {
                             "description": "Karta wykres historii umożliwia wyświetlenie wykresu dla każdej z wymienionych encji.",
@@ -2833,11 +2921,18 @@
                         "entity": "Encja",
                         "no_description": "Brak dostępnego opisu."
                     },
+                    "common": {
+                        "add": "Dodaj",
+                        "clear": "Wyczyść",
+                        "edit": "Edytuj",
+                        "none": "Brak"
+                    },
                     "edit_badges": {
                         "panel_mode": "Te odznaki nie zostaną wyświetlone, ponieważ ten widok jest w \"Trybie panelu\"."
                     },
                     "edit_card": {
                         "add": "Dodaj kartę",
+                        "clear": "Wyczyść",
                         "confirm_cancel": "Czy na pewno chcesz anulować?",
                         "delete": "Usuń kartę",
                         "duplicate": "Duplikuj kartę",
@@ -2847,10 +2942,10 @@
                         "move_after": "Przesuń kartę za",
                         "move_before": "Przesuń kartę przed",
                         "options": "Więcej opcji",
-                        "pick_card": "Wybierz kartę, którą chcesz dodać.",
+                        "pick_card": "Którą kartę chcesz dodać?",
                         "pick_card_view_title": "Którą kartę chcesz dodać do widoku {name}?",
                         "search_cards": "Szukaj kart",
-                        "show_code_editor": "Edytor kodu",
+                        "show_code_editor": "Edytor YAML",
                         "show_visual_editor": "Edytor wizualny",
                         "toggle_editor": "Przełącz edytor",
                         "typed_header": "Konfiguracja karty {type}",
@@ -2878,14 +2973,30 @@
                         }
                     },
                     "header": "Edycja interfejsu użytkownika",
+                    "header-footer": {
+                        "choose_header_footer": "Wybierz {type}",
+                        "footer": "Stopka",
+                        "header": "Nagłówek",
+                        "types": {
+                            "buttons": {
+                                "name": "Przyciski"
+                            },
+                            "graph": {
+                                "name": "Wykres"
+                            },
+                            "picture": {
+                                "name": "Obraz"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Otwórz menu interfejsu użytkownika Lovelace",
-                        "raw_editor": "Manualny edytor konfiguracji"
+                        "raw_editor": "Edytor konfiguracji YAML"
                     },
                     "migrate": {
                         "header": "Konfiguracja niekompatybilna",
                         "migrate": "Migracja konfiguracji",
-                        "para_migrate": "Home Assistant może automatycznie dodać ID do wszystkich twoich kart i widoków, po kliknięciu przycisku \"Migracja konfiguracji\".",
+                        "para_migrate": "Home Assistant może automatycznie dodać identyfikatory do wszystkich twoich kart i widoków, po kliknięciu przycisku 'Migracja konfiguracji'.",
                         "para_no_id": "Ten element nie ma ID. Dodaj ID do tego elementu w \"ui-lovelace.yaml\"."
                     },
                     "move_card": {
@@ -2922,6 +3033,13 @@
                         "dashboard_label": "Dashboard",
                         "header": "Wybierz widok"
                     },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Edytor stopki",
+                            "header": "Edytor nagłówka",
+                            "row": "Edytor wiersza encji"
+                        }
+                    },
                     "suggest_card": {
                         "add": "Dodaj do interfejsu użytkownika Lovelace",
                         "create_own": "Wybierz inną kartę",
@@ -2941,11 +3059,12 @@
                     "exit_edit_mode": "Wyjdź z trybu edycji interfejsu użytkownika",
                     "help": "Pomoc",
                     "refresh": "Wczytaj ponownie",
-                    "reload_resources": "Wczytaj ponownie zasoby"
+                    "reload_resources": "Wczytaj ponownie zasoby",
+                    "start_conversation": "Rozpocznij rozmowę"
                 },
                 "reload_lovelace": "Wczytaj ponownie Lovelace",
                 "reload_resources": {
-                    "refresh_body": "Musisz odświeżyć stronę, aby zakończyć ponowne wczytywanie zasobów, czy chcesz teraz odświeżyć?",
+                    "refresh_body": "Musisz odświeżyć stronę, aby zakończyć ponowne wczytywanie zasobów. Odświeżyć teraz?",
                     "refresh_header": "Czy chcesz odświeżyć?"
                 },
                 "unused_entities": {
@@ -3186,6 +3305,10 @@
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
                 },
+                "enable_shortcuts": {
+                    "description": "Włącz lub wyłącz skróty klawiszowe do wykonywania różnych czynności w interfejsie użytkownika.",
+                    "header": "Skróty klawiszowe"
+                },
                 "force_narrow": {
                     "description": "Spowoduje to domyślne ukrycie paska bocznego, podobnie jak w przypadku urządzeń przenośnych.",
                     "header": "Zawsze ukrywaj pasek boczny"
@@ -3230,6 +3353,10 @@
                     "header": "Moduły uwierzytelniania wieloskładnikowego"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nazwa urządzenia",
+                        "title": "Jak powinno nazywać się to urządzenie?"
+                    },
                     "description": "Wysyłaj powiadomienia na to urządzenie.",
                     "error_load_platform": "Skonfiguruj notify.html5",
                     "error_use_https": "Wymagany protokół SSL dla interfejsu użytkownika",
@@ -3270,6 +3397,9 @@
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",
                     "header": "Wibracja"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Rozpocznij rozmowę"
             },
             "shopping-list": {
                 "add_item": "Dodaj element",

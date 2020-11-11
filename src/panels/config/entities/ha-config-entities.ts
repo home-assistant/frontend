@@ -46,7 +46,10 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
@@ -685,7 +688,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._selectedEntities = ev.detail.value;
   }
 
-  private _enableSelected() {
+  private async _enableSelected() {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_title",
@@ -695,15 +698,42 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_text"
       ),
-      confirmText: this.hass.localize("ui.common.yes"),
-      dismissText: this.hass.localize("ui.common.no"),
-      confirm: () => {
-        this._selectedEntities.forEach((entity) =>
-          updateEntityRegistryEntry(this.hass, entity, {
-            disabled_by: null,
+      confirmText: this.hass.localize("ui.common.enable"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirm: async () => {
+        let require_restart = false;
+        let reload_delay = 0;
+        await Promise.all(
+          this._selectedEntities.map(async (entity) => {
+            const result = await updateEntityRegistryEntry(this.hass, entity, {
+              disabled_by: null,
+            });
+            if (result.require_restart) {
+              require_restart = true;
+            }
+            if (result.reload_delay) {
+              reload_delay = Math.max(reload_delay, result.reload_delay);
+            }
           })
         );
         this._clearSelection();
+        // If restart is required by any entity, show a dialog.
+        // Otherwise, show a dialog explaining that some patience is needed
+        if (require_restart) {
+          showAlertDialog(this, {
+            text: this.hass.localize(
+              "ui.dialogs.entity_registry.editor.enabled_restart_confirm"
+            ),
+          });
+        } else if (reload_delay) {
+          showAlertDialog(this, {
+            text: this.hass.localize(
+              "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
+              "delay",
+              reload_delay
+            ),
+          });
+        }
       },
     });
   }
@@ -718,8 +748,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_text"
       ),
-      confirmText: this.hass.localize("ui.common.yes"),
-      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.disable"),
+      dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
@@ -758,8 +788,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               "selected",
               this._selectedEntities.length
             ),
-      confirmText: this.hass.localize("ui.common.yes"),
-      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.remove"),
+      dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
         removeableEntities.forEach((entity) =>
           removeEntityRegistryEntry(this.hass, entity)
