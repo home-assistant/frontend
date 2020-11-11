@@ -13,7 +13,7 @@ import { HomeAssistant } from "../types";
 
 @customElement("ha-icon-button-next")
 export class HaIconButtonNext extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -37,7 +37,7 @@ export class HaIconButtonNext extends LitElement {
     return html`
       <mwc-icon-button
         .disabled=${this.disabled}
-        .label=${this.label || this.hass.localize("ui.common.next")}
+        .label=${this.label || this.hass?.localize("ui.common.next") || "Next"}
       >
         <ha-svg-icon .path=${this._icon}></ha-svg-icon>
       </mwc-icon-button>
