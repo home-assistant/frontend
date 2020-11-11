@@ -12,7 +12,6 @@ import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/entity/ha-state-icon";
 import type { Cluster } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";

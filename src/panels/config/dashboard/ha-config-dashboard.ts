@@ -22,6 +22,8 @@ import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import { mdiCloudLock } from "@mdi/js";
 
+const CONF_HAPPENING = new Date() < new Date("2020-12-13T23:00:00Z");
+
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -58,13 +60,26 @@ class HaConfigDashboard extends LitElement {
                   {
                     component: "cloud",
                     path: "/config/cloud",
-                    translationKey: "ui.panel.config.cloud.caption",
+                    name: "Home Assistant Cloud",
                     info: this.cloudStatus,
                     iconPath: mdiCloudLock,
                   },
                 ]}
               ></ha-config-navigation>
             </ha-card>
+          `
+        : ""}
+      ${CONF_HAPPENING
+        ? html`
+            <ha-card class="conf-card"
+              ><a
+                target="_blank"
+                href="https://www.home-assistant.io/conference"
+                rel="noopener noreferrer"
+              >
+                <img src="/static/images/conference.png" />
+                <div class="carrot"><ha-icon-next></ha-icon-next></div></a
+            ></ha-card>
           `
         : ""}
       ${Object.values(configSections).map(
@@ -164,6 +179,22 @@ class HaConfigDashboard extends LitElement {
         ha-card a {
           text-decoration: none;
           color: var(--primary-text-color);
+        }
+        .conf-card {
+          position: relative;
+        }
+        .conf-card img {
+          display: block;
+          width: 100%;
+        }
+        .conf-card .carrot {
+          position: absolute;
+          top: 0;
+          right: 16px;
+          bottom: 0;
+          display: flex;
+          align-items: center;
+          color: white;
         }
         .promo-advanced {
           text-align: center;

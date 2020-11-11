@@ -18,6 +18,8 @@ import {
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import { UNAVAILABLE_STATES } from "./entity";
+import { supportsFeature } from "../common/entity/supports-feature";
 
 export const SUPPORT_PAUSE = 1;
 export const SUPPORT_SEEK = 2;
@@ -31,7 +33,7 @@ export const SUPPORT_PLAY_MEDIA = 512;
 export const SUPPORT_VOLUME_BUTTONS = 1024;
 export const SUPPORT_SELECT_SOURCE = 2048;
 export const SUPPORT_STOP = 4096;
-export const SUPPORTS_PLAY = 16384;
+export const SUPPORT_PLAY = 16384;
 export const SUPPORT_SELECT_SOUND_MODE = 65536;
 export const SUPPORT_BROWSE_MEDIA = 131072;
 export const CONTRAST_RATIO = 4.5;
@@ -166,6 +168,7 @@ export const computeMediaDescription = (stateObj: HassEntity): string => {
 
   switch (stateObj.attributes.media_content_type) {
     case "music":
+    case "image":
       secondaryTitle = stateObj.attributes.media_artist;
       break;
     case "playlist":
@@ -186,4 +189,86 @@ export const computeMediaDescription = (stateObj: HassEntity): string => {
   }
 
   return secondaryTitle;
+};
+
+export const computeMediaControls = (
+  stateObj: HassEntity
+): ControlButton[] | undefined => {
+  if (!stateObj) {
+    return undefined;
+  }
+
+  const state = stateObj.state;
+
+  if (UNAVAILABLE_STATES.includes(state)) {
+    return undefined;
+  }
+
+  if (state === "off") {
+    return supportsFeature(stateObj, SUPPORT_TURN_ON)
+      ? [
+          {
+            icon: "hass:power",
+            action: "turn_on",
+          },
+        ]
+      : undefined;
+  }
+
+  const buttons: ControlButton[] = [];
+
+  if (supportsFeature(stateObj, SUPPORT_TURN_OFF)) {
+    buttons.push({
+      icon: "hass:power",
+      action: "turn_off",
+    });
+  }
+
+  if (
+    (state === "playing" || state === "paused") &&
+    supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+  ) {
+    buttons.push({
+      icon: "hass:skip-previous",
+      action: "media_previous_track",
+    });
+  }
+
+  if (
+    (state === "playing" &&
+      (supportsFeature(stateObj, SUPPORT_PAUSE) ||
+        supportsFeature(stateObj, SUPPORT_STOP))) ||
+    ((state === "paused" || state === "idle") &&
+      supportsFeature(stateObj, SUPPORT_PLAY)) ||
+    (state === "on" &&
+      (supportsFeature(stateObj, SUPPORT_PLAY) ||
+        supportsFeature(stateObj, SUPPORT_PAUSE)))
+  ) {
+    buttons.push({
+      icon:
+        state === "on"
+          ? "hass:play-pause"
+          : state !== "playing"
+          ? "hass:play"
+          : supportsFeature(stateObj, SUPPORT_PAUSE)
+          ? "hass:pause"
+          : "hass:stop",
+      action:
+        state === "playing" && !supportsFeature(stateObj, SUPPORT_PAUSE)
+          ? "media_stop"
+          : "media_play_pause",
+    });
+  }
+
+  if (
+    (state === "playing" || state === "paused") &&
+    supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+  ) {
+    buttons.push({
+      icon: "hass:skip-next",
+      action: "media_next_track",
+    });
+  }
+
+  return buttons.length > 0 ? buttons : undefined;
 };

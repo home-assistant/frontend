@@ -43,6 +43,7 @@ export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
       }
     case "blind":
     case "curtain":
+    case "shade":
       switch (state) {
         case "opening":
           return "hass:arrow-up-box";

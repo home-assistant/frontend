@@ -391,7 +391,7 @@
             "humidifier": {
                 "humidity": "目標湿度",
                 "mode": "モード",
-                "on_entity": "{名前} オン",
+                "on_entity": "{name} オン",
                 "target_humidity_entity": "目標湿度"
             },
             "light": {
@@ -681,6 +681,11 @@
             },
             "service-picker": {
                 "service": "サービス"
+            },
+            "user-picker": {
+                "add_user": "ユーザーを追加",
+                "no_user": "ユーザーなし",
+                "remove_user": "ユーザーを削除する"
             }
         },
         "dialogs": {
@@ -779,6 +784,7 @@
                 "dismiss": "ダイアログを閉じる",
                 "edit": "エンティティを編集",
                 "history": "履歴",
+                "last_changed": "最終変更日",
                 "last_updated": "最終更新",
                 "person": {
                     "create_zone": "現在地からゾーンを作成"
@@ -786,7 +792,7 @@
                 "restored": {
                     "confirm_remove_text": "このエンティティを削除しますか?",
                     "confirm_remove_title": "エンティティを削除しますか?",
-                    "not_provided": "このエンティティは現在利用できず、削除、変更、または機能不全の統合または孤立したデバイスです。",
+                    "not_provided": "このエンティティは現在利用できず、削除、変更ができなく孤立したデバイスです。",
                     "remove_action": "エンティティの削除",
                     "remove_intro": "エンティティが使用されなくなった場合は、削除することでクリーンアップできます。"
                 },
@@ -869,6 +875,11 @@
                         "trend": "トレンドエンティティをリロードします",
                         "universal": "ユニバーサルメディアプレーヤーエンティティをリロードします",
                         "zone": "ゾーンの再読込"
+                    },
+                    "server_control": {
+                        "perform_action": "{action}サーバー",
+                        "restart": "再起動",
+                        "stop": "停止"
                     }
                 },
                 "filter_placeholder": "エンティティフィルター"
@@ -933,6 +944,7 @@
         },
         "notification_toast": {
             "connection_lost": "切断されました。再接続中...",
+            "dismiss": "退出",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
             "started": "ホームアシスタントが開始されました！",
             "starting": "Home Assistantが起動中です。終了するまですべてが利用できるわけではありません。",
@@ -1186,6 +1198,9 @@
                                     "trigger": "トリガー"
                                 },
                                 "event": {
+                                    "context_user_pick": "ユーザーを追加",
+                                    "context_user_picked": "ユーザー起動イベント",
+                                    "context_users": "トリガーされるイベントの制限",
                                     "event_data": "イベントのデータ",
                                     "event_type": "イベントの種類",
                                     "label": "イベント"
@@ -1975,6 +1990,7 @@
                     },
                     "services": {
                         "add_node": "ノードを追加",
+                        "cancel_command": "コマンドのキャンセル",
                         "remove_node": "ノードを削除"
                     }
                 },
@@ -2161,7 +2177,7 @@
                 },
                 "tags": {
                     "add_tag": "タグを追加する",
-                    "automation_title": "タグ {名前} がスキャンされます",
+                    "automation_title": "{name}タグのスキャン",
                     "caption": "タグ",
                     "create_automation": "タグを使用したオートメーションの作成",
                     "description": "タグの管理",
@@ -2519,6 +2535,7 @@
                         "listeners": "このテンプレートは、次の状態変更イベントをリッスンします。",
                         "no_listeners": "このテンプレートは、状態が変更されたイベントが聞こえないため、自動的に更新されません。",
                         "reset": "デモ テンプレートにリセット",
+                        "result_type": "結果の種類",
                         "template_extensions": "ホーム アシスタント テンプレートの拡張機能",
                         "time": "このテンプレートは、最後の状態変更イベントの後 60 秒ごとに更新されます。",
                         "title": "テンプレート",
@@ -2663,6 +2680,7 @@
                                 "entity-id": "エンティティ ID",
                                 "last-changed": "最終変更",
                                 "last-triggered": "最後にトリガーされた",
+                                "last-updated": "最終更新日",
                                 "none": "セカンダリ情報なし",
                                 "position": "ポジション",
                                 "tilt-position": "チルト位置"
@@ -2927,7 +2945,8 @@
                     "exit_edit_mode": "UI 編集モードを終了",
                     "help": "ヘルプ",
                     "refresh": "更新",
-                    "reload_resources": "リソースの再読込"
+                    "reload_resources": "リソースの再読込",
+                    "start_conversation": "会話を開始する"
                 },
                 "reload_lovelace": "Lovelace の再読込",
                 "reload_resources": {
@@ -3113,7 +3132,7 @@
                 "core-config": {
                     "button_detect": "検出",
                     "finish": "次",
-                    "intro": "こんにちは {名前}, ホーム アシスタントへようこそ.あなたの家に名前を付けますか?",
+                    "intro": "こんにちは {name}, ホーム アシスタントへようこそ.あなたの家に名前を付けますか?",
                     "intro_location": "どこに住んでいるか知りたいです。 この情報は、他の情報の表示および太陽の位置に関する自動化の設定に役立ちます。 これらの情報がインターネットで外部と共有されることがありません。",
                     "intro_location_detect": "外部サービスに対してワンタイムリクエストを行うことで、この情報を入力することができます。",
                     "location_name": "ホーム アシスタントの名前",
@@ -3172,6 +3191,9 @@
                     "dropdown_label": "ダッシュボード",
                     "header": "ダッシュボード"
                 },
+                "enable_shortcuts": {
+                    "header": "キーボード ショートカット"
+                },
                 "force_narrow": {
                     "description": "これにより、モバイルエクスペリエンスと同様に、サイドバーがデフォルトで非表示になります。",
                     "header": "サイドバーを常に非表示にする"
@@ -3216,6 +3238,10 @@
                     "header": "多要素認証モジュール"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "デバイス名",
+                        "title": "このデバイスは何を呼び出す必要がありますか?"
+                    },
                     "description": "このデバイスに通知を送信します。",
                     "error_load_platform": "notify.html5を設定",
                     "error_use_https": "Frontend で SSL を有効になっている必要があります。",

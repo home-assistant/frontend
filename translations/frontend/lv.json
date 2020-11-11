@@ -1468,6 +1468,7 @@
                         "name": "Vārds",
                         "password": "Parole",
                         "password_confirm": "Apstipriniet paroli",
+                        "password_not_match": "Paroles nesakrīt",
                         "username": "Lietotājvārds"
                     },
                     "caption": "Lietotāji",
@@ -1484,7 +1485,9 @@
                         "group": "Grupa",
                         "id": "ID",
                         "name": "Vārds",
+                        "new_password": "Jauna parole",
                         "owner": "Īpašnieks",
+                        "password_changed": "Parole tika veiksmīgi nomainīta",
                         "system_generated": "Sistēmas ģenerēts",
                         "system_generated_users_not_editable": "Sistēmas ģenerētos lietotājus nevar atjaunināt.",
                         "system_generated_users_not_removable": "Sistēmas ģenerētos lietotājus nevar dzēst.",

@@ -21,6 +21,18 @@ export const getDefaultPanel = (hass: HomeAssistant): PanelInfo =>
     ? hass.panels[hass.defaultPanel]
     : hass.panels[DEFAULT_PANEL];
 
+export const getPanelNameTranslationKey = (panel: PanelInfo): string => {
+  if (panel.url_path === "lovelace") {
+    return "panel.states";
+  }
+
+  if (panel.url_path === "profile") {
+    return "panel.profile";
+  }
+
+  return `panel.${panel.title}`;
+};
+
 export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
   if (!hass.panels) {
     return undefined;
@@ -34,13 +46,20 @@ export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
     return undefined;
   }
 
-  if (panel.url_path === "lovelace") {
-    return hass.localize("panel.states");
+  const translationKey = getPanelNameTranslationKey(panel);
+
+  return hass.localize(translationKey) || panel.title || undefined;
+};
+
+export const getPanelIcon = (panel: PanelInfo): string | null => {
+  if (!panel.icon) {
+    switch (panel.component_name) {
+      case "profile":
+        return "hass:account";
+      case "lovelace":
+        return "hass:view-dashboard";
+    }
   }
 
-  if (panel.url_path === "profile") {
-    return hass.localize("panel.profile");
-  }
-
-  return hass.localize(`panel.${panel.title}`) || panel.title || undefined;
+  return panel.icon;
 };

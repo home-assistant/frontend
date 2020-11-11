@@ -7,7 +7,6 @@ const gulp = require("gulp");
 const fs = require("fs");
 const foreach = require("gulp-foreach");
 const merge = require("gulp-merge-json");
-const minify = require("gulp-jsonminify");
 const rename = require("gulp-rename");
 const transform = require("gulp-json-transform");
 const { mapFiles } = require("../util");
@@ -301,7 +300,6 @@ gulp.task("build-flattened-translations", function () {
         return flatten(data);
       })
     )
-    .pipe(minify())
     .pipe(
       rename((filePath) => {
         if (filePath.dirname === "core") {

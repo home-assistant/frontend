@@ -129,6 +129,7 @@ class OZWNetworkDashboard extends LitElement {
                   <div class="card-actions">
                     ${this._generateServiceButton("add_node")}
                     ${this._generateServiceButton("remove_node")}
+                    ${this._generateServiceButton("cancel_command")}
                   </div>
                 </ha-card>
               `

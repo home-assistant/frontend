@@ -7,6 +7,7 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import { HA_COLOR_PALETTE } from "../../../common/const";
@@ -24,6 +25,7 @@ import type {
   HomeAssistant,
 } from "../../../types";
 import "../../calendar/ha-full-calendar";
+import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entites";
 import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-warning";
@@ -70,6 +72,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   @internalProperty() private _narrow = false;
 
   @internalProperty() private _veryNarrow = false;
+
+  @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
 
   private _startDate?: Date;
 
@@ -121,8 +125,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     const views: FullCalendarView[] = this._veryNarrow
-      ? ["listWeek"]
-      : ["listWeek", "dayGridMonth", "dayGridDay"];
+      ? ["list"]
+      : ["list", "dayGridMonth", "dayGridDay"];
 
     return html`
       <ha-card>
@@ -186,6 +190,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
     this._narrow = card.offsetWidth < 870;
     this._veryNarrow = card.offsetWidth < 350;
+
+    this._calendar?.updateSize();
   }
 
   private async _attachObserver(): Promise<void> {

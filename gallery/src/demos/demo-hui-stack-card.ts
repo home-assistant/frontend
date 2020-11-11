@@ -1,6 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { mockHistory } from "../../../demo/src/stubs/history";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -35,6 +36,10 @@ const ENTITIES = [
     gps_accuracy: 91,
     battery: 71,
     friendly_name: "Home Boy",
+  }),
+  getEntity("sensor", "illumination", "23", {
+    friendly_name: "Illumination",
+    unit_of_measurement: "lx",
   }),
 ];
 
@@ -89,6 +94,42 @@ const CONFIGS = [
       entity: light.bed_light
     `,
   },
+  {
+    heading: "Default Grid",
+    config: `
+- type: grid
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    - type: entity
+      entity: device_tracker.demo_paulus
+    - type: sensor
+      entity: sensor.illumination
+      graph: line
+    - type: entity
+      entity: device_tracker.demo_anne_therese
+    `,
+  },
+  {
+    heading: "Non-square Grid with 2 columns",
+    config: `
+- type: grid
+  columns: 2
+  square: false
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    - type: entity
+      entity: device_tracker.demo_paulus
+    - type: sensor
+      entity: sensor.illumination
+      graph: line
+    `,
+  },
 ];
 
 class DemoStack extends PolymerElement {
@@ -110,6 +151,7 @@ class DemoStack extends PolymerElement {
     const hass = provideHass(this.$.demos);
     hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
+    mockHistory(hass);
   }
 }
 

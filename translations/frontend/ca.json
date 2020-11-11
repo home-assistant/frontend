@@ -21,7 +21,7 @@
         "map": "Mapa",
         "media_browser": "Navegador multimèdia",
         "profile": "Perfil",
-        "shopping_list": "Llista de compres",
+        "shopping_list": "Llista de la compra",
         "states": "Visualització general"
     },
     "state_attributes": {
@@ -432,7 +432,7 @@
                 "turn_on": "Engega"
             },
             "persistent_notification": {
-                "dismiss": "Desestimar"
+                "dismiss": "Omet"
             },
             "scene": {
                 "activate": "Activar"
@@ -511,15 +511,23 @@
             "continue": "Continua",
             "copied": "Copiat",
             "delete": "Elimina",
+            "disable": "Desactiva",
+            "enable": "Activa",
             "error_required": "Obligatori",
+            "leave": "Surt",
             "loading": "Carregant",
             "menu": "Menú",
             "next": "Següent",
             "no": "No",
+            "not_now": "Ara no",
             "overflow_menu": "Menú desbordament",
             "previous": "Anterior",
             "refresh": "Actualitza",
+            "remove": "Elimina",
+            "rename": "Canvia el nom",
             "save": "Desa",
+            "skip": "Omet",
+            "stay": "Queda't",
             "successfully_deleted": "S'ha eliminat correctament",
             "successfully_saved": "S'ha desat correctament",
             "undo": "Desfés",
@@ -695,6 +703,11 @@
             },
             "service-picker": {
                 "service": "Servei"
+            },
+            "user-picker": {
+                "add_user": "Afegeix usuari",
+                "no_user": "Cap usuari",
+                "remove_user": "Elimina usuari"
             }
         },
         "dialogs": {
@@ -710,13 +723,15 @@
             },
             "entity_registry": {
                 "control": "Control",
-                "dismiss": "Desestimar",
+                "dismiss": "Omet",
                 "editor": {
                     "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
                     "delete": "Elimina",
                     "enabled_cause": "Desactivada per {cause}.",
+                    "enabled_delay_confirm": "Les entitats activades s'afegiran a Home Assistant d'aquí a {delay} segons",
                     "enabled_description": "Les entitats desactivades no s'afegiran a Home Assistant.",
                     "enabled_label": "Activa l'entitat",
+                    "enabled_restart_confirm": "Reinicia Home Assistant per acabar d'activar les entitats",
                     "entity_id": "ID de l'entitat",
                     "icon": "Icona",
                     "icon_error": "Els icones han de tenir el format 'prefix:nom_icona', per exemple: 'mdi:home'",
@@ -789,10 +804,16 @@
             },
             "more_info_control": {
                 "controls": "Controls",
+                "cover": {
+                    "close_tile_cover": "Inclinació de la coberta tancada",
+                    "open_tilt_cover": "Inclinació de la coberta oberta",
+                    "stop_cover": "Atura el moviment de la coberta"
+                },
                 "details": "Detalls",
-                "dismiss": "Desestimar el diàleg",
+                "dismiss": "Omet el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
+                "last_changed": "Darrer canvi",
                 "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
@@ -868,7 +889,7 @@
                         "input_select": "Actualitza entrades de selecció",
                         "input_text": "Actualitza entrades de text",
                         "min_max": "Actualitza entitats min/max",
-                        "mqtt": "Actualitza entitats MQTT",
+                        "mqtt": "Actualitza entitats MQTT configurades manualment",
                         "person": "Actualitza persones",
                         "ping": "Actualitza entitats de sensors binaris de ping",
                         "reload": "Actualitza {domain}",
@@ -883,6 +904,11 @@
                         "trend": "Actualitza entitats de tendència",
                         "universal": "Actualitza entitats del reproductor universal",
                         "zone": "Actualitza zones"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Servidor",
+                        "restart": "Reinicia",
+                        "stop": "Atura"
                     }
                 },
                 "filter_placeholder": "Filtre d'entitats"
@@ -941,12 +967,13 @@
         "notification_drawer": {
             "click_to_configure": "Prem el botó per configurar {entity}",
             "close": "Tanca",
-            "dismiss_all": "Descarta-ho tot",
+            "dismiss_all": "Omet tot",
             "empty": "No hi ha notificacions",
             "title": "Notificacions"
         },
         "notification_toast": {
             "connection_lost": "Connexió perduda. Tornant a connectar...",
+            "dismiss": "Omet",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "started": "Home Assistant s'ha iniciat!",
             "starting": "Home Assistant està iniciant-se, no estarà tot disponible fins que acabi",
@@ -1072,7 +1099,7 @@
                                     "wait_template": "Plantilla d'espera"
                                 }
                             },
-                            "unsupported_action": "Acció no suportada per la UI: {action}"
+                            "unsupported_action": "La UI no és compatible amb l'acció: {action}"
                         },
                         "alias": "Nom",
                         "conditions": {
@@ -1149,7 +1176,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condició no suportada per la UI: {condition}"
+                            "unsupported_condition": "La UI no és compatible amb la condició: {condition}"
                         },
                         "copy_to_clipboard": "Copia al porta-retalls",
                         "default_name": "Nova automatització",
@@ -1200,6 +1227,9 @@
                                     "trigger": "Disparador"
                                 },
                                 "event": {
+                                    "context_user_pick": "Selecciona usuari",
+                                    "context_user_picked": "Esdeveniment cridat per usuari",
+                                    "context_users": "Limita-ho als esdeveniments disparats per",
                                     "event_data": "Dades de l'esdeveniment",
                                     "event_type": "Tipus d'esdeveniment",
                                     "label": "Esdeveniment"
@@ -1275,7 +1305,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Plataforma no suportada per la UI: {platform}"
+                            "unsupported_platform": "La UI no és compatible amb la plataforma: {platform}"
                         },
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?"
                     },
@@ -1296,6 +1326,22 @@
                         "only_editable": "Només es poden editar les automatitzacions definides dins l'arxiu automations.yaml.",
                         "pick_automation": "Selecciona l'automatització a editar",
                         "show_info_automation": "Mostra informació sobre l'automatització"
+                    },
+                    "thingtalk": {
+                        "create": "Crea automatització",
+                        "link_devices": {
+                            "ambiguous_entities": "Un o més dispositius tenen més d'una entitat coincident. Escull la que vulguis utilitzar.",
+                            "header": "Genial! Ara hem d'enllaçar alguns dispositius",
+                            "unknown_placeholder": "Marcador desconegut"
+                        },
+                        "task_selection": {
+                            "error_empty": "Introdueix alguna ordre o prem a omet.",
+                            "error_unsupported": "No hem pogut crear una automatització per a això (encara?).",
+                            "for_example": "Per exemple:",
+                            "header": "Crea una nova automatització",
+                            "introduction": "Escriu a continuació el que hauria de fer l'automatització i intentarem convertir-ho en una automatització de Home Assistant.",
+                            "language_note": "Nota: ara per are només s'admet en anglès"
+                        }
                     }
                 },
                 "cloud": {
@@ -1426,7 +1472,7 @@
                     "login": {
                         "alert_email_confirm_necessary": "Has de confirmar el teu correu electrònic abans d'iniciar sessió.",
                         "alert_password_change_required": "Has de canviar la teva contrasenya abans d'iniciar sessió.",
-                        "dismiss": "Desestimar",
+                        "dismiss": "Omet",
                         "email": "Correu electrònic",
                         "email_error_msg": "Correu electrònic invàlid",
                         "forgot_password": "has oblidat la contrasenya?",
@@ -1595,12 +1641,12 @@
                         "disable_selected": {
                             "button": "Desactiva seleccionada/es",
                             "confirm_text": "Les entitats desactivades no s'afegiran a Home Assistant.",
-                            "confirm_title": "Vols desactivar {number} entitat/s?"
+                            "confirm_title": "Vols desactivar {number} {number, plural,\n  one {entitat}\n  other {entitats}\n}?"
                         },
                         "enable_selected": {
                             "button": "Activa seleccionada/es",
                             "confirm_text": "Això farà que tornin a estar disponibles a Home Assistant si estan desactivades.",
-                            "confirm_title": "Vols activar {number} entitat/s?"
+                            "confirm_title": "Vols activar {number} {number, plural,\n  one {entitat}\n  other {entitats}\n}?"
                         },
                         "filter": {
                             "filter": "Filtre",
@@ -1622,9 +1668,9 @@
                         "remove_selected": {
                             "button": "Elimina seleccionada/es",
                             "confirm_partly_text": "Només pots eliminar {removable} de les {selected} entitats seleccionades. Les entitats només es poden eliminar quan la integració ja no les està proporcionant.\nA vegades pot ser que hagis de reiniciar Home Assistant per poder eliminar les entitats d'una antiga integració eliminada. Segur que vols eliminar les entitats?",
-                            "confirm_partly_title": "Només es poden eliminar {number} entitats seleccionades.",
-                            "confirm_text": "Les hauries d'eliminar de la configuració Lovelace i de les automatitzacions si contenen aquestes entitats.",
-                            "confirm_title": "Vols eliminar {number} entitat/s?"
+                            "confirm_partly_title": "Només {number} {number, plural,\n  one {entitat seleccionada pot ser eliminada}\n  other {entitats seleccionades poden ser eliminades}\n}.",
+                            "confirm_text": "Hauries d'eliminar aquestes entitats de les configuracions de Lovelace i de les automatitzacions que les continguin.",
+                            "confirm_title": "Vols eliminar {number} {number, plural,\n  one {entitat}\n  other {entitats}\n}?"
                         },
                         "search": "Cerca entitats",
                         "selected": "{number} seleccionada/es",
@@ -1688,6 +1734,42 @@
                     "server": "servidor",
                     "source": "Font:",
                     "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa activada",
+                                "can_reach_cert_server": "Servidor de certificació accessible",
+                                "can_reach_cloud": "Home Assistant Cloud accessible",
+                                "can_reach_cloud_auth": "Servidor d'autenticació accessible",
+                                "google_enabled": "Google activat",
+                                "logged_in": "Sessió iniciada",
+                                "relayer_connected": "Encaminador connectat",
+                                "remote_connected": "Connexió remota establerta",
+                                "remote_enabled": "Connexió remota activada",
+                                "subscription_expiration": "Caducitat de la subscripció"
+                            },
+                            "homeassistant": {
+                                "arch": "Arquitectura de la CPU",
+                                "dev": "Desenvolupament",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Tipus d'instal·lació",
+                                "os_name": "Nom del sistema operatiu",
+                                "os_version": "Versió del sistema operatiu",
+                                "python_version": "Versió de Python",
+                                "timezone": "Zona horària",
+                                "version": "Versió",
+                                "virtualenv": "Entorn virtual"
+                            },
+                            "lovelace": {
+                                "dashboards": "Panells",
+                                "mode": "Mode",
+                                "resources": "Recursos"
+                            }
+                        },
+                        "manage": "Gestiona",
+                        "more_info": "més informació"
+                    },
                     "title": "Informació"
                 },
                 "integration_panel_move": {
@@ -1717,7 +1799,7 @@
                         "no_devices": "Aquesta integració no té dispositius.",
                         "options": "Opcions",
                         "reload": "Torna a carregar",
-                        "reload_confirm": "La integració s'ha tornar a carregar",
+                        "reload_confirm": "La integració s'ha tornat a carregar",
                         "reload_restart_confirm": "Reinicia Home Assistant per acabar de carregar aquesta integració",
                         "rename": "Canvia el nom",
                         "restart_confirm": "Reinicia Home Assistant per acabar d'eliminar aquesta integració",
@@ -1731,7 +1813,7 @@
                         "aborted": "Avortat",
                         "close": "Tanca",
                         "created_config": "S'ha creat configuració per a {name}.",
-                        "dismiss": "Desestima el diàleg",
+                        "dismiss": "Omet el diàleg",
                         "error_saving_area": "Error desant àrea: {error}",
                         "external_step": {
                             "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
@@ -1989,6 +2071,7 @@
                     },
                     "services": {
                         "add_node": "Afegeix node",
+                        "cancel_command": "Cancel·la ordre",
                         "remove_node": "Elimina node"
                     }
                 },
@@ -2103,7 +2186,7 @@
                         "sequence_sentence": "Seqüència d'accions de l'script."
                     },
                     "picker": {
-                        "add_script": "Crea un script nou",
+                        "add_script": "Afegeix script",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "headers": {
@@ -2140,7 +2223,7 @@
                             "input_text": "Actualitza entrades de text",
                             "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitat reiniciar-lo. Si prems actualitza s'esborrarà la configuració YAML actual i se'n carregarà la nova.",
                             "min_max": "Actualitza entitats min/max",
-                            "mqtt": "Actualitza entitats MQTT",
+                            "mqtt": "Actualitza entitats MQTT configurades manualment",
                             "person": "Actualitza persones",
                             "ping": "Actualitza entitats de sensors binaris de ping",
                             "reload": "Actualitza {domain}",
@@ -2177,6 +2260,8 @@
                     "add_tag": "Afegeix etiqueta",
                     "automation_title": "S'escanegi l'etiqueta {name}",
                     "caption": "Etiquetes",
+                    "confirm_remove": "Estàs segur que vols eliminar l'etiqueta {tag}?",
+                    "confirm_remove_title": "Elimina l'etiqueta?",
                     "create_automation": "Crea una automatització amb una etiqueta",
                     "description": "Gestiona les etiquetes",
                     "detail": {
@@ -2477,7 +2562,7 @@
                     "events": {
                         "alert_event_type": "El tipus d'esdeveniment és un camp obligatori",
                         "available_events": "Esdeveniments disponibles",
-                        "count_listeners": " ({count} oients)",
+                        "count_listeners": " ({count} oient/s)",
                         "data": "Dades de l'esdeveniment (en YAML, opcionals)",
                         "description": "Crida un esdeveniment al bus d'esdeveniments.",
                         "documentation": "Documentació d'esdeveniments.",
@@ -2531,10 +2616,11 @@
                         "entity": "Entitat",
                         "jinja_documentation": "Documentació sobre plantilles amb Jinja2",
                         "listeners": "Aquesta plantilla escolta als següents esdeveniments de canvi d'estat:",
-                        "no_listeners": "Aquesta plantilla no escolta cap esdeveniment de canvi d'estat i no s'actualitza automàticament.",
+                        "no_listeners": "Aquesta plantilla no escolta cap esdeveniment i no s'actualitzarà automàticament.",
                         "reset": "Restableix a la plantilla de demostració",
+                        "result_type": "Tipus de resultat",
                         "template_extensions": "Extensions de plantilla de Home Assistant",
-                        "time": "Aquesta plantilla s'actualitza cada 60 segons després de l'últim canvi d'estat.",
+                        "time": "Aquesta plantilla s'actualitza al començament de cada minut.",
                         "title": "Plantilla",
                         "unknown_error_template": "Error desconegut renderitzant plantilla"
                     }
@@ -2601,7 +2687,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "S'ha actualitzat la configuració de Lovelace, vols actualitzar la pàgina?",
+                    "message": "S'ha actualitzat la configuració de la UI Lovelace d'aquest panell. Vols actualitzar-lo per veure els canvis?",
                     "refresh": "Actualitza"
                 },
                 "editor": {
@@ -2677,6 +2763,7 @@
                                 "entity-id": "ID de l'entitat",
                                 "last-changed": "Últim canvi",
                                 "last-triggered": "Disparada per última vegada",
+                                "last-updated": "Última actualització",
                                 "none": "Sense informació secundària",
                                 "position": "Posició",
                                 "tilt-position": "Inclinació"
@@ -2734,12 +2821,16 @@
                             "theme": "Tema",
                             "title": "Títol",
                             "unit": "Unitat",
-                            "url": "Enllaç"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Columnes",
                             "description": "La targeta visualització és útil per agrupar diversos sensors de forma general i compacta.",
                             "name": "Visualització"
+                        },
+                        "grid": {
+                            "description": "La targeta quadrícula et permet mostrar diferents targetes dins d'una quadrícula.",
+                            "name": "Quadrícula"
                         },
                         "history-graph": {
                             "description": "La targeta gràfic històric et permet mostrar un gràfic per a cadascuna de les entitats establertes.",
@@ -2833,11 +2924,18 @@
                         "entity": "Entitat",
                         "no_description": "No hi ha cap descripció disponible."
                     },
+                    "common": {
+                        "add": "Afegeix",
+                        "clear": "Esborra",
+                        "edit": "Edita",
+                        "none": "Cap"
+                    },
                     "edit_badges": {
                         "panel_mode": "Aquestes insígnies no es mostraran ja que aquesta visualització està en \"mode panell\""
                     },
                     "edit_card": {
                         "add": "Afegir targeta",
+                        "clear": "Esborra",
                         "confirm_cancel": "Segur que vols cancel·lar?",
                         "delete": "Elimina targeta",
                         "duplicate": "Duplica targeta",
@@ -2878,6 +2976,22 @@
                         }
                     },
                     "header": "Editar la interfície d'usuari (UI)",
+                    "header-footer": {
+                        "choose_header_footer": "Tria un {type}",
+                        "footer": "Peu de pàgina",
+                        "header": "Capçalera",
+                        "types": {
+                            "buttons": {
+                                "name": "Botons"
+                            },
+                            "graph": {
+                                "name": "Gràfic"
+                            },
+                            "picture": {
+                                "name": "Imatge"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Obre el menú de Lovelace",
                         "raw_editor": "Editor de codi"
@@ -2922,6 +3036,13 @@
                         "dashboard_label": "Panell",
                         "header": "Trieu una vista"
                     },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Editor de peu de pàgina",
+                            "header": "Editor de capçalera",
+                            "row": "Editor de fila d'entitats"
+                        }
+                    },
                     "suggest_card": {
                         "add": "Afegeix a la UI Lovelace",
                         "create_own": "Escull una targeta diferent",
@@ -2941,7 +3062,8 @@
                     "exit_edit_mode": "Surt del mode d'edició d'interfície",
                     "help": "Ajuda",
                     "refresh": "Actualitzar",
-                    "reload_resources": "Actualitza recursos"
+                    "reload_resources": "Actualitza recursos",
+                    "start_conversation": "Inicia conversa"
                 },
                 "reload_lovelace": "Actualiza la interfície d'usuari",
                 "reload_resources": {
@@ -3186,6 +3308,10 @@
                     "dropdown_label": "Panell",
                     "header": "Panell"
                 },
+                "enable_shortcuts": {
+                    "description": "Activa o desactiva dreceres de teclat. Poden dur a terme diverses accions a la IU.",
+                    "header": "Dreceres de teclat"
+                },
                 "force_narrow": {
                     "description": "Això ocultarà la barra lateral de manera similar als mòbils i tablets.",
                     "header": "Amaga sempre la barra lateral"
@@ -3230,6 +3356,10 @@
                     "header": "Mòduls d'autenticació amb múltiples passos"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nom del dispositiu",
+                        "title": "Com vols anomenar aquest dispositiu?"
+                    },
                     "description": "Envia notificacions a aquest dispositiu.",
                     "error_load_platform": "Configurar notify.html5.",
                     "error_use_https": "Requereix tenir SSL habilitat per a la interfície (frontend).",
@@ -3270,6 +3400,9 @@
                     "description": "Activa o desactiva la vibració en d'aquest dispositiu.",
                     "header": "Vibra"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Inicia conversa"
             },
             "shopping-list": {
                 "add_item": "Afegir article",

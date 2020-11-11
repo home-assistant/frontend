@@ -58,8 +58,18 @@ export interface DataEntryFlowStepAbort {
   description_placeholders: { [key: string]: string };
 }
 
+export interface DataEntryFlowStepProgress {
+  type: "progress";
+  flow_id: string;
+  handler: string;
+  step_id: string;
+  progress_action: string;
+  description_placeholders: { [key: string]: string };
+}
+
 export type DataEntryFlowStep =
   | DataEntryFlowStepForm
   | DataEntryFlowStepExternal
   | DataEntryFlowStepCreateEntry
-  | DataEntryFlowStepAbort;
+  | DataEntryFlowStepAbort
+  | DataEntryFlowStepProgress;

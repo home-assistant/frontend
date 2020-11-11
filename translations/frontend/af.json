@@ -784,6 +784,7 @@
                             "type_select": "Sneller tipe",
                             "type": {
                                 "event": {
+                                    "context_user_pick": "Voeg gebruiker toe",
                                     "event_data": "Gebeurtenis data",
                                     "event_type": "Gebeurtenis tipe",
                                     "label": "Gebeurtenis"
@@ -1545,7 +1546,8 @@
                     "configure_ui": "Stel gebruikerskoppelvlak op",
                     "exit_edit_mode": "Verlaat UI-wysigingsmodus",
                     "help": "Help",
-                    "refresh": "Verfris"
+                    "refresh": "Verfris",
+                    "start_conversation": "Begin gesprek"
                 },
                 "reload_lovelace": "Herlaai Lovelace",
                 "unused_entities": {
