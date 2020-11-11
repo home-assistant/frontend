@@ -502,6 +502,7 @@
           },
           "navigation": {
             "navigate_to": "Navigate to {panel}",
+            "navigate_to_config": "Navigate to {panel} configuration",
             "logs": "[%key:ui::panel::config::logs::caption%]",
             "automation": "[%key:ui::panel::config::automation::caption%]",
             "script": "[%key:ui::panel::config::script::caption%]",

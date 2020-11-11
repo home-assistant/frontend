@@ -214,9 +214,7 @@ export class QuickBar extends LitElement {
               slot="graphic"
             ></ha-svg-icon>`
           : html`<ha-icon .icon=${item.icon} slot="graphic"></ha-icon>`}
-
-        <span class="item-text">${item.text}</span>
-
+        ${item.text}
         ${item.altText
           ? html`
               <span slot="secondary" class="item-text secondary"
@@ -387,7 +385,7 @@ export class QuickBar extends LitElement {
       const text = this.hass.localize(
         "ui.dialogs.quick-bar.commands.navigation.navigate_to",
         "panel",
-        this.hass.localize(translationKey)
+        this.hass.localize(translationKey) || panel.title
       );
 
       return {
@@ -430,7 +428,7 @@ export class QuickBar extends LitElement {
 
       if (page.translationKey) {
         const caption = this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+          "ui.dialogs.quick-bar.commands.navigation.navigate_to_config",
           "panel",
           shortCaption
         );
@@ -506,7 +504,7 @@ export class QuickBar extends LitElement {
 
         ha-icon,
         ha-svg-icon {
-          margin-left: 8px;
+          margin-left: 20px;
         }
 
         ha-svg-icon.prefix {
@@ -529,10 +527,6 @@ export class QuickBar extends LitElement {
         mwc-list-item {
           width: 100%;
           text-transform: capitalize;
-        }
-
-        .item-text {
-          margin-left: 16px;
         }
       `,
     ];
