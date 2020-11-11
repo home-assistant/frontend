@@ -281,7 +281,7 @@ class OZWNodeConfig extends LitElement {
   }
 
   private _configValueChanged(ev: CustomEvent) {
-    this._configData[(<OzwConfigFormButton>ev.currentTarget)!.parameter] =
+    this._configData[(<OzwHaForm>ev.currentTarget)!.parameter] =
       ev.detail.value[Object.keys(ev.detail.value)[0]];
   }
 
@@ -300,8 +300,6 @@ class OZWNodeConfig extends LitElement {
     } catch (e) {
       console.log("error", e);
     }
-
-    console.log(parameter, value);
   }
 
   private async _refreshNodeClicked() {
