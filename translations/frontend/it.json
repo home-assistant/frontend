@@ -511,16 +511,23 @@
             "continue": "Continua",
             "copied": "Copiato",
             "delete": "Elimina",
+            "disable": "Disattivare",
+            "enable": "Attivare",
             "error_required": "Necessario",
+            "leave": "Partire",
             "loading": "Caricamento",
             "menu": "Menù",
             "next": "Avanti",
             "no": "No",
+            "not_now": "Non ora",
             "overflow_menu": "Menù di Overflow",
             "previous": "Indietro",
             "refresh": "Aggiorna",
+            "remove": "Rimuovere",
+            "rename": "Rinomina",
             "save": "Salva",
             "skip": "Salta",
+            "stay": "Rimanere",
             "successfully_deleted": "Cancellato con successo",
             "successfully_saved": "Salvataggio riuscito",
             "undo": "Annulla",
@@ -581,7 +588,7 @@
                     "cleared_device_class": "sgombro (nessun {device_class} rilevato)",
                     "detected_device_class": "rilevato {device_class}",
                     "rose": "sorto",
-                    "set": "impostato",
+                    "set": "tramontato",
                     "turned_off": "spento",
                     "turned_on": "acceso",
                     "was_at_home": "era a casa",
@@ -624,7 +631,7 @@
                     "season": "Stagione",
                     "track": "Traccia dispositivo",
                     "tv_show": "Programma televisivo",
-                    "url": "Url",
+                    "url": "URL",
                     "video": "Video"
                 },
                 "content-type": {
@@ -721,8 +728,10 @@
                     "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
                     "delete": "Elimina",
                     "enabled_cause": "Disabilitato da {cause}.",
+                    "enabled_delay_confirm": "Le entità abilitate saranno aggiunte a Home Assistant in {delay} secondi",
                     "enabled_description": "Le entità disabilitate non saranno aggiunte a Home Assistant",
                     "enabled_label": "Abilita entità",
+                    "enabled_restart_confirm": "Riavviare Home Assistant per completare l'abilitazione delle entità",
                     "entity_id": "ID entità",
                     "icon": "Icona",
                     "icon_error": "Le icone dovrebbero essere nel formato 'prefisso:nome_icona', ad esempio 'mdi:home'.",
@@ -795,6 +804,11 @@
             },
             "more_info_control": {
                 "controls": "Controlli",
+                "cover": {
+                    "close_tile_cover": "Chiudere l'inclinazione della copertura",
+                    "open_tilt_cover": "Aprire l'inclinazione della copertura",
+                    "stop_cover": "Fermare il movimento della copertura"
+                },
                 "details": "Dettagli",
                 "dismiss": "Chiudi finestra di dialogo",
                 "edit": "Modifica entità",
@@ -1627,12 +1641,12 @@
                         "disable_selected": {
                             "button": "Disabilita selezionato",
                             "confirm_text": "Le entità disabilitate non verranno aggiunte a Home Assistant",
-                            "confirm_title": "Vuoi disabilitare {number} entità?"
+                            "confirm_title": "Vuoi disattivare {number} {number, plural,\n  one {entità}\n  other {entità}\n}?"
                         },
                         "enable_selected": {
                             "button": "Abilita selezionato",
                             "confirm_text": "Questo li renderà nuovamente disponibili in Home Assistant se ora sono disabilitati.",
-                            "confirm_title": "Vuoi abilitare {number} entità?"
+                            "confirm_title": "Vuoi attivare {number} {number, plural,\n  one {entità}\n  other {entità}\n}?"
                         },
                         "filter": {
                             "filter": "Filtro",
@@ -1654,9 +1668,9 @@
                         "remove_selected": {
                             "button": "Rimuovi selezionati",
                             "confirm_partly_text": "Puoi rimuovere solo {removable} delle {selected} entità selezionate. Le entità possono essere rimosse solo quando l'integrazione non le fornisce più. A volte è necessario riavviare Home Assistant prima di poter rimuovere le entità di un'integrazione rimossa. Sei sicuro di voler rimuovere le entità rimovibili?",
-                            "confirm_partly_title": "Solo {number} entità selezionate possono essere rimosse.",
+                            "confirm_partly_title": "Soltanto {number} {number, plural,\n  one {entità selezionata può}\n  other {entità selezionate possono}\n} essere rimossa/e.",
                             "confirm_text": "Dovresti rimuoverli dalla configurazione di Lovelace e dalle automazioni se contengono queste entità.",
-                            "confirm_title": "Vuoi rimuovere {number} entità?"
+                            "confirm_title": "Vuoi rimuovere {number} {number, plural,\n  one {entità}\n  other {entità}\n}?"
                         },
                         "search": "Cerca entità",
                         "selected": "{number} selezionato",
@@ -1720,6 +1734,42 @@
                     "server": "server",
                     "source": "Sorgenti:",
                     "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa abilitato",
+                                "can_reach_cert_server": "Raggiungi il server dei certificati",
+                                "can_reach_cloud": "Raggiungi Home Assistant Cloud",
+                                "can_reach_cloud_auth": "Raggiungi il server di autenticazione",
+                                "google_enabled": "Google abilitato",
+                                "logged_in": "Accesso effettuato",
+                                "relayer_connected": "Relayer connesso",
+                                "remote_connected": "Connesso in remoto",
+                                "remote_enabled": "Remoto abilitato",
+                                "subscription_expiration": "Scadenza abbonamento"
+                            },
+                            "homeassistant": {
+                                "arch": "Architettura della CPU",
+                                "dev": "Sviluppo",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Tipo di installazione",
+                                "os_name": "Nome del Sistema Operativo",
+                                "os_version": "Versione del Sistema Operativo",
+                                "python_version": "Versione Python",
+                                "timezone": "Fuso orario",
+                                "version": "Versione",
+                                "virtualenv": "Ambiente virtuale"
+                            },
+                            "lovelace": {
+                                "dashboards": "Plance",
+                                "mode": "Modalità",
+                                "resources": "Risorse"
+                            }
+                        },
+                        "manage": "Gestire",
+                        "more_info": "maggiori informazioni"
+                    },
                     "title": "Informazioni"
                 },
                 "integration_panel_move": {
@@ -1845,7 +1895,7 @@
                             "title": "Titolo",
                             "title_required": "È richiesto il titolo.",
                             "update": "Aggiorna",
-                            "url": "Url",
+                            "url": "URL",
                             "url_error_msg": "L'URL dovrebbe contenere un - e non può contenere spazi o caratteri speciali, ad eccezione di _ e -"
                         },
                         "picker": {
@@ -1873,8 +1923,8 @@
                             "new_resource": "Aggiungi nuova risorsa",
                             "type": "Tipo di risorsa",
                             "update": "Aggiorna",
-                            "url": "Url",
-                            "url_error_msg": "Url è un campo obbligatorio",
+                            "url": "URL",
+                            "url_error_msg": "URL è un campo obbligatorio",
                             "warning_header": "Siate cauti!",
                             "warning_text": "L'aggiunta di risorse può essere pericolosa, assicurarsi di conoscere l'origine della risorsa e considerarle attendibili. Le risorse sbagliate potrebbero danneggiare seriamente il sistema."
                         },
@@ -1882,11 +1932,11 @@
                             "add_resource": "Aggiungi risorsa",
                             "headers": {
                                 "type": "Tipo",
-                                "url": "Url"
+                                "url": "URL"
                             },
                             "no_resources": "Nessuna risorsa"
                         },
-                        "refresh_body": "Devi aggiornare la pagina per completare la rimozione, vuoi aggiornare ora?",
+                        "refresh_body": "È necessario aggiornare la pagina per completare la rimozione. Vuoi aggiornare ora?",
                         "refresh_header": "Vuoi aggiornare?",
                         "types": {
                             "css": "Foglio di stile",
@@ -2136,7 +2186,7 @@
                         "sequence_sentence": "Sequenza di azioni di questo script."
                     },
                     "picker": {
-                        "add_script": "Crea nuovo script",
+                        "add_script": "Aggiungi script",
                         "edit_script": "Modifica script",
                         "header": "Editor script",
                         "headers": {
@@ -2210,6 +2260,8 @@
                     "add_tag": "Aggiungi Etichetta",
                     "automation_title": "L'etichetta {name} è scansionata",
                     "caption": "Etichette",
+                    "confirm_remove": "Sei sicuro di voler rimuovere il tag {tag}?",
+                    "confirm_remove_title": "Rimuovere il tag?",
                     "create_automation": "Creare un'automazione con l'etichetta",
                     "description": "Gestisci le etichette",
                     "detail": {
@@ -2647,11 +2699,11 @@
                             "navigate": "Vai a",
                             "none": "Nessuna Azione",
                             "toggle": "Commuta",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "editor_service_data": "I dati di servizio possono essere inseriti solo nell'editor del codice",
                         "navigation_path": "Percorso di navigazione",
-                        "url_path": "Percorso Url"
+                        "url_path": "Percorso URL"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2769,7 +2821,7 @@
                             "theme": "Tema",
                             "title": "Titolo",
                             "unit": "Unità",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Colonne",
@@ -2872,11 +2924,18 @@
                         "entity": "Entità",
                         "no_description": "Nessuna descrizione disponibile."
                     },
+                    "common": {
+                        "add": "Aggiungi",
+                        "clear": "Cancella",
+                        "edit": "Modifica",
+                        "none": "Nessuno"
+                    },
                     "edit_badges": {
                         "panel_mode": "Questi badge non verranno visualizzati perché questa vista è in \"Modalità pannello\"."
                     },
                     "edit_card": {
                         "add": "Aggiungi scheda",
+                        "clear": "Cancella",
                         "confirm_cancel": "Sei sicuro di voler annullare?",
                         "delete": "Elimina scheda",
                         "duplicate": "Duplica scheda",
@@ -2917,6 +2976,22 @@
                         }
                     },
                     "header": "Modifica dell'interfaccia utente",
+                    "header-footer": {
+                        "choose_header_footer": "Scegli un {type}",
+                        "footer": "Piè di pagina",
+                        "header": "Intestazione",
+                        "types": {
+                            "buttons": {
+                                "name": "Pulsanti"
+                            },
+                            "graph": {
+                                "name": "Grafico"
+                            },
+                            "picture": {
+                                "name": "Immagine"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Apri il menu dell'interfaccia utente di Lovelace",
                         "raw_editor": "Editor di Configurazione testuale"
@@ -2960,6 +3035,13 @@
                     "select_view": {
                         "dashboard_label": "Plancia",
                         "header": "Scegliere una visualizzazione"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Editor piè di pagina",
+                            "header": "Editor intestazione",
+                            "row": "Editor di riga dell'entità"
+                        }
                     },
                     "suggest_card": {
                         "add": "Aggiungi all'interfaccia utente di Lovelace",

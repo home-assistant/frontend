@@ -1664,6 +1664,20 @@
                     "server": "servidor",
                     "source": "Fonte:",
                     "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Ativo pela Alexa",
+                                "google_enabled": "Ativo pelo Google",
+                                "logged_in": "Ligado em"
+                            },
+                            "lovelace": {
+                                "dashboards": "Dashboards",
+                                "mode": "Modo",
+                                "resources": "Recursos"
+                            }
+                        }
+                    },
                     "title": "Informações"
                 },
                 "integration_panel_move": {
@@ -2791,8 +2805,15 @@
                         "entity": "Entidade",
                         "no_description": "Não há descrição disponível."
                     },
+                    "common": {
+                        "add": "Adicionar",
+                        "clear": "Limpar",
+                        "edit": "Editar",
+                        "none": "Nenhum"
+                    },
                     "edit_card": {
                         "add": "Adicionar Cartão",
+                        "clear": "Limpar",
                         "confirm_cancel": "Tem certeza que deseja terminar a sessão?",
                         "delete": "Apagar Cartão",
                         "duplicate": "Duplicar cartão",
@@ -2833,6 +2854,22 @@
                         }
                     },
                     "header": "Editar UI",
+                    "header-footer": {
+                        "choose_header_footer": "Escolhe um {type}",
+                        "footer": "Rodapé",
+                        "header": "Cabeçalho",
+                        "types": {
+                            "buttons": {
+                                "name": "Botões"
+                            },
+                            "graph": {
+                                "name": "Gráfico"
+                            },
+                            "picture": {
+                                "name": "Imagem"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Abrir menu Lovelace IU",
                         "raw_editor": "Editor de configuração do código-fonte"
@@ -2876,6 +2913,13 @@
                     "select_view": {
                         "dashboard_label": "Painel de instrumentos",
                         "header": "Escolha uma vista"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Editor de Rodapé",
+                            "header": "Editor de Cabeçalho",
+                            "row": "Editor de Linha de Entidade"
+                        }
                     },
                     "suggest_card": {
                         "add": "Adicionar à Lovelace UI",

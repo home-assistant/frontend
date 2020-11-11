@@ -511,16 +511,23 @@
             "continue": "Continua",
             "copied": "Copiat",
             "delete": "Elimina",
+            "disable": "Desactiva",
+            "enable": "Activa",
             "error_required": "Obligatori",
+            "leave": "Surt",
             "loading": "Carregant",
             "menu": "Menú",
             "next": "Següent",
             "no": "No",
+            "not_now": "Ara no",
             "overflow_menu": "Menú desbordament",
             "previous": "Anterior",
             "refresh": "Actualitza",
+            "remove": "Elimina",
+            "rename": "Canvia el nom",
             "save": "Desa",
             "skip": "Omet",
+            "stay": "Queda't",
             "successfully_deleted": "S'ha eliminat correctament",
             "successfully_saved": "S'ha desat correctament",
             "undo": "Desfés",
@@ -721,8 +728,10 @@
                     "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
                     "delete": "Elimina",
                     "enabled_cause": "Desactivada per {cause}.",
+                    "enabled_delay_confirm": "Les entitats activades s'afegiran a Home Assistant d'aquí a {delay} segons",
                     "enabled_description": "Les entitats desactivades no s'afegiran a Home Assistant.",
                     "enabled_label": "Activa l'entitat",
+                    "enabled_restart_confirm": "Reinicia Home Assistant per acabar d'activar les entitats",
                     "entity_id": "ID de l'entitat",
                     "icon": "Icona",
                     "icon_error": "Els icones han de tenir el format 'prefix:nom_icona', per exemple: 'mdi:home'",
@@ -795,6 +804,11 @@
             },
             "more_info_control": {
                 "controls": "Controls",
+                "cover": {
+                    "close_tile_cover": "Inclinació de la coberta tancada",
+                    "open_tilt_cover": "Inclinació de la coberta oberta",
+                    "stop_cover": "Atura el moviment de la coberta"
+                },
                 "details": "Detalls",
                 "dismiss": "Omet el diàleg",
                 "edit": "Edita entitat",
@@ -1627,12 +1641,12 @@
                         "disable_selected": {
                             "button": "Desactiva seleccionada/es",
                             "confirm_text": "Les entitats desactivades no s'afegiran a Home Assistant.",
-                            "confirm_title": "Vols desactivar {number} entitat/s?"
+                            "confirm_title": "Vols desactivar {number} {number, plural,\n  one {entitat}\n  other {entitats}\n}?"
                         },
                         "enable_selected": {
                             "button": "Activa seleccionada/es",
                             "confirm_text": "Això farà que tornin a estar disponibles a Home Assistant si estan desactivades.",
-                            "confirm_title": "Vols activar {number} entitat/s?"
+                            "confirm_title": "Vols activar {number} {number, plural,\n  one {entitat}\n  other {entitats}\n}?"
                         },
                         "filter": {
                             "filter": "Filtre",
@@ -1654,9 +1668,9 @@
                         "remove_selected": {
                             "button": "Elimina seleccionada/es",
                             "confirm_partly_text": "Només pots eliminar {removable} de les {selected} entitats seleccionades. Les entitats només es poden eliminar quan la integració ja no les està proporcionant.\nA vegades pot ser que hagis de reiniciar Home Assistant per poder eliminar les entitats d'una antiga integració eliminada. Segur que vols eliminar les entitats?",
-                            "confirm_partly_title": "Només es poden eliminar {number} entitats seleccionades.",
+                            "confirm_partly_title": "Només {number} {number, plural,\n  one {entitat seleccionada pot ser eliminada}\n  other {entitats seleccionades poden ser eliminades}\n}.",
                             "confirm_text": "Hauries d'eliminar aquestes entitats de les configuracions de Lovelace i de les automatitzacions que les continguin.",
-                            "confirm_title": "Vols eliminar {number} entitat/s?"
+                            "confirm_title": "Vols eliminar {number} {number, plural,\n  one {entitat}\n  other {entitats}\n}?"
                         },
                         "search": "Cerca entitats",
                         "selected": "{number} seleccionada/es",
@@ -1720,6 +1734,42 @@
                     "server": "servidor",
                     "source": "Font:",
                     "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa activada",
+                                "can_reach_cert_server": "Servidor de certificació accessible",
+                                "can_reach_cloud": "Home Assistant Cloud accessible",
+                                "can_reach_cloud_auth": "Servidor d'autenticació accessible",
+                                "google_enabled": "Google activat",
+                                "logged_in": "Sessió iniciada",
+                                "relayer_connected": "Encaminador connectat",
+                                "remote_connected": "Connexió remota establerta",
+                                "remote_enabled": "Connexió remota activada",
+                                "subscription_expiration": "Caducitat de la subscripció"
+                            },
+                            "homeassistant": {
+                                "arch": "Arquitectura de la CPU",
+                                "dev": "Desenvolupament",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Tipus d'instal·lació",
+                                "os_name": "Nom del sistema operatiu",
+                                "os_version": "Versió del sistema operatiu",
+                                "python_version": "Versió de Python",
+                                "timezone": "Zona horària",
+                                "version": "Versió",
+                                "virtualenv": "Entorn virtual"
+                            },
+                            "lovelace": {
+                                "dashboards": "Panells",
+                                "mode": "Mode",
+                                "resources": "Recursos"
+                            }
+                        },
+                        "manage": "Gestiona",
+                        "more_info": "més informació"
+                    },
                     "title": "Informació"
                 },
                 "integration_panel_move": {
@@ -2210,6 +2260,8 @@
                     "add_tag": "Afegeix etiqueta",
                     "automation_title": "S'escanegi l'etiqueta {name}",
                     "caption": "Etiquetes",
+                    "confirm_remove": "Estàs segur que vols eliminar l'etiqueta {tag}?",
+                    "confirm_remove_title": "Elimina l'etiqueta?",
                     "create_automation": "Crea una automatització amb una etiqueta",
                     "description": "Gestiona les etiquetes",
                     "detail": {
@@ -2635,7 +2687,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "S'ha actualitzat la configuració de Lovelace, vols actualitzar la pàgina?",
+                    "message": "S'ha actualitzat la configuració de la UI Lovelace d'aquest panell. Vols actualitzar-lo per veure els canvis?",
                     "refresh": "Actualitza"
                 },
                 "editor": {
@@ -2769,7 +2821,7 @@
                             "theme": "Tema",
                             "title": "Títol",
                             "unit": "Unitat",
-                            "url": "Enllaç"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Columnes",
@@ -2872,11 +2924,18 @@
                         "entity": "Entitat",
                         "no_description": "No hi ha cap descripció disponible."
                     },
+                    "common": {
+                        "add": "Afegeix",
+                        "clear": "Esborra",
+                        "edit": "Edita",
+                        "none": "Cap"
+                    },
                     "edit_badges": {
                         "panel_mode": "Aquestes insígnies no es mostraran ja que aquesta visualització està en \"mode panell\""
                     },
                     "edit_card": {
                         "add": "Afegir targeta",
+                        "clear": "Esborra",
                         "confirm_cancel": "Segur que vols cancel·lar?",
                         "delete": "Elimina targeta",
                         "duplicate": "Duplica targeta",
@@ -2917,6 +2976,22 @@
                         }
                     },
                     "header": "Editar la interfície d'usuari (UI)",
+                    "header-footer": {
+                        "choose_header_footer": "Tria un {type}",
+                        "footer": "Peu de pàgina",
+                        "header": "Capçalera",
+                        "types": {
+                            "buttons": {
+                                "name": "Botons"
+                            },
+                            "graph": {
+                                "name": "Gràfic"
+                            },
+                            "picture": {
+                                "name": "Imatge"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Obre el menú de Lovelace",
                         "raw_editor": "Editor de codi"
@@ -2960,6 +3035,13 @@
                     "select_view": {
                         "dashboard_label": "Panell",
                         "header": "Trieu una vista"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Editor de peu de pàgina",
+                            "header": "Editor de capçalera",
+                            "row": "Editor de fila d'entitats"
+                        }
                     },
                     "suggest_card": {
                         "add": "Afegeix a la UI Lovelace",

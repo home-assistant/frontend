@@ -511,16 +511,23 @@
             "continue": "Nadaljuj",
             "copied": "Kopirano",
             "delete": "Izbriši",
+            "disable": "Onemogoči",
+            "enable": "Omogoči",
             "error_required": "Zahtevano",
+            "leave": "Odidi",
             "loading": "Nalaganje",
             "menu": "Meni",
             "next": "Naslednji",
             "no": "Ne",
+            "not_now": "Ne zdaj",
             "overflow_menu": "Prelivni meni",
             "previous": "Prejšnji",
             "refresh": "Osveži",
+            "remove": "Odstraniti",
+            "rename": "Preimenuj",
             "save": "Shrani",
             "skip": "Preskoči",
+            "stay": "Ostani",
             "successfully_deleted": "Uspešno odstranjeno",
             "successfully_saved": "Shranjeno",
             "undo": "Razveljavi",
@@ -721,8 +728,10 @@
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati ta vnos?",
                     "delete": "Izbriši",
                     "enabled_cause": "Onemogočeno zaradi {cause}.",
+                    "enabled_delay_confirm": "Omogočene entitete bodo v Home Assistant dodane v {delay} sekundah",
                     "enabled_description": "Onemogočene entitete ne bodo dodane v Home Assistant.",
                     "enabled_label": "Omogoči entiteto",
+                    "enabled_restart_confirm": "Znova zaženi Home Assistant, da dokončaš omogočanje entitet",
                     "entity_id": "ID entitete",
                     "icon": "Ikona",
                     "icon_error": "Ikone morajo biti v obliki 'prefix:iconname', npr. 'mid:home'",
@@ -795,6 +804,11 @@
             },
             "more_info_control": {
                 "controls": "Kontrolniki",
+                "cover": {
+                    "close_tile_cover": "Zapri nagib pokrova",
+                    "open_tilt_cover": "Odpri nagib pokrova",
+                    "stop_cover": "Zaustavite premikanje pokrova"
+                },
                 "details": "Podrobnosti",
                 "dismiss": "Opusti pogovorno okno",
                 "edit": "Uredi entiteto",
@@ -1315,10 +1329,18 @@
                     },
                     "thingtalk": {
                         "create": "Ustvari avtomatizacijo",
+                        "link_devices": {
+                            "ambiguous_entities": "Ena ali več naprav ima več entitet, ki se ujemajo, izberite napravo, ki jo želite uporabiti.",
+                            "header": "Krasno! Zdaj moramo povezati nekaj naprav",
+                            "unknown_placeholder": "Neznano rezervirano mesto"
+                        },
                         "task_selection": {
                             "error_empty": "Vnesite ukaz ali tapnite preskoči.",
+                            "error_unsupported": "Za to (še?) nismo mogli ustvariti avtomatizacije.",
                             "for_example": "Na primer:",
-                            "header": "Ustvari novo avtomatizacijo"
+                            "header": "Ustvari novo avtomatizacijo",
+                            "introduction": "Spodaj vnesite, kaj naj naredi ta avtomatizacija, mi pa jo bomo poskušali pretvoriti v avtomatizacijo Home Assistant.",
+                            "language_note": "Opomba: Za zdaj je podprta le angleščina."
                         }
                     }
                 },
@@ -1712,6 +1734,42 @@
                     "server": "strežnik",
                     "source": "Vir:",
                     "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa omogočena",
+                                "can_reach_cert_server": "Dostop do strežnika certifikatov",
+                                "can_reach_cloud": "Dosezite oblak Home Assistant",
+                                "can_reach_cloud_auth": "Dosezite strežnik za preverjanje pristnosti",
+                                "google_enabled": "Google omogočen",
+                                "logged_in": "Prijavljen kot",
+                                "relayer_connected": "Preklopnik povezan",
+                                "remote_connected": "Oddaljeno povezano",
+                                "remote_enabled": "Oddaljeno omogočeno",
+                                "subscription_expiration": "Potek naročnine"
+                            },
+                            "homeassistant": {
+                                "arch": "Arhitektura CPU",
+                                "dev": "Razvoj",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Vrsta namestitve",
+                                "os_name": "Ime operacijskega sistema",
+                                "os_version": "Različica operacijskega sistema",
+                                "python_version": "Različica Pythona",
+                                "timezone": "Časovni pas",
+                                "version": "Različica",
+                                "virtualenv": "Navidezno okolje"
+                            },
+                            "lovelace": {
+                                "dashboards": "Nadzorne plošče",
+                                "mode": "Način",
+                                "resources": "Viri"
+                            }
+                        },
+                        "manage": "Upravljaj",
+                        "more_info": "več informacij"
+                    },
                     "title": "Info"
                 },
                 "integration_panel_move": {
@@ -1743,7 +1801,7 @@
                         "reload": "Znova naloži",
                         "reload_confirm": "Integracija je bila znova naložena",
                         "reload_restart_confirm": "Znova zaženi Home Assistant, da dokončate ponovno nalaganje te integracije",
-                        "rename": "Preimenujte",
+                        "rename": "Preimenuj",
                         "restart_confirm": "Znova zaženite Home Assistant-a, da dokončate odstranitev te integracije",
                         "services": "{count} {count, plural,\n  one {storitev}\n  two {storitvi}\n  other {storitve}\n}",
                         "settings_button": "Uredite nastavitve za {integration}",
@@ -2182,6 +2240,8 @@
                     "add_tag": "Dodaj značko",
                     "automation_title": "Značka {name} se prebira",
                     "caption": "Značke",
+                    "confirm_remove": "Ali ste prepričani, da želite odstraniti oznako {tag} ?",
+                    "confirm_remove_title": "Želiš odstraniti oznako?",
                     "create_automation": "Ustvarite avtomatizacijo z značko",
                     "description": "Upravljanje značk",
                     "detail": {
@@ -2844,11 +2904,18 @@
                         "entity": "Entiteta",
                         "no_description": "Opis ni na voljo."
                     },
+                    "common": {
+                        "add": "Dodaj",
+                        "clear": "Počisti",
+                        "edit": "Uredi",
+                        "none": "Noben"
+                    },
                     "edit_badges": {
                         "panel_mode": "Te značke ne bodo prikazane, ker je ta pogled v načinu \"Panel Mode\"."
                     },
                     "edit_card": {
                         "add": "Dodaj kartico",
+                        "clear": "Počisti",
                         "confirm_cancel": "Ali ste prepričani, da želite preklicati?",
                         "delete": "Izbriši kartico",
                         "duplicate": "Podvoji kartico",
@@ -2889,6 +2956,22 @@
                         }
                     },
                     "header": "Uredi UI",
+                    "header-footer": {
+                        "choose_header_footer": "Izberite {type}",
+                        "footer": "Noga",
+                        "header": "Glava",
+                        "types": {
+                            "buttons": {
+                                "name": "Gumbi"
+                            },
+                            "graph": {
+                                "name": "Graf"
+                            },
+                            "picture": {
+                                "name": "Slika"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Odprite meni uporabniškega vmesnika Lovelace",
                         "raw_editor": "\"Surovi\" urejevalnik konfiguracije"
@@ -2932,6 +3015,13 @@
                     "select_view": {
                         "dashboard_label": "Nadzorna plošča",
                         "header": "Izberite pogled"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Urejevalnik noge",
+                            "header": "Urejevalnik glave",
+                            "row": "Urejevalnik vrstic entitete"
+                        }
                     },
                     "suggest_card": {
                         "add": "Dodaj v uporabniški vmesnik Lovelace",

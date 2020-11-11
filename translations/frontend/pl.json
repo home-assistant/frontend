@@ -511,16 +511,23 @@
             "continue": "Kontynuuj",
             "copied": "Skopiowano",
             "delete": "Usuń",
+            "disable": "Wyłącz",
+            "enable": "Włącz",
             "error_required": "To pole jest wymagane",
+            "leave": "Wyjdź",
             "loading": "Ładowanie",
             "menu": "Menu",
             "next": "Dalej",
             "no": "Nie",
+            "not_now": "Nie teraz",
             "overflow_menu": "Menu",
             "previous": "Poprzedni",
             "refresh": "Odśwież",
+            "remove": "Usuń",
+            "rename": "Zmień nazwę",
             "save": "Zapisz",
             "skip": "Pomiń",
+            "stay": "Zostań",
             "successfully_deleted": "Pomyślnie usunięto",
             "successfully_saved": "Pomyślnie zapisano",
             "undo": "Cofnij",
@@ -721,8 +728,10 @@
                     "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
                     "delete": "Usuń",
                     "enabled_cause": "Wyłączone przez {cause}.",
+                    "enabled_delay_confirm": "Włączone encje zostaną dodane do Home Assistant po {delay} sekundach",
                     "enabled_description": "Wyłączone encje nie będą dostępne w Home Assistant.",
                     "enabled_label": "Włącz encję",
+                    "enabled_restart_confirm": "Uruchom ponownie Home Assistant, aby zakończyć włączanie encji",
                     "entity_id": "Identyfikator encji",
                     "icon": "Ikona",
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
@@ -795,6 +804,11 @@
             },
             "more_info_control": {
                 "controls": "Sterowanie",
+                "cover": {
+                    "close_tile_cover": "Przechylenie zamkniętej rolety",
+                    "open_tilt_cover": "Przechylenie otwartej rolety",
+                    "stop_cover": "Wstrzymanie rolety"
+                },
                 "details": "Szczegóły",
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
@@ -1627,12 +1641,12 @@
                         "disable_selected": {
                             "button": "Wyłącz wybrane",
                             "confirm_text": "Wyłączone encje nie będą dostępne w Home Assistant.",
-                            "confirm_title": "Czy chcesz wyłączyć encje: {number}?"
+                            "confirm_title": "Czy chcesz wyłączyć {number} {number, plural,\n  one {encję}\n  few {encje}\n  many {encji}\n  other {encji}\n}?"
                         },
                         "enable_selected": {
                             "button": "Włącz wybrane",
                             "confirm_text": "Dzięki temu będą ponownie dostępne w Home Assistant, jeśli są teraz wyłączone.",
-                            "confirm_title": "Czy chcesz włączyć encje: {number}?"
+                            "confirm_title": "Czy chcesz włączyć {number} {number, plural,\n  one {encję}\n  few {encje}\n  many {encji}\n  other {encji}\n}?"
                         },
                         "filter": {
                             "filter": "Filtr",
@@ -1654,9 +1668,9 @@
                         "remove_selected": {
                             "button": "Usuń wybrane",
                             "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taką możliwość. Czasami trzeba ponownie uruchomić Home Assistant, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
-                            "confirm_partly_title": "Wybrane encje możliwe do usunięcia: {number}",
+                            "confirm_partly_title": "Można usunąć tylko {number} {number, plural,\n  one {encję}\n  few {encje}\n  many {encji}\n  other {encji}\n}.",
                             "confirm_text": "Powinieneś uprzednio usunąć integrację z automatyzacji i konfiguracji Lovelace, jeśli encje w niej występują.",
-                            "confirm_title": "Czy chcesz usunąć encje: {number}?"
+                            "confirm_title": "Czy chcesz usunąć {number} {number, plural,\n  one {encję}\n  few {encje}\n  many {encji}\n  other {encji}\n}?"
                         },
                         "search": "Szukaj encji",
                         "selected": "wybrano {number}",
@@ -1720,6 +1734,39 @@
                     "server": "serwer",
                     "source": "Źródło:",
                     "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa włączona",
+                                "can_reach_cert_server": "Dostęp do serwera certyfikatów",
+                                "can_reach_cloud": "Dostęp do chmury Home Assistant",
+                                "can_reach_cloud_auth": "Dostęp do serwera uwierzytelniania",
+                                "google_enabled": "Asystent Google włączony",
+                                "logged_in": "Zalogowany",
+                                "subscription_expiration": "Wygaśnięcie subskrypcji"
+                            },
+                            "homeassistant": {
+                                "arch": "Architektura procesora",
+                                "dev": "Rozwój",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Typ instalacji",
+                                "os_name": "Nazwa systemu operacyjnego",
+                                "os_version": "Wersja systemu operacyjnego",
+                                "python_version": "Wersja Pythona",
+                                "timezone": "Strefa czasowa",
+                                "version": "Wersja",
+                                "virtualenv": "Środowisko wirtualne"
+                            },
+                            "lovelace": {
+                                "dashboards": "Dashboardy",
+                                "mode": "Tryb",
+                                "resources": "Zasoby"
+                            }
+                        },
+                        "manage": "Zarządzanie",
+                        "more_info": "więcej info"
+                    },
                     "title": "Informacje"
                 },
                 "integration_panel_move": {
@@ -1886,7 +1933,7 @@
                             },
                             "no_resources": "Brak zasobów"
                         },
-                        "refresh_body": "Musisz odświeżyć stronę, aby zakończyć usuwanie, czy chcesz teraz odświeżyć?",
+                        "refresh_body": "Musisz odświeżyć stronę, aby zakończyć usuwanie. Odświeżyć teraz?",
                         "refresh_header": "Czy chcesz odświeżyć?",
                         "types": {
                             "css": "Arkusz stylów",
@@ -2210,6 +2257,8 @@
                     "add_tag": "Dodaj tag",
                     "automation_title": "Tag {name} jest skanowany",
                     "caption": "Tagi",
+                    "confirm_remove": "Czy na pewno chcesz usunąć tag {tag}?",
+                    "confirm_remove_title": "Usunąć tag?",
                     "create_automation": "Utwórz automatyzację z tagiem",
                     "description": "Zarządzaj tagami",
                     "detail": {
@@ -2635,7 +2684,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Zaktualizowano konfigurację interfejsu Lovelace, czy wczytać ją ponownie?",
+                    "message": "Zaktualizowano konfigurację interfejsu Lovelace. Odświeżyć teraz?",
                     "refresh": "Wczytaj ponownie"
                 },
                 "editor": {
@@ -2872,11 +2921,18 @@
                         "entity": "Encja",
                         "no_description": "Brak dostępnego opisu."
                     },
+                    "common": {
+                        "add": "Dodaj",
+                        "clear": "Wyczyść",
+                        "edit": "Edytuj",
+                        "none": "Brak"
+                    },
                     "edit_badges": {
                         "panel_mode": "Te odznaki nie zostaną wyświetlone, ponieważ ten widok jest w \"Trybie panelu\"."
                     },
                     "edit_card": {
                         "add": "Dodaj kartę",
+                        "clear": "Wyczyść",
                         "confirm_cancel": "Czy na pewno chcesz anulować?",
                         "delete": "Usuń kartę",
                         "duplicate": "Duplikuj kartę",
@@ -2917,6 +2973,22 @@
                         }
                     },
                     "header": "Edycja interfejsu użytkownika",
+                    "header-footer": {
+                        "choose_header_footer": "Wybierz {type}",
+                        "footer": "Stopka",
+                        "header": "Nagłówek",
+                        "types": {
+                            "buttons": {
+                                "name": "Przyciski"
+                            },
+                            "graph": {
+                                "name": "Wykres"
+                            },
+                            "picture": {
+                                "name": "Obraz"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Otwórz menu interfejsu użytkownika Lovelace",
                         "raw_editor": "Edytor konfiguracji YAML"
@@ -2961,6 +3033,13 @@
                         "dashboard_label": "Dashboard",
                         "header": "Wybierz widok"
                     },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Edytor stopki",
+                            "header": "Edytor nagłówka",
+                            "row": "Edytor wiersza encji"
+                        }
+                    },
                     "suggest_card": {
                         "add": "Dodaj do interfejsu użytkownika Lovelace",
                         "create_own": "Wybierz inną kartę",
@@ -2985,7 +3064,7 @@
                 },
                 "reload_lovelace": "Wczytaj ponownie Lovelace",
                 "reload_resources": {
-                    "refresh_body": "Musisz odświeżyć stronę, aby zakończyć ponowne wczytywanie zasobów, czy chcesz teraz odświeżyć?",
+                    "refresh_body": "Musisz odświeżyć stronę, aby zakończyć ponowne wczytywanie zasobów. Odświeżyć teraz?",
                     "refresh_header": "Czy chcesz odświeżyć?"
                 },
                 "unused_entities": {
