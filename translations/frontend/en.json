@@ -872,6 +872,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Areas",
+                        "automation": "Automations",
+                        "core": "General",
+                        "customize": "Customizations",
+                        "devices": "Devices",
+                        "entities": "Entities",
+                        "helpers": "Helpers",
+                        "info": "Info",
+                        "integrations": "Integrations",
+                        "logs": "Logs",
+                        "lovelace": "Lovelace Dashboards",
+                        "navigate_to": "Navigate to {panel}",
+                        "navigate_to_config": "Navigate to {panel} configuration",
+                        "person": "People",
+                        "scene": "Scenes",
+                        "script": "Scripts",
+                        "server_control": "Server Controls",
+                        "tags": "Tags",
+                        "users": "Users",
+                        "zone": "Zones"
+                    },
                     "reload": {
                         "automation": "Reload automations",
                         "command_line": "Reload command line entities",
@@ -2323,6 +2345,7 @@
                         "update_user": "Update"
                     },
                     "picker": {
+                        "add_user": "Add user",
                         "headers": {
                             "group": "Group",
                             "name": "Name",
@@ -2603,6 +2626,8 @@
                         "filter_attributes": "Filter attributes",
                         "filter_entities": "Filter entities",
                         "filter_states": "Filter states",
+                        "last_changed": "Last changed",
+                        "last_updated": "Last updated",
                         "more_info": "More Info",
                         "no_entities": "No entities",
                         "set_state": "Set State",
@@ -2853,6 +2878,10 @@
                         "light": {
                             "description": "The Light card allows you to change the brightness of the light.",
                             "name": "Light"
+                        },
+                        "logbook": {
+                            "description": "The Logbook card shows a list of events for entities.",
+                            "name": "Logbook"
                         },
                         "map": {
                             "dark_mode": "Dark Mode?",

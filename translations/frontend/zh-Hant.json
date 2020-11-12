@@ -511,16 +511,23 @@
             "continue": "繼續",
             "copied": "已複製",
             "delete": "刪除",
+            "disable": "關閉",
+            "enable": "開啟",
             "error_required": "必填",
+            "leave": "離開",
             "loading": "讀取中",
             "menu": "選單",
             "next": "下一步",
             "no": "否",
+            "not_now": "現在不要",
             "overflow_menu": "捲動選單",
             "previous": "上一步",
             "refresh": "更新",
+            "remove": "移除",
+            "rename": "重新命名",
             "save": "儲存",
             "skip": "略過",
+            "stay": "保持",
             "successfully_deleted": "成功刪除",
             "successfully_saved": "成功儲存",
             "undo": "撤消",
@@ -624,7 +631,7 @@
                     "season": "季",
                     "track": "音軌",
                     "tv_show": "電視節目",
-                    "url": "網址",
+                    "url": "URL",
                     "video": "影片"
                 },
                 "content-type": {
@@ -721,8 +728,10 @@
                     "confirm_delete": "確定要刪除此實體？",
                     "delete": "刪除",
                     "enabled_cause": "由 {cause} 關閉。",
+                    "enabled_delay_confirm": "啟用的實體將會於 {delay} 秒後新增至 Home Assistant",
                     "enabled_description": "關閉的實體將不會新增至 Home Assistant。",
                     "enabled_label": "啟用實體",
+                    "enabled_restart_confirm": "重新啟動 Home Assistant 以完成實體啟用",
                     "entity_id": "實體 ID",
                     "icon": "圖示",
                     "icon_error": "圖示必須按照格式「prefix:iconname」設定，例如「mdi:home」",
@@ -795,6 +804,11 @@
             },
             "more_info_control": {
                 "controls": "控制",
+                "cover": {
+                    "close_tile_cover": "開啟窗簾",
+                    "open_tilt_cover": "開啟窗簾",
+                    "stop_cover": "停止窗簾"
+                },
                 "details": "詳細資訊",
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
@@ -875,7 +889,7 @@
                         "input_select": "重新載入輸入選擇",
                         "input_text": "重新載入輸入文字",
                         "min_max": "重新載入最低/最高實體",
-                        "mqtt": "手動重新載入 MQTT 實體",
+                        "mqtt": "重新載入手動設定 MQTT 實體",
                         "person": "重新載入人員",
                         "ping": "重新載入 Ping 二進位傳感器實體",
                         "reload": "重新載入{domain}",
@@ -1627,12 +1641,12 @@
                         "disable_selected": {
                             "button": "關閉已選擇",
                             "confirm_text": "關閉的實體將不會新增至 Home Assistant。",
-                            "confirm_title": "是否要關閉 {number} 個實體？"
+                            "confirm_title": "是否要關閉 {number} {number, plural,\n  one {個實體}\n  other {個實體}\n}？"
                         },
                         "enable_selected": {
                             "button": "開啟已選擇",
                             "confirm_text": "假如目前為關閉狀態，將再次於 Home Assistant 中開啟。",
-                            "confirm_title": "是否要開啟 {number} 個實體？"
+                            "confirm_title": "是否要開啟 {number} {number, plural,\n  one {個實體}\n  other {個實體}\n}？"
                         },
                         "filter": {
                             "filter": "過濾器",
@@ -1654,9 +1668,9 @@
                         "remove_selected": {
                             "button": "移除已選擇",
                             "confirm_partly_text": "已選擇的 {selected} 個實體中、僅有 {removable} 個可移除。僅有當整合不再提供實體時、實體方能進行移除。有時候，於移除整合之後、需重啟 Home Assistant 後、方能進行移除的動作。確定要移除可移除之實體？",
-                            "confirm_partly_title": "僅 {number} 個已選擇之實體可移除。",
+                            "confirm_partly_title": "僅 {number} {number, plural,\n  one {個已選擇之實體}\n  other {個已選擇之實體}\n}可移除。。",
                             "confirm_text": "假如包含此些實體，應該從 Lovelace 設定與自動化中進行移除。",
-                            "confirm_title": "是否要移除 {number} 個實體？"
+                            "confirm_title": "是否要移除 {number} {number, plural,\n  one {個實體}\n  other {個實體}\n}？"
                         },
                         "search": "搜尋實體",
                         "selected": "已選擇 {number} 個",
@@ -1720,6 +1734,42 @@
                     "server": "伺服器",
                     "source": "來源：",
                     "system_health_error": "系統健康元件未載入。請於 configuration.yaml 內加入「system_health:」",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa 已啟用",
+                                "can_reach_cert_server": "連線驗證伺服器",
+                                "can_reach_cloud": "連線 Home Assistant Cloud",
+                                "can_reach_cloud_auth": "連線認證伺服器",
+                                "google_enabled": "Google 已啟用",
+                                "logged_in": "已登入",
+                                "relayer_connected": "中繼已連線",
+                                "remote_connected": "遠端控制已連線",
+                                "remote_enabled": "遠端控制已啟用",
+                                "subscription_expiration": "訂閱到期"
+                            },
+                            "homeassistant": {
+                                "arch": "CPU 架構",
+                                "dev": "開發版",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "安裝類型",
+                                "os_name": "作業系統名稱",
+                                "os_version": "作業系統版本",
+                                "python_version": "Python 版本",
+                                "timezone": "時區",
+                                "version": "版本",
+                                "virtualenv": "虛擬環境"
+                            },
+                            "lovelace": {
+                                "dashboards": "主面板",
+                                "mode": "模式",
+                                "resources": "資源"
+                            }
+                        },
+                        "manage": "管理",
+                        "more_info": "更多資訊"
+                    },
                     "title": "資訊"
                 },
                 "integration_panel_move": {
@@ -1845,7 +1895,7 @@
                             "title": "標題",
                             "title_required": "必須輸入標題",
                             "update": "更新",
-                            "url": "網址",
+                            "url": "URL",
                             "url_error_msg": "網址應該包含一個 -，同時不能包含空格或特殊字元，除了 _ 及 -。"
                         },
                         "picker": {
@@ -1873,8 +1923,8 @@
                             "new_resource": "新增資源",
                             "type": "資源類型",
                             "update": "更新",
-                            "url": "網址",
-                            "url_error_msg": "網址為必填欄位",
+                            "url": "URL",
+                            "url_error_msg": "URL 為必填欄位",
                             "warning_header": "請特別注意！",
                             "warning_text": "新增資源具有風險性、請確認資源來源安全性。惡意的資源可能嚴重損害您的系統。"
                         },
@@ -1882,7 +1932,7 @@
                             "add_resource": "新增資源",
                             "headers": {
                                 "type": "類別",
-                                "url": "網址"
+                                "url": "URL"
                             },
                             "no_resources": "沒有資源"
                         },
@@ -2136,7 +2186,9 @@
                         "sequence_sentence": "此腳本所含的操作動作。"
                     },
                     "picker": {
-                        "add_script": "新增新腳本",
+                        "add_script": "新增腳本",
+                        "duplicate": "複製",
+                        "duplicate_script": "複製腳本",
                         "edit_script": "編輯腳本",
                         "header": "腳本編輯器",
                         "headers": {
@@ -2173,7 +2225,7 @@
                             "input_text": "重新載入輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
                             "min_max": "重新載入最低/最高實體",
-                            "mqtt": "手動重新載入 MQTT 實體",
+                            "mqtt": "重新載入手動設定 MQTT 實體",
                             "person": "重新載入人員",
                             "ping": "重新載入 Ping 二進位傳感器實體",
                             "reload": "重新載入{domain}",
@@ -2210,6 +2262,8 @@
                     "add_tag": "新增標籤",
                     "automation_title": "標籤 {name} 已掃描",
                     "caption": "標籤",
+                    "confirm_remove": "是否要移除標籤 {tag}？",
+                    "confirm_remove_title": "移除標籤？",
                     "create_automation": "以標籤新增自動化",
                     "description": "管理標籤",
                     "detail": {
@@ -2635,7 +2689,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "此主面板 Lovelace UI 設定已更新，是否要更新頁面檢視變更？",
+                    "message": "此主面板 Lovelace UI 設定已更新，更新頁面檢視變更？",
                     "refresh": "更新"
                 },
                 "editor": {
@@ -2647,11 +2701,11 @@
                             "navigate": "導航",
                             "none": "沒有動作",
                             "toggle": "開關",
-                            "url": "網址"
+                            "url": "URL"
                         },
                         "editor_service_data": "服務資料僅能於代碼編輯器中輸入",
                         "navigation_path": "導航路徑",
-                        "url_path": "網址路徑"
+                        "url_path": "URL 路徑"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2769,7 +2823,7 @@
                             "theme": "主題",
                             "title": "標題",
                             "unit": "單位",
-                            "url": "網址"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "列",
@@ -2872,11 +2926,18 @@
                         "entity": "實體",
                         "no_description": "無描述可使用。"
                     },
+                    "common": {
+                        "add": "新增",
+                        "clear": "清除",
+                        "edit": "編輯",
+                        "none": "無"
+                    },
                     "edit_badges": {
                         "panel_mode": "\"面板模式\"下、圓標圖示將不會顯示。"
                     },
                     "edit_card": {
                         "add": "新增面板",
+                        "clear": "清除",
                         "confirm_cancel": "確定要取消？",
                         "delete": "刪除面板",
                         "duplicate": "複製面板",
@@ -2917,6 +2978,22 @@
                         }
                     },
                     "header": "編輯 UI",
+                    "header-footer": {
+                        "choose_header_footer": "選擇{type}",
+                        "footer": "Footer",
+                        "header": "Header",
+                        "types": {
+                            "buttons": {
+                                "name": "按鈕"
+                            },
+                            "graph": {
+                                "name": "圖像"
+                            },
+                            "picture": {
+                                "name": "照片"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "開啟 Lovelace UI 選單",
                         "raw_editor": "文字模式編輯器"
@@ -2960,6 +3037,13 @@
                     "select_view": {
                         "dashboard_label": "主面板",
                         "header": "選擇面板"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Footer 編輯器",
+                            "header": "Header 編輯器",
+                            "row": "實體編輯器"
+                        }
                     },
                     "suggest_card": {
                         "add": "新增至 Lovelace UI",

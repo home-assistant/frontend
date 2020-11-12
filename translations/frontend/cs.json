@@ -1,7 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "Položka konfigurace",
+            "config_entry": "Položka nastavení",
             "integration": "Integrace",
             "user": "Uživatel"
         }
@@ -209,8 +209,8 @@
             "off": "Vypnuto"
         },
         "configurator": {
-            "configure": "Konfigurovat",
-            "configured": "Nakonfigurováno"
+            "configure": "Nastavit",
+            "configured": "Nastaveno"
         },
         "cover": {
             "closed": "Zavřeno",
@@ -792,12 +792,12 @@
                     "pattern": "Vzor regex pro ověření na straně klienta",
                     "text": "Text"
                 },
-                "platform_not_loaded": "Integrace {platform} není načtena. Přidejte ji do své konfigurace buďto přidáním 'default_config:' nebo ''{platform}:''.",
+                "platform_not_loaded": "Integrace {platform} není načtena. Přidejte ji do své konfigurace buďto přidáním \"default_config:\" nebo ''{platform}:''.",
                 "required_error_msg": "Toto pole je povinné",
                 "timer": {
                     "duration": "Doba trvání"
                 },
-                "yaml_not_editable": "Nastavení této entity nelze upravovat z uživatelského rozhraní. Pouze entity nastavené z uživatelského rozhraní lze konfigurovat v uživatelském rozhraní."
+                "yaml_not_editable": "Nastavení této entity nelze upravovat z uživatelského rozhraní. Pouze entity nastavené z uživatelského rozhraní lze spravovat v uživatelském rozhraní."
             },
             "image_cropper": {
                 "crop": "Oříznout"
@@ -889,7 +889,7 @@
                         "input_select": "Nově načíst pomocníky - výběry",
                         "input_text": "Nově načíst pomocníky - texty",
                         "min_max": "Nově načíst entity integrace Min/Max",
-                        "mqtt": "Nově načíst ručně nakonfigurované entity integrace MQTT",
+                        "mqtt": "Nově načíst ručně nastavené entity integrace MQTT",
                         "person": "Nově načíst osoby",
                         "ping": "Nově načíst entity integrace Ping",
                         "reload": "Nově načíst integraci {domain}",
@@ -925,7 +925,7 @@
                 "buttons": {
                     "add": "Přidejte zařízení prostřednictvím tohoto zařízení",
                     "clusters": "Clustery",
-                    "reconfigure": "Překonfigurovat zařízení",
+                    "reconfigure": "Přenastavit zařízení",
                     "remove": "Odebrat zařízení",
                     "zigbee_information": "Podpis zařízení Zigbee"
                 },
@@ -939,7 +939,7 @@
                 "power_source": "Zdroj napájení",
                 "quirk": "Zvláštnost",
                 "services": {
-                    "reconfigure": "Překonfigurovat zařízení ZHA (opravit zařízení). Použijte, pokud se zařízením máte problémy. Je-li dotyčné zařízení napájené bateriemi, ujistěte se prosím, že je při používání této služby spuštěné a přijímá příkazy.",
+                    "reconfigure": "Přenastavení zařízení ZHA (oprava zařízení). Použijte, pokud se zařízením máte problémy. Je-li dotyčné zařízení napájené bateriemi, ujistěte se prosím, že je při používání této služby spuštěné a přijímá příkazy.",
                     "remove": "Odebrat zařízení ze sítě Zigbee.",
                     "updateDeviceName": "Nastavte vlastní název tohoto zařízení v seznamu zařízení.",
                     "zigbee_information": "Zobrazit Zigbee informace zařízení."
@@ -986,7 +986,7 @@
             },
             "config": {
                 "advanced_mode": {
-                    "hint_enable": "Chybí vám možnosti konfigurace? Zapněte rozšířený režim",
+                    "hint_enable": "Chybí vám možnosti nastavení? Zapněte rozšířený režim",
                     "link_profile_page": "stránka vašeho profilu"
                 },
                 "areas": {
@@ -1015,7 +1015,7 @@
                         "header": "Oblasti",
                         "integrations_page": "Stránka integrací",
                         "introduction": "Oblasti se používají k uspořádání zařízení podle místa kde jsou. Tato informace bude použita k organizaci rozhraní, k nastavení oprávnění a v integraci s ostatnímy systémy.",
-                        "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže tam klikněte na nakonfigurovanou integraci abyste se dostali na kartu zažízení.",
+                        "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže, tam klikněte na nastavenou integraci, abyste se dostali ke kartám zařízení.",
                         "no_areas": "Vypadá to, že ještě nemáte žádné oblasti!"
                     }
                 },
@@ -1320,7 +1320,7 @@
                         "headers": {
                             "name": "Název"
                         },
-                        "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https://home-assistant.io/docs/automation/editor/), abyste se ujistili, že jste Home Assistant nakonfigurovali správně.",
+                        "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím pokyny na odkazu níže, abyste se ujistili, že jste Home Assistant nastavili správně.",
                         "learn_more": "Další informace o automatizacích",
                         "no_automations": "Nemohli jsme najít žádné upravitelné automatizace",
                         "only_editable": "Upravitelné mohou být pouze automatizace definované v automations.yaml.",
@@ -1347,7 +1347,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Dokumentace ke konfiguraci",
+                            "config_documentation": "Dokumentace pro nastavení",
                             "disable": "zakázat",
                             "enable": "povolit",
                             "enable_ha_skill": "Povolte Home Assistant skill pro Alexu",
@@ -1364,7 +1364,7 @@
                         "connection_status": "Stav cloudového připojení",
                         "fetching_subscription": "Načítání předplatného ...",
                         "google": {
-                            "config_documentation": "Dokumentace ke konfiguraci",
+                            "config_documentation": "Dokumentace pro nastavení",
                             "devices_pin": "PIN pro zabezpečovací zařízení",
                             "enable_ha_skill": "Povolte Home Assistant skill pro Google Assistant",
                             "enable_state_reporting": "Povolit hlášení stavu",
@@ -1399,11 +1399,11 @@
                         "thank_you_note": "Děkujeme, že jste se stali součástí Home Assistant Cloud. Díky lidem, jako jste vy, jsme schopni udělat skvělý zážitek z domácí automatizace pro každého. Díky!",
                         "webhooks": {
                             "disable_hook_error_msg": "Nepodařilo se deaktivovat webhook:",
-                            "info": "Všechno, co je nakonfigurováno tak, aby bylo spouštěno webhookem, může mít veřejně přístupnou adresu URL, která vám umožní posílat data zpět Home Assistant odkudkoli, aniž by byla vaše instance vystavena internetu.",
+                            "info": "Všechno, co je nastaveno tak, aby bylo spouštěno webhookem, může mít veřejně přístupnou adresu URL, která vám umožní posílat data zpět Home Assistant odkudkoli, aniž by byla vaše instance vystavena internetu.",
                             "link_learn_more": "Další informace o vytváření automatizací využívajících webhook.",
                             "loading": "Načítání ...",
                             "manage": "Spravovat",
-                            "no_hooks_yet": "Vypadá to, že ještě nemáte žádné webhooky. Začněte konfigurací ",
+                            "no_hooks_yet": "Vypadá to, že ještě nemáte žádné webhooky. Začněte nastavením ",
                             "no_hooks_yet_link_automation": "automatizace webhooků",
                             "no_hooks_yet_link_integration": "integrace založené na webhooku",
                             "no_hooks_yet2": "nebo vytvořením",
@@ -1411,7 +1411,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "Úprava entit, které jsou exponované prostřednictvím tohoto uživatelského rozhraní je zakázána, protože jste nakonfigurovali filtry entit v souboru configuration.yaml.",
+                        "banner": "Nastavení, které entity jsou vystaveny, pomocí uživatelského rozhraní je zakázáno, protože jste nastavili filtry entit v souboru configuration.yaml.",
                         "dont_expose_entity": "Nevystavovat entitu",
                         "expose": "Exponovat do Alexa",
                         "expose_entity": "Vystavit entitu",
@@ -1455,7 +1455,7 @@
                         "title": "Zapomenuté heslo"
                     },
                     "google": {
-                        "banner": "Úprava entity, které jsou exponované prostřednictvím tohoto uživatelského rozhraní je zakázána, protože jste nakonfigurovali filtry entit v souboru configuration.yaml.",
+                        "banner": "Nastavení, které entity jsou vystaveny, pomocí uživatelského rozhraní je zakázáno, protože jste nastavili filtry entit v souboru configuration.yaml.",
                         "disable_2FA": "Zakázat dvoufaktorové ověřování",
                         "dont_expose_entity": "Nevystavovat entitu",
                         "expose": "Exponovat do Google Assistant",
@@ -1523,7 +1523,7 @@
                     "section": {
                         "core": {
                             "core_config": {
-                                "edit_requires_storage": "Editor je zakázán, protože konfigurace je uložena v configuration.yaml.",
+                                "edit_requires_storage": "Editor je zakázán, protože nastavení je uloženo v configuration.yaml.",
                                 "elevation": "Nadmořská výška",
                                 "elevation_meters": "metrů",
                                 "external_url": "Externí adresa URL",
@@ -1540,7 +1540,7 @@
                                 "unit_system_metric": "Metrický"
                             },
                             "header": "Obecná nastavení",
-                            "introduction": "Moc dobře víme, že změna konfigurace může být velmi únavným procesem. Tato sekce se proto pokusí udělat váš život alespoň trochu jednodušší."
+                            "introduction": "Moc dobře víme, že změna nastavení může být velmi únavný proces. Tato sekce se proto pokusí udělat váš život alespoň trochu jednodušší."
                         }
                     }
                 },
@@ -1594,7 +1594,7 @@
                     "caption": "Zařízení",
                     "confirm_delete": "Opravdu chcete toto zařízení odstranit?",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit?",
-                    "confirm_rename_entity_ids_warning": "Žádná konfigurace (např. automatizace, skripty, scény, dashboardy), která tyto entity aktuálně používá, nebude změněna! Budete vše muset aktualizovat sami, aby používaly nová ID entit!",
+                    "confirm_rename_entity_ids_warning": "Žádná nastavení (např. automatizace, skripty, scény, dashboardy), která tyto entity aktuálně používá, nebudou změněna! Vše budete muset aktualizovat sami, aby se používaly nová ID entit!",
                     "data_table": {
                         "area": "Oblast",
                         "battery": "Baterie",
@@ -1708,7 +1708,7 @@
                     },
                     "types": {
                         "counter": "Počítadlo",
-                        "input_boolean": "Přepínač",
+                        "input_boolean": "Přepnout",
                         "input_datetime": "Datum a/nebo čas",
                         "input_number": "Číslo",
                         "input_select": "Výběr",
@@ -1774,8 +1774,8 @@
                 },
                 "integration_panel_move": {
                     "link_integration_page": "stránka integrací",
-                    "missing_zha": "Hledáte konfiguraci ZHA? Byl přesunut do položky Z-Wave na {integrations_page} .",
-                    "missing_zwave": "Hledáte konfiguraci Z-Wave? Byl přesunut do položky Z-Wave na {integrations_page} ."
+                    "missing_zha": "Hledáte nastavení ZHA? Bylo přesunuto do položky ZHA na {integrations_page}.",
+                    "missing_zwave": "Hledáte nastavení Z-Wave? Bylo přesunuto do položky Z-Wave na {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Přidat integraci",
@@ -1824,8 +1824,8 @@
                         "not_all_required_fields": "Nejsou vyplněna všechna povinná pole.",
                         "submit": "Odeslat"
                     },
-                    "configure": "Konfigurovat",
-                    "configured": "Zkonfigurováno",
+                    "configure": "Nastavit",
+                    "configured": "Nastaveno",
                     "description": "Správa integrací",
                     "details": "Podrobnosti o integraci",
                     "discovered": "Objeveno",
@@ -1844,18 +1844,18 @@
                     "integration": "integrace",
                     "integration_not_found": "Integrace nebyla nalezena.",
                     "new": "Nastavte novou integraci",
-                    "no_integrations": "Vypadá to, že ještě nemáte nakonfigurovány žádné integrace. Kliknutím na tlačítko níže přidáte svou první integraci!",
-                    "none": "Zatím nic nezkonfigurováno",
+                    "no_integrations": "Vypadá to, že ještě nemáte nastaveny žádné integrace. Kliknutím na tlačítko níže přidáte svou první integraci!",
+                    "none": "Zatím nic nastaveno",
                     "none_found": "Žádné integrace nenalezeny.",
                     "none_found_detail": "Upravte kritéria vyhledávání.",
-                    "note_about_integrations": "Ne všechny integrace lze prozatím konfigurovat prostřednictvím uživatelského rozhraní.",
+                    "note_about_integrations": "Některé integrace zatím nelze nastavit prostřednictvím uživatelského rozhraní.",
                     "note_about_website_reference": "Další jsou k dispozici na ",
-                    "reconfigure": "Překonfigurovat",
+                    "reconfigure": "Přenastavit",
                     "rename_dialog": "Upravit název této položky nastavení",
                     "rename_input_label": "Název položky",
                     "search": "Hledat integraci"
                 },
-                "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\nZatím není možné vše konfigurovat přímo z uživatelského rozhraní, ale pracujeme na tom.",
+                "introduction": "Zde je možné nastavit vaše komponenty a Home Assistant.\nZatím není možné vše nastavit přímo z uživatelského rozhraní, ale pracujeme na tom.",
                 "logs": {
                     "caption": "Logy",
                     "clear": "Zrušit",
@@ -1947,7 +1947,7 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Konfigurovat",
+                    "button": "Nastavit",
                     "description_listen": "Naslouchat tématu",
                     "description_publish": "Publikovat paket",
                     "listening_to": "Naslouchám",
@@ -1961,7 +1961,7 @@
                     "topic": "téma"
                 },
                 "ozw": {
-                    "button": "Konfigurovat",
+                    "button": "Nastavit",
                     "common": {
                         "controller": "Ovladač",
                         "instance": "Instance",
@@ -1980,7 +1980,7 @@
                     "navigation": {
                         "network": "Síť",
                         "node": {
-                            "config": "Konfigurace",
+                            "config": "Nastavení",
                             "dashboard": "Dashboard"
                         },
                         "nodes": "Uzly",
@@ -2013,9 +2013,9 @@
                     },
                     "node_config": {
                         "header": "Nastavení uzlu",
-                        "help_source": "Popisy parametrů konfigurace a text nápovědy poskytuje projekt OpenZWave.",
-                        "introduction": "Spravujte různé konfigurační parametry pro uzel Z-Wave.",
-                        "wakeup_help": "Uzly napájené z baterie musí být vzhůru, aby mohly změnit svou konfiguraci. Pokud uzel není vzhůru, OpenZWave se pokusí aktualizovat konfiguraci uzlu při příštím probuzení, což může být o několik hodin (nebo dní) později. Zařízení probudíte takto:"
+                        "help_source": "Popisy parametrů nastavení a text nápovědy poskytuje projekt OpenZWave.",
+                        "introduction": "Spravujte různé parametry nastavení uzlu Z-Wave.",
+                        "wakeup_help": "Uzly napájené z baterie musí být vzhůru, aby mohly změnit své nastavení. Pokud uzel není vzhůru, OpenZWave se pokusí aktualizovat nastavení uzlu při příštím probuzení, což může být o několik hodin (nebo dní) později. Zařízení probudíte takto:"
                     },
                     "node_metadata": {
                         "product_manual": "Příručka k produktu"
@@ -2024,7 +2024,7 @@
                         "associations": "Obnovuji přidružené skupiny a členství",
                         "cacheload": "Načítám informace ze souboru mezipaměti OpenZWave. Uzly baterií zůstanou v této fázi, dokud se uzel neprobudí.",
                         "complete": "Proces komunikace je dokončen",
-                        "configuration": "Získávám konfiguraci z uzlu",
+                        "configuration": "Získávám nastavení z uzlu",
                         "dynamic": "Získávám často se měnící hodnoty z uzlu",
                         "instances": "Získávám podrobnosti o tom, jaké instance nebo kanály zařízení podporuje",
                         "manufacturerspecific1": "Získávám z uzlu kody výrobce a produktů",
@@ -2103,7 +2103,7 @@
                     "introduction": "Zde můžete definovat každou osobu v Home Assistant.",
                     "learn_more": "Další informace o osobách",
                     "no_persons_created_yet": "Vypadá to, že jste dosud žádné osoby nevytvořili.",
-                    "note_about_persons_configured_in_yaml": "Poznámka: Osoby konfigurované pomocí configuration.yaml nelze upravovat pomocí uživatelského rozhraní.",
+                    "note_about_persons_configured_in_yaml": "Poznámka: Osoby nastavené pomocí configuration.yaml nelze upravovat pomocí uživatelského rozhraní.",
                     "person_not_found": "Nedaří se nám najít osobu, kterou jste se pokoušeli upravit.",
                     "person_not_found_title": "Osoba nenalezena"
                 },
@@ -2144,7 +2144,7 @@
                         "headers": {
                             "name": "Název"
                         },
-                        "introduction": "Editor scén vám umožňuje vytvářet a upravovat scény. Postupujte podle níže uvedeného odkazu a přečtěte si pokyny, abyste se ujistili, že jste Home Assistant nakonfigurovali správně.",
+                        "introduction": "Editor scén vám umožňuje vytvářet a upravovat scény. Přečtěte si pokyny na odkazy níže, abyste se ujistili, že jste Home Assistant nastavili správně.",
                         "learn_more": "Další informace o scénách",
                         "no_scenes": "Nemohli jsme najít žádné upravitelné scény",
                         "only_editable": "Lze upravovat pouze scény definované v souboru scenes.yaml.",
@@ -2187,12 +2187,14 @@
                     },
                     "picker": {
                         "add_script": "Přidat skript",
+                        "duplicate": "Duplikát",
+                        "duplicate_script": "Duplikovat skript",
                         "edit_script": "Upravit skript",
                         "header": "Editor skriptů",
                         "headers": {
                             "name": "Název"
                         },
-                        "introduction": "Editor skriptů umožňuje vytvářet a upravovat skripty. Postupujte podle níže uvedeného odkazu a přečtěte si pokyny, abyste se ujistili, že jste Home Assistant nakonfigurovali správně.",
+                        "introduction": "Editor skriptů umožňuje vytvářet a upravovat skripty. Přečtěte si pokyny na odkazy níže, abyste se ujistili, že jste Home Assistant nastavili správně.",
                         "learn_more": "Další informace o skriptech",
                         "no_scripts": "Nemohli jsme najít žádné upravitelné skripty",
                         "run_script": "Spustit skript",
@@ -2213,7 +2215,7 @@
                             "generic": "Nově načíst entity integrace Generic IP camera",
                             "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
                             "group": "Nově načíst skupiny, skupiny entit a notifikační služby",
-                            "heading": "Konfigurace z YAML se načítá",
+                            "heading": "Nastavení z YAML se načítá",
                             "history_stats": "Nově načíst entity integrace History stats",
                             "homekit": "Nově načíst entity integrace HomeKit",
                             "input_boolean": "Nově načíst pomocníky - přepínače",
@@ -2221,9 +2223,9 @@
                             "input_number": "Nově načíst pomocníky - čísla",
                             "input_select": "Nově načíst pomocníky - výběry",
                             "input_text": "Nově načíst pomocníky - texty",
-                            "introduction": "Některé části Home Assistant lze nově načíst bez nutnosti restartování. Nové načtení zahodí jejich aktuální konfiguraci a načte novou.",
+                            "introduction": "Některé části Home Assistant lze nově načíst bez nutnosti restartování. Nové načtení zahodí jejich aktuální nastavení a načte nové.",
                             "min_max": "Nově načíst entity integrace Min/Max",
-                            "mqtt": "Nově načíst ručně nakonfigurované entity integrace MQTT",
+                            "mqtt": "Nově načíst ručně nastavené entity integrace MQTT",
                             "person": "Nově načíst osoby",
                             "ping": "Nově načíst entity integrace Ping",
                             "reload": "Nově načíst integraci {domain}",
@@ -2250,7 +2252,7 @@
                         "validation": {
                             "check_config": "Zkontrolujte konfiguraci",
                             "heading": "Ověření konfigurace",
-                            "introduction": "Pokud jste nedávno provedli změny konfigurace a chcete se ujistit, že je vše v pořádku, můžete ji zde ověřit",
+                            "introduction": "Pokud jste nedávno provedli změny konfigurace a chcete se ujistit, že je vše v pořádku, můžete zde konfiguraci ověřit",
                             "invalid": "Konfigurace není v pořádku!",
                             "valid": "Konfigurace je v pořádku!"
                         }
@@ -2343,7 +2345,7 @@
                         "caption": "Přidat zařízení",
                         "description": "Přidat zařízení do sítě Zigbee"
                     },
-                    "button": "Konfigurovat",
+                    "button": "Nastavit",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributy vybraného klastru",
@@ -2417,7 +2419,7 @@
                         "zha_zigbee_groups": "ZHA Zigbee skupiny"
                     },
                     "header": "Nastavení Zigbee Home Automation",
-                    "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant. Z uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
+                    "introduction": "Zde je možné nastavit vaše komponenty ZHA a Home Assistant. Z uživatelského rozhraní sice zatím není možné nastavit úplně vše, ale pracujeme na tom.",
                     "network_management": {
                         "header": "Správa sítě",
                         "introduction": "Příkazy, které ovlivňují celou síť"
@@ -2437,7 +2439,7 @@
                 "zone": {
                     "add_zone": "Přidat zónu",
                     "caption": "Zóny",
-                    "configured_in_yaml": "Zóny konfigurované pomocí configuration.yaml nelze upravovat pomocí UI.",
+                    "configured_in_yaml": "Zóny nastavené pomocí configuration.yaml nelze upravovat v uživatelském rozhraní.",
                     "confirm_delete": "Opravdu chcete tuto zónu smazat?",
                     "create_zone": "Vytvořit zónu",
                     "description": "Spravá zón, ve kterých chcete sledovat osoby",
@@ -2458,13 +2460,13 @@
                     },
                     "edit_home_zone": "Poloměr domovské zóny zatím nelze upravit z frontendu. Z frontendu se dá změnit jen poloha domovské zóny.",
                     "edit_home_zone_narrow": "Poloměr domovské zóny zatím nelze upravit z rozhraní. Umístění lze změnit z obecného nastavení.",
-                    "go_to_core_config": "Přejít na obecnou konfiguraci?",
-                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecného nastavení. Poloměr domovské zóny zatím nelze upravit z rozhraní. Chcete přejít na obecnou konfiguraci?",
+                    "go_to_core_config": "Přejít na obecnou nastavení?",
+                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecného nastavení. Poloměr domovské zóny zatím nelze upravit z rozhraní. Chcete přejít do obecného nastavení?",
                     "introduction": "Zóny umožňují určit určité oblasti na zemi. Když je osoba v zóně, stav převezme název ze zóny. Zóny lze také použít jako aktivační událost nebo podmínku v nastavení automatizace.",
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
                 "zwave": {
-                    "button": "Konfigurovat",
+                    "button": "Nastavit",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -2488,12 +2490,12 @@
                         "network_stopped": "Síť Z-Wave byla zastavena"
                     },
                     "node_config": {
-                        "config_parameter": "Konfigurační parametr",
-                        "config_value": "Konfigurační hodnota",
+                        "config_parameter": "Parametr nastavení",
+                        "config_value": "Hodnota nastavení",
                         "false": "False",
                         "header": "Možnosti nastavení uzlu",
                         "seconds": "sekund",
-                        "set_config_parameter": "Nastavte konfigurační parametr",
+                        "set_config_parameter": "Nastavte parametr",
                         "set_wakeup": "Nastavit interval probuzení",
                         "true": "True"
                     },
@@ -2538,7 +2540,7 @@
                         "remove_failed_node": "Odebrat selhaný uzel",
                         "remove_node": "Odebrat uzel",
                         "replace_failed_node": "Nahradit selhaný uzel",
-                        "save_config": "Uložit konfiguraci",
+                        "save_config": "Uložit nastavení",
                         "soft_reset": "Měkký reset",
                         "start_network": "Spustit síť",
                         "stop_network": "Zastavit síť",
@@ -2940,7 +2942,7 @@
                         "delete": "Smazat kartu",
                         "duplicate": "Duplikovat kartu",
                         "edit": "Upravit",
-                        "header": "Konfigurace karty",
+                        "header": "Nastavení karty",
                         "move": "Přesunout",
                         "move_after": "Posunout kartu za",
                         "move_before": "Posunout kartu před",
@@ -2964,8 +2966,8 @@
                         "add": "Přidat pohled",
                         "delete": "Odstranit pohled",
                         "edit": "Upravit pohled",
-                        "header": "Zobrazit konfiguraci",
-                        "header_name": "{name} Zobrazit konfiguraci",
+                        "header": "Zobrazit nastavení",
+                        "header_name": "Zobrazit nastavení {name}",
                         "move_left": "Posunout pohled doleva",
                         "move_right": "Posunout pohled doprava",
                         "tab_badges": "Odznaky",
@@ -2994,19 +2996,19 @@
                     },
                     "menu": {
                         "open": "Otevřít Lovelace menu",
-                        "raw_editor": "Editor kódu konfigurace"
+                        "raw_editor": "Editor kódu nastavení"
                     },
                     "migrate": {
-                        "header": "Konfigurace není kompatibilní",
-                        "migrate": "Migrovat konfiguraci",
-                        "para_migrate": "Home Assistant může automaticky přidat ID ke všem vašim kartám a pohledům stisknutím tlačítka \"Migrovat konfiguraci\".",
+                        "header": "Nastavení není kompatibilní",
+                        "migrate": "Migrovat nastavení",
+                        "para_migrate": "Home Assistant může automaticky přidat ID ke všem vašim kartám a pohledům stisknutím tlačítka \"Migrovat nastavení\".",
                         "para_no_id": "Tento prvek nemá ID. Přidejte k tomuto prvku ID v 'ui-lovelace.yaml'."
                     },
                     "move_card": {
                         "header": "Vyberte pohled, do kterého chcete kartu přesunout"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Pokud odeberete konfiguraci uživatelského rozhraní Lovelace, automaticky vygenerujeme pohledy Lovelace s vašimi oblastmi a zařízeními.",
+                        "confirm_remove_config_text": "Pokud odeberete nastavení uživatelského rozhraní Lovelace, automaticky vygenerujeme pohledy Lovelace s vašimi oblastmi a zařízeními.",
                         "confirm_remove_config_title": "Opravdu chcete odstranit nastavení uživatelského rozhraní Lovelace?",
                         "confirm_unsaved_changes": "Máte neuložené změny. Opravdu chcete odejít?",
                         "confirm_unsaved_comments": "Vaše konfigurace obsahuje komentáře, které se neuloží. Chcete pokračovat?",
@@ -3014,8 +3016,8 @@
                         "error_parse_yaml": "Chyba při parsování YAML: {error}",
                         "error_remove": "Nelze odstranit nastavení: {error}",
                         "error_save_yaml": "Nelze uložit YAML: {error}",
-                        "header": "Upravit konfiguraci",
-                        "resources_moved": "Zdroje by již neměly být přidávány do konfigurace Lovelace, ale mohou být přidávány v konfiguračním panelu Lovelace.",
+                        "header": "Upravit nastavení",
+                        "resources_moved": "Zdroje by již neměly být přidávány do konfigurace Lovelace, ale mohou být přidávány v panelu nastavení Lovelace.",
                         "save": "Uložit",
                         "saved": "Uloženo",
                         "unsaved_changes": "Neuložené změny"
@@ -3028,9 +3030,9 @@
                         "para": "Tento dashboard momentálně spravuje Home Assistant. Je automaticky aktualizován při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás. Vždy si můžete vytvořit nový dashboard na hraní.",
                         "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rozhraním ?",
                         "save": "Převzít kontrolu",
-                        "yaml_config": "Abyste mohli snadněji začít, zde je aktuální konfigurace tohoto dashboardu:",
-                        "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve své konfiguraci pro tento dashboard nebo výchozí 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Používáte režim YAML, což znamená, že nemůžete změnit konfiguraci Lovelace z uživatelského rozhraní. Pokud chcete měnit Lovelace z uživatelského rozhraní, odstraňte 'mode: yaml' z vaší konfigurace Lovelace v 'configuration.yaml.'"
+                        "yaml_config": "Abyste mohli snadněji začít, zde je aktuální nastavení tohoto dashboardu:",
+                        "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve svém nastavení pro tento dashboard, nebo výchozí \"ui-lovelace.yaml\".",
+                        "yaml_mode": "Používáte režim YAML, což znamená, že nemůžete změnit nastavení Lovelace z uživatelského rozhraní. Pokud chcete měnit Lovelace z uživatelského rozhraní, odstraňte \"mode: yaml\" z vašeho nastavení Lovelace v \"configuration.yaml\"."
                     },
                     "select_view": {
                         "dashboard_label": "Dashboard",
@@ -3157,7 +3159,7 @@
                         "legacy_api_password": {
                             "abort": {
                                 "login_expired": "Relace vypršela, přihlaste se prosím znovu.",
-                                "no_api_password_set": "Nemáte nakonfigurované heslo API."
+                                "no_api_password_set": "Nemáte nastavené heslo k API."
                             },
                             "error": {
                                 "invalid_auth": "Neplatné heslo API",
@@ -3168,7 +3170,7 @@
                                     "data": {
                                         "password": "Heslo API"
                                     },
-                                    "description": "Zadejte heslo pro API ve své HTTP konfiguraci"
+                                    "description": "Zadejte heslo k API ve svém nastavení HTTP:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -3257,7 +3259,7 @@
                 },
                 "integration": {
                     "finish": "Dokončit",
-                    "intro": "Zařízení a služby jsou v Home Assistant reprezentovány jako integrace. Tyto můžete nastavit nyní nebo později z konfigurační obrazovky.",
+                    "intro": "Zařízení a služby jsou v Home Assistant reprezentovány jako integrace. Ty můžete nastavit nyní nebo později v nastavení.",
                     "more_integrations": "Více"
                 },
                 "intro": "Jste připraveni oživit svůj domov, zachovat si své soukromí a připojit se k celosvětové komunitě tvůrců?",
@@ -3361,7 +3363,7 @@
                         "title": "Jak by se toto zařízení mělo jmenovat?"
                     },
                     "description": "Posílat oznámení na toto zařízení",
-                    "error_load_platform": "Konfigurovat notify.html5.",
+                    "error_load_platform": "Nastavit notify.html5.",
                     "error_use_https": "Vyžaduje SSL pro frontend.",
                     "header": "Push notifikace",
                     "link_promo": "Další informace",

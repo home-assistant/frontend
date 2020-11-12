@@ -2021,7 +2021,14 @@
                         "complete": "Postopek intervjuja je končan",
                         "configuration": "Pridobitev konfiguracijskih vrednosti iz vozlišča",
                         "dynamic": "Pridobivanje pogosto spreminjajočih se vrednosti iz vozlišča",
-                        "session": "Pridobitev redko spreminjajočih se vrednosti iz vozlišča"
+                        "manufacturerspecific1": "Pridobivanje identifikacijskih kod proizvajalca in izdelka iz vozlišča",
+                        "manufacturerspecific2": "Pridobivanje dodatnih identifikacijskih kod proizvajalca in izdelka iz vozlišča",
+                        "nodeinfo": "Pridobivanje podprtih razredov ukazov iz vozlišča",
+                        "nodeplusinfo": "Pridobivanje informacij o Z-Wave + iz vozlišča",
+                        "probe": "Preverjanje, ali je vozlišče budno / živo",
+                        "protocolinfo": "Pridobivanje osnovnih zmožnosti Z-Wave tega vozlišča od krmilnika",
+                        "session": "Pridobitev redko spreminjajočih se vrednosti iz vozlišča",
+                        "wakeup": "Nastavljanje podpore za vrste in sporočila za prebujanje"
                     },
                     "node": {
                         "button": "Podrobnosti o vozlišču",
@@ -2167,6 +2174,8 @@
                     },
                     "picker": {
                         "add_script": "Ustvari novo skripto",
+                        "duplicate": "Podvoji",
+                        "duplicate_script": "Podvoji skripto",
                         "edit_script": "Uredi skripto",
                         "header": "Urejevalnik skript",
                         "headers": {

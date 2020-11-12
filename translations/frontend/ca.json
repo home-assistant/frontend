@@ -2187,6 +2187,8 @@
                     },
                     "picker": {
                         "add_script": "Afegeix script",
+                        "duplicate": "Duplica",
+                        "duplicate_script": "Duplica l'script",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "headers": {
