@@ -78,3 +78,25 @@ export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
       return "hass:window-open";
   }
 };
+
+export const computeOpenIcon = (stateObj: HassEntity): string => {
+  switch (stateObj.attributes.device_class) {
+    case "awning":
+    case "door":
+    case "gate":
+      return "hass:arrow-expand-horizontal";
+    default:
+      return "hass:arrow-up";
+  }
+};
+
+export const computeCloseIcon = (stateObj: HassEntity): string => {
+  switch (stateObj.attributes.device_class) {
+    case "awning":
+    case "door":
+    case "gate":
+      return "hass:arrow-collapse-horizontal";
+    default:
+      return "hass:arrow-down";
+  }
+};
