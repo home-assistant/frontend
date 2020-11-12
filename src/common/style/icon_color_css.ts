@@ -5,17 +5,17 @@ export interface StateColor {
   color?: string;
 }
 
-export const computeStateColor = (
+export const computeCustomStateColor = (
   state: string,
   stateColors: StateColor[]
-): string => {
+): string | undefined => {
   for (const stateColor of stateColors) {
     if (stateColor.state === state) {
-      return stateColor.color || "--paper-item-icon-active-color";
+      return stateColor.color || "var(--paper-item-icon-active-color, #fdd835)";
     }
   }
 
-  return "";
+  return undefined;
 };
 
 export const iconColorCSS = css`

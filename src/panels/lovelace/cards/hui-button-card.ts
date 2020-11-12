@@ -27,7 +27,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
-  computeStateColor,
+  computeCustomStateColor,
   iconColorCSS,
 } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
@@ -302,7 +302,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   private _computeColor(stateObj: HassEntity | LightEntity): string {
     if (Array.isArray(this._config!.state_color)) {
-      const color = computeStateColor(
+      const color = computeCustomStateColor(
         stateObj.state,
         this._config!.state_color
       );

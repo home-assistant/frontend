@@ -16,7 +16,7 @@ import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";
 import {
-  computeStateColor,
+  computeCustomStateColor,
   iconColorCSS,
   StateColor,
 } from "../../common/style/icon_color_css";
@@ -122,7 +122,7 @@ export class StateBadge extends LitElement {
         }
       }
       if (Array.isArray(this.stateColor)) {
-        const color = computeStateColor(stateObj.state, this.stateColor);
+        const color = computeCustomStateColor(stateObj.state, this.stateColor);
         if (color) {
           iconStyle.color = color;
         }
