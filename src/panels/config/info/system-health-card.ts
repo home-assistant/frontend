@@ -207,7 +207,12 @@ class SystemHealthCard extends LitElement {
       let first = true;
       const parts = [
         `${
-          github && domain !== "homeassistant" ? `<details><summary>${domainToName(this.hass.localize, domain)</summary>\n` : "\n"
+          github && domain !== "homeassistant"
+            ? `<details><summary>${domainToName(
+                this.hass.localize,
+                domain
+              )}</summary>\n`
+            : ""
         }`,
       ];
 
@@ -246,9 +251,9 @@ class SystemHealthCard extends LitElement {
     }
 
     copyToClipboard(
-      `${
-        github ? "## " : ""
-      }System Health\n\n${haContent}\n\n${domainParts.join("\n\n")}`
+      `${github ? "## " : ""}System Health\n${haContent}\n\n${domainParts.join(
+        "\n\n"
+      )}`
     );
 
     showToast(this, { message: this.hass.localize("ui.common.copied") });
