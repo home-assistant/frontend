@@ -8,11 +8,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 import "../ha-relative-time";
 import "./state-badge";
@@ -33,7 +33,7 @@ class StateInfo extends LitElement {
       return html``;
     }
 
-    return html` <state-badge
+    return html`<state-badge
         .stateObj=${this.stateObj}
         .stateColor=${true}
       ></state-badge>
@@ -42,7 +42,7 @@ class StateInfo extends LitElement {
           ${computeStateName(this.stateObj)}
         </div>
         ${this.inDialog
-          ? html` <div class="time-ago">
+          ? html`<div class="time-ago">
               <ha-relative-time
                 id="last_changed"
                 .hass=${this.hass}
