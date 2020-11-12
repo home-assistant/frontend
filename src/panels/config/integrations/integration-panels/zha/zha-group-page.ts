@@ -94,15 +94,16 @@ export class ZHAGroupPage extends LitElement {
     if (!this.group) {
       return html`
         <hass-error-screen
-          error="${this.hass.localize(
+          .hass=${this.hass}
+          .error=${this.hass.localize(
             "ui.panel.config.zha.groups.group_not_found"
-          )}"
+          )}
         ></hass-error-screen>
       `;
     }
 
     return html`
-      <hass-subpage .header=${this.group.name}>
+      <hass-subpage .hass=${this.hass} .header=${this.group.name}>
         <ha-icon-button
           slot="toolbar-icon"
           icon="hass:delete"

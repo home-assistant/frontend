@@ -145,7 +145,7 @@ class HassTabsSubpage extends LitElement {
             `
           : html`
               <ha-icon-button-arrow-prev
-                aria-label="Back"
+                .hass=${this.hass}
                 @click=${this._backTapped}
               ></ha-icon-button-arrow-prev>
             `}
@@ -217,7 +217,7 @@ class HassTabsSubpage extends LitElement {
         display: flex;
         align-items: center;
         font-size: 20px;
-        height: 65px;
+        height: var(--header-height);
         background-color: var(--sidebar-background-color);
         font-weight: 400;
         color: var(--sidebar-text-color);

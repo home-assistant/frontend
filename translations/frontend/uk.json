@@ -569,7 +569,7 @@
                 "messages": {
                     "became_unavailable": "стала недоступною",
                     "changed_to_state": "змінено на {state}",
-                    "cleared_device_class": "чисто (не {device_class} виявлено)",
+                    "cleared_device_class": "чисто ({device_class} не виявлено)",
                     "detected_device_class": "виявлено {device_class}",
                     "set": "встановити",
                     "turned_off": "вимкнено",
@@ -623,14 +623,15 @@
                     "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
                     "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}"
                 },
-                "just_now": "Прямо зараз",
+                "just_now": "Щойно",
                 "never": "Ніколи",
                 "past": "{time} тому",
                 "past_duration": {
-                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} тому",
-                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} тому",
-                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} тому",
-                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} тому"
+                    "day": "{count} {count, plural,\n  one {день}\n  other {днів}\n} тому",
+                    "hour": "{count} {count, plural,\n  one {годину}\n  other {годин}\n} тому",
+                    "minute": "{count} {count, plural,\n  one {хвилину}\n  other {хвилин}\n} тому",
+                    "second": "{count} {count, plural,\n  one {секунду}\n  other {секунд}\n} тому",
+                    "week": "{count} {count, plural,\n  one {тиждень}\n  other {тижнів}\n} тому"
                 }
             },
             "service-picker": {
@@ -676,6 +677,13 @@
                 "ok": "ТАК"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Початкове значення",
+                    "maximum": "Максимальне значення",
+                    "minimum": "Мінімальне значення",
+                    "restore": "Відновлення останнього відомого значення під час Home Assistant",
+                    "step": "Розмір кроку"
+                },
                 "generic": {
                     "icon": "Значок",
                     "name": "Назва"
@@ -708,7 +716,10 @@
                     "password": "Пароль",
                     "text": "Текст"
                 },
-                "required_error_msg": "Це поле є обов'язковим"
+                "required_error_msg": "Це поле є обов'язковим",
+                "timer": {
+                    "duration": "Тривалість"
+                }
             },
             "image_cropper": {
                 "crop": "Обрізати"
@@ -719,6 +730,7 @@
                 "dismiss": "Відхилити",
                 "edit": "Редагувати об'єкт",
                 "history": "Історія",
+                "last_changed": "Востаннє змінено",
                 "last_updated": "Останнє оновлення",
                 "person": {
                     "create_zone": "Створити зону з поточного місця розташування"
@@ -774,6 +786,13 @@
                 }
             },
             "quick-bar": {
+                "commands": {
+                    "server_control": {
+                        "perform_action": "{action} сервер",
+                        "restart": "Перезапустити",
+                        "stop": "Зупинити"
+                    }
+                },
                 "filter_placeholder": "Фільтр об'єкта"
             },
             "voice_command": {
@@ -836,6 +855,7 @@
         },
         "notification_toast": {
             "connection_lost": "З'єднання втрачено. Повторне підключення...",
+            "dismiss": "Відхилити",
             "service_call_failed": "Не вдалося викликати сервіс {service}.",
             "started": "Home Assistant запущений!",
             "triggered": "Запущено {name}"
@@ -1141,6 +1161,7 @@
                                 "time": {
                                     "at": "У",
                                     "label": "Час",
+                                    "type_input": "Значення помічнику дати й часу",
                                     "type_value": "Фіксований час"
                                 },
                                 "webhook": {
@@ -1512,11 +1533,13 @@
                         "no_helpers": "Схоже, у вас ще немає помічників!"
                     },
                     "types": {
+                        "counter": "Лічильник",
                         "input_boolean": "Тумблер",
                         "input_datetime": "Дата та/або час",
                         "input_number": "Номер",
                         "input_select": "Випадання",
-                        "input_text": "Текст"
+                        "input_text": "Текст",
+                        "timer": "Таймер"
                     }
                 },
                 "info": {
@@ -2362,6 +2385,7 @@
                                 "entity-id": "ID об'єкта",
                                 "last-changed": "Востаннє змінено",
                                 "last-triggered": "Останнє спрацьовування",
+                                "last-updated": "Останнє оновлення",
                                 "none": "Немає додаткової інформації",
                                 "position": "Положення",
                                 "tilt-position": "Положення нахилу"
@@ -2896,6 +2920,9 @@
                     "header": "Багатофакторна перевірка справжності модулів"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Ім'я пристрою"
+                    },
                     "description": "Надіслати сповіщення на цей пристрій.",
                     "error_load_platform": "Налаштувати notify.html5.",
                     "error_use_https": "Потрібно ввімкнути SSL для інтерфейсу.",

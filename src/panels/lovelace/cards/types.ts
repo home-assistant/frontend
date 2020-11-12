@@ -169,6 +169,13 @@ export interface LightCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface LogbookCardConfig extends LovelaceCardConfig {
+  type: "logbook";
+  entities: string[];
+  title?: string;
+  hours_to_show?: number;
+}
+
 export interface MapCardConfig extends LovelaceCardConfig {
   type: "map";
   title?: string;
@@ -286,6 +293,11 @@ export interface ShoppingListCardConfig extends LovelaceCardConfig {
 export interface StackCardConfig extends LovelaceCardConfig {
   cards: LovelaceCardConfig[];
   title?: string;
+}
+
+export interface GridCardConfig extends StackCardConfig {
+  columns?: number;
+  square?: boolean;
 }
 
 export interface ThermostatCardConfig extends LovelaceCardConfig {

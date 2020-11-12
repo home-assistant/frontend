@@ -197,7 +197,6 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         display: flex;
         padding: 0 16px 4px;
         flex-wrap: wrap;
-        height: 100%;
         box-sizing: border-box;
         align-content: center;
       }

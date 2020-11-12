@@ -7,6 +7,7 @@ import {
   rgb2hex,
   rgb2lab,
 } from "../color/convert-color";
+import { hexBlend } from "../color/hex";
 import { labBrighten, labDarken } from "../color/lab";
 import { rgbContrast } from "../color/rgb";
 
@@ -37,6 +38,13 @@ export const applyThemesOnElement = (
     if (themeOptions.dark) {
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
+      if (themeOptions.primaryColor) {
+        themeRules["app-header-background-color"] = hexBlend(
+          themeOptions.primaryColor,
+          "#121212",
+          8
+        );
+      }
     }
     if (themeOptions.primaryColor) {
       cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;

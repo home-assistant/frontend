@@ -72,6 +72,12 @@ class MoreInfoSun extends LitElement {
         flex-direction: row;
         justify-content: space-between;
       }
+      ha-relative-time {
+        display: inline-block;
+      }
+      ha-relative-time::first-letter {
+        text-transform: lowercase;
+      }
     `;
   }
 }

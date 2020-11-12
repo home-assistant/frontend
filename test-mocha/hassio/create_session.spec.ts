@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { createHassioSession } from "../../src/data/hassio/supervisor";
+import { createHassioSession } from "../../src/data/hassio/ingress";
 
 const sessionID = "fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh";
 
@@ -15,7 +15,7 @@ describe("Create hassio session", function () {
         return { data: { session: sessionID } };
       },
     });
-    assert.equal(
+    assert.strictEqual(
       // @ts-ignore
       global.document.cookie,
       "ingress_session=fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh;path=/api/hassio_ingress/;SameSite=Strict"
@@ -32,7 +32,7 @@ describe("Create hassio session", function () {
         return { data: { session: sessionID } };
       },
     });
-    assert.equal(
+    assert.strictEqual(
       // @ts-ignore
       global.document.cookie,
       "ingress_session=fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh;path=/api/hassio_ingress/;SameSite=Strict;Secure"
@@ -52,6 +52,6 @@ describe("Create hassio session", function () {
       () => true,
       () => false
     );
-    assert.equal(await createSessionPromise, false);
+    assert.strictEqual(await createSessionPromise, false);
   });
 });

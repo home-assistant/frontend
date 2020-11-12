@@ -67,6 +67,7 @@ export class ZHAAddGroupPage extends LitElement {
   protected render() {
     return html`
       <hass-subpage
+        .hass=${this.hass}
         .header=${this.hass.localize("ui.panel.config.zha.groups.create_group")}
       >
         <ha-config-section .isWide=${!this.narrow}>

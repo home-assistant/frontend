@@ -14,7 +14,9 @@ import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { StackCardConfig } from "./types";
 
-export abstract class HuiStackCard extends LitElement implements LovelaceCard {
+export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
+  extends LitElement
+  implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(
       /* webpackChunkName: "hui-stack-card-editor" */ "../editor/config-elements/hui-stack-card-editor"
@@ -32,13 +34,13 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
   @property() protected _cards?: LovelaceCard[];
 
-  @internalProperty() private _config?: StackCardConfig;
+  @internalProperty() protected _config?: T;
 
   public getCardSize(): number | Promise<number> {
     return 1;
   }
 
-  public setConfig(config: StackCardConfig): void {
+  public setConfig(config: T): void {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
       throw new Error("Card config incorrect");
     }
@@ -87,6 +89,9 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
         color: var(--ha-card-header-color, --primary-text-color);
         font-family: var(--ha-card-header-font-family, inherit);
         font-size: var(--ha-card-header-font-size, 24px);
+        font-weight: normal;
+        margin-block-start: 0px;
+        margin-block-end: 0px;
         letter-spacing: -0.012em;
         line-height: 32px;
         display: block;

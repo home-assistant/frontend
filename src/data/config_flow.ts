@@ -11,6 +11,7 @@ export const DISCOVERY_SOURCES = [
   "ssdp",
   "zeroconf",
   "discovery",
+  "mqtt",
 ];
 
 export const ATTENTION_SOURCES = ["reauth"];

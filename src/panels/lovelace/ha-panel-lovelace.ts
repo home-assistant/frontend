@@ -109,6 +109,7 @@ class LovelacePanel extends LitElement {
     if (state === "error") {
       return html`
         <hass-error-screen
+          .hass=${this.hass}
           title="${domainToName(this.hass!.localize, "lovelace")}"
           .error="${this._errorMsg}"
         >
@@ -184,7 +185,7 @@ class LovelacePanel extends LitElement {
       message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
       action: {
         action: () => this._fetchConfig(false),
-        text: this.hass!.localize("ui.panel.lovelace.changed_toast.refresh"),
+        text: this.hass!.localize("ui.common.refresh"),
       },
       duration: 0,
       dismissable: false,

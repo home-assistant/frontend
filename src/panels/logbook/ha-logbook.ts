@@ -22,7 +22,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
 import "../../components/ha-relative-time";
 import { LogbookEntry } from "../../data/logbook";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-logbook")
@@ -81,7 +81,7 @@ class HaLogbook extends LitElement {
 
     return html`
       <div
-        class="container ${classMap({
+        class="container ha-scrollbar ${classMap({
           narrow: this.narrow,
           rtl: this._rtl,
           "no-name": this.noName,
@@ -225,6 +225,7 @@ class HaLogbook extends LitElement {
   static get styles(): CSSResultArray {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         :host {
           display: block;
