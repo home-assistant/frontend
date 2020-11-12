@@ -93,7 +93,7 @@ export class HuiGlanceCardEditor extends LitElement
   }
 
   get _state_color(): boolean {
-    return this._config!.state_color ?? true;
+    return Boolean(this._config!.state_color) ?? true;
   }
 
   protected render(): TemplateResult {
