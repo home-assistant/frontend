@@ -511,15 +511,23 @@
             "continue": "Continuar",
             "copied": "Copiado",
             "delete": "Apagar",
+            "disable": "Desativar",
+            "enable": "Ativar",
             "error_required": "Obrigatório",
+            "leave": "Sair",
             "loading": "A carregar",
             "menu": "Menu",
             "next": "Seguinte",
             "no": "Não",
+            "not_now": "Agora não",
             "overflow_menu": "Menu sobreposto",
             "previous": "Anterior",
             "refresh": "Atualizar",
+            "remove": "Remover",
+            "rename": "Renomear",
             "save": "Guardar",
+            "skip": "Saltar",
+            "stay": "Ficar",
             "successfully_deleted": "Eliminado com sucesso",
             "successfully_saved": "Salva com sucesso",
             "undo": "Desfazer",
@@ -695,6 +703,11 @@
             },
             "service-picker": {
                 "service": "Serviço"
+            },
+            "user-picker": {
+                "add_user": "Adicionar Utilizador",
+                "no_user": "Nenhum utilizador",
+                "remove_user": "Remover utilizador"
             }
         },
         "dialogs": {
@@ -783,6 +796,7 @@
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidade",
                 "history": "Histórico",
+                "last_changed": "Última modificação",
                 "last_updated": "Última atualização",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
@@ -873,6 +887,10 @@
                         "trend": "Recarregar entidades de tendência",
                         "universal": "Recarregue entidades reprodutoras de multimédia",
                         "zone": "Recarregar zonas"
+                    },
+                    "server_control": {
+                        "restart": "Recomeçar",
+                        "stop": "Parar"
                     }
                 },
                 "filter_placeholder": "Filtro de Entidade"
@@ -936,6 +954,7 @@
         },
         "notification_toast": {
             "connection_lost": "Ligação perdida. A ligar de novo...",
+            "dismiss": "Descartar",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
             "started": "Home Assistant já iniciou",
             "starting": "Home Assistant está a inicializar, nem tudo estará disponível até o processo concluir.",
@@ -1188,6 +1207,7 @@
                                     "trigger": "Acionador"
                                 },
                                 "event": {
+                                    "context_user_pick": "Selecionar o utilizador",
                                     "event_data": "Dados do evento",
                                     "event_type": "Tipo de evento",
                                     "label": "Evento"
@@ -1284,6 +1304,14 @@
                         "only_editable": "Apenas as automações em automations.yaml são editáveis.",
                         "pick_automation": "Escolha a automação a editar",
                         "show_info_automation": "Mostra informações sobre automação"
+                    },
+                    "thingtalk": {
+                        "create": "Criar automação",
+                        "task_selection": {
+                            "for_example": "Por exemplo:",
+                            "header": "Criar uma nova automação",
+                            "language_note": "Nota: Por enquanto, apenas o inglês é suportado."
+                        }
                     }
                 },
                 "cloud": {
@@ -1667,16 +1695,34 @@
                     "system_health": {
                         "checks": {
                             "cloud": {
-                                "alexa_enabled": "Ativo pela Alexa",
-                                "google_enabled": "Ativo pelo Google",
-                                "logged_in": "Ligado em"
+                                "alexa_enabled": "Alexa ativa",
+                                "google_enabled": "Google ativo",
+                                "logged_in": "Ligado em",
+                                "remote_connected": "Ligado remotamente",
+                                "remote_enabled": "Remoto ativo",
+                                "subscription_expiration": "Validade da Subscrição"
+                            },
+                            "homeassistant": {
+                                "arch": "Arquitetura do Processador",
+                                "dev": "Desenvolvimento",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Tipo de Instalação",
+                                "os_name": "Nome do Sistema Operativo",
+                                "os_version": "Versão do Sistema Operativo",
+                                "python_version": "Versão Python",
+                                "timezone": "Fuso horário",
+                                "version": "Versão",
+                                "virtualenv": "Ambiente Virtual"
                             },
                             "lovelace": {
                                 "dashboards": "Dashboards",
                                 "mode": "Modo",
                                 "resources": "Recursos"
                             }
-                        }
+                        },
+                        "manage": "Gerir",
+                        "more_info": "mais informações"
                     },
                     "title": "Informações"
                 },
@@ -1964,6 +2010,7 @@
                     },
                     "services": {
                         "add_node": "Adicionar nó",
+                        "cancel_command": "Cancelar comando",
                         "remove_node": "Remover nó"
                     }
                 },
@@ -2078,6 +2125,8 @@
                     },
                     "picker": {
                         "add_script": "Adicionar script",
+                        "duplicate": "Duplicado",
+                        "duplicate_script": "Script duplicado",
                         "edit_script": "Editar script",
                         "header": "Editor de Script",
                         "headers": {
@@ -2151,6 +2200,8 @@
                     "add_tag": "Adicionar etiqueta",
                     "automation_title": "A etiqueta {name} é lida",
                     "caption": "Etiquetas",
+                    "confirm_remove": "Tens a certeza que queres remover a etiqueta {tag}?",
+                    "confirm_remove_title": "Remover a etiqueta?",
                     "create_automation": "Criar automação com etiqueta",
                     "description": "Gerir etiquetas",
                     "detail": {
@@ -2506,6 +2557,7 @@
                         "listeners": "Este modelo ouve os seguintes eventos de mudança de estado:",
                         "no_listeners": "Este modelo não ouve nenhum evento alterado pelo estado e não será atualizado automaticamente.",
                         "reset": "Redefinir para modelo de demonstração",
+                        "result_type": "Tipo de resultado",
                         "template_extensions": "Extensões de templates do Home Assistant",
                         "title": "Template",
                         "unknown_error_template": "Erro desconhecido ao processar o template"
@@ -2649,6 +2701,7 @@
                                 "entity-id": "ID da entidade",
                                 "last-changed": "Última modificação",
                                 "last-triggered": "Acionado pela última vez",
+                                "last-updated": "Última atualização",
                                 "none": "Sem informações secundárias",
                                 "position": "Posição",
                                 "tilt-position": "Posição de Inclinação"
@@ -2940,7 +2993,8 @@
                     "exit_edit_mode": "Sair do modo de edição do IU",
                     "help": "Ajuda",
                     "refresh": "Atualizar",
-                    "reload_resources": "Recarregar recursos"
+                    "reload_resources": "Recarregar recursos",
+                    "start_conversation": "Iniciar conversa"
                 },
                 "reload_lovelace": "Recarregar UI",
                 "reload_resources": {
@@ -3185,6 +3239,9 @@
                     "dropdown_label": "Painel de instrumentos",
                     "header": "Painel de instrumentos"
                 },
+                "enable_shortcuts": {
+                    "header": "Atalhos de Teclado"
+                },
                 "force_narrow": {
                     "description": "Isto esconderá por defeito a barra lateral, semelhante à experiência no telemóvel.",
                     "header": "Esconder sempre a barra lateral."
@@ -3229,6 +3286,9 @@
                     "header": "Módulos de Autenticação por Multíplos-fatores"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nome do dispositivo"
+                    },
                     "description": "Enviar notificações para este dispositivo.",
                     "error_load_platform": "Configurar notify.html5.",
                     "error_use_https": "Requer SSL ativo para o interface principal",
@@ -3269,6 +3329,9 @@
                     "description": "Ative ou desative a vibração neste dispositivo ao controlar dispositivos.",
                     "header": "Vibrar"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Iniciar conversa"
             },
             "shopping-list": {
                 "add_item": "Adicionar item",

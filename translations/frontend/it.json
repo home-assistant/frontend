@@ -889,7 +889,7 @@
                         "input_select": "Ricarica input a discesa",
                         "input_text": "Ricarica input testuali",
                         "min_max": "Ricarica le entità min/max",
-                        "mqtt": "Ricarica entità mqtt configurate manualmente",
+                        "mqtt": "Ricarica le entità MQTT configurate manualmente",
                         "person": "Ricarica le persone",
                         "ping": "Ricarica le entità del sensore binario Ping",
                         "reload": "Ricarica {domain}",
@@ -2187,6 +2187,8 @@
                     },
                     "picker": {
                         "add_script": "Aggiungi script",
+                        "duplicate": "Duplica",
+                        "duplicate_script": "Duplica script",
                         "edit_script": "Modifica script",
                         "header": "Editor script",
                         "headers": {
@@ -2223,7 +2225,7 @@
                             "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML attuale e si caricherà la versione aggiornata.",
                             "min_max": "Ricarica le entità min/max",
-                            "mqtt": "Ricarica entità mqtt configurate manualmente",
+                            "mqtt": "Ricarica le entità MQTT configurate manualmente",
                             "person": "Ricarica le persone",
                             "ping": "Ricarica le entità del sensore binario Ping",
                             "reload": "Ricarica {domain}",

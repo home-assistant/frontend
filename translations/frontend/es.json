@@ -2187,6 +2187,8 @@
                     },
                     "picker": {
                         "add_script": "Añadir script",
+                        "duplicate": "Duplicar",
+                        "duplicate_script": "Duplicar script",
                         "edit_script": "Editar script",
                         "header": "Editor de scripts",
                         "headers": {
