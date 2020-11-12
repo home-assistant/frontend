@@ -207,9 +207,7 @@ class SystemHealthCard extends LitElement {
       let first = true;
       const parts = [
         `${
-          github && domain !== "homeassistant" ? "<details><summary>" : ""
-        }${domainToName(this.hass.localize, domain)}${
-          github && domain !== "homeassistant" ? "</summary>\n" : "\n"
+          github && domain !== "homeassistant" ? `<details><summary>${domainToName(this.hass.localize, domain)</summary>\n` : "\n"
         }`,
       ];
 
