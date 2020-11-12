@@ -1,3 +1,4 @@
+import { StateColor } from "../../../common/style/icon_color_css";
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
@@ -68,7 +69,7 @@ export interface StateIconElementConfig extends LovelaceElementConfigBase {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   icon?: string;
-  state_color?: boolean;
+  state_color?: boolean | StateColor[];
 }
 
 export interface StateLabelElementConfig extends LovelaceElementConfigBase {

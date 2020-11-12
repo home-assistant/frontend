@@ -15,7 +15,11 @@ import { styleMap } from "lit-html/directives/style-map";
 import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";
-import { iconColorCSS } from "../../common/style/icon_color_css";
+import {
+  computeStateColor,
+  iconColorCSS,
+  StateColor,
+} from "../../common/style/icon_color_css";
 
 import type { HomeAssistant } from "../../types";
 
@@ -24,13 +28,13 @@ import "../ha-icon";
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public overrideIcon?: string;
 
   @property() public overrideImage?: string;
 
-  @property({ type: Boolean }) public stateColor?: boolean;
+  @property({ type: Boolean }) public stateColor?: boolean | StateColor[];
 
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
@@ -115,6 +119,12 @@ export class StateBadge extends LitElement {
           }
           // lowest brighntess will be around 50% (that's pretty dark)
           iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+        }
+      }
+      if (Array.isArray(this.stateColor)) {
+        const color = computeStateColor(stateObj.state, this.stateColor);
+        if (color) {
+          iconStyle.color = color;
         }
       }
     }

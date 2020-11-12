@@ -1,5 +1,23 @@
 import { css } from "lit-element";
 
+export interface StateColor {
+  state: string;
+  color?: string;
+}
+
+export const computeStateColor = (
+  state: string,
+  stateColors: StateColor[]
+): string => {
+  for (const stateColor of stateColors) {
+    if (stateColor.state === state) {
+      return stateColor.color || "--paper-item-icon-active-color";
+    }
+  }
+
+  return "";
+};
+
 export const iconColorCSS = css`
   ha-icon[data-domain="alert"][data-state="on"],
   ha-icon[data-domain="automation"][data-state="on"],

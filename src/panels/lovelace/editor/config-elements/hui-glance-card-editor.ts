@@ -37,6 +37,7 @@ import {
   EditorTarget,
   entitiesConfigStruct,
   EntitiesEditorEvent,
+  stateColorConfigStruct,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -48,7 +49,7 @@ const cardConfigStruct = object({
   show_name: optional(boolean()),
   show_state: optional(boolean()),
   show_icon: optional(boolean()),
-  state_color: optional(boolean()),
+  state_color: union([optional(boolean()), array(stateColorConfigStruct)]),
   entities: array(entitiesConfigStruct),
 });
 

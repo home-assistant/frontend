@@ -1,3 +1,4 @@
+import { StateColor } from "../../../common/style/icon_color_css";
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView } from "../../../types";
 import { Condition } from "../common/validate-condition";
@@ -56,7 +57,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
-  state_color?: boolean;
+  state_color?: boolean | StateColor[];
   show_name?: boolean;
   show_icon?: boolean;
 }
@@ -70,7 +71,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
   footer?: LovelaceHeaderFooterConfig;
-  state_color?: boolean;
+  state_color?: boolean | StateColor[];
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
@@ -83,7 +84,7 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
-  state_color?: boolean;
+  state_color?: boolean | StateColor[];
   show_state?: boolean;
 }
 
@@ -133,7 +134,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
   image?: string;
   show_state?: boolean;
-  state_color?: boolean;
+  state_color?: boolean | StateColor[];
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -144,7 +145,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   theme?: string;
   entities: Array<string | ConfigEntity>;
   columns?: number;
-  state_color?: boolean;
+  state_color?: boolean | StateColor[];
 }
 
 export interface HumidifierCardConfig extends LovelaceCardConfig {

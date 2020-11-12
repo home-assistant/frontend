@@ -180,6 +180,11 @@ const attributeEntitiesRowConfigStruct = object({
   name: optional(string()),
 });
 
+export const stateColorConfigStruct = object({
+  state: string(),
+  color: optional(string()),
+});
+
 export const entitiesConfigStruct = union([
   object({
     entity: string(),
@@ -188,7 +193,7 @@ export const entitiesConfigStruct = union([
     image: optional(string()),
     secondary_info: optional(string()),
     format: optional(string()),
-    state_color: optional(boolean()),
+    state_color: union([optional(boolean()), array(stateColorConfigStruct)]),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),

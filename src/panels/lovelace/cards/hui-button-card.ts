@@ -26,7 +26,10 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { iconColorCSS } from "../../../common/style/icon_color_css";
+import {
+  computeStateColor,
+  iconColorCSS,
+} from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant, LightEntity } from "../../../types";
@@ -298,6 +301,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(stateObj: HassEntity | LightEntity): string {
+    if (Array.isArray(this._config!.state_color)) {
+      const color = computeStateColor(
+        stateObj.state,
+        this._config!.state_color
+      );
+      if (color) {
+        return color;
+      }
+    }
     if (!stateObj.attributes.hs_color || !this._config?.state_color) {
       return "";
     }
