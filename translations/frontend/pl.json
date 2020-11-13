@@ -872,6 +872,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Obszary",
+                        "automation": "Automatyzacje",
+                        "core": "Ogólne",
+                        "customize": "Dostosowywanie",
+                        "devices": "Urządzenia",
+                        "entities": "Rejestr encji",
+                        "helpers": "Pomocnicy",
+                        "info": "Informacje",
+                        "integrations": "Integracje",
+                        "logs": "Logi",
+                        "lovelace": "Dashboardy",
+                        "navigate_to": "Przejdź do: {panel}",
+                        "navigate_to_config": "Przejdź do: Konfiguracja > {panel}",
+                        "person": "Osoby",
+                        "scene": "Sceny",
+                        "script": "Skrypty",
+                        "server_control": "Kontrola serwera",
+                        "tags": "Tagi",
+                        "users": "Użytkownicy",
+                        "zone": "Strefy"
+                    },
                     "reload": {
                         "automation": "Automatyzacje",
                         "command_line": "Encje komponentu linia komend",
@@ -1743,11 +1765,14 @@
                                 "can_reach_cloud_auth": "Dostęp do serwera uwierzytelniania",
                                 "google_enabled": "Asystent Google włączony",
                                 "logged_in": "Zalogowany",
+                                "relayer_connected": "Relayer podłączony",
+                                "remote_connected": "Zdalny dostęp podłączony",
+                                "remote_enabled": "Zdalny dostęp włączony",
                                 "subscription_expiration": "Wygaśnięcie subskrypcji"
                             },
                             "homeassistant": {
                                 "arch": "Architektura procesora",
-                                "dev": "Rozwój",
+                                "dev": "Wersja rozwojowa",
                                 "docker": "Docker",
                                 "hassio": "HassOS",
                                 "installation_type": "Typ instalacji",
@@ -1764,7 +1789,7 @@
                                 "resources": "Zasoby"
                             }
                         },
-                        "manage": "Zarządzanie",
+                        "manage": "Zarządzaj",
                         "more_info": "więcej info"
                     },
                     "title": "Informacje"
@@ -2320,6 +2345,7 @@
                         "update_user": "Aktualizuj"
                     },
                     "picker": {
+                        "add_user": "Dodaj użytkownika",
                         "headers": {
                             "group": "Grupa",
                             "name": "Nazwa",
@@ -2600,6 +2626,8 @@
                         "filter_attributes": "filtr atrybutów",
                         "filter_entities": "Filtr encji",
                         "filter_states": "Filtr stanów",
+                        "last_changed": "Ostatnia zmiana",
+                        "last_updated": "Ostatnio zaktualizowano",
                         "more_info": "Więcej informacji",
                         "no_entities": "Brak encji",
                         "set_state": "Ustaw stan",
@@ -2717,7 +2745,7 @@
                         },
                         "calendar": {
                             "calendar_entities": "Encje kalendarza",
-                            "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy",
+                            "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy.",
                             "inital_view": "Widok początkowy",
                             "name": "Kalendarz",
                             "views": {
@@ -2850,6 +2878,10 @@
                         "light": {
                             "description": "Karta światło pozwala zmienić jasność światła.",
                             "name": "Światło"
+                        },
+                        "logbook": {
+                            "description": "Karta dziennika pokazuje listę zdarzeń dla encji.",
+                            "name": "Dziennik"
                         },
                         "map": {
                             "dark_mode": "Tryb ciemny",

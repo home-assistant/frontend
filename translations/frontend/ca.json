@@ -813,7 +813,7 @@
                 "dismiss": "Omet el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
-                "last_changed": "Darrer canvi",
+                "last_changed": "Últim canvi",
                 "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
@@ -872,6 +872,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Àrees",
+                        "automation": "Automatització",
+                        "core": "General",
+                        "customize": "Personalització",
+                        "devices": "Dispositius",
+                        "entities": "Entitats",
+                        "helpers": "Ajudants",
+                        "info": "Informació",
+                        "integrations": "Integracions",
+                        "logs": "Registres",
+                        "lovelace": "Panells Lovelace",
+                        "navigate_to": "Vés a {panel}",
+                        "navigate_to_config": "Vés a la configuració de {panel}",
+                        "person": "Persones",
+                        "scene": "Escenes",
+                        "script": "Programació (scripts)",
+                        "server_control": "Controls del servidor",
+                        "tags": "Etiquetes",
+                        "users": "Usuaris",
+                        "zone": "Zones"
+                    },
                     "reload": {
                         "automation": "Actualitza automatitzacions",
                         "command_line": "Actualitza entitats de comandes",
@@ -1925,7 +1947,7 @@
                             "update": "Actualitza",
                             "url": "URL",
                             "url_error_msg": "L'URL és un camp obligatori",
-                            "warning_header": "Ves amb compte!",
+                            "warning_header": "Vés amb compte!",
                             "warning_text": "Afegir recursos pot ser perillós, assegura't de conèixer i confiar en el seu origen. Els recursos fraudulents poden perjudicar greument el teu sistema."
                         },
                         "picker": {
@@ -2323,6 +2345,7 @@
                         "update_user": "Actualitza"
                     },
                     "picker": {
+                        "add_user": "Afegeix usuari",
                         "headers": {
                             "group": "Grup",
                             "name": "Nom",
@@ -2603,6 +2626,8 @@
                         "filter_attributes": "Filtra atributs",
                         "filter_entities": "Filtra entitats",
                         "filter_states": "Filtra estats",
+                        "last_changed": "Últim canvi",
+                        "last_updated": "Última actualització",
                         "more_info": "Més informació",
                         "no_entities": "No hi ha entitats",
                         "set_state": "Estableix estat",
@@ -2853,6 +2878,10 @@
                         "light": {
                             "description": "La targeta llum et permet ajustar la brillantor d'una llum.",
                             "name": "Llum"
+                        },
+                        "logbook": {
+                            "description": "La targeta diari de registre mostra una llista d'esdeveniments de les entitats",
+                            "name": "Diari de registre"
                         },
                         "map": {
                             "dark_mode": "Mode fosc?",

@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Controls",
                 "cover": {
+                    "close_cover": "Close cover",
                     "close_tile_cover": "Close cover tilt",
+                    "open_cover": "Open cover",
                     "open_tilt_cover": "Open cover tilt",
                     "stop_cover": "Stop cover from moving"
                 },

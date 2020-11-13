@@ -867,6 +867,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Помещения",
+                        "automation": "Автоматизация",
+                        "core": "Общие",
+                        "customize": "Кастомизация",
+                        "devices": "Устройства",
+                        "entities": "Объекты",
+                        "helpers": "Вспомогательное",
+                        "info": "О системе",
+                        "integrations": "Интеграции",
+                        "logs": "Журнал сервера",
+                        "lovelace": "Панели Lovelace",
+                        "navigate_to": "Открыть \"{panel}\"",
+                        "navigate_to_config": "Перейти в раздел \"{panel}\"",
+                        "person": "Люди",
+                        "scene": "Сцены",
+                        "script": "Сценарии",
+                        "server_control": "Сервер",
+                        "tags": "Метки",
+                        "users": "Пользователи",
+                        "zone": "Зоны"
+                    },
                     "reload": {
                         "automation": "Перезагрузить автоматизации",
                         "command_line": "Перезагрузить объекты интеграции \"Command Line\"",
@@ -1636,12 +1658,12 @@
                         "disable_selected": {
                             "button": "Скрыть выбранные",
                             "confirm_text": "Скрытые объекты не будут доступны в Home Assistant.",
-                            "confirm_title": "Вы уверены, что хотите скрыть {number} выбранных объектов?"
+                            "confirm_title": "Вы уверены, что хотите скрыть {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
                         },
                         "enable_selected": {
                             "button": "Отображать выбранные",
                             "confirm_text": "Если эти объекты ранее были скрыты, они снова будут отображаться в Home Assistant.",
-                            "confirm_title": "Отображать {number} выбранных объектов?"
+                            "confirm_title": "Отображать {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
                         },
                         "filter": {
                             "filter": "Фильтр",
@@ -1663,9 +1685,9 @@
                         "remove_selected": {
                             "button": "Удалить выбранные",
                             "confirm_partly_text": "Вы можете удалить только {removable} из выбранных {selected} объектов. Объекты могут быть удалены только когда интеграция больше не предоставляет объекты. В некоторых случаях Вам нужно будет перезапустить Home Assistant, чтобы удалить объекты удаленной интеграции. Вы уверены, что хотите удалить объекты?",
-                            "confirm_partly_title": "Только {number} выбранных объектов могут быть удалены.",
+                            "confirm_partly_title": "Только {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n} могут быть удалены.",
                             "confirm_text": "Вы должны удалить эти объекты из конфигурации Lovelace и из правил автоматизации.",
-                            "confirm_title": "Вы уверены, что хотите удалить выбранные объекты? ({number})"
+                            "confirm_title": "Вы уверены, что хотите удалить {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
                         },
                         "search": "Поиск объектов",
                         "selected": "Выбрано: {number}",
@@ -2312,6 +2334,7 @@
                         "update_user": "Обновить"
                     },
                     "picker": {
+                        "add_user": "Добавить пользователя",
                         "headers": {
                             "group": "Группа",
                             "name": "Имя",
@@ -2592,6 +2615,8 @@
                         "filter_attributes": "Поиск",
                         "filter_entities": "Поиск",
                         "filter_states": "Поиск",
+                        "last_changed": "Последнее изменение",
+                        "last_updated": "Последнее обновление",
                         "more_info": "Подробнее",
                         "no_entities": "Не найдено",
                         "set_state": "Задать состояние",
@@ -2842,6 +2867,10 @@
                         "light": {
                             "description": "Позволяет контролировать источник света, изменять яркость.",
                             "name": "Освещение"
+                        },
+                        "logbook": {
+                            "description": "Отображает список событий для объектов.",
+                            "name": "Журнал событий"
                         },
                         "map": {
                             "dark_mode": "Тёмная тема",

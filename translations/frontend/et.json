@@ -872,6 +872,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Alad",
+                        "automation": "Automatiseeringud",
+                        "core": "Üldine",
+                        "customize": "Kohandamised",
+                        "devices": "Seadmed",
+                        "entities": "Olemid",
+                        "helpers": "Abimehed",
+                        "info": "Info",
+                        "integrations": "Sidumised",
+                        "logs": "Logid",
+                        "lovelace": "Lovelace vaated",
+                        "navigate_to": "Mine vaatesse {panel}",
+                        "navigate_to_config": "Mine vaate {panel} sätetesse",
+                        "person": "Isikud",
+                        "scene": "Stseenid",
+                        "script": "Scriptid",
+                        "server_control": "Serveri juhtimine",
+                        "tags": "Märgised",
+                        "users": "Kasutajad",
+                        "zone": "Tsoonid"
+                    },
                     "reload": {
                         "automation": "Taaslae automatiseeringud",
                         "command_line": "Taaslae käsurea olemid",
@@ -2323,6 +2345,7 @@
                         "update_user": "Uuenda"
                     },
                     "picker": {
+                        "add_user": "Lisa kasutaja",
                         "headers": {
                             "group": "Grupp",
                             "name": "Nimi",
@@ -2603,6 +2626,8 @@
                         "filter_attributes": "Filtreeri atribuute",
                         "filter_entities": "Filtreeri olemeid",
                         "filter_states": "Filtreeri olekuid",
+                        "last_changed": "Viimati muudetud",
+                        "last_updated": "Viimati uuendatud",
                         "more_info": "Rohkem infot",
                         "no_entities": "Olemid puuduvad",
                         "set_state": "Määra olek",
@@ -2853,6 +2878,10 @@
                         "light": {
                             "description": "Valgustikaart võimaldab muuta valguse heledust.",
                             "name": "Valgusti"
+                        },
+                        "logbook": {
+                            "description": "Logiraamatu kaardil kuvatakse olemite sündmuste loend.",
+                            "name": "Logiraamat"
                         },
                         "map": {
                             "dark_mode": "Tume režiim?",
