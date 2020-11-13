@@ -496,6 +496,10 @@ class HUIRoot extends LitElement {
 
         fireEvent(this, "iron-resize");
 
+        if (!views.includes(this.config.views[this._curView as number])) {
+          navigate(this, `${this.route?.prefix}/0`);
+        }
+
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
