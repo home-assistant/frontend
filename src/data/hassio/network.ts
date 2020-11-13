@@ -1,24 +1,54 @@
 import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
-export interface NetworkInterface {
+interface IpConfiguration {
+  address: string[];
   gateway: string;
-  id: string;
-  ip_address: string;
-  address?: string;
-  method: "static" | "dhcp";
-  nameservers: string[] | string;
-  dns?: string[];
-  primary: boolean;
-  type: string;
+  method: "disabled" | "static" | "auto";
+  nameservers: string[];
 }
 
-export interface NetworkInterfaces {
-  [key: string]: NetworkInterface;
+export interface NetworkInterface {
+  primary: boolean;
+  privacy: boolean;
+  interface: string;
+  enabled: boolean;
+  ipv4?: Partial<IpConfiguration>;
+  ipv6?: Partial<IpConfiguration>;
+  type: "ethernet" | "wireless" | "vlan";
+  wifi?: Partial<WifiConfiguration>;
+}
+
+interface DockerNetwork {
+  address: string;
+  dns: string;
+  gateway: string;
+  interface: string;
+}
+
+interface AccessPoint {
+  mode: "infrastructure" | "mesh" | "adhoc" | "ap";
+  ssid: string;
+  mac: string;
+  frequency: number;
+  signal: number;
+}
+
+export interface AccessPoints {
+  accesspoints: AccessPoint[];
+}
+
+export interface WifiConfiguration {
+  mode: "infrastructure" | "mesh" | "adhoc" | "ap";
+  auth: "open" | "wep" | "wpa-psk";
+  ssid: string;
+  signal: number;
+  psk?: string;
 }
 
 export interface NetworkInfo {
-  interfaces: NetworkInterfaces;
+  interfaces: NetworkInterface[];
+  docker: DockerNetwork;
 }
 
 export const fetchNetworkInfo = async (hass: HomeAssistant) => {
@@ -39,5 +69,17 @@ export const updateNetworkInterface = async (
     "POST",
     `hassio/network/interface/${network_interface}/update`,
     options
+  );
+};
+
+export const accesspointScan = async (
+  hass: HomeAssistant,
+  network_interface: string
+) => {
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<AccessPoints>>(
+      "GET",
+      `hassio/network/interface/${network_interface}/accesspoints`
+    )
   );
 };
