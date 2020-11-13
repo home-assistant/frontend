@@ -21,7 +21,7 @@ export interface LovelaceConfig {
   // When specified, we execute strategy and merge into config on top level (no deep merge)
   strategy?: {
     name: string;
-    options: { [key: string]: unknown };
+    options?: { [key: string]: unknown };
   };
   views: LovelaceViewConfig[];
   background?: string;
@@ -84,7 +84,7 @@ export interface LovelaceViewConfig {
   // When specified, we execute strategy and merge into view config on top level (no deep merge)
   strategy?: {
     name: string;
-    options: { [key: string]: unknown };
+    options?: { [key: string]: unknown };
   };
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];

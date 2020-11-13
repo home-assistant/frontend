@@ -232,7 +232,7 @@ const computeDefaultViewStates = (
   return states;
 };
 
-const generateViewConfig = (
+export const generateViewConfig = (
   localize: LocalizeFunc,
   path: string,
   title: string | undefined,
