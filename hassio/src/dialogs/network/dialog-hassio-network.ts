@@ -229,7 +229,7 @@ export class DialogHassioNetwork extends LitElement
           : ""}
         ${this._dirty
           ? html`<div class="warning">
-              If you are changing the WiFi, IP or gateway addresses, you might
+              If you are changing the Wi-Fi, IP or gateway addresses, you might
               lose the connection!
             </div>`
           : ""}
