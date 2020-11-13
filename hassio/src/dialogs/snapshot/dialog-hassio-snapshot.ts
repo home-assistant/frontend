@@ -109,7 +109,13 @@ class HassioSnapshotDialog extends LitElement {
       return html``;
     }
     return html`
-      <ha-dialog open stacked @closing=${this._closeDialog} .heading=${true}>
+      <ha-dialog
+        open
+        stacked
+        @closing=${this._closeDialog}
+        .heading=${true}
+        hideactions
+      >
         <div slot="heading">
           <ha-header-bar>
             <span slot="title">
@@ -192,45 +198,47 @@ class HassioSnapshotDialog extends LitElement {
         ${this._error ? html` <p class="error">Error: ${this._error}</p> ` : ""}
 
         <div>Actions:</div>
+        <div class="button-row">
+          ${this._snapshot.type === "full"
+            ? html`
+                <mwc-button
+                  @click=${this._fullRestoreClicked}
+                  slot="secondaryAction"
+                >
+                  <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
+                  Restore Everything
+                </mwc-button>
+              `
+            : ""}
+          <mwc-button
+            @click=${this._partialRestoreClicked}
+            slot="secondaryAction"
+          >
+            <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
+            Restore Selected
+          </mwc-button>
+        </div>
         ${!this._onboarding
-          ? html`<mwc-button
-              @click=${this._downloadClicked}
-              slot="primaryAction"
-            >
-              <ha-svg-icon .path=${mdiDownload} class="icon"></ha-svg-icon>
-              Download Snapshot
-            </mwc-button>`
-          : ""}
-
-        <mwc-button
-          @click=${this._partialRestoreClicked}
-          slot="secondaryAction"
-        >
-          <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
-          Restore Selected
-        </mwc-button>
-        ${this._snapshot.type === "full"
           ? html`
-              <mwc-button
-                @click=${this._fullRestoreClicked}
-                slot="secondaryAction"
-              >
-                <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
-                Wipe &amp; restore
-              </mwc-button>
+              <div class="button-row">
+                <mwc-button
+                  @click=${this._downloadClicked}
+                  slot="primaryAction"
+                >
+                  <ha-svg-icon .path=${mdiDownload} class="icon"></ha-svg-icon>
+                  Download Snapshot
+                </mwc-button>
+
+                <mwc-button
+                  @click=${this._deleteClicked}
+                  slot="secondaryAction"
+                >
+                  <ha-svg-icon .path=${mdiDelete} class="icon warning">
+                  </ha-svg-icon>
+                  <span class="warning">Delete Snapshot</span>
+                </mwc-button>
+              </div>
             `
-          : ""}
-        ${!this._onboarding
-          ? html`<mwc-button
-              @click=${this._deleteClicked}
-              slot="secondaryAction"
-            >
-              <ha-svg-icon
-                .path=${mdiDelete}
-                class="icon warning"
-              ></ha-svg-icon>
-              <span class="warning">Delete Snapshot</span>
-            </mwc-button>`
           : ""}
       </ha-dialog>
     `;
@@ -244,6 +252,9 @@ class HassioSnapshotDialog extends LitElement {
         paper-checkbox {
           display: block;
           margin: 4px;
+        }
+        .button-row mwc-button {
+          padding: 8px;
         }
         .details {
           color: var(--secondary-text-color);
