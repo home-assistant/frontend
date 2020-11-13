@@ -154,11 +154,8 @@ export class HaStateLabelBadge extends LitElement {
       case "device_tracker":
       case "updater":
       case "person":
-        return stateIcon(state);
       case "sun":
-        return state.state === "above_horizon"
-          ? domainIcon(domain)
-          : "hass:brightness-3";
+        return stateIcon(state);
       case "timer":
         return state.state === "active"
           ? "hass:timer-outline"
