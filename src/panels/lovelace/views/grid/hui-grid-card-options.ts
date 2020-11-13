@@ -38,7 +38,6 @@ export class HuiGridCardOptions extends LitElement {
   protected render(): TemplateResult {
     return html`
       <slot></slot>
-
       <div class="parent-card-actions">
         <div class="overlay"></div>
         <div class="card-actions">
@@ -73,18 +72,17 @@ export class HuiGridCardOptions extends LitElement {
                 aria-label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.options"
                 )}
-                title=${this.hass!.localize(
+                .title=${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.options"
                 )}
               >
-                <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
-
               <mwc-list-item>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.move"
-                )}</mwc-list-item
-              >
+                )}
+              </mwc-list-item>
             </ha-button-menu>
           </div>
         </div>

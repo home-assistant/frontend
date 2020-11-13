@@ -26,6 +26,7 @@ import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiCardOptions } from "../components/hui-card-options";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
+import { replaceView } from "../editor/config-util";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import { HuiGridCardOptions } from "./grid/hui-grid-card-options";
 
@@ -113,7 +114,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
         .columns=${this._columns}
         .dragDisabled=${!this.lovelace?.editMode}
         .resizeDisabled=${!this.lovelace?.editMode}
-        @layout-changed=${(ev) => console.log(ev.detail)}
+        @item-changed=${this._saveLayout}
       ></lit-grid-layout>
       ${this.lovelace?.editMode
         ? html`
@@ -181,6 +182,18 @@ export class GridView extends LitElement implements LovelaceViewElement {
       this._createLayout();
       this._createCards();
     }
+  }
+
+  private async _saveLayout(ev: CustomEvent): Promise<void> {
+    console.log("save");
+
+    const viewConf: LovelaceViewConfig = {
+      ...this._config,
+      layout: ev.detail.layout,
+    };
+    await this.lovelace?.saveConfig(
+      replaceView(this.lovelace!.config, this.index, viewConf)
+    );
   }
 
   private _itemRenderer = (key: string): TemplateResult => {
