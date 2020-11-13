@@ -452,7 +452,7 @@ export class HuiDialogEditCard extends LitElement
           position: relative;
           height: max-content;
           background: var(--primary-background-color);
-          padding: 20px 4px;
+          padding: 4px;
           border-radius: 4px;
         }
         .element-preview ha-circular-progress {
