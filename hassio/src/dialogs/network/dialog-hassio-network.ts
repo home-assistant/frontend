@@ -251,11 +251,14 @@ export class DialogHassioNetwork extends LitElement
   }
 
   private async _scanForAP() {
+    if (!this._interface) {
+      return;
+    }
     this._scanning = true;
     try {
       this._accessPoints = await accesspointScan(
         this.hass,
-        this._interface?.interface!
+        this._interface.interface
       );
     } catch (err) {
       showAlertDialog(this, {
@@ -345,7 +348,8 @@ export class DialogHassioNetwork extends LitElement
     }
     if (!data) {
       return [];
-    } else if (typeof data === "string") {
+    }
+    if (typeof data === "string") {
       return data.replace(/ /g, "").split(",");
     }
     return data;
@@ -354,7 +358,8 @@ export class DialogHassioNetwork extends LitElement
   _toString(data: string | string[]): string {
     if (!data) {
       return "";
-    } else if (Array.isArray(data)) {
+    }
+    if (Array.isArray(data)) {
       return data.join(", ");
     }
     return data;
