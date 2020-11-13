@@ -202,14 +202,12 @@ class HUIRoot extends LitElement {
                           dir="${computeRTLDirection(this.hass!)}"
                         >
                           ${this.lovelace!.config.views.map((view) =>
-                            Boolean(
-                              view.visible !== undefined &&
-                                ((Array.isArray(view.visible) &&
-                                  !view.visible.some(
-                                    (e) => e.user === this.hass!.user!.id
-                                  )) ||
-                                  view.visible === false)
-                            )
+                            view.visible !== undefined &&
+                            ((Array.isArray(view.visible) &&
+                              !view.visible.some(
+                                (e) => e.user === this.hass!.user!.id
+                              )) ||
+                              view.visible === false)
                               ? ""
                               : html`
                                   <paper-tab aria-label="${view.title}">
