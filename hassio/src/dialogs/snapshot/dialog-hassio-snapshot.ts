@@ -201,19 +201,13 @@ class HassioSnapshotDialog extends LitElement {
         <div class="button-row">
           ${this._snapshot.type === "full"
             ? html`
-                <mwc-button
-                  @click=${this._fullRestoreClicked}
-                  slot="secondaryAction"
-                >
+                <mwc-button @click=${this._fullRestoreClicked}>
                   <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
                   Restore Everything
                 </mwc-button>
               `
             : ""}
-          <mwc-button
-            @click=${this._partialRestoreClicked}
-            slot="secondaryAction"
-          >
+          <mwc-button @click=${this._partialRestoreClicked}>
             <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
             Restore Selected
           </mwc-button>
@@ -221,18 +215,12 @@ class HassioSnapshotDialog extends LitElement {
         ${!this._onboarding
           ? html`
               <div class="button-row">
-                <mwc-button
-                  @click=${this._downloadClicked}
-                  slot="primaryAction"
-                >
+                <mwc-button @click=${this._downloadClicked}>
                   <ha-svg-icon .path=${mdiDownload} class="icon"></ha-svg-icon>
                   Download Snapshot
                 </mwc-button>
 
-                <mwc-button
-                  @click=${this._deleteClicked}
-                  slot="secondaryAction"
-                >
+                <mwc-button @click=${this._deleteClicked}>
                   <ha-svg-icon .path=${mdiDelete} class="icon warning">
                   </ha-svg-icon>
                   <span class="warning">Delete Snapshot</span>
