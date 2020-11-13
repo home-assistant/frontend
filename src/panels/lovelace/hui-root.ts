@@ -46,11 +46,7 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tabs";
-import type {
-  LovelaceConfig,
-  LovelacePanelConfig,
-  LovelaceViewConfig,
-} from "../../data/lovelace";
+import type { LovelaceConfig, LovelaceViewConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -109,381 +105,319 @@ class HUIRoot extends LitElement {
         id="layout"
       >
         <app-header slot="header" effects="waterfall" fixed>
-          ${this._editMode
-            ? html`
-                <app-toolbar class="edit-mode">
-                  <mwc-icon-button
-                    .label="${this.hass!.localize(
-                      "ui.panel.lovelace.menu.exit_edit_mode"
-                    )}"
-                    title="${this.hass!.localize(
-                      "ui.panel.lovelace.menu.close"
-                    )}"
-                    @click="${this._editModeDisable}"
+          ${this._editMode ? this._renderToolbarEdit() : this._renderToolbar()}
+        </app-header>
+        <div id="view" @ll-rebuild="${this._debouncedConfigChanged}"></div>
+      </ha-app-layout>
+    `;
+  }
+
+  private _renderToolbar(): TemplateResult {
+    return html`<app-toolbar>
+      <ha-menu-button
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+      ></ha-menu-button>
+      ${this._visibleViews.length > 1
+        ? html`
+            <ha-tabs
+              scrollable
+              .selected="${this._curView}"
+              @iron-activate="${this._handleViewSelected}"
+              dir="${computeRTLDirection(this.hass!)}"
+            >
+              ${this._visibleViews.map(
+                (view) =>
+                  html`
+                    <paper-tab aria-label="${view.title}">
+                      ${view.icon
+                        ? html`
+                            <ha-icon
+                              title="${view.title}"
+                              .icon="${view.icon}"
+                            ></ha-icon>
+                          `
+                        : view.title || "Unnamed view"}
+                    </paper-tab>
+                  `
+              )}
+            </ha-tabs>
+          `
+        : html`<div main-title>${this.config.title}</div>`}
+      ${this._conversation(this.hass.config.components) &&
+      (!this.narrow || (!this.hass!.user?.is_admin && !this._yamlMode))
+        ? html`
+            <mwc-icon-button
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.menu.start_conversation"
+              )}
+              @click=${this._showVoiceCommandDialog}
+            >
+              <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
+            </mwc-icon-button>
+          `
+        : ""}
+      ${this._yamlMode || this.hass!.user?.is_admin
+        ? html`<ha-button-menu corner="BOTTOM_START">
+            <mwc-icon-button
+              slot="trigger"
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.menu.open"
+              )}
+              .title="${this.hass!.localize(
+                "ui.panel.lovelace.editor.menu.open"
+              )}"
+            >
+              <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+            </mwc-icon-button>
+            ${this.narrow && this._conversation(this.hass.config.components)
+              ? html`
+                  <mwc-list-item
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.menu.start_conversation"
+                    )}
+                    graphic="icon"
+                    @request-selected=${this._showVoiceCommandDialog}
                   >
-                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                  </mwc-icon-button>
-                  <div main-title>
-                    ${this.config.title ||
-                    this.hass!.localize("ui.panel.lovelace.editor.header")}
-                    <mwc-icon-button
-                      aria-label="${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
-                      )}"
-                      title="${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
-                      )}"
-                      class="edit-icon"
-                      @click="${this._editLovelace}"
+                    <span
+                      >${this.hass!.localize(
+                        "ui.panel.lovelace.menu.start_conversation"
+                      )}</span
                     >
-                      <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                    </mwc-icon-button>
-                  </div>
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiMicrophone}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                `
+              : ""}
+            ${this._yamlMode
+              ? html`
+                  <mwc-list-item
+                    aria-label=${this.hass!.localize("ui.common.refresh")}
+                    graphic="icon"
+                    @request-selected="${this._handleRefresh}"
+                  >
+                    <span>${this.hass!.localize("ui.common.refresh")}</span>
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiRefresh}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                  ${this.hass!.user?.is_admin
+                    ? html`<mwc-list-item
+                        aria-label=${this.hass!.localize(
+                          "ui.panel.lovelace.unused_entities.title"
+                        )}
+                        graphic="icon"
+                        @request-selected="${this._handleUnusedEntities}"
+                      >
+                        <span
+                          >${this.hass!.localize(
+                            "ui.panel.lovelace.unused_entities.title"
+                          )}</span
+                        >
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiShape}
+                        ></ha-svg-icon>
+                      </mwc-list-item>`
+                    : ""}
+                  <mwc-list-item
+                    graphic="icon"
+                    aria-label=${this.hass!.localize(
+                      "ui.panel.lovelace.menu.reload_resources"
+                    )}
+                    @request-selected=${this._handleReloadResources}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.menu.reload_resources"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiRefresh}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                `
+              : ""}
+            ${this.hass!.user?.is_admin && !this.hass!.config.safe_mode
+              ? html`
+                  <mwc-list-item
+                    graphic="icon"
+                    aria-label=${this.hass!.localize(
+                      "ui.panel.lovelace.menu.configure_ui"
+                    )}
+                    @request-selected=${this._handleEnableEditMode}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.menu.configure_ui"
+                    )}
+                    <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+                  </mwc-list-item>
                   <a
                     href="${documentationUrl(this.hass, "/lovelace/")}"
                     rel="noreferrer"
                     class="menu-link"
                     target="_blank"
                   >
-                    <mwc-icon-button
-                      title="${this.hass!.localize(
+                    <mwc-list-item
+                      graphic="icon"
+                      aria-label=${this.hass!.localize(
                         "ui.panel.lovelace.menu.help"
-                      )}"
-                    >
-                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-                    </mwc-icon-button>
-                  </a>
-                  <ha-button-menu corner="BOTTOM_START">
-                    <mwc-icon-button
-                      slot="trigger"
-                      .title="${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.open"
-                      )}"
-                      .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.open"
                       )}
                     >
-                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                    </mwc-icon-button>
-                    ${__DEMO__ /* No unused entities available in the demo */
-                      ? ""
-                      : html`
-                          <mwc-list-item
-                            aria-label=${this.hass!.localize(
-                              "ui.panel.lovelace.unused_entities.title"
-                            )}
-                            @request-selected="${this._handleUnusedEntities}"
-                          >
-                            ${this.hass!.localize(
-                              "ui.panel.lovelace.unused_entities.title"
-                            )}
-                          </mwc-list-item>
-                        `}
-                    <mwc-list-item @request-selected="${this._handleRawEditor}">
-                      ${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.raw_editor"
-                      )}
+                      ${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiHelp}
+                      ></ha-svg-icon>
                     </mwc-list-item>
-                  </ha-button-menu>
-                </app-toolbar>
-              `
+                  </a>
+                `
+              : ""}
+          </ha-button-menu>`
+        : ""}
+    </app-toolbar>`;
+  }
+
+  private _renderToolbarEdit(): TemplateResult {
+    return html`<app-toolbar class="edit-mode">
+        <mwc-icon-button
+          .label="${this.hass!.localize(
+            "ui.panel.lovelace.menu.exit_edit_mode"
+          )}"
+          title="${this.hass!.localize("ui.panel.lovelace.menu.close")}"
+          @click="${this._editModeDisable}"
+        >
+          <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+        </mwc-icon-button>
+        <div main-title>
+          ${this.config.title ||
+          this.hass!.localize("ui.panel.lovelace.editor.header")}
+          <mwc-icon-button
+            aria-label="${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+            )}"
+            title="${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+            )}"
+            class="edit-icon"
+            @click="${this._editLovelace}"
+          >
+            <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+          </mwc-icon-button>
+        </div>
+        <a
+          href="${documentationUrl(this.hass, "/lovelace/")}"
+          rel="noreferrer"
+          class="menu-link"
+          target="_blank"
+        >
+          <mwc-icon-button
+            title="${this.hass!.localize("ui.panel.lovelace.menu.help")}"
+          >
+            <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+          </mwc-icon-button>
+        </a>
+        <ha-button-menu corner="BOTTOM_START">
+          <mwc-icon-button
+            slot="trigger"
+            .title="${this.hass!.localize(
+              "ui.panel.lovelace.editor.menu.open"
+            )}"
+            .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+          >
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+          ${__DEMO__ /* No unused entities available in the demo */
+            ? ""
             : html`
-                <app-toolbar>
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                  ${this.lovelace!.config.views.length > 1
-                    ? html`
-                        <ha-tabs
-                          scrollable
-                          .selected="${this._curView}"
-                          @iron-activate="${this._handleViewSelected}"
-                          dir="${computeRTLDirection(this.hass!)}"
-                        >
-                          ${this.lovelace!.config.views.map((view) =>
-                            view.visible !== undefined &&
-                            ((Array.isArray(view.visible) &&
-                              !view.visible.some(
-                                (e) => e.user === this.hass!.user!.id
-                              )) ||
-                              view.visible === false)
-                              ? ""
-                              : html`
-                                  <paper-tab aria-label="${view.title}">
-                                    ${view.icon
-                                      ? html`
-                                          <ha-icon
-                                            title="${view.title}"
-                                            .icon="${view.icon}"
-                                          ></ha-icon>
-                                        `
-                                      : view.title || "Unnamed view"}
-                                  </paper-tab>
-                                `
-                          )}
-                        </ha-tabs>
-                      `
-                    : html`<div main-title>${this.config.title}</div>`}
-                  ${(!this.narrow &&
-                    this._conversation(this.hass.config.components)) ||
-                  (!this.hass!.user?.is_admin &&
-                    !this._yamlMode &&
-                    this._conversation(this.hass.config.components))
-                    ? html`
-                        <mwc-icon-button
-                          .label=${this.hass!.localize(
-                            "ui.panel.lovelace.menu.start_conversation"
-                          )}
-                          @click=${this._showVoiceCommandDialog}
-                        >
-                          <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
-                        </mwc-icon-button>
-                      `
-                    : ""}
-                  ${this._yamlMode || this.hass!.user?.is_admin
-                    ? html`<ha-button-menu corner="BOTTOM_START">
-                        <mwc-icon-button
-                          slot="trigger"
-                          .label=${this.hass!.localize(
-                            "ui.panel.lovelace.editor.menu.open"
-                          )}
-                          .title="${this.hass!.localize(
-                            "ui.panel.lovelace.editor.menu.open"
-                          )}"
-                        >
-                          <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                        </mwc-icon-button>
-                        ${this.narrow &&
-                        this._conversation(this.hass.config.components)
-                          ? html`
-                              <mwc-list-item
-                                .label=${this.hass!.localize(
-                                  "ui.panel.lovelace.menu.start_conversation"
-                                )}
-                                graphic="icon"
-                                @request-selected=${this
-                                  ._showVoiceCommandDialog}
-                              >
-                                <span
-                                  >${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.start_conversation"
-                                  )}</span
-                                >
-                                <ha-svg-icon
-                                  slot="graphic"
-                                  .path=${mdiMicrophone}
-                                ></ha-svg-icon>
-                              </mwc-list-item>
-                            `
-                          : ""}
-                        ${this._yamlMode
-                          ? html`
-                              <mwc-list-item
-                                aria-label=${this.hass!.localize(
-                                  "ui.common.refresh"
-                                )}
-                                graphic="icon"
-                                @request-selected="${this._handleRefresh}"
-                              >
-                                <span
-                                  >${this.hass!.localize(
-                                    "ui.common.refresh"
-                                  )}</span
-                                >
-                                <ha-svg-icon
-                                  slot="graphic"
-                                  .path=${mdiRefresh}
-                                ></ha-svg-icon>
-                              </mwc-list-item>
-                              ${this.hass!.user?.is_admin
-                                ? html`<mwc-list-item
-                                    aria-label=${this.hass!.localize(
-                                      "ui.panel.lovelace.unused_entities.title"
-                                    )}
-                                    graphic="icon"
-                                    @request-selected="${this
-                                      ._handleUnusedEntities}"
-                                  >
-                                    <span
-                                      >${this.hass!.localize(
-                                        "ui.panel.lovelace.unused_entities.title"
-                                      )}</span
-                                    >
-                                    <ha-svg-icon
-                                      slot="graphic"
-                                      .path=${mdiShape}
-                                    ></ha-svg-icon>
-                                  </mwc-list-item>`
-                                : ""}
-                            `
-                          : ""}
-                        ${(this.hass.panels.lovelace
-                          ?.config as LovelacePanelConfig)?.mode === "yaml"
-                          ? html`
-                              <mwc-list-item
-                                graphic="icon"
-                                aria-label=${this.hass!.localize(
-                                  "ui.panel.lovelace.menu.reload_resources"
-                                )}
-                                @request-selected=${this._handleReloadResources}
-                              >
-                                ${this.hass!.localize(
-                                  "ui.panel.lovelace.menu.reload_resources"
-                                )}
-                                <ha-svg-icon
-                                  slot="graphic"
-                                  .path=${mdiRefresh}
-                                ></ha-svg-icon>
-                              </mwc-list-item>
-                            `
-                          : ""}
-                        ${this.hass!.user?.is_admin &&
-                        !this.hass!.config.safe_mode
-                          ? html`
-                              <mwc-list-item
-                                graphic="icon"
-                                aria-label=${this.hass!.localize(
-                                  "ui.panel.lovelace.menu.configure_ui"
-                                )}
-                                @request-selected=${this._handleEnableEditMode}
-                              >
-                                ${this.hass!.localize(
-                                  "ui.panel.lovelace.menu.configure_ui"
-                                )}
-                                <ha-svg-icon
-                                  slot="graphic"
-                                  .path=${mdiCog}
-                                ></ha-svg-icon>
-                              </mwc-list-item>
-                              <a
-                                href="${documentationUrl(
-                                  this.hass,
-                                  "/lovelace/"
-                                )}"
-                                rel="noreferrer"
-                                class="menu-link"
-                                target="_blank"
-                              >
-                                <mwc-list-item
-                                  graphic="icon"
-                                  aria-label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.help"
-                                  )}
-                                >
-                                  ${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.help"
-                                  )}
-                                  <ha-svg-icon
-                                    slot="graphic"
-                                    .path=${mdiHelp}
-                                  ></ha-svg-icon>
-                                </mwc-list-item>
-                              </a>
-                            `
-                          : ""}
-                      </ha-button-menu>`
-                    : ""}
-                </app-toolbar>
+                <mwc-list-item
+                  aria-label=${this.hass!.localize(
+                    "ui.panel.lovelace.unused_entities.title"
+                  )}
+                  @request-selected="${this._handleUnusedEntities}"
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.unused_entities.title"
+                  )}
+                </mwc-list-item>
               `}
-          ${this._editMode
-            ? html`
-                <div sticky>
-                  <paper-tabs
-                    scrollable
-                    .selected="${this._curView}"
-                    @iron-activate="${this._handleViewSelected}"
-                    dir="${computeRTLDirection(this.hass!)}"
-                  >
-                    ${this.lovelace!.config.views.map(
-                      (view) => html`
-                        <paper-tab
-                          aria-label="${view.title}"
-                          class="${classMap({
-                            "hide-tab": Boolean(
-                              !this._editMode &&
-                                view.visible !== undefined &&
-                                ((Array.isArray(view.visible) &&
-                                  !view.visible.some(
-                                    (e) => e.user === this.hass!.user!.id
-                                  )) ||
-                                  view.visible === false)
-                            ),
-                          })}"
-                        >
-                          ${this._editMode
-                            ? html`
-                                <ha-icon-button-arrow-prev
-                                  .hass=${this.hass}
-                                  .title="${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_left"
-                                  )}"
-                                  .label="${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_left"
-                                  )}"
-                                  class="edit-icon view"
-                                  @click="${this._moveViewLeft}"
-                                  ?disabled="${this._curView === 0}"
-                                ></ha-icon-button-arrow-prev>
-                              `
-                            : ""}
-                          ${view.icon
-                            ? html`
-                                <ha-icon
-                                  title="${view.title}"
-                                  .icon="${view.icon}"
-                                ></ha-icon>
-                              `
-                            : view.title || "Unnamed view"}
-                          ${this._editMode
-                            ? html`
-                                <ha-svg-icon
-                                  title="${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.edit"
-                                  )}"
-                                  class="edit-icon view"
-                                  .path=${mdiPencil}
-                                  @click="${this._editView}"
-                                ></ha-svg-icon>
-                                <ha-icon-button-arrow-next
-                                  .hass=${this.hass}
-                                  .title="${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_right"
-                                  )}"
-                                  .label="${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_right"
-                                  )}"
-                                  class="edit-icon view"
-                                  @click="${this._moveViewRight}"
-                                  ?disabled="${(this._curView! as number) +
-                                    1 ===
-                                  this.lovelace!.config.views.length}"
-                                ></ha-icon-button-arrow-next>
-                              `
-                            : ""}
-                        </paper-tab>
-                      `
-                    )}
-                    ${this._editMode
-                      ? html`
-                          <mwc-icon-button
-                            id="add-view"
-                            @click="${this._addView}"
-                            title="${this.hass!.localize(
-                              "ui.panel.lovelace.editor.edit_view.add"
-                            )}"
-                          >
-                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                          </mwc-icon-button>
-                        `
-                      : ""}
-                  </paper-tabs>
-                </div>
-              `
-            : ""}
-        </app-header>
-        <div id="view" @ll-rebuild="${this._debouncedConfigChanged}"></div>
-      </ha-app-layout>
+          <mwc-list-item @request-selected="${this._handleRawEditor}">
+            ${this.hass!.localize("ui.panel.lovelace.editor.menu.raw_editor")}
+          </mwc-list-item>
+        </ha-button-menu>
+      </app-toolbar>
+      ${this._renderEditTabs()} `;
+  }
+
+  private _renderEditTabs(): TemplateResult {
+    return html`
+      <div sticky>
+        <paper-tabs
+          scrollable
+          .selected="${this._curView}"
+          @iron-activate="${this._handleViewSelected}"
+          dir="${computeRTLDirection(this.hass!)}"
+        >
+          ${this.lovelace!.config.views.map(
+            (view) => html`
+              <paper-tab aria-label="${view.title}">
+                <ha-icon-button-arrow-prev
+                  .hass=${this.hass}
+                  .title="${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.move_left"
+                  )}"
+                  .label="${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.move_left"
+                  )}"
+                  class="edit-icon view"
+                  @click="${this._moveViewLeft}"
+                  ?disabled="${this._curView === 0}"
+                ></ha-icon-button-arrow-prev>
+                ${view.icon
+                  ? html`
+                      <ha-icon
+                        title="${view.title}"
+                        .icon="${view.icon}"
+                      ></ha-icon>
+                    `
+                  : view.title || "Unnamed view"}
+                <ha-svg-icon
+                  title="${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.edit"
+                  )}"
+                  class="edit-icon view"
+                  .path=${mdiPencil}
+                  @click="${this._editView}"
+                ></ha-svg-icon>
+                <ha-icon-button-arrow-next
+                  .hass=${this.hass}
+                  .title="${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.move_right"
+                  )}"
+                  .label="${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.move_right"
+                  )}"
+                  class="edit-icon view"
+                  @click="${this._moveViewRight}"
+                  ?disabled="${(this._curView! as number) + 1 ===
+                  this.lovelace!.config.views.length}"
+                ></ha-icon-button-arrow-next>
+              </paper-tab>
+            `
+          )}
+          <mwc-icon-button
+            id="add-view"
+            @click="${this._addView}"
+            title="${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_view.add"
+            )}"
+          >
+            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+          </mwc-icon-button>
+        </paper-tabs>
+      </div>
     `;
   }
 
@@ -592,6 +526,10 @@ class HUIRoot extends LitElement {
 
   private get _yamlMode(): boolean {
     return this.lovelace!.mode === "yaml";
+  }
+
+  private get _visibleViews() {
+    return this.lovelace!.config.views.filter((view) => this._isVisible(view));
   }
 
   private get _editMode() {
