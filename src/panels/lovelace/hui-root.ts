@@ -450,7 +450,10 @@ class HUIRoot extends LitElement {
     const viewPath = this.route!.path.split("/")[1];
 
     if (changedProperties.has("route")) {
-      const views = this.config.views;
+      const views =
+        !this._editMode && this._visibleViews.length > 0
+          ? this._visibleViews
+          : this.config.views;
 
       if (!viewPath && views.length) {
         newSelectView = views.findIndex(this._isVisible);
@@ -486,7 +489,10 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
-        const views = this.config && this.config.views;
+        const views =
+          !this._editMode && this._visibleViews.length > 0
+            ? this._visibleViews
+            : this.config && this.config.views;
 
         fireEvent(this, "iron-resize");
 
@@ -653,9 +659,13 @@ class HUIRoot extends LitElement {
 
   private _handleViewSelected(ev) {
     const viewIndex = ev.detail.selected as number;
+    const views =
+      !this._editMode && this._visibleViews.length > 0
+        ? this._visibleViews
+        : this.config.views;
 
     if (viewIndex !== this._curView) {
-      const path = this.config.views[viewIndex].path || viewIndex;
+      const path = views[viewIndex].path || viewIndex;
       navigate(this, `${this.route?.prefix}/${path}`);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
