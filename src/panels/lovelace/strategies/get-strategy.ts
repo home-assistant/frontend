@@ -1,23 +1,21 @@
-// @ts-nocheck
 import { LovelaceDashboardStrategy } from "../../../data/lovelace";
 
 const CUSTOM_PREFIX = "custom:";
 
-const strategies: { [key: string]: () => Promise<any> } = {
-  default: () => Promise.resolve(SingleViewLovelaceDashboardStrategy),
-  by_view: () => import("./by_view").ByViewLovelaceDashboardStrategy,
+const strategies = {
+  default: import("./default-strategy"),
 };
 
 export const getLovelaceDashboardStrategy = (
   name: string
 ): Promise<LovelaceDashboardStrategy> => {
   if (name in strategies) {
-    return strategies[name]();
+    return strategies[name].generateDashboard();
   }
 
   if (!name.startsWith(CUSTOM_PREFIX)) {
     // This will just generate a view with a single error card
-    return errorStrategy(`Unknown strategy specified: ${name}`);
+    // return errorStrategy(`Unknown strategy specified: ${name}`);
   }
 
   const tag = `ll-strategy-${name.substr(CUSTOM_PREFIX.length)}`;
@@ -26,25 +24,25 @@ export const getLovelaceDashboardStrategy = (
 };
 
 // To define a custom strategy
-customElements.define(
-  "ll-strategy-paulus",
-  class extends HTMLElement {
-    static async generateDashboard(info) {
-      return {
-        views: [
-          {
-            strategy: {
-              name: "custom:paulus",
-            },
-          },
-        ],
-      };
-    }
+// customElements.define(
+//   "ll-strategy-paulus",
+//   class extends HTMLElement {
+//     static async generateDashboard(info) {
+//       return {
+//         views: [
+//           {
+//             strategy: {
+//               name: "custom:paulus",
+//             },
+//           },
+//         ],
+//       };
+//     }
 
-    static async generateView(info) {
-      return {
-        cards: [],
-      };
-    }
-  }
-);
+//     static async generateView(info) {
+//       return {
+//         cards: [],
+//       };
+//     }
+//   }
+// );
