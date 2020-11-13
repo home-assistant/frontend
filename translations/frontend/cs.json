@@ -872,6 +872,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Oblasti",
+                        "automation": "Automatizace",
+                        "core": "Obecné",
+                        "customize": "Přizpůsobení",
+                        "devices": "Zařízení",
+                        "entities": "Entity",
+                        "helpers": "Pomocníci",
+                        "info": "Informace",
+                        "integrations": "Integrace",
+                        "logs": "Logy",
+                        "lovelace": "Lovelace Dashboardy",
+                        "navigate_to": "Přejít na {panel}",
+                        "navigate_to_config": "Přejít na nastavení {panel}",
+                        "person": "Osoby",
+                        "scene": "Scény",
+                        "script": "Skripty",
+                        "server_control": "Ovládání serveru",
+                        "tags": "Značky",
+                        "users": "Uživatelé",
+                        "zone": "Zóny"
+                    },
                     "reload": {
                         "automation": "Nově načíst automatizace",
                         "command_line": "Nově načíst entity integrace Command line",
@@ -2323,6 +2345,7 @@
                         "update_user": "Aktualizovat"
                     },
                     "picker": {
+                        "add_user": "Přidat uživatele",
                         "headers": {
                             "group": "Skupina",
                             "name": "Název",
@@ -2603,6 +2626,8 @@
                         "filter_attributes": "Filtrovat atributy",
                         "filter_entities": "Filtrovat entity",
                         "filter_states": "Filtrovat stavy",
+                        "last_changed": "Naposledy změněno",
+                        "last_updated": "Poslední aktualizace",
                         "more_info": "Více informací",
                         "no_entities": "Žádné entity",
                         "set_state": "Nastavit stav",
@@ -2853,6 +2878,10 @@
                         "light": {
                             "description": "Karta Světlo umožňuje změnit jas světla.",
                             "name": "Světlo"
+                        },
+                        "logbook": {
+                            "description": "Karta Záznamy zobrazuje seznam událostí entit.",
+                            "name": "Záznamy"
                         },
                         "map": {
                             "dark_mode": "Tmavý režim?",

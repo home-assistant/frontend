@@ -588,7 +588,7 @@
                     "cleared_device_class": "no detectado (no se detecta {device_class})",
                     "detected_device_class": "detectado {device_class}",
                     "rose": "salió",
-                    "set": "Establecer",
+                    "set": "se puso",
                     "turned_off": "apagado",
                     "turned_on": "encendido",
                     "was_at_home": "estaba en casa",
@@ -872,6 +872,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Áreas",
+                        "automation": "Automatizaciones",
+                        "core": "Configuración general",
+                        "customize": "Personalizaciones",
+                        "devices": "Dispositivos",
+                        "entities": "Entidades",
+                        "helpers": "Ayudantes",
+                        "info": "Información",
+                        "integrations": "Integraciones",
+                        "logs": "Registros",
+                        "lovelace": "Paneles de Control Lovelace",
+                        "navigate_to": "Navegar a {panel}",
+                        "navigate_to_config": "Navegar a la configuración de {panel}",
+                        "person": "Personas",
+                        "scene": "Escenas",
+                        "script": "Scripts",
+                        "server_control": "Controles del servidor",
+                        "tags": "Etiquetas",
+                        "users": "Usuarios",
+                        "zone": "Zonas"
+                    },
                     "reload": {
                         "automation": "Recargar automatizaciones",
                         "command_line": "Recargar entidades de línea de comandos",
@@ -889,7 +911,7 @@
                         "input_select": "Recargar los campos desplegables",
                         "input_text": "Recargar los campos de texto",
                         "min_max": "Recargar entidades min/max",
-                        "mqtt": "Recargar entidades mqtt configuradas manualmente",
+                        "mqtt": "Recargar entidades MQTT configuradas manualmente",
                         "person": "Recargar personas",
                         "ping": "Recargar entidades de sensor binario de ping",
                         "reload": "Recargar {domain}",
@@ -897,7 +919,7 @@
                         "rpi_gpio": "Recargar entidades GPIO de Raspberry Pi",
                         "scene": "Recargar escenas",
                         "script": "Recargar scripts",
-                        "smtp": "Recargar servicios de notificación smtp",
+                        "smtp": "Recargar servicios de notificación SMTP",
                         "statistics": "Recargar entidades de estadísticas",
                         "telegram": "Recargar servicios de notificación de telegram",
                         "template": "Recargar entidades de plantilla",
@@ -2225,7 +2247,7 @@
                             "input_text": "Recargar los campos de texto",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
                             "min_max": "Recargar entidades min/max",
-                            "mqtt": "Recargar entidades mqtt configuradas manualmente",
+                            "mqtt": "Recargar entidades MQTT configuradas manualmente",
                             "person": "Recargar personas",
                             "ping": "Recargar entidades de sensor binario de ping",
                             "reload": "Recargar {domain}",
@@ -2233,7 +2255,7 @@
                             "rpi_gpio": "Recargar entidades GPIO de Raspberry Pi",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",
-                            "smtp": "Recargar servicios de notificación smtp",
+                            "smtp": "Recargar servicios de notificación SMTP",
                             "statistics": "Recargar entidades de estadísticas",
                             "telegram": "Recargar servicios de notificación de telegram",
                             "template": "Recargar entidades de plantilla",
@@ -2323,6 +2345,7 @@
                         "update_user": "Actualizar"
                     },
                     "picker": {
+                        "add_user": "Añadir usuario",
                         "headers": {
                             "group": "Grupo",
                             "name": "Nombre",
@@ -2603,6 +2626,8 @@
                         "filter_attributes": "Filtrar atributos",
                         "filter_entities": "Filtrar entidades",
                         "filter_states": "Filtrar estados",
+                        "last_changed": "Último cambio",
+                        "last_updated": "Última actualización",
                         "more_info": "Más Información",
                         "no_entities": "Sin entidades",
                         "set_state": "Establecer estado",
@@ -2853,6 +2878,10 @@
                         "light": {
                             "description": "La tarjeta de luz te permite cambiar la intensidad de la luz.",
                             "name": "Luz"
+                        },
+                        "logbook": {
+                            "description": "La tarjeta Registro muestra una lista de eventos para las entidades.",
+                            "name": "Registro"
                         },
                         "map": {
                             "dark_mode": "¿Modo oscuro?",

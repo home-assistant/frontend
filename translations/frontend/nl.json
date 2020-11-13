@@ -867,6 +867,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Gebieden",
+                        "automation": "Automatiseringen",
+                        "core": "Algemeen",
+                        "customize": "Aanpassingen",
+                        "devices": "Apparaten",
+                        "entities": "Entiteiten",
+                        "helpers": "Helpers",
+                        "info": "Info",
+                        "integrations": "Integraties",
+                        "logs": "Logs",
+                        "lovelace": "Lovelace Dashboards",
+                        "navigate_to": "Navigeer naar {panel}",
+                        "navigate_to_config": "Navigeer naar {panel} configuratie",
+                        "person": "Personen",
+                        "scene": "Scènes",
+                        "script": "Scripts",
+                        "server_control": "Server Controls",
+                        "tags": "Tags",
+                        "users": "Gebruikers",
+                        "zone": "Zones"
+                    },
                     "reload": {
                         "automation": "Herlaad automatiseringen",
                         "command_line": "Herlaad commandline entiteiten",
@@ -1736,8 +1758,11 @@
                                 "can_reach_cert_server": "Bereik de certificaatserver",
                                 "can_reach_cloud": "Bereik Home Assistant Cloud",
                                 "can_reach_cloud_auth": "Bereik authenticatieserver",
+                                "google_enabled": "Google ingeschakeld",
+                                "logged_in": "Ingelogd",
                                 "remote_connected": "Op afstand verbonden",
-                                "remote_enabled": "Op afstand ingeschakeld"
+                                "remote_enabled": "Op afstand ingeschakeld",
+                                "subscription_expiration": "Abonnement vervalt"
                             },
                             "homeassistant": {
                                 "arch": "CPU-architectuur",
@@ -1751,6 +1776,11 @@
                                 "timezone": "Tijdzone",
                                 "version": "Versie",
                                 "virtualenv": "Virtuele omgeving"
+                            },
+                            "lovelace": {
+                                "dashboards": "Dashboards",
+                                "mode": "Mode",
+                                "resources": "Bronnen"
                             }
                         },
                         "manage": "Beheer",
@@ -2173,6 +2203,8 @@
                     },
                     "picker": {
                         "add_script": "Voeg script toe",
+                        "duplicate": "Dupliceer",
+                        "duplicate_script": "Script dupliceren",
                         "edit_script": "Bewerk script",
                         "header": "Script Editor",
                         "headers": {
@@ -2209,7 +2241,7 @@
                             "input_text": "Herlaad input texts",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
                             "min_max": "Herlaad min/max entiteiten",
-                            "mqtt": "Herlaad handmatig geconfigureerde mqtt-entiteiten",
+                            "mqtt": "Herlaad handmatig geconfigureerde MQTT-entiteiten",
                             "person": "Herlaad personen",
                             "ping": "Herlaad ping binaire sensor entiteiten",
                             "reload": "Herlaad {domain}",
@@ -2217,7 +2249,7 @@
                             "rpi_gpio": "Herlaad Raspberry Pi GPIO-entiteiten",
                             "scene": "Herlaad scenes",
                             "script": "Herlaad scripts",
-                            "smtp": "Herlaad smtp notify services",
+                            "smtp": "Laad de SMTP-meldingsservices opnieuw",
                             "statistics": "Herlaad statistische entiteiten",
                             "telegram": "Herlaad telegram notify services",
                             "template": "Herlaad template entiteiten",
@@ -2307,6 +2339,7 @@
                         "update_user": "Bijwerken"
                     },
                     "picker": {
+                        "add_user": "Voeg gebruiker toe",
                         "headers": {
                             "group": "Groep",
                             "name": "Naam",
@@ -2587,6 +2620,8 @@
                         "filter_attributes": "Filter attributen",
                         "filter_entities": "Filter entiteiten",
                         "filter_states": "Filter toestanden",
+                        "last_changed": "Laatst gewijzigd",
+                        "last_updated": "Laatst bijgewerkt",
                         "more_info": "Meer informatie",
                         "no_entities": "Geen entiteiten",
                         "set_state": "Definieer toestand",
@@ -2838,6 +2873,10 @@
                             "description": "Met de Light-kaart kunt u de helderheid van het licht wijzigen.",
                             "name": "Lamp"
                         },
+                        "logbook": {
+                            "description": "De Logboekkaart toont een lijst met gebeurtenissen voor entiteiten.",
+                            "name": "Logboek"
+                        },
                         "map": {
                             "dark_mode": "Donkere modus?",
                             "default_zoom": "Standaard zoom",
@@ -2910,11 +2949,18 @@
                         "entity": "Entiteit",
                         "no_description": "Er is geen beschrijving beschikbaar"
                     },
+                    "common": {
+                        "add": "Toevoegen",
+                        "clear": "Wis",
+                        "edit": "Bewerk",
+                        "none": "Geen"
+                    },
                     "edit_badges": {
                         "panel_mode": "Deze badges worden niet weergegeven omdat deze weergave zich in de \"Paneelmodus\" bevindt."
                     },
                     "edit_card": {
                         "add": "Kaart toevoegen",
+                        "clear": "Wis",
                         "confirm_cancel": "Weet u zeker dat u wilt afbreken?",
                         "delete": "Verwijder kaart",
                         "duplicate": "Dupliceer kaart",
@@ -2956,10 +3002,15 @@
                     },
                     "header": "Bewerk UI",
                     "header-footer": {
+                        "choose_header_footer": "Kies een {type}",
+                        "footer": "Voettekst",
                         "header": "Header",
                         "types": {
                             "buttons": {
                                 "name": "Knoppen"
+                            },
+                            "graph": {
+                                "name": "Grafiek"
                             },
                             "picture": {
                                 "name": "Afbeelding"

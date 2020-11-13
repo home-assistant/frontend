@@ -2297,6 +2297,7 @@
                         "update_user": "Aktualisieren"
                     },
                     "picker": {
+                        "add_user": "Benutzer hinzufügen",
                         "headers": {
                             "group": "Gruppe",
                             "name": "Name",

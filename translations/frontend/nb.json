@@ -872,6 +872,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Områder",
+                        "automation": "Automasjoner",
+                        "core": "Generelt",
+                        "customize": "Tilpasninger",
+                        "devices": "Enheter",
+                        "entities": "Entiteter",
+                        "helpers": "Hjelpere",
+                        "info": "Informasjon",
+                        "integrations": "Integrasjoner",
+                        "logs": "Logger",
+                        "lovelace": "Lovelace instrumentbord",
+                        "navigate_to": "Naviger til {panel}",
+                        "navigate_to_config": "Naviger til {panel} konfigurasjon",
+                        "person": "Personer",
+                        "scene": "Scener",
+                        "script": "Skript",
+                        "server_control": "Server-kontroller",
+                        "tags": "Tagger",
+                        "users": "Brukere",
+                        "zone": "Soner"
+                    },
                     "reload": {
                         "automation": "Last inn automasjoner på nytt",
                         "command_line": "Last inn kommandolinje entiteter på nytt",
@@ -2323,6 +2345,7 @@
                         "update_user": "Oppdater"
                     },
                     "picker": {
+                        "add_user": "Legg til bruker",
                         "headers": {
                             "group": "Gruppe",
                             "name": "Navn",
@@ -2603,6 +2626,8 @@
                         "filter_attributes": "Filtrere attributter",
                         "filter_entities": "Filtrere entiteter",
                         "filter_states": "Filtrere tilstander",
+                        "last_changed": "Sist endret",
+                        "last_updated": "Sist oppdatert",
                         "more_info": "Mer info",
                         "no_entities": "Ingen entiteter",
                         "set_state": "Sett tilstand",
@@ -2853,6 +2878,10 @@
                         "light": {
                             "description": "Med Light-kortet kan du endre lysstyrken.",
                             "name": "Lys"
+                        },
+                        "logbook": {
+                            "description": "Loggbokskortet viser en liste over hendelser for entiteter",
+                            "name": "Loggbok"
                         },
                         "map": {
                             "dark_mode": "Mørk modus?",

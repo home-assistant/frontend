@@ -875,7 +875,7 @@
                         "input_select": "Recharger les listes de sélection (input select)",
                         "input_text": "Recharger les entrées de texte (input text)",
                         "min_max": "Recharger les entités min/max",
-                        "mqtt": "Recharger les entités mqtt configurées manuellement",
+                        "mqtt": "Recharger les entités MQTT configurées manuellement",
                         "person": "Recharger les personnes",
                         "ping": "Recharger les entités de capteur binaire ping",
                         "reload": "Recharger {domain}",
@@ -883,7 +883,7 @@
                         "rpi_gpio": "Recharger les entités GPIO du Raspberry Pi",
                         "scene": "Recharger les scènes",
                         "script": "Recharger les scripts",
-                        "smtp": "Recharger les services de notification smtp",
+                        "smtp": "Recharger les services de notification SMTP",
                         "statistics": "Recharger les entités de statistiques",
                         "telegram": "Recharger les services de notification de telegram",
                         "template": "Recharger les entités modèles",
@@ -1213,7 +1213,7 @@
                                     "trigger": "Déclencheur"
                                 },
                                 "event": {
-                                    "context_user_pick": "Ajouter un utilisateur",
+                                    "context_user_pick": "Sélectionner un utilisateur",
                                     "context_user_picked": "Événement déclenché par l'utilisateur",
                                     "context_users": "Limiter aux événements déclenchés par",
                                     "event_data": "Données de l'événement",
@@ -2136,7 +2136,7 @@
                         "sequence_sentence": "La séquence d'actions de ce script."
                     },
                     "picker": {
-                        "add_script": "Créer un nouveau script",
+                        "add_script": "Ajouter un  script",
                         "edit_script": "Éditer le script",
                         "header": "Éditeur de script",
                         "headers": {
@@ -2173,7 +2173,7 @@
                             "input_text": "Recharger les entrées de texte (input text)",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
                             "min_max": "Recharger les entités min/max",
-                            "mqtt": "Recharger les entités mqtt configurées manuellement",
+                            "mqtt": "Recharger les entités MQTT configurées manuellement",
                             "person": "Recharger les personnes",
                             "ping": "Recharger les entités de capteur binaire ping",
                             "reload": "Recharger {domain}",
@@ -2181,7 +2181,7 @@
                             "rpi_gpio": "Recharger les entités GPIO du Raspberry Pi",
                             "scene": "Recharger les scènes",
                             "script": "Recharger les scripts",
-                            "smtp": "Recharger les services de notification smtp",
+                            "smtp": "Recharger les services de notification SMTP",
                             "statistics": "Recharger les entités de statistiques",
                             "telegram": "Recharger les services de notification de telegram",
                             "template": "Recharger les entités modèles",
@@ -2635,7 +2635,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configuration de l'interface utilisateur de Lovelace a été mise à jour, réactualisée pour voir les changements ?",
+                    "message": "La configuration de l'interface utilisateur de Lovelace a été mise à jour. Voulez-vous actualiser pour voir les changements ?",
                     "refresh": "Rafraîchir"
                 },
                 "editor": {
