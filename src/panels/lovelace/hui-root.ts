@@ -108,7 +108,7 @@ class HUIRoot extends LitElement {
         })}
         id="layout"
       >
-        <app-header slot="header" effects="waterfall" fixed condenses>
+        <app-header slot="header" effects="waterfall" fixed>
           ${this._editMode
             ? html`
                 <app-toolbar class="edit-mode">
@@ -891,9 +891,6 @@ class HUIRoot extends LitElement {
           */
           flex: 1 1 100%;
           max-width: 100%;
-        }
-        .hide-tab {
-          display: none;
         }
         .menu-link {
           text-decoration: none;
