@@ -899,6 +899,8 @@
         },
         "info": {
           "caption": "Info",
+          "copy_raw": "Raw Text",
+          "copy_github": "For GitHub",
           "description": "View info about your Home Assistant installation",
           "home_assistant_logo": "Home Assistant logo",
           "path_configuration": "Path to configuration.yaml: {path}",
