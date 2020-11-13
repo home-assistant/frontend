@@ -469,11 +469,7 @@ export class DialogHassioNetwork extends LitElement
     }
 
     this._dirty = true;
-    if (Array.isArray(this._interface[version]![id])) {
-      this._interface[version]![id] = [value];
-    } else {
-      this._interface[version]![id] = value;
-    }
+    this._interface[version]![id] = value;
   }
 
   private _handleInputValueChangedWifi(ev: CustomEvent): void {
