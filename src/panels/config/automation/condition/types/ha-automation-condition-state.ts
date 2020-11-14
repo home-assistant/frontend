@@ -49,29 +49,27 @@ export class HaStateCondition extends LitElement implements ConditionElement {
           )}
           .name=${"state-" + idx}
           .value=${value}
-          @value-changed=${this._valueChanged}
+          @value-changed=${this._stateValueChanged}
         ></paper-input>`
       )}
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const name = (ev.target as any)?.name;
+    handleChangeEvent(this, ev);
+  }
 
-    if (name.startsWith("state-")) {
-      ev.stopPropagation();
-      const value = ev.detail.value;
-      const idx = name.split("-").pop();
+  private _stateValueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    const idx = (ev.target as any)?.name.split("-").pop();
 
-      if ((this.condition.state[idx] || "") === value) {
-        return;
-      }
-
-      this.condition.state[idx] = value;
-      handleChange(this, "state", this.condition.state);
-    } else {
-      handleChangeEvent(this, ev);
+    if ((this.condition.state[idx] || "") === value) {
+      return;
     }
+
+    this.condition.state[idx] = value;
+    handleChange(this, "state", this.condition.state);
   }
 }
 

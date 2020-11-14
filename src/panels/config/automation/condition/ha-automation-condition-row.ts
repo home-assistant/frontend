@@ -33,14 +33,13 @@ export const handleChange = (
   if (!name) {
     return;
   }
-  const newVal = value;
 
   let newCondition: Condition;
-  if (!newVal) {
+  if (!value) {
     newCondition = { ...element.condition };
     delete newCondition[name];
   } else {
-    newCondition = { ...element.condition, [name]: newVal };
+    newCondition = { ...element.condition, [name]: value };
   }
   fireEvent(element, "value-changed", { value: newCondition });
 };

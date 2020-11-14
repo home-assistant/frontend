@@ -72,6 +72,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
               .value=${value?.startsWith("input_datetime.") ? value : ""}
               @value-changed=${this._valueChanged}
               .hass=${this.hass}
+              allow-custom-entity
             ></ha-entity-picker>`
           )
         : at.map(
