@@ -588,7 +588,7 @@
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
                     "detected_device_class": "gedetecteerd {device_class}",
                     "rose": "opkomst",
-                    "set": "stel  in",
+                    "set": "ondergang",
                     "turned_off": "is uitgeschakeld",
                     "turned_on": "is ingeschakeld",
                     "was_at_home": "was thuis",
@@ -804,6 +804,13 @@
             },
             "more_info_control": {
                 "controls": "Besturing",
+                "cover": {
+                    "close_cover": "Sluit zonnewering",
+                    "close_tile_cover": "Sluit klep",
+                    "open_cover": "Open zonnewering",
+                    "open_tilt_cover": "Open klep",
+                    "stop_cover": "Stop beweging van zonnewering"
+                },
                 "details": "Details",
                 "dismiss": "Dialoogvenster sluiten",
                 "edit": "Entiteit bewerken",
@@ -984,7 +991,7 @@
         "notification_drawer": {
             "click_to_configure": "Klik op de knop om {entity} te configureren",
             "close": "Sluiten",
-            "dismiss_all": "Alles afkeuren",
+            "dismiss_all": "Alles verbergen",
             "empty": "Geen notificaties",
             "title": "Notificaties"
         },
@@ -1345,7 +1352,7 @@
                         "show_info_automation": "Informatie weergeven over automatisering"
                     },
                     "thingtalk": {
-                        "create": "Creëer automatisering",
+                        "create": "Automatisering maken",
                         "link_devices": {
                             "ambiguous_entities": "Een of meer apparaten hebben meer dan één overeenkomende entiteit. Kies het apparaat dat u wilt gebruiken.",
                             "header": "Geweldig! Nu moeten we enkele apparaten koppelen",
@@ -1355,7 +1362,7 @@
                             "error_empty": "Voer een commando in of druk op overslaan.",
                             "error_unsupported": "Daar konden we (nog) geen automatisering voor maken.",
                             "for_example": "Bijvoorbeeld:",
-                            "header": "Creëer een nieuwe automatisering",
+                            "header": "Een nieuwe automatisering maken",
                             "introduction": "Typ hieronder wat deze automatisering zou moeten doen, en we zullen proberen om het om te zetten in een Home Assistant automatisering.",
                             "language_note": "Opmerking: voorlopig wordt alleen Engels ondersteund."
                         }
@@ -1755,11 +1762,12 @@
                         "checks": {
                             "cloud": {
                                 "alexa_enabled": "Alexa ingeschakeld",
-                                "can_reach_cert_server": "Bereik de certificaatserver",
+                                "can_reach_cert_server": "Bereik de certificaat server",
                                 "can_reach_cloud": "Bereik Home Assistant Cloud",
                                 "can_reach_cloud_auth": "Bereik authenticatieserver",
                                 "google_enabled": "Google ingeschakeld",
                                 "logged_in": "Ingelogd",
+                                "relayer_connected": "Relayer verbonden",
                                 "remote_connected": "Op afstand verbonden",
                                 "remote_enabled": "Op afstand ingeschakeld",
                                 "subscription_expiration": "Abonnement vervalt"
@@ -2339,7 +2347,7 @@
                         "update_user": "Bijwerken"
                     },
                     "picker": {
-                        "add_user": "Voeg gebruiker toe",
+                        "add_user": "Gebruiker toevoegen",
                         "headers": {
                             "group": "Groep",
                             "name": "Naam",
@@ -2960,7 +2968,7 @@
                     },
                     "edit_card": {
                         "add": "Kaart toevoegen",
-                        "clear": "Wis",
+                        "clear": "Leegmaken",
                         "confirm_cancel": "Weet u zeker dat u wilt afbreken?",
                         "delete": "Verwijder kaart",
                         "duplicate": "Dupliceer kaart",
@@ -3004,7 +3012,7 @@
                     "header-footer": {
                         "choose_header_footer": "Kies een {type}",
                         "footer": "Voettekst",
-                        "header": "Header",
+                        "header": "Koptekst",
                         "types": {
                             "buttons": {
                                 "name": "Knoppen"
@@ -3064,7 +3072,7 @@
                     "sub-element-editor": {
                         "types": {
                             "footer": "Voettekst Editor",
-                            "header": "Header Editor",
+                            "header": "Koptekst Editor",
                             "row": "Entiteitsrij Editor"
                         }
                     },
@@ -3382,7 +3390,7 @@
                 },
                 "push_notifications": {
                     "add_device_prompt": {
-                        "input_label": "Apparaatnaam",
+                        "input_label": "Naam van het apparaat",
                         "title": "Hoe moet dit apparaat genoemd worden?"
                     },
                     "description": "Verstuur meldingen naar dit apparaat.",

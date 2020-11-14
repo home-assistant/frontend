@@ -804,6 +804,10 @@
             },
             "more_info_control": {
                 "controls": "Steuerelemente",
+                "cover": {
+                    "close_cover": "Abdeckung schließen",
+                    "open_cover": "Abdeckung öffnen"
+                },
                 "details": "Details",
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
@@ -867,6 +871,26 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "automation": "Automatisierungen",
+                        "core": "Allgemein",
+                        "customize": "Anpassungen",
+                        "devices": "Geräte",
+                        "entities": "Entitäten",
+                        "helpers": "Helfer",
+                        "info": "Info",
+                        "integrations": "Integrationen",
+                        "logs": "Logs",
+                        "navigate_to": "Navigiere zu {panel}",
+                        "navigate_to_config": "Navigiere zur {panel} Konfiguration",
+                        "person": "Personen",
+                        "scene": "Szenen",
+                        "script": "Skripte",
+                        "server_control": "Serversteuerung",
+                        "tags": "Tags",
+                        "users": "Benutzer",
+                        "zone": "Zonen"
+                    },
                     "reload": {
                         "automation": "Automationen neu laden",
                         "command_line": "Komandozeilen Entätien neu laden",
@@ -1636,12 +1660,12 @@
                         "disable_selected": {
                             "button": "Ausgewählte deaktivieren",
                             "confirm_text": "Deaktivierte Entitäten werden zu Home Assistant nicht hinzugefügt.",
-                            "confirm_title": "Möchtest du {number} Entitäten deaktivieren?"
+                            "confirm_title": "Möchtest du {number} {number, plural,\n  one {{entity}}\n  other {{entities}}\n} deaktivieren?"
                         },
                         "enable_selected": {
                             "button": "Ausgewählte aktivieren",
                             "confirm_text": "Dadurch stehen sie in Home Assistant wieder zur Verfügung, wenn sie jetzt deaktiviert sind.",
-                            "confirm_title": "Möchtest du {number} Entitäten aktivieren?"
+                            "confirm_title": "Möchtest du {number} {number, plural,\n  one {{entity}}\n  other {{entities}}\n} aktivieren?"
                         },
                         "filter": {
                             "filter": "Filter",
@@ -1665,7 +1689,7 @@
                             "confirm_partly_text": "Du kannst nur {removable} der ausgewählten {selected} Entitäten entfernen. Entitäten können nur entfernt werden, wenn die Integration die Entitäten nicht mehr bereitstellt. Manchmal musst du Home Assistant neu starten, bevor du die Entitäten einer entfernten Integration entfernen kannst. Möchtest du die entfernbaren Entitäten wirklich entfernen?",
                             "confirm_partly_title": "Es können nur {number} ausgewählte Objekte entfernt werden.",
                             "confirm_text": "Du solltest sie aus deiner Lovelace-Konfiguration und deinen Automatisierungen entfernen, wenn sie diese Entitäten enthalten.",
-                            "confirm_title": "Möchtest du {number} Entitäten entfernen?"
+                            "confirm_title": "Möchtest du {number} {number, plural,\n  one {{entity}}\n  other {{entities}}\n} entfernen?"
                         },
                         "search": "Entitäten suchen",
                         "selected": "{number} ausgewählt",
@@ -1733,6 +1757,9 @@
                         "checks": {
                             "cloud": {
                                 "alexa_enabled": "Alexa aktiviert",
+                                "can_reach_cert_server": "Zertifikatsserver erreichbar",
+                                "can_reach_cloud": "Home Assistant Cloud erreichbar",
+                                "can_reach_cloud_auth": "Authentifizierungsserver erreichbar",
                                 "google_enabled": "Google aktiviert",
                                 "logged_in": "Eingeloggt",
                                 "remote_connected": "Remote verbunden",
@@ -2578,6 +2605,8 @@
                         "filter_attributes": "Attribute filtern",
                         "filter_entities": "Entitäten filtern",
                         "filter_states": "Zustände filtern",
+                        "last_changed": "Letzte Änderung",
+                        "last_updated": "Letzte Aktualisierung",
                         "more_info": "Mehr Info",
                         "no_entities": "Keine Entitäten",
                         "set_state": "Status setzen",
@@ -2676,7 +2705,7 @@
                             "navigate": "Navigieren",
                             "none": "Keine Aktion",
                             "toggle": "Umschalten",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "editor_service_data": "Servicedaten können nur im Code-Editor eingegeben werden",
                         "navigation_path": "Navigationspfad",
@@ -2773,7 +2802,7 @@
                             "camera_image": "Kamera-Entität",
                             "camera_view": "Kameraansicht",
                             "double_tap_action": "Doppeltipp-Aktion",
-                            "entities": "Ungenutzte Elemente",
+                            "entities": "Entitäten",
                             "entity": "Entität",
                             "hold_action": "Halte-Aktion",
                             "hours_to_show": "Stunden",
@@ -2798,7 +2827,7 @@
                             "theme": "Aussehen",
                             "title": "Titel",
                             "unit": "Einheit",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Spalten",
@@ -2828,6 +2857,10 @@
                         "light": {
                             "description": "Mit der Licht-Karte kannst du die Helligkeit des Lichts ändern.",
                             "name": "Licht"
+                        },
+                        "logbook": {
+                            "description": "Die Logbuchkarte zeigt eine Liste von Ereignissen für Entitäten.",
+                            "name": "Logbuch"
                         },
                         "map": {
                             "dark_mode": "Dunkler Modus?",
@@ -3027,7 +3060,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Dadurch wird die erste Karte in voller Breite gerendert. Andere Karten in dieser Ansicht werden nicht gerendert.",
+                            "description": "Dadurch wird die erste Karte in voller Breite angezeigt. Andere Karten und Marker in dieser Ansicht werden nicht angezeigt.",
                             "title": "Panel-Modus?",
                             "warning_multiple_cards": "Diese Ansicht enthält mehr als eine Karte, in einer Bedienfeldansicht kann jedoch nur eine Karte angezeigt werden."
                         }

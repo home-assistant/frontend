@@ -804,6 +804,10 @@
             },
             "more_info_control": {
                 "controls": "控制项",
+                "cover": {
+                    "close_cover": "关闭卷帘",
+                    "open_cover": "打开卷帘"
+                },
                 "details": "详情",
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
@@ -867,6 +871,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "区域注册表",
+                        "automation": "自动化",
+                        "core": "通用",
+                        "customize": "自定义",
+                        "devices": "设备",
+                        "entities": "实体注册表",
+                        "helpers": "辅助元素",
+                        "info": "信息",
+                        "integrations": "集成",
+                        "logs": "日志",
+                        "lovelace": "Lovelace 仪表盘",
+                        "navigate_to": "导航到{panel}",
+                        "navigate_to_config": "导航到{panel}配置",
+                        "person": "人员",
+                        "scene": "场景",
+                        "script": "脚本",
+                        "server_control": "服务控制",
+                        "tags": "标签",
+                        "users": "用户",
+                        "zone": "地点"
+                    },
                     "reload": {
                         "automation": "重载自动化",
                         "command_line": "重载命令行实体",
@@ -884,7 +910,7 @@
                         "input_select": "重载多项选择器",
                         "input_text": "重载文字输入",
                         "min_max": "重载最小值/最大值实体",
-                        "mqtt": "重载手动配置的 mqtt 实体",
+                        "mqtt": "重载手动配置的 MQTT 实体",
                         "person": "重载人员",
                         "ping": "重载 ping 二元传感器实体",
                         "reload": "重载{domain}",
@@ -892,7 +918,7 @@
                         "rpi_gpio": "重载树莓派 GPIO 实体",
                         "scene": "重载场景",
                         "script": "重载脚本",
-                        "smtp": "重载 smtp 通知服务",
+                        "smtp": "重载 SMTP 通知服务",
                         "statistics": "重载 statistics 实体",
                         "telegram": "重载 telegram 通知服务",
                         "template": "重载模板实体",
@@ -2182,6 +2208,8 @@
                     },
                     "picker": {
                         "add_script": "添加脚本",
+                        "duplicate": "制作副本",
+                        "duplicate_script": "复制脚本",
                         "edit_script": "编辑脚本",
                         "header": "脚本编辑器",
                         "headers": {
@@ -2218,7 +2246,7 @@
                             "input_text": "重载文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
                             "min_max": "重载最小值/最大值实体",
-                            "mqtt": "重载手动配置的 mqtt 实体",
+                            "mqtt": "重载手动配置的 MQTT 实体",
                             "person": "重载人员",
                             "ping": "重载 ping 二元传感器实体",
                             "reload": "重载{domain}",
@@ -2226,7 +2254,7 @@
                             "rpi_gpio": "重载树莓派 GPIO 实体",
                             "scene": "重载场景",
                             "script": "重载脚本",
-                            "smtp": "重载 smtp 通知服务",
+                            "smtp": "重载 SMTP 通知服务",
                             "statistics": "重载 statistics 实体",
                             "telegram": "重载 telegram 通知服务",
                             "template": "重载模板实体",
@@ -2316,6 +2344,7 @@
                         "update_user": "更新"
                     },
                     "picker": {
+                        "add_user": "添加用户",
                         "headers": {
                             "group": "群组",
                             "name": "名称",
@@ -2596,6 +2625,8 @@
                         "filter_attributes": "输入筛选属性",
                         "filter_entities": "输入筛选实体",
                         "filter_states": "输入筛选状态",
+                        "last_changed": "上次变化",
+                        "last_updated": "上次更新",
                         "more_info": "更多信息",
                         "no_entities": "没有可用实体",
                         "set_state": "设置状态",
@@ -2846,6 +2877,10 @@
                         "light": {
                             "description": "“灯光”卡片用于调整灯的亮度。",
                             "name": "灯光"
+                        },
+                        "logbook": {
+                            "description": "“日志”卡片可显示实体的事件列表。",
+                            "name": "日志"
                         },
                         "map": {
                             "dark_mode": "夜间模式？",

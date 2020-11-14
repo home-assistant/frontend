@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Controles",
                 "cover": {
+                    "close_cover": "Cerrar persiana",
                     "close_tile_cover": "Cerrar la inclinación de la persiana",
+                    "open_cover": "Abrir persiana",
                     "open_tilt_cover": "Inclinación de la persiana abierta",
                     "stop_cover": "Detener el movimiento de la persiana"
                 },

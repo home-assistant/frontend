@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Ovládací prvky",
                 "cover": {
+                    "close_cover": "Zavřít",
                     "close_tile_cover": "Snížit náklon",
+                    "open_cover": "Otevřít",
                     "open_tilt_cover": "Zvýšit náklon",
                     "stop_cover": "Zastavit pohyb"
                 },

@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Controls",
                 "cover": {
+                    "close_cover": "Tanca la coberta",
                     "close_tile_cover": "Inclinació de la coberta tancada",
+                    "open_cover": "Obre la coberta",
                     "open_tilt_cover": "Inclinació de la coberta oberta",
                     "stop_cover": "Atura el moviment de la coberta"
                 },
