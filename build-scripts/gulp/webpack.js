@@ -33,7 +33,10 @@ const runDevServer = ({
       throw err;
     }
     // Server listening
-    log("[webpack-dev-server]", `http://localhost:${port}`);
+    log(
+      "[webpack-dev-server]",
+      `Project is running at http://localhost:${port}`
+    );
   });
 
 const handler = (done) => (err, stats) => {

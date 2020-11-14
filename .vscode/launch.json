@@ -1,0 +1,40 @@
+{
+  // https://github.com/microsoft/vscode-js-debug/blob/master/OPTIONS.md
+  "configurations": [
+    {
+      "name": "Debug Frontend",
+      "request": "launch",
+      "type": "pwa-chrome",
+      "url": "http://localhost:8123/",
+      "webRoot": "${workspaceFolder}/hass_frontend",
+      "preLaunchTask": "Develop Frontend",
+    },
+    {
+      "name": "Debug Gallery",
+      "request": "launch",
+      "type": "pwa-chrome",
+      "url": "http://localhost:8100/",
+      "urlFilter": "http://localhost:8100/*",
+      "webRoot": "${workspaceFolder}/gallery/dist",
+      "preLaunchTask": "Develop Gallery"
+    },
+    {
+      "name": "Debug Demo",
+      "request": "launch",
+      "type": "pwa-chrome",
+      "url": "http://localhost:8090/",
+      "urlFilter": "http://localhost:8090/*",
+      "webRoot": "${workspaceFolder}/demo/dist",
+      "preLaunchTask": "Develop Demo"
+    },
+    {
+      "name": "Debug Cast",
+      "request": "launch",
+      "type": "pwa-chrome",
+      "url": "http://localhost:8080/",
+      "urlFilter": "http://localhost:8080/*",
+      "webRoot": "${workspaceFolder}/cast/dist",
+      "preLaunchTask": "Develop Cast"
+    },
+  ]
+}

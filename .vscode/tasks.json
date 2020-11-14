@@ -1,0 +1,83 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Develop Frontend",
+      "type": "gulp",
+      "task": "develop-app",
+      "problemMatcher": {
+        "base": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Using gulpfile",
+          "endsPattern": "Build done @"
+        }
+      },
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Develop Gallery",
+      "type": "gulp",
+      "task": "develop-gallery",
+      "problemMatcher": {
+        "base": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Using gulpfile",
+          "endsPattern": "Build done @"
+        }
+      },
+
+      "isBackground": true,
+      "group": "build",
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Develop Demo",
+      "type": "gulp",
+      "task": "develop-demo",
+      "problemMatcher": {
+        "base": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Using gulpfile",
+          "endsPattern": "Build done @"
+        }
+      },
+
+      "isBackground": true,
+      "group": "build",
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Develop Cast",
+      "type": "gulp",
+      "task": "develop-cast",
+      "problemMatcher": {
+        "base": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Using gulpfile",
+          "endsPattern": "Build done @"
+        }
+      },
+
+      "isBackground": true,
+      "group": "build",
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+  ]
+}
