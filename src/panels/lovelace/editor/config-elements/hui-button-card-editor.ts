@@ -8,7 +8,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { assert, boolean, object, optional, string } from "superstruct";
+import {
+  array,
+  assert,
+  boolean,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -22,7 +30,11 @@ import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { actionConfigStruct, EditorTarget } from "../types";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  stateColorConfigStruct,
+} from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -36,7 +48,7 @@ const cardConfigStruct = object({
   tap_action: optional(actionConfigStruct),
   hold_action: optional(actionConfigStruct),
   theme: optional(string()),
-  show_state: optional(boolean()),
+  state_color: optional(union([boolean(), array(stateColorConfigStruct)])),
 });
 
 const actions = [

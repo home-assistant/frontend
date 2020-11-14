@@ -181,8 +181,9 @@ const attributeEntitiesRowConfigStruct = object({
 });
 
 export const stateColorConfigStruct = object({
-  state: string(),
-  color: optional(string()),
+  state: optional(union([string(), number()])),
+  color: string(),
+  below: optional(number()),
 });
 
 export const entitiesConfigStruct = union([

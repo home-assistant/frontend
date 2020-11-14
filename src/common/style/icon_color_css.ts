@@ -1,21 +1,37 @@
 import { css } from "lit-element";
 
 export interface StateColor {
-  state: string;
-  color?: string;
+  state?: string | number;
+  color: string;
+  below?: number;
 }
 
 export const computeCustomStateColor = (
-  state: string,
+  state: string | number,
   stateColors: StateColor[]
 ): string | undefined => {
-  for (const stateColor of stateColors) {
-    if (stateColor.state === state) {
-      return stateColor.color || "var(--paper-item-icon-active-color, #fdd835)";
+  let color;
+  const sortableStateColors = stateColors.filter(
+    (stateColor) => stateColor.below
+  );
+
+  sortableStateColors.sort(
+    (a: StateColor, b: StateColor) => (a.below ?? 0) - (b.below ?? 0)
+  );
+
+  for (const stateColor of sortableStateColors) {
+    if (stateColor.below! < Number(state)) {
+      color = stateColor.color;
     }
   }
 
-  return undefined;
+  for (const stateColor of stateColors) {
+    if (stateColor.state === state || stateColor.state === Number(state)) {
+      color = stateColor.color;
+    }
+  }
+
+  return color;
 };
 
 export const iconColorCSS = css`

@@ -20,26 +20,26 @@ import {
   string,
   union,
 } from "superstruct";
+
+import type { StateColor } from "../../../../common/style/icon_color_css";
+import type { HomeAssistant } from "../../../../types";
+import type { ConfigEntity, GlanceCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+import type { EditorTarget, EntitiesEditorEvent } from "../types";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { processEditorEntities } from "../process-editor-entities";
+import { entitiesConfigStruct, stateColorConfigStruct } from "../types";
+import { configElementStyle } from "./config-elements-style";
+
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import { HomeAssistant } from "../../../../types";
-import { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
-import { LovelaceCardEditor } from "../../types";
-import { processEditorEntities } from "../process-editor-entities";
-import {
-  EditorTarget,
-  entitiesConfigStruct,
-  EntitiesEditorEvent,
-  stateColorConfigStruct,
-} from "../types";
-import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
   type: string(),
@@ -49,7 +49,7 @@ const cardConfigStruct = object({
   show_name: optional(boolean()),
   show_state: optional(boolean()),
   show_icon: optional(boolean()),
-  state_color: union([optional(boolean()), array(stateColorConfigStruct)]),
+  state_color: optional(union([boolean(), array(stateColorConfigStruct)])),
   entities: array(entitiesConfigStruct),
 });
 
@@ -92,8 +92,8 @@ export class HuiGlanceCardEditor extends LitElement
     return this._config!.show_state || true;
   }
 
-  get _state_color(): boolean {
-    return Boolean(this._config!.state_color) ?? true;
+  get _state_color(): boolean | StateColor[] {
+    return this._config!.state_color ?? true;
   }
 
   protected render(): TemplateResult {

@@ -52,7 +52,7 @@ const cardConfigStruct = object({
   title: optional(union([string(), boolean()])),
   theme: optional(string()),
   show_header_toggle: optional(boolean()),
-  state_color: union([optional(boolean()), array(stateColorConfigStruct)]),
+  state_color: optional(union([boolean(), array(stateColorConfigStruct)])),
   entities: array(entitiesConfigStruct),
   header: optional(headerFooterConfigStructs),
   footer: optional(headerFooterConfigStructs),
