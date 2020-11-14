@@ -47,28 +47,41 @@ import {
 } from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
 
-const DEFAULT_NAVIGATION_ICON = "hass:arrow-right-circle";
 const DEFAULT_SERVER_ICON = "hass:server";
 
 interface QuickBarItem extends ScorableTextItem {
+  primaryText: string;
   icon?: string;
   iconPath?: string;
   action(data?: any): void;
 }
 
-interface QuickBarNavigationItem extends QuickBarItem {
+interface CommandItem extends QuickBarItem {
+  categoryKey: "reload" | "navigation" | "server_control";
+  categoryText: string;
+}
+
+const isCommandItem = (
+  item: QuickBarItem | CommandItem
+): item is CommandItem => {
+  return (item as CommandItem).categoryKey !== undefined;
+};
+
+interface QuickBarNavigationItem extends CommandItem {
   path: string;
 }
 
-interface NavigationInfo extends PageNavigation {
-  text: string;
-}
+type NavigationInfo = PageNavigation & Pick<QuickBarItem, "primaryText">;
 
+type BaseNavigationCommand = Pick<
+  QuickBarNavigationItem,
+  "primaryText" | "path"
+>;
 @customElement("ha-quick-bar")
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _commandItems?: QuickBarItem[];
+  @internalProperty() private _commandItems?: CommandItem[];
 
   @internalProperty() private _entityItems?: QuickBarItem[];
 
@@ -201,6 +214,12 @@ export class QuickBar extends LitElement {
   }
 
   private _renderItem(item: QuickBarItem, index?: number) {
+    return isCommandItem(item)
+      ? this._renderCommandItem(item, index)
+      : this._renderEntityItem(item, index);
+  }
+
+  private _renderEntityItem(item: QuickBarItem, index?: number) {
     return html`
       <mwc-list-item
         .twoline=${Boolean(item.altText)}
@@ -216,7 +235,30 @@ export class QuickBar extends LitElement {
               slot="graphic"
             ></ha-svg-icon>`
           : html`<ha-icon .icon=${item.icon} slot="graphic"></ha-icon>`}
-        ${item.text}
+        <span>${item.primaryText}</span>
+        ${item.altText
+          ? html`
+              <span slot="secondary" class="item-text secondary"
+                >${item.altText}</span
+              >
+            `
+          : null}
+      </mwc-list-item>
+    `;
+  }
+
+  private _renderCommandItem(item: CommandItem, index?: number) {
+    return html`
+      <mwc-list-item
+        .twoline=${Boolean(item.altText)}
+        .item=${item}
+        index=${ifDefined(index)}
+      >
+        <span class="command-category ${item.categoryKey}"
+          >${item.categoryText}
+        </span>
+
+        <span>${item.primaryText}</span>
         ${item.altText
           ? html`
               <span slot="secondary" class="item-text secondary"
@@ -315,94 +357,112 @@ export class QuickBar extends LitElement {
 
   private _generateEntityItems(): QuickBarItem[] {
     return Object.keys(this.hass.states)
-      .map((entityId) => ({
-        text: computeStateName(this.hass.states[entityId]),
-        altText: entityId,
-        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
-        action: () => fireEvent(this, "hass-more-info", { entityId }),
-      }))
-      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+      .map((entityId) => {
+        const primaryText = computeStateName(this.hass.states[entityId]);
+        return {
+          primaryText,
+          filterText: primaryText,
+          altText: entityId,
+          icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+          action: () => fireEvent(this, "hass-more-info", { entityId }),
+        };
+      })
+      .sort((a, b) =>
+        compare(a.primaryText.toLowerCase(), b.primaryText.toLowerCase())
+      );
   }
 
-  private _generateCommandItems(): QuickBarItem[] {
+  private _generateCommandItems(): CommandItem[] {
     return [
       ...this._generateReloadCommands(),
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
-    ].sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+    ].sort((a, b) =>
+      compare(a.filterText.toLowerCase(), b.filterText.toLowerCase())
+    );
   }
 
-  private _generateReloadCommands(): QuickBarItem[] {
+  private _generateReloadCommands(): CommandItem[] {
     const reloadableDomains = componentsWithService(this.hass, "reload").sort();
 
-    return reloadableDomains.map((domain) => ({
-      text:
+    return reloadableDomains.map((domain) => {
+      const categoryText = this.hass.localize(
+        `ui.dialogs.quick-bar.commands.types.reload`
+      );
+      const primaryText =
         this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
         this.hass.localize(
           "ui.dialogs.quick-bar.commands.reload.reload",
           "domain",
           domainToName(this.hass.localize, domain)
-        ),
-      icon: domainIcon(domain),
-      action: () => this.hass.callService(domain, "reload"),
-    }));
+        );
+
+      return {
+        primaryText,
+        filterText: `${categoryText} ${primaryText}`,
+        icon: domainIcon(domain),
+        action: () => this.hass.callService(domain, "reload"),
+        categoryKey: "reload",
+        categoryText,
+      };
+    });
   }
 
-  private _generateServerControlCommands(): QuickBarItem[] {
+  private _generateServerControlCommands(): CommandItem[] {
     const serverActions = ["restart", "stop"];
 
-    return serverActions.map((action) =>
-      this._generateConfirmationCommand(
+    return serverActions.map((action) => {
+      const categoryKey = "server_control";
+      const categoryText = this.hass.localize(
+        `ui.dialogs.quick-bar.commands.types.${categoryKey}`
+      );
+      const primaryText = this.hass.localize(
+        "ui.dialogs.quick-bar.commands.server_control.perform_action",
+        "action",
+        this.hass.localize(
+          `ui.dialogs.quick-bar.commands.server_control.${action}`
+        )
+      );
+
+      return this._generateConfirmationCommand(
         {
-          text: this.hass.localize(
-            "ui.dialogs.quick-bar.commands.server_control.perform_action",
-            "action",
-            this.hass.localize(
-              `ui.dialogs.quick-bar.commands.server_control.${action}`
-            )
-          ),
+          primaryText,
+          filterText: `${categoryText} ${primaryText}`,
+          categoryKey,
+          categoryText,
           icon: DEFAULT_SERVER_ICON,
           action: () => this.hass.callService("homeassistant", action),
         },
         this.hass.localize("ui.dialogs.generic.ok")
-      )
-    );
+      );
+    });
   }
 
-  private _generateNavigationCommands(): QuickBarItem[] {
+  private _generateNavigationCommands(): CommandItem[] {
     const panelItems = this._generateNavigationPanelCommands();
     const sectionItems = this._generateNavigationConfigSectionCommands();
 
-    return this._withNavigationActions([...panelItems, ...sectionItems]);
+    return this._finalizeNavigationCommands([...panelItems, ...sectionItems]);
   }
 
-  private _generateNavigationPanelCommands(): Omit<
-    QuickBarNavigationItem,
-    "action"
-  >[] {
+  private _generateNavigationPanelCommands(): BaseNavigationCommand[] {
     return Object.keys(this.hass.panels)
       .filter((panelKey) => panelKey !== "_my_redirect")
       .map((panelKey) => {
         const panel = this.hass.panels[panelKey];
         const translationKey = getPanelNameTranslationKey(panel);
 
-        const text = this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-          "panel",
-          this.hass.localize(translationKey) || panel.title || panel.url_path
-        );
+        const primaryText =
+          this.hass.localize(translationKey) || panel.title || panel.url_path;
 
         return {
-          text,
-          icon: getPanelIcon(panel) || DEFAULT_NAVIGATION_ICON,
+          primaryText,
           path: `/${panel.url_path}`,
         };
       });
   }
 
-  private _generateNavigationConfigSectionCommands(): Partial<
-    QuickBarNavigationItem
-  >[] {
+  private _generateNavigationConfigSectionCommands(): BaseNavigationCommand[] {
     const items: NavigationInfo[] = [];
 
     for (const sectionKey of Object.keys(configSections)) {
@@ -437,7 +497,7 @@ export class QuickBar extends LitElement {
           shortCaption
         );
 
-        return { ...page, text: caption };
+        return { ...page, primaryText: caption };
       }
     }
 
@@ -445,9 +505,9 @@ export class QuickBar extends LitElement {
   }
 
   private _generateConfirmationCommand(
-    item: QuickBarItem,
+    item: CommandItem,
     confirmText: ConfirmationDialogParams["confirmText"]
-  ): QuickBarItem {
+  ): CommandItem {
     return {
       ...item,
       action: () =>
@@ -458,13 +518,23 @@ export class QuickBar extends LitElement {
     };
   }
 
-  private _withNavigationActions(items) {
-    return items.map(({ text, icon, iconPath, path }) => ({
-      text,
-      icon,
-      iconPath,
-      action: () => navigate(this, path),
-    }));
+  private _finalizeNavigationCommands(
+    items: BaseNavigationCommand[]
+  ): CommandItem[] {
+    return items.map((item) => {
+      const categoryKey = "navigation";
+      const categoryText = this.hass.localize(
+        `ui.dialogs.quick-bar.commands.types.${categoryKey}`
+      );
+
+      return {
+        ...item,
+        categoryKey,
+        categoryText,
+        filterText: `${categoryText} ${item.primaryText}`,
+        action: () => navigate(this, item.path),
+      };
+    });
   }
 
   private _toggleIfAlreadyOpened() {
@@ -514,6 +584,27 @@ export class QuickBar extends LitElement {
         ha-svg-icon.prefix {
           margin: 8px;
           color: var(--primary-text-color);
+        }
+
+        span.command-category {
+          font-weight: bold;
+          padding: 3px;
+          display: inline-flex;
+          border-radius: 6px;
+          color: black;
+        }
+
+        span.command-category.reload {
+          background: pink;
+        }
+
+        span.command-category.navigation {
+          background: lightblue;
+        }
+
+        span.command-category.server_control {
+          background: orange;
+          color: white;
         }
 
         .uni-virtualizer-host {
