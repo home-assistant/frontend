@@ -42,7 +42,7 @@ export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
 
 export interface ScorableTextItem {
   score?: number;
-  text: string;
+  filterText: string;
   altText?: string;
 }
 
@@ -55,8 +55,8 @@ export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
   return items
     .map((item) => {
       item.score = item.altText
-        ? fuzzySequentialMatch(filter, item.text, item.altText)
-        : fuzzySequentialMatch(filter, item.text);
+        ? fuzzySequentialMatch(filter, item.filterText, item.altText)
+        : fuzzySequentialMatch(filter, item.filterText);
       return item;
     })
     .filter((item) => item.score !== undefined && item.score > 0)
