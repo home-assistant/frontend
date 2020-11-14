@@ -45,9 +45,8 @@ import { navigate } from "../../common/navigate";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { canShowPage } from "../../common/config/can_show_page";
-import { getPanelIcon, getPanelNameTranslationKey } from "../../data/panel";
+import { getPanelNameTranslationKey } from "../../data/panel";
 
-const DEFAULT_NAVIGATION_ICON = "hass:arrow-right-circle";
 const DEFAULT_SERVER_ICON = "hass:server";
 
 interface QuickBarItem extends ScorableTextItem {
@@ -57,7 +56,7 @@ interface QuickBarItem extends ScorableTextItem {
   action(data?: any): void;
 }
 
-interface CommandItem extends QuickBarItem {
+export interface CommandItem extends QuickBarItem {
   categoryKey: "reload" | "navigation" | "server_control";
   categoryText: string;
 }
@@ -96,6 +95,8 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _commandMode = false;
 
+  @internalProperty() private _commandType?: CommandItem["categoryKey"];
+
   @internalProperty() private _done = false;
 
   @query("search-input", false) private _filterInputField?: HTMLElement;
@@ -104,6 +105,10 @@ export class QuickBar extends LitElement {
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
+    this._commandType = params.commandType;
+    this._search = this._commandType
+      ? `${this._getCommandCategoryLabel(this._commandType).toLowerCase()} `
+      : "";
     this._initializeItemsIfNeeded();
     this._opened = true;
   }
@@ -385,9 +390,8 @@ export class QuickBar extends LitElement {
     const reloadableDomains = componentsWithService(this.hass, "reload").sort();
 
     return reloadableDomains.map((domain) => {
-      const categoryText = this.hass.localize(
-        `ui.dialogs.quick-bar.commands.types.reload`
-      );
+      const categoryKey = "reload";
+      const categoryText = this._getCommandCategoryLabel(categoryKey);
       const primaryText =
         this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
         this.hass.localize(
@@ -401,7 +405,7 @@ export class QuickBar extends LitElement {
         filterText: `${categoryText} ${primaryText}`,
         icon: domainIcon(domain),
         action: () => this.hass.callService(domain, "reload"),
-        categoryKey: "reload",
+        categoryKey,
         categoryText,
       };
     });
@@ -412,9 +416,7 @@ export class QuickBar extends LitElement {
 
     return serverActions.map((action) => {
       const categoryKey = "server_control";
-      const categoryText = this.hass.localize(
-        `ui.dialogs.quick-bar.commands.types.${categoryKey}`
-      );
+      const categoryText = this._getCommandCategoryLabel(categoryKey);
       const primaryText = this.hass.localize(
         "ui.dialogs.quick-bar.commands.server_control.perform_action",
         "action",
@@ -512,9 +514,7 @@ export class QuickBar extends LitElement {
   ): CommandItem[] {
     return items.map((item) => {
       const categoryKey = "navigation";
-      const categoryText = this.hass.localize(
-        `ui.dialogs.quick-bar.commands.types.${categoryKey}`
-      );
+      const categoryText = this._getCommandCategoryLabel(categoryKey);
 
       return {
         ...item,
@@ -541,6 +541,10 @@ export class QuickBar extends LitElement {
     (items: QuickBarItem[], filter: string): QuickBarItem[] =>
       fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
   );
+
+  private _getCommandCategoryLabel = (
+    categoryKey: CommandItem["categoryKey"]
+  ) => this.hass.localize(`ui.dialogs.quick-bar.commands.types.${categoryKey}`);
 
   static get styles() {
     return [

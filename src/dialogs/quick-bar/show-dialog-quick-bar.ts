@@ -1,8 +1,10 @@
 import { fireEvent } from "../../common/dom/fire_event";
+import { CommandItem } from "./ha-quick-bar";
 
 export interface QuickBarParams {
   entityFilter?: string;
   commandMode?: boolean;
+  commandType?: CommandItem["categoryKey"];
 }
 
 export const loadQuickBar = () =>

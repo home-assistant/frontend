@@ -7,6 +7,7 @@ import {
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
+import { CommandItem } from "../dialogs/quick-bar/ha-quick-bar";
 
 declare global {
   interface HASSDomEvents {
@@ -32,15 +33,22 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       tinykeys(window, {
         e: (ev) => this._showQuickBar(ev),
         c: (ev) => this._showQuickBar(ev, true),
+        g: (ev) => this._showQuickBar(ev, true, "navigation"),
+        r: (ev) => this._showQuickBar(ev, true, "reload"),
+        s: (ev) => this._showQuickBar(ev, true, "server_control"),
       });
     }
 
-    private _showQuickBar(e: KeyboardEvent, commandMode = false) {
+    private _showQuickBar(
+      e: KeyboardEvent,
+      commandMode = false,
+      commandType?: CommandItem["categoryKey"]
+    ) {
       if (!this._canShowQuickBar(e)) {
         return;
       }
 
-      showQuickBar(this, { commandMode });
+      showQuickBar(this, { commandMode, commandType });
     }
 
     private _canShowQuickBar(e: KeyboardEvent) {
