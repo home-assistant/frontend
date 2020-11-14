@@ -5,11 +5,26 @@
       "label": "Develop Frontend",
       "type": "gulp",
       "task": "develop-app",
+      // Sync changes here to other tasks until issue resolved
+      // https://github.com/Microsoft/vscode/issues/61497
       "problemMatcher": {
-        "base": "$tsc",
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "Using gulpfile",
+          "beginsPattern": "Changes detected. Starting compilation",
           "endsPattern": "Build done @"
         }
       },
@@ -27,10 +42,23 @@
       "type": "gulp",
       "task": "develop-gallery",
       "problemMatcher": {
-        "base": "$tsc",
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "Using gulpfile",
+          "beginsPattern": "Changes detected. Starting compilation",
           "endsPattern": "Build done @"
         }
       },
@@ -46,10 +74,23 @@
       "type": "gulp",
       "task": "develop-demo",
       "problemMatcher": {
-        "base": "$tsc",
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "Using gulpfile",
+          "beginsPattern": "Changes detected. Starting compilation",
           "endsPattern": "Build done @"
         }
       },
@@ -65,10 +106,23 @@
       "type": "gulp",
       "task": "develop-cast",
       "problemMatcher": {
-        "base": "$tsc",
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "Using gulpfile",
+          "beginsPattern": "Changes detected. Starting compilation",
           "endsPattern": "Build done @"
         }
       },
