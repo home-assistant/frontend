@@ -5,6 +5,7 @@ import { InputDateTime } from "../../../data/input_datetime";
 import { InputNumber } from "../../../data/input_number";
 import { InputSelect } from "../../../data/input_select";
 import { InputText } from "../../../data/input_text";
+import { InputTimetable } from "../../../data/input_timetable";
 import { Timer } from "../../../data/timer";
 
 export const HELPER_DOMAINS = [
@@ -14,6 +15,7 @@ export const HELPER_DOMAINS = [
   "input_number",
   "input_datetime",
   "input_select",
+  "input_timetable",
   "counter",
   "timer",
 ];
@@ -25,5 +27,6 @@ export type Helper =
   | InputNumber
   | InputSelect
   | InputDateTime
+  | InputTimetable
   | Counter
   | Timer;

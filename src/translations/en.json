@@ -620,6 +620,7 @@
             "input_number": "[%key:ui::panel::config::server_control::section::reloading::input_number%]",
             "input_datetime": "[%key:ui::panel::config::server_control::section::reloading::input_datetime%]",
             "input_select": "[%key:ui::panel::config::server_control::section::reloading::input_select%]",
+            "input_timetable": "[%key:ui::panel::config::server_control::section::reloading::input_timetable%]",
             "template": "[%key:ui::panel::config::server_control::section::reloading::template%]",
             "universal": "[%key:ui::panel::config::server_control::section::reloading::universal%]",
             "rest": "[%key:ui::panel::config::server_control::section::reloading::rest%]",
@@ -1307,6 +1308,7 @@
             "input_boolean": "Toggle",
             "input_button": "Button",
             "input_datetime": "Date and/or time",
+            "input_timetable": "Timetable",
             "counter": "Counter",
             "timer": "Timer"
           },
@@ -1514,6 +1516,7 @@
               "input_text": "Input texts",
               "input_number": "Input numbers",
               "input_datetime": "Input date times",
+              "input_timetable": "Input timetables",
               "input_select": "Input selects",
               "template": "Template entities",
               "universal": "Universal media player entities",
