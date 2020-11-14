@@ -31,6 +31,7 @@ export const FIXED_DOMAIN_ICONS = {
   input_number: "hass:ray-vertex",
   input_select: "hass:format-list-bulleted",
   input_text: "hass:form-textbox",
+  input_timetable: "hass:timetable",
   light: "hass:lightbulb",
   mailbox: "hass:mailbox",
   notify: "hass:comment-alert",
