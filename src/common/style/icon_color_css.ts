@@ -20,7 +20,7 @@ export const computeCustomStateColor = (
   );
 
   for (const stateColor of sortableStateColors) {
-    if (stateColor.below! < Number(state)) {
+    if (stateColor.below! > Number(state)) {
       color = stateColor.color;
     }
   }
