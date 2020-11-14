@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Kontroller",
                 "cover": {
+                    "close_cover": "Lukk dekselet",
                     "close_tile_cover": "Lukk dekkevinkel",
+                    "open_cover": "Åpne dekselet",
                     "open_tilt_cover": "Åpne dekkevinkel",
                     "stop_cover": "Stopp dekke fra å bevege seg"
                 },

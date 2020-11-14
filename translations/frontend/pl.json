@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Sterowanie",
                 "cover": {
+                    "close_cover": "Zamknij roletę",
                     "close_tile_cover": "Przechylenie zamkniętej rolety",
+                    "open_cover": "Otwórz roletę",
                     "open_tilt_cover": "Przechylenie otwartej rolety",
                     "stop_cover": "Wstrzymanie rolety"
                 },
@@ -1772,7 +1774,7 @@
                             },
                             "homeassistant": {
                                 "arch": "Architektura procesora",
-                                "dev": "Wersja rozwojowa",
+                                "dev": "Wersja deweloperska",
                                 "docker": "Docker",
                                 "hassio": "HassOS",
                                 "installation_type": "Typ instalacji",

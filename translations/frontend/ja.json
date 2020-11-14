@@ -497,6 +497,8 @@
             "continue": "続行",
             "copied": "コピー",
             "delete": "削除",
+            "disable": "無効",
+            "enable": "有効",
             "error_required": "必須",
             "leave": "離れる",
             "loading": "読込中",
@@ -507,7 +509,10 @@
             "overflow_menu": "オーバーフローメニュー",
             "previous": "前",
             "refresh": "更新",
+            "remove": "削除",
+            "rename": "リネーム",
             "save": "保存",
+            "skip": "スキップ",
             "stay": "滞在",
             "successfully_deleted": "正常に削除されました",
             "successfully_saved": "正常に保存されました",
@@ -786,7 +791,9 @@
             "more_info_control": {
                 "controls": "コントロール",
                 "cover": {
+                    "close_cover": "カバーを閉じる",
                     "close_tile_cover": "カバーの傾きを閉じる",
+                    "open_cover": "カバーを開く",
                     "open_tilt_cover": "オープンカバーの傾き",
                     "stop_cover": "カバーの動きを止めます"
                 },
@@ -853,6 +860,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "エリア",
+                        "automation": "オートメーション",
+                        "core": "一般",
+                        "customize": "カスタマイズ",
+                        "devices": "デバイス",
+                        "entities": "エンティティ",
+                        "helpers": "ヘルパー",
+                        "info": "詳細",
+                        "integrations": "インテグレーション",
+                        "logs": "ログ",
+                        "lovelace": "Lovelaceダッシュボード",
+                        "navigate_to": "{panel}に移動します",
+                        "navigate_to_config": "{panel}構成に移動します",
+                        "person": "人々",
+                        "scene": "シーン",
+                        "script": "スクリプト",
+                        "server_control": "サーバーコントロール",
+                        "tags": "タグ",
+                        "users": "ユーザー",
+                        "zone": "場所"
+                    },
                     "reload": {
                         "automation": "オートメーションの再読込",
                         "command_line": "コマンドラインエンティティをリロードする",
@@ -1307,6 +1336,22 @@
                         "only_editable": "automations.yaml で定義されたオートメーションのみが編集可能です。",
                         "pick_automation": "編集するオートメーションを選択",
                         "show_info_automation": "オートメーションに関する情報を表示"
+                    },
+                    "thingtalk": {
+                        "create": "オートメーションを作成",
+                        "link_devices": {
+                            "ambiguous_entities": "1 つ以上のデバイスに複数の一致するエンティティがあります。",
+                            "header": "すごい！今、我々はいくつかのデバイスをリンクする必要があります",
+                            "unknown_placeholder": "不明なプレースホルダ"
+                        },
+                        "task_selection": {
+                            "error_empty": "コマンドを入力するか、スキップをタップします。",
+                            "error_unsupported": "私たちは自動化を作成できませんでした(まだ?",
+                            "for_example": "例えば：",
+                            "header": "新しいオートメーションを作成する",
+                            "introduction": "このオートメーションの実行内容の下に入力すると、ホーム アシスタントのオートメーションに変換されます。",
+                            "language_note": "注: 現在は英語のみがサポートされています。"
+                        }
                     }
                 },
                 "cloud": {
@@ -2288,6 +2333,7 @@
                         "update_user": "更新"
                     },
                     "picker": {
+                        "add_user": "ユーザーを追加する",
                         "headers": {
                             "group": "グループ",
                             "name": "名前",
@@ -2568,6 +2614,8 @@
                         "filter_attributes": "フィルター属性",
                         "filter_entities": "エンティティのフィルター処理",
                         "filter_states": "状態のフィルター処理",
+                        "last_changed": "最終変更",
+                        "last_updated": "最終更新",
                         "more_info": "もっと見る",
                         "no_entities": "エンティティなし",
                         "set_state": "状態を設定",
@@ -2795,6 +2843,10 @@
                             "description": "Glance カードは、複数のセンサーをコンパクトな概要でグループ化するのに便利です。",
                             "name": "一覧"
                         },
+                        "grid": {
+                            "description": "グリッド カードを使用すると、グリッドに複数のカードを表示できます。",
+                            "name": "グリッド"
+                        },
                         "history-graph": {
                             "description": "履歴グラフ カードを使用すると、一覧表示された各エンティティのグラフを表示できます。",
                             "name": "履歴グラフ"
@@ -2814,6 +2866,10 @@
                         "light": {
                             "description": "ライトカードを使用すると、ライトの明るさを変更できます。",
                             "name": "照明"
+                        },
+                        "logbook": {
+                            "description": "ログブックカードには、エンティティのイベントの一覧が表示されます。",
+                            "name": "ログブック"
                         },
                         "map": {
                             "dark_mode": "ダークモード？",
@@ -3002,7 +3058,8 @@
                     "sub-element-editor": {
                         "types": {
                             "footer": "フッタ エディタ",
-                            "header": "ヘッダーエディター"
+                            "header": "ヘッダーエディター",
+                            "row": "エンティティエディタ"
                         }
                     },
                     "suggest_card": {
@@ -3271,6 +3328,7 @@
                     "header": "ダッシュボード"
                 },
                 "enable_shortcuts": {
+                    "description": "UI でさまざまな操作を実行するためのキーボード ショートカットを有効または無効にします。",
                     "header": "キーボード ショートカット"
                 },
                 "force_narrow": {
@@ -3361,6 +3419,9 @@
                     "description": "デバイスを制御するときに、このデバイスのバイブレーションを有効または無効にします。",
                     "header": "バイブレーション機能"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "会話を開始する"
             },
             "shopping-list": {
                 "add_item": "アイテムを追加",

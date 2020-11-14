@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Juhtelemendid",
                 "cover": {
+                    "close_cover": "Sulge kate",
                     "close_tile_cover": "Sulge katte ribid",
+                    "open_cover": "Ava kate",
                     "open_tilt_cover": "Ava katte ribid",
                     "stop_cover": "Peata katte liikumine"
                 },

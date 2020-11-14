@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "控制",
                 "cover": {
+                    "close_cover": "關閉窗簾",
                     "close_tile_cover": "開啟窗簾",
+                    "open_cover": "開啟窗簾",
                     "open_tilt_cover": "開啟窗簾",
                     "stop_cover": "停止窗簾"
                 },
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "分區",
+                        "automation": "自動化",
+                        "core": "一般設定",
+                        "customize": "自訂化",
+                        "devices": "設備",
+                        "entities": "實體",
+                        "helpers": "助手",
+                        "info": "更多資訊",
+                        "integrations": "整合",
+                        "logs": "記錄",
+                        "lovelace": "Lovelace 主面板",
+                        "navigate_to": "導航至 {panel}",
+                        "navigate_to_config": "導航至 {panel} 設定",
+                        "person": "人員",
+                        "scene": "場景",
+                        "script": "腳本",
+                        "server_control": "伺服器控制",
+                        "tags": "標籤",
+                        "users": "用戶",
+                        "zone": "區域"
+                    },
                     "reload": {
                         "automation": "重新載入自動化",
                         "command_line": "重新載入命令列實體",
@@ -2323,6 +2347,7 @@
                         "update_user": "更新"
                     },
                     "picker": {
+                        "add_user": "新增用戶",
                         "headers": {
                             "group": "群組",
                             "name": "名稱",
@@ -2603,6 +2628,8 @@
                         "filter_attributes": "屬性過濾器",
                         "filter_entities": "實體過濾器",
                         "filter_states": "狀態過濾器",
+                        "last_changed": "上次變更",
+                        "last_updated": "最後更新",
                         "more_info": "更多資訊",
                         "no_entities": "無實體",
                         "set_state": "設定狀態",
@@ -2853,6 +2880,10 @@
                         "light": {
                             "description": "燈光面板可供變更燈光的亮度與開關。",
                             "name": "燈光面板"
+                        },
+                        "logbook": {
+                            "description": "日誌面板顯示實體事件列表。",
+                            "name": "日誌面板"
                         },
                         "map": {
                             "dark_mode": "深色模式？",
