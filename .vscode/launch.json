@@ -7,6 +7,7 @@
       "type": "pwa-chrome",
       "url": "http://localhost:8123/",
       "webRoot": "${workspaceFolder}/hass_frontend",
+      "disableNetworkCache": true,
       "preLaunchTask": "Develop Frontend",
     },
     {
@@ -14,8 +15,8 @@
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:8100/",
-      "urlFilter": "http://localhost:8100/*",
       "webRoot": "${workspaceFolder}/gallery/dist",
+      "disableNetworkCache": true,
       "preLaunchTask": "Develop Gallery"
     },
     {
@@ -23,8 +24,8 @@
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:8090/",
-      "urlFilter": "http://localhost:8090/*",
       "webRoot": "${workspaceFolder}/demo/dist",
+      "disableNetworkCache": true,
       "preLaunchTask": "Develop Demo"
     },
     {
@@ -32,8 +33,8 @@
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:8080/",
-      "urlFilter": "http://localhost:8080/*",
       "webRoot": "${workspaceFolder}/cast/dist",
+      "disableNetworkCache": true,
       "preLaunchTask": "Develop Cast"
     },
   ]
