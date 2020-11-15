@@ -1743,6 +1743,8 @@
                 "info": {
                     "built_using": "Construido usando",
                     "caption": "Información",
+                    "copy_github": "Para GitHub",
+                    "copy_raw": "Texto sin procesar",
                     "custom_uis": "IU personalizadas:",
                     "description": "Ver información sobre tu instalación de Home Assistant",
                     "developed_by": "Desarrollado por un montón de gente impresionante.",

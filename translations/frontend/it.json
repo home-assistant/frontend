@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Controlli",
                 "cover": {
+                    "close_cover": "Chiudere gli scuri",
                     "close_tile_cover": "Chiudere l'inclinazione della copertura",
+                    "open_cover": "Aprire gli scuri",
                     "open_tilt_cover": "Aprire l'inclinazione della copertura",
                     "stop_cover": "Fermare il movimento della copertura"
                 },
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Aree",
+                        "automation": "Automazioni",
+                        "core": "Generale",
+                        "customize": "Personalizzazioni",
+                        "devices": "Dispositivi",
+                        "entities": "Entità",
+                        "helpers": "Aiutanti",
+                        "info": "Informazioni",
+                        "integrations": "Integrazioni",
+                        "logs": "Registri",
+                        "lovelace": "Plance di Lovelace",
+                        "navigate_to": "Navigare verso {panel}",
+                        "navigate_to_config": "Navigare fino a {panel} configurazione",
+                        "person": "Persone",
+                        "scene": "Scene",
+                        "script": "Script",
+                        "server_control": "Controlli del Server",
+                        "tags": "Tag",
+                        "users": "Utenti",
+                        "zone": "Zone"
+                    },
                     "reload": {
                         "automation": "Ricarica le Automazioni",
                         "command_line": "Ricarica le entità di riga di comando",
@@ -1719,6 +1743,8 @@
                 "info": {
                     "built_using": "Costruito usando",
                     "caption": "Informazioni",
+                    "copy_github": "Per GitHub",
+                    "copy_raw": "Testo non elaborato",
                     "custom_uis": "Interfacce Utente personalizzate:",
                     "description": "Visualizza le informazioni sull'installazione di Home Assistant",
                     "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
@@ -1857,7 +1883,7 @@
                 },
                 "introduction": "In questa vista è possibile configurare i componenti e l'Home Assistant. Non tutto è ancora configurabile dall'interfaccia utente, ma ci stiamo lavorando.",
                 "logs": {
-                    "caption": "Logs",
+                    "caption": "Registri",
                     "clear": "Pulisci",
                     "description": "Vedi i logs di Home Assistant",
                     "details": "Dettagli registro ({level})",
@@ -2261,7 +2287,7 @@
                 "tags": {
                     "add_tag": "Aggiungi Etichetta",
                     "automation_title": "L'etichetta {name} è scansionata",
-                    "caption": "Etichette",
+                    "caption": "Tag",
                     "confirm_remove": "Sei sicuro di voler rimuovere il tag {tag}?",
                     "confirm_remove_title": "Rimuovere il tag?",
                     "create_automation": "Creare un'automazione con l'etichetta",
@@ -2323,6 +2349,7 @@
                         "update_user": "Aggiorna"
                     },
                     "picker": {
+                        "add_user": "Aggiungi utente",
                         "headers": {
                             "group": "Gruppo",
                             "name": "Nome",
@@ -2603,6 +2630,8 @@
                         "filter_attributes": "Filtra attributi",
                         "filter_entities": "Filtra entità",
                         "filter_states": "Filtra stati",
+                        "last_changed": "Ultima modifica",
+                        "last_updated": "Ultimo aggiornamento",
                         "more_info": "Ulteriori informazioni",
                         "no_entities": "Nessuna entità",
                         "set_state": "Imposta Stato",
@@ -2853,6 +2882,10 @@
                         "light": {
                             "description": "La scheda Luce consente di modificare la luminosità della luce.",
                             "name": "Luce"
+                        },
+                        "logbook": {
+                            "description": "La scheda del Diario di bordo mostra un elenco di eventi per le entità.",
+                            "name": "Diario di bordo"
                         },
                         "map": {
                             "dark_mode": "Modalità scura?",

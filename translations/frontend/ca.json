@@ -1743,6 +1743,8 @@
                 "info": {
                     "built_using": "Creat utilitzant",
                     "caption": "Informació",
+                    "copy_github": "Per GitHub",
+                    "copy_raw": "Text en brut",
                     "custom_uis": "Interfícies d'usuari personalitzades:",
                     "description": "Consulta informació de la teva instal·lació de Home Assistant",
                     "developed_by": "Desenvolupat per un munt de gent fantàstica.",

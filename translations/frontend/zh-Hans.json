@@ -1740,6 +1740,8 @@
                 "info": {
                     "built_using": "建于",
                     "caption": "信息",
+                    "copy_github": "用于 GitHub",
+                    "copy_raw": "原始文本",
                     "custom_uis": "自定义用户界面：",
                     "description": "查看关于此 Home Assistant 安装的信息",
                     "developed_by": "由一帮很 Awesome~~~ 的人开发。",

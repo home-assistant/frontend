@@ -1743,6 +1743,8 @@
                 "info": {
                     "built_using": "Ehitatud kasutades",
                     "caption": "Info",
+                    "copy_github": "GitHubi jaoks",
+                    "copy_raw": "Ainult tekst",
                     "custom_uis": "Kohandatud kasutajaliidesed:",
                     "description": "Kuva Home Assistant'i info",
                     "developed_by": "Tehtud paljude lahedate inimeste poolt.",

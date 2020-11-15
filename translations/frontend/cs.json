@@ -892,7 +892,7 @@
                         "scene": "Scény",
                         "script": "Skripty",
                         "server_control": "Ovládání serveru",
-                        "tags": "Značky",
+                        "tags": "Štítky",
                         "users": "Uživatelé",
                         "zone": "Zóny"
                     },
@@ -1298,7 +1298,7 @@
                                     "sunset": "Západ slunce"
                                 },
                                 "tag": {
-                                    "label": "Značka"
+                                    "label": "Štítek"
                                 },
                                 "template": {
                                     "label": "Šablona",
@@ -1743,6 +1743,8 @@
                 "info": {
                     "built_using": "Sestaveno pomocí",
                     "caption": "Informace",
+                    "copy_github": "Pro GitHub",
+                    "copy_raw": "Nezpracovaný text",
                     "custom_uis": "Vlastní uživatelská rozhraní:",
                     "description": "Informace o instalaci Home Assistant",
                     "developed_by": "Vyvinuto partou úžasných lidí.",
@@ -2283,13 +2285,13 @@
                     }
                 },
                 "tags": {
-                    "add_tag": "Přidat značku",
-                    "automation_title": "Značka {name} je naskenována",
-                    "caption": "Značky",
-                    "confirm_remove": "Opravdu chcete odebrat značku {tag}?",
-                    "confirm_remove_title": "Odebrat značku?",
-                    "create_automation": "Vytvořit automatizaci se značkou",
-                    "description": "Správa značek",
+                    "add_tag": "Přidat štítek",
+                    "automation_title": "Štítek {name} je naskenován",
+                    "caption": "Štítky",
+                    "confirm_remove": "Opravdu chcete odebrat štítek {tag}?",
+                    "confirm_remove_title": "Odebrat štítek?",
+                    "create_automation": "Vytvořit automatizaci se štítkem",
+                    "description": "Správa štítků",
                     "detail": {
                         "companion_apps": "doprovodné aplikace",
                         "create": "Vytvořit",
@@ -2297,20 +2299,20 @@
                         "delete": "Smazat",
                         "description": "Popis",
                         "name": "Název",
-                        "new_tag": "Nová značka",
-                        "tag_id": "ID značky",
+                        "new_tag": "Nový štítek",
+                        "tag_id": "ID štítku",
                         "tag_id_placeholder": "Automaticky vygenerováno, pokud zůstane prázdné",
                         "update": "Aktualizovat",
-                        "usage": "Značka může po naskenování spustit automatizaci. Můžete použít NFC značky, QR kódy nebo jakýkoli jiný druh značky. Použijte naše {companion_link} k zapsání této značky na programovatelnou NFC značku nebo vytvořte QR kód níže."
+                        "usage": "Štítek může po naskenování spustit automatizaci. Můžete použít NFC tagy, QR kódy nebo jakýkoli jiný druh štítku. Použijte naše {companion_link} k zapsání tohoto štítku na programovatelný NFC tag nebo vytvořte QR kód níže."
                     },
                     "edit": "Upravit",
                     "headers": {
                         "last_scanned": "Naposledy naskenováno",
                         "name": "Název"
                     },
-                    "learn_more": "Další informace o značkách",
-                    "never_scanned": "Nikdy naskenováno",
-                    "no_tags": "Žádné značky",
+                    "learn_more": "Další informace o štítcích",
+                    "never_scanned": "Nikdy neskenováno",
+                    "no_tags": "Žádné štítky",
                     "write": "Zapsat"
                 },
                 "users": {

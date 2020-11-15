@@ -1741,6 +1741,7 @@
                 "info": {
                     "built_using": "Buildelve:",
                     "caption": "Infó",
+                    "copy_raw": "Nyers szöveg",
                     "custom_uis": "Egyéni felhasználói felületek:",
                     "description": "Telepítési információ megtekintése a Home Assistant-ról",
                     "developed_by": "Egy csomó fantasztikus ember által kifejlesztve.",
