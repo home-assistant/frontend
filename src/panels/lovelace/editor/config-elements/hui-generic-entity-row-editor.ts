@@ -1,8 +1,6 @@
-import { mdiClose } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
-  css,
-  CSSResultArray,
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -78,25 +76,14 @@ export class HuiGenericEntityRowEditor extends LitElement
 
     return html`
       <div class="card-config">
-        <div class="picker-clear">
-          <ha-entity-picker
-            hide-clear-icon
-            allow-custom-entity
-            .hass=${this.hass}
-            .value=${this._config.entity}
-            .configValue=${"entity"}
-            @change=${this._valueChanged}
-          ></ha-entity-picker>
-          <mwc-icon-button
-            aria-label=${this.hass!.localize(
-              "ui.components.entity.entity-picker.clear"
-            )}
-            class="remove-icon"
-            @click=${this._removeRow}
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
-        </div>
+        <ha-entity-picker
+          hide-clear-icon
+          allow-custom-entity
+          .hass=${this.hass}
+          .value=${this._config.entity}
+          .configValue=${"entity"}
+          @change=${this._valueChanged}
+        ></ha-entity-picker>
         <div class="side-by-side">
           <paper-input
             .label=${this.hass!.localize(
@@ -177,24 +164,8 @@ export class HuiGenericEntityRowEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _removeRow(): void {
-    fireEvent(this, "config-changed", { config: undefined });
-  }
-
-  static get styles(): CSSResultArray {
-    return [
-      configElementStyle,
-      css`
-        .picker-clear {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .picker-clear ha-entity-picker {
-          flex-grow: 1;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

@@ -1,5 +1,11 @@
-import { mdiHelpCircle } from "@mdi/js";
+import {
+  mdiCodeBracesBox,
+  mdiDotsVertical,
+  mdiFormSelect,
+  mdiHelpCircle,
+} from "@mdi/js";
 import deepFreeze from "deep-freeze";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultArray,
@@ -18,6 +24,11 @@ import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-header-bar";
+import "../../../../components/ha-menu-button";
+import {
+  CoreFrontendUserData,
+  getOptimisticFrontendUserDataCollection,
+} from "../../../../data/frontend";
 import type {
   LovelaceCardConfig,
   LovelaceViewConfig,
@@ -75,6 +86,10 @@ export class HuiDialogEditCard extends LitElement
 
   @internalProperty() private _dirty = false;
 
+  @internalProperty() private _coreUserData?: CoreFrontendUserData | null;
+
+  private _unsubCoreData?: UnsubscribeFunc;
+
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -90,6 +105,12 @@ export class HuiDialogEditCard extends LitElement
     if (params.cardConfig) {
       this._dirty = true;
     }
+    this._unsubCoreData = getOptimisticFrontendUserDataCollection(
+      this.hass.connection,
+      "core"
+    ).subscribe((coreUserData) => {
+      this._coreUserData = coreUserData;
+    });
   }
 
   public closeDialog(): boolean {
@@ -102,6 +123,10 @@ export class HuiDialogEditCard extends LitElement
     this._error = undefined;
     this._documentationURL = undefined;
     this._dirty = false;
+    if (this._unsubCoreData) {
+      this._unsubCoreData();
+      this._unsubCoreData = undefined;
+    }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     return true;
   }
@@ -157,10 +182,11 @@ export class HuiDialogEditCard extends LitElement
       <ha-dialog
         open
         scrimClickAction
+        full
+        .heading=${true}
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         @opened=${this._opened}
-        .heading=${true}
       >
         <div slot="heading">
           <ha-header-bar>
@@ -180,6 +206,52 @@ export class HuiDialogEditCard extends LitElement
                       <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
+                `
+              : ""}
+            ${this._cardConfig !== undefined && this._coreUserData?.showAdvanced
+              ? html`
+                  <ha-button-menu
+                    fixed
+                    corner="BOTTOM_START"
+                    slot="actionItems"
+                    @closed=${(ev) => ev.stopPropagation()}
+                  >
+                    <mwc-icon-button
+                      slot="trigger"
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}
+                      .title=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}
+                    >
+                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+                    </mwc-icon-button>
+                    <mwc-list-item
+                      graphic="icon"
+                      .label=${this.hass!.localize(
+                        !this._cardEditorEl || this._GUImode
+                          ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                          : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                      )}
+                      .disabled=${!this._guiModeAvailable}
+                      @request-selected=${this._toggleMode}
+                    >
+                      <span
+                        >${this.hass!.localize(
+                          !this._cardEditorEl || this._GUImode
+                            ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                            : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                        )}</span
+                      >
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${!this._cardEditorEl || this._GUImode
+                          ? mdiCodeBracesBox
+                          : mdiFormSelect}
+                      ></ha-svg-icon>
+                    </mwc-list-item>
+                  </ha-button-menu>
                 `
               : ""}
           </ha-header-bar>
@@ -211,22 +283,6 @@ export class HuiDialogEditCard extends LitElement
               : ``}
           </div>
         </div>
-        ${this._cardConfig !== undefined
-          ? html`
-              <mwc-button
-                slot="secondaryAction"
-                @click=${this._toggleMode}
-                .disabled=${!this._guiModeAvailable}
-                class="gui-mode-button"
-              >
-                ${this.hass!.localize(
-                  !this._cardEditorEl || this._GUImode
-                    ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                    : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                )}
-              </mwc-button>
-            `
-          : ""}
         <div slot="primaryAction" @click=${this._save}>
           <mwc-button @click=${this._cancel}>
             ${this.hass!.localize("ui.common.cancel")}
@@ -361,24 +417,15 @@ export class HuiDialogEditCard extends LitElement
           --dialog-content-padding: 0px 24px;
         }
 
+        :host([large]) .content {
+          --mdc-dialog-max-width: calc(100% - 32px);
+        }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           ha-dialog {
             --mdc-dialog-max-height: 100%;
-            height: 100%;
           }
-        }
-
-        @media all and (min-width: 850px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 845px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
-        }
-
-        ha-dialog {
-          --mdc-dialog-max-width: 845px;
-          --dialog-z-index: 5;
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
@@ -388,6 +435,24 @@ export class HuiDialogEditCard extends LitElement
           :host([large]) .content {
             width: calc(90vw - 48px);
           }
+        }
+
+        @media all and (min-width: 850px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 845px;
+          }
+        }
+
+        @media (min-width: 1200px) {
+          ha-dialog {
+            --mdc-dialog-max-width: 1100px;
+            --dialog-surface-position: fixed;
+          }
+        }
+
+        ha-dialog {
+          --dialog-z-index: 5;
+          --mdc-dialog-max-height: 650px;
         }
 
         ha-header-bar {
@@ -408,23 +473,17 @@ export class HuiDialogEditCard extends LitElement
           flex-direction: column;
           margin: 0 -10px;
         }
+
         .content hui-card-preview {
           margin: 4px auto;
           max-width: 390px;
         }
+
         .content .element-editor {
           margin: 0 10px;
         }
 
         @media (min-width: 1200px) {
-          ha-dialog {
-            --mdc-dialog-max-width: calc(100% - 32px);
-            --mdc-dialog-min-width: 1000px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
-
           .content {
             flex-direction: row;
           }
@@ -436,28 +495,34 @@ export class HuiDialogEditCard extends LitElement
           }
           .content hui-card-preview {
             padding: 8px 10px;
-            margin: auto 0px;
+            margin: auto;
             max-width: 500px;
           }
         }
+
         .hidden {
           display: none;
         }
+
         .element-editor {
           margin-bottom: 8px;
         }
+
         .blur {
           filter: blur(2px) grayscale(100%);
         }
+
         .element-preview {
           position: relative;
         }
+
         .element-preview ha-circular-progress {
           top: 50%;
           left: 50%;
           position: absolute;
           z-index: 10;
         }
+
         hui-card-preview {
           padding-top: 8px;
           margin-bottom: 4px;
@@ -465,14 +530,13 @@ export class HuiDialogEditCard extends LitElement
           width: 100%;
           box-sizing: border-box;
         }
-        .gui-mode-button {
-          margin-right: auto;
-        }
+
         .header {
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
+
         .header_button {
           color: inherit;
           text-decoration: none;

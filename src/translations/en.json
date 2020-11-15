@@ -2379,7 +2379,8 @@
             "edit": "Edit",
             "clear": "Clear",
             "add": "Add",
-            "none": "None"
+            "none": "None",
+            "delete": "Delete"
           },
           "raw_editor": {
             "header": "Edit Configuration",

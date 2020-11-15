@@ -210,11 +210,12 @@ export class HuiEntitiesCardEditor extends LitElement
 
   private _handleSubElementChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    if (!this._config || !this.hass) {
+    const configValue = this._subElementEditorConfig?.type;
+
+    if (!this._config || !this.hass || !configValue) {
       return;
     }
 
-    const configValue = this._subElementEditorConfig?.type;
     const value = ev.detail.config;
     let goBack = false;
 

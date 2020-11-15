@@ -152,6 +152,10 @@ export abstract class HuiElementEditor<T> extends LitElement {
     this.GUImode = !this.GUImode;
   }
 
+  public remove() {
+    this._configElement?.remove();
+  }
+
   public refreshYamlEditor(focus = false) {
     if (this._configElement?.refreshYamlEditor) {
       this._configElement.refreshYamlEditor(focus);

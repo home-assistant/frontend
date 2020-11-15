@@ -1,6 +1,13 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
-import { mdiArrowLeft } from "@mdi/js";
+import "@material/mwc-list/mwc-list-item";
+import {
+  mdiArrowLeft,
+  mdiCodeBracesBox,
+  mdiDotsVertical,
+  mdiFormSelect,
+  mdiTrashCanOutline,
+} from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -13,6 +20,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
@@ -55,17 +63,60 @@ export class HuiSubElementEditor extends LitElement {
             )}</span
           >
         </div>
-        <mwc-button
+
+        <ha-button-menu
+          fixed
+          corner="BOTTOM_START"
           slot="secondaryAction"
-          .disabled=${!this._guiModeAvailable}
-          @click=${this._toggleMode}
+          @closed=${(ev) => ev.stopPropagation()}
         >
-          ${this.hass.localize(
-            this._guiMode
-              ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-              : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-          )}
-        </mwc-button>
+          <mwc-icon-button
+            slot="trigger"
+            .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+            .title=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+          >
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-list-item
+            graphic="icon"
+            .label=${this.hass!.localize(
+              this._guiMode
+                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+            )}
+            .disabled=${!this._guiModeAvailable}
+            @request-selected=${this._toggleMode}
+          >
+            <span
+              >${this.hass!.localize(
+                this._guiMode
+                  ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                  : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+              )}</span
+            >
+            <ha-svg-icon
+              slot="graphic"
+              .path=${this._guiMode ? mdiCodeBracesBox : mdiFormSelect}
+            ></ha-svg-icon>
+          </mwc-list-item>
+          <mwc-list-item
+            graphic="icon"
+            .label=${this.hass!.localize(
+              "ui.panel.lovelace.editor.common.delete"
+            )}
+            @request-selected=${this._remove}
+          >
+            <span
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.common.delete"
+              )}</span
+            >
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiTrashCanOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
       </div>
       ${this.config.type === "row"
         ? html`
@@ -96,7 +147,13 @@ export class HuiSubElementEditor extends LitElement {
   }
 
   private _toggleMode(): void {
+    console.log("toggle");
+
     this._editorElement?.toggleMode();
+  }
+
+  private _remove(): void {
+    fireEvent(this, "config-changed", { config: undefined });
   }
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {

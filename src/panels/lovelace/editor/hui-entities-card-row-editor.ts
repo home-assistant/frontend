@@ -24,6 +24,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 
 declare global {
@@ -78,10 +79,21 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           this._renderEmptySortable
             ? ""
             : this.entities!.map((entityConf, index) => {
+                const stateObj = this.hass!.states[
+                  (entityConf as EntityConfig).entity
+                ];
                 return html`
-                  <ha-card outlined class="entity handle">
+                  <ha-card
+                    outlined
+                    class="entity"
+                    .index=${index}
+                    .actionHandler=${actionHandler({
+                      hasHold: true,
+                    })}
+                    @click=${this._editRow}
+                  >
                     <div>
-                      <span>
+                      <span class="primary">
                         ${entityConf.type
                           ? html`
                               ${this.hass!.localize(
@@ -90,9 +102,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                             `
                           : html`
                               ${(entityConf as EntityConfig).name ||
-                              this.hass!.states[
-                                (entityConf as EntityConfig).entity
-                              ].attributes.friendly_name ||
+                              stateObj?.attributes.friendly_name ||
                               (entityConf as EntityConfig).entity}
                             `}
                       </span>
@@ -113,8 +123,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                         "ui.components.entity.entity-picker.edit"
                       )}
                       class="edit-icon"
-                      .index=${index}
-                      @click=${this._editRow}
                     >
                       <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
                     </mwc-icon-button>
@@ -172,7 +180,8 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     this._sortable = new Sortable(this.shadowRoot!.querySelector(".entities"), {
       animation: 150,
       fallbackClass: "sortable-fallback",
-      handle: ".handle",
+      handle: ".entity",
+      delay: 500,
       onEnd: async (evt: SortableEvent) => this._rowMoved(evt),
     });
   }
@@ -234,10 +243,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           justify-content: space-between;
           padding: 12px;
           margin: 8px 0;
-        }
-
-        .handle {
-          cursor: move;
+          cursor: pointer;
         }
 
         .special-row {
@@ -251,6 +257,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         .entity div {
           display: flex;
           flex-direction: column;
+          overflow: hidden;
         }
 
         .edit-icon {
@@ -258,9 +265,16 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           color: var(--secondary-text-color);
         }
 
+        .primary {
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
         .secondary {
           font-size: 12px;
           color: var(--secondary-text-color);
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
       `,
     ];
