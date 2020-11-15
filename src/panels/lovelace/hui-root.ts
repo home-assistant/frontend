@@ -54,7 +54,6 @@ import {
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import "../../layouts/ha-app-layout";
 import type { haAppLayout } from "../../layouts/ha-app-layout";
-import type { HaTabs } from "../../components/ha-tabs";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -77,8 +76,6 @@ class HUIRoot extends LitElement {
   @internalProperty() private _curView?: number | "hass-unused-entities";
 
   @query("ha-app-layout", true) private _appLayout!: haAppLayout;
-
-  @query("ha-tabs", true) private _haTabs!: HaTabs;
 
   private _viewCache?: { [viewId: string]: HUIView };
 
