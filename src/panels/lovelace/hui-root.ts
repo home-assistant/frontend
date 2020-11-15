@@ -452,10 +452,8 @@ class HUIRoot extends LitElement {
     let views = this._visibleViews;
     const viewPath = this.route!.path.split("/")[1];
     const hiddenView =
-      (!isNaN(+viewPath) && +viewPath < views.length) ||
-      views.some((view) => view.path === viewPath)
-        ? false
-        : true;
+      !views.some((v) => v.path === viewPath) ||
+      (!isNaN(+viewPath) && +viewPath >= views.length);
 
     if (changedProperties.has("route")) {
       if (!viewPath && views.length) {
@@ -470,7 +468,6 @@ class HUIRoot extends LitElement {
       } else if (viewPath) {
         let selectedView = viewPath as any;
         if (hiddenView && !this._editMode) {
-          console.log("hidden view");
           views = this.config.views;
           selectedView = isNaN(+viewPath) ? viewPath : 0;
         }
@@ -497,18 +494,16 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
-        const views = this._visibleViews;
-
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
           viewPath === "hass-unused-entities"
         ) {
-          newSelectView = views.findIndex(this._isVisible);
+          newSelectView = this._visibleViews.findIndex(this._isVisible);
           navigate(
             this,
             `${this.route!.prefix}/${
-              views[newSelectView].path || newSelectView
+              this._visibleViews[newSelectView].path || newSelectView
             }`,
             true
           );
