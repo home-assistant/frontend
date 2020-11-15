@@ -1,6 +1,8 @@
+import { mdiClose } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
-  CSSResult,
+  css,
+  CSSResultArray,
   customElement,
   html,
   internalProperty,
@@ -14,6 +16,7 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { EntitiesCardEntityConfig } from "../../cards/types";
@@ -75,13 +78,25 @@ export class HuiGenericEntityRowEditor extends LitElement
 
     return html`
       <div class="card-config">
-        <ha-entity-picker
-          allow-custom-entity
-          .hass=${this.hass}
-          .value=${this._config.entity}
-          .configValue=${"entity"}
-          @change=${this._valueChanged}
-        ></ha-entity-picker>
+        <div class="picker-clear">
+          <ha-entity-picker
+            hide-clear-icon
+            allow-custom-entity
+            .hass=${this.hass}
+            .value=${this._config.entity}
+            .configValue=${"entity"}
+            @change=${this._valueChanged}
+          ></ha-entity-picker>
+          <mwc-icon-button
+            aria-label=${this.hass!.localize(
+              "ui.components.entity.entity-picker.clear"
+            )}
+            class="remove-icon"
+            @click=${this._removeRow}
+          >
+            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+          </mwc-icon-button>
+        </div>
         <div class="side-by-side">
           <paper-input
             .label=${this.hass!.localize(
@@ -162,8 +177,24 @@ export class HuiGenericEntityRowEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
-    return configElementStyle;
+  private _removeRow(): void {
+    fireEvent(this, "config-changed", { config: undefined });
+  }
+
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .picker-clear {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .picker-clear ha-entity-picker {
+          flex-grow: 1;
+        }
+      `,
+    ];
   }
 }
 

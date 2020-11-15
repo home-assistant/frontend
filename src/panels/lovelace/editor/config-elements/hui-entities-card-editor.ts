@@ -188,20 +188,9 @@ export class HuiEntitiesCardEditor extends LitElement
       return;
     }
 
-    if (configValue === "row" || (ev.detail && ev.detail.entities)) {
+    if (ev.detail && ev.detail.entities) {
       const newConfigEntities =
         ev.detail.entities || this._configEntities!.concat();
-      if (configValue === "row") {
-        if (!value) {
-          newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
-          this._goBack();
-        } else {
-          newConfigEntities[this._subElementEditorConfig!.index!] = value;
-        }
-
-        this._subElementEditorConfig!.elementConfig = value;
-      }
-
       this._config = { ...this._config!, entities: newConfigEntities };
       this._configEntities = processEditorEntities(this._config!.entities);
     } else if (configValue) {
@@ -227,12 +216,13 @@ export class HuiEntitiesCardEditor extends LitElement
 
     const configValue = this._subElementEditorConfig?.type;
     const value = ev.detail.config;
+    let goBack = false;
 
     if (configValue === "row") {
       const newConfigEntities = this._configEntities!.concat();
       if (!value) {
         newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
-        this._goBack();
+        goBack = true;
       } else {
         newConfigEntities[this._subElementEditorConfig!.index!] = value;
       }
@@ -251,10 +241,14 @@ export class HuiEntitiesCardEditor extends LitElement
       }
     }
 
-    this._subElementEditorConfig = {
-      ...this._subElementEditorConfig!,
-      elementConfig: value,
-    };
+    if (goBack) {
+      this._goBack();
+    } else {
+      this._subElementEditorConfig = {
+        ...this._subElementEditorConfig!,
+        elementConfig: value,
+      };
+    }
 
     fireEvent(this, "config-changed", { config: this._config });
   }

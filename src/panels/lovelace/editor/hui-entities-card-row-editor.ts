@@ -1,5 +1,6 @@
+import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
-import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiChevronRight } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -19,7 +20,7 @@ import Sortable, {
 } from "sortablejs/modular/sortable.core.esm";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
-import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
@@ -63,59 +64,50 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     }
 
     return html`
-      <h3>
-        ${this.label ||
-        `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.entities"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.required"
-        )})`}
-      </h3>
+      <div class="title">
+        <span>
+          ${this.label ||
+          `${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.entities"
+          )}:`}
+        </span>
+        <mwc-button label="Add Row" @click=${this._addEntity}></mwc-button>
+      </div>
       <div class="entities">
         ${guard([this.entities, this._renderEmptySortable], () =>
           this._renderEmptySortable
             ? ""
             : this.entities!.map((entityConf, index) => {
                 return html`
-                  <div class="entity">
-                    <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
-                    ${entityConf.type
-                      ? html`
-                          <div class="special-row">
-                            <div>
-                              <span>
-                                ${this.hass!.localize(
-                                  `ui.panel.lovelace.editor.card.entities.entity_row.${entityConf.type}`
-                                )}
-                              </span>
-                              <span class="secondary"
-                                >${this.hass!.localize(
-                                  "ui.panel.lovelace.editor.card.entities.edit_special_row"
-                                )}</span
-                              >
-                            </div>
-                          </div>
-                        `
-                      : html`
-                          <ha-entity-picker
-                            allow-custom-entity
-                            hideClearIcon
-                            .hass=${this.hass}
-                            .value=${(entityConf as EntityConfig).entity}
-                            .index=${index}
-                            @value-changed=${this._valueChanged}
-                          ></ha-entity-picker>
-                        `}
-                    <mwc-icon-button
-                      aria-label=${this.hass!.localize(
-                        "ui.components.entity.entity-picker.clear"
-                      )}
-                      class="remove-icon"
-                      .index=${index}
-                      @click=${this._removeRow}
-                    >
-                      <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                    </mwc-icon-button>
+                  <ha-card outlined class="entity handle">
+                    <div>
+                      <span>
+                        ${entityConf.type
+                          ? html`
+                              ${this.hass!.localize(
+                                `ui.panel.lovelace.editor.card.entities.entity_row.${entityConf.type}`
+                              )}
+                            `
+                          : html`
+                              ${(entityConf as EntityConfig).name ||
+                              this.hass!.states[
+                                (entityConf as EntityConfig).entity
+                              ].attributes.friendly_name ||
+                              (entityConf as EntityConfig).entity}
+                            `}
+                      </span>
+                      <span class="secondary">
+                        ${entityConf.type
+                          ? html`
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.editor.card.entities.edit_special_row"
+                              )}
+                            `
+                          : html`
+                              ${(entityConf as EntityConfig).entity}
+                            `}</span
+                      >
+                    </div>
                     <mwc-icon-button
                       aria-label=${this.hass!.localize(
                         "ui.components.entity.entity-picker.edit"
@@ -124,17 +116,13 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                       .index=${index}
                       @click=${this._editRow}
                     >
-                      <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
                     </mwc-icon-button>
-                  </div>
+                  </ha-card>
                 `;
               })
         )}
       </div>
-      <ha-entity-picker
-        .hass=${this.hass}
-        @value-changed=${this._addEntity}
-      ></ha-entity-picker>
     `;
   }
 
@@ -189,16 +177,20 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     });
   }
 
-  private async _addEntity(ev: CustomEvent): Promise<void> {
-    const value = ev.detail.value;
-    if (value === "") {
-      return;
-    }
+  private async _addEntity(): Promise<void> {
     const newConfigEntities = this.entities!.concat({
-      entity: value as string,
+      entity: "",
     });
-    (ev.target as HaEntityPicker).value = "";
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
+
+    const index = newConfigEntities.length - 1;
+    fireEvent(this, "edit-detail-element", {
+      subElementConfig: {
+        index,
+        type: "row",
+        elementConfig: this.entities![index],
+      },
+    });
   }
 
   private _rowMoved(ev: SortableEvent): void {
@@ -211,32 +203,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     newEntities.splice(ev.newIndex!, 0, newEntities.splice(ev.oldIndex!, 1)[0]);
 
     fireEvent(this, "entities-changed", { entities: newEntities });
-  }
-
-  private _removeRow(ev: CustomEvent): void {
-    const index = (ev.currentTarget as any).index;
-    const newConfigEntities = this.entities!.concat();
-
-    newConfigEntities.splice(index, 1);
-
-    fireEvent(this, "entities-changed", { entities: newConfigEntities });
-  }
-
-  private _valueChanged(ev: CustomEvent): void {
-    const value = ev.detail.value;
-    const index = (ev.target as any).index;
-    const newConfigEntities = this.entities!.concat();
-
-    if (value === "") {
-      newConfigEntities.splice(index, 1);
-    } else {
-      newConfigEntities[index] = {
-        ...newConfigEntities[index],
-        entity: value!,
-      };
-    }
-
-    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
   private _editRow(ev: CustomEvent): void {
@@ -254,35 +220,39 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     return [
       sortableStyles,
       css`
-        .entity {
+        .title {
+          font-size: 18px;
           display: flex;
+          justify-content: space-between;
           align-items: center;
         }
 
-        .entity .handle {
-          padding-right: 8px;
-          cursor: move;
+        .entity {
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px;
+          margin: 8px 0;
         }
 
-        .entity ha-entity-picker {
-          flex-grow: 1;
+        .handle {
+          cursor: move;
         }
 
         .special-row {
           height: 60px;
-          font-size: 16px;
           display: flex;
           align-items: center;
           justify-content: space-between;
           flex-grow: 1;
         }
 
-        .special-row div {
+        .entity div {
           display: flex;
           flex-direction: column;
         }
 
-        .remove-icon,
         .edit-icon {
           --mdc-icon-button-size: 36px;
           color: var(--secondary-text-color);

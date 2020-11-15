@@ -358,6 +358,7 @@ export class HuiDialogEditCard extends LitElement
       css`
         :host {
           --code-mirror-max-height: calc(100vh - 176px);
+          --dialog-content-padding: 0px 24px;
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {

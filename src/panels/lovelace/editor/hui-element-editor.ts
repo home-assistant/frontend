@@ -31,7 +31,11 @@ import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
 
 export interface ConfigChangedEvent {
-  config: LovelaceCardConfig | LovelaceRowConfig | LovelaceHeaderFooterConfig;
+  config:
+    | LovelaceCardConfig
+    | LovelaceRowConfig
+    | LovelaceHeaderFooterConfig
+    | undefined;
   error?: string;
   guiModeAvailable?: boolean;
 }
