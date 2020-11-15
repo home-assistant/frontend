@@ -282,7 +282,6 @@ class DataEntryFlowDialog extends LitElement {
   private async _processStep(
     step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>
   ): Promise<void> {
-    console.log("new step", step);
     if (step instanceof Promise) {
       this._loading = true;
       try {
