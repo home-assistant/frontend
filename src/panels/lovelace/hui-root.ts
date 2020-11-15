@@ -90,7 +90,7 @@ class HUIRoot extends LitElement {
     // The view can trigger a re-render when it knows that certain
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView, true),
+      () => this._selectView(this._curView, true, false),
       100,
       false
     );
@@ -421,15 +421,6 @@ class HUIRoot extends LitElement {
     `;
   }
 
-  private _isVisible = (view: LovelaceViewConfig) =>
-    Boolean(
-      this._editMode ||
-        view.visible === undefined ||
-        view.visible === true ||
-        (Array.isArray(view.visible) &&
-          view.visible.some((show) => show.user === this.hass!.user?.id))
-    );
-
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -446,12 +437,12 @@ class HUIRoot extends LitElement {
 
     let newSelectView;
     let force = false;
+    let hiddenView = true;
 
     const viewPath = this.route!.path.split("/")[1];
+    let views = !this._editMode ? this._visibleViews : this.config.views;
 
     if (changedProperties.has("route")) {
-      const views = this.config.views;
-
       if (!viewPath && views.length) {
         newSelectView = views.findIndex(this._isVisible);
         navigate(
@@ -462,12 +453,22 @@ class HUIRoot extends LitElement {
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
       } else if (viewPath) {
+        views = this.config.views;
         const selectedView = viewPath;
         const selectedViewInt = Number(selectedView);
         let index = 0;
         for (let i = 0; i < views.length; i++) {
           if (views[i].path === selectedView || i === selectedViewInt) {
-            index = i;
+            if (this._isVisible(views[i]) && i !== selectedViewInt) {
+              index = this._visibleViews.indexOf(views[i]);
+              hiddenView = false;
+            } else if (views[i].path === selectedView) {
+              index = i;
+            } else if (i < this._visibleViews.length) {
+              index = this._visibleViews.indexOf(views[i]);
+              hiddenView = false;
+              index = i;
+            }
             break;
           }
         }
@@ -486,10 +487,6 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
-        const views = this.config && this.config.views;
-
-        fireEvent(this, "iron-resize");
-
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
@@ -504,6 +501,7 @@ class HUIRoot extends LitElement {
             true
           );
         }
+        fireEvent(this, "iron-resize");
       }
 
       if (!force && huiView) {
@@ -516,7 +514,7 @@ class HUIRoot extends LitElement {
         newSelectView = this._curView;
       }
       // Will allow for ripples to start rendering
-      afterNextRender(() => this._selectView(newSelectView, force));
+      afterNextRender(() => this._selectView(newSelectView, force, hiddenView));
     }
   }
 
@@ -526,12 +524,6 @@ class HUIRoot extends LitElement {
 
   private get _yamlMode(): boolean {
     return this.lovelace!.mode === "yaml";
-  }
-
-  private get _visibleViews() {
-    return this._editMode
-      ? this.lovelace!.config.views
-      : this.lovelace!.config.views.filter((view) => this._isVisible(view));
   }
 
   private get _editMode() {
@@ -545,6 +537,19 @@ class HUIRoot extends LitElement {
   private get _viewRoot(): HTMLDivElement {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
   }
+
+  private get _visibleViews() {
+    return this.lovelace!.config.views.filter((view) => this._isVisible(view));
+  }
+
+  private _isVisible = (view: LovelaceViewConfig) =>
+    Boolean(
+      this._editMode ||
+        view.visible === undefined ||
+        view.visible === true ||
+        (Array.isArray(view.visible) &&
+          view.visible.some((show) => show.user === this.hass!.user?.id))
+    );
 
   private _handleRefresh(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
@@ -654,16 +659,21 @@ class HUIRoot extends LitElement {
   }
 
   private _handleViewSelected(ev) {
-    const viewIndex = ev.detail.selected as number;
+    let viewIndex = ev.detail.selected as number;
+    const views = !this._editMode ? this._visibleViews : this.config.views;
 
-    if (viewIndex !== this._curView) {
-      const path = this.config.views[viewIndex].path || viewIndex;
+    if (views[viewIndex] !== views[this._curView as number]) {
+      const path = views[viewIndex].path || viewIndex;
       navigate(this, `${this.route?.prefix}/${path}`);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
   }
 
-  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
+  private _selectView(
+    viewIndex: HUIRoot["_curView"],
+    force: boolean,
+    hidden: boolean
+  ): void {
     if (!force && this._curView === viewIndex) {
       return;
     }
@@ -698,19 +708,32 @@ class HUIRoot extends LitElement {
     }
 
     let view;
-    const viewConfig = this.config.views[viewIndex];
+    const viewConfig =
+      hidden || this._editMode
+        ? this.config.views[viewIndex]
+        : this._visibleViews[viewIndex];
+
+    if (!hidden && !this._editMode) {
+      for (let i = 0; i < this.config.views.length; i++) {
+        if (this.config.views[i] === this._visibleViews[viewIndex]) {
+          viewIndex = i;
+          break;
+        }
+      }
+    }
 
     if (!viewConfig) {
       this._enableEditMode();
       return;
     }
 
-    if (!force && this._viewCache![viewIndex]) {
-      view = this._viewCache![viewIndex];
+    const cacheType = hidden ? "hidden" : "visible";
+    if (!force && this._viewCache![`${cacheType}${viewIndex}`]) {
+      view = this._viewCache![`${cacheType}${viewIndex}`];
     } else {
       view = document.createElement("hui-view");
       view.index = viewIndex;
-      this._viewCache![viewIndex] = view;
+      this._viewCache![`${cacheType}${viewIndex}`] = view;
     }
 
     view.lovelace = this.lovelace;
@@ -726,6 +749,13 @@ class HUIRoot extends LitElement {
       );
     } else {
       this._appLayout.style.removeProperty("--lovelace-background");
+    }
+
+    if (!this._isVisible(this.config.views[viewIndex])) {
+      setTimeout(
+        () => this._layout.header.querySelector("ha-tabs").select(-1),
+        100
+      );
     }
 
     root.appendChild(view);
