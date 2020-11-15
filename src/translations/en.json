@@ -741,6 +741,10 @@
         "person": {
           "create_zone": "Create zone from current location"
         },
+        "input_timetable": {
+          "add": "Add entry",
+          "delete": "Delete entry"
+        },
         "cover": {
           "open_cover": "Open cover",
           "close_cover": "Close cover",

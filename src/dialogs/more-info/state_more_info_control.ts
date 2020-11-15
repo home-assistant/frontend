@@ -17,6 +17,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   group: () => import("./controls/more-info-group"),
   humidifier: () => import("./controls/more-info-humidifier"),
   input_datetime: () => import("./controls/more-info-input_datetime"),
+  input_timetable: () => import("./controls/more-info-input_timetable"),
   light: () => import("./controls/more-info-light"),
   lock: () => import("./controls/more-info-lock"),
   media_player: () => import("./controls/more-info-media_player"),
