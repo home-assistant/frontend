@@ -90,7 +90,7 @@ class HUIRoot extends LitElement {
     // The view can trigger a re-render when it knows that certain
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView, true, false),
+      () => this._selectView(this._curView, true),
       100,
       false
     );
@@ -446,13 +446,12 @@ class HUIRoot extends LitElement {
 
     let newSelectView;
     let force = false;
-    let views = this._visibleViews;
+
     const viewPath = this.route!.path.split("/")[1];
-    const hiddenView =
-      !views.some((v) => v.path === viewPath) ||
-      (!isNaN(+viewPath) && +viewPath >= views.length);
 
     if (changedProperties.has("route")) {
+      const views = this.config.views;
+
       if (!viewPath && views.length) {
         newSelectView = views.findIndex(this._isVisible);
         navigate(
@@ -463,11 +462,7 @@ class HUIRoot extends LitElement {
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
       } else if (viewPath) {
-        let selectedView = viewPath as any;
-        if (hiddenView && !this._editMode) {
-          views = this.config.views;
-          selectedView = isNaN(+viewPath) ? viewPath : 0;
-        }
+        const selectedView = viewPath;
         const selectedViewInt = Number(selectedView);
         let index = 0;
         for (let i = 0; i < views.length; i++) {
@@ -491,16 +486,20 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
+        const views = this.config && this.config.views;
+
+        fireEvent(this, "iron-resize");
+
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
           viewPath === "hass-unused-entities"
         ) {
-          newSelectView = this._visibleViews.findIndex(this._isVisible);
+          newSelectView = views.findIndex(this._isVisible);
           navigate(
             this,
             `${this.route!.prefix}/${
-              this._visibleViews[newSelectView].path || newSelectView
+              views[newSelectView].path || newSelectView
             }`,
             true
           );
@@ -517,9 +516,8 @@ class HUIRoot extends LitElement {
         newSelectView = this._curView;
       }
       // Will allow for ripples to start rendering
-      afterNextRender(() => this._selectView(newSelectView, force, hiddenView));
+      afterNextRender(() => this._selectView(newSelectView, force));
     }
-    fireEvent(this, "iron-resize");
   }
 
   private get config(): LovelaceConfig {
@@ -659,17 +657,13 @@ class HUIRoot extends LitElement {
     const viewIndex = ev.detail.selected as number;
 
     if (viewIndex !== this._curView) {
-      const path = this._visibleViews[viewIndex].path || viewIndex;
+      const path = this.config.views[viewIndex].path || viewIndex;
       navigate(this, `${this.route?.prefix}/${path}`);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
   }
 
-  private _selectView(
-    viewIndex: HUIRoot["_curView"],
-    force: boolean,
-    hidden: boolean
-  ): void {
+  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
     if (!force && this._curView === viewIndex) {
       return;
     }
@@ -704,9 +698,7 @@ class HUIRoot extends LitElement {
     }
 
     let view;
-    const viewConfig = hidden
-      ? this.config.views[viewIndex]
-      : this._visibleViews[viewIndex];
+    const viewConfig = this.config.views[viewIndex];
 
     if (!viewConfig) {
       this._enableEditMode();
