@@ -115,6 +115,7 @@ export class HuiEntityCardEditor extends LitElement
         </div>
         <div class="side-by-side">
           <ha-entity-attribute-picker
+            allow-custom-value
             .hass=${this.hass}
             .entityId=${this._entity}
             .label="${this.hass.localize(

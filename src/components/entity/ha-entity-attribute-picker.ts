@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -14,13 +15,13 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import { formatAttributeName } from "../../util/hass-attributes-util";
 import "../ha-svg-icon";
 import "./state-badge";
-import { formatAttributeName } from "../../util/hass-attributes-util";
-import "@material/mwc-icon-button/mwc-icon-button";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -39,6 +40,41 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: string }) => {
   root.querySelector("paper-item")!.textContent = formatAttributeName(
     model.item
   );
+};
+
+const SELECTABLE_ATTRIBUTES: { [key: string]: string[] } = {
+  light: ["brightness"],
+  climate: [
+    "current_temperature",
+    "fan_mode",
+    "preset_mode",
+    "swing_mode",
+    "temperature",
+    "current_hundity",
+    "humidity",
+    "hvac_action",
+  ],
+  fan: ["speed"],
+  air_quality: [
+    "nitrogen_oxide",
+    "particulate_matter_10",
+    "particulate_matter_2_5",
+  ],
+  cover: ["current_position", "current_tilt_position"],
+  device_tracker: ["battery"],
+  humidifier: ["humidty"],
+  media_player: ["media_title"],
+  vacuum: ["battery_level", "status"],
+  water_heater: ["current_temperature", "temperature", "operation_mode"],
+  weather: [
+    "temperature",
+    "humidity",
+    "ozone",
+    "pressure",
+    "wind_bearing",
+    "wind_speed",
+    "visibility",
+  ],
 };
 
 @customElement("ha-entity-attribute-picker")
@@ -68,9 +104,8 @@ class HaEntityAttributePicker extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("_opened") && this._opened) {
-      const state = this.entityId ? this.hass.states[this.entityId] : undefined;
-      (this._comboBox as any).items = state
-        ? Object.keys(state.attributes)
+      (this._comboBox as any).items = this.entityId
+        ? this._selectableAttributes(this.entityId)
         : [];
     }
   }
@@ -136,6 +171,19 @@ class HaEntityAttributePicker extends LitElement {
       </vaadin-combo-box-light>
     `;
   }
+
+  private _selectableAttributes = memoizeOne((entity: string) => {
+    const stateObj = this.hass.states[entity];
+    if (!stateObj) {
+      return [];
+    }
+
+    return Object.keys(stateObj.attributes).filter((attr) =>
+      SELECTABLE_ATTRIBUTES[entity.substring(0, entity.indexOf("."))].includes(
+        attr
+      )
+    );
+  });
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();
