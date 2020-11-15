@@ -147,8 +147,6 @@ export class HuiSubElementEditor extends LitElement {
   }
 
   private _toggleMode(): void {
-    console.log("toggle");
-
     this._editorElement?.toggleMode();
   }
 
