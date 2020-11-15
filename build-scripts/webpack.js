@@ -4,6 +4,21 @@ const TerserPlugin = require("terser-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
 const bundle = require("./bundle");
+const log = require("fancy-log");
+
+class LogStartCompilePlugin {
+  ignoredFirst = false;
+
+  apply(compiler) {
+    compiler.hooks.beforeCompile.tap("LogStartCompilePlugin", () => {
+      if (!this.ignoredFirst) {
+        this.ignoredFirst = true;
+        return;
+      }
+      log("Changes detected. Starting compilation");
+    });
+  }
+}
 
 const createWebpackConfig = ({
   entry,
@@ -104,7 +119,8 @@ const createWebpackConfig = ({
         ),
         path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
       ),
-    ],
+      !isProdBuild && new LogStartCompilePlugin(),
+    ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
     },
