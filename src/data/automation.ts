@@ -4,6 +4,7 @@ import {
 } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
 import { Context, HomeAssistant } from "../types";
+import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action } from "./script";
 
@@ -14,15 +15,26 @@ export interface AutomationEntity extends HassEntityBase {
   };
 }
 
-export interface AutomationConfig {
+export type AutomationConfig =
+  | ManualAutomationConfig
+  | BlueprintAutomationConfig;
+
+export interface BaseAutomationConfig {
   id?: string;
-  alias: string;
-  description: string;
+  alias?: string;
+  description?: string;
+}
+
+export interface ManualAutomationConfig extends BaseAutomationConfig {
   trigger: Trigger[];
   condition?: Condition[];
   action: Action[];
   mode?: "single" | "restart" | "queued" | "parallel";
   max?: number;
+}
+
+export interface BlueprintAutomationConfig extends BaseAutomationConfig {
+  use_blueprint: { path: string; input?: BlueprintInput };
 }
 
 export interface ForDict {

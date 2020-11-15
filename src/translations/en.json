@@ -1349,6 +1349,19 @@
             }
           }
         },
+        "blueprint": {
+          "caption": "Blueprints",
+          "description": "Manage blueprints",
+          "picker": {
+            "header": "Blueprint Editor",
+            "introduction": "The blueprint editor allows you to create and edit blueprints.",
+            "learn_more": "Learn more about blueprints",
+            "headers": {
+              "name": "Name"
+            }
+          },
+          "editor": {}
+        },
         "script": {
           "caption": "Scripts",
           "description": "Manage scripts",
