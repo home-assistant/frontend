@@ -96,6 +96,23 @@ export class HaDialog extends MwcDialog {
           margin-left: 40px;
           margin-right: 0px;
         }
+
+        .mdc-dialog__content::-webkit-scrollbar {
+          width: 0.4rem;
+          height: 0.4rem;
+        }
+
+        .mdc-dialog__content::-webkit-scrollbar-thumb {
+          -webkit-border-radius: 4px;
+          border-radius: 4px;
+          background: var(--scrollbar-thumb-color);
+        }
+
+        .mdc-dialog__content {
+          overflow-y: auto;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: thin;
+        }
       `,
     ];
   }
