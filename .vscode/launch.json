@@ -9,6 +9,9 @@
       "webRoot": "${workspaceFolder}/hass_frontend",
       "disableNetworkCache": true,
       "preLaunchTask": "Develop Frontend",
+      "outFiles": [
+        "${workspaceFolder}/hass_frontend/frontend_latest/*.js"
+      ]
     },
     {
       "name": "Debug Gallery",
