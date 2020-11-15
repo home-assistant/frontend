@@ -872,6 +872,7 @@
             "quick-bar": {
                 "commands": {
                     "navigation": {
+                        "areas": "Bereiche",
                         "automation": "Automatisierungen",
                         "core": "Allgemein",
                         "customize": "Anpassungen",
@@ -1738,6 +1739,8 @@
                 "info": {
                     "built_using": "Gebaut mit",
                     "caption": "Info",
+                    "copy_github": "Für GitHub",
+                    "copy_raw": "Roher Text",
                     "custom_uis": "Benutzerdefinierte UIs:",
                     "description": "Informationen über deine Home Assistant Installation",
                     "developed_by": "Entwickelt von einem Haufen toller Leute.",
@@ -2016,7 +2019,8 @@
                             "offline": "OZWDaemon offline",
                             "ready": "Bereit zum Verbinden",
                             "started": "Verbunden mit MQTT",
-                            "starting": "Verbinde zu MQTT"
+                            "starting": "Verbinde zu MQTT",
+                            "stopped": "OpenZWave gestoppt"
                         },
                         "offline": "Offline",
                         "online": "Online",
@@ -2230,7 +2234,7 @@
                             "min_max": "Min/Max-Entitäten neu laden",
                             "mqtt": "Lade manuell konfigurierte MQTT-Entitäten neu",
                             "person": "Personen neu laden",
-                            "reload": "Neu laden {domain}",
+                            "reload": "{domain} neu laden",
                             "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
                             "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
                             "scene": "Szenen neu laden",
