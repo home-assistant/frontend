@@ -296,6 +296,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
+    const entityFilterRegExp = RegExp(
+      _entityFilter.toLowerCase().replace(/\*/g, ".*")
+    );
+
     return Object.keys(hass.states)
       .map(function (key) {
         return hass.states[key];
@@ -305,14 +309,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         // 2. If we have a match for the entity ID => we do not have to look further
         // 3. If entity ID does not match => check the friendly name => if there is none,
         //    this entity is not relevant for rendering => return false
-        const entityFilter = _entityFilter.toLowerCase();
         if (
-          entityFilter &&
-          !value.entity_id.includes(entityFilter) &&
+          _entityFilter &&
+          !entityFilterRegExp.test(value.entity_id) &&
           (value.attributes.friendly_name === undefined ||
-            !value.attributes.friendly_name
-              .toLowerCase()
-              .includes(entityFilter))
+            !entityFilterRegExp.test(
+              value.attributes.friendly_name.toLowerCase()
+            ))
         ) {
           return false;
         }
