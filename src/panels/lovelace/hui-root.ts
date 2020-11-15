@@ -54,6 +54,7 @@ import {
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import "../../layouts/ha-app-layout";
 import type { haAppLayout } from "../../layouts/ha-app-layout";
+import type { HaTabs } from "../../components/ha-tabs";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -77,6 +78,8 @@ class HUIRoot extends LitElement {
 
   @query("ha-app-layout", true) private _appLayout!: haAppLayout;
 
+  @query("ha-tabs", true) private _haTabs!: HaTabs;
+
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
@@ -90,7 +93,7 @@ class HUIRoot extends LitElement {
     // The view can trigger a re-render when it knows that certain
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView, true),
+      () => this._selectView(this._curView, true, false),
       100,
       false
     );
@@ -446,15 +449,15 @@ class HUIRoot extends LitElement {
 
     let newSelectView;
     let force = false;
-
+    let views = this._visibleViews;
     const viewPath = this.route!.path.split("/")[1];
+    const hiddenView =
+      (!isNaN(+viewPath) && +viewPath < views.length) ||
+      views.some((view) => view.path === viewPath)
+        ? false
+        : true;
 
     if (changedProperties.has("route")) {
-      const views =
-        !this._editMode && this._visibleViews.length > 0
-          ? this._visibleViews
-          : this.config.views;
-
       if (!viewPath && views.length) {
         newSelectView = views.findIndex(this._isVisible);
         navigate(
@@ -465,7 +468,12 @@ class HUIRoot extends LitElement {
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
       } else if (viewPath) {
-        const selectedView = viewPath;
+        let selectedView = viewPath as any;
+        if (hiddenView && !this._editMode) {
+          console.log("hidden view");
+          views = this.config.views;
+          selectedView = isNaN(+viewPath) ? viewPath : 0;
+        }
         const selectedViewInt = Number(selectedView);
         let index = 0;
         for (let i = 0; i < views.length; i++) {
@@ -489,16 +497,7 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
-        const views =
-          !this._editMode && this._visibleViews.length > 0
-            ? this._visibleViews
-            : this.config && this.config.views;
-
-        fireEvent(this, "iron-resize");
-
-        if (!views.includes(this.config.views[this._curView as number])) {
-          navigate(this, `${this.route?.prefix}/0`);
-        }
+        const views = this._visibleViews;
 
         // Leave unused entities when leaving edit mode
         if (
@@ -526,8 +525,9 @@ class HUIRoot extends LitElement {
         newSelectView = this._curView;
       }
       // Will allow for ripples to start rendering
-      afterNextRender(() => this._selectView(newSelectView, force));
+      afterNextRender(() => this._selectView(newSelectView, force, hiddenView));
     }
+    fireEvent(this, "iron-resize");
   }
 
   private get config(): LovelaceConfig {
@@ -539,7 +539,9 @@ class HUIRoot extends LitElement {
   }
 
   private get _visibleViews() {
-    return this.lovelace!.config.views.filter((view) => this._isVisible(view));
+    return this._editMode
+      ? this.lovelace!.config.views
+      : this.lovelace!.config.views.filter((view) => this._isVisible(view));
   }
 
   private get _editMode() {
@@ -663,19 +665,19 @@ class HUIRoot extends LitElement {
 
   private _handleViewSelected(ev) {
     const viewIndex = ev.detail.selected as number;
-    const views =
-      !this._editMode && this._visibleViews.length > 0
-        ? this._visibleViews
-        : this.config.views;
 
     if (viewIndex !== this._curView) {
-      const path = views[viewIndex].path || viewIndex;
+      const path = this._visibleViews[viewIndex].path || viewIndex;
       navigate(this, `${this.route?.prefix}/${path}`);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
   }
 
-  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
+  private _selectView(
+    viewIndex: HUIRoot["_curView"],
+    force: boolean,
+    hidden: boolean
+  ): void {
     if (!force && this._curView === viewIndex) {
       return;
     }
@@ -710,7 +712,9 @@ class HUIRoot extends LitElement {
     }
 
     let view;
-    const viewConfig = this.config.views[viewIndex];
+    const viewConfig = hidden
+      ? this.config.views[viewIndex]
+      : this._visibleViews[viewIndex];
 
     if (!viewConfig) {
       this._enableEditMode();
