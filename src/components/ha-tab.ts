@@ -99,13 +99,13 @@ export class HaTab extends LitElement {
         display: flex;
         flex-direction: column;
         text-align: center;
+        box-sizing: border-box;
         align-items: center;
         justify-content: center;
-        height: 64px;
+        height: var(--header-height);
         cursor: pointer;
         position: relative;
         outline: none;
-        box-sizing: border-box;
       }
 
       .name {

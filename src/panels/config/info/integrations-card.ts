@@ -17,6 +17,7 @@ import {
   IntegrationManifest,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("integrations-card")
 class IntegrationsCard extends LitElement {
@@ -50,7 +51,7 @@ class IntegrationsCard extends LitElement {
                     <td>
                       <img
                         loading="lazy"
-                        src="https://brands.home-assistant.io/_/${domain}/icon.png"
+                        src=${brandsUrl(domain, "icon", true)}
                         referrerpolicy="no-referrer"
                       />
                     </td>

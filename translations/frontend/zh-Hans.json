@@ -511,15 +511,23 @@
             "continue": "继续",
             "copied": "已复制",
             "delete": "删除",
+            "disable": "禁用",
+            "enable": "启用",
             "error_required": "必填",
+            "leave": "离开",
             "loading": "加载中",
             "menu": "菜单",
             "next": "下一步",
             "no": "否",
+            "not_now": "暂时不要",
             "overflow_menu": "Overflow 菜单",
             "previous": "上一步",
             "refresh": "刷新",
+            "remove": "删除",
+            "rename": "重命名",
             "save": "保存",
+            "skip": "跳过",
+            "stay": "留下",
             "successfully_deleted": "已成功删除",
             "successfully_saved": "保存成功",
             "undo": "撤消",
@@ -720,8 +728,10 @@
                     "confirm_delete": "您确定要删除此条目吗？",
                     "delete": "删除",
                     "enabled_cause": "由于 {cause} 而被禁用",
+                    "enabled_delay_confirm": "已启用的实体将在 {delay} 秒后添加到 Home Assistant",
                     "enabled_description": "已禁用的实体不再添加到 Home Assistant。",
                     "enabled_label": "启用实体",
+                    "enabled_restart_confirm": "重启 Home Assistant 以完成实体的启用",
                     "entity_id": "实体 ID",
                     "icon": "图标",
                     "icon_error": "图标的格式应为 prefix:iconname，例如：mdi:home",
@@ -794,6 +804,10 @@
             },
             "more_info_control": {
                 "controls": "控制项",
+                "cover": {
+                    "close_cover": "关闭卷帘",
+                    "open_cover": "打开卷帘"
+                },
                 "details": "详情",
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
@@ -857,6 +871,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "区域注册表",
+                        "automation": "自动化",
+                        "core": "通用",
+                        "customize": "自定义",
+                        "devices": "设备",
+                        "entities": "实体注册表",
+                        "helpers": "辅助元素",
+                        "info": "信息",
+                        "integrations": "集成",
+                        "logs": "日志",
+                        "lovelace": "Lovelace 仪表盘",
+                        "navigate_to": "导航到{panel}",
+                        "navigate_to_config": "导航到{panel}配置",
+                        "person": "人员",
+                        "scene": "场景",
+                        "script": "脚本",
+                        "server_control": "服务控制",
+                        "tags": "标签",
+                        "users": "用户",
+                        "zone": "地点"
+                    },
                     "reload": {
                         "automation": "重载自动化",
                         "command_line": "重载命令行实体",
@@ -874,7 +910,7 @@
                         "input_select": "重载多项选择器",
                         "input_text": "重载文字输入",
                         "min_max": "重载最小值/最大值实体",
-                        "mqtt": "重载手动配置的 mqtt 实体",
+                        "mqtt": "重载手动配置的 MQTT 实体",
                         "person": "重载人员",
                         "ping": "重载 ping 二元传感器实体",
                         "reload": "重载{domain}",
@@ -882,7 +918,7 @@
                         "rpi_gpio": "重载树莓派 GPIO 实体",
                         "scene": "重载场景",
                         "script": "重载脚本",
-                        "smtp": "重载 smtp 通知服务",
+                        "smtp": "重载 SMTP 通知服务",
                         "statistics": "重载 statistics 实体",
                         "telegram": "重载 telegram 通知服务",
                         "template": "重载模板实体",
@@ -1212,7 +1248,7 @@
                                     "trigger": "触发条件"
                                 },
                                 "event": {
-                                    "context_user_pick": "添加用户",
+                                    "context_user_pick": "选择用户",
                                     "context_user_picked": "用户触发事件",
                                     "context_users": "仅限以下用户触发事件",
                                     "event_data": "事件数据",
@@ -1311,6 +1347,22 @@
                         "only_editable": "只能编辑 automations.yaml 中的自动化。",
                         "pick_automation": "选择要编辑的自动化",
                         "show_info_automation": "显示有关自动化的信息"
+                    },
+                    "thingtalk": {
+                        "create": "创建自动化",
+                        "link_devices": {
+                            "ambiguous_entities": "有些设备有多个匹配的实体，请选择要使用的实体。",
+                            "header": "很好！现在我们需要链接设备",
+                            "unknown_placeholder": "未知占位符"
+                        },
+                        "task_selection": {
+                            "error_empty": "请输入命令或点击“跳过”。",
+                            "error_unsupported": "目前无法创建这样的自动化。",
+                            "for_example": "例如：",
+                            "header": "创建新的自动化",
+                            "introduction": "请在下方输入这个自动化要实现什么功能，Home Assistant 会尝试将其转换为自动化。",
+                            "language_note": "注意：目前只支持英文。"
+                        }
                     }
                 },
                 "cloud": {
@@ -1404,7 +1456,7 @@
                         "will_be_auto_renewed": "将自动续订"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "Webhook可从以下URL获得：",
+                        "available_at": "Webhook 可从以下 URL 获得：",
                         "close": "关闭",
                         "confirm_disable": "您确定要禁用此Webhook吗？",
                         "copied_to_clipboard": "复制到剪贴板",
@@ -1688,6 +1740,8 @@
                 "info": {
                     "built_using": "建于",
                     "caption": "信息",
+                    "copy_github": "用于 GitHub",
+                    "copy_raw": "原始文本",
                     "custom_uis": "自定义用户界面：",
                     "description": "查看关于此 Home Assistant 安装的信息",
                     "developed_by": "由一帮很 Awesome~~~ 的人开发。",
@@ -1703,6 +1757,42 @@
                     "server": "服务器",
                     "source": "源：",
                     "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "已启用 Alexa",
+                                "can_reach_cert_server": "可访问证书服务器",
+                                "can_reach_cloud": "可访问 Home Assistant Cloud",
+                                "can_reach_cloud_auth": "可访问认证服务器",
+                                "google_enabled": "已启用 Google",
+                                "logged_in": "已登录",
+                                "relayer_connected": "通过代理连接",
+                                "remote_connected": "远程连接",
+                                "remote_enabled": "已启用远程控制",
+                                "subscription_expiration": "订阅到期时间"
+                            },
+                            "homeassistant": {
+                                "arch": "CPU 架构",
+                                "dev": "开发版",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "安装类型",
+                                "os_name": "操作系统名称",
+                                "os_version": "操作系统版本",
+                                "python_version": "Python 版本",
+                                "timezone": "时区",
+                                "version": "版本",
+                                "virtualenv": "虚拟环境"
+                            },
+                            "lovelace": {
+                                "dashboards": "仪表盘",
+                                "mode": "模式",
+                                "resources": "资源"
+                            }
+                        },
+                        "manage": "管理",
+                        "more_info": "更多信息"
+                    },
                     "title": "信息"
                 },
                 "integration_panel_move": {
@@ -1869,7 +1959,7 @@
                             },
                             "no_resources": "没有资源"
                         },
-                        "refresh_body": "您必须刷新页面才能完成删除，是否要立即刷新？",
+                        "refresh_body": "必须刷新页面才能完成删除，是否要立即刷新？",
                         "refresh_header": "要刷新吗？",
                         "types": {
                             "css": "样式表",
@@ -2120,6 +2210,8 @@
                     },
                     "picker": {
                         "add_script": "添加脚本",
+                        "duplicate": "制作副本",
+                        "duplicate_script": "复制脚本",
                         "edit_script": "编辑脚本",
                         "header": "脚本编辑器",
                         "headers": {
@@ -2156,7 +2248,7 @@
                             "input_text": "重载文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
                             "min_max": "重载最小值/最大值实体",
-                            "mqtt": "重载手动配置的 mqtt 实体",
+                            "mqtt": "重载手动配置的 MQTT 实体",
                             "person": "重载人员",
                             "ping": "重载 ping 二元传感器实体",
                             "reload": "重载{domain}",
@@ -2164,7 +2256,7 @@
                             "rpi_gpio": "重载树莓派 GPIO 实体",
                             "scene": "重载场景",
                             "script": "重载脚本",
-                            "smtp": "重载 smtp 通知服务",
+                            "smtp": "重载 SMTP 通知服务",
                             "statistics": "重载 statistics 实体",
                             "telegram": "重载 telegram 通知服务",
                             "template": "重载模板实体",
@@ -2193,6 +2285,8 @@
                     "add_tag": "添加标签",
                     "automation_title": "扫描到标签 {name}",
                     "caption": "标签",
+                    "confirm_remove": "您确定要删除标签 {tag} 吗？",
+                    "confirm_remove_title": "删除标签？",
                     "create_automation": "通过标签创建自动化",
                     "description": "管理标签",
                     "detail": {
@@ -2252,6 +2346,7 @@
                         "update_user": "更新"
                     },
                     "picker": {
+                        "add_user": "添加用户",
                         "headers": {
                             "group": "群组",
                             "name": "名称",
@@ -2532,6 +2627,8 @@
                         "filter_attributes": "输入筛选属性",
                         "filter_entities": "输入筛选实体",
                         "filter_states": "输入筛选状态",
+                        "last_changed": "上次变化",
+                        "last_updated": "上次更新",
                         "more_info": "更多信息",
                         "no_entities": "没有可用实体",
                         "set_state": "设置状态",
@@ -2618,7 +2715,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace 配置已更新，您想刷新吗？",
+                    "message": "此仪表盘的 Lovelace 配置已更新。刷新页面以查看更改？",
                     "refresh": "刷新"
                 },
                 "editor": {
@@ -2759,6 +2856,10 @@
                             "description": "“概览”卡片用于将多个传感器汇聚成一个紧凑的概览。",
                             "name": "概览"
                         },
+                        "grid": {
+                            "description": "“网格”卡片用于将多个卡片显示在一个网格。",
+                            "name": "网格"
+                        },
                         "history-graph": {
                             "description": "“历史图表”卡片用于为每一个列出的实体显示图表。",
                             "name": "历史图表"
@@ -2778,6 +2879,10 @@
                         "light": {
                             "description": "“灯光”卡片用于调整灯的亮度。",
                             "name": "灯光"
+                        },
+                        "logbook": {
+                            "description": "“日志”卡片可显示实体的事件列表。",
+                            "name": "日志"
                         },
                         "map": {
                             "dark_mode": "夜间模式？",
@@ -2851,11 +2956,18 @@
                         "entity": "实体",
                         "no_description": "没有描述。"
                     },
+                    "common": {
+                        "add": "添加",
+                        "clear": "清除",
+                        "edit": "编辑",
+                        "none": "无"
+                    },
                     "edit_badges": {
                         "panel_mode": "这些徽章将不会显示，因为此视图处于面板模式。"
                     },
                     "edit_card": {
                         "add": "添加卡片",
+                        "clear": "清除",
                         "confirm_cancel": "确实要取消吗？",
                         "delete": "删除卡片",
                         "duplicate": "复制卡片",
@@ -2896,6 +3008,22 @@
                         }
                     },
                     "header": "编辑 UI",
+                    "header-footer": {
+                        "choose_header_footer": "请选择{type}",
+                        "footer": "页脚",
+                        "header": "页眉",
+                        "types": {
+                            "buttons": {
+                                "name": "按钮"
+                            },
+                            "graph": {
+                                "name": "图表"
+                            },
+                            "picture": {
+                                "name": "图片"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "打开 Lovelace UI 菜单",
                         "raw_editor": "原始配置编辑器"
@@ -2939,6 +3067,13 @@
                     "select_view": {
                         "dashboard_label": "仪表盘",
                         "header": "选择视图"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "页脚编辑器",
+                            "header": "页眉编辑器",
+                            "row": "实体行编辑器"
+                        }
                     },
                     "suggest_card": {
                         "add": "添加至 Lovelace UI",
@@ -3297,6 +3432,9 @@
                     "description": "控制设备时，在此设备上启用或禁用振动。",
                     "header": "振动"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "开始对话"
             },
             "shopping-list": {
                 "add_item": "添加项目",

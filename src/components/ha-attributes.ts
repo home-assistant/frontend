@@ -9,7 +9,9 @@ import {
   TemplateResult,
 } from "lit-element";
 import { until } from "lit-html/directives/until";
-import hassAttributeUtil from "../util/hass-attributes-util";
+import hassAttributeUtil, {
+  formatAttributeName,
+} from "../util/hass-attributes-util";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
@@ -34,7 +36,7 @@ class HaAttributes extends LitElement {
           (attribute) => html`
             <div class="data-entry">
               <div class="key">
-                ${attribute.replace(/_/g, " ").replace(/\bid\b/g, "ID")}
+                ${formatAttributeName(attribute)}
               </div>
               <div class="value">
                 ${this.formatAttribute(attribute)}
@@ -61,12 +63,12 @@ class HaAttributes extends LitElement {
         justify-content: space-between;
       }
       .data-entry .value {
-        max-width: 200px;
+        max-width: 50%;
         overflow-wrap: break-word;
         text-align: right;
       }
-      .key:first-letter {
-        text-transform: capitalize;
+      .key {
+        flex-grow: 1;
       }
       .attribution {
         color: var(--secondary-text-color);

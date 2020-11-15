@@ -466,11 +466,15 @@
                 "commands": {
                     "reload": {
                         "filesize": "Ailgychwyn endidau maint ffeil",
+                        "history_stats": "Ail-lwytho endidau ystadegau hanes",
+                        "homekit": "Ail-lwytho HomeKit",
+                        "min_max": "AIl-lwytho endidau lleiaf/uchaf",
                         "mqtt": "Ailgychwyn endidau mqtt wedi'u ffurfweddu",
                         "ping": "Ailgychwyn endidau sensor ping binary",
                         "rpi_gpio": "Ailgychwyn endidau GPIO Raspberry Pi",
                         "smtp": "Ailgychwyn gwasanaethau hysbysu smtp",
-                        "telegram": "Ailgychwyn gwasanaethau hysbysu telegram"
+                        "telegram": "Ailgychwyn gwasanaethau hysbysu telegram",
+                        "trend": "Ail-lwytho endidau tuedd"
                     },
                     "server_control": {
                         "perform_action": "{action} Gweinydd",

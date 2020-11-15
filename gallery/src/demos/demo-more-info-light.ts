@@ -6,7 +6,7 @@ import { SUPPORT_BRIGHTNESS } from "../../../src/data/light";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-more-infos";
-import "../components/more-info-content";
+import "../../../src/dialogs/more-info/more-info-content";
 
 const ENTITIES = [
   getEntity("light", "bed_light", "on", {
@@ -40,8 +40,12 @@ class DemoMoreInfoLight extends PolymerElement {
 
   public ready() {
     super.ready();
+    this._setupDemo();
+  }
+
+  private async _setupDemo() {
     const hass = provideHass(this);
-    hass.updateTranslations(null, "en");
+    await hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }

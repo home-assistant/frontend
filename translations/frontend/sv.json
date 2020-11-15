@@ -723,15 +723,15 @@
                     "enabled_description": "Inaktiverade entiteter kommer inte att läggas till i Home Assistant.",
                     "enabled_label": "Aktivera entitet",
                     "entity_id": "Entitets-ID",
-                    "icon": "Överskrid ikon",
+                    "icon": "Ikon",
                     "icon_error": "Ikoner ska vara i formatet 'prefix:ikonnamn', t.ex. 'mdi:home'",
-                    "name": "Skriv över namn",
+                    "name": "Namn",
                     "note": "Obs: detta kanske inte fungerar ännu med alla integrationer.",
                     "unavailable": "Den här entiteten är för närvarande inte tillgänglig.",
                     "update": "Uppdatera"
                 },
                 "faq": "dokumentation",
-                "no_unique_id": "Den här entiteten har inget unikt ID, därför kan den inte hanteras från användargränssnittet.",
+                "no_unique_id": "Den här entiteten har inget unikt ID, därför kan den inte hanteras från användargränssnittet.\nKlicka här {faq_link} för mer detaljer.",
                 "related": "Relaterade",
                 "settings": "Inställningar"
             },
@@ -860,7 +860,7 @@
                     "reload": {
                         "automation": "Ladda om automationer",
                         "command_line": "Ladda om command line entiteter",
-                        "core": "Ladda om plats ",
+                        "core": "Ladda om plats och anpassningar",
                         "filesize": "Ladda om filstorleks ",
                         "filter": "Ladda om filter entiteter",
                         "generic": "Ladda om standard IP kamera entiteter",
@@ -882,9 +882,9 @@
                         "rpi_gpio": "Ladda om Raspberry Pi GPIO entiteter",
                         "scene": "Ladda om scener",
                         "script": "Ladda om skripts",
-                        "smtp": "Ladda om smtp notifieringstjänster",
+                        "smtp": "Ladda om smtp aviseringstjänster",
                         "statistics": "Ladda om statistik entiteter",
-                        "telegram": "Ladda om telegram notifieringstjänster",
+                        "telegram": "Ladda om telegram aviseringstjänster",
                         "template": "Ladda om mallade entiteter",
                         "trend": "Ladda om trend entiteter",
                         "universal": "Ladda om universella mediaspelar entiteter",
@@ -912,7 +912,7 @@
                     "clusters": "Hantera kluster",
                     "reconfigure": "Konfigurera om enheten",
                     "remove": "Ta bort enhet",
-                    "zigbee_information": "Zigbee-information"
+                    "zigbee_information": "Zigbee-enhetens signatur"
                 },
                 "confirmations": {
                     "remove": "Är du säker på att du vill ta bort enheten?"
@@ -1619,7 +1619,7 @@
                         },
                         "filter": {
                             "filter": "Filter",
-                            "hidden_entities": "{number} dold {number, plural,\n  one {entity}\n  other {entities}\n}",
+                            "hidden_entities": "{number} dold {number, plural,\n  one {entitet}\n  other {entiteter}\n}",
                             "show_all": "Visa alla",
                             "show_disabled": "Visa inaktiverade entiteter",
                             "show_readonly": "Visa skrivskyddade entiteter",
@@ -1946,7 +1946,7 @@
                     },
                     "node_config": {
                         "header": "Nodkonfiguration",
-                        "help_source": "Config-parameterbeskrivningar och hjälptext tillhandahålls av OpenZWave-projektet.",
+                        "help_source": "Konfig-parameterbeskrivningar och hjälptext tillhandahålls av OpenZWave-projektet.",
                         "introduction": "Hantera de olika konfigurationsparametrarna för en Z-Wave-nod.",
                         "wakeup_help": "Batteridrivna noder måste vara vaken för att ändra konfigurationen. Om noden inte är vaken kommer OpenZWave att försöka uppdatera nodens konfiguration nästa gång den vaknar, vilket kan vara flera timmar (eller dagar) senare. Följ dessa steg för att väcka enheten:"
                     },
@@ -2119,7 +2119,7 @@
                         "sequence_sentence": "Handlingssekvensen för detta skript."
                     },
                     "picker": {
-                        "add_script": "Lägg till skript",
+                        "add_script": "Lägg till nytt skript",
                         "edit_script": "Redigera skript",
                         "header": "Skript-redigerare",
                         "headers": {
@@ -2145,7 +2145,7 @@
                             "filter": "Ladda om filterentiteter",
                             "generic": "Ladda om generella IP kamera entiteter",
                             "generic_thermostat": "Ladda om standard termometer entiteter",
-                            "group": "Ladda om grupper",
+                            "group": "Ladda om grupper, gruppentiteter och aviseringstjänster",
                             "heading": "YAML-konfiguration laddas om",
                             "history_stats": "Ladda om historiskstatistik entiteter",
                             "homekit": "Ladda om HomeKit",
@@ -2206,7 +2206,7 @@
                         "tag_id": "Tagg-ID",
                         "tag_id_placeholder": "Autogenereras när det lämnas tomt",
                         "update": "Uppdatera",
-                        "usage": "En tagg kan utlösa en automatisering när den skannas, du kan använda NFC-taggar, QR-koder eller någon annan typ av tagg. Använd vår {companion_link} att skriva den här taggen till en programmerbar NFC-tagg eller skapa en QR-kod nedan."
+                        "usage": "En tagg kan utlösa en automatisering när den skannas, du kan använda NFC-taggar, QR-koder eller någon annan typ av tagg. Använd vår {companion_link} till att skriva den här taggen till en programmerbar NFC-tagg eller skapa en QR-kod nedan."
                     },
                     "edit": "Redigera",
                     "headers": {
@@ -2371,7 +2371,7 @@
                     "configured_in_yaml": "Zoner konfigurerade via configuration.yaml kan inte redigeras via användargränssnittet.",
                     "confirm_delete": "Är du säker på att du vill ta bort den här zonen?",
                     "create_zone": "Skapa Zon",
-                    "description": "Hantera zonerna du vill följa personer i",
+                    "description": "Hantera zonerna som du vill följa personer i",
                     "detail": {
                         "create": "Skapa",
                         "delete": "Radera",
@@ -2547,7 +2547,7 @@
                         "entity": "Entitet",
                         "jinja_documentation": "Malldokumentation för Jinja2",
                         "listeners": "Den här mallen lyssnar efter följande tillståndsändrade händelser:",
-                        "no_listeners": "Den här mallen lyssnar inte efter några tillståndsändrade händelser och uppdateras inte automatiskt.",
+                        "no_listeners": "Den här mallen lyssnar inte efter några händelser och uppdateras inte automatiskt.",
                         "reset": "Återställ till demomall",
                         "result_type": "Resultattyp",
                         "template_extensions": "Mallutökningar för Home Assistant",
@@ -2911,7 +2911,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter om du tar bort din Lovelace UI-konfiguration.",
-                        "confirm_remove_config_title": "Är du säker på att du vill ta bort din Lovelace UI konfiguration? Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter.",
+                        "confirm_remove_config_title": "Är du säker på att du vill ta bort din Lovelace UI konfiguration?",
                         "confirm_unsaved_changes": "Du har osparade ändringar. Är du säker på att du vill avsluta?",
                         "confirm_unsaved_comments": "Din konfiguration innehåller en eller flera kommentarer, dessa kommer inte att sparas. Vill du fortsätta ändå?",
                         "error_invalid_config": "Din konfiguration är inte giltig: {error}",
@@ -2955,7 +2955,7 @@
                 },
                 "menu": {
                     "close": "Stäng",
-                    "configure_ui": "Konfigurera användargränssnittet",
+                    "configure_ui": "Redigera kontrollpanel",
                     "exit_edit_mode": "Avsluta UI-redigeringsläge",
                     "help": "Hjälp",
                     "refresh": "Uppdatera",
@@ -3237,7 +3237,7 @@
                     "name": "Namn",
                     "not_used": "Har aldrig använts",
                     "prompt_copy_token": "Kopiera din åtkomsttoken. Den kommer inte att visas igen.",
-                    "prompt_name": "Namn?"
+                    "prompt_name": "Ge token ett namn"
                 },
                 "mfa_setup": {
                     "close": "Stäng",

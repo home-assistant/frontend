@@ -257,7 +257,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           : ""}
         <mwc-fab
           slot="fab"
-          title=${hass.localize("ui.panel.config.zone.add_zone")}
+          .label=${hass.localize("ui.panel.config.zone.add_zone")}
+          extended
           @click=${this._createZone}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -440,9 +441,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass!.localize("ui.panel.config.zone.confirm_delete"),
-        text: this.hass!.localize("ui.panel.config.zone.confirm_delete2"),
-        dismissText: this.hass!.localize("ui.common.no"),
-        confirmText: this.hass!.localize("ui.common.yes"),
+        dismissText: this.hass!.localize("ui.common.cancel"),
+        confirmText: this.hass!.localize("ui.common.delete"),
       }))
     ) {
       return false;

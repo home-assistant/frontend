@@ -39,6 +39,7 @@ class HassLoadingScreen extends LitElement {
                 `
               : html`
                   <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
                     @click=${this._handleBack}
                   ></ha-icon-button-arrow-prev>
                 `}
@@ -66,7 +67,7 @@ class HassLoadingScreen extends LitElement {
           display: flex;
           align-items: center;
           font-size: 20px;
-          height: 65px;
+          height: var(--header-height);
           padding: 0 16px;
           pointer-events: none;
           background-color: var(--app-header-background-color);

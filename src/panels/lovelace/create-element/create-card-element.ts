@@ -55,6 +55,7 @@ const LAZY_LOAD_TYPES = {
   markdown: () => import("../cards/hui-markdown-card"),
   picture: () => import("../cards/hui-picture-card"),
   calendar: () => import("../cards/hui-calendar-card"),
+  logbook: () => import("../cards/hui-logbook-card"),
 };
 
 // This will not return an error card but will throw the error

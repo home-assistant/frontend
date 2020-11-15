@@ -84,9 +84,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       ${this.lovelace?.editMode
         ? html`
             <mwc-fab
-              title=${this.hass!.localize(
+              .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}
+              extended
               @click=${this._addCard}
               class=${classMap({
                 rtl: computeRTL(this.hass!),

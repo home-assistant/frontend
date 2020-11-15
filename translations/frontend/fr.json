@@ -520,6 +520,7 @@
             "previous": "Précédent",
             "refresh": "Rafraîchir",
             "save": "Enregistrer",
+            "skip": "Passer",
             "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
             "undo": "Annuler",
@@ -798,6 +799,7 @@
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
                 "history": "Historique",
+                "last_changed": "Dernière modification",
                 "last_updated": "Dernière mise à jour",
                 "person": {
                     "create_zone": "Créer une zone à partir de l'emplacement actuel"
@@ -873,7 +875,7 @@
                         "input_select": "Recharger les listes de sélection (input select)",
                         "input_text": "Recharger les entrées de texte (input text)",
                         "min_max": "Recharger les entités min/max",
-                        "mqtt": "Recharger les entités mqtt configurées manuellement",
+                        "mqtt": "Recharger les entités MQTT configurées manuellement",
                         "person": "Recharger les personnes",
                         "ping": "Recharger les entités de capteur binaire ping",
                         "reload": "Recharger {domain}",
@@ -881,7 +883,7 @@
                         "rpi_gpio": "Recharger les entités GPIO du Raspberry Pi",
                         "scene": "Recharger les scènes",
                         "script": "Recharger les scripts",
-                        "smtp": "Recharger les services de notification smtp",
+                        "smtp": "Recharger les services de notification SMTP",
                         "statistics": "Recharger les entités de statistiques",
                         "telegram": "Recharger les services de notification de telegram",
                         "template": "Recharger les entités modèles",
@@ -1211,7 +1213,7 @@
                                     "trigger": "Déclencheur"
                                 },
                                 "event": {
-                                    "context_user_pick": "Ajouter un utilisateur",
+                                    "context_user_pick": "Sélectionner un utilisateur",
                                     "context_user_picked": "Événement déclenché par l'utilisateur",
                                     "context_users": "Limiter aux événements déclenchés par",
                                     "event_data": "Données de l'événement",
@@ -1310,6 +1312,22 @@
                         "only_editable": "Seules les automatisations définies dans automations.yaml sont modifiables.",
                         "pick_automation": "Choisissez l'automatisation à modifier",
                         "show_info_automation": "Afficher des informations sur l'automatisation"
+                    },
+                    "thingtalk": {
+                        "create": "Créer l’automatisation",
+                        "link_devices": {
+                            "ambiguous_entities": "Un ou plusieurs appareils ont plus d’une entrée correspondante, veuillez choisir celle que vous souhaitez utiliser.",
+                            "header": "Super ! Maintenant nous allons lier quelques appareils",
+                            "unknown_placeholder": "Espace réservé introuvable"
+                        },
+                        "task_selection": {
+                            "error_empty": "Entrez une commande ou appuyez sur ignorer.",
+                            "error_unsupported": "Nous n'avons pas pu créer une automatisation pour cela (pour le moment ?).",
+                            "for_example": "Par exemple : ",
+                            "header": "Créer une nouvelle automatisation",
+                            "introduction": "Tapez ci-dessous ce que cette automatisation devrait faire, et nous allons essayer de la convertir en une automatisation Home Assistant.",
+                            "language_note": "Remarque: pour l'instant, seul l'anglais est pris en charge."
+                        }
                     }
                 },
                 "cloud": {
@@ -1672,7 +1690,7 @@
                             "name": "Nom",
                             "type": "Type"
                         },
-                        "no_helpers": "On dirait que vous n'avez pas encore d'aide!"
+                        "no_helpers": "On dirait que vous n'avez pas encore d'entrée!"
                     },
                     "types": {
                         "counter": "Compteur",
@@ -2118,7 +2136,7 @@
                         "sequence_sentence": "La séquence d'actions de ce script."
                     },
                     "picker": {
-                        "add_script": "Créer un nouveau script",
+                        "add_script": "Ajouter un  script",
                         "edit_script": "Éditer le script",
                         "header": "Éditeur de script",
                         "headers": {
@@ -2155,7 +2173,7 @@
                             "input_text": "Recharger les entrées de texte (input text)",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
                             "min_max": "Recharger les entités min/max",
-                            "mqtt": "Recharger les entités mqtt configurées manuellement",
+                            "mqtt": "Recharger les entités MQTT configurées manuellement",
                             "person": "Recharger les personnes",
                             "ping": "Recharger les entités de capteur binaire ping",
                             "reload": "Recharger {domain}",
@@ -2163,7 +2181,7 @@
                             "rpi_gpio": "Recharger les entités GPIO du Raspberry Pi",
                             "scene": "Recharger les scènes",
                             "script": "Recharger les scripts",
-                            "smtp": "Recharger les services de notification smtp",
+                            "smtp": "Recharger les services de notification SMTP",
                             "statistics": "Recharger les entités de statistiques",
                             "telegram": "Recharger les services de notification de telegram",
                             "template": "Recharger les entités modèles",
@@ -2617,7 +2635,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configuration de l'interface utilisateur de Lovelace a été mise à jour, réactualisée pour voir les changements ?",
+                    "message": "La configuration de l'interface utilisateur de Lovelace a été mise à jour. Voulez-vous actualiser pour voir les changements ?",
                     "refresh": "Rafraîchir"
                 },
                 "editor": {
@@ -2757,6 +2775,10 @@
                             "columns": "Colonnes",
                             "description": "La carte Coup d'œil est utile pour regrouper plusieurs capteurs dans une vue d'ensemble compacte.",
                             "name": "Coup d'œil"
+                        },
+                        "grid": {
+                            "description": "La carte Grille vous permet d’afficher plusieurs cartes dans une grille.",
+                            "name": "Grille"
                         },
                         "history-graph": {
                             "description": "La carte Graphique historique vous permet d'afficher un graphique pour chacune des entités répertoriées.",
@@ -3296,6 +3318,9 @@
                     "description": "Activer ou désactiver les vibrations sur cet appareil lors du contrôle des périphériques.",
                     "header": "Vibrer"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Démarrer la conversation"
             },
             "shopping-list": {
                 "add_item": "Ajouter un élément",
