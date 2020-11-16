@@ -584,7 +584,7 @@
                 "entries_not_found": "No s'han trobat entrades al registre.",
                 "messages": {
                     "became_unavailable": "no està disponible",
-                    "changed_to_state": "a canviat a {state}",
+                    "changed_to_state": "ha canviat a {state}",
                     "cleared_device_class": "s'ha esborrat (no s'ha detectat cap {device_class})",
                     "detected_device_class": "s'ha detectat {device_class}",
                     "rose": "rosa",

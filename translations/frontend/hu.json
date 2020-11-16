@@ -585,8 +585,8 @@
                 "messages": {
                     "became_unavailable": "elérhetetlenné vált",
                     "changed_to_state": "állapota megváltozott: {state}",
-                    "cleared_device_class": "{device_class} érzékelés befejeződött",
-                    "detected_device_class": "{device_class}-t érzékelt",
+                    "cleared_device_class": "{device_class} észlelés befejeződött",
+                    "detected_device_class": "{device_class} észlelve",
                     "rose": "felkelt",
                     "set": "lenyugodott",
                     "turned_off": "ki lett kapcsolva",
@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Vezérlők",
                 "cover": {
+                    "close_cover": "Árnyékoló zárása",
                     "close_tile_cover": "Árnyékoló döntésének zárása",
+                    "open_cover": "Árnyékoló nyitása",
                     "open_tilt_cover": "Árnyékoló döntésének nyitása",
                     "stop_cover": "Árnyékoló mozgásának leállítása"
                 },
@@ -1741,6 +1743,7 @@
                 "info": {
                     "built_using": "Buildelve:",
                     "caption": "Infó",
+                    "copy_github": "A GitHub számára",
                     "copy_raw": "Nyers szöveg",
                     "custom_uis": "Egyéni felhasználói felületek:",
                     "description": "Telepítési információ megtekintése a Home Assistant-ról",
