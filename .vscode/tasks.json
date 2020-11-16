@@ -63,10 +63,7 @@
         }
       },
       "isBackground": true,
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
+      "group": "build",
       "runOptions": {
         "instanceLimit": 1
       }
