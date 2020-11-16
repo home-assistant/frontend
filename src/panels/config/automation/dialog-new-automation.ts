@@ -55,7 +55,8 @@ class DialogNewAutomation extends LitElement {
               ? html`<ha-card outlined>
                   <div>
                     <h3>Describe the automation you want to create</h3>
-                    And we will try to create it for you.
+                    And we will try to create it for you. For example: Turn the
+                    lights off when I leave.
                     <div class="side-by-side">
                       <paper-input
                         id="input"

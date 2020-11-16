@@ -69,11 +69,13 @@ class DialogImportBlueprint extends LitElement {
                   label="Filename"
                 ></paper-input>
                 <pre>${this._result.raw_data}</pre>`
-            : html`<paper-input
-                id="input"
-                label="Url of the blueprint"
-                dialogInitialFocus
-              ></paper-input>`}
+            : html`You can import Blueprints of other users from Github and the
+                community forums. Enter the url of the Blueprint
+                below.<paper-input
+                  id="input"
+                  label="Url of the blueprint"
+                  dialogInitialFocus
+                ></paper-input>`}
         </div>
         ${!this._result
           ? html`<mwc-button
@@ -117,9 +119,11 @@ class DialogImportBlueprint extends LitElement {
 
   private async _import() {
     this._importing = true;
+    this._error = undefined;
     try {
       const url = this._input?.value;
       if (!url) {
+        this._error = "Please enter the url of the blueprint.";
         return;
       }
       this._result = await importBlueprint(this.hass, url);

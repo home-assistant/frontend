@@ -30,24 +30,15 @@ class HaBluePrintPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  private _sortedBlueprints = memoizeOne((blueprints?: Blueprints) => {
+  private _processedBlueprints = memoizeOne((blueprints?: Blueprints) => {
     if (!blueprints) {
       return [];
     }
-    let result: any[] = [];
-    result = result.concat(
-      Object.entries(blueprints).map(([path, blueprint]) => ({
-        ...blueprint.metadata,
-        path,
-      }))
-    );
-    return result.sort((a, b) => {
-      const domainCompare = compare(a.domain, b.domain);
-      if (domainCompare !== 0) {
-        return domainCompare;
-      }
-      return compare(a.name, b.name);
-    });
+    const result = Object.entries(blueprints).map(([path, blueprint]) => ({
+      ...blueprint.metadata,
+      path,
+    }));
+    return result.sort((a, b) => compare(a.name, b.name));
   });
 
   protected render(): TemplateResult {
@@ -67,7 +58,7 @@ class HaBluePrintPicker extends LitElement {
               "ui.components.blueprint-picker.select_blueprint"
             ) || "Select a blueprint"}
           </paper-item>
-          ${this._sortedBlueprints(this.blueprints).map(
+          ${this._processedBlueprints(this.blueprints).map(
             (blueprint) => html`
               <paper-item data-blueprint-path=${blueprint.path}>
                 ${blueprint.name}

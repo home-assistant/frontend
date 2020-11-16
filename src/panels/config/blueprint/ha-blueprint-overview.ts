@@ -60,14 +60,11 @@ class HaBlueprintOverview extends LitElement {
 
   @property() public blueprints!: Blueprints;
 
-  private _blueprints = memoizeOne((blueprints: Blueprints) => {
-    let result: any[] = [];
-    result = result.concat(
-      Object.entries(blueprints).map(([path, blueprint]) => ({
-        ...blueprint.metadata,
-        path,
-      }))
-    );
+  private _processedBlueprints = memoizeOne((blueprints: Blueprints) => {
+    const result = Object.entries(blueprints).map(([path, blueprint]) => ({
+      ...blueprint.metadata,
+      path,
+    }));
     return result;
   });
 
@@ -129,7 +126,7 @@ class HaBlueprintOverview extends LitElement {
         .route=${this.route}
         .tabs=${configSections.automation}
         .columns=${this._columns(this.hass.language)}
-        .data=${this._blueprints(this.blueprints)}
+        .data=${this._processedBlueprints(this.blueprints)}
         id="entity_id"
         .noDataText=${this.hass.localize(
           "ui.panel.config.blueprint.picker.no_blueprints"

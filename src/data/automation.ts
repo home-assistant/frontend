@@ -19,13 +19,10 @@ export type AutomationConfig =
   | ManualAutomationConfig
   | BlueprintAutomationConfig;
 
-export interface BaseAutomationConfig {
+export interface ManualAutomationConfig {
   id?: string;
   alias?: string;
   description?: string;
-}
-
-export interface ManualAutomationConfig extends BaseAutomationConfig {
   trigger: Trigger[];
   condition?: Condition[];
   action: Action[];
@@ -33,7 +30,7 @@ export interface ManualAutomationConfig extends BaseAutomationConfig {
   max?: number;
 }
 
-export interface BlueprintAutomationConfig extends BaseAutomationConfig {
+export interface BlueprintAutomationConfig extends ManualAutomationConfig {
   use_blueprint: { path: string; input?: BlueprintInput };
 }
 

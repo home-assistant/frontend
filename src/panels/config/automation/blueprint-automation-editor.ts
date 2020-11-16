@@ -32,6 +32,7 @@ import {
 } from "../../../data/blueprint";
 import memoizeOne from "memoize-one";
 import "../../../components/ha-blueprint-picker";
+import "../../../components/ha-circular-progress";
 
 @customElement("blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends LitElement {
@@ -52,20 +53,15 @@ export class HaBlueprintAutomationEditor extends LitElement {
     this._getBlueprints();
   }
 
-  private _blueprint = memoizeOne(
-    (
-      config: BlueprintAutomationConfig,
-      blueprints?: Blueprints
-    ): Blueprint | undefined => {
-      if (!blueprints) {
-        return undefined;
-      }
-      return blueprints[config.use_blueprint.path];
+  private get _blueprint(): Blueprint | undefined {
+    if (!this._blueprints) {
+      return undefined;
     }
-  );
+    return this._blueprints[this.config.use_blueprint.path];
+  }
 
   protected render() {
-    const blueprint = this._blueprint(this.config, this._blueprints);
+    const blueprint = this._blueprint;
     return html`<ha-config-section .isWide=${this.isWide}>
         ${!this.narrow
           ? html` <span slot="header">${this.config.alias}</span> `
@@ -128,38 +124,40 @@ export class HaBlueprintAutomationEditor extends LitElement {
           <div class="card-content">
             <div class="blueprint-picker-container">
               ${this._blueprints
-                ? html`
-                    <ha-blueprint-picker
-                      .hass=${this.hass}
-                      label="Blueprint to use"
-                      .blueprints=${this._blueprints}
-                      .value=${this.config.use_blueprint.path}
-                      @value-changed=${this._blueprintChanged}
-                    ></ha-blueprint-picker>
-                  `
-                : "You don't have any blueprints."}
+                ? this._blueprints.length
+                  ? html`
+                      <ha-blueprint-picker
+                        .hass=${this.hass}
+                        label="Blueprint to use"
+                        .blueprints=${this._blueprints}
+                        .value=${this.config.use_blueprint.path}
+                        @value-changed=${this._blueprintChanged}
+                      ></ha-blueprint-picker>
+                    `
+                  : "You don't have any blueprints."
+                : html`<ha-circular-progress active></ha-circular-progress>`}
               <mwc-button @click=${this._navigateBlueprints}>
                 Manage Blueprints
               </mwc-button>
             </div>
             ${this.config.use_blueprint.path
-              ? html` ${blueprint?.metadata?.input &&
+              ? blueprint?.metadata?.input &&
                 Object.keys(blueprint.metadata.input).length
-                  ? html`<h3>Inputs</h3>
-                      ${Object.entries(blueprint.metadata.input).map(
-                        ([key, value]) =>
-                          html`<div>
-                            ${value?.description}
-                            <paper-input
-                              .key=${key}
-                              .label=${value?.name || key}
-                              .value=${this.config.use_blueprint.input &&
-                              this.config.use_blueprint.input[key]}
-                              @value-changed=${this._inputChanged}
-                            ></paper-input>
-                          </div>`
-                      )}`
-                  : "This blueprint doesn't have any inputs."}`
+                ? html`<h3>Inputs</h3>
+                    ${Object.entries(blueprint.metadata.input).map(
+                      ([key, value]) =>
+                        html`<div>
+                          ${value?.description}
+                          <paper-input
+                            .key=${key}
+                            .label=${value?.name || key}
+                            .value=${this.config.use_blueprint.input &&
+                            this.config.use_blueprint.input[key]}
+                            @value-changed=${this._inputChanged}
+                          ></paper-input>
+                        </div>`
+                    )}`
+                : "This blueprint doesn't have any inputs."
               : ""}
           </div>
         </ha-card>

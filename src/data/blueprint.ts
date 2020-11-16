@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-export type Blueprints = Record<string, Blueprint>[];
+export type Blueprints = Record<string, Blueprint>;
 
 export interface Blueprint {
   metadata: BlueprintMetaData;
