@@ -7,6 +7,7 @@ ENV \
   PATH=$PATH:./node_modules/.bin
 
 # Install nvm
+COPY .nvmrc /tmp/.nvmrc
 RUN \
   su vscode -c \
-    "source /usr/local/share/nvm/nvm.sh && nvm install lts/* 2>&1"
+    "source /usr/local/share/nvm/nvm.sh && nvm install $(cat /tmp/.nvmrc) 2>&1"

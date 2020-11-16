@@ -1,7 +1,8 @@
 {
   "name": "Home Assistant Frontend",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "context": ".."
   },
   "appPort": 8123,
   "context": "..",
