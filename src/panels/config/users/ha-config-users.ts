@@ -85,9 +85,7 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           template: (is_active) => html`
-            ${is_active
-              ? html` <ha-icon icon="hass:check-circle-outline"></ha-icon> `
-              : ""}
+            ${is_active ? html` <ha-icon icon="hass:check"> </ha-icon> ` : ""}
           `,
         },
         is_owner: {
@@ -99,9 +97,7 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           template: (is_owner) => html`
-            ${is_owner
-              ? html` <ha-icon icon="hass:check-circle-outline"></ha-icon> `
-              : ""}
+            ${is_owner ? html` <ha-icon icon="hass:check"> </ha-icon> ` : ""}
           `,
         },
         system_generated: {
@@ -113,9 +109,7 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           template: (generated) => html`
-            ${generated
-              ? html` <ha-icon icon="hass:check-circle-outline"></ha-icon> `
-              : ""}
+            ${generated ? html` <ha-icon icon="hass:check"> </ha-icon> ` : ""}
           `,
         },
       };

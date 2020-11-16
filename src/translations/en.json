@@ -1934,7 +1934,7 @@
           "picker": {
             "headers": {
               "name": "Display name",
-              "username": "User name",
+              "username": "Username",
               "group": "Group",
               "system": "System generated",
               "is_active": "Active",
@@ -1945,7 +1945,7 @@
           "editor": {
             "caption": "View user",
             "name": "Display Name",
-            "username": "User Name",
+            "username": "Username",
             "change_password": "Change password",
             "new_password": "New Password",
             "password_changed": "Password was changed successfully",
@@ -1966,8 +1966,6 @@
           },
           "add_user": {
             "caption": "Add user",
-            "name": "Name",
-            "username": "Username",
             "password": "Password",
             "password_confirm": "Confirm Password",
             "password_not_match": "Passwords don't match",
