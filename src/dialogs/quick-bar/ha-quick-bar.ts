@@ -207,6 +207,7 @@ export class QuickBar extends LitElement {
         .item=${item}
         index=${ifDefined(index)}
         graphic="icon"
+        class=${this._commandMode ? "command-item" : ""}
       >
         ${item.iconPath
           ? html`<ha-svg-icon
@@ -526,6 +527,9 @@ export class QuickBar extends LitElement {
 
         mwc-list-item {
           width: 100%;
+        }
+
+        mwc-list-item.command-item {
           text-transform: capitalize;
         }
       `,
