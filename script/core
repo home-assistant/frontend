@@ -25,19 +25,14 @@ fi
 if [ ! -d "${WORKSPACE}/config" ]; then
   echo "Creating default configuration."
   mkdir -p "${WORKSPACE}/config";
-  echo "default_config:
-
-demo:
+  hass --script ensure_config -c config
+  echo "demo:
 
 logger:
   default: info
   logs:
     homeassistant.components.frontend: debug
 
-group: !include groups.yaml
-automation: !include automations.yaml
-script: !include scripts.yaml
-scene: !include scenes.yaml
 " >> "${WORKSPACE}/config/configuration.yaml"
 
   if [ ! -z "${HASSIO}" ]; then
@@ -53,10 +48,6 @@ frontend:
 # hassio:
 #   development_repo: ${WORKSPACE}" >> "${WORKSPACE}/config/configuration.yaml"
   fi
-
-  for file in "groups" "automations" "scripts" "scenes"; do
-    touch "${WORKSPACE}/config/${file}.yaml"
-  done
 
 fi
 
