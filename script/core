@@ -32,19 +32,20 @@ logger:
   default: info
   logs:
     homeassistant.components.frontend: debug
-
 " >> "${WORKSPACE}/config/configuration.yaml"
 
   if [ ! -z "${HASSIO}" ]; then
   echo "
 # frontend:
 #   development_repo: ${WORKSPACE}
+
 hassio:
   development_repo: ${WORKSPACE}" >> "${WORKSPACE}/config/configuration.yaml"
   else
   echo "
 frontend:
   development_repo: ${WORKSPACE}
+
 # hassio:
 #   development_repo: ${WORKSPACE}" >> "${WORKSPACE}/config/configuration.yaml"
   fi
