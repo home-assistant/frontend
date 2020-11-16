@@ -186,10 +186,10 @@ class HaSidebar extends LitElement {
 
   @internalProperty() private _renderEmptySortable = false;
 
-  @query("mwc-list.ha-scrollbar", false)
+  @query("div.ha-scrollbar mwc-list.main-panels", false)
   private _standardPanelList?: List;
 
-  @query("mwc-list.utility-panels", false)
+  @query("div.ha-scrollbar mwc-list.utility-panels", false)
   private _utilityPanelList?: List;
 
   private _mouseLeaveTimeout?: number;
@@ -370,6 +370,7 @@ class HaSidebar extends LitElement {
     // prettier-ignore
     return html`
       <mwc-list
+        class="main-panels"
         attr-for-selected="data-panel"
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
@@ -906,13 +907,6 @@ class HaSidebar extends LitElement {
         }
         .menu mwc-icon-button {
           color: var(--sidebar-icon-color);
-        }
-        :host([expanded]) .menu mwc-icon-button {
-          margin-right: 23px;
-        }
-        :host([expanded][rtl]) .menu mwc-icon-button {
-          margin-right: 0px;
-          margin-left: 23px;
         }
 
         ha-clickable-list-item {
