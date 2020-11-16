@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Kontrolniki",
                 "cover": {
+                    "close_cover": "Zapri pokrov",
                     "close_tile_cover": "Zapri nagib pokrova",
+                    "open_cover": "Odpri pokrov",
                     "open_tilt_cover": "Odpri nagib pokrova",
                     "stop_cover": "Zaustavite premikanje pokrova"
                 },
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Področja",
+                        "automation": "Avtomatizacije",
+                        "core": "Splošno",
+                        "customize": "Prilagoditve",
+                        "devices": "Naprave",
+                        "entities": "Entitete",
+                        "helpers": "Pomočniki",
+                        "info": "Informacije",
+                        "integrations": "Integracije",
+                        "logs": "Dnevniki",
+                        "lovelace": "Nadzorne plošče Lovelace",
+                        "navigate_to": "Pojdi na {panel}",
+                        "navigate_to_config": "Pojdi na nastavitve {location}",
+                        "person": "Osebe",
+                        "scene": "Scene",
+                        "script": "Skripti",
+                        "server_control": "Nadzor strežnika",
+                        "tags": "Značke",
+                        "users": "Uporabniki",
+                        "zone": "Območja"
+                    },
                     "reload": {
                         "automation": "Znova naloži avtomatizacije",
                         "command_line": "Znova naloži entitete ukazne vrstice",
@@ -1393,7 +1417,7 @@
                             "instance_is_available": "Vaš primerek je na voljo na",
                             "instance_will_be_available": "Vaš primerek bo na voljo na",
                             "link_learn_how_it_works": "Naučite se, kako deluje",
-                            "title": "Daljinsko Upravljanje"
+                            "title": "Oddaljeno upravljanje"
                         },
                         "sign_out": "Izpis",
                         "thank_you_note": "Zahvaljujemo se vam za to, da ste del Home Assistant Cloud-a. Zaradi ljudi, kot ste vi, smo sposobni narediti dobro izkušnjo avtomatizacije doma za vsakogar. hvala!",
@@ -1406,7 +1430,7 @@
                             "no_hooks_yet": "Izgleda, da še nimate webhooks-ov. Začnite s konfiguracijo ",
                             "no_hooks_yet_link_automation": "webhook avtomatizacije",
                             "no_hooks_yet_link_integration": "integracijo, ki temelji na Webhook-u",
-                            "no_hooks_yet2": "ali z ustvarjanjem",
+                            "no_hooks_yet2": " ali z ustvarjanjem ",
                             "title": "Webhooks"
                         }
                     },
@@ -1567,7 +1591,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Noben {name} še ni bil dodan s to napravo. Lahko ga dodaš s klikom na gumb + spodaj.",
+                    "add_prompt": "{name} še niso bile dodana za to napravo. Lahko jih dodaš s klikom na gumb + spodaj.",
                     "automation": {
                         "actions": {
                             "caption": "Ko se nekaj sproži ...",
@@ -1719,6 +1743,8 @@
                 "info": {
                     "built_using": "Zgrajen z uporabo",
                     "caption": "Info",
+                    "copy_github": "Za GitHub",
+                    "copy_raw": "Surovo besedilo",
                     "custom_uis": "Uporabniški vmesniki po meri:",
                     "description": "Ogled informacij o namestitvi Home Assistant",
                     "developed_by": "Razvija ga kup osupljivih ljudi.",
@@ -1793,7 +1819,7 @@
                         "entity_unavailable": "entiteta ni na voljo",
                         "firmware": "Firmware: {version}",
                         "hub": "Povezan prek",
-                        "manuf": "po {manufacturer}",
+                        "manuf": "naredil: {manufacturer}",
                         "no_area": "Brez območja",
                         "no_device": "Entitete brez naprav",
                         "no_devices": "Ta integracija je brez naprav.",
@@ -2310,6 +2336,7 @@
                         "update_user": "Posodobi"
                     },
                     "picker": {
+                        "add_user": "Dodaj uporabnika",
                         "headers": {
                             "group": "Skupina",
                             "name": "Ime",
@@ -2590,6 +2617,8 @@
                         "filter_attributes": "Filter atributov",
                         "filter_entities": "Filter entitet",
                         "filter_states": "Filter stanj",
+                        "last_changed": "Zadnja sprememba",
+                        "last_updated": "Zadnja osvežitev",
                         "more_info": "Več informacij",
                         "no_entities": "Brez entitet",
                         "set_state": "Nastavi stanje",
@@ -2840,6 +2869,10 @@
                         "light": {
                             "description": "Kartica Light omogoča spreminjanje svetlosti luči.",
                             "name": "Luči"
+                        },
+                        "logbook": {
+                            "description": "Na kartici Dnevnik je prikazan seznam dogodkov za entitete.",
+                            "name": "Dnevnik"
                         },
                         "map": {
                             "dark_mode": "Temni način?",

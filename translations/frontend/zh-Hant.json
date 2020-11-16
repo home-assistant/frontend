@@ -1743,6 +1743,8 @@
                 "info": {
                     "built_using": "建置使用",
                     "caption": "更多資訊",
+                    "copy_github": "GitHub",
+                    "copy_raw": "原始文字",
                     "custom_uis": "自定介面：",
                     "description": "檢視 Home Assistant 安裝資訊",
                     "developed_by": "由一群充滿熱情的人們所開發。",

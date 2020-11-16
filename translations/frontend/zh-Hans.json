@@ -806,7 +806,10 @@
                 "controls": "控制项",
                 "cover": {
                     "close_cover": "关闭卷帘",
-                    "open_cover": "打开卷帘"
+                    "close_tile_cover": "关闭翻转式卷帘",
+                    "open_cover": "打开卷帘",
+                    "open_tilt_cover": "打开翻转式卷帘",
+                    "stop_cover": "停止卷帘移动"
                 },
                 "details": "详情",
                 "dismiss": "关闭对话框",

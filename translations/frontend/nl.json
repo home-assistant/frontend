@@ -1743,6 +1743,8 @@
                 "info": {
                     "built_using": "Gebouwd met behulp van",
                     "caption": "Info",
+                    "copy_github": "Voor GitHub",
+                    "copy_raw": "Ruwe tekst",
                     "custom_uis": "Aangepaste UI's:",
                     "description": "Informatie over je Home Assistant installatie",
                     "developed_by": "Ontwikkeld door een stel geweldige mensen.",

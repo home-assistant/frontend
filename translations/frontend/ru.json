@@ -367,7 +367,7 @@
             },
             "climate": {
                 "aux_heat": "Дополнительный нагрев",
-                "away_mode": "Режим ожидания",
+                "away_mode": "Режим \"не дома\"",
                 "cooling": "{name} охлаждение",
                 "current_temperature": "{name} текущая температура",
                 "currently": "Сейчас",
@@ -514,7 +514,7 @@
             "disable": "Отключить",
             "enable": "Включить",
             "error_required": "Обязательное поле",
-            "leave": "Покинуть",
+            "leave": "Выйти",
             "loading": "Загрузка",
             "menu": "Меню",
             "next": "Далее",
@@ -1756,9 +1756,15 @@
                     "system_health": {
                         "checks": {
                             "cloud": {
+                                "alexa_enabled": "Интеграция с Alexa",
                                 "can_reach_cert_server": "Доступ к серверу сертификатов",
                                 "can_reach_cloud": "Доступ к Home Assistant Cloud",
                                 "can_reach_cloud_auth": "Доступ к серверу аутентификации",
+                                "google_enabled": "Интеграция с Google",
+                                "logged_in": "Вход в систему",
+                                "relayer_connected": "Relayer подключен",
+                                "remote_connected": "Удалённый доступ подключен",
+                                "remote_enabled": "Удалённый доступ активирован",
                                 "subscription_expiration": "Срок действия подписки"
                             },
                             "homeassistant": {
