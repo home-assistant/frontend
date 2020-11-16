@@ -122,7 +122,7 @@ class HUIRoot extends LitElement {
         ? html`
             <ha-tabs
               scrollable
-              .selected="${this._curView}"
+              .selected="${this._curView === undefined ? -1 : this._curView}"
               @iron-activate="${this._handleViewSelected}"
               dir="${computeRTLDirection(this.hass!)}"
             >
@@ -440,7 +440,7 @@ class HUIRoot extends LitElement {
     let hiddenView = true;
 
     const viewPath = this.route!.path.split("/")[1];
-    let views = !this._editMode ? this._visibleViews : this.config.views;
+    let views = this._editMode ? this.config.views : this._visibleViews;
 
     if (changedProperties.has("route")) {
       if (!viewPath && views.length) {
@@ -465,7 +465,6 @@ class HUIRoot extends LitElement {
             } else if (views[i].path === selectedView) {
               index = i;
             } else if (i < this._visibleViews.length) {
-              index = this._visibleViews.indexOf(views[i]);
               hiddenView = false;
               index = i;
             }
@@ -499,6 +498,19 @@ class HUIRoot extends LitElement {
               views[newSelectView].path || newSelectView
             }`,
             true
+          );
+        } else if (oldLovelace && !oldLovelace.editMode && viewPath) {
+          const selectedView = viewPath;
+          const selectedViewInt = Number(selectedView);
+          for (let i = 0; i < views.length; i++) {
+            if (views[i].path === selectedView || i === selectedViewInt) {
+              this._curView = i;
+              break;
+            }
+          }
+        } else if (oldLovelace) {
+          this._curView = this._visibleViews.indexOf(
+            this.config.views[this._curView as number]
           );
         }
         fireEvent(this, "iron-resize");
@@ -659,11 +671,10 @@ class HUIRoot extends LitElement {
   }
 
   private _handleViewSelected(ev) {
-    let viewIndex = ev.detail.selected as number;
-    const views = !this._editMode ? this._visibleViews : this.config.views;
+    const viewIndex = ev.detail.selected as number;
 
-    if (views[viewIndex] !== views[this._curView as number]) {
-      const path = views[viewIndex].path || viewIndex;
+    if (viewIndex !== this._curView) {
+      const path = this._visibleViews[viewIndex].path || viewIndex;
       navigate(this, `${this.route?.prefix}/${path}`);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
@@ -680,7 +691,7 @@ class HUIRoot extends LitElement {
 
     viewIndex = viewIndex === undefined ? 0 : viewIndex;
 
-    this._curView = viewIndex;
+    this._curView = hidden && !this._editMode ? -1 : viewIndex;
 
     if (force) {
       this._viewCache = {};
@@ -707,12 +718,6 @@ class HUIRoot extends LitElement {
       return;
     }
 
-    let view;
-    const viewConfig =
-      hidden || this._editMode
-        ? this.config.views[viewIndex]
-        : this._visibleViews[viewIndex];
-
     if (!hidden && !this._editMode) {
       for (let i = 0; i < this.config.views.length; i++) {
         if (this.config.views[i] === this._visibleViews[viewIndex]) {
@@ -721,6 +726,9 @@ class HUIRoot extends LitElement {
         }
       }
     }
+
+    let view;
+    const viewConfig = this.config.views[viewIndex];
 
     if (!viewConfig) {
       this._enableEditMode();
@@ -751,9 +759,9 @@ class HUIRoot extends LitElement {
       this._appLayout.style.removeProperty("--lovelace-background");
     }
 
-    if (!this._isVisible(this.config.views[viewIndex])) {
+    if (this._curView === -1) {
       setTimeout(
-        () => this._layout.header.querySelector("ha-tabs").select(-1),
+        () => this._layout.header.querySelector("ha-tabs")._fireResize(),
         100
       );
     }
