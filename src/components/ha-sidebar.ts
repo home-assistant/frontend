@@ -187,10 +187,10 @@ class HaSidebar extends LitElement {
   @internalProperty() private _renderEmptySortable = false;
 
   @query("div.ha-scrollbar mwc-list.main-panels", false)
-  private _standardPanelList?: List;
+  private _standardPanelList!: List;
 
   @query("div.ha-scrollbar mwc-list.utility-panels", false)
-  private _utilityPanelList?: List;
+  private _utilityPanelList!: List;
 
   private _mouseLeaveTimeout?: number;
 
@@ -720,29 +720,48 @@ class HaSidebar extends LitElement {
     return -1;
   }
 
-  private _listboxKeydown(ev: KeyboardEvent) {
-    const [beforeSpacer] = computePanels(
+  private _getCurrentListPosition(ev: KeyboardEvent) {
+    return {
+      index: this._getIndexOfTarget(ev),
+      list: ev.currentTarget as List,
+    };
+  }
+
+  private _selectNextItem(ev: KeyboardEvent) {
+    const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
       this._panelOrder,
       this._hiddenPanels
     );
 
-    const curIndex = this._getIndexOfTarget(ev);
-    const curList = ev.currentTarget as List;
+    const { index, list } = this._getCurrentListPosition(ev);
 
-    if (ev.code === "ArrowDown" && curList === this._standardPanelList) {
-      const isLastItem = curIndex === beforeSpacer.length - 1;
+    if (list === this._standardPanelList && index === beforeSpacer.length - 1) {
+      this._setFocusPanelList(this._utilityPanelList, "top");
+    } else if (
+      list === this._utilityPanelList &&
+      index === afterSpacer.length - 1
+    ) {
+      this._setFocusPanelList(this._standardPanelList, "top");
+    }
+  }
 
-      if (isLastItem) {
-        this._setFocusFirstListItem();
-      }
-    } else if (ev.code === "ArrowUp" && curList === this._utilityPanelList) {
-      const isFirstItem = curIndex === 0;
+  private _selectPreviousItem(ev: KeyboardEvent) {
+    const { index, list } = this._getCurrentListPosition(ev);
 
-      if (isFirstItem) {
-        this._setFocusLastListItem();
-      }
+    if (list === this._standardPanelList && index === 0) {
+      this._setFocusPanelList(this._utilityPanelList, "bottom");
+    } else if (list === this._utilityPanelList && index === 0) {
+      this._setFocusPanelList(this._standardPanelList, "bottom");
+    }
+  }
+
+  private _listboxKeydown(ev: KeyboardEvent) {
+    if (ev.code === "ArrowDown") {
+      this._selectNextItem(ev);
+    } else if (ev.code === "ArrowUp") {
+      this._selectPreviousItem(ev);
     } else if (ev.code === "Enter") {
       (ev.target as ListItem)?.shadowRoot?.querySelector("a")?.click();
     }
@@ -750,13 +769,14 @@ class HaSidebar extends LitElement {
     this._recentKeydownActiveUntil = new Date().getTime() + 100;
   }
 
-  private _setFocusFirstListItem() {
-    this._utilityPanelList?.focusItemAtIndex(0);
-  }
+  private _setFocusPanelList(list: List, position: "top" | "bottom") {
+    let index = 0;
 
-  private _setFocusLastListItem() {
-    const list = this._standardPanelList;
-    list?.focusItemAtIndex(list?.items.length - 1);
+    if (position === "bottom") {
+      index = list.querySelectorAll("ha-clickable-list-item").length - 1;
+    }
+
+    list.focusItemAtIndex(index);
   }
 
   private _showTooltip(item) {
@@ -910,7 +930,7 @@ class HaSidebar extends LitElement {
         }
 
         ha-clickable-list-item {
-          margin: 4px 8px;
+          margin: 4px;
           border-radius: 4px;
           height: 40px;
           --mdc-list-side-padding: 12px;
