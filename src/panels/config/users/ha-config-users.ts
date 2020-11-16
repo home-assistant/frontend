@@ -43,10 +43,25 @@ export class HaConfigUsers extends LitElement {
           ),
           sortable: true,
           filterable: true,
+          width: "25%",
           direction: "asc",
           grows: true,
           template: (name) => html`
             ${name ||
+            this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
+          `,
+        },
+        username: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.username"
+          ),
+          sortable: true,
+          filterable: true,
+          width: "20%",
+          direction: "asc",
+          grows: true,
+          template: (username) => html`
+            ${username ||
             this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
           `,
         },
@@ -56,9 +71,37 @@ export class HaConfigUsers extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          width: "30%",
+          width: "20%",
           template: (groupIds) => html`
             ${this.hass.localize(`groups.${groupIds[0]}`)}
+          `,
+        },
+        is_active: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.is_active"
+          ),
+          type: "icon",
+          width: "10%",
+          sortable: true,
+          filterable: true,
+          template: (is_active) => html`
+            ${is_active
+              ? html` <ha-icon icon="hass:check-circle-outline"></ha-icon> `
+              : ""}
+          `,
+        },
+        is_owner: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.is_owner"
+          ),
+          type: "icon",
+          width: "10%",
+          sortable: true,
+          filterable: true,
+          template: (is_owner) => html`
+            ${is_owner
+              ? html` <ha-icon icon="hass:check-circle-outline"></ha-icon> `
+              : ""}
           `,
         },
         system_generated: {
@@ -66,7 +109,7 @@ export class HaConfigUsers extends LitElement {
             "ui.panel.config.users.picker.headers.system"
           ),
           type: "icon",
-          width: "80px",
+          width: "15%",
           sortable: true,
           filterable: true,
           template: (generated) => html`

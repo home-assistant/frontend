@@ -67,7 +67,10 @@ class DialogUserDetail extends LitElement {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="secondary">
-            ${this.hass.localize("ui.panel.config.users.editor.id")}: ${user.id}
+            ${this.hass.localize("ui.panel.config.users.editor.id")}:
+            ${user.id}<br />
+            ${this.hass.localize("ui.panel.config.users.editor.username")}:
+            ${user.username}
           </div>
           <div>
             ${user.is_owner
