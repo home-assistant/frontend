@@ -17,4 +17,10 @@ export const configElementStyle = css`
   ha-settings-row {
     padding: 0;
   }
+  ha-expansion-panel {
+    padding-top: 8px;
+  }
+  .advanced-title {
+    font-size: 16px;
+  }
 `;

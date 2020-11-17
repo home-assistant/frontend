@@ -1,7 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import {
-  css,
-  CSSResultArray,
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -281,19 +280,8 @@ export class HuiButtonCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: newConfig });
   }
 
-  static get styles(): CSSResultArray {
-    return [
-      configElementStyle,
-      css`
-        ha-expansion-panel {
-          padding-top: 8px;
-        }
-
-        .advanced-title {
-          font-size: 16px;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

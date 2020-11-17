@@ -237,9 +237,6 @@ export abstract class HuiElementEditor<T> extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
 
-    console.log(this.isAdvanced);
-    console.log(changedProperties);
-
     if (this._configElement && changedProperties.has("hass")) {
       this._configElement.hass = this.hass;
     }
@@ -251,8 +248,6 @@ export abstract class HuiElementEditor<T> extends LitElement {
       this._configElement.lovelace = this.lovelace;
     }
     if (this._configElement && changedProperties.has("isAdvanced")) {
-      console.log("in side updating");
-
       this._configElement.isAdvanced = this.isAdvanced;
     }
   }
