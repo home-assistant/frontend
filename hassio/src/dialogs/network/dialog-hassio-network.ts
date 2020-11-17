@@ -77,7 +77,6 @@ export class DialogHassioNetwork extends LitElement
       return a.primary > b.primary ? -1 : 1;
     });
     this._interface = { ...this._interfaces[this._curTabIndex] };
-    this._interface.type = "wireless";
 
     await this.updateComplete;
   }
