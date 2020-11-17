@@ -335,6 +335,16 @@ export class HaConfigDeviceDashboard extends LitElement {
       this.hass.localize
     );
 
+    const deviceData = this._devices(
+      this.devices,
+      this.entries,
+      this.entities,
+      this.areas,
+      this._searchParms,
+      this._showDisabled,
+      this.hass.localize
+    );
+
     const headerToolbar = html`
       <search-input
         no-label-float
@@ -450,11 +460,6 @@ export class HaConfigDeviceDashboard extends LitElement {
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
         .data=${devicesOutput}
-        .activeFilters=${this._activeFilters(
-          this.entries,
-          this._searchParms,
-          this.hass.localize
-        )}
         .filter=${this._filter}
         @row-click=${this._handleRowClicked}
         clickable
