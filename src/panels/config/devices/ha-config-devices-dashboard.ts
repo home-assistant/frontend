@@ -1,4 +1,5 @@
 import { mdiPlus } from "@mdi/js";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResult,
@@ -23,6 +24,7 @@ import {
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-button-menu";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
