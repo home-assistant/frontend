@@ -575,6 +575,10 @@ export class DialogHassioNetwork extends LitElement
           margin: 4px;
           padding: 0 8px;
         }
+        paper-input {
+          padding: 0 14px;
+          --mdc-list-side-padding: 10px;
+        }
       `,
     ];
   }
