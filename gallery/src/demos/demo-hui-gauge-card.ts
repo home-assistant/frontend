@@ -7,6 +7,8 @@ import "../components/demo-cards";
 
 const ENTITIES = [
   getEntity("sensor", "brightness", "12", {}),
+  getEntity("sensor", "brightness_medium", "53", {}),
+  getEntity("sensor", "brightness_high", "87", {}),
   getEntity("plant", "bonsai", "ok", {}),
   getEntity("sensor", "not_working", "unavailable", {}),
   getEntity("sensor", "outside_humidity", "54", {
@@ -22,15 +24,9 @@ const CONFIGS = [
     heading: "Basic example",
     config: `
 - type: gauge
-  entity: sensor.brightness
-    `,
-  },
-  {
-    heading: "With title",
-    config: `
-- type: gauge
   title: Humidity
   entity: sensor.outside_humidity
+  name: Outside Humidity
     `,
   },
   {
@@ -39,6 +35,7 @@ const CONFIGS = [
 - type: gauge
   entity: sensor.outside_temperature
   unit_of_measurement: C
+  name: Outside Temperature
     `,
   },
   {
@@ -46,19 +43,45 @@ const CONFIGS = [
     config: `
 - type: gauge
   entity: sensor.brightness
+  name: Brightness Low
   severity:
-    red: 32
+    red: 75
     green: 0
-    yellow: 23
+    yellow: 50
     `,
   },
   {
-    heading: "Setting Min and Max Values",
+    heading: "Setting Severity Levels",
+    config: `
+- type: gauge
+  entity: sensor.brightness_medium
+  name: Brightness Medium
+  severity:
+    red: 75
+    green: 0
+    yellow: 50
+    `,
+  },
+  {
+    heading: "Setting Severity Levels",
+    config: `
+- type: gauge
+  entity: sensor.brightness_high
+  name: Brightness High
+  severity:
+    red: 75
+    green: 0
+    yellow: 50
+    `,
+  },
+  {
+    heading: "Setting Min (0) and Max (15) Values",
     config: `
 - type: gauge
   entity: sensor.brightness
+  name: Brightness
   min: 0
-  max: 38
+  max: 15
     `,
   },
   {
