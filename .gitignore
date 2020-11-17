@@ -33,3 +33,6 @@ yarn-error.log
 
 #asdf
 .tool-versions
+
+# Home Assistant config
+/config

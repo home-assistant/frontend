@@ -13,6 +13,7 @@ import {
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-menu-button";
 import { CloudStatus } from "../../../data/cloud";
 import { haStyle } from "../../../resources/styles";
@@ -20,7 +21,8 @@ import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
-import { mdiCloudLock } from "@mdi/js";
+import { mdiClose, mdiCloudLock } from "@mdi/js";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 const CONF_HAPPENING = new Date() < new Date("2020-12-13T23:00:00Z");
 
@@ -69,17 +71,22 @@ class HaConfigDashboard extends LitElement {
             </ha-card>
           `
         : ""}
-      ${CONF_HAPPENING
+      ${CONF_HAPPENING && !localStorage.dismissConf2020
         ? html`
-            <ha-card class="conf-card"
-              ><a
+            <ha-card class="conf-card">
+              <a
                 target="_blank"
                 href="https://www.home-assistant.io/conference"
                 rel="noopener noreferrer"
               >
                 <img src="/static/images/conference.png" />
-                <div class="carrot"><ha-icon-next></ha-icon-next></div></a
-            ></ha-card>
+                <div class="carrot"><ha-icon-next></ha-icon-next></div>
+              </a>
+              <ha-svg-icon
+                .path=${mdiClose}
+                @click=${this._dismissConference}
+              ></ha-svg-icon>
+            </ha-card>
           `
         : ""}
       ${Object.values(configSections).map(
@@ -157,6 +164,33 @@ class HaConfigDashboard extends LitElement {
     `;
   }
 
+  private async _dismissConference() {
+    if (
+      await showConfirmationDialog(this, {
+        title: "Home Assistant Conference",
+        text: html`
+          If you've
+          <a
+            target="_blank"
+            href="https://hopin.to/events/home-assistant-conference"
+            rel="noopener noreferrer"
+            >bought your ticket</a
+          >
+          or have
+          <a
+            target="_blank"
+            href="https://www.youtube.com/watch?v=xSB_MuKkgxE"
+            rel="noopener noreferrer"
+            >subscribed to the livestream</a
+          >, you might want to dismiss this banner. Do you want to continue?
+        `,
+      })
+    ) {
+      localStorage.dismissConf2020 = "1";
+      this.requestUpdate();
+    }
+  }
+
   static get styles(): CSSResultArray {
     return [
       haStyle,
@@ -195,6 +229,12 @@ class HaConfigDashboard extends LitElement {
           display: flex;
           align-items: center;
           color: white;
+        }
+        .conf-card ha-svg-icon {
+          position: absolute;
+          bottom: -4px;
+          left: -4px;
+          color: #a2cdf3;
         }
         .promo-advanced {
           text-align: center;
