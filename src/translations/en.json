@@ -2520,7 +2520,7 @@
             },
             "entities": {
               "name": "Entities",
-              "show_header_toggle": "Show Header Toggle?",
+              "show_header_toggle": "Show/Hide a toggle in the header to control all entities in the card",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
@@ -2635,7 +2635,7 @@
               "state": "State",
               "secondary_info_attribute": "Secondary Info Attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?"
+              "state_color": "Color the icons based on their current states"
             },
             "map": {
               "name": "Map",
