@@ -1,9 +1,10 @@
-import { ListItem } from "@material/mwc-list/mwc-list-item";
+import { style } from "@material/mwc-list/mwc-list-item-css";
+import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 import { css, CSSResult, customElement, property } from "lit-element";
 import { html } from "lit-html";
 
 @customElement("ha-clickable-list-item")
-export class HaClickableListItem extends ListItem {
+export class HaClickableListItem extends ListItemBase {
   public href?: string;
 
   public disableHref = false;
@@ -23,7 +24,7 @@ export class HaClickableListItem extends ListItem {
 
   static get styles(): CSSResult[] {
     return [
-      super.styles,
+      style,
       css`
         :host {
           padding-left: 0px;
