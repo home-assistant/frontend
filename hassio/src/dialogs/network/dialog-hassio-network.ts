@@ -142,7 +142,7 @@ export class DialogHassioNetwork extends LitElement
                   : ""}
                 <mwc-button
                   @click=${this._scanForAP}
-                  ?disabled=${this._scanning}
+                  .disabled=${this._scanning}
                 >
                   ${this._scanning
                     ? html`<ha-circular-progress active size="small">
@@ -238,7 +238,7 @@ export class DialogHassioNetwork extends LitElement
       </div>
       <div class="buttons">
         <mwc-button label="close" @click=${this.closeDialog}> </mwc-button>
-        <mwc-button @click=${this._updateNetwork} ?disabled=${!this._dirty}>
+        <mwc-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
           ${this._processing
             ? html`<ha-circular-progress active size="small">
               </ha-circular-progress>`
