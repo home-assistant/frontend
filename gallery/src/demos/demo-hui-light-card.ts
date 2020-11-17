@@ -8,29 +8,43 @@ import "../components/demo-cards";
 const ENTITIES = [
   getEntity("light", "bed_light", "on", {
     friendly_name: "Bed Light",
-    brightness: 130,
+    brightness: 255,
   }),
-  getEntity("light", "dim", "off", {
+  getEntity("light", "dim_on", "on", {
+    friendly_name: "Dining Room",
+    supported_features: 1,
+    brightness: 100,
+  }),
+  getEntity("light", "dim_off", "off", {
+    friendly_name: "Dining Room",
     supported_features: 1,
   }),
   getEntity("light", "unavailable", "unavailable", {
+    friendly_name: "Lost Light",
     supported_features: 1,
   }),
 ];
 
 const CONFIGS = [
   {
-    heading: "Basic example",
+    heading: "Switchable Light",
     config: `
 - type: light
   entity: light.bed_light
     `,
   },
   {
-    heading: "Dim",
+    heading: "Dimmable Light On",
     config: `
 - type: light
-  entity: light.dim
+  entity: light.dim_on
+    `,
+  },
+  {
+    heading: "Dimmable Light Off",
+    config: `
+- type: light
+  entity: light.dim_off
     `,
   },
   {
