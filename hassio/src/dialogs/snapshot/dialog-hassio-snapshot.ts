@@ -241,8 +241,9 @@ class HassioSnapshotDialog extends LitElement {
           display: block;
           margin: 4px;
         }
-        .button-row mwc-button {
-          padding: 8px;
+        .button-row {
+            display: flex;
+            align-content: space-between;
         }
         .details {
           color: var(--secondary-text-color);
