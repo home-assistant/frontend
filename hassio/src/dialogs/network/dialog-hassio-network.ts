@@ -76,6 +76,7 @@ export class DialogHassioNetwork extends LitElement
       return a.primary > b.primary ? -1 : 1;
     });
     this._interface = this._interfaces[this._curTabIndex];
+
     await this.updateComplete;
   }
 
@@ -256,6 +257,26 @@ export class DialogHassioNetwork extends LitElement
     if (!this._interface) {
       return;
     }
+    const APS = [
+      {
+        ssid: "Hogwarts Great Hall WiFi",
+        mode: "ap",
+        mac: "89:29:79:e5:72",
+        signal: Math.floor(Math.random() * (99 - 11)),
+      },
+      {
+        ssid: "Pretty Fly for a Wi-Fi",
+        mode: "ap",
+        mac: "2f:27:0a:87:df",
+        signal: Math.floor(Math.random() * (99 - 11)),
+      },
+      {
+        ssid: "LAN Solo",
+        mode: "ap",
+        mac: "11:7e:53:43:57",
+        signal: Math.floor(Math.random() * (99 - 11)),
+      },
+    ];
     this._scanning = true;
     try {
       this._accessPoints = await accesspointScan(
@@ -548,7 +569,7 @@ export class DialogHassioNetwork extends LitElement
           text-align: right;
         }
         .container {
-          padding: 0 24px 20px;
+          padding: 0 8px 4px;
         }
         .form {
           margin-bottom: 53px;
@@ -572,11 +593,12 @@ export class DialogHassioNetwork extends LitElement
         }
 
         ha-expansion-panel {
-          margin: 4px;
-          padding: 0 8px;
+          margin: 4px 0;
         }
         paper-input {
           padding: 0 14px;
+        }
+        mwc-list-item {
           --mdc-list-side-padding: 10px;
         }
       `,
