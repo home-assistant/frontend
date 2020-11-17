@@ -59,6 +59,8 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
+  @property({ attribute: false }) public isAdvanced?: boolean;
+
   @internalProperty() private _yaml?: string;
 
   @internalProperty() private _config?: T;
@@ -235,6 +237,9 @@ export abstract class HuiElementEditor<T> extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
 
+    console.log(this.isAdvanced);
+    console.log(changedProperties);
+
     if (this._configElement && changedProperties.has("hass")) {
       this._configElement.hass = this.hass;
     }
@@ -244,6 +249,11 @@ export abstract class HuiElementEditor<T> extends LitElement {
       changedProperties.has("lovelace")
     ) {
       this._configElement.lovelace = this.lovelace;
+    }
+    if (this._configElement && changedProperties.has("isAdvanced")) {
+      console.log("in side updating");
+
+      this._configElement.isAdvanced = this.isAdvanced;
     }
   }
 
@@ -291,6 +301,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
         }
 
         configElement.hass = this.hass;
+        configElement.isAdvanced = this.isAdvanced;
         if ("lovelace" in configElement) {
           configElement.lovelace = this.lovelace;
         }

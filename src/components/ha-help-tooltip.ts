@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -18,7 +18,7 @@ export class HaHelpTooltip extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+      <ha-svg-icon .path=${mdiHelpCircleOutline}></ha-svg-icon>
       <paper-tooltip
         offset="4"
         .position=${this.position}

@@ -179,6 +179,9 @@ export class HuiActionEditor extends LitElement {
       .dropdown {
         display: flex;
       }
+      paper-dropdown-menu {
+        flex-grow: 1;
+      }
     `;
   }
 }

@@ -1,8 +1,10 @@
 import {
+  mdiCheckboxBlankOutline,
+  mdiCheckBoxOutline,
   mdiCodeBracesBox,
   mdiDotsVertical,
   mdiFormSelect,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
 } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -88,6 +90,8 @@ export class HuiDialogEditCard extends LitElement
 
   @internalProperty() private _coreUserData?: CoreFrontendUserData | null;
 
+  @internalProperty() private _isAdvanced? = false;
+
   private _unsubCoreData?: UnsubscribeFunc;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
@@ -110,6 +114,7 @@ export class HuiDialogEditCard extends LitElement
       "core"
     ).subscribe((coreUserData) => {
       this._coreUserData = coreUserData;
+      this._isAdvanced = coreUserData?.showAdvanced;
     });
   }
 
@@ -203,12 +208,12 @@ export class HuiDialogEditCard extends LitElement
                     dir=${computeRTLDirection(this.hass)}
                   >
                     <mwc-icon-button>
-                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiHelpCircleOutline}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
                 `
               : ""}
-            ${this._cardConfig !== undefined && this._coreUserData?.showAdvanced
+            ${this._cardConfig !== undefined
               ? html`
                   <ha-button-menu
                     fixed
@@ -227,30 +232,48 @@ export class HuiDialogEditCard extends LitElement
                     >
                       <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
                     </mwc-icon-button>
-                    <mwc-list-item
-                      graphic="icon"
-                      .label=${this.hass!.localize(
-                        !this._cardEditorEl || this._GUImode
-                          ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                          : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                      )}
-                      .disabled=${!this._guiModeAvailable}
-                      @request-selected=${this._toggleMode}
-                    >
-                      <span
-                        >${this.hass!.localize(
-                          !this._cardEditorEl || this._GUImode
-                            ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                            : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                        )}</span
-                      >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${!this._cardEditorEl || this._GUImode
-                          ? mdiCodeBracesBox
-                          : mdiFormSelect}
-                      ></ha-svg-icon>
-                    </mwc-list-item>
+                    ${this._coreUserData?.showAdvanced === true
+                      ? html`
+                          <mwc-list-item
+                            graphic="icon"
+                            .label=${this.hass!.localize(
+                              !this._cardEditorEl || this._GUImode
+                                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                            )}
+                            .disabled=${!this._guiModeAvailable}
+                            @request-selected=${this._toggleMode}
+                          >
+                            <span
+                              >${this.hass!.localize(
+                                !this._cardEditorEl || this._GUImode
+                                  ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                                  : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                              )}</span
+                            >
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${!this._cardEditorEl || this._GUImode
+                                ? mdiCodeBracesBox
+                                : mdiFormSelect}
+                            ></ha-svg-icon>
+                          </mwc-list-item>
+                        `
+                      : html`
+                          <mwc-list-item
+                            graphic="icon"
+                            label="Show Advanced Options"
+                            @request-selected=${this._toggleAdvanced}
+                          >
+                            <span>Show Advanced Options</span>
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${this._isAdvanced
+                                ? mdiCheckBoxOutline
+                                : mdiCheckboxBlankOutline}
+                            ></ha-svg-icon>
+                          </mwc-list-item>
+                        `}
                   </ha-button-menu>
                 `
               : ""}
@@ -262,6 +285,7 @@ export class HuiDialogEditCard extends LitElement
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
+              .isAdvanced=${this._isAdvanced}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
@@ -335,6 +359,10 @@ export class HuiDialogEditCard extends LitElement
 
   private _toggleMode(): void {
     this._cardEditorEl?.toggleMode();
+  }
+
+  private _toggleAdvanced(): void {
+    this._isAdvanced = !this._isAdvanced;
   }
 
   private _opened() {

@@ -14,4 +14,9 @@ export const configElementStyle = css`
   .suffix {
     margin: 0 8px;
   }
+  .switch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;

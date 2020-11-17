@@ -26,11 +26,7 @@ export class HuiThemeSelectEditor extends LitElement {
     return html`
       <paper-dropdown-menu
         .label=${this.label ||
-        `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.theme"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.optional"
-        )})`}
+        this.hass!.localize("ui.panel.lovelace.editor.card.generic.theme")}
         dynamic-align
       >
         <paper-listbox
