@@ -4,6 +4,7 @@ export interface StateColor {
   state?: string | number;
   color: string;
   below?: number;
+  above?: number;
 }
 
 export const computeCustomStateColor = (
@@ -12,15 +13,21 @@ export const computeCustomStateColor = (
 ): string | undefined => {
   let color;
   const sortableStateColors = stateColors.filter(
-    (stateColor) => stateColor.below
+    (stateColor) => stateColor.below || stateColor.above
   );
 
   sortableStateColors.sort(
-    (a: StateColor, b: StateColor) => (a.below ?? 0) - (b.below ?? 0)
+    (a: StateColor, b: StateColor) =>
+      (a.below ? a.below : a.above ?? 0) - (b.below ? b.below : b.above ?? 0)
   );
 
   for (const stateColor of sortableStateColors) {
-    if (stateColor.below! > Number(state)) {
+    if (stateColor.below && stateColor.below > Number(state)) {
+      color = stateColor.color;
+      break;
+    }
+
+    if (stateColor.above && stateColor.above < Number(state)) {
       color = stateColor.color;
     }
   }

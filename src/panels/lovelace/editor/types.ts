@@ -184,6 +184,7 @@ export const stateColorConfigStruct = object({
   state: optional(union([string(), number()])),
   color: string(),
   below: optional(number()),
+  above: optional(number()),
 });
 
 export const entitiesConfigStruct = union([
