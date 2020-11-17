@@ -48,6 +48,10 @@ class HaPanelDevTemplate extends LitElement {
 
   @property() public narrow!: boolean;
 
+  @property() public simple = false;
+
+  @property() public startingTemplate?: string;
+
   @internalProperty() private _error?: string;
 
   @internalProperty() private _rendering = false;
@@ -72,7 +76,9 @@ class HaPanelDevTemplate extends LitElement {
   }
 
   protected firstUpdated() {
-    if (localStorage && localStorage["panel-dev-template-template"]) {
+    if (this.startingTemplate) {
+      this._template = this.startingTemplate;
+    } else if (localStorage && localStorage["panel-dev-template-template"]) {
       this._template = localStorage["panel-dev-template-template"];
     } else {
       this._template = DEMO_TEMPLATE;
@@ -82,13 +88,6 @@ class HaPanelDevTemplate extends LitElement {
   }
 
   protected render() {
-    const type = typeof this._templateResult?.result;
-    const resultType =
-      type === "object"
-        ? Array.isArray(this._templateResult?.result)
-          ? "list"
-          : "dict"
-        : type;
     return html`
       <div
         class="content ${classMap({
@@ -97,42 +96,7 @@ class HaPanelDevTemplate extends LitElement {
         })}"
       >
         <div class="edit-pane">
-          <p>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.description"
-            )}
-          </p>
-          <ul>
-            <li>
-              <a
-                href="http://jinja.pocoo.org/docs/dev/templates/"
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.jinja_documentation"
-                )}
-              </a>
-            </li>
-            <li>
-              <a
-                href="${documentationUrl(
-                  this.hass,
-                  "/docs/configuration/templating/"
-                )}"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.template_extensions"
-                )}</a
-              >
-            </li>
-          </ul>
-          <p>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.editor"
-            )}
-          </p>
+          ${this.simple ? "" : this._renderDescription()}
           <ha-code-editor
             mode="jinja2"
             .value=${this._template}
@@ -147,103 +111,156 @@ class HaPanelDevTemplate extends LitElement {
           </mwc-button>
         </div>
 
-        <div class="render-pane">
-          ${this._rendering
-            ? html`<ha-circular-progress
-                class="render-spinner"
-                active
-                size="small"
-              ></ha-circular-progress>`
-            : ""}
-          ${this._templateResult
-            ? html`${this.hass.localize(
-                "ui.panel.developer-tools.tabs.templates.result_type"
-              )}:
-              ${resultType}`
-            : ""}
-          <!-- prettier-ignore -->
-          <pre
-            class="rendered ${classMap({
-            error: Boolean(this._error),
-            [resultType]: resultType,
-          })}"
-          >${this._error}${type === "object"
-            ? JSON.stringify(this._templateResult!.result, null, 2)
-            : this._templateResult?.result}</pre>
-          ${this._templateResult?.listeners.time
-            ? html`
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.templates.time"
-                  )}
-                </p>
-              `
-            : ""}
-          ${!this._templateResult?.listeners
-            ? ""
-            : this._templateResult.listeners.all
-            ? html`
-                <p class="all_listeners">
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.templates.all_listeners"
-                  )}
-                </p>
-              `
-            : this._templateResult.listeners.domains.length ||
-              this._templateResult.listeners.entities.length
-            ? html`
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.templates.listeners"
-                  )}
-                </p>
-                <ul>
-                  ${this._templateResult.listeners.domains
-                    .sort()
-                    .map(
-                      (domain) =>
-                        html`
-                          <li>
-                            <b
-                              >${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.templates.domain"
-                              )}</b
-                            >: ${domain}
-                          </li>
-                        `
-                    )}
-                  ${this._templateResult.listeners.entities
-                    .sort()
-                    .map(
-                      (entity_id) =>
-                        html`
-                          <li>
-                            <b
-                              >${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.templates.entity"
-                              )}</b
-                            >: ${entity_id}
-                          </li>
-                        `
-                    )}
-                </ul>
-              `
-            : !this._templateResult?.listeners.time
-            ? html` <span class="all_listeners">
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.no_listeners"
-                )}
-              </span>`
-            : html``}
-        </div>
+        ${this._renderResult()}
       </div>
     `;
+  }
+
+  private _renderResult() {
+    const type = typeof this._templateResult?.result;
+    const resultType =
+      type === "object"
+        ? Array.isArray(this._templateResult?.result)
+          ? "list"
+          : "dict"
+        : type;
+
+    return html`<div class="render-pane">
+      ${this._rendering
+        ? html`<ha-circular-progress
+            class="render-spinner"
+            active
+            size="small"
+          ></ha-circular-progress>`
+        : ""}
+      ${this._templateResult
+        ? html`${this.hass.localize(
+            "ui.panel.developer-tools.tabs.templates.result_type"
+          )}:
+          ${resultType}`
+        : ""}
+      <!-- prettier-ignore -->
+      <pre
+            class="rendered ${classMap({
+        error: Boolean(this._error),
+        [resultType]: resultType,
+      })}"
+          >${this._error}${type === "object"
+        ? JSON.stringify(this._templateResult!.result, null, 2)
+        : this._templateResult?.result}</pre>
+      ${this._templateResult?.listeners.time
+        ? html`
+            <p>
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.templates.time"
+              )}
+            </p>
+          `
+        : ""}
+      ${!this._templateResult?.listeners
+        ? ""
+        : this._templateResult.listeners.all
+        ? html`
+            <p class="all_listeners">
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.templates.all_listeners"
+              )}
+            </p>
+          `
+        : this._templateResult.listeners.domains.length ||
+          this._templateResult.listeners.entities.length
+        ? html`
+            <p>
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.templates.listeners"
+              )}
+            </p>
+            <ul>
+              ${this._templateResult.listeners.domains
+                .sort()
+                .map(
+                  (domain) =>
+                    html`
+                      <li>
+                        <b
+                          >${this.hass.localize(
+                            "ui.panel.developer-tools.tabs.templates.domain"
+                          )}</b
+                        >: ${domain}
+                      </li>
+                    `
+                )}
+              ${this._templateResult.listeners.entities
+                .sort()
+                .map(
+                  (entity_id) =>
+                    html`
+                      <li>
+                        <b
+                          >${this.hass.localize(
+                            "ui.panel.developer-tools.tabs.templates.entity"
+                          )}</b
+                        >: ${entity_id}
+                      </li>
+                    `
+                )}
+            </ul>
+          `
+        : !this._templateResult?.listeners.time
+        ? html` <span class="all_listeners">
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.no_listeners"
+            )}
+          </span>`
+        : html``}
+    </div>`;
+  }
+
+  private _renderDescription() {
+    return html`<p>
+        ${this.hass.localize(
+          "ui.panel.developer-tools.tabs.templates.description"
+        )}
+      </p>
+      <ul>
+        <li>
+          <a
+            href="http://jinja.pocoo.org/docs/dev/templates/"
+            target="_blank"
+            rel="noreferrer"
+            >${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.jinja_documentation"
+            )}
+          </a>
+        </li>
+        <li>
+          <a
+            href="${documentationUrl(
+              this.hass,
+              "/docs/configuration/templating/"
+            )}"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.template_extensions"
+            )}</a
+          >
+        </li>
+      </ul>
+      <p>
+        ${this.hass.localize("ui.panel.developer-tools.tabs.templates.editor")}
+      </p>`;
   }
 
   static get styles(): CSSResultArray {
     return [
       haStyle,
       css`
+        :root {
+          --template-results-width: 50%;
+        }
+
         :host {
           -ms-user-select: initial;
           -webkit-user-select: initial;
@@ -264,12 +281,12 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         .horizontal .edit-pane {
-          max-width: 50%;
+          max-width: var(--template-results-width, 50%);
         }
 
         .render-pane {
           position: relative;
-          max-width: 50%;
+          max-width: var(--template-results-width, 50%);
         }
 
         .render-spinner {

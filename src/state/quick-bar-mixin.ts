@@ -7,10 +7,15 @@ import {
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
+import {
+  showTemplateEditor,
+  TemplateEditorParams,
+} from "../dialogs/template-editor/show-dialog-template-editor";
 
 declare global {
   interface HASSDomEvents {
     "hass-quick-bar": QuickBarParams;
+    "hass-template-editor": TemplateEditorParams;
     "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
   }
 }
@@ -32,18 +37,27 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       tinykeys(window, {
         e: (ev) => this._showQuickBar(ev),
         c: (ev) => this._showQuickBar(ev, true),
+        t: (ev) => this._showTemplateEditor(ev),
       });
     }
 
     private _showQuickBar(e: KeyboardEvent, commandMode = false) {
-      if (!this._canShowQuickBar(e)) {
+      if (!this._canShowDialogWithShortcut(e)) {
         return;
       }
 
       showQuickBar(this, { commandMode });
     }
 
-    private _canShowQuickBar(e: KeyboardEvent) {
+    private _showTemplateEditor(e: KeyboardEvent) {
+      if (!this._canShowDialogWithShortcut(e)) {
+        return;
+      }
+
+      showTemplateEditor(this, { startingTemplate: "{{ states.sun.sun }}" });
+    }
+
+    private _canShowDialogWithShortcut(e: KeyboardEvent) {
       return (
         this.hass?.user?.is_admin &&
         this.hass.enableShortcuts &&
