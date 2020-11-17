@@ -682,7 +682,7 @@
                     "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
-                "future": "Há {time}",
+                "future": "Dentro de {time}",
                 "future_duration": {
                     "day": "In {count} {count, plural,\n  one {dia}\n  other {dias}\n}",
                     "hour": "In {count} {count, plural,\n  one {hora}\n  other {horas}\n}",
