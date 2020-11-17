@@ -63,7 +63,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
 
   private _sortable?;
 
-  @query("#sortable", true) private _sortableEl?: HTMLElement;
+  @query("#sortable") private _sortableEl?: HTMLElement;
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 2 : 0) : 0) + 3;
@@ -319,7 +319,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
   }
 
   private _createSortable() {
-    this._sortable = new Sortable(this.shadowRoot!.getElementById("sortable"), {
+    const sortableEl = this._sortableEl;
+    this._sortable = new Sortable(sortableEl, {
       animation: 150,
       fallbackClass: "sortable-fallback",
       dataIdAttr: "item-id",
@@ -336,8 +337,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
         );
         this._renderEmptySortable = true;
         await this.updateComplete;
-        while (this._sortableEl?.lastElementChild) {
-          this._sortableEl.removeChild(this._sortableEl.lastElementChild);
+        while (sortableEl?.lastElementChild) {
+          sortableEl.removeChild(sortableEl.lastElementChild);
         }
         this._renderEmptySortable = false;
       },
