@@ -42,9 +42,13 @@ class HaBluePrintPicker extends LitElement {
   });
 
   protected render(): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
     return html`
       <paper-dropdown-menu-light
-        .label=${this.label}
+        .label=${this.label ||
+        this.hass.localize("ui.components.blueprint-picker.label")}
         .disabled=${this.disabled}
       >
         <paper-listbox
@@ -54,9 +58,9 @@ class HaBluePrintPicker extends LitElement {
           @iron-select=${this._blueprintChanged}
         >
           <paper-item data-blueprint-path="">
-            ${this.hass?.localize(
+            ${this.hass.localize(
               "ui.components.blueprint-picker.select_blueprint"
-            ) || "Select a blueprint"}
+            )}
           </paper-item>
           ${this._processedBlueprints(this.blueprints).map(
             (blueprint) => html`

@@ -73,7 +73,7 @@ class HaBlueprintOverview extends LitElement {
       const columns: DataTableColumnContainer = {
         name: {
           title: this.hass.localize(
-            "ui.panel.config.blueprint.picker.headers.name"
+            "ui.panel.config.blueprint.overview.headers.name"
           ),
           sortable: true,
           filterable: true,
@@ -129,7 +129,7 @@ class HaBlueprintOverview extends LitElement {
         .data=${this._processedBlueprints(this.blueprints)}
         id="entity_id"
         .noDataText=${this.hass.localize(
-          "ui.panel.config.blueprint.picker.no_blueprints"
+          "ui.panel.config.blueprint.overview.no_blueprints"
         )}
         hasFab
       >
@@ -139,7 +139,7 @@ class HaBlueprintOverview extends LitElement {
         <mwc-fab
           slot="fab"
           title=${this.hass.localize(
-            "ui.panel.config.blueprint.picker.add_blueprint"
+            "ui.panel.config.blueprint.overview.add_blueprint"
           )}
           @click=${this._addBlueprint}
         >
@@ -153,14 +153,16 @@ class HaBlueprintOverview extends LitElement {
     showAlertDialog(this, {
       title: this.hass.localize("ui.panel.config.blueprint.caption"),
       text: html`
-        ${this.hass.localize("ui.panel.config.blueprint.picker.introduction")}
+        ${this.hass.localize("ui.panel.config.blueprint.overview.introduction")}
         <p>
           <a
             href="${documentationUrl(this.hass, "/docs/blueprint/editor/")}"
             target="_blank"
             rel="noreferrer"
           >
-            ${this.hass.localize("ui.panel.config.blueprint.picker.learn_more")}
+            ${this.hass.localize(
+              "ui.panel.config.blueprint.overview.learn_more"
+            )}
           </a>
         </p>
       `,
@@ -184,8 +186,12 @@ class HaBlueprintOverview extends LitElement {
     const blueprint = ev.currentTarget.blueprint;
     if (
       !(await showConfirmationDialog(this, {
-        title: "Remove this Blueprint?",
-        text: "Are you sure you want to delete this Blueprint?",
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.confirm_delete_header"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.blueprint.overview.confirm_delete_text"
+        ),
       }))
     ) {
       return;

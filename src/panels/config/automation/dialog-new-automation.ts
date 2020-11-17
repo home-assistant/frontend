@@ -46,23 +46,36 @@ class DialogNewAutomation extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        heading="Create a new automation"
+        .heading=${this.hass.localize(
+          "ui.panel.config.automation.dialog_new.header"
+        )}
       >
         <div>
-          How do you want to create your new automation?
+          ${this.hass.localize("ui.panel.config.automation.dialog_new.how")}
           <div class="container">
             ${isComponentLoaded(this.hass, "cloud")
               ? html`<ha-card outlined>
                   <div>
-                    <h3>Describe the automation you want to create</h3>
-                    And we will try to create it for you. For example: Turn the
-                    lights off when I leave.
+                    <h3>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.dialog_new.thingtalk.header"
+                      )}
+                    </h3>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.dialog_new.thingtalk.intro"
+                    )}
                     <div class="side-by-side">
                       <paper-input
                         id="input"
-                        label="What should this automation do?"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.dialog_new.thingtalk.input_label"
+                        )}
                       ></paper-input>
-                      <mwc-button @click=${this._thingTalk}>Create</mwc-button>
+                      <mwc-button @click=${this._thingTalk}
+                        >${this.hass.localize(
+                          "ui.panel.config.automation.dialog_new.thingtalk.create"
+                        )}</mwc-button
+                      >
                     </div>
                   </div>
                 </ha-card>`
@@ -70,7 +83,11 @@ class DialogNewAutomation extends LitElement {
             ${isComponentLoaded(this.hass, "blueprint")
               ? html`<ha-card outlined>
                   <div>
-                    <h3>Use a blueprint</h3>
+                    <h3>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.dialog_new.blueprint.use_blueprint"
+                      )}
+                    </h3>
                     <ha-blueprint-picker
                       @value-changed=${this._blueprintPicked}
                       .hass=${this.hass}
@@ -81,7 +98,9 @@ class DialogNewAutomation extends LitElement {
           </div>
         </div>
         <mwc-button slot="primaryAction" @click=${this._blank}>
-          Start with an empty automation
+          ${this.hass.localize(
+            "ui.panel.config.automation.dialog_new.start_empty"
+          )}
         </mwc-button>
       </ha-dialog>
     `;

@@ -57,23 +57,34 @@ class DialogImportBlueprint extends LitElement {
       return html``;
     }
     return html`
-      <ha-dialog open @closed=${this.closeDialog} heading="Add new blueprint">
+      <ha-dialog
+        open
+        @closed=${this.closeDialog}
+        .heading=${this.hass.localize("ui.panel.config.blueprint.add.header")}
+      >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._result
-            ? html`Import <b>${this._result.blueprint.metadata.name}</b> (${this
-                  ._result.blueprint.metadata.domain})
+            ? html`${this.hass.localize(
+                  "ui.panel.config.blueprint.add.import",
+                  "name",
+                  "domain",
+                  html`<b>${this._result.blueprint.metadata.name}</b>`,
+                  this._result.blueprint.metadata.domain
+                )}
                 <paper-input
                   id="input"
                   .value=${this._result.suggested_filename}
                   label="Filename"
                 ></paper-input>
                 <pre>${this._result.raw_data}</pre>`
-            : html`You can import Blueprints of other users from Github and the
-                community forums. Enter the url of the Blueprint
-                below.<paper-input
+            : html`${this.hass.localize(
+                  "ui.panel.config.blueprint.add.import_introduction"
+                )}<paper-input
                   id="input"
-                  label="Url of the blueprint"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.blueprint.add.url"
+                  )}
                   dialogInitialFocus
                 ></paper-input>`}
         </div>
@@ -87,17 +98,19 @@ class DialogImportBlueprint extends LitElement {
                 ? html`<ha-circular-progress
                     active
                     size="small"
-                    title="Importing blueprint..."
+                    .title=${this.hass.localize(
+                      "ui.panel.config.blueprint.add.importing"
+                    )}
                   ></ha-circular-progress>`
                 : ""}
-              Import blueprint
+              ${this.hass.localize("ui.panel.config.blueprint.add.import_btn")}
             </mwc-button>`
           : html`<mwc-button
                 slot="secondaryAction"
                 @click=${this.closeDialog}
                 .disabled=${this._saving}
               >
-                Cancel
+                ${this.hass.localize("ui.common.cancel")}
               </mwc-button>
               <mwc-button
                 slot="primaryAction"
@@ -108,10 +121,12 @@ class DialogImportBlueprint extends LitElement {
                   ? html`<ha-circular-progress
                       active
                       size="small"
-                      title="Saving blueprint..."
+                      .title=${this.hass.localize(
+                        "ui.panel.config.blueprint.add.saving"
+                      )}
                     ></ha-circular-progress>`
                   : ""}
-                Save blueprint
+                ${this.hass.localize("ui.panel.config.blueprint.add.save_btn")}
               </mwc-button>`}
       </ha-dialog>
     `;
@@ -123,7 +138,9 @@ class DialogImportBlueprint extends LitElement {
     try {
       const url = this._input?.value;
       if (!url) {
-        this._error = "Please enter the url of the blueprint.";
+        this._error = this.hass.localize(
+          "ui.panel.config.blueprint.add.error_no_url"
+        );
         return;
       }
       this._result = await importBlueprint(this.hass, url);
