@@ -44,7 +44,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
 });
 
 module.exports.terserOptions = (latestBuild) => ({
-  safari10: true,
+  safari10: !latestBuild,
   ecma: latestBuild ? undefined : 5,
   output: { comments: false },
 });
