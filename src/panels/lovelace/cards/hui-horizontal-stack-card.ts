@@ -29,7 +29,7 @@ class HuiHorizontalStackCard extends HuiStackCard {
         }
         #root > * {
           flex: 1 1 0;
-          margin: 0 4px;
+          margin: var(--horizontal-stack-margin, var(--stack-card-margin, 4px 0));
           min-width: 0;
         }
         #root > *:first-child {
