@@ -195,6 +195,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         );
       }
 
+      inputDevices = inputDevices.filter((device) => !device.disabled_by);
       const outputDevices = inputDevices.map((device) => {
         return {
           id: device.id,

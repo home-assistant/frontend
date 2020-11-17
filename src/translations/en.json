@@ -1745,6 +1745,9 @@
           "name": "Name",
           "update": "Update",
           "no_devices": "No devices",
+          "enabled_label": "Enable device",
+          "enabled_cause": "Disabled by {cause}.",
+          "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
@@ -1801,7 +1804,16 @@
             "no_area": "No area"
           },
           "delete": "Delete",
-          "confirm_delete": "Are you sure you want to delete this device?"
+          "confirm_delete": "Are you sure you want to delete this device?",
+          "picker": {
+            "search": "Search devices",
+            "filter": {
+              "filter": "Filter",
+              "show_disabled": "Show disabled devices",
+              "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+              "show_all": "Show all"
+            }
+          }
         },
         "entities": {
           "caption": "Entities",
