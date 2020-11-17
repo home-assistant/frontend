@@ -2957,7 +2957,7 @@
                         "clear": "削除",
                         "confirm_cancel": "キャンセルしてもよいですか?",
                         "delete": "カードを削除",
-                        "duplicate": "重複するカード",
+                        "duplicate": "カードの複製",
                         "edit": "編集",
                         "header": "カード設定",
                         "move": "ビューに移動",
