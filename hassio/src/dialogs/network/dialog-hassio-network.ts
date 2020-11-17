@@ -72,7 +72,7 @@ export class DialogHassioNetwork extends LitElement
     this._params = params;
     this._dirty = false;
     this._curTabIndex = 0;
-    this._interfaces = params.network?.interfaces.sort((a, b) => {
+    this._interfaces = params.network.interfaces.sort((a, b) => {
       return a.primary > b.primary ? -1 : 1;
     });
     this._interface = this._interfaces[this._curTabIndex];
@@ -449,7 +449,6 @@ export class DialogHassioNetwork extends LitElement
     ) {
       return;
     }
-
     this._dirty = true;
 
     this._interface[version]!.method = value;
@@ -463,7 +462,7 @@ export class DialogHassioNetwork extends LitElement
       | "wpa-psk";
     this._wifiConfiguration!.auth = value;
     this._dirty = true;
-    this.requestUpdate("_interface");
+    this.requestUpdate("_wifiConfiguration");
   }
 
   private _handleInputValueChanged(ev: CustomEvent): void {
@@ -472,7 +471,11 @@ export class DialogHassioNetwork extends LitElement
     const version = (ev.target as any).version as "ipv4" | "ipv6";
     const id = (ev.target as PaperInputElement).id;
 
-    if (!value || !this._interface || this._interface[version]![id] === value) {
+    if (
+      !value ||
+      !this._interface ||
+      this._toString(this._interface[version]![id]) === this._toString(value)
+    ) {
       return;
     }
 
@@ -492,7 +495,6 @@ export class DialogHassioNetwork extends LitElement
     ) {
       return;
     }
-
     this._dirty = true;
     this._wifiConfiguration![id] = value;
   }
