@@ -17,6 +17,7 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import { formatAttributeName } from "../../util/hass-attributes-util";
@@ -179,9 +180,7 @@ class HaEntityAttributePicker extends LitElement {
     }
 
     return Object.keys(stateObj.attributes).filter((attr) =>
-      SELECTABLE_ATTRIBUTES[entity.substring(0, entity.indexOf("."))].includes(
-        attr
-      )
+      SELECTABLE_ATTRIBUTES[computeDomain(entity)].includes(attr)
     );
   });
 
