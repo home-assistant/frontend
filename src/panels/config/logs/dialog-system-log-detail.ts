@@ -1,6 +1,6 @@
+import "../../../components/ha-header-bar";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiContentCopy, mdiClose } from "@mdi/js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-tooltip/paper-tooltip";
 import type { PaperTooltipElement } from "@polymer/paper-tooltip/paper-tooltip";
 import {
@@ -69,18 +69,22 @@ class DialogSystemLogDetail extends LitElement {
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions heading=${true}>
-        <div slot="heading" class="heading">
-          <h2 class="title">
+        <ha-header-bar slot="heading">
+          <mwc-icon-button slot="navigationIcon" dialogAction="cancel">
+            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+          </mwc-icon-button>
+          <span slot="title">
             ${this.hass.localize(
               "ui.panel.config.logs.details",
               "level",
               item.level
             )}
-          </h2>
-          <mwc-icon-button id="copy" @click=${this._copyLog}>
+          </span>
+          <mwc-icon-button id="copy" @click=${this._copyLog} slot="actionItems">
             <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
           </mwc-icon-button>
           <paper-tooltip
+            slot="actionItems"
             manual-mode
             for="copy"
             position="left"
@@ -88,10 +92,7 @@ class DialogSystemLogDetail extends LitElement {
             offset="4"
             >${this.hass.localize("ui.common.copied")}</paper-tooltip
           >
-          <mwc-icon-button @click=${this.closeDialog}>
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
-        </div>
+        </ha-header-bar>
         <div class="contents">
           <p>
             Logger: ${item.name}<br />
@@ -194,18 +195,13 @@ class DialogSystemLogDetail extends LitElement {
           margin-bottom: 0;
           font-family: var(--code-font-family, monospace);
         }
-        .heading {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 8px 12px 8px 24px;
-        }
-        .heading ha-svg-icon {
-          cursor: pointer;
-        }
-        .title {
-          flex-grow: 1;
-          margin: 0;
+
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
