@@ -35,6 +35,7 @@ import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../header-footer-editor/hui-header-footer-editor";
+import "../hui-config-element-template";
 import "../hui-entities-card-row-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
@@ -44,7 +45,6 @@ import {
   entitiesConfigStruct,
   SubElementEditorConfig,
 } from "../types";
-import "./../hui-config-element-template";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -122,8 +122,7 @@ export class HuiEntitiesCardEditor extends LitElement
               )}
             </span>
             <span slot="description"
-              >The toggle will only be visible when there are two or more
-              togglable entities</span
+              >Only visible when 2 or more entities can be toggled</span
             >
             <ha-switch
               .checked=${this._config!.show_header_toggle !== false}
