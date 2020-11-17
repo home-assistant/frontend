@@ -35,6 +35,7 @@ export const computeCustomStateColor = (
   for (const stateColor of stateColors) {
     if (stateColor.state === state || stateColor.state === Number(state)) {
       color = stateColor.color;
+      break;
     }
   }
 
