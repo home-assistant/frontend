@@ -499,6 +499,28 @@
             "perform_action": "{action} Server",
             "restart": "[%key:ui::panel::config::server_control::section::server_management::restart%]",
             "stop": "[%key:ui::panel::config::server_control::section::server_management::stop%]"
+          },
+          "navigation": {
+            "navigate_to": "Navigate to {panel}",
+            "navigate_to_config": "Navigate to {panel} configuration",
+            "logs": "[%key:ui::panel::config::logs::caption%]",
+            "automation": "[%key:ui::panel::config::automation::caption%]",
+            "script": "[%key:ui::panel::config::script::caption%]",
+            "integrations": "[%key:ui::panel::config::integrations::caption%]",
+            "areas": "[%key:ui::panel::config::areas::caption%]",
+            "scene": "[%key:ui::panel::config::scene::caption%]",
+            "helpers": "[%key:ui::panel::config::helpers::caption%]",
+            "tags": "[%key:ui::panel::config::tags::caption%]",
+            "person": "[%key:ui::panel::config::person::caption%]",
+            "devices": "[%key:ui::panel::config::devices::caption%]",
+            "entities": "[%key:ui::panel::config::entities::caption%]",
+            "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
+            "core": "[%key:ui::panel::config::core::caption%]",
+            "zone": "[%key:ui::panel::config::zone::caption%]",
+            "users": "[%key:ui::panel::config::users::caption%]",
+            "info": "[%key:ui::panel::config::info::caption%]",
+            "customize": "[%key:ui::panel::config::customize::caption%]",
+            "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
         },
         "filter_placeholder": "Entity Filter"
@@ -563,6 +585,9 @@
           "create_zone": "Create zone from current location"
         },
         "cover": {
+          "open_cover": "Open cover",
+          "stop_cover": "Stop the cover from moving",
+          "close_cover": "Close cover",
           "open_tilt_cover": "Open cover tilt",
           "close_tile_cover": "Close cover tilt",
           "stop_cover": "Stop cover from moving"
@@ -874,6 +899,8 @@
         },
         "info": {
           "caption": "Info",
+          "copy_raw": "Raw Text",
+          "copy_github": "For GitHub",
           "description": "View info about your Home Assistant installation",
           "home_assistant_logo": "Home Assistant logo",
           "path_configuration": "Path to configuration.yaml: {path}",
@@ -892,39 +919,7 @@
           "issues": "Issues",
           "system_health": {
             "manage": "Manage",
-            "more_info": "more info",
-            "checks": {
-              "homeassistant": {
-                "arch": "CPU Architecture",
-                "dev": "Development",
-                "docker": "Docker",
-                "hassio": "HassOS",
-                "installation_type": "Installation Type",
-                "os_name": "Operating System Name",
-                "os_version": "Operating System Version",
-                "python_version": "Python Version",
-                "timezone": "Timezone",
-                "version": "Version",
-                "virtualenv": "Virtual Environment"
-              },
-              "cloud": {
-                "can_reach_cert_server": "Reach Certificate Server",
-                "can_reach_cloud": "Reach Home Assistant Cloud",
-                "can_reach_cloud_auth": "Reach Authentication Server",
-                "relayer_connected": "Relayer Connected",
-                "remote_connected": "Remote Connected",
-                "remote_enabled": "Remote Enabled",
-                "alexa_enabled": "Alexa Enabled",
-                "google_enabled": "Google Enabled",
-                "logged_in": "Logged In",
-                "subscription_expiration": "Subscription Expiration"
-              },
-              "lovelace": {
-                "dashboards": "Dashboards",
-                "mode": "Mode",
-                "resources": "Resources"
-              }
-            }
+            "more_info": "more info"
           }
         },
         "logs": {
@@ -1941,7 +1936,8 @@
               "name": "Name",
               "group": "Group",
               "system": "System"
-            }
+            },
+            "add_user": "Add user"
           },
           "editor": {
             "caption": "View user",
@@ -2583,6 +2579,10 @@
               "name": "Grid",
               "description": "The Grid card allows you to show multiple cards in a grid."
             },
+            "logbook": {
+              "name": "Logbook",
+              "description": "The Logbook card shows a list of events for entities."
+            },
             "history-graph": {
               "name": "History Graph",
               "description": "The History Graph card allows you to display a graph for each of the entities listed."
@@ -3066,7 +3066,9 @@
             "filter_attributes": "Filter attributes",
             "no_entities": "No entities",
             "more_info": "More Info",
-            "alert_entity_field": "Entity is a mandatory field"
+            "alert_entity_field": "Entity is a mandatory field",
+            "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
+            "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]"
           },
           "templates": {
             "title": "Template",

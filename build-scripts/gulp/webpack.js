@@ -18,6 +18,14 @@ const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: false }),
 ];
 
+/**
+ * @param {{
+ *   compiler: import("webpack").Compiler,
+ *   contentBase: string,
+ *   port: number,
+ *   listenHost?: string
+ * }}
+ */
 const runDevServer = ({
   compiler,
   contentBase,
@@ -33,7 +41,10 @@ const runDevServer = ({
       throw err;
     }
     // Server listening
-    log("[webpack-dev-server]", `http://localhost:${port}`);
+    log(
+      "[webpack-dev-server]",
+      `Project is running at http://localhost:${port}`
+    );
   });
 
 const handler = (done) => (err, stats) => {
@@ -45,11 +56,11 @@ const handler = (done) => (err, stats) => {
     return;
   }
 
-  log(`Build done @ ${new Date().toLocaleTimeString()}`);
-
   if (stats.hasErrors() || stats.hasWarnings()) {
-    log.warn(stats.toString("minimal"));
+    console.log(stats.toString("minimal"));
   }
+
+  log(`Build done @ ${new Date().toLocaleTimeString()}`);
 
   if (done) {
     done();

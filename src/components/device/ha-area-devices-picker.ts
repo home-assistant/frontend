@@ -1,5 +1,5 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import "@material/mwc-button/mwc-button";
-import "../ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -38,6 +38,8 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "./ha-devices-picker";
+import "../ha-svg-icon";
+import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 
 interface DevicesByArea {
   [areaId: string]: AreaDevices;
@@ -62,7 +64,7 @@ const rowRenderer = (
         margin: -10px 0;
         padding: 0;
       }
-      ha-icon-button {
+      mwc-icon-button {
         float: right;
       }
       .devices {
@@ -324,36 +326,34 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
           autocorrect="off"
           spellcheck="false"
         >
-          ${this.value
-            ? html`
-                <ha-icon-button
-                  aria-label=${this.hass.localize(
+          <div class="suffix" slot="suffix">
+            ${this.value
+              ? html`<mwc-icon-button
+                  class="clear-button"
+                  .label=${this.hass.localize(
                     "ui.components.device-picker.clear"
                   )}
-                  slot="suffix"
-                  class="clear-button"
-                  icon="hass:close"
                   @click=${this._clearValue}
                   no-ripple
                 >
-                  Clear
-                </ha-icon-button>
-              `
-            : ""}
-          ${areas.length > 0
-            ? html`
-                <ha-icon-button
-                  aria-label=${this.hass.localize(
-                    "ui.components.device-picker.show_devices"
-                  )}
-                  slot="suffix"
-                  class="toggle-button"
-                  .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
-                >
-                  Toggle
-                </ha-icon-button>
-              `
-            : ""}
+                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+                </mwc-icon-button> `
+              : ""}
+            ${areas.length > 0
+              ? html`
+                  <mwc-icon-button
+                    .label=${this.hass.localize(
+                      "ui.components.device-picker.show_devices"
+                    )}
+                    class="toggle-button"
+                  >
+                    <ha-svg-icon
+                      .path=${this._opened ? mdiMenuUp : mdiMenuDown}
+                    ></ha-svg-icon>
+                  </mwc-icon-button>
+                `
+              : ""}
+          </div>
         </paper-input>
       </vaadin-combo-box-light>
       <mwc-button @click=${this._switchPicker}
@@ -409,10 +409,12 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResult {
     return css`
-      paper-input > ha-icon-button {
-        width: 24px;
-        height: 24px;
-        padding: 2px;
+      .suffix {
+        display: flex;
+      }
+      mwc-icon-button {
+        --mdc-icon-button-size: 24px;
+        padding: 0px 2px;
         color: var(--secondary-text-color);
       }
       [hidden] {

@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Controls",
                 "cover": {
+                    "close_cover": "Close cover",
                     "close_tile_cover": "Close cover tilt",
+                    "open_cover": "Open cover",
                     "open_tilt_cover": "Open cover tilt",
                     "stop_cover": "Stop cover from moving"
                 },
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Areas",
+                        "automation": "Automations",
+                        "core": "General",
+                        "customize": "Customizations",
+                        "devices": "Devices",
+                        "entities": "Entities",
+                        "helpers": "Helpers",
+                        "info": "Info",
+                        "integrations": "Integrations",
+                        "logs": "Logs",
+                        "lovelace": "Lovelace Dashboards",
+                        "navigate_to": "Navigate to {panel}",
+                        "navigate_to_config": "Navigate to {panel} configuration",
+                        "person": "People",
+                        "scene": "Scenes",
+                        "script": "Scripts",
+                        "server_control": "Server Controls",
+                        "tags": "Tags",
+                        "users": "Users",
+                        "zone": "Zones"
+                    },
                     "reload": {
                         "automation": "Reload automations",
                         "command_line": "Reload command line entities",
@@ -889,7 +913,7 @@
                         "input_select": "Reload input selects",
                         "input_text": "Reload input texts",
                         "min_max": "Reload min/max entities",
-                        "mqtt": "Reload manually configured mqtt entities",
+                        "mqtt": "Reload manually configured MQTT entities",
                         "person": "Reload people",
                         "ping": "Reload ping binary sensor entities",
                         "reload": "Reload {domain}",
@@ -897,7 +921,7 @@
                         "rpi_gpio": "Reload Raspberry Pi GPIO entities",
                         "scene": "Reload scenes",
                         "script": "Reload scripts",
-                        "smtp": "Reload smtp notify services",
+                        "smtp": "Reload SMTP notify services",
                         "statistics": "Reload statistics entities",
                         "telegram": "Reload telegram notify services",
                         "template": "Reload template entities",
@@ -1719,6 +1743,8 @@
                 "info": {
                     "built_using": "Built using",
                     "caption": "Info",
+                    "copy_github": "For GitHub",
+                    "copy_raw": "Raw Text",
                     "custom_uis": "Custom UIs:",
                     "description": "View info about your Home Assistant installation",
                     "developed_by": "Developed by a bunch of awesome people.",
@@ -2187,6 +2213,8 @@
                     },
                     "picker": {
                         "add_script": "Add script",
+                        "duplicate": "Duplicate",
+                        "duplicate_script": "Duplicate script",
                         "edit_script": "Edit script",
                         "header": "Script Editor",
                         "headers": {
@@ -2223,7 +2251,7 @@
                             "input_text": "Reload input texts",
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "min_max": "Reload min/max entities",
-                            "mqtt": "Reload manually configured mqtt entities",
+                            "mqtt": "Reload manually configured MQTT entities",
                             "person": "Reload people",
                             "ping": "Reload ping binary sensor entities",
                             "reload": "Reload {domain}",
@@ -2231,7 +2259,7 @@
                             "rpi_gpio": "Reload Raspberry Pi GPIO entities",
                             "scene": "Reload scenes",
                             "script": "Reload scripts",
-                            "smtp": "Reload smtp notify services",
+                            "smtp": "Reload SMTP notify services",
                             "statistics": "Reload statistics entities",
                             "telegram": "Reload telegram notify services",
                             "template": "Reload template entities",
@@ -2321,6 +2349,7 @@
                         "update_user": "Update"
                     },
                     "picker": {
+                        "add_user": "Add user",
                         "headers": {
                             "group": "Group",
                             "name": "Name",
@@ -2601,6 +2630,8 @@
                         "filter_attributes": "Filter attributes",
                         "filter_entities": "Filter entities",
                         "filter_states": "Filter states",
+                        "last_changed": "Last changed",
+                        "last_updated": "Last updated",
                         "more_info": "More Info",
                         "no_entities": "No entities",
                         "set_state": "Set State",
@@ -2851,6 +2882,10 @@
                         "light": {
                             "description": "The Light card allows you to change the brightness of the light.",
                             "name": "Light"
+                        },
+                        "logbook": {
+                            "description": "The Logbook card shows a list of events for entities.",
+                            "name": "Logbook"
                         },
                         "map": {
                             "dark_mode": "Dark Mode?",

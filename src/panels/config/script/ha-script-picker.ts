@@ -2,6 +2,7 @@ import "@material/mwc-icon-button";
 import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
   CSSResult,
   customElement,
   html,
@@ -199,8 +200,15 @@ class HaScriptPicker extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return haStyle;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        a {
+          text-decoration: none;
+        }
+      `,
+    ];
   }
 }
 

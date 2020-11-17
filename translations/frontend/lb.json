@@ -511,16 +511,23 @@
             "continue": "Weider",
             "copied": "Kopéiert",
             "delete": "Läschen",
+            "disable": "Desaktivéieren",
+            "enable": "Aktivéieren",
             "error_required": "Erfuerderlech",
+            "leave": "Fortgoen",
             "loading": "Lued",
             "menu": "Menu",
             "next": "Nächst",
             "no": "Nee",
+            "not_now": "Net elo",
             "overflow_menu": "Iwwerlaf menu",
             "previous": "Virdrun",
             "refresh": "Aktualiséieren",
+            "remove": "Läschen",
+            "rename": "Ëmbenennen",
             "save": "Späicheren",
             "skip": "Iwwersprangen",
+            "stay": "Bleiwen",
             "successfully_deleted": "Erfollegräich geläscht.",
             "successfully_saved": "Erfollegräich gespäichert.",
             "undo": "Réckgängeg maachen",
@@ -1697,6 +1704,42 @@
                     "server": "server",
                     "source": "Quell:",
                     "system_health_error": "System Gesondheet Komponent net gelueden. Setz 'system_health:' zur configuration.yaml dobäi",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa aktivéiert",
+                                "can_reach_cert_server": "Zertifikat Server ereechbar",
+                                "can_reach_cloud": "Home Assistant Cloud ereechbar",
+                                "can_reach_cloud_auth": "Authentifikatioun Server ereechbar",
+                                "google_enabled": "Google aktivéiert",
+                                "logged_in": "Ageloggt",
+                                "relayer_connected": "Relayer verbonnen",
+                                "remote_connected": "Remote verbonnen",
+                                "remote_enabled": "Remote aktivéiert",
+                                "subscription_expiration": "Abonnement Verfallsdatum"
+                            },
+                            "homeassistant": {
+                                "arch": "CPU Architektur",
+                                "dev": "Entwécklung",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Typ vun Installatioun",
+                                "os_name": "Betribssystem Numm",
+                                "os_version": "Betribssystem Versioun",
+                                "python_version": "Python Versioun",
+                                "timezone": "Zäitzon",
+                                "version": "Versioun",
+                                "virtualenv": "Virtuellen Environnement"
+                            },
+                            "lovelace": {
+                                "dashboards": "Tableau de Bord",
+                                "mode": "Modus",
+                                "resources": "Ressourcen"
+                            }
+                        },
+                        "manage": "Verwalten",
+                        "more_info": "Méi Informatiounen"
+                    },
                     "title": "Info"
                 },
                 "integration_panel_move": {
@@ -2182,6 +2225,8 @@
                     "add_tag": "Tag dobäisetzen",
                     "automation_title": "Tag {name} gouf gescannt",
                     "caption": "Tags",
+                    "confirm_remove": "Sécher fir den Tag {tag} ze läsche?",
+                    "confirm_remove_title": "Tag läschen?",
                     "create_automation": "Erstell Automatisme mam Tag",
                     "description": "Tags verwalten",
                     "detail": {
@@ -2844,8 +2889,15 @@
                         "entity": "Entitéit",
                         "no_description": "Keng Beschreiwung verfügbar"
                     },
+                    "common": {
+                        "add": "Dobäisetzen",
+                        "clear": "Läschen",
+                        "edit": "Änneren",
+                        "none": "Keen"
+                    },
                     "edit_card": {
                         "add": "Kaart dobäisetzen",
+                        "clear": "Läschen",
                         "confirm_cancel": "Sécher fir ofzebriechen ?",
                         "delete": "Kaart läschen",
                         "duplicate": "Kaart Replikéieren",
@@ -2886,6 +2938,18 @@
                         }
                     },
                     "header": "UI änneren",
+                    "header-footer": {
+                        "footer": "Fousszeilen",
+                        "header": "Entête",
+                        "types": {
+                            "buttons": {
+                                "name": "Knäppercher"
+                            },
+                            "graph": {
+                                "name": "Graph"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Lovelace Menu opmaachen",
                         "raw_editor": "Editeur fir déi reng Konfiguratioun"
@@ -2929,6 +2993,12 @@
                     "select_view": {
                         "dashboard_label": "Tableau de Bord",
                         "header": "Vue auswielen"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Fousszeilen Editeur",
+                            "header": "Entête Editeur"
+                        }
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace bäisetzen",

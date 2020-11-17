@@ -103,7 +103,7 @@ class StepFlowPickHandler extends LitElement {
                 <img
                   slot="item-icon"
                   loading="lazy"
-                  src="${brandsUrl(handler.slug, "icon", true)}"
+                  src=${brandsUrl(handler.slug, "icon", true)}
                   referrerpolicy="no-referrer"
                 />
 

@@ -25,19 +25,12 @@ import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
-  ControlButton,
+  computeMediaControls,
   MediaPickedEvent,
-  SUPPORTS_PLAY,
   SUPPORT_BROWSE_MEDIA,
-  SUPPORT_NEXT_TRACK,
-  SUPPORT_PAUSE,
   SUPPORT_PLAY_MEDIA,
-  SUPPORT_PREVIOUS_TRACK,
   SUPPORT_SELECT_SOUND_MODE,
   SUPPORT_SELECT_SOURCE,
-  SUPPORT_STOP,
-  SUPPORT_TURN_OFF,
-  SUPPORT_TURN_ON,
   SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
@@ -57,8 +50,8 @@ class MoreInfoMediaPlayer extends LitElement {
       return html``;
     }
 
-    const controls = this._getControls();
     const stateObj = this.stateObj;
+    const controls = computeMediaControls(stateObj);
 
     return html`
       ${!controls
@@ -252,84 +245,6 @@ class MoreInfoMediaPlayer extends LitElement {
         cursor: pointer;
       }
     `;
-  }
-
-  private _getControls(): ControlButton[] | undefined {
-    const stateObj = this.stateObj;
-
-    if (!stateObj) {
-      return undefined;
-    }
-
-    const state = stateObj.state;
-
-    if (UNAVAILABLE_STATES.includes(state)) {
-      return undefined;
-    }
-
-    if (state === "off") {
-      return supportsFeature(stateObj, SUPPORT_TURN_ON)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_on",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "idle") {
-      return supportsFeature(stateObj, SUPPORTS_PLAY)
-        ? [
-            {
-              icon: "hass:play",
-              action: "media_play",
-            },
-          ]
-        : undefined;
-    }
-
-    const buttons: ControlButton[] = [];
-
-    if (supportsFeature(stateObj, SUPPORT_TURN_OFF)) {
-      buttons.push({
-        icon: "hass:power",
-        action: "turn_off",
-      });
-    }
-
-    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-previous",
-        action: "media_previous_track",
-      });
-    }
-
-    if (
-      (state === "playing" &&
-        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-          supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
-    ) {
-      buttons.push({
-        icon:
-          state !== "playing"
-            ? "hass:play"
-            : supportsFeature(stateObj, SUPPORT_PAUSE)
-            ? "hass:pause"
-            : "hass:stop",
-        action: "media_play_pause",
-      });
-    }
-
-    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-next",
-        action: "media_next_track",
-      });
-    }
-
-    return buttons.length > 0 ? buttons : undefined;
   }
 
   private _handleClick(e: MouseEvent): void {
