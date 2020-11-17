@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
@@ -75,7 +76,8 @@ export class DialogHassioNetwork extends LitElement
     this._interfaces = params.network.interfaces.sort((a, b) => {
       return a.primary > b.primary ? -1 : 1;
     });
-    this._interface = this._interfaces[this._curTabIndex];
+    this._interface = { ...this._interfaces[this._curTabIndex] };
+    this._interface.type = "wireless";
 
     await this.updateComplete;
   }
@@ -153,25 +155,29 @@ export class DialogHassioNetwork extends LitElement
                 ${this._accessPoints &&
                 this._accessPoints.accesspoints &&
                 this._accessPoints.accesspoints.length !== 0
-                  ? this._accessPoints.accesspoints
-                      .filter((ap) => ap.ssid)
-                      .map(
-                        (ap) =>
-                          html`
-                            <mwc-list-item
-                              twoline
-                              @click=${this._selectAP}
-                              .activated=${ap.ssid ===
-                              this._wifiConfiguration?.ssid}
-                              .ap=${ap}
-                            >
-                              <span>${ap.ssid}</span>
-                              <span slot="secondary">
-                                ${ap.mac} - Strength: ${ap.signal}
-                              </span>
-                            </mwc-list-item>
-                          `
-                      )
+                  ? html`
+                      <mwc-list>
+                        ${this._accessPoints.accesspoints
+                          .filter((ap) => ap.ssid)
+                          .map(
+                            (ap) =>
+                              html`
+                                <mwc-list-item
+                                  twoline
+                                  @click=${this._selectAP}
+                                  .activated=${ap.ssid ===
+                                  this._wifiConfiguration?.ssid}
+                                  .ap=${ap}
+                                >
+                                  <span>${ap.ssid}</span>
+                                  <span slot="secondary">
+                                    ${ap.mac} - Strength: ${ap.signal}
+                                  </span>
+                                </mwc-list-item>
+                              `
+                          )}
+                      </mwc-list>
+                    `
                   : ""}
                 ${this._wifiConfiguration
                   ? html`
@@ -248,7 +254,7 @@ export class DialogHassioNetwork extends LitElement
       </div>`;
   }
 
-  private async _selectAP(event) {
+  private _selectAP(event) {
     this._wifiConfiguration = event.currentTarget.ap;
     this._dirty = true;
   }
@@ -436,7 +442,7 @@ export class DialogHassioNetwork extends LitElement
       }
     }
     this._curTabIndex = ev.detail.index;
-    this._interface = this._interfaces[ev.detail.index];
+    this._interface = { ...this._interfaces[ev.detail.index] };
   }
 
   private _handleRadioValueChanged(ev: CustomEvent): void {
