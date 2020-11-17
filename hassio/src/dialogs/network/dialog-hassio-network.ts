@@ -257,26 +257,6 @@ export class DialogHassioNetwork extends LitElement
     if (!this._interface) {
       return;
     }
-    const APS = [
-      {
-        ssid: "Hogwarts Great Hall WiFi",
-        mode: "ap",
-        mac: "89:29:79:e5:72",
-        signal: Math.floor(Math.random() * (99 - 11)),
-      },
-      {
-        ssid: "Pretty Fly for a Wi-Fi",
-        mode: "ap",
-        mac: "2f:27:0a:87:df",
-        signal: Math.floor(Math.random() * (99 - 11)),
-      },
-      {
-        ssid: "LAN Solo",
-        mode: "ap",
-        mac: "11:7e:53:43:57",
-        signal: Math.floor(Math.random() * (99 - 11)),
-      },
-    ];
     this._scanning = true;
     try {
       this._accessPoints = await accesspointScan(
