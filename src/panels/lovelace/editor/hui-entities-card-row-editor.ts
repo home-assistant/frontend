@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
-import { mdiChevronRight } from "@mdi/js";
+import { mdiChevronRight, mdiDragVerticalVariant } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -24,7 +24,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 
 declare global {
@@ -87,12 +86,13 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                     outlined
                     class="entity"
                     .index=${index}
-                    .actionHandler=${actionHandler({
-                      hasHold: true,
-                    })}
                     @click=${this._editRow}
                   >
-                    <div>
+                    <ha-svg-icon
+                      class="handle"
+                      .path=${mdiDragVerticalVariant}
+                    ></ha-svg-icon>
+                    <div class="info">
                       <span class="primary">
                         ${entityConf.type
                           ? html`
@@ -118,14 +118,10 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                             `}</span
                       >
                     </div>
-                    <mwc-icon-button
-                      aria-label=${this.hass!.localize(
-                        "ui.components.entity.entity-picker.edit"
-                      )}
+                    <ha-svg-icon
                       class="edit-icon"
-                    >
-                      <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
-                    </mwc-icon-button>
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
                   </ha-card>
                 `;
               })
@@ -180,8 +176,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     this._sortable = new Sortable(this.shadowRoot!.querySelector(".entities"), {
       animation: 150,
       fallbackClass: "sortable-fallback",
-      handle: ".entity",
-      delay: 500,
+      handle: ".handle",
       onEnd: async (evt: SortableEvent) => this._rowMoved(evt),
     });
   }
@@ -246,6 +241,14 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           cursor: pointer;
         }
 
+        .handle {
+          min-width: 18px;
+          --mdc-icon-size: 18px;
+          padding-right: 8px;
+          cursor: move;
+          color: var(--secondary-text-color);
+        }
+
         .special-row {
           height: 60px;
           display: flex;
@@ -254,14 +257,17 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           flex-grow: 1;
         }
 
-        .entity div {
+        .info {
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          flex-grow: 1;
         }
 
         .edit-icon {
-          --mdc-icon-button-size: 36px;
+          min-width: 24px;
           color: var(--secondary-text-color);
         }
 
