@@ -6,8 +6,10 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+
 import relativeTime from "../common/datetime/relative_time";
-import { HomeAssistant } from "../types";
+
+import type { HomeAssistant } from "../types";
 
 @customElement("ha-relative-time")
 class HaRelativeTime extends LitElement {
