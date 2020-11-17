@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Juhtelemendid",
                 "cover": {
+                    "close_cover": "Sulge kate",
                     "close_tile_cover": "Sulge katte ribid",
+                    "open_cover": "Ava kate",
                     "open_tilt_cover": "Ava katte ribid",
                     "stop_cover": "Peata katte liikumine"
                 },
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Alad",
+                        "automation": "Automatiseeringud",
+                        "core": "Üldine",
+                        "customize": "Kohandamised",
+                        "devices": "Seadmed",
+                        "entities": "Olemid",
+                        "helpers": "Abimehed",
+                        "info": "Info",
+                        "integrations": "Sidumised",
+                        "logs": "Logid",
+                        "lovelace": "Lovelace vaated",
+                        "navigate_to": "Mine vaatesse {panel}",
+                        "navigate_to_config": "Mine vaate {panel} sätetesse",
+                        "person": "Isikud",
+                        "scene": "Stseenid",
+                        "script": "Scriptid",
+                        "server_control": "Serveri juhtimine",
+                        "tags": "Märgised",
+                        "users": "Kasutajad",
+                        "zone": "Tsoonid"
+                    },
                     "reload": {
                         "automation": "Taaslae automatiseeringud",
                         "command_line": "Taaslae käsurea olemid",
@@ -1719,6 +1743,8 @@
                 "info": {
                     "built_using": "Ehitatud kasutades",
                     "caption": "Info",
+                    "copy_github": "GitHubi jaoks",
+                    "copy_raw": "Ainult tekst",
                     "custom_uis": "Kohandatud kasutajaliidesed:",
                     "description": "Kuva Home Assistant'i info",
                     "developed_by": "Tehtud paljude lahedate inimeste poolt.",
@@ -2187,6 +2213,8 @@
                     },
                     "picker": {
                         "add_script": "Lisa uus skript",
+                        "duplicate": "Klooni",
+                        "duplicate_script": "Klooni skript",
                         "edit_script": "Muuda skripti",
                         "header": "Skriptiredaktor",
                         "headers": {
@@ -2231,7 +2259,7 @@
                             "rpi_gpio": "Taaslae Raspberry Pi GPIO üksused",
                             "scene": "Taaslae stseenid",
                             "script": "Taaslae skriptid",
-                            "smtp": "TAASLAE SMTP TEAVITUSED",
+                            "smtp": "TAASLAE SMTP TEAVITUSTEENUSED",
                             "statistics": "TAASLAE STATISTIKAOLEMID",
                             "telegram": "TAASLAE TELEGRAM TEAVITUSE OLEMID",
                             "template": "TAASLAE MALLIOLEMID",
@@ -2321,6 +2349,7 @@
                         "update_user": "Uuenda"
                     },
                     "picker": {
+                        "add_user": "Lisa kasutaja",
                         "headers": {
                             "group": "Grupp",
                             "name": "Nimi",
@@ -2601,6 +2630,8 @@
                         "filter_attributes": "Filtreeri atribuute",
                         "filter_entities": "Filtreeri olemeid",
                         "filter_states": "Filtreeri olekuid",
+                        "last_changed": "Viimati muudetud",
+                        "last_updated": "Viimati uuendatud",
                         "more_info": "Rohkem infot",
                         "no_entities": "Olemid puuduvad",
                         "set_state": "Määra olek",
@@ -2851,6 +2882,10 @@
                         "light": {
                             "description": "Valgustikaart võimaldab muuta valguse heledust.",
                             "name": "Valgusti"
+                        },
+                        "logbook": {
+                            "description": "Logiraamatu kaardil kuvatakse olemite sündmuste loend.",
+                            "name": "Logiraamat"
                         },
                         "map": {
                             "dark_mode": "Tume režiim?",

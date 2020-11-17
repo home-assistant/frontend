@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Sterowanie",
                 "cover": {
+                    "close_cover": "Zamknij roletę",
                     "close_tile_cover": "Przechylenie zamkniętej rolety",
+                    "open_cover": "Otwórz roletę",
                     "open_tilt_cover": "Przechylenie otwartej rolety",
                     "stop_cover": "Wstrzymanie rolety"
                 },
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Obszary",
+                        "automation": "Automatyzacje",
+                        "core": "Ogólne",
+                        "customize": "Dostosowywanie",
+                        "devices": "Urządzenia",
+                        "entities": "Rejestr encji",
+                        "helpers": "Pomocnicy",
+                        "info": "Informacje",
+                        "integrations": "Integracje",
+                        "logs": "Logi",
+                        "lovelace": "Dashboardy",
+                        "navigate_to": "Przejdź do: {panel}",
+                        "navigate_to_config": "Przejdź do: Konfiguracja > {panel}",
+                        "person": "Osoby",
+                        "scene": "Sceny",
+                        "script": "Skrypty",
+                        "server_control": "Kontrola serwera",
+                        "tags": "Tagi",
+                        "users": "Użytkownicy",
+                        "zone": "Strefy"
+                    },
                     "reload": {
                         "automation": "Automatyzacje",
                         "command_line": "Encje komponentu linia komend",
@@ -1369,7 +1393,7 @@
                             "enable_ha_skill": "Włącz skill Home Assistant dla Asystenta Google",
                             "enable_state_reporting": "Włącz raportowanie stanów",
                             "enter_pin_error": "Nie można zapisać kodu PIN:",
-                            "enter_pin_hint": "Wprowadź kod PIN, aby korzystać z urządzeń bezpieczeństwa",
+                            "enter_pin_hint": "Wprowadź kod PIN",
                             "enter_pin_info": "Wpisz kod PIN, aby wejść w interakcję z urządzeniami bezpieczeństwa. Urządzeniami bezpieczeństwa są drzwi, drzwi garażowe i zamki. Podczas interakcji z takimi urządzeniami za pośrednictwem Asystenta Google zostaniesz poproszony o wprowadzenie tego kodu PIN.",
                             "info": "Dzięki integracji z Asystentem Google dla Chmury Home Assistant będzie możliwe kontrolowanie wszystkich urządzeń Home Assistant za pośrednictwem dowolnego urządzenia obsługującego Asystenta Google.",
                             "info_state_reporting": "Jeśli włączysz raportowanie stanów, Home Assistant wyśle wszystkie zmiany stanu udostępnionych encji na serwery Google. Dzięki temu zawsze możesz zobaczyć najnowsze stany w aplikacji Google.",
@@ -1719,6 +1743,8 @@
                 "info": {
                     "built_using": "Zbudowany przy użyciu",
                     "caption": "Informacje",
+                    "copy_github": "Dla GitHuba",
+                    "copy_raw": "Tekst",
                     "custom_uis": "Niestandardowe interfejsy użytkownika:",
                     "description": "Informacje o instalacji Home Assistant",
                     "developed_by": "Opracowany przez grono wspaniałych ludzi.",
@@ -1743,11 +1769,14 @@
                                 "can_reach_cloud_auth": "Dostęp do serwera uwierzytelniania",
                                 "google_enabled": "Asystent Google włączony",
                                 "logged_in": "Zalogowany",
+                                "relayer_connected": "Relayer podłączony",
+                                "remote_connected": "Zdalny dostęp podłączony",
+                                "remote_enabled": "Zdalny dostęp włączony",
                                 "subscription_expiration": "Wygaśnięcie subskrypcji"
                             },
                             "homeassistant": {
                                 "arch": "Architektura procesora",
-                                "dev": "Rozwój",
+                                "dev": "Wersja deweloperska",
                                 "docker": "Docker",
                                 "hassio": "HassOS",
                                 "installation_type": "Typ instalacji",
@@ -1764,7 +1793,7 @@
                                 "resources": "Zasoby"
                             }
                         },
-                        "manage": "Zarządzanie",
+                        "manage": "Zarządzaj",
                         "more_info": "więcej info"
                     },
                     "title": "Informacje"
@@ -2184,6 +2213,8 @@
                     },
                     "picker": {
                         "add_script": "Dodaj skrypt",
+                        "duplicate": "Duplikuj",
+                        "duplicate_script": "Duplikuj skrypt",
                         "edit_script": "Edytuj skrypt",
                         "header": "Edytor skryptów",
                         "headers": {
@@ -2318,6 +2349,7 @@
                         "update_user": "Aktualizuj"
                     },
                     "picker": {
+                        "add_user": "Dodaj użytkownika",
                         "headers": {
                             "group": "Grupa",
                             "name": "Nazwa",
@@ -2598,6 +2630,8 @@
                         "filter_attributes": "filtr atrybutów",
                         "filter_entities": "Filtr encji",
                         "filter_states": "Filtr stanów",
+                        "last_changed": "Ostatnia zmiana",
+                        "last_updated": "Ostatnio zaktualizowano",
                         "more_info": "Więcej informacji",
                         "no_entities": "Brak encji",
                         "set_state": "Ustaw stan",
@@ -2715,7 +2749,7 @@
                         },
                         "calendar": {
                             "calendar_entities": "Encje kalendarza",
-                            "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy",
+                            "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy.",
                             "inital_view": "Widok początkowy",
                             "name": "Kalendarz",
                             "views": {
@@ -2848,6 +2882,10 @@
                         "light": {
                             "description": "Karta światło pozwala zmienić jasność światła.",
                             "name": "Światło"
+                        },
+                        "logbook": {
+                            "description": "Karta dziennika pokazuje listę zdarzeń dla encji.",
+                            "name": "Dziennik"
                         },
                         "map": {
                             "dark_mode": "Tryb ciemny",

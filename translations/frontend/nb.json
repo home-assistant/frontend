@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Kontroller",
                 "cover": {
+                    "close_cover": "Lukk dekselet",
                     "close_tile_cover": "Lukk dekkevinkel",
+                    "open_cover": "Åpne dekselet",
                     "open_tilt_cover": "Åpne dekkevinkel",
                     "stop_cover": "Stopp dekke fra å bevege seg"
                 },
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Områder",
+                        "automation": "Automasjoner",
+                        "core": "Generelt",
+                        "customize": "Tilpasninger",
+                        "devices": "Enheter",
+                        "entities": "Entiteter",
+                        "helpers": "Hjelpere",
+                        "info": "Informasjon",
+                        "integrations": "Integrasjoner",
+                        "logs": "Logger",
+                        "lovelace": "Lovelace instrumentbord",
+                        "navigate_to": "Naviger til {panel}",
+                        "navigate_to_config": "Naviger til {panel} konfigurasjon",
+                        "person": "Personer",
+                        "scene": "Scener",
+                        "script": "Skript",
+                        "server_control": "Server-kontroller",
+                        "tags": "Tagger",
+                        "users": "Brukere",
+                        "zone": "Soner"
+                    },
                     "reload": {
                         "automation": "Last inn automasjoner på nytt",
                         "command_line": "Last inn kommandolinje entiteter på nytt",
@@ -889,7 +913,7 @@
                         "input_select": "Last inn innputt valg på nytt",
                         "input_text": "Last inn innputt tekster på nytt",
                         "min_max": "Last inn min/maks entiteter på nytt",
-                        "mqtt": "Laste inn manuelt konfigurerte mqtt-enheter",
+                        "mqtt": "Laste inn manuelt konfigurerte MQTT-enheter",
                         "person": "Last inn personer på nytt",
                         "ping": "Last inn Ping binær sensor entiteter på nytt",
                         "reload": "Last inn {domain} på nytt",
@@ -897,7 +921,7 @@
                         "rpi_gpio": "Last inn Raspberry Pi GPIO entiteter på nytt",
                         "scene": "Last inn scener på nytt",
                         "script": "Last inn skript på nytt",
-                        "smtp": "Last inn SMTP varslingstjenester på nytt",
+                        "smtp": "Last SMTP-varslingstjenester på nytt",
                         "statistics": "Last inn statistiske entiteter på nytt",
                         "telegram": "Last inn Telegram varslingstjenester på nytt",
                         "template": "Laste inn mal entiteter på nytt",
@@ -1719,6 +1743,8 @@
                 "info": {
                     "built_using": "Bygget med",
                     "caption": "Informasjon",
+                    "copy_github": "",
+                    "copy_raw": "Rå tekst",
                     "custom_uis": "Tilpassede brukergrensesnitt:",
                     "description": "Vise informasjon om installasjonen av Home Assistant",
                     "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
@@ -2187,6 +2213,8 @@
                     },
                     "picker": {
                         "add_script": "Legg til skript",
+                        "duplicate": "Dupliser",
+                        "duplicate_script": "Dupliser skript",
                         "edit_script": "Rediger skript",
                         "header": "Skriptredigering",
                         "headers": {
@@ -2223,7 +2251,7 @@
                             "input_text": "Last inn innputt tekster på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "min_max": "Last inn min/maks entiteter på nytt",
-                            "mqtt": "Laste inn manuelt konfigurerte mqtt-enheter",
+                            "mqtt": "Laste inn manuelt konfigurerte MQTT-enheter",
                             "person": "Last inn personer på nytt",
                             "ping": "Last inn Ping binær sensor entiteter på nytt",
                             "reload": "Last inn {domain} på nytt",
@@ -2231,7 +2259,7 @@
                             "rpi_gpio": "Last inn Raspberry Pi GPIO entiteter på nytt",
                             "scene": "Last inn scener på nytt",
                             "script": "Last inn skript på nytt",
-                            "smtp": "Last inn SMTP varslingstjenester på nytt",
+                            "smtp": "Last SMTP-varslingstjenester på nytt",
                             "statistics": "Last inn statistiske entiteter på nytt",
                             "telegram": "Last inn Telegram varslingstjenester på nytt",
                             "template": "Laste inn mal entiteter på nytt",
@@ -2321,6 +2349,7 @@
                         "update_user": "Oppdater"
                     },
                     "picker": {
+                        "add_user": "Legg til bruker",
                         "headers": {
                             "group": "Gruppe",
                             "name": "Navn",
@@ -2601,6 +2630,8 @@
                         "filter_attributes": "Filtrere attributter",
                         "filter_entities": "Filtrere entiteter",
                         "filter_states": "Filtrere tilstander",
+                        "last_changed": "Sist endret",
+                        "last_updated": "Sist oppdatert",
                         "more_info": "Mer info",
                         "no_entities": "Ingen entiteter",
                         "set_state": "Sett tilstand",
@@ -2852,6 +2883,10 @@
                             "description": "Med Light-kortet kan du endre lysstyrken.",
                             "name": "Lys"
                         },
+                        "logbook": {
+                            "description": "Loggbokskortet viser en liste over hendelser for entiteter",
+                            "name": "Loggbok"
+                        },
                         "map": {
                             "dark_mode": "Mørk modus?",
                             "default_zoom": "Standard zoom",
@@ -2938,7 +2973,7 @@
                         "clear": "Tøm",
                         "confirm_cancel": "Er du sikker på at du vil avbryte?",
                         "delete": "Slett kort",
-                        "duplicate": "Duplisert kort",
+                        "duplicate": "Dupliser kort",
                         "edit": "Rediger",
                         "header": "Kortkonfigurasjon",
                         "move": "Flytt til visning",

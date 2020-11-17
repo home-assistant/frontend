@@ -584,7 +584,7 @@
                 "entries_not_found": "No s'han trobat entrades al registre.",
                 "messages": {
                     "became_unavailable": "no està disponible",
-                    "changed_to_state": "a canviat a {state}",
+                    "changed_to_state": "ha canviat a {state}",
                     "cleared_device_class": "s'ha esborrat (no s'ha detectat cap {device_class})",
                     "detected_device_class": "s'ha detectat {device_class}",
                     "rose": "rosa",
@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Controls",
                 "cover": {
+                    "close_cover": "Tanca la coberta",
                     "close_tile_cover": "Inclinació de la coberta tancada",
+                    "open_cover": "Obre la coberta",
                     "open_tilt_cover": "Inclinació de la coberta oberta",
                     "stop_cover": "Atura el moviment de la coberta"
                 },
@@ -813,7 +815,7 @@
                 "dismiss": "Omet el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
-                "last_changed": "Darrer canvi",
+                "last_changed": "Últim canvi",
                 "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Àrees",
+                        "automation": "Automatització",
+                        "core": "General",
+                        "customize": "Personalització",
+                        "devices": "Dispositius",
+                        "entities": "Entitats",
+                        "helpers": "Ajudants",
+                        "info": "Informació",
+                        "integrations": "Integracions",
+                        "logs": "Registres",
+                        "lovelace": "Panells Lovelace",
+                        "navigate_to": "Vés a {panel}",
+                        "navigate_to_config": "Vés a la configuració de {panel}",
+                        "person": "Persones",
+                        "scene": "Escenes",
+                        "script": "Programació (scripts)",
+                        "server_control": "Controls del servidor",
+                        "tags": "Etiquetes",
+                        "users": "Usuaris",
+                        "zone": "Zones"
+                    },
                     "reload": {
                         "automation": "Actualitza automatitzacions",
                         "command_line": "Actualitza entitats de comandes",
@@ -1719,6 +1743,8 @@
                 "info": {
                     "built_using": "Creat utilitzant",
                     "caption": "Informació",
+                    "copy_github": "Per GitHub",
+                    "copy_raw": "Text en brut",
                     "custom_uis": "Interfícies d'usuari personalitzades:",
                     "description": "Consulta informació de la teva instal·lació de Home Assistant",
                     "developed_by": "Desenvolupat per un munt de gent fantàstica.",
@@ -1925,7 +1951,7 @@
                             "update": "Actualitza",
                             "url": "URL",
                             "url_error_msg": "L'URL és un camp obligatori",
-                            "warning_header": "Ves amb compte!",
+                            "warning_header": "Vés amb compte!",
                             "warning_text": "Afegir recursos pot ser perillós, assegura't de conèixer i confiar en el seu origen. Els recursos fraudulents poden perjudicar greument el teu sistema."
                         },
                         "picker": {
@@ -2187,6 +2213,8 @@
                     },
                     "picker": {
                         "add_script": "Afegeix script",
+                        "duplicate": "Duplica",
+                        "duplicate_script": "Duplica l'script",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "headers": {
@@ -2321,6 +2349,7 @@
                         "update_user": "Actualitza"
                     },
                     "picker": {
+                        "add_user": "Afegeix usuari",
                         "headers": {
                             "group": "Grup",
                             "name": "Nom",
@@ -2601,6 +2630,8 @@
                         "filter_attributes": "Filtra atributs",
                         "filter_entities": "Filtra entitats",
                         "filter_states": "Filtra estats",
+                        "last_changed": "Últim canvi",
+                        "last_updated": "Última actualització",
                         "more_info": "Més informació",
                         "no_entities": "No hi ha entitats",
                         "set_state": "Estableix estat",
@@ -2851,6 +2882,10 @@
                         "light": {
                             "description": "La targeta llum et permet ajustar la brillantor d'una llum.",
                             "name": "Llum"
+                        },
+                        "logbook": {
+                            "description": "La targeta diari de registre mostra una llista d'esdeveniments de les entitats",
+                            "name": "Diari de registre"
                         },
                         "map": {
                             "dark_mode": "Mode fosc?",

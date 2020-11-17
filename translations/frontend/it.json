@@ -712,7 +712,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Se disabilitato, le entità appena individuate per {integration} non verranno automaticamente aggiunte a Home Assistant.",
+                "enable_new_entities_description": "Se disabilitato, le entità appena rilevate per {integration} non verranno automaticamente aggiunte a Home Assistant.",
                 "enable_new_entities_label": "Abilita nuove entità aggiunte.",
                 "title": "Opzioni di sistema per {integration}",
                 "update": "Aggiornamento"
@@ -805,7 +805,9 @@
             "more_info_control": {
                 "controls": "Controlli",
                 "cover": {
+                    "close_cover": "Chiudere gli scuri",
                     "close_tile_cover": "Chiudere l'inclinazione della copertura",
+                    "open_cover": "Aprire gli scuri",
                     "open_tilt_cover": "Aprire l'inclinazione della copertura",
                     "stop_cover": "Fermare il movimento della copertura"
                 },
@@ -872,6 +874,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Aree",
+                        "automation": "Automazioni",
+                        "core": "Generale",
+                        "customize": "Personalizzazioni",
+                        "devices": "Dispositivi",
+                        "entities": "Entità",
+                        "helpers": "Aiutanti",
+                        "info": "Informazioni",
+                        "integrations": "Integrazioni",
+                        "logs": "Registri",
+                        "lovelace": "Plance di Lovelace",
+                        "navigate_to": "Navigare verso {panel}",
+                        "navigate_to_config": "Navigare fino a {panel} configurazione",
+                        "person": "Persone",
+                        "scene": "Scene",
+                        "script": "Script",
+                        "server_control": "Controlli del Server",
+                        "tags": "Tag",
+                        "users": "Utenti",
+                        "zone": "Zone"
+                    },
                     "reload": {
                         "automation": "Ricarica le Automazioni",
                         "command_line": "Ricarica le entità di riga di comando",
@@ -889,7 +913,7 @@
                         "input_select": "Ricarica input a discesa",
                         "input_text": "Ricarica input testuali",
                         "min_max": "Ricarica le entità min/max",
-                        "mqtt": "Ricarica entità mqtt configurate manualmente",
+                        "mqtt": "Ricarica le entità MQTT configurate manualmente",
                         "person": "Ricarica le persone",
                         "ping": "Ricarica le entità del sensore binario Ping",
                         "reload": "Ricarica {domain}",
@@ -1719,6 +1743,8 @@
                 "info": {
                     "built_using": "Costruito usando",
                     "caption": "Informazioni",
+                    "copy_github": "Per GitHub",
+                    "copy_raw": "Testo non elaborato",
                     "custom_uis": "Interfacce Utente personalizzate:",
                     "description": "Visualizza le informazioni sull'installazione di Home Assistant",
                     "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
@@ -1828,13 +1854,13 @@
                     "configured": "Configurato",
                     "description": "Gestisci le integrazioni",
                     "details": "Dettagli dell'integrazione",
-                    "discovered": "Scoperto",
+                    "discovered": "Rilevato",
                     "home_assistant_website": "Sito Web di Home Assistant",
                     "ignore": {
-                        "confirm_delete_ignore": "Questo farà apparire di nuovo l'integrazione nelle vostre integrazioni scoperte quando verrà scoperta. Questo potrebbe richiedere un riavvio o richiedere un po' di tempo.",
+                        "confirm_delete_ignore": "Questo farà apparire di nuovo l'integrazione tra quelle rilevate quando verrà individuata. Questo potrebbe richiedere un riavvio o impiegare un po' di tempo.",
                         "confirm_delete_ignore_title": "Smettere di ignorare {name}?",
                         "confirm_ignore": "Sei sicuro di non voler configurare questa integrazione? È possibile annullare questa operazione facendo clic su 'Mostra integrazioni ignorate' nel menu di overflow in alto a destra.",
-                        "confirm_ignore_title": "Ignorare l'individuazione di {name}?",
+                        "confirm_ignore_title": "Ignorare a rilevazione di {name}?",
                         "hide_ignored": "Nascondi integrazioni ignorate",
                         "ignore": "Ignora",
                         "ignored": "Ignorato",
@@ -1857,7 +1883,7 @@
                 },
                 "introduction": "In questa vista è possibile configurare i componenti e l'Home Assistant. Non tutto è ancora configurabile dall'interfaccia utente, ma ci stiamo lavorando.",
                 "logs": {
-                    "caption": "Logs",
+                    "caption": "Registri",
                     "clear": "Pulisci",
                     "description": "Vedi i logs di Home Assistant",
                     "details": "Dettagli registro ({level})",
@@ -2187,6 +2213,8 @@
                     },
                     "picker": {
                         "add_script": "Aggiungi script",
+                        "duplicate": "Duplica",
+                        "duplicate_script": "Duplica script",
                         "edit_script": "Modifica script",
                         "header": "Editor script",
                         "headers": {
@@ -2223,7 +2251,7 @@
                             "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML attuale e si caricherà la versione aggiornata.",
                             "min_max": "Ricarica le entità min/max",
-                            "mqtt": "Ricarica entità mqtt configurate manualmente",
+                            "mqtt": "Ricarica le entità MQTT configurate manualmente",
                             "person": "Ricarica le persone",
                             "ping": "Ricarica le entità del sensore binario Ping",
                             "reload": "Ricarica {domain}",
@@ -2259,7 +2287,7 @@
                 "tags": {
                     "add_tag": "Aggiungi Etichetta",
                     "automation_title": "L'etichetta {name} è scansionata",
-                    "caption": "Etichette",
+                    "caption": "Tag",
                     "confirm_remove": "Sei sicuro di voler rimuovere il tag {tag}?",
                     "confirm_remove_title": "Rimuovere il tag?",
                     "create_automation": "Creare un'automazione con l'etichetta",
@@ -2321,6 +2349,7 @@
                         "update_user": "Aggiorna"
                     },
                     "picker": {
+                        "add_user": "Aggiungi utente",
                         "headers": {
                             "group": "Gruppo",
                             "name": "Nome",
@@ -2331,7 +2360,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovered_text": "I dispositivi verranno visualizzati qui una volta scoperti.",
+                        "discovered_text": "I dispositivi verranno visualizzati qui una volta rilevati.",
                         "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
                         "header": "Zigbee Home Automation - Aggiungi dispositivi",
                         "no_devices_found": "Nessun dispositivo trovato, assicurati che siano in modalità di associazione e tienili attivi mentre la scansione è in esecuzione.",
@@ -2601,6 +2630,8 @@
                         "filter_attributes": "Filtra attributi",
                         "filter_entities": "Filtra entità",
                         "filter_states": "Filtra stati",
+                        "last_changed": "Ultima modifica",
+                        "last_updated": "Ultimo aggiornamento",
                         "more_info": "Ulteriori informazioni",
                         "no_entities": "Nessuna entità",
                         "set_state": "Imposta Stato",
@@ -2851,6 +2882,10 @@
                         "light": {
                             "description": "La scheda Luce consente di modificare la luminosità della luce.",
                             "name": "Luce"
+                        },
+                        "logbook": {
+                            "description": "La scheda del Diario di bordo mostra un elenco di eventi per le entità.",
+                            "name": "Diario di bordo"
                         },
                         "map": {
                             "dark_mode": "Modalità scura?",
