@@ -143,6 +143,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
       let inputDevices = [...devices];
 
+      inputDevices = inputDevices.filter((device) => !device.disabled_by);
+
       if (includeDomains) {
         inputDevices = inputDevices.filter((device) => {
           const devEntities = deviceEntityLookup[device.id];
@@ -195,7 +197,6 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         );
       }
 
-      inputDevices = inputDevices.filter((device) => !device.disabled_by);
       const outputDevices = inputDevices.map((device) => {
         return {
           id: device.id,
