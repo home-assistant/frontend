@@ -114,7 +114,6 @@ class HassioSnapshotDialog extends LitElement {
         stacked
         @closing=${this._closeDialog}
         .heading=${true}
-        hideactions
       >
         <div slot="heading">
           <ha-header-bar>
@@ -198,7 +197,7 @@ class HassioSnapshotDialog extends LitElement {
         ${this._error ? html` <p class="error">Error: ${this._error}</p> ` : ""}
 
         <div>Actions:</div>
-        <div class="button-row">
+        <div class="button-row" slot="primaryAction">
           ${this._snapshot.type === "full"
             ? html`
                 <mwc-button @click=${this._fullRestoreClicked}>
@@ -214,7 +213,7 @@ class HassioSnapshotDialog extends LitElement {
         </div>
         ${!this._onboarding
           ? html`
-              <div class="button-row">
+              <div class="button-row" slot="secondaryAction">
                 <mwc-button @click=${this._downloadClicked}>
                   <ha-svg-icon .path=${mdiDownload} class="icon"></ha-svg-icon>
                   Download Snapshot
