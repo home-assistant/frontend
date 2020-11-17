@@ -1,4 +1,4 @@
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResult,
@@ -18,18 +18,10 @@ export class HaSettingsRow extends LitElement {
 
   protected render(): SVGTemplateResult {
     return html`
-      <style>
-        paper-item-body {
-          padding-right: 16px;
-        }
-      </style>
-      <paper-item-body
-        ?two-line=${!this.threeLine}
-        ?three-line=${this.threeLine}
-      >
+      <mwc-list-item noninteractive ?twoline=${!this.threeLine}>
         <slot name="heading"></slot>
-        <div secondary><slot name="description"></slot></div>
-      </paper-item-body>
+        <span slot="secondary"><slot name="description"></slot></span>
+      </mwc-list-item>
       <slot></slot>
     `;
   }
@@ -38,16 +30,19 @@ export class HaSettingsRow extends LitElement {
     return css`
       :host {
         display: flex;
-        padding: 0 16px;
         align-content: normal;
         align-self: auto;
         align-items: center;
+        justify-content: space-between;
       }
       :host([narrow]) {
         align-items: normal;
         flex-direction: column;
         border-top: 1px solid var(--divider-color);
         padding-bottom: 8px;
+      }
+      mwc-list-item {
+        --mdc-list-side-padding: 0;
       }
       ::slotted(ha-switch) {
         padding: 16px 0;

@@ -12,10 +12,10 @@ import {
 import { assert, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -111,10 +111,6 @@ export class HuiButtonCardEditor extends LitElement
       return html``;
     }
 
-    const dir = computeRTLDirection(this.hass!);
-
-    console.log(this.isAdvanced);
-
     return html`
       <div class="card-config">
         <ha-entity-picker
@@ -195,8 +191,8 @@ export class HuiButtonCardEditor extends LitElement
                   )}
                   @value-changed=${this._valueChanged}
                 ></hui-action-editor>
-                <div class="switch">
-                  <span>
+                <ha-settings-row three-line>
+                  <span slot="heading">
                     ${this.hass.localize(
                       "ui.panel.lovelace.editor.card.generic.show_state"
                     )}
@@ -206,9 +202,9 @@ export class HuiButtonCardEditor extends LitElement
                     .configValue=${"show_state"}
                     @change=${this._change}
                   ></ha-switch>
-                </div>
-                <div class="switch">
-                  <span>
+                </ha-settings-row>
+                <ha-settings-row three-line>
+                  <span slot="heading">
                     ${this.hass.localize(
                       "ui.panel.lovelace.editor.card.generic.show_name"
                     )}
@@ -218,9 +214,9 @@ export class HuiButtonCardEditor extends LitElement
                     .configValue=${"show_name"}
                     @change=${this._change}
                   ></ha-switch>
-                </div>
-                <div class="switch">
-                  <span>
+                </ha-settings-row>
+                <ha-settings-row three-line>
+                  <span slot="heading">
                     ${this.hass.localize(
                       "ui.panel.lovelace.editor.card.generic.show_icon"
                     )}
@@ -230,7 +226,7 @@ export class HuiButtonCardEditor extends LitElement
                     .configValue=${"show_icon"}
                     @change=${this._change}
                   ></ha-switch>
-                </div>
+                </ha-settings-row>
               </div>
             </ha-expansion-panel>
           `
