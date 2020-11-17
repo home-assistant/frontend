@@ -34,14 +34,11 @@ export const sortableStyles = css`
 
   .sortable-fallback {
     display: none;
+    opacity: 0;
   }
 
   .sortable-ghost {
     opacity: 0.4;
-  }
-
-  .sortable-fallback {
-    opacity: 0;
   }
 
   @keyframes keyframes1 {

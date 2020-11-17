@@ -47,6 +47,7 @@ import { actionHandler } from "../panels/lovelace/common/directives/action-handl
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../types";
 import { ListItem } from "@material/mwc-list/mwc-list-item";
+import { navigate } from "../common/navigate";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
@@ -603,7 +604,6 @@ class HaSidebar extends LitElement {
       animation: 150,
       fallbackClass: "sortable-fallback",
       dataIdAttr: "data-panel",
-      handle: "ha-clickable-list-item",
       onSort: async () => {
         this._panelOrder = this._sortable.toArray();
       },
@@ -849,18 +849,19 @@ class HaSidebar extends LitElement {
       <ha-clickable-list-item
         .activated=${urlPath === this.hass.panelUrl}
         .href=${urlPath}
+        .disableHref=${this.editMode}
         data-panel=${urlPath}
         tabindex="-1"
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
+        @click=${() => navigate(this, `/${urlPath}`)}
         graphic="icon"
         .rtl=${this.rtl}
       >
         ${iconPath
           ? html`<ha-svg-icon slot="graphic" .path=${iconPath}></ha-svg-icon>`
           : html`<ha-icon slot="graphic" .icon=${icon}></ha-icon>`}
-
-        <span class="item-text">${title}</span>
+        ${title}
         ${this.editMode
           ? html`<mwc-icon-button
               class="hide-panel"

@@ -6,6 +6,8 @@ import { html } from "lit-html";
 export class HaClickableListItem extends ListItem {
   public href?: string;
 
+  public disableHref = false;
+
   // property used only in css
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
@@ -14,9 +16,9 @@ export class HaClickableListItem extends ListItem {
     const href = this.href ? `/${this.href}` : "";
 
     return html` ${this.renderRipple()}
-      <a aria-role="option" href=${href}>
-        ${r}
-      </a>`;
+    ${this.disableHref
+      ? html`<a aria-role="option">${r}</a>`
+      : html`<a aria-role="option" href=${href}>${r}</a>`}`;
   }
 
   static get styles(): CSSResult[] {
