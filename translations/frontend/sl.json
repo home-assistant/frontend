@@ -676,11 +676,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
-                    "hour": "{count} {count, plural,\n  one {Ura}\n  other {Ur}\n}",
+                    "day": "{count} {count, plural,\n  one {dan}\n  other {dni}\n}",
+                    "hour": "{count} {count, plural,\n  one {ura}\n  two {uri}\n  three {ure}\n  four {ure}\n  other {ur}\n}",
                     "minute": "{count} {count, plural,\n  one {minuta}\n  other {minut}\n}",
                     "second": "{count} {count, plural,\none {sekunda}\nother {sekund}\n}",
-                    "week": "{count} {count, plural,\none {Teden}\nother {Tednov}\n}"
+                    "week": "{count} {count, plural,\none {Teden}\ntwo {Tedna}\nthree {Tedne}\nfour {Tedne}\nother {Tednov}\n}"
                 },
                 "future": "Čez {time}",
                 "future_duration": {
@@ -977,10 +977,10 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
-            "hour": "{count} {count, plural,\n  one {Ura}\n  other {Ur}\n}",
-            "minute": "{count} {count, plural,\n  one {Minuta}\n  other {Minut}\n}",
-            "second": "{count} {count, plural,\none {Sekunda}\nother {Sekund}\n}",
+            "day": "{count} {count, plural,\none {dan}\nother {dni}\n}",
+            "hour": "{count} {count, plural,\n  one {ura}\n  two {uri}\n  three {ure}\n  four {ure}\n  other {ur}\n}",
+            "minute": "{count} {count, plural,\n  one {minuta}\n  two {minuti}\n  three {minute}\n  four {minute}\n  other {minut}\n}",
+            "second": "{count} {count, plural,\none {sekunda}\ntwo {sekundi}\nthree {sekunde}\nfour {sekunde}\nother {sekund}\n}",
             "week": "{count} {count, plural,\none {Teden}\nother {Tednov}\n}"
         },
         "login-form": {
@@ -1251,7 +1251,7 @@
                                     "trigger": "Sprožilec"
                                 },
                                 "event": {
-                                    "context_user_pick": "Dodaj uporabnika",
+                                    "context_user_pick": "Izberite uporabnika",
                                     "context_user_picked": "Dogodek uporabnikove sprožitve",
                                     "context_users": "Omeji na dogodke, ki jih sproži",
                                     "event_data": "Podatki o dogodku",
@@ -1665,12 +1665,12 @@
                         "disable_selected": {
                             "button": "Onemogoči izbrane",
                             "confirm_text": "Onemogočene entitete ne bodo dodane v Home Assistant.",
-                            "confirm_title": "Ali želite onemogočiti {number} entitet?"
+                            "confirm_title": "Ali želite odstraniti {number} {number, plural,\n  one {entiteto}\n  two {entiteti}\n  other {entitete}\n}?"
                         },
                         "enable_selected": {
                             "button": "Omogoči izbrane",
                             "confirm_text": "Naprave bodo znova na voljo v  Home Assistant-u, če so zdaj onemogočene.",
-                            "confirm_title": "Ali želite omogočiti {number} entiteto/i/e?"
+                            "confirm_title": "Ali želite omogočiti {number} {number, plural,\n  one {entiteto}\n  two {entiteti}\n  other {entitete}\n}?"
                         },
                         "filter": {
                             "filter": "Filter",
@@ -1692,9 +1692,9 @@
                         "remove_selected": {
                             "button": "Odstrani izbrane",
                             "confirm_partly_text": "Lahko odstranite le {removable} izbranih {selected} entitet. Entitete je mogoče odstraniti le, če integracija ne zagotavlja več entitet. Včasih morate znova zagnati Home Assistant, preden lahko odstranite entitete odstranjene integracije. Ali ste prepričani, da želite odstraniti odstranljive entitete?",
-                            "confirm_partly_title": "Odstranjene so lahko le izbrane {number} entitete.",
+                            "confirm_partly_title": "Samo {number} {number, plural,\n one {izbrana entiteta}\n two {izbrani entiteti}\n tree {izbrane entitete}\n four {izbrane entitete}\n other {izbranih entitet}\n} je lahko odstranjenih.",
                             "confirm_text": "Če vsebujejo te entitete, bi jih morali odstraniti iz vašega Lovelace config-a in avtomatizacije.",
-                            "confirm_title": "Ali želite odstraniti {number} entiteto-i/e?"
+                            "confirm_title": "Ali želite odstraniti {number} {number, plural,\n  one {entiteto}\n  two {entiteti}\n  other {entitete}\n}?"
                         },
                         "search": "Iskanje entitet",
                         "selected": "{številka} izbrana/ih",
@@ -1950,7 +1950,7 @@
                             "type": "Vrsta vira",
                             "update": "Posodobi",
                             "url": "URL",
-                            "url_error_msg": "Url je obvezno polje",
+                            "url_error_msg": "URL je obvezno polje",
                             "warning_header": "Bodite previdni!",
                             "warning_text": "Dodajanje virov je lahko nevarno, prepričajte se, da poznate vir vira in jim zaupate. Slabi viri lahko resno škodijo vašemu sistemu."
                         },
@@ -1962,7 +1962,7 @@
                             },
                             "no_resources": "Brez virov"
                         },
-                        "refresh_body": "Če želite dokončati odstranitev, morate osvežiti stran, ali jo želite zdaj osvežiti?",
+                        "refresh_body": "Če želite dokončati odstranitev, morate osvežiti stran. Jo morda želite osvežiti zdaj?",
                         "refresh_header": "Ali želite osvežiti?",
                         "types": {
                             "css": "Slogovna stran",
@@ -2015,6 +2015,8 @@
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Poizvedena so bila vsa vozlišča",
+                            "driverallnodesqueriedsomedead": "Poizvedena so bila vsa vozlišča. Nekatera vozlišča so bila najdena mrtva.",
+                            "driverawakenodesqueries": "Poizvedena so bila vsa budna vozlišča",
                             "driverfailed": "Povezava s krmilnikom Z-Wave ni uspela",
                             "driverready": "Inicializacija krmilnika Z-Wave",
                             "driverremoved": "Gonilnik je odstranjen",
@@ -2038,22 +2040,29 @@
                     "node_config": {
                         "header": "Konfiguracija vozlišča",
                         "help_source": "Opisi konfiguracijskih parametrov in besedilo pomoči zagotavlja projekt OpenZWave.",
-                        "introduction": "Upravljajte različne konfiguracijske parametre za vozlišče Z-Wave."
+                        "introduction": "Upravljajte različne konfiguracijske parametre za vozlišče Z-Wave.",
+                        "wakeup_help": "Vozlišča, ki jih napajajo baterije morajo biti budna, da lahko spreminjate njihovo konfiguracijo. Če vozlišče ni budno, bo OpenZWave poskusil posodobiti konfiguracijo vozlišča naslednjič, ko se zbudi, kar pa bi lahko bilo več ur (ali dni) kasneje. Sledite tem korakom, da zbudite napravo:"
                     },
                     "node_metadata": {
                         "product_manual": "Priročnik za izdelek"
                     },
                     "node_query_stages": {
+                        "associations": "Osveževanje pridružitvenih skupin in članstev",
+                        "cacheload": "Nalaganje informacij iz datotek predpomnilnika OpenZWave. Vozlišča na bateriji bodo ostala na tej stopnji, dokler se vozlišče ne zbudi.",
                         "complete": "Postopek intervjuja je končan",
                         "configuration": "Pridobitev konfiguracijskih vrednosti iz vozlišča",
                         "dynamic": "Pridobivanje pogosto spreminjajočih se vrednosti iz vozlišča",
+                        "instances": "Pridobivanje podatkov o tem, katere instance ali kanale naprava podpira",
                         "manufacturerspecific1": "Pridobivanje identifikacijskih kod proizvajalca in izdelka iz vozlišča",
                         "manufacturerspecific2": "Pridobivanje dodatnih identifikacijskih kod proizvajalca in izdelka iz vozlišča",
+                        "neighbors": "Pridobivanje seznama sosedov",
                         "nodeinfo": "Pridobivanje podprtih razredov ukazov iz vozlišča",
                         "nodeplusinfo": "Pridobivanje informacij o Z-Wave + iz vozlišča",
                         "probe": "Preverjanje, ali je vozlišče budno / živo",
                         "protocolinfo": "Pridobivanje osnovnih zmožnosti Z-Wave tega vozlišča od krmilnika",
                         "session": "Pridobitev redko spreminjajočih se vrednosti iz vozlišča",
+                        "static": "Pridobivanje statičnih vrednosti iz naprave.",
+                        "versions": "Pridobivanje informacij o različicah vdelane programske opreme in o ukaznih razredov",
                         "wakeup": "Nastavljanje podpore za vrste in sporočila za prebujanje"
                     },
                     "node": {
@@ -2065,12 +2074,14 @@
                         "id": "ID",
                         "manufacturer": "Proizvajalec",
                         "model": "Model",
+                        "query_stage": "Stopnja poizvedbe",
                         "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
                         "battery_note": "Če vozlišče napaja baterijo, se pred nadaljevanjem prepričajte, da ga zbudite",
                         "button": "Osveži vozlišče",
                         "complete": "Osveževanje vozlišča je končano",
+                        "description": "To bo OpenZWave-u sporočilo, naj znova vzpostavi komunikacijo s vozliščem in posodobi njegove ukazne razrede, zmožnosti in vrednosti vozlišča.",
                         "node_status": "Stanje vozlišča",
                         "refreshing_description": "Osveževanje informacij o vozlišču ...",
                         "start_refresh_button": "Začni osveževanje",
@@ -2080,7 +2091,9 @@
                         "wakeup_instructions_source": "Navodila za prebujanje so pridobljena iz podatkovne zbirke naprav OpenZWave."
                     },
                     "select_instance": {
-                        "header": "Izberite OpenZWave instanco"
+                        "header": "Izberite OpenZWave instanco",
+                        "introduction": "Izvaja se več kot ena OpenZWave instanca. S katero instanco bi radi upravljali?",
+                        "none_found": "OpenZWave instance ni bilo mogoče najti. Če menite, da je prišlo do napake, preverite vašo OpenZWave in MQTT konfiguracijo in zagotovite, da Home Assistant lahko komunicira z vašim MQTT posrednikom."
                     },
                     "services": {
                         "add_node": "Dodaj vozlišče",
@@ -2238,7 +2251,7 @@
                             "input_text": "Ponovno naloži vhodna besedila",
                             "introduction": "Nekateri deli programa Home Assistant se lahko naložijo brez ponovnega zagona. S ponovnim nalaganjem se trenutna konfiguracija YAML zamenja in naloži nova.",
                             "min_max": "Znova naloži entitete min/max",
-                            "mqtt": "Ročno osveži konfigurirane entitete MQTT",
+                            "mqtt": "Znova naložite ročno konfigurirane entitete MQTT",
                             "person": "Ponovno naloži osebe",
                             "ping": "Znova naloži entitete binarnega senzorja PING",
                             "reload": "Znova naloži {domain}",
@@ -2705,7 +2718,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Nastavitve uporabniškega vmesnika Lovelace za to nadzorno ploščo so bile posodobljene, če želite videti spremembe jo morate osvežiti.",
+                    "message": "Nastavitve uporabniškega vmesnika Lovelace za to nadzorno ploščo so bile posodobljene. Če želite videti spremembe, jo osvežite.",
                     "refresh": "Osveži"
                 },
                 "editor": {
@@ -2721,7 +2734,7 @@
                         },
                         "editor_service_data": "Podatke o storitvah lahko vnesete samo v urejevalniku kode",
                         "navigation_path": "Navigacijska pot",
-                        "url_path": "Url pot"
+                        "url_path": "Pot URL-ja"
                     },
                     "card": {
                         "alarm-panel": {
@@ -3089,7 +3102,7 @@
                 },
                 "reload_lovelace": "Ponovno naloži uporabniški vmesnik",
                 "reload_resources": {
-                    "refresh_body": "Če želite dokončati ponovno nalaganje, morate osvežiti stran, ali jo želite zdaj osvežiti?",
+                    "refresh_body": "Če želite dokončati ponovno nalaganje, morate osvežiti stran. Ali jo želite zdaj osvežiti?",
                     "refresh_header": "Ali želite osvežiti?"
                 },
                 "unused_entities": {
