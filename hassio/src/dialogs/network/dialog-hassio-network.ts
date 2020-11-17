@@ -62,7 +62,7 @@ export class DialogHassioNetwork extends LitElement
 
   @internalProperty() private _params?: HassioNetworkDialogParams;
 
-  @internalProperty() private _prosessing = false;
+  @internalProperty() private _processing = false;
 
   @internalProperty() private _scanning = false;
 
@@ -81,7 +81,7 @@ export class DialogHassioNetwork extends LitElement
 
   public closeDialog(): void {
     this._params = undefined;
-    this._prosessing = false;
+    this._processing = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -149,8 +149,10 @@ export class DialogHassioNetwork extends LitElement
                       </ha-circular-progress>`
                     : "Scan for accesspoints"}
                 </mwc-button>
-                ${this._accessPoints?.accesspoints.length !== 0
-                  ? this._accessPoints?.accesspoints
+                ${this._accessPoints &&
+                this._accessPoints.accesspoints &&
+                this._accessPoints.accesspoints.length !== 0
+                  ? this._accessPoints.accesspoints
                       .filter((ap) => ap.ssid)
                       .map(
                         (ap) =>
@@ -158,13 +160,13 @@ export class DialogHassioNetwork extends LitElement
                             <mwc-list-item
                               twoline
                               @click=${this._selectAP}
-                              ?activated=${ap.ssid ===
+                              .activated=${ap.ssid ===
                               this._wifiConfiguration?.ssid}
                               .ap=${ap}
                             >
                               <span>${ap.ssid}</span>
                               <span slot="secondary">
-                                ${ap.mac} Strength: ${ap.signal}
+                                ${ap.mac} - Strength: ${ap.signal}
                               </span>
                             </mwc-list-item>
                           `
@@ -179,7 +181,7 @@ export class DialogHassioNetwork extends LitElement
                             .ap=${this._wifiConfiguration}
                             value="open"
                             name="auth"
-                            ?checked=${this._wifiConfiguration.auth ===
+                            .checked=${this._wifiConfiguration.auth ===
                               undefined ||
                             this._wifiConfiguration.auth === "open"}
                           >
@@ -191,7 +193,7 @@ export class DialogHassioNetwork extends LitElement
                             .ap=${this._wifiConfiguration}
                             value="wep"
                             name="auth"
-                            ?checked=${this._wifiConfiguration.auth === "wep"}
+                            .checked=${this._wifiConfiguration.auth === "wep"}
                           >
                           </ha-radio>
                         </ha-formfield>
@@ -201,7 +203,7 @@ export class DialogHassioNetwork extends LitElement
                             .ap=${this._wifiConfiguration}
                             value="wpa-psk"
                             name="auth"
-                            ?checked=${this._wifiConfiguration.auth ===
+                            .checked=${this._wifiConfiguration.auth ===
                             "wpa-psk"}
                           >
                           </ha-radio>
@@ -237,7 +239,7 @@ export class DialogHassioNetwork extends LitElement
       <div class="buttons">
         <mwc-button label="close" @click=${this.closeDialog}> </mwc-button>
         <mwc-button @click=${this._updateNetwork} ?disabled=${!this._dirty}>
-          ${this._prosessing
+          ${this._processing
             ? html`<ha-circular-progress active size="small">
               </ha-circular-progress>`
             : "Save"}
@@ -265,8 +267,9 @@ export class DialogHassioNetwork extends LitElement
         title: "Failed to scan for accesspoints",
         text: extractApiErrorMessage(err),
       });
+    } finally {
+      this._scanning = false;
     }
-    this._scanning = false;
   }
 
   private _renderIPConfiguration(version: string) {
@@ -280,7 +283,7 @@ export class DialogHassioNetwork extends LitElement
               .version=${version}
               value="auto"
               name="${version}method"
-              ?checked=${this._interface![version]?.method === "auto"}
+              .checked=${this._interface![version]?.method === "auto"}
             >
             </ha-radio>
           </ha-formfield>
@@ -290,7 +293,7 @@ export class DialogHassioNetwork extends LitElement
               .version=${version}
               value="static"
               name="${version}method"
-              ?checked=${this._interface![version]?.method === "static"}
+              .checked=${this._interface![version]?.method === "static"}
             >
             </ha-radio>
           </ha-formfield>
@@ -300,7 +303,7 @@ export class DialogHassioNetwork extends LitElement
               .version=${version}
               value="disabled"
               name="${version}method"
-              ?checked=${this._interface![version]?.method === "disabled"}
+              .checked=${this._interface![version]?.method === "disabled"}
             >
             </ha-radio>
           </ha-formfield>
@@ -366,7 +369,7 @@ export class DialogHassioNetwork extends LitElement
   }
 
   private async _updateNetwork() {
-    this._prosessing = true;
+    this._processing = true;
     let interfaceOptions: Partial<NetworkInterface> = {};
 
     IP_VERSIONS.forEach((version) => {
@@ -411,7 +414,7 @@ export class DialogHassioNetwork extends LitElement
         title: "Failed to change network settings",
         text: extractApiErrorMessage(err),
       });
-      this._prosessing = false;
+      this._processing = false;
       return;
     }
     this._params?.loadData();
