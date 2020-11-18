@@ -1,10 +1,8 @@
 import {
   customElement,
-  html,
-  LitElement,
+  UpdatingElement,
   property,
   PropertyValues,
-  TemplateResult,
 } from "lit-element";
 
 import relativeTime from "../common/datetime/relative_time";
@@ -12,7 +10,7 @@ import relativeTime from "../common/datetime/relative_time";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-relative-time")
-class HaRelativeTime extends LitElement {
+class HaRelativeTime extends UpdatingElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public datetime?: string;
@@ -41,10 +39,6 @@ class HaRelativeTime extends LitElement {
     this._updateRelative();
   }
 
-  protected render(): TemplateResult {
-    return html`<div class="datetime"></div>`;
-  }
-
   private _clearInterval(): void {
     if (this._interval) {
       window.clearInterval(this._interval);
@@ -59,13 +53,11 @@ class HaRelativeTime extends LitElement {
     this._interval = window.setInterval(() => this._updateRelative(), 60000);
   }
 
-  private _updateRelative() {
+  private _updateRelative(): void {
     if (!this.datetime) {
-      this.shadowRoot!.querySelector(
-        ".datetime"
-      )!.innerHTML = this.hass.localize("ui.components.relative_time.never");
+      this.innerHTML = this.hass.localize("ui.components.relative_time.never");
     } else {
-      this.shadowRoot!.querySelector(".datetime")!.innerHTML = relativeTime(
+      this.innerHTML = relativeTime(
         new Date(this.datetime),
         this.hass.localize
       );
