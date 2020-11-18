@@ -12,7 +12,6 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
 import "@material/mwc-list/mwc-list-item";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
   CSSResult,
@@ -36,14 +35,11 @@ import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
   AutomationEntity,
-  Condition,
   deleteAutomation,
   getAutomationEditorInitData,
   showAutomationEditor,
-  Trigger,
   triggerAutomation,
 } from "../../../data/automation";
-import { Action } from "../../../data/script";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -53,7 +49,6 @@ import "../../../layouts/hass-tabs-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./action/ha-automation-action";
@@ -61,11 +56,13 @@ import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
 import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
-
-const MODES = ["single", "restart", "queued", "parallel"];
-const MODES_MAX = ["queued", "parallel"];
+import "./manual-automation-editor";
+import "./blueprint-automation-editor";
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-editor": HaAutomationEditor;
+  }
   // for fire event
   interface HASSDomEvents {
     "ui-mode-not-available": Error;
@@ -193,6 +190,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             </ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
+
         ${this._config
           ? html`
               ${this.narrow
@@ -204,217 +202,19 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   : ""}
                 ${this._mode === "gui"
                   ? html`
-                      <ha-config-section .isWide=${this.isWide}>
-                        ${!this.narrow
-                          ? html`
-                              <span slot="header">${this._config.alias}</span>
-                            `
-                          : ""}
-                        <span slot="introduction">
-                          ${this.hass.localize(
-                            "ui.panel.config.automation.editor.introduction"
-                          )}
-                        </span>
-                        <ha-card>
-                          <div class="card-content">
-                            <paper-input
-                              .label=${this.hass.localize(
-                                "ui.panel.config.automation.editor.alias"
-                              )}
-                              name="alias"
-                              .value=${this._config.alias}
-                              @value-changed=${this._valueChanged}
-                            >
-                            </paper-input>
-                            <paper-textarea
-                              .label=${this.hass.localize(
-                                "ui.panel.config.automation.editor.description.label"
-                              )}
-                              .placeholder=${this.hass.localize(
-                                "ui.panel.config.automation.editor.description.placeholder"
-                              )}
-                              name="description"
-                              .value=${this._config.description}
-                              @value-changed=${this._valueChanged}
-                            ></paper-textarea>
-                            <p>
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.modes.description",
-                                "documentation_link",
-                                html`<a
-                                  href="${documentationUrl(
-                                    this.hass,
-                                    "/integrations/automation/#automation-modes"
-                                  )}"
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  >${this.hass.localize(
-                                    "ui.panel.config.automation.editor.modes.documentation"
-                                  )}</a
-                                >`
-                              )}
-                            </p>
-                            <paper-dropdown-menu-light
-                              .label=${this.hass.localize(
-                                "ui.panel.config.automation.editor.modes.label"
-                              )}
-                              no-animations
-                            >
-                              <paper-listbox
-                                slot="dropdown-content"
-                                .selected=${this._config.mode
-                                  ? MODES.indexOf(this._config.mode)
-                                  : 0}
-                                @iron-select=${this._modeChanged}
-                              >
-                                ${MODES.map(
-                                  (mode) => html`
-                                    <paper-item .mode=${mode}>
-                                      ${this.hass.localize(
-                                        `ui.panel.config.automation.editor.modes.${mode}`
-                                      ) || mode}
-                                    </paper-item>
-                                  `
-                                )}
-                              </paper-listbox>
-                            </paper-dropdown-menu-light>
-                            ${this._config.mode &&
-                            MODES_MAX.includes(this._config.mode)
-                              ? html`<paper-input
-                                  .label=${this.hass.localize(
-                                    `ui.panel.config.automation.editor.max.${this._config.mode}`
-                                  )}
-                                  type="number"
-                                  name="max"
-                                  .value=${this._config.max || "10"}
-                                  @value-changed=${this._valueChanged}
-                                >
-                                </paper-input>`
-                              : html``}
-                          </div>
-                          ${stateObj
-                            ? html`
-                                <div
-                                  class="card-actions layout horizontal justified center"
-                                >
-                                  <div class="layout horizontal center">
-                                    <ha-entity-toggle
-                                      .hass=${this.hass}
-                                      .stateObj=${stateObj}
-                                    ></ha-entity-toggle>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.automation.editor.enable_disable"
-                                    )}
-                                  </div>
-                                  <mwc-button
-                                    @click=${this._excuteAutomation}
-                                    .stateObj=${stateObj}
-                                  >
-                                    ${this.hass.localize(
-                                      "ui.card.automation.trigger"
-                                    )}
-                                  </mwc-button>
-                                </div>
-                              `
-                            : ""}
-                        </ha-card>
-                      </ha-config-section>
-
-                      <ha-config-section .isWide=${this.isWide}>
-                        <span slot="header">
-                          ${this.hass.localize(
-                            "ui.panel.config.automation.editor.triggers.header"
-                          )}
-                        </span>
-                        <span slot="introduction">
-                          <p>
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.triggers.introduction"
-                            )}
-                          </p>
-                          <a
-                            href="${documentationUrl(
-                              this.hass,
-                              "/docs/automation/trigger/"
-                            )}"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.triggers.learn_more"
-                            )}
-                          </a>
-                        </span>
-                        <ha-automation-trigger
-                          .triggers=${this._config.trigger}
-                          @value-changed=${this._triggerChanged}
-                          .hass=${this.hass}
-                        ></ha-automation-trigger>
-                      </ha-config-section>
-
-                      <ha-config-section .isWide=${this.isWide}>
-                        <span slot="header">
-                          ${this.hass.localize(
-                            "ui.panel.config.automation.editor.conditions.header"
-                          )}
-                        </span>
-                        <span slot="introduction">
-                          <p>
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.conditions.introduction"
-                            )}
-                          </p>
-                          <a
-                            href="${documentationUrl(
-                              this.hass,
-                              "/docs/scripts/conditions/"
-                            )}"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.conditions.learn_more"
-                            )}
-                          </a>
-                        </span>
-                        <ha-automation-condition
-                          .conditions=${this._config.condition || []}
-                          @value-changed=${this._conditionChanged}
-                          .hass=${this.hass}
-                        ></ha-automation-condition>
-                      </ha-config-section>
-
-                      <ha-config-section .isWide=${this.isWide}>
-                        <span slot="header">
-                          ${this.hass.localize(
-                            "ui.panel.config.automation.editor.actions.header"
-                          )}
-                        </span>
-                        <span slot="introduction">
-                          <p>
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.actions.introduction"
-                            )}
-                          </p>
-                          <a
-                            href="${documentationUrl(
-                              this.hass,
-                              "/docs/automation/action/"
-                            )}"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.actions.learn_more"
-                            )}
-                          </a>
-                        </span>
-                        <ha-automation-action
-                          .actions=${this._config.action}
-                          @value-changed=${this._actionChanged}
-                          .hass=${this.hass}
-                        ></ha-automation-action>
-                      </ha-config-section>
+                      ${"use_blueprint" in this._config
+                        ? html`<blueprint-automation-editor
+                            .hass=${this.hass}
+                            .stateObj=${stateObj}
+                            .config=${this._config}
+                            @value-changed=${this._valueChanged}
+                          ></blueprint-automation-editor>`
+                        : html`<manual-automation-editor
+                            .hass=${this.hass}
+                            .stateObj=${stateObj}
+                            .config=${this._config}
+                            @value-changed=${this._valueChanged}
+                          ></manual-automation-editor>`}
                     `
                   : this._mode === "yaml"
                   ? html`
@@ -531,17 +331,25 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
     if (changedProps.has("automationId") && !this.automationId && this.hass) {
       const initData = getAutomationEditorInitData();
-      this._dirty = !!initData;
-      this._config = {
+      let baseConfig: Partial<AutomationConfig> = {
         alias: this.hass.localize(
           "ui.panel.config.automation.editor.default_name"
         ),
         description: "",
-        trigger: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
-        condition: [],
-        action: [{ ...HaDeviceAction.defaultConfig }],
-        ...initData,
       };
+      if (!initData || !("use_blueprint" in initData)) {
+        baseConfig = {
+          ...baseConfig,
+          mode: "single",
+          trigger: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
+          condition: [],
+          action: [{ ...HaDeviceAction.defaultConfig }],
+        };
+      }
+      this._config = {
+        ...baseConfig,
+        ...initData,
+      } as AutomationConfig;
     }
 
     if (
@@ -560,58 +368,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._entityId = automation?.entity_id;
   }
 
-  private _modeChanged(ev: CustomEvent) {
-    const mode = ((ev.target as PaperListboxElement)?.selectedItem as any)
-      ?.mode;
-
-    if (mode === this._config!.mode) {
-      return;
-    }
-
-    this._config = { ...this._config!, mode };
-    if (!MODES_MAX.includes(mode)) {
-      delete this._config.max;
-    }
-    this._dirty = true;
-  }
-
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
-    const target = ev.target as any;
-    const name = target.name;
-    if (!name) {
-      return;
-    }
-    let newVal = ev.detail.value;
-    if (target.type === "number") {
-      newVal = Number(newVal);
-    }
-    if ((this._config![name] || "") === newVal) {
-      return;
-    }
-    this._config = { ...this._config!, [name]: newVal };
+    this._config = ev.detail.value;
     this._dirty = true;
-  }
-
-  private _triggerChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, trigger: ev.detail.value as Trigger[] };
     this._errors = undefined;
-    this._dirty = true;
-  }
-
-  private _conditionChanged(ev: CustomEvent): void {
-    this._config = {
-      ...this._config!,
-      condition: ev.detail.value as Condition[],
-    };
-    this._errors = undefined;
-    this._dirty = true;
-  }
-
-  private _actionChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, action: ev.detail.value as Action[] };
-    this._errors = undefined;
-    this._dirty = true;
   }
 
   private _excuteAutomation(ev: Event) {
