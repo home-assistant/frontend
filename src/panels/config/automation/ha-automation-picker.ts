@@ -12,7 +12,6 @@ import {
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -20,19 +19,16 @@ import { DataTableColumnContainer } from "../../../components/data-table/ha-data
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-svg-icon";
-import {
-  AutomationConfig,
-  AutomationEntity,
-  showAutomationEditor,
-  triggerAutomation,
-} from "../../../data/automation";
+import { AutomationEntity, triggerAutomation } from "../../../data/automation";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import { showThingtalkDialog } from "./show-dialog-thingtalk";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import { navigate } from "../../../common/navigate";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -220,14 +216,14 @@ class HaAutomationPicker extends LitElement {
   }
 
   private _createNew() {
-    if (!isComponentLoaded(this.hass, "cloud")) {
-      showAutomationEditor(this);
-      return;
+    if (
+      isComponentLoaded(this.hass, "cloud") ||
+      isComponentLoaded(this.hass, "blueprint")
+    ) {
+      showNewAutomationDialog(this);
+    } else {
+      navigate(this, "/config/automation/edit/new");
     }
-    showThingtalkDialog(this, {
-      callback: (config: Partial<AutomationConfig> | undefined) =>
-        showAutomationEditor(this, config),
-    });
   }
 
   static get styles(): CSSResult {

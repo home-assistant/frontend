@@ -33,6 +33,7 @@ import {
   mdiMathLog,
   mdiPencil,
   mdiNfcVariant,
+  mdiPaletteSwatch,
 } from "@mdi/js";
 
 declare global {
@@ -75,6 +76,12 @@ export const configSections: { [name: string]: PageNavigation[] } = {
   ],
   automation: [
     {
+      component: "blueprint",
+      path: "/config/blueprint",
+      translationKey: "ui.panel.config.blueprint.caption",
+      iconPath: mdiPaletteSwatch,
+    },
+    {
       component: "automation",
       path: "/config/automation",
       translationKey: "ui.panel.config.automation.caption",
@@ -92,6 +99,8 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.script.caption",
       iconPath: mdiScriptText,
     },
+  ],
+  helpers: [
     {
       component: "helpers",
       path: "/config/helpers",
@@ -204,6 +213,13 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import(
             /* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation"
+          ),
+      },
+      blueprint: {
+        tag: "ha-config-blueprint",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-blueprint" */ "./blueprint/ha-config-blueprint"
           ),
       },
       tags: {
