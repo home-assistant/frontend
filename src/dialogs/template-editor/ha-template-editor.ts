@@ -51,15 +51,6 @@ export class TemplateEditor extends LitElement {
       @closed=${this.closeDialog}
       hideActions
     >
-      <div slot="heading">
-        <ha-header-bar>
-          <span slot="title">
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.editor"
-            )}
-          </span>
-        </ha-header-bar>
-      </div>
       <div class="content">
         <developer-tools-template
           .narrow=${true}
