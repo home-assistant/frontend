@@ -806,7 +806,8 @@
                 "controls": "Steuerelemente",
                 "cover": {
                     "close_cover": "Abdeckung schließen",
-                    "open_cover": "Abdeckung öffnen"
+                    "open_cover": "Abdeckung öffnen",
+                    "stop_cover": "Abdeckung anhalten"
                 },
                 "details": "Details",
                 "dismiss": "Dialog ausblenden",
@@ -882,6 +883,7 @@
                         "info": "Info",
                         "integrations": "Integrationen",
                         "logs": "Logs",
+                        "lovelace": "Lovelace Dashboards",
                         "navigate_to": "Navigiere zu {panel}",
                         "navigate_to_config": "Navigiere zur {panel} Konfiguration",
                         "person": "Personen",
