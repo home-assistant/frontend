@@ -11,7 +11,7 @@ The Home Assistant build pipeline contains various steps to prepare a build.
 - Generating the service worker
 - Compressing the files
 
-## Converting files responsibilities
+## Converting files
 
 Currently in Home Assistant we use a bundler to convert TypeScript, CSS and JSON files to JavaScript files that the browser understands.
 
