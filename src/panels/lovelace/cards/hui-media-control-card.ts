@@ -358,14 +358,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
           ${!isUnavailable &&
           (mediaDescription || stateObj.attributes.media_title || showControls)
             ? html`
-                <div
-                  class="title-controls"
-                  style=${styleMap({
-                    paddingRight: isOffState
-                      ? "0"
-                      : `${this._cardHeight - 40}px`,
-                  })}
-                >
+                <div class="title-controls">
                   ${!mediaDescription && !stateObj.attributes.media_title
                     ? ""
                     : html`
@@ -788,7 +781,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       mwc-icon-button.browse-media {
         position: absolute;
-        right: 0;
+        right: 4px;
         --mdc-icon-size: 24px;
       }
 
@@ -810,7 +803,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .more-info {
         position: absolute;
         top: 8px;
-        right: 0px;
+        right: 4px;
       }
 
       .media-info {
