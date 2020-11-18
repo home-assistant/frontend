@@ -1,3 +1,4 @@
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiCheckboxBlankOutline,
   mdiCheckBoxOutline,
@@ -22,6 +23,7 @@ import {
 } from "lit-element";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-request-selected-event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
@@ -357,11 +359,17 @@ export class HuiDialogEditCard extends LitElement
     this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
-  private _toggleMode(): void {
+  private _toggleMode(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     this._cardEditorEl?.toggleMode();
   }
 
-  private _toggleAdvanced(): void {
+  private _toggleAdvanced(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     this._isAdvanced = !this._isAdvanced;
   }
 
