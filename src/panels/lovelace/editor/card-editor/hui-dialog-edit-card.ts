@@ -453,10 +453,6 @@ export class HuiDialogEditCard extends LitElement
           --dialog-content-padding: 0px 24px;
         }
 
-        :host([large]) .content {
-          --mdc-dialog-max-width: calc(100% - 32px);
-        }
-
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           ha-dialog {
@@ -468,7 +464,7 @@ export class HuiDialogEditCard extends LitElement
           ha-dialog {
             --mdc-dialog-max-width: 90vw;
           }
-          :host([large]) .content {
+          :host([large]) ha-dialog {
             width: calc(90vw - 48px);
           }
         }
@@ -489,6 +485,10 @@ export class HuiDialogEditCard extends LitElement
         ha-dialog {
           --dialog-z-index: 5;
           --mdc-dialog-max-height: 650px;
+        }
+
+        :host([large]) ha-dialog {
+          --mdc-dialog-max-width: calc(100% - 32px);
         }
 
         ha-header-bar {
