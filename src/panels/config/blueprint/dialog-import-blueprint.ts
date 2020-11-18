@@ -66,17 +66,32 @@ class DialogImportBlueprint extends LitElement {
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._result
             ? html`${this.hass.localize(
-                  "ui.panel.config.blueprint.add.import",
+                  "ui.panel.config.blueprint.add.import_header",
                   "name",
-                  "domain",
                   html`<b>${this._result.blueprint.metadata.name}</b>`,
+                  "domain",
                   this._result.blueprint.metadata.domain
                 )}
-                <paper-input
-                  id="input"
-                  .value=${this._result.suggested_filename}
-                  label="Filename"
-                ></paper-input>
+                ${this._result.validation_errors
+                  ? html`
+                      <p class="error">
+                        ${this.hass.localize(
+                          "ui.panel.config.blueprint.add.unsupported_blueprint"
+                        )}
+                      </p>
+                      <ul class="error">
+                        ${this._result.validation_errors.map(
+                          (error) => html`<li>${error}</li>`
+                        )}
+                      </ul>
+                    `
+                  : html`
+                      <paper-input
+                        id="input"
+                        .value=${this._result.suggested_filename}
+                        label="Filename"
+                      ></paper-input>
+                    `}
                 <pre>${this._result.raw_data}</pre>`
             : html`${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_introduction"
@@ -115,7 +130,7 @@ class DialogImportBlueprint extends LitElement {
               <mwc-button
                 slot="primaryAction"
                 @click=${this._save}
-                .disabled=${this._saving}
+                .disabled=${this._saving || this._result.validation_errors}
               >
                 ${this._saving
                   ? html`<ha-circular-progress
