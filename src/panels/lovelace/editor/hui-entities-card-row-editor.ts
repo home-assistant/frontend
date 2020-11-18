@@ -183,7 +183,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
   private async _addEntity(): Promise<void> {
     const newConfigEntities = this.entities!.concat({
-      entity: " ",
+      entity: Object.keys(this.hass!.states)[0],
     });
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
 
@@ -192,7 +192,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
       subElementConfig: {
         index,
         type: "row",
-        elementConfig: this.entities![index],
+        elementConfig: newConfigEntities[index],
       },
     });
   }
