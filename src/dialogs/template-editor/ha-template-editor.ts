@@ -44,7 +44,9 @@ export class TemplateEditor extends LitElement {
     }
 
     return html`<ha-dialog
-      .heading=${true}
+      .heading=${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.editor"
+            )}
       open
       @closed=${this.closeDialog}
       hideActions
