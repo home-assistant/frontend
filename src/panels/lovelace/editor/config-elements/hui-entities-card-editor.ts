@@ -239,9 +239,10 @@ export class HuiEntitiesCardEditor extends LitElement
       this._config = { ...this._config!, entities: newConfigEntities };
       this._configEntities = processEditorEntities(this._config!.entities);
     } else if (configValue) {
-      if (value === "") {
+      if (!value || value === "") {
         this._config = { ...this._config };
         delete this._config[configValue!];
+        goBack = true;
       } else {
         this._config = {
           ...this._config,

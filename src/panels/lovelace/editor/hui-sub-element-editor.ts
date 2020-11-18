@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiArrowLeft,
   mdiCodeBracesBox,
@@ -20,6 +21,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
@@ -146,11 +148,17 @@ export class HuiSubElementEditor extends LitElement {
     fireEvent(this, "go-back");
   }
 
-  private _toggleMode(): void {
+  private _toggleMode(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     this._editorElement?.toggleMode();
   }
 
-  private _remove(): void {
+  private _remove(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     fireEvent(this, "config-changed", { config: undefined });
   }
 
