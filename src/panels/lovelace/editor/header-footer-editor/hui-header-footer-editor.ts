@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiChevronRight } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -31,68 +31,31 @@ export class HuiHeaderFooterEditor extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div>
+      <div @click=${this._click}>
         <span>
           ${this.hass.localize(
-            `ui.panel.lovelace.editor.header-footer.${this.configValue}`
-          )}:
-          ${!this.config?.type
-            ? this.hass!.localize("ui.panel.lovelace.editor.common.none")
-            : this.hass!.localize(
-                `ui.panel.lovelace.editor.header-footer.types.${this.config?.type}.name`
-              )}
+            `ui.panel.lovelace.editor.header-footer.${this.configValue}.manage`
+          )}
         </span>
-      </div>
-      <div>
-        ${!this.config?.type
-          ? html`
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.common.add"
-                )}
-                class="add-icon"
-                @click=${this._add}
-              >
-                <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-              </mwc-icon-button>
-            `
-          : html`
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.common.clear"
-                )}
-                class="remove-icon"
-                @click=${this._delete}
-              >
-                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-              </mwc-icon-button>
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.common.edit"
-                )}
-                class="edit-icon"
-                @click=${this._edit}
-              >
-                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-              </mwc-icon-button>
-            `}
+        <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
       </div>
     `;
   }
 
-  private _edit(): void {
+  private _click(): void {
+    if (!this.config?.type) {
+      showCreateHeaderFooterDialog(this, {
+        pickHeaderFooter: (config) => this._elementPicked(config),
+        type: this.configValue,
+      });
+      return;
+    }
+
     fireEvent(this, "edit-detail-element", {
       subElementConfig: {
         elementConfig: this.config,
         type: this.configValue,
       },
-    });
-  }
-
-  private _add(): void {
-    showCreateHeaderFooterDialog(this, {
-      pickHeaderFooter: (config) => this._elementPicked(config),
-      type: this.configValue,
     });
   }
 
@@ -106,34 +69,19 @@ export class HuiHeaderFooterEditor extends LitElement {
     });
   }
 
-  private _delete(): void {
-    fireEvent(this, "value-changed", { value: "" });
-  }
-
   static get styles(): CSSResult {
     return css`
-      :host {
-        font-size: 16px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 12px;
-      }
-
       :host > div {
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        padding-bottom: 12px;
+        min-height: 48px;
+        cursor: pointer;
       }
 
-      mwc-icon-button,
-      .header-footer-icon {
-        --mdc-icon-button-size: 36px;
+      ha-svg-icon {
         color: var(--secondary-text-color);
-      }
-
-      .header-footer-icon {
-        padding-right: 8px;
       }
     `;
   }

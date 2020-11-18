@@ -2379,7 +2379,6 @@
             "edit": "Edit",
             "clear": "Clear",
             "add": "Add",
-            "none": "None",
             "delete": "Delete"
           },
           "raw_editor": {
@@ -2716,8 +2715,14 @@
             "by_card": "By Card"
           },
           "header-footer": {
-            "header": "Header",
-            "footer": "Footer",
+            "header": {
+              "name": "Header",
+              "manage": "Manage header configuration"
+            },
+            "footer": {
+              "name": "Footer",
+              "manage": "Manage footer configuration"
+            },
             "choose_header_footer": "Choose a {type}",
             "types": {
               "graph": {

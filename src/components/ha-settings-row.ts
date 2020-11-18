@@ -30,6 +30,7 @@ export class HaSettingsRow extends LitElement {
     return css`
       :host {
         display: flex;
+        padding: 0 16px;
         align-content: normal;
         align-self: auto;
         align-items: center;

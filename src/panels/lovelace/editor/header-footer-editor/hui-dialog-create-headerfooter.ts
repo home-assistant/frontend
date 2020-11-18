@@ -53,7 +53,7 @@ export class HuiCreateDialogHeaderFooter extends LitElement
             `ui.panel.lovelace.editor.header-footer.choose_header_footer`,
             "type",
             this.hass!.localize(
-              `ui.panel.lovelace.editor.header-footer.${this._params.type}`
+              `ui.panel.lovelace.editor.header-footer.${this._params.type}.name`
             )
           )
         )}
