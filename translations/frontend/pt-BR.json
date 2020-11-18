@@ -510,15 +510,22 @@
             "continue": "Continuar",
             "copied": "Copiado",
             "delete": "Eliminar",
+            "disable": "Desabilitar",
+            "enable": "Habilitar",
             "error_required": "Obrigatório",
+            "leave": "Sair",
             "loading": "Carregando",
             "menu": "Menu",
             "next": "Próximo",
             "no": "Não",
+            "not_now": "Agora não",
             "overflow_menu": "Menu expansível",
             "previous": "Anterior",
             "refresh": "Atualizar",
+            "remove": "Remover",
+            "rename": "Renomear",
             "save": "Salvar",
+            "skip": "Ignorar",
             "successfully_deleted": "Eliminado com sucesso",
             "successfully_saved": "Salvo com sucesso",
             "undo": "Desfazer",
@@ -582,8 +589,10 @@
                     "was_disconnected": "foi desconectado",
                     "was_locked": "foi trancada",
                     "was_opened": "foi aberto",
+                    "was_plugged_in": "foi conectado",
                     "was_safe": "estava seguro",
                     "was_unlocked": "foi destrancada",
+                    "was_unplugged": "foi desconectado",
                     "was_unsafe": "estava inseguro"
                 }
             },
@@ -605,7 +614,7 @@
                     "playlist": "Lista de reprodução",
                     "podcast": "Podcast",
                     "season": "Temporada",
-                    "url": "Url",
+                    "url": "URL",
                     "video": "Vídeo"
                 },
                 "content-type": {
@@ -654,6 +663,10 @@
             },
             "service-picker": {
                 "service": "Serviço"
+            },
+            "user-picker": {
+                "add_user": "Adicionar Usuário",
+                "remove_user": "Remover usuário"
             }
         },
         "dialogs": {
@@ -685,7 +698,7 @@
                     "update": "Atualizar"
                 },
                 "faq": "documentação",
-                "no_unique_id": "Essa entidade não possui um ID exclusivo; portanto, suas configurações não podem ser gerenciadas a partir da interface do usuário.",
+                "no_unique_id": "Essa entidade não possui um ID único; portanto suas configurações não podem ser gerenciadas a partir da interface do usuário. Consulte o {faq_link} para mais detalhes.",
                 "related": "Relacionado",
                 "settings": "Configurações"
             },
@@ -731,6 +744,9 @@
                 },
                 "platform_not_loaded": "A integração {platform} não está carregada. Por favor adicione-a em sua configuração adicionando 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Este campo é obrigatório",
+                "timer": {
+                    "duration": "Duração"
+                },
                 "yaml_not_editable": "As configurações desta entidade não podem ser editadas a partir da interface do usuário. Somente entidades configuradas a partir da interface do usuário são configuráveis a partir da interface do usuário."
             },
             "image_cropper": {
@@ -742,6 +758,7 @@
                 "dismiss": "Dispensar diálogo",
                 "edit": "Editar entidade",
                 "history": "Histórico",
+                "last_changed": "Última alteração",
                 "last_updated": "Última atualização",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
@@ -799,6 +816,36 @@
                 }
             },
             "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "areas": "Áreas",
+                        "automation": "Automações",
+                        "core": "Geral",
+                        "customize": "Customizações",
+                        "devices": "Dispositivos",
+                        "entities": "Entidades",
+                        "info": "Informações",
+                        "integrations": "Integrações",
+                        "person": "Pessoas",
+                        "scene": "Cenas",
+                        "server_control": "Controles do Servidor",
+                        "users": "Usuários",
+                        "zone": "Zonas"
+                    },
+                    "reload": {
+                        "automation": "Recarregar automações",
+                        "group": "Recarregar grupos, grupos de entidades e serviços de notificação",
+                        "homekit": "Recarregar HomeKit",
+                        "person": "Recarregar pessoas",
+                        "reload": "Recarregar {domain}",
+                        "scene": "Recarregar cenas",
+                        "zone": "Recarregar zonas"
+                    },
+                    "server_control": {
+                        "restart": "Reiniciar",
+                        "stop": "Parar"
+                    }
+                },
                 "filter_placeholder": "Filtro de Entidades"
             },
             "voice_command": {
@@ -860,6 +907,7 @@
         },
         "notification_toast": {
             "connection_lost": "Conexão perdida. Reconectando…",
+            "dismiss": "Dispensar",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
             "started": "O Home Assistant foi iniciado!",
             "starting": "O Home Assistant está iniciando, algumas funcionalidades podem estar indisponíveis até que esteja iniciado.",
@@ -1105,6 +1153,7 @@
                                     "trigger": "Gatilho"
                                 },
                                 "event": {
+                                    "context_user_pick": "Selecione o usuário",
                                     "event_data": "Dados de evento",
                                     "event_type": "Tipo de evento",
                                     "label": "Evento"
@@ -1200,6 +1249,14 @@
                         "only_editable": "Apenas as automaçãos definidas em automatis.yaml são editáveis.",
                         "pick_automation": "Escolha uma automação para editar",
                         "show_info_automation": "Mostrar informações sobre automação"
+                    },
+                    "thingtalk": {
+                        "create": "Criar automação",
+                        "task_selection": {
+                            "for_example": "Por exemplo:",
+                            "header": "Criar nova automação",
+                            "language_note": "Nota: Por enquanto, apenas o Inglês é suportado."
+                        }
                     }
                 },
                 "cloud": {
@@ -1495,6 +1552,7 @@
                         },
                         "filter": {
                             "filter": "Filtro",
+                            "show_all": "Mostrar tudo",
                             "show_disabled": "Mostrar entidades desativadas",
                             "show_readonly": "Mostrar entidades somente de leitura",
                             "show_unavailable": "Mostrar entidades indisponíveis"
@@ -1533,7 +1591,7 @@
                 "header": "Configurar o Home Assistant",
                 "helpers": {
                     "caption": "Ajudantes",
-                    "description": "Elementos que podem ajudar a construir automações.",
+                    "description": "Gerencie elementos que ajudam a construir automações",
                     "dialog": {
                         "add_helper": "Adicionar ajudante",
                         "add_platform": "Adicionar {platform}",
@@ -1550,6 +1608,7 @@
                         "no_helpers": "Parece que você ainda não tem ajudantes!"
                     },
                     "types": {
+                        "counter": "Contador",
                         "input_boolean": "Alternar",
                         "input_datetime": "Data e/ou hora",
                         "input_number": "Número",
@@ -1561,7 +1620,7 @@
                     "built_using": "Construído usando",
                     "caption": "Informações",
                     "custom_uis": "UIs personalizadas:",
-                    "description": "Informações sobre a instalação do Home Assistant",
+                    "description": "Ver informações sobre a instalação do Home Assistant",
                     "developed_by": "Desenvolvido por um monte de pessoas incríveis.",
                     "documentation": "Documentação",
                     "frontend": "frontend-ui",
@@ -1575,6 +1634,25 @@
                     "server": "servidor",
                     "source": "Código fonte:",
                     "system_health_error": "O componente System Health não foi carregado. Adicione 'system_health:' ao configuration.yaml",
+                    "system_health": {
+                        "checks": {
+                            "homeassistant": {
+                                "arch": "Arquitetura da CPU",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Tipo de Instalação",
+                                "os_name": "Nome do Sistema Operacional",
+                                "os_version": "Versão do Sistema Operacional",
+                                "timezone": "Fuso horário",
+                                "version": "Versão"
+                            },
+                            "lovelace": {
+                                "mode": "Modo",
+                                "resources": "Recursos"
+                            }
+                        },
+                        "more_info": "Mais Informações"
+                    },
                     "title": "Info"
                 },
                 "integration_panel_move": {
@@ -1815,6 +1893,7 @@
                     },
                     "services": {
                         "add_node": "Adicionar Nó",
+                        "cancel_command": "Cancelar Comando",
                         "remove_node": "Remover Nó"
                     }
                 },
@@ -1928,6 +2007,8 @@
                     },
                     "picker": {
                         "add_script": "Adicionar script",
+                        "duplicate": "Duplicar",
+                        "duplicate_script": "Duplicar script",
                         "edit_script": "Editar script",
                         "header": "Editor de Scripts",
                         "headers": {
@@ -1953,7 +2034,7 @@
                             "filter": "Recarregar entidades de filtro",
                             "generic": "Recarregar entidades genéricas de câmeras IP",
                             "generic_thermostat": "Recarregar entidades genéricas do termostato",
-                            "group": "Recarregar os grupos",
+                            "group": "Recarregar os grupos, grupos de entidades e serviços de notificação",
                             "heading": "Recarregando a configuração YAML",
                             "homekit": "Recarregar Homekit",
                             "input_boolean": "Recarregar entradas de booleanos",
@@ -2050,6 +2131,7 @@
                         "update_user": "Atualizar"
                     },
                     "picker": {
+                        "add_user": "Adicionar Usuário",
                         "headers": {
                             "group": "Grupo",
                             "name": "Nome",
@@ -2174,7 +2256,7 @@
                         "create": "Criar",
                         "delete": "Excluir",
                         "icon": "Ícone",
-                        "icon_error_msg": "O ícone deve estar no formato prefixo:nomedoícone, por exemplo: mdi:home",
+                        "icon_error_msg": "O ícone deve estar no formato \"prefixo:nomedoícone\", por exemplo: \"mdi:home\"",
                         "latitude": "Latitude",
                         "longitude": "Longitude",
                         "name": "Nome",
@@ -2330,6 +2412,8 @@
                         "filter_attributes": "Filtro de atributos",
                         "filter_entities": "Filtro de entidades",
                         "filter_states": "Filtro de estados",
+                        "last_changed": "Última alteração",
+                        "last_updated": "Última atualização",
                         "more_info": "Mais informações",
                         "no_entities": "Nenhuma entidade",
                         "set_state": "Definir Estado",
@@ -2340,6 +2424,7 @@
                     "templates": {
                         "description": "Os templates são renderizados usando o Jinja2 com algumas extensões específicas do Home Assistant.",
                         "editor": "Editor de templates",
+                        "entity": "Entidade",
                         "jinja_documentation": "Documentação do template Jinja2",
                         "template_extensions": "Extensões de template do Home Assistant",
                         "title": "Modelo",
@@ -2422,7 +2507,7 @@
                             "toggle": "Alternar",
                             "url": "URL"
                         },
-                        "url_path": "Caminho de Url"
+                        "url_path": "Caminho de URL"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2473,7 +2558,9 @@
                             "secondary_info_values": {
                                 "brightness": "Brilho",
                                 "entity-id": "ID da entidade",
+                                "last-changed": "Última alteração",
                                 "last-triggered": "Último Disparo",
+                                "none": "Sem informações secundárias",
                                 "position": "Posição",
                                 "tilt-position": "Posição de inclinação"
                             },
@@ -2628,8 +2715,15 @@
                         "entity": "Entidade",
                         "no_description": "Nenhuma descrição disponível"
                     },
+                    "common": {
+                        "add": "Adicionar",
+                        "clear": "Limpar",
+                        "edit": "Editar",
+                        "none": "Nenhum"
+                    },
                     "edit_card": {
                         "add": "Adicionar Cartão",
+                        "clear": "Limpar",
                         "confirm_cancel": "Tem certeza de que deseja cancelar?",
                         "delete": "Excluir Cartão",
                         "duplicate": "Duplicar",
@@ -2667,6 +2761,21 @@
                         }
                     },
                     "header": "Editar “interface” do usuário",
+                    "header-footer": {
+                        "footer": "Rodapé",
+                        "header": "Cabeçalho",
+                        "types": {
+                            "buttons": {
+                                "name": "Botões"
+                            },
+                            "graph": {
+                                "name": "Gráfico"
+                            },
+                            "picture": {
+                                "name": "Imagem"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Abra o menu da Interface Lovelace",
                         "raw_editor": "Editor de configuração RAW"
@@ -2710,6 +2819,12 @@
                     "select_view": {
                         "dashboard_label": "Painel de controle",
                         "header": "Selecione uma tela"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Editor de Rodapé",
+                            "header": "Editor de Cabeçalho"
+                        }
                     },
                     "suggest_card": {
                         "add": "Adicionar a UI do Lovelace",
@@ -2971,6 +3086,9 @@
                     "description": "Escolha um painel padrão para este dispositivo.",
                     "dropdown_label": "Painel de controle",
                     "header": "Painel de controle"
+                },
+                "enable_shortcuts": {
+                    "header": "Atalhos de Teclado"
                 },
                 "force_narrow": {
                     "description": "Isto irá ocultar a barra lateral por padrão, semelhante à experiência móvel.",

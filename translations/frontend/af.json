@@ -1091,7 +1091,7 @@
                         "confirm_delete_ignore": "Dit sal die integrasie weer in u ontdekte integrasies laat verskyn wanneer dit ontdek word. Dit kan herbegin of 'n geruime tyd neem.",
                         "confirm_delete_ignore_title": "Hou op om {name} ignoreer?",
                         "confirm_ignore": "Is u seker dat u nie hierdie integrasie wil instel nie? U kan dit ongedaan maak deur op die 'Wys geïgnoreerde integrasies' in die oorloopmenu regs bo te klik.",
-                        "confirm_ignore_title": "Ignoreer ontdekking van {naam}?",
+                        "confirm_ignore_title": "Ignoreer ontdekking van {name}?",
                         "hide_ignored": "Verberg geïgnoreerde integrasies",
                         "ignore": "Ignoreer",
                         "ignored": "Geïgnoreer",
