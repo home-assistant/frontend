@@ -143,6 +143,7 @@ export class DialogHassioNetwork extends LitElement
                   ? html`<p>Connected to: ${this._interface?.wifi?.ssid}</p>`
                   : ""}
                 <mwc-button
+                  class="scan"
                   @click=${this._scanForAP}
                   .disabled=${this._scanning}
                 >
@@ -549,6 +550,10 @@ export class DialogHassioNetwork extends LitElement
           --mdc-theme-primary: var(--error-color);
         }
 
+        mwc-button.scan {
+          margin-left: 8px;
+        }
+
         :host([rtl]) app-toolbar {
           direction: rtl;
           text-align: right;
@@ -575,6 +580,9 @@ export class DialogHassioNetwork extends LitElement
         .warning {
           color: var(--error-color);
           --primary-color: var(--error-color);
+        }
+        div.warning {
+          margin: 12px 4px -12px;
         }
 
         ha-expansion-panel {
