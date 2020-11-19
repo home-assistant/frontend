@@ -56,11 +56,11 @@ export class HassioUploadSnapshot extends LitElement {
     if (file.size > MAX_FILE_SIZE) {
       showAlertDialog(this, {
         title: "Snapshot file is too big",
-        text: html`The maximum allowed filesize is 1GB,
+        text: html`The maximum allowed filesize is 1GB.<br />
           <a
             href="https://www.home-assistant.io/hassio/haos_common_tasks/#restoring-a-snapshot-on-a-new-install"
             target="_blank"
-            >have a look here on how to restore it.</a
+            >Have a look here on how to restore it.</a
           >`,
         confirmText: "ok",
       });
