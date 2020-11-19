@@ -63,8 +63,8 @@ class MoreInfoCover extends LitElement {
         <div class="tilt">
           <ha-labeled-slider
             .caption=${this.hass.localize("ui.card.cover.tilt_position")}
-            pin=""
-            extra=""
+            pin
+            extra
             .value=${this.stateObj.attributes.current_tilt_position}
             .disabled=${!this._entityObj.supportsSetTiltPosition}
             @on-change=${this._coverTiltPositionSliderChanged}
