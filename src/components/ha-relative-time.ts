@@ -34,8 +34,8 @@ class HaRelativeTime extends UpdatingElement {
     this._updateRelative();
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+  protected update(changedProps: PropertyValues) {
+    super.update(changedProps);
     this._updateRelative();
   }
 
