@@ -164,7 +164,7 @@ export class HuiNotificationDrawer extends EventsMixin(
     if (
       this.open &&
       oldNotifications.length > 0 &&
-      !newNotifications.length === 0
+      newNotifications.length === 0
     ) {
       this.open = false;
     }
