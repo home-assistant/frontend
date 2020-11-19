@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
-import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiArrowLeft,
   mdiCodeBracesBox,
