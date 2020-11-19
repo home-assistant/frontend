@@ -741,7 +741,7 @@
                     "update": "更新"
                 },
                 "faq": "文档",
-                "no_unique_id": "该实体没有唯一的 ID，因此无法由 UI 管理其设置。请参阅 {faq_link} 以详细了解。",
+                "no_unique_id": "该实体 (\"{entity_id}\") 没有唯一的 ID，因此无法由 UI 管理其设置。请参阅 {faq_link} 以详细了解。",
                 "related": "关联",
                 "settings": "设置"
             },

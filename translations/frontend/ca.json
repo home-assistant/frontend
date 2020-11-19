@@ -206,7 +206,7 @@
             "fan_only": "Només ventilador",
             "heat": "Escalfar",
             "heat_cool": "Escalfar/Refredar",
-            "off": "Apagat"
+            "off": "Desactivat"
         },
         "configurator": {
             "configure": "Configurar",
@@ -229,8 +229,8 @@
             "not_home": "Fora"
         },
         "fan": {
-            "off": "Apagat",
-            "on": "Engegat"
+            "off": "Desactivat",
+            "on": "Activat"
         },
         "group": {
             "closed": "Tancat",
@@ -262,7 +262,7 @@
         "media_player": {
             "idle": "Inactiu",
             "off": "Desactivat",
-            "on": "Encès",
+            "on": "Activat",
             "paused": "Pausat",
             "playing": "Reproduint",
             "standby": "En espera"
@@ -275,8 +275,8 @@
             "problem": "Problema"
         },
         "remote": {
-            "off": "Apagat",
-            "on": "Encès"
+            "off": "Desactivat",
+            "on": "Activat"
         },
         "scene": {
             "scening": "Escena activa"
@@ -294,7 +294,7 @@
             "below_horizon": "Sota l'horitzó"
         },
         "switch": {
-            "off": "Apagat",
+            "off": "Desactivat",
             "on": "Activat"
         },
         "timer": {
@@ -307,8 +307,8 @@
             "docked": "Aparcat",
             "error": "Error",
             "idle": "Inactiu",
-            "off": "Apagat",
-            "on": "Encès",
+            "off": "Desactivat",
+            "on": "Activat",
             "paused": "Pausat",
             "returning": "Retornant a la base"
         },
@@ -694,11 +694,11 @@
                 "never": "Mai",
                 "past": "Fa {time}",
                 "past_duration": {
-                    "day": "Fa {count} {count, plural,\n  one {dia}\n  other {dies}\n}",
-                    "hour": "Fa {count} {count, plural,\n  one {hora}\n  other {hores}\n}",
-                    "minute": "Fa {count} {count, plural,\n  one {minut}\n  other {minuts}\n}",
-                    "second": "Fa {count} {count, plural,\n  one {segon}\n  other {segons}\n}",
-                    "week": "Fa {count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
+                    "day": "fa {count} {count, plural,\n  one {dia}\n  other {dies}\n}",
+                    "hour": "fa {count} {count, plural,\n  one {hora}\n  other {hores}\n}",
+                    "minute": "fa {count} {count, plural,\n  one {minut}\n  other {minuts}\n}",
+                    "second": "fa {count} {count, plural,\n  one {segon}\n  other {segons}\n}",
+                    "week": "fa {count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
                 }
             },
             "service-picker": {
@@ -741,7 +741,7 @@
                     "update": "Actualitza"
                 },
                 "faq": "documentació",
-                "no_unique_id": "Aquesta entitat no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari. Consulta {faq_link} per a més detalls.",
+                "no_unique_id": "Aquesta entitat (\"{entity_id}\") no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari. Consulta les {faq_link} per a més detalls.",
                 "related": "Relacionat",
                 "settings": "Configuració"
             },
@@ -1875,7 +1875,7 @@
                     "none_found": "No s'han trobat integracions",
                     "none_found_detail": "Ajusta els paràmetres de cerca.",
                     "note_about_integrations": "Encara no es poden configurar totes les integracions a través de la UI.",
-                    "note_about_website_reference": "N'hi ha més disponibles al ",
+                    "note_about_website_reference": "En pots trobar més al ",
                     "reconfigure": "Reconfigura",
                     "rename_dialog": "Edita el nom de l'entrada de configuració",
                     "rename_input_label": "Nom de l'entrada",
@@ -3370,7 +3370,7 @@
                     "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes/scripts interactuar amb la instància de Home Assistant. Cada token és vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
                     "empty_state": "Encara no tens tokens d'autenticació d'accés de llarga durada.",
                     "header": "Tokens d'autenticació d'accés de llarga durada",
-                    "last_used": "Darrer ús el {date} des de {location}",
+                    "last_used": "Darrer ús {date} des de {location}",
                     "learn_auth_requests": "Aprèn a fer sol·licituds autenticades.",
                     "name": "Nom",
                     "not_used": "Mai no s'ha utilitzat",
@@ -3409,7 +3409,7 @@
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'actualització.",
                     "description": "Cada token d'autenticació d'actualització representa un inici de sessió diferent. Els tokens d'autenticació d'actualització s'eliminaran automàticament quan tanquis la sessió. A sota hi ha una llista de tokens d'autenticació d'actualització que estan actius actualment al teu compte.",
                     "header": "Refresca els tokens d'autenticació",
-                    "last_used": "Darrer ús el {date} des de {location}",
+                    "last_used": "Darrer ús {date} des de {location}",
                     "not_used": "Mai no s'ha utilitzat",
                     "token_title": "Token d'actualització de {clientId}"
                 },

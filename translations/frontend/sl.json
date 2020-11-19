@@ -741,7 +741,7 @@
                     "update": "Posodobi"
                 },
                 "faq": "dokumentacija",
-                "no_unique_id": "Ta entiteta nima enoličnega ID-ja, zato njenih nastavitev ni mogoče upravljati iz uporabniškega vmesnika. Za več podrobnosti glejte {faq_link} .",
+                "no_unique_id": "Ta entiteta (\"{entity_id}\") nima enoličnega ID-ja, zato njenih nastavitev ni mogoče upravljati iz uporabniškega vmesnika. Za več podrobnosti glejte {faq_link} .",
                 "related": "Povezano",
                 "settings": "Nastavitve"
             },

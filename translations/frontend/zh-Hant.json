@@ -741,7 +741,7 @@
                     "update": "更新"
                 },
                 "faq": "相關文件",
-                "no_unique_id": "此實體不包含唯一 ID、因此無法由 UI 進行管理設定。請參閱{faq_link}以獲得更詳細資訊。",
+                "no_unique_id": "此實體（\"{entity_id}\"）不包含唯一 ID、因此無法由 UI 進行管理設定。請參閱{faq_link}以獲得更詳細資訊。",
                 "related": "相關",
                 "settings": "設定"
             },

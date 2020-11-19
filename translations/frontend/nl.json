@@ -741,7 +741,7 @@
                     "update": "Bijwerken"
                 },
                 "faq": "documentatie",
-                "no_unique_id": "Deze entiteit heeft geen unieke ID, daarom kunnen de instellingen niet worden beheerd vanuit de gebruikersinterface. Zie de {faq_link} voor meer details",
+                "no_unique_id": "Deze entiteit (\" {entity_id} \") heeft geen unieke ID, daarom kunnen de instellingen ervan niet worden beheerd vanuit de gebruikersinterface. Zie de {faq_link} voor meer details.",
                 "related": "Gerelateerd",
                 "settings": "instellingen"
             },
