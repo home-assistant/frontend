@@ -67,7 +67,7 @@ class MoreInfoCover extends LitElement {
             extra
             .value=${this.stateObj.attributes.current_tilt_position}
             .disabled=${!this._entityObj.supportsSetTiltPosition}
-            @on-change=${this._coverTiltPositionSliderChanged}
+            @change=${this._coverTiltPositionSliderChanged}
           >
             <ha-cover-tilt-controls
               class=${classMap({
