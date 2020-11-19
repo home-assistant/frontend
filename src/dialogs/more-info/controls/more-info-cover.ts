@@ -52,7 +52,7 @@ class MoreInfoCover extends LitElement {
     return html`<div class=${classMap(this._computeClassNames())}>
         <div class="current_position">
           <ha-labeled-slider
-            .caption="[[localize('ui.card.cover.position')]]"
+            .caption=${this.hass.localize("ui.card.cover.position")}
             pin=""
             .value=${this.stateObj.attributes.current_position}
             .disabled=${!this._entityObj.supportsSetPosition}
