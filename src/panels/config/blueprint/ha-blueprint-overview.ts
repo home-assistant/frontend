@@ -138,9 +138,10 @@ class HaBlueprintOverview extends LitElement {
         </mwc-icon-button>
         <mwc-fab
           slot="fab"
-          title=${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
+          extended
           @click=${this._addBlueprint}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
