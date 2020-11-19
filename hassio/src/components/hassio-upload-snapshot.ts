@@ -27,7 +27,7 @@ declare global {
   }
 }
 
-const MAX_FILE_SIZE = 1000000; // 1GB
+const MAX_FILE_SIZE = 1073741824; // 1GB
 
 @customElement("hassio-upload-snapshot")
 export class HassioUploadSnapshot extends LitElement {
