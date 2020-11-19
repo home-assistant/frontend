@@ -13,7 +13,7 @@ import {
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { compare } from "../common/string/compare";
-import { Blueprints, fetchBlueprints } from "../data/blueprint";
+import { Blueprint, Blueprints, fetchBlueprints } from "../data/blueprint";
 import { HomeAssistant } from "../types";
 
 @customElement("ha-blueprint-picker")
@@ -34,10 +34,12 @@ class HaBluePrintPicker extends LitElement {
     if (!blueprints) {
       return [];
     }
-    const result = Object.entries(blueprints).map(([path, blueprint]) => ({
-      ...blueprint.metadata,
-      path,
-    }));
+    const result = Object.entries(blueprints)
+      .filter(([_path, blueprint]) => !("error" in blueprint))
+      .map(([path, blueprint]) => ({
+        ...(blueprint as Blueprint).metadata,
+        path,
+      }));
     return result.sort((a, b) => compare(a.name, b.name));
   });
 

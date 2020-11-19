@@ -26,12 +26,13 @@ import { haStyle } from "../../../resources/styles";
 import { HassEntity } from "home-assistant-js-websocket";
 import { navigate } from "../../../common/navigate";
 import {
-  Blueprint,
+  BlueprintOrError,
   Blueprints,
   fetchBlueprints,
 } from "../../../data/blueprint";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-selector/ha-selector";
 
 @customElement("blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends LitElement {
@@ -52,7 +53,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     this._getBlueprints();
   }
 
-  private get _blueprint(): Blueprint | undefined {
+  private get _blueprint(): BlueprintOrError | undefined {
     if (!this._blueprints) {
       return undefined;
     }
@@ -149,9 +150,14 @@ export class HaBlueprintAutomationEditor extends LitElement {
                 )}
               </mwc-button>
             </div>
+
             ${this.config.use_blueprint.path
-              ? blueprint?.metadata?.input &&
-                Object.keys(blueprint.metadata.input).length
+              ? blueprint && "error" in blueprint
+                ? html`<p class="warning">
+                    There is an error in this Blueprint: ${blueprint.error}
+                  </p>`
+                : blueprint?.metadata?.input &&
+                  Object.keys(blueprint.metadata.input).length
                 ? html`<h3>
                       ${this.hass.localize(
                         "ui.panel.config.automation.editor.blueprint.inputs"
@@ -161,13 +167,23 @@ export class HaBlueprintAutomationEditor extends LitElement {
                       ([key, value]) =>
                         html`<div>
                           ${value?.description}
-                          <paper-input
-                            .key=${key}
-                            .label=${value?.name || key}
-                            .value=${this.config.use_blueprint.input &&
-                            this.config.use_blueprint.input[key]}
-                            @value-changed=${this._inputChanged}
-                          ></paper-input>
+                          ${value?.selector
+                            ? html`<ha-selector
+                                .hass=${this.hass}
+                                .selector=${value.selector}
+                                .key=${key}
+                                .label=${value?.name || key}
+                                .value=${this.config.use_blueprint.input &&
+                                this.config.use_blueprint.input[key]}
+                                @value-changed=${this._inputChanged}
+                              ></ha-selector>`
+                            : html`<paper-input
+                                .key=${key}
+                                .label=${value?.name || key}
+                                .value=${this.config.use_blueprint.input &&
+                                this.config.use_blueprint.input[key]}
+                                @value-changed=${this._inputChanged}
+                              ></paper-input>`}
                         </div>`
                     )}`
                 : this.hass.localize(
@@ -206,7 +222,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     ev.stopPropagation();
     const target = ev.target as any;
     const key = target.key;
-    const value = target.value;
+    const value = ev.detail.value;
     if (
       (this.config.use_blueprint.input &&
         this.config.use_blueprint.input[key] === value) ||
