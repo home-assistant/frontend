@@ -44,6 +44,8 @@ export class HuiSubElementEditor extends LitElement {
 
   @property({ attribute: false }) public config!: SubElementEditorConfig;
 
+  @property({ type: Boolean }) public isAdvancedUser? = false;
+
   @internalProperty() private _guiModeAvailable = true;
 
   @internalProperty() private _guiMode = true;
@@ -79,28 +81,32 @@ export class HuiSubElementEditor extends LitElement {
           >
             <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item
-            graphic="icon"
-            .label=${this.hass!.localize(
-              this._guiMode
-                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-            )}
-            .disabled=${!this._guiModeAvailable}
-            @request-selected=${this._toggleMode}
-          >
-            <span
-              >${this.hass!.localize(
-                this._guiMode
-                  ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                  : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-              )}</span
-            >
-            <ha-svg-icon
-              slot="graphic"
-              .path=${this._guiMode ? mdiCodeBracesBox : mdiFormSelect}
-            ></ha-svg-icon>
-          </mwc-list-item>
+          ${this.isAdvancedUser
+            ? html`
+                <mwc-list-item
+                  graphic="icon"
+                  .label=${this.hass!.localize(
+                    this._guiMode
+                      ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                      : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                  )}
+                  .disabled=${!this._guiModeAvailable}
+                  @request-selected=${this._toggleMode}
+                >
+                  <span
+                    >${this.hass!.localize(
+                      this._guiMode
+                        ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                        : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                    )}</span
+                  >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${this._guiMode ? mdiCodeBracesBox : mdiFormSelect}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              `
+            : ""}
           <mwc-list-item
             graphic="icon"
             .label=${this.hass!.localize(
