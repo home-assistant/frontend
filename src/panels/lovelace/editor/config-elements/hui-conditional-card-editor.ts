@@ -1,5 +1,6 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
+import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import {
   css,
   CSSResultArray,
@@ -192,8 +193,8 @@ export class HuiConditionalCardEditor extends LitElement
     `;
   }
 
-  private _selectTab(ev): void {
-    this._cardTab = parseInt(ev.detail.index, 10) === 1;
+  private _selectTab(ev: MDCTabBarActivatedEvent): void {
+    this._cardTab = ev.detail.index === 1;
   }
 
   private _toggleMode(): void {
