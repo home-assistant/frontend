@@ -53,7 +53,7 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioHostInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public hostInfo!: HassioHostInfoType;
+  @property({ attribute: false }) public hostInfo!: HassioHostInfoType;
 
   @property({ attribute: false }) public hassioInfo!: HassioInfo;
 
@@ -193,12 +193,10 @@ class HassioHostInfo extends LitElement {
   }
 
   private _primaryIpAddress = memoizeOne((network_info: NetworkInfo) => {
-    if (!network_info) {
+    if (!network_info || !network_info.interfaces) {
       return "";
     }
-    return Object.keys(network_info?.interfaces)
-      .map((device) => network_info.interfaces[device])
-      .find((device) => device.primary)?.ip_address;
+    return network_info.interfaces.find((a) => a.primary)?.ipv4?.address![0];
   });
 
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
