@@ -293,8 +293,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     let config = entityConf as EntityConfig;
 
     config = {
-      state_color: this._config!.state_color ?? undefined,
-      secondary_info: this._config!.secondary_info ?? undefined,
+      state_color: this._config!.state_color,
+      secondary_info: this._config!.secondary_info,
       ...config,
     } as EntityConfig;
 
