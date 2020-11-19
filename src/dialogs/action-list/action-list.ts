@@ -78,7 +78,6 @@ class ActionListDialog extends LitElement
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    this.closeDialog();
     const config = (ev.currentTarget as any).config as ActionConfig;
     handleAction(
       this,
@@ -86,6 +85,7 @@ class ActionListDialog extends LitElement
       { entity: this._params?.entity, tap_action: config },
       "tap"
     );
+    this.closeDialog();
   }
 
   static get styles(): CSSResultArray {
