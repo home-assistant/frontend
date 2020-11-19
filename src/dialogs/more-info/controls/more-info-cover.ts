@@ -56,7 +56,7 @@ class MoreInfoCover extends LitElement {
             pin=""
             .value=${this.stateObj.attributes.current_position}
             .disabled=${!this._entityObj.supportsSetPosition}
-            @on-change=${this._coverPositionSliderChanged}
+            @change=${this._coverPositionSliderChanged}
           ></ha-labeled-slider>
         </div>
 
