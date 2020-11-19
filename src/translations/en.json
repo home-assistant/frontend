@@ -1452,7 +1452,7 @@
             },
             "confirm_delete_header": "Delete this blueprint?",
             "confirm_delete_text": "Are you sure you want to delete this blueprint",
-            "add_blueprint": "Add Blueprint"
+            "add_blueprint": "Add blueprint"
           },
           "add": {
             "header": "Add new blueprint",
