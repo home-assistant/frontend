@@ -166,28 +166,6 @@ class HaConfigDashboard extends LitElement {
           text-decoration: none;
           color: var(--primary-text-color);
         }
-        .conf-card {
-          position: relative;
-        }
-        .conf-card img {
-          display: block;
-          width: 100%;
-        }
-        .conf-card .carrot {
-          position: absolute;
-          top: 0;
-          right: 16px;
-          bottom: 0;
-          display: flex;
-          align-items: center;
-          color: white;
-        }
-        .conf-card ha-svg-icon {
-          position: absolute;
-          bottom: -4px;
-          left: -4px;
-          color: #a2cdf3;
-        }
         .promo-advanced {
           text-align: center;
           color: var(--secondary-text-color);
