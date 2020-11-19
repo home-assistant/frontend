@@ -692,7 +692,7 @@
                 },
                 "just_now": "Agora mesmo",
                 "never": "Nunca",
-                "past": "{time} atrás",
+                "past": "Há {time} atrás",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n} atrás",
                     "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n} atrás",

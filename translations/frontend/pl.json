@@ -741,7 +741,7 @@
                     "update": "Aktualizuj"
                 },
                 "faq": "dokumentacja",
-                "no_unique_id": "Ta encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami. Więcej szczegółów znajdziesz w {faq_link}.",
+                "no_unique_id": "Encja \"{entity_id}\" nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami. Więcej szczegółów znajdziesz w {faq_link}.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
             },

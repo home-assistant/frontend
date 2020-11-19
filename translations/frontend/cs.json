@@ -741,7 +741,7 @@
                     "update": "Aktualizovat"
                 },
                 "faq": "dokumentace",
-                "no_unique_id": "Tato entita nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní. Další podrobnosti naleznete na stránce {faq_link}.",
+                "no_unique_id": "Tato entita (\"{entity_id}\") nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní. Další podrobnosti naleznete na stránce {faq_link}.",
                 "related": "Související",
                 "settings": "Nastavení"
             },

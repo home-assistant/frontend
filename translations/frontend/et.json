@@ -741,7 +741,7 @@
                     "update": "Uuenda"
                 },
                 "faq": "dokumentatsioon",
-                "no_unique_id": "Sellel olemil puudub unikaalne ID-d. Seetõttu ei saa selle seadeid kasutajaliidesest hallata. Lisainfot vaata {faq_link}.",
+                "no_unique_id": "Olemil (\"{entity_id}\") puudub unikaalne ID-d. Seetõttu ei saa selle seadeid kasutajaliidesest hallata. Lisainfot vaata {faq_link}.",
                 "related": "Seotud",
                 "settings": "Seaded"
             },
@@ -927,7 +927,7 @@
                         "template": "Taaslae mallisisestused",
                         "trend": "Taaslae trendide olemid",
                         "universal": "Taaslae meediumimängija olemid",
-                        "zone": "Tasslae tsoonid"
+                        "zone": "Taaslae tsoonid"
                     },
                     "server_control": {
                         "perform_action": "{action} server",
@@ -1364,7 +1364,7 @@
                             "for_example": "Näiteks:",
                             "header": "Loo uus automatiseering",
                             "introduction": "Sisesta allpool, mida see automaatiseering peaks tegema, ja proovime selle teisendada Home Assistanti automaatiseeringuks.",
-                            "language_note": "Märkus. Praegu toetatakse ainult inglise keelt."
+                            "language_note": "Märkus: praegu toetatakse ainult inglise keelt."
                         }
                     }
                 },
@@ -2795,7 +2795,7 @@
                                 "last-changed": "Viimati muudetud",
                                 "last-triggered": "Viimati vallandunud",
                                 "last-updated": "Viimati uuendatud",
-                                "none": "Teisene teave puudub",
+                                "none": "Lisateave puudub",
                                 "position": "Asend",
                                 "tilt-position": "Kalle"
                             },

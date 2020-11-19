@@ -741,7 +741,7 @@
                     "update": "Actualizar"
                 },
                 "faq": "documentación",
-                "no_unique_id": "Esta entidad no tiene una ID única, por lo que su configuración no se puede administrar desde la IU. Consulta {faq_link} para más detalles.",
+                "no_unique_id": "Esta entidad (\"{entity_id}\") no tiene un ID único, por lo tanto, su configuración no se puede administrar desde la IU. Consulta el {faq_link} para obtener más detalles.",
                 "related": "Relacionado",
                 "settings": "Configuración"
             },

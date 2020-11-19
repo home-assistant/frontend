@@ -741,7 +741,7 @@
                     "update": "Oppdater"
                 },
                 "faq": "dokumentasjon",
-                "no_unique_id": "Denne enheten har ikke en unik ID, og innstillingene kan derfor ikke administreres fra brukergrensesnittet. Se {faq_link} for mer informasjon.",
+                "no_unique_id": "Denne enheten ({entity_id}) har ikke en unik ID, derfor kan ikke innstillingene administreres fra brukergrensesnittet. Se {faq_link} hvis du vil ha mer informasjon.",
                 "related": "Relaterte",
                 "settings": "Innstillinger"
             },
