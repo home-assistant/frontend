@@ -1450,19 +1450,20 @@
             "headers": {
               "name": "Name"
             },
-            "confirm_delete_header": "Delete this Blueprint?",
-            "confirm_delete_text": "Are you sure you want to delete this Blueprint"
+            "confirm_delete_header": "Delete this blueprint?",
+            "confirm_delete_text": "Are you sure you want to delete this blueprint",
+            "add_blueprint": "Add blueprint"
           },
           "add": {
             "header": "Add new blueprint",
             "import_header": "Import {name} ({domain})",
-            "import_introduction": "You can import Blueprints of other users from Github and the community forums. Enter the url of the Blueprint below.",
-            "url": "Url of the blueprint",
+            "import_introduction": "You can import blueprints of other users from Github and the community forums. Enter the URL of the blueprint below.",
+            "url": "URL of the blueprint",
             "importing": "Importing blueprint...",
             "import_btn": "Import blueprint",
             "saving": "Saving blueprint...",
             "save_btn": "Save blueprint",
-            "error_no_url": "Please enter the url of the blueprint."
+            "error_no_url": "Please enter the URL of the blueprint."
           }
         },
         "script": {
