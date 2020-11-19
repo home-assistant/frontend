@@ -103,7 +103,10 @@ export class HuiEntitiesCardEditor extends LitElement
     }
 
     return html`
-      <hui-config-element-template .isAdvanced=${this.isAdvanced}>
+      <hui-config-element-template
+        .hass=${this.hass}
+        .isAdvanced=${this.isAdvanced}
+      >
         <div class="card-config">
           <paper-input
             .label="${this.hass.localize(
@@ -121,9 +124,11 @@ export class HuiEntitiesCardEditor extends LitElement
                 "ui.panel.lovelace.editor.card.entities.show_header_toggle"
               )}
             </span>
-            <span slot="description"
-              >Only visible when 2 or more entities can be toggled</span
-            >
+            <span slot="description">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.card.entities.show_header_toggle_secondary"
+              )}
+            </span>
             <ha-switch
               .checked=${this._config!.show_header_toggle !== false}
               .configValue=${"show_header_toggle"}

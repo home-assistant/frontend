@@ -11,7 +11,6 @@ import {
 import { assert, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
-import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
 import "../../../../components/ha-settings-row";
@@ -112,9 +111,13 @@ export class HuiButtonCardEditor extends LitElement
     }
 
     return html`
-      <hui-config-element-template .isAdvanced=${this.isAdvanced}>
+      <hui-config-element-template
+        .hass=${this.hass}
+        .isAdvanced=${this.isAdvanced}
+      >
         <div class="card-config">
           <ha-entity-picker
+            allow-custom-entity
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.entity"
             )}
@@ -122,7 +125,6 @@ export class HuiButtonCardEditor extends LitElement
             .value=${this._entity}
             .configValue=${"entity"}
             @value-changed=${this._valueChanged}
-            allow-custom-entity
           ></ha-entity-picker>
           <paper-input
             .label=${this.hass.localize(

@@ -14,7 +14,6 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { EntitiesCardEntityConfig } from "../../cards/types";

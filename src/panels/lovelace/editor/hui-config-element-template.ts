@@ -8,9 +8,12 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-expansion-panel";
+import { HomeAssistant } from "../../../types";
 
 @customElement("hui-config-element-template")
 export class HuiConfigElementTemplate extends LitElement {
+  public hass!: HomeAssistant;
+
   @property({ type: Boolean }) public isAdvanced? = false;
 
   protected render(): TemplateResult {
@@ -19,7 +22,11 @@ export class HuiConfigElementTemplate extends LitElement {
       ${this.isAdvanced
         ? html`
             <ha-expansion-panel>
-              <span class="advanced-title" slot="title">Advanced options</span>
+              <span class="advanced-title" slot="title">
+                ${this.hass.localize(
+                  `ui.panel.lovelace.editor.common.advanced_options`
+                )}
+              </span>
               <slot name="advanced"></slot>
             </ha-expansion-panel>
           `

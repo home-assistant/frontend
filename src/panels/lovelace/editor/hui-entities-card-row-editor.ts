@@ -71,7 +71,12 @@ export class HuiEntitiesCardRowEditor extends LitElement {
             "ui.panel.lovelace.editor.card.generic.entities"
           )}:`}
         </span>
-        <mwc-button label="Add Row" @click=${this._addEntity}></mwc-button>
+        <mwc-button
+          .label=${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.entities.add_row"
+          )}
+          @click=${this._addEntity}
+        ></mwc-button>
       </div>
       <div class="entities">
         ${guard([this.entities, this._renderEmptySortable], () =>
@@ -113,10 +118,8 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                                 "ui.panel.lovelace.editor.card.entities.edit_special_row"
                               )}
                             `
-                          : html`
-                              ${(entityConf as EntityConfig).entity}
-                            `}</span
-                      >
+                          : html`${(entityConf as EntityConfig).entity}`}
+                      </span>
                     </div>
                     <ha-svg-icon
                       class="edit-icon"

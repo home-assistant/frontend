@@ -2379,7 +2379,8 @@
             "edit": "Edit",
             "clear": "Clear",
             "add": "Add",
-            "delete": "Delete"
+            "delete": "Delete",
+            "advanced_options": "Advanced Options"
           },
           "raw_editor": {
             "header": "Edit Configuration",
@@ -2520,11 +2521,13 @@
             "entities": {
               "name": "Entities",
               "show_header_toggle": "Show/Hide a toggle in the header to control all entities in the card",
+              "show_header_toggle_secondary": "Only visible when 2 or more entities can be toggled",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
               "edit_special_row": "View the details of this row by clicking the edit button",
               "entity_row_editor": "Entity Row Editor",
+              "add_row": "Add Row",
               "secondary_info_values": {
                 "none": "No Secondary Info",
                 "entity-id": "Entity ID",

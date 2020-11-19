@@ -150,11 +150,11 @@ export abstract class HuiElementEditor<T> extends LitElement {
     });
   }
 
-  public toggleMode() {
+  public toggleMode(): void {
     this.GUImode = !this.GUImode;
   }
 
-  public remove() {
+  public remove(): void {
     this._configElement?.remove();
   }
 
