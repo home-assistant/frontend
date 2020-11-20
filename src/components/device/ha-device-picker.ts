@@ -119,7 +119,11 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
+<<<<<<< HEAD
       deviceFilter: this["deviceFilter"]
+=======
+      includeDeviceId: string
+>>>>>>> Always show selected device in device picker
     ): Device[] => {
       if (!devices.length) {
         return [];
@@ -143,7 +147,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
       let inputDevices = [...devices];
 
-      inputDevices = inputDevices.filter((device) => !device.disabled_by);
+      inputDevices = inputDevices.filter(
+        (device) => device.id == includeDeviceId || !device.disabled_by
+      );
 
       if (includeDomains) {
         inputDevices = inputDevices.filter((device) => {
@@ -243,6 +249,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       this.excludeDomains,
       this.includeDeviceClasses,
       this.deviceFilter
+      this.value
     );
     return html`
       <vaadin-combo-box-light
