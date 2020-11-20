@@ -279,12 +279,14 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _triggerChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, trigger: ev.detail.value as Trigger[] },
     });
   }
 
   private _conditionChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {
         ...this.config!,
@@ -294,6 +296,7 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _actionChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, action: ev.detail.value as Action[] },
     });
