@@ -25,6 +25,7 @@ export interface BlueprintImportResult {
   suggested_filename: string;
   raw_data: string;
   blueprint: Blueprint;
+  validation_errors: string[] | null;
 }
 
 export const fetchBlueprints = (hass: HomeAssistant, domain: string) =>
