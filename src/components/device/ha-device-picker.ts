@@ -119,11 +119,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
-<<<<<<< HEAD
       deviceFilter: this["deviceFilter"]
-=======
-      includeDeviceId: string
->>>>>>> Always show selected device in device picker
+      value: this["value"]
     ): Device[] => {
       if (!devices.length) {
         return [];
