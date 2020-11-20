@@ -20,10 +20,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "With Name",
+    heading: "With Name (defined in card)",
     config: `
 - type: button
-  name: Bedroom
+  name: Custom Name
   entity: light.bed_light
     `,
   },
@@ -32,7 +32,7 @@ const CONFIGS = [
     config: `
 - type: button
   entity: light.bed_light
-  icon: mdi:hotel
+  icon: mdi:tools
     `,
   },
   {
@@ -71,13 +71,7 @@ const CONFIGS = [
 
 class DemoButtonEntity extends PolymerElement {
   static get template() {
-    return html`
-      <demo-cards
-        id="demos"
-        hass="[[hass]]"
-        configs="[[_configs]]"
-      ></demo-cards>
-    `;
+    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
 
   static get properties() {
@@ -86,7 +80,6 @@ class DemoButtonEntity extends PolymerElement {
         type: Object,
         value: CONFIGS,
       },
-      hass: Object,
     };
   }
 
