@@ -24,8 +24,8 @@ import type { CalendarCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceCardEditor } from "../../types";
+import "../hui-config-element-template";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
-import "./../hui-config-element-template";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
