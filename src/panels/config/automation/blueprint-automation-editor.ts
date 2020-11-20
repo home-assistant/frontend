@@ -166,7 +166,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
                     ${Object.entries(blueprint.metadata.input).map(
                       ([key, value]) =>
                         html`<div>
-                          ${value?.description}
                           ${value?.selector
                             ? html`<ha-selector
                                 .hass=${this.hass}
@@ -184,6 +183,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                                 this.config.use_blueprint.input[key]}
                                 @value-changed=${this._inputChanged}
                               ></paper-input>`}
+                          ${value?.description}
                         </div>`
                     )}`
                 : this.hass.localize(
@@ -286,6 +286,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
         }
         h3 {
           margin-top: 16px;
+          margin-bottom: 0px;
         }
         span[slot="introduction"] a {
           color: var(--primary-color);

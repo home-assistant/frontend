@@ -1,6 +1,6 @@
 import "@material/mwc-fab";
 import "@material/mwc-icon-button";
-import { mdiPlus, mdiHelpCircle, mdiDelete } from "@mdi/js";
+import { mdiPlus, mdiHelpCircle, mdiDelete, mdiRobot } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -114,8 +114,14 @@ class HaBlueprintOverview extends LitElement {
             ? ""
             : html`<mwc-icon-button
                 .blueprint=${blueprint}
+                .label=${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.use_blueprint"
+                )}
+                title=${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.use_blueprint"
+                )}
                 @click=${(ev) => this._createNew(ev)}
-                ><ha-svg-icon .path=${mdiPlus}></ha-svg-icon
+                ><ha-svg-icon .path=${mdiRobot}></ha-svg-icon
               ></mwc-icon-button>`,
       };
       columns.delete = {
@@ -126,6 +132,9 @@ class HaBlueprintOverview extends LitElement {
             ? ""
             : html`<mwc-icon-button
                 .blueprint=${blueprint}
+                .label=${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.delete_blueprint"
+                )}
                 @click=${(ev) => this._delete(ev)}
                 ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
               ></mwc-icon-button>`,
