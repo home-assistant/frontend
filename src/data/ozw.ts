@@ -69,8 +69,6 @@ export interface OZWDeviceConfig {
   type: string;
   value: string | number;
   parameter: number;
-  min: number;
-  max: number;
   help: string;
   schema: HaFormSchema;
 }
