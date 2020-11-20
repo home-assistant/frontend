@@ -16,18 +16,13 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
     return html`
       <style include="ha-style">
         .error {
-          color: red;
+          color: var(--error-color);
         }
         .status {
           color: var(--primary-color);
         }
-        .error,
-        .status {
-          position: absolute;
-          top: -4px;
-        }
-        .currentPassword {
-          margin-top: -4px;
+        #currentPassword {
+          margin-top: -8px;
         }
       </style>
       <div>
@@ -42,7 +37,7 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
               <div class="status">[[_statusMsg]]</div>
             </template>
             <paper-input
-              class="currentPassword"
+              id="currentPassword"
               label="[[localize('ui.panel.profile.change_password.current_password')]]"
               type="password"
               value="{{_currentPassword}}"
@@ -118,12 +113,16 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
     if (!this._currentPassword || !this._password1 || !this._password2) return;
 
     if (this._password1 !== this._password2) {
-      this._errorMsg = "New password confirmation doesn't match";
+      this._errorMsg = this.hass.localize(
+        "ui.panel.profile.change_password.error_new_mismatch"
+      );
       return;
     }
 
     if (this._currentPassword === this._password1) {
-      this._errorMsg = "New password must be different than current password";
+      this._errorMsg = this.hass.localize(
+        "ui.panel.profile.change_password.error_new_is_old"
+      );
       return;
     }
 
@@ -138,11 +137,14 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
       });
 
       this.setProperties({
-        _statusMsg: "Password changed successfully",
+        _statusMsg: this.hass.localize(
+          "ui.panel.profile.change_password.success"
+        ),
         _currentPassword: null,
         _password1: null,
         _password2: null,
       });
+      this.shadowRoot.querySelector("#currentPassword").invalid = false;
     } catch (err) {
       this._errorMsg = err.message;
     }
