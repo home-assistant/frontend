@@ -14,7 +14,6 @@ import {
 } from "lit-element";
 import { assert, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
@@ -111,7 +110,6 @@ export class HuiPictureEntityCardEditor extends LitElement
 
     const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
     const views = ["auto", "live"];
-    const dir = computeRTLDirection(this.hass!);
 
     return html`
       <hui-config-element-template
