@@ -1944,7 +1944,7 @@
           },
           "editor": {
             "caption": "View user",
-            "name": "Display Name",
+            "name": "Display name",
             "username": "Username",
             "change_password": "Change password",
             "new_password": "New Password",
