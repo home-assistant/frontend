@@ -1,4 +1,5 @@
 import { HomeAssistant } from "../types";
+import { Selector } from "./selector";
 
 export type Blueprints = Record<string, BlueprintOrError>;
 
@@ -10,10 +11,14 @@ export interface Blueprint {
 export interface BlueprintMetaData {
   domain: string;
   name: string;
-  input: BlueprintInput;
+  input: Record<string, BlueprintInput>;
 }
 
-export type BlueprintInput = Record<string, any>;
+export interface BlueprintInput {
+  name?: string;
+  description?: string;
+  selector?: Selector;
+}
 
 export interface BlueprintImportResult {
   url: string;

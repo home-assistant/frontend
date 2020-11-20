@@ -4,23 +4,7 @@ import { HomeAssistant } from "../../types";
 
 import "./ha-selector-entity";
 import "./ha-selector-device";
-
-export type Selector = EntitySelector | DeviceSelector;
-
-export interface EntitySelector {
-  entity: {
-    integration?: string;
-    domain?: string;
-  };
-}
-
-export interface DeviceSelector {
-  device: {
-    integration?: string;
-    manufacturer?: string;
-    model?: string;
-  };
-}
+import { Selector } from "../../data/selector";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {

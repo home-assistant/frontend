@@ -6,12 +6,12 @@ import {
   property,
 } from "lit-element";
 import { HomeAssistant } from "../../types";
-import { EntitySelector } from "./ha-selector";
 import "../entity/ha-entity-picker";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { EntitySelector } from "../../data/selector";
 
 @customElement("ha-selector-entity")
 export class HaEntitySelector extends SubscribeMixin(LitElement) {

@@ -6,10 +6,10 @@ import {
   property,
 } from "lit-element";
 import { HomeAssistant } from "../../types";
-import { DeviceSelector } from "./ha-selector";
 import "../device/ha-device-picker";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
+import { DeviceSelector } from "../../data/selector";
 
 @customElement("ha-selector-device")
 export class HaDeviceSelector extends LitElement {
