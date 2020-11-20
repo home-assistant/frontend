@@ -176,7 +176,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this._hass || this._configEntities?.length === 0) {
+    if (!this._config || !this._hass) {
       return html``;
     }
 
