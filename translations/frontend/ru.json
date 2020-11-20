@@ -547,6 +547,10 @@
                 "clear": "Очистить",
                 "show_areas": "Показать помещения"
             },
+            "blueprint-picker": {
+                "add_user": "Добавить пользователя",
+                "remove_user": "Удалить пользователя"
+            },
             "data-table": {
                 "no-data": "Нет данных",
                 "search": "Поиск"
@@ -1039,6 +1043,9 @@
                 "automation": {
                     "caption": "Автоматизация",
                     "description": "Управление правилами автоматизации",
+                    "dialog_new": {
+                        "header": "Новая автоматизация"
+                    },
                     "editor": {
                         "actions": {
                             "add": "Добавить действие",

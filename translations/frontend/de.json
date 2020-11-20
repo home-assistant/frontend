@@ -547,6 +547,10 @@
                 "clear": "Löschen",
                 "show_areas": "Bereiche anzeigen"
             },
+            "blueprint-picker": {
+                "add_user": "Benutzer hinzufügen",
+                "remove_user": "Benutzer entfernen"
+            },
             "data-table": {
                 "no-data": "Keine Daten",
                 "search": "Suche"

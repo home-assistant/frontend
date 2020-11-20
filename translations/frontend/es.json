@@ -547,6 +547,11 @@
                 "clear": "Limpiar",
                 "show_areas": "Mostrar áreas"
             },
+            "blueprint-picker": {
+                "add_user": "Añadir usuario",
+                "remove_user": "Eliminar usuario",
+                "select_blueprint": "Selecciona un plano"
+            },
             "data-table": {
                 "no-data": "Sin datos",
                 "search": "Buscar"
@@ -1046,6 +1051,20 @@
                 "automation": {
                     "caption": "Automatizaciones",
                     "description": "Administra las automatizaciones",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Usa un plano"
+                        },
+                        "header": "Crear una nueva automatización",
+                        "how": "¿Cómo quieres crear tu nueva automatización?",
+                        "start_empty": "Empezar con una automatización vacía",
+                        "thingtalk": {
+                            "create": "Crear",
+                            "header": "Describe la automatización que quieres crear",
+                            "input_label": "¿Qué debería hacer esta automatización?",
+                            "intro": "E intentaremos crearla para ti. Por ejemplo: Apaga las luces cuando me vaya."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Añadir acción",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "No hay soporte en la IU para la acción: {action}"
                         },
                         "alias": "Nombre",
+                        "blueprint": {
+                            "blueprint_to_use": "Plano a utilizar",
+                            "header": "Plano",
+                            "inputs": "Entradas",
+                            "manage_blueprints": "Administrar planos",
+                            "no_blueprints": "No tienes ningún plano",
+                            "no_inputs": "Este plano no tiene ninguna entrada."
+                        },
                         "conditions": {
                             "add": "Añadir condición",
                             "delete": "Eliminar",
@@ -1366,6 +1393,31 @@
                             "introduction": "Escribe a continuación lo que debe hacer esta automatización, e intentaremos convertirlo en una automatización de Home Assistant.",
                             "language_note": "Nota: Solo se admite Inglés por ahora."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Por favor, introduce la URL del plano.",
+                        "header": "Añadir nuevo plano",
+                        "import_btn": "Importar plano",
+                        "import_header": "Importar {name} ({domain})",
+                        "import_introduction": "Puedes importar planos de otros usuarios desde Github y los foros de la comunidad. Introduce la URL del plano a continuación.",
+                        "importing": "Importando plano...",
+                        "save_btn": "Guardar plano",
+                        "saving": "Guardando plano...",
+                        "url": "URL del plano"
+                    },
+                    "caption": "Planos",
+                    "description": "Administrar planos",
+                    "overview": {
+                        "confirm_delete_header": "¿Eliminar este plano?",
+                        "confirm_delete_text": "¿Estás seguro de que quieres borrar este plano?",
+                        "header": "Editor de planos",
+                        "headers": {
+                            "name": "Nombre"
+                        },
+                        "introduction": "El editor de planos te permite crear y editar planos.",
+                        "learn_more": "Más información sobre planos"
                     }
                 },
                 "cloud": {

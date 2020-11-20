@@ -631,7 +631,7 @@
                     "season": "Temporada",
                     "track": "Faixa",
                     "tv_show": "Programa de TV",
-                    "url": "Url",
+                    "url": "URL",
                     "video": "Vídeo"
                 },
                 "content-type": {
@@ -916,7 +916,7 @@
                         "rpi_gpio": "Recarregar entidades Raspberry Pi GPIO",
                         "scene": "Recarregar cenas",
                         "script": "Recarregar scripts",
-                        "smtp": "Recarregar serviços de notificação de smtp",
+                        "smtp": "Recarregar serviços de notificação de SMTP",
                         "statistics": "Recarregar entidades estatísticas",
                         "telegram": "Recarregar os serviços de notificação do Telegram",
                         "template": "Recarregar entidades modelo",
@@ -1680,7 +1680,7 @@
                         "remove_selected": {
                             "button": "Remover selecionado",
                             "confirm_partly_text": "Você pode remover apenas {removable} das {selected} entidades selecionadas. As entidades só podem ser removidas quando a integração deixar de suportá-las. Por vezes é necessário reiniciar o Home Assistant antes de poder remover as entidades de uma integração removida. Tem a certeza de que deseja remover as entidades removíveis?",
-                            "confirm_partly_title": "Somente {número} entidades selecionadas podem ser removidas.",
+                            "confirm_partly_title": "Apenas {number} {number, plural,\n  uma {selected entity} pode ser removida \n  outras {selected entities} podem ser removidas \n}.",
                             "confirm_text": "Deve remover da configuração do Lovelace e das automações se contêm estas entidades",
                             "confirm_title": "Deseja remover {number} entidades?"
                         },
@@ -2231,7 +2231,7 @@
                             "rpi_gpio": "Recarregar entidades Raspberry Pi GPIO",
                             "scene": "Recarregar cenas",
                             "script": "Recarregar scripts",
-                            "smtp": "Recarregar serviços de notificação de smtp",
+                            "smtp": "Recarregar serviços de notificação de SMTP",
                             "statistics": "Recarregar entidades estatísticas",
                             "telegram": "Recarregar os serviços de notificação do Telegram",
                             "template": "Recarregar entidades modelo",
@@ -2618,7 +2618,7 @@
                         "entity": "Entidade",
                         "jinja_documentation": "Documentação do template Jinja2",
                         "listeners": "Este modelo ouve os seguintes eventos de mudança de estado:",
-                        "no_listeners": "Este modelo não ouve nenhum evento alterado pelo estado e não será atualizado automaticamente.",
+                        "no_listeners": "Este modelo não monitoriza nenhum evento e não será atualizado automaticamente.",
                         "reset": "Redefinir para modelo de demonstração",
                         "result_type": "Tipo de resultado",
                         "template_extensions": "Extensões de templates do Home Assistant",
@@ -2700,11 +2700,11 @@
                             "navigate": "Navegar",
                             "none": "Nenhuma Ação",
                             "toggle": "Alternar",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "editor_service_data": "Os dados de serviço só podem ser inseridos no editor de código",
                         "navigation_path": "URL de navegação",
-                        "url_path": "URL"
+                        "url_path": "Endereço URL"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2745,7 +2745,7 @@
                         },
                         "entities": {
                             "description": "O cartão de entidades é o tipo mais comum de cartão. Ele agrupa itens em listas.",
-                            "edit_special_row": "Editar linha usando o editor de código",
+                            "edit_special_row": "Visualize os detalhes desta linha pressionando o botão editar",
                             "entity_row_editor": "Editor de Linha de Entidade",
                             "entity_row": {
                                 "attribute": "Atributo",

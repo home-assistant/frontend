@@ -547,6 +547,11 @@
                 "clear": "Puhasta",
                 "show_areas": "Näita alasid"
             },
+            "blueprint-picker": {
+                "add_user": "Lisa kasutaja",
+                "remove_user": "Kustuta kasutaja",
+                "select_blueprint": "Kavandi valimine"
+            },
             "data-table": {
                 "no-data": "Andmeid pole",
                 "search": "Otsing"
@@ -1046,6 +1051,20 @@
                 "automation": {
                     "caption": "Automatiseeringud",
                     "description": "Loo ja redigeeri automatiseeringuid",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Kasuta kavandit"
+                        },
+                        "header": "Loo uus automatiseering",
+                        "how": "Kuidas soovid luua oma uue automaatiseeringu?",
+                        "start_empty": "Loo tühi automaatiseering",
+                        "thingtalk": {
+                            "create": "Loo",
+                            "header": "Kirjelda automatiseeringut mida soovid luua",
+                            "input_label": "Mida peaks see automatiseering tegema?",
+                            "intro": "Me püüame selle Sulle luua. Näiteks: lülita tuled välja kui ma lahkun."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Lisa toiming",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "Kasutajaliides ei toeta tegevust: {action}"
                         },
                         "alias": "Nimi",
+                        "blueprint": {
+                            "blueprint_to_use": "Kasutatav kavand",
+                            "header": "",
+                            "inputs": "Sisendid",
+                            "manage_blueprints": "Kavandite haldamine",
+                            "no_blueprints": "Kavandid puuduvad",
+                            "no_inputs": "Sellel kavandil puuduvad sisendid."
+                        },
                         "conditions": {
                             "add": "Lisa tingimus",
                             "delete": "Kustuta",
@@ -1366,6 +1393,31 @@
                             "introduction": "Sisesta allpool, mida see automaatiseering peaks tegema, ja proovime selle teisendada Home Assistanti automaatiseeringuks.",
                             "language_note": "Märkus: praegu toetatakse ainult inglise keelt."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Sisesta kavandi URL.",
+                        "header": "Uue kavandi lisamine",
+                        "import_btn": "Impordi kavand",
+                        "import_header": "Impordi {name} ( {domain} )",
+                        "import_introduction": "Teiste kasutajate kavandeid saad importida Githubist ja kogukonna foorumitest. Sisesta alloleva kavandi URL.",
+                        "importing": "Kavandi importimine ...",
+                        "save_btn": "Salvesta kavand",
+                        "saving": "Kavandi salvestamine ...",
+                        "url": "Kavandi URL"
+                    },
+                    "caption": "",
+                    "description": "Kavandite haldamine",
+                    "overview": {
+                        "confirm_delete_header": "Kas kustutada see kavand?",
+                        "confirm_delete_text": "Kas soovid kindlasti selle kavandi kustutada?",
+                        "header": "Kavandi redaktor",
+                        "headers": {
+                            "name": "Nimi"
+                        },
+                        "introduction": "Kavandite redaktor võimaldab luua ja muuta kavandeid.",
+                        "learn_more": "Lisateave kavandite kohta"
                     }
                 },
                 "cloud": {

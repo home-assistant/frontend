@@ -547,6 +547,11 @@
                 "clear": "未觸發",
                 "show_areas": "顯示分區"
             },
+            "blueprint-picker": {
+                "add_user": "新增用戶",
+                "remove_user": "移除用戶",
+                "select_blueprint": "選擇 Blueprint"
+            },
             "data-table": {
                 "no-data": "沒有資料",
                 "search": "搜尋"
@@ -1046,6 +1051,20 @@
                 "automation": {
                     "caption": "自動化",
                     "description": "管理自動化",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "使用 Blueprint"
+                        },
+                        "header": "新增自動化",
+                        "how": "要怎麼新增自動化？",
+                        "start_empty": "以空白自動化開始",
+                        "thingtalk": {
+                            "create": "新增",
+                            "header": "敘述新增自動化的用途",
+                            "input_label": "自動化的用途是？",
+                            "intro": "系統將嘗試為您新增自動化。例如：我離開的時候，關燈。"
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "新增一個動作",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "UI 介面不支援觸發動作：{action}"
                         },
                         "alias": "名稱",
+                        "blueprint": {
+                            "blueprint_to_use": "欲使用之 Blueprint",
+                            "header": "Blueprint",
+                            "inputs": "輸入",
+                            "manage_blueprints": "管理 Blueprint",
+                            "no_blueprints": "目前沒有任何 Blueprint",
+                            "no_inputs": "Blueprint 未包含任何輸入。"
+                        },
                         "conditions": {
                             "add": "新增一個判斷式",
                             "delete": "刪除",
@@ -1366,6 +1393,31 @@
                             "introduction": "於下方輸入自動化內容，Home Assistant 將會試著將其轉換成自動化。",
                             "language_note": "注意：目前僅支援英文。"
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "請輸入 Blueprint 之 URL。",
+                        "header": "新增 Blueprint",
+                        "import_btn": "匯入 Blueprint",
+                        "import_header": "匯入 {name} ({domain})",
+                        "import_introduction": "可以自 Github 及社群論壇匯入其他使用者的 Blueprint。於下方輸入 Blueprint 之URL。",
+                        "importing": "正在匯入 Blueprint...",
+                        "save_btn": "儲存 Blueprint",
+                        "saving": "正在儲存 Blueprint...",
+                        "url": "Blueprint 之 URL"
+                    },
+                    "caption": "Blueprint",
+                    "description": "管理 Blueprint",
+                    "overview": {
+                        "confirm_delete_header": "刪除此 Blueprint？",
+                        "confirm_delete_text": "確定要刪除此 Blueprint",
+                        "header": "Blueprint 編輯器",
+                        "headers": {
+                            "name": "名稱"
+                        },
+                        "introduction": "Blueprint 編輯器可允許新增與編輯 Blueprint。",
+                        "learn_more": "詳細了解 Blueprint"
                     }
                 },
                 "cloud": {

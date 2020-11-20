@@ -547,6 +547,11 @@
                 "clear": "Počisti",
                 "show_areas": "Pokaži cone"
             },
+            "blueprint-picker": {
+                "add_user": "Dodaj uporabnika",
+                "remove_user": "Odstrani uporabnika",
+                "select_blueprint": "Izberite načrt"
+            },
             "data-table": {
                 "no-data": "Ni podatkov",
                 "search": "Iskanje"
@@ -1046,6 +1051,20 @@
                 "automation": {
                     "caption": "Avtomatizacije",
                     "description": "Upravljanje avtomatizacij",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Uporabite načrt"
+                        },
+                        "header": "Ustvarite novo avtomatizacijo",
+                        "how": "Kako želite ustvariti svojo novo avtomatizacijo?",
+                        "start_empty": "Začnite s prazno avtomatizacijo",
+                        "thingtalk": {
+                            "create": "Ustvari",
+                            "header": "Opišite avtomatizacijo, ki jo želite ustvariti",
+                            "input_label": "Kaj naj ta avtomatizacija počne?",
+                            "intro": "In poskusili ga bomo ustvariti za vas. Na primer: ugasni luči, ko odidem."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Dodaj akcijo",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "Ni podpore za UI za dejanje: {action}"
                         },
                         "alias": "Ime",
+                        "blueprint": {
+                            "blueprint_to_use": "Načrt za uporabo",
+                            "header": "Načrt",
+                            "inputs": "Vhodi",
+                            "manage_blueprints": "Upravljanje načrtov",
+                            "no_blueprints": "Nimate nobenih načrtov",
+                            "no_inputs": "Ta načrt nima nobenih vnosov."
+                        },
                         "conditions": {
                             "add": "Dodaj pogoj",
                             "delete": "Izbriši",
@@ -1366,6 +1393,31 @@
                             "introduction": "Spodaj vnesite, kaj naj naredi ta avtomatizacija, mi pa jo bomo poskušali pretvoriti v avtomatizacijo Home Assistant.",
                             "language_note": "Opomba: Za zdaj je podprta le angleščina."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Prosimo, vnesite urnik od načrta.",
+                        "header": "Dodajte nov načrt",
+                        "import_btn": "Uvozi načrt",
+                        "import_header": "Uvozi {name} ({domain})",
+                        "import_introduction": "Načrte lahko uvozite od uporabnikov iz Github-a in iz forumov. Spodaj vnesite URL načrta.",
+                        "importing": "Uvažanje načrta ...",
+                        "save_btn": "Shrani načrt",
+                        "saving": "Shranjevanje načrta ...",
+                        "url": "URL načrta"
+                    },
+                    "caption": "Načrti",
+                    "description": "Upravljanje načrtov",
+                    "overview": {
+                        "confirm_delete_header": "Želite izbrisati ta načrt?",
+                        "confirm_delete_text": "Ali ste prepričani, da želite izbrisati ta načrt",
+                        "header": "Urejevalnik načrtov",
+                        "headers": {
+                            "name": "Ime"
+                        },
+                        "introduction": "Urejevalnik načrtov vam omogoča ustvarjanje in urejanje načrtov.",
+                        "learn_more": "Preberite več o načrtih"
                     }
                 },
                 "cloud": {

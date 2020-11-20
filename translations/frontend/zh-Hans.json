@@ -547,6 +547,11 @@
                 "clear": "清除",
                 "show_areas": "显示区域"
             },
+            "blueprint-picker": {
+                "add_user": "添加用户",
+                "remove_user": "删除用户",
+                "select_blueprint": "选择蓝图"
+            },
             "data-table": {
                 "no-data": "没有数据",
                 "search": "搜索"
@@ -886,8 +891,8 @@
                         "integrations": "集成",
                         "logs": "日志",
                         "lovelace": "Lovelace 仪表盘",
-                        "navigate_to": "导航到{panel}",
-                        "navigate_to_config": "导航到{panel}配置",
+                        "navigate_to": "转到 {panel}",
+                        "navigate_to_config": "转到{panel}配置",
                         "person": "人员",
                         "scene": "场景",
                         "script": "脚本",
@@ -1039,13 +1044,27 @@
                         "header": "区域注册表",
                         "integrations_page": "集成页面",
                         "introduction": "区域用于组织设备所在的位置。此信息将用于 Home Assistant 的各个地方，以帮助您组织界面、权限和与其他系统的集成。",
-                        "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。",
+                        "introduction2": "要将设备置入某个区域，请使用下面的链接转到集成页面，然后点击一个已配置的集成以进入设备卡片。",
                         "no_areas": "您还没有建立区域。"
                     }
                 },
                 "automation": {
                     "caption": "自动化",
                     "description": "管理自动化",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "使用蓝图"
+                        },
+                        "header": "创建新的自动化",
+                        "how": "您想如何创建新的自动化？",
+                        "start_empty": "从空的自动化开始",
+                        "thingtalk": {
+                            "create": "创建",
+                            "header": "请描述您想创建的自动化",
+                            "input_label": "这个自动化是做什么的？",
+                            "intro": "我们会尝试为您创建。例如：Turn the lights off when I leave."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "添加动作",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "图形界面暂不支持操作：{action}"
                         },
                         "alias": "名称",
+                        "blueprint": {
+                            "blueprint_to_use": "要使用的蓝图",
+                            "header": "蓝图",
+                            "inputs": "输入",
+                            "manage_blueprints": "管理蓝图",
+                            "no_blueprints": "您还没有蓝图。",
+                            "no_inputs": "该蓝图没有任何输入。"
+                        },
                         "conditions": {
                             "add": "添加环境条件",
                             "delete": "删除",
@@ -1366,6 +1393,31 @@
                             "introduction": "请在下方输入这个自动化要实现什么功能，Home Assistant 会尝试将其转换为自动化。",
                             "language_note": "注意：目前只支持英文。"
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "请输入蓝图的网址。",
+                        "header": "添加新的蓝图",
+                        "import_btn": "导入蓝图",
+                        "import_header": "导入 {name} ({domain})",
+                        "import_introduction": "您可以从 Github 和社区论坛导入其他用户的蓝图。请在下方输入 蓝图的网址。",
+                        "importing": "正在导入蓝图...",
+                        "save_btn": "保存蓝图",
+                        "saving": "正在保存蓝图...",
+                        "url": "蓝图 URL"
+                    },
+                    "caption": "蓝图",
+                    "description": "管理蓝图",
+                    "overview": {
+                        "confirm_delete_header": "删除此蓝图？",
+                        "confirm_delete_text": "您确定要删除此蓝图吗？",
+                        "header": "蓝图编辑器",
+                        "headers": {
+                            "name": "名称"
+                        },
+                        "introduction": "蓝图编辑器用于创建和编辑蓝图。",
+                        "learn_more": "详细了解蓝图"
                     }
                 },
                 "cloud": {
@@ -2698,7 +2750,7 @@
                         "call_service": "调用服务{name}",
                         "hold": "按住：",
                         "more_info": "显示更多信息： {name}",
-                        "navigate_to": "导航到{location}",
+                        "navigate_to": "转到 {location}",
                         "tap": "点击：",
                         "toggle": "切换{name}",
                         "url": "打开窗口前往 {url_path}"
@@ -2727,7 +2779,7 @@
                             "call-service": "调用服务",
                             "default_action": "默认动作",
                             "more-info": "更多信息",
-                            "navigate": "导航",
+                            "navigate": "前往",
                             "none": "没有动作",
                             "toggle": "切换",
                             "url": "网址"

@@ -1046,6 +1046,15 @@
                 "automation": {
                     "caption": "Automasjoner",
                     "description": "Administrer automasjoner",
+                    "dialog_new": {
+                        "start_empty": "Start med en tom automatisering",
+                        "thingtalk": {
+                            "create": "Opprett",
+                            "header": "Beskriv automatiseringen du vil opprette",
+                            "input_label": "Hva skal denne automatiseringen gjøre?",
+                            "intro": "Og vi vil prøve å skape det for deg. For eksempel: Slå av lysene når jeg drar."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Legg til handling",
@@ -1126,6 +1135,14 @@
                             "unsupported_action": "Ingen brukergrensesnitt for handling: {action}"
                         },
                         "alias": "Navn",
+                        "blueprint": {
+                            "blueprint_to_use": "Blueprint å bruke",
+                            "header": "Blueprint",
+                            "inputs": "Innganger",
+                            "manage_blueprints": "Administrer Blueprints",
+                            "no_blueprints": "Du har ingen blueprints",
+                            "no_inputs": "Denne blueprint har ingen innganger."
+                        },
                         "conditions": {
                             "add": "Legg til betingelse",
                             "delete": "Slett",
@@ -1366,6 +1383,31 @@
                             "introduction": "Skriv nedenfor hva denne automasjonen skal gjøre, og vi vil prøve å konvertere den til en Home Assistant automasjon",
                             "language_note": "Merk: Bare engelsk støttes foreløpig."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Vennligst skriv inn url til blueprint.",
+                        "header": "Legg til ny blueprint",
+                        "import_btn": "Importer blueprint",
+                        "import_header": "Importer {name} ({domene})",
+                        "import_introduction": "Du kan importere Blueprints av andre brukere fra Github og fellesskapsforaene. Skriv inn nettadressen til Blueprint nedenfor.",
+                        "importing": "Importerer blueprint...",
+                        "save_btn": "Lagre blueprint",
+                        "saving": "Lagrer blueprint...",
+                        "url": "Url-adressen til blueprint"
+                    },
+                    "caption": "Blueprints",
+                    "description": "Administrer blueprints",
+                    "overview": {
+                        "confirm_delete_header": "Slette denne blueprint?",
+                        "confirm_delete_text": "Er du sikker på at du vil slette denne Blueprint",
+                        "header": "Blueprint Editor",
+                        "headers": {
+                            "name": "Navn"
+                        },
+                        "introduction": "Med blueprint editor kan du opprette og redigere blueprints.",
+                        "learn_more": "Lær mer om blueprint"
                     }
                 },
                 "cloud": {
