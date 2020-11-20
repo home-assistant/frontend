@@ -94,7 +94,7 @@ export const removeEntityRegistryEntry = (
     entity_id: entityId,
   });
 
-const fetchEntityRegistry = (conn) =>
+export const fetchEntityRegistry = (conn) =>
   conn.sendMessagePromise({
     type: "config/entity_registry/list",
   });
