@@ -547,6 +547,11 @@
                 "clear": "Effacer",
                 "show_areas": "Afficher les pièces"
             },
+            "blueprint-picker": {
+                "add_user": "Ajouter un utilisateur",
+                "remove_user": "Supprimer l'utilisateur",
+                "select_blueprint": "Sélectionnez un plan"
+            },
             "data-table": {
                 "no-data": "Pas de données",
                 "search": "Chercher"
@@ -685,7 +690,7 @@
                 "future": "Dans {time}",
                 "future_duration": {
                     "day": "Dans {count} {count, plural,\n  one {day}\n  other {days}\n}",
-                    "hour": "Dans {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "hour": "Dans {count} {count, plural,\n  one {heure}\n  other {heures}\n}",
                     "minute": "Dans {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
                     "second": "Dans {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
                     "week": "Dans {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
@@ -695,7 +700,7 @@
                 "past": "Il y a {time}",
                 "past_duration": {
                     "day": "Il y a {count} {count, plural,\n  one {day}\n  other {days}\n}",
-                    "hour": "Il y a {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "hour": "Il y a {count} {count, plural,\n  one {heure}\n  other {heures}\n}",
                     "minute": "Il y a {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
                     "second": "Il y a {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
                     "week": "Il y a {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
@@ -1041,6 +1046,20 @@
                 "automation": {
                     "caption": "Automatisations",
                     "description": "Créer et modifier des automatisations",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Utiliser un plan"
+                        },
+                        "header": "Créer une nouvelle automatisation",
+                        "how": "Comment souhaitez-vous créer votre nouvelle automatisation?",
+                        "start_empty": "Commencer par une automatisation vide",
+                        "thingtalk": {
+                            "create": "Créer",
+                            "header": "Décrivez l'automatisation que vous souhaitez créer",
+                            "input_label": "Que devrait faire cette automatisation ?",
+                            "intro": "Et nous essaierons de le créer pour vous. Par exemple: éteignez les lumières lorsque je pars."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Ajouter une action",
@@ -1121,6 +1140,14 @@
                             "unsupported_action": "Pas d'interface utilisateur pour l'action : {action}"
                         },
                         "alias": "Nom",
+                        "blueprint": {
+                            "blueprint_to_use": "Plan à utiliser",
+                            "header": "Plan",
+                            "inputs": "Entrées",
+                            "manage_blueprints": "Gérer les plans",
+                            "no_blueprints": "Vous n'avez pas de plans",
+                            "no_inputs": "Ce plan n'a aucune entrée."
+                        },
                         "conditions": {
                             "add": "Ajouter une condition",
                             "delete": "Supprimer",
@@ -1361,6 +1388,31 @@
                             "introduction": "Tapez ci-dessous ce que cette automatisation devrait faire, et nous allons essayer de la convertir en une automatisation Home Assistant.",
                             "language_note": "Remarque: pour l'instant, seul l'anglais est pris en charge."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Veuillez entrer l'adresse internet du plan",
+                        "header": "Ajouter un nouveau plan",
+                        "import_btn": "Importer un plan",
+                        "import_header": "Import {nom} ( {domaine} )",
+                        "import_introduction": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'url du plan ci-dessous.",
+                        "importing": "Importation du plan ...",
+                        "save_btn": "Sauver le plan",
+                        "saving": "Enregistrement du plan ...",
+                        "url": "URL du plan"
+                    },
+                    "caption": "Plans",
+                    "description": "Gérer les plans",
+                    "overview": {
+                        "confirm_delete_header": "Supprimer ce plan ?",
+                        "confirm_delete_text": "Êtes-vous sûr de vouloir supprimer ce plan",
+                        "header": "Éditeur de plans",
+                        "headers": {
+                            "name": "Nom"
+                        },
+                        "introduction": "L’éditeur de plans vous permet de créer et de modifier des plans.",
+                        "learn_more": "En savoir plus sur les plans"
                     }
                 },
                 "cloud": {
@@ -2618,6 +2670,7 @@
                         "filter_attributes": "Filtrer les attributs",
                         "filter_entities": "Filtrer les entités",
                         "filter_states": "Filtrer les états",
+                        "last_changed": "Dernier changement",
                         "last_updated": "Dernière mise à jour",
                         "more_info": "Plus d’infos",
                         "no_entities": "Aucune entité",
@@ -2871,6 +2924,7 @@
                             "name": "Lumière"
                         },
                         "logbook": {
+                            "description": "La fiche du journal de bord présente une liste d'événements pour les entités.",
                             "name": "Journal"
                         },
                         "map": {

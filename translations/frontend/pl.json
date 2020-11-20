@@ -547,6 +547,11 @@
                 "clear": "Wyczyść",
                 "show_areas": "Pokaż obszary"
             },
+            "blueprint-picker": {
+                "add_user": "Dodaj użytkownika",
+                "remove_user": "Usuń użytkownika",
+                "select_blueprint": "Wybierz schemat"
+            },
             "data-table": {
                 "no-data": "Brak danych",
                 "search": "Szukaj"
@@ -1046,6 +1051,20 @@
                 "automation": {
                     "caption": "Automatyzacje",
                     "description": "Zarządzaj automatyzacjami",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Użyj schematu"
+                        },
+                        "header": "Utwórz nową automatyzację",
+                        "how": "Jak chcesz utworzyć nową automatyzację?",
+                        "start_empty": "Zacznij od pustej automatyzacji",
+                        "thingtalk": {
+                            "create": "Utwórz",
+                            "header": "Opisz automatyzację, którą chcesz utworzyć",
+                            "input_label": "Co powinna zrobić ta automatyzacja?",
+                            "intro": "A my postaramy się ją dla Ciebie utworzyć. Na przykład: Wyłącz światła, kiedy wyjdę."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Dodaj akcję",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "Brak w interfejsie użytkownika wsparcia dla akcji: {action}"
                         },
                         "alias": "Nazwa",
+                        "blueprint": {
+                            "blueprint_to_use": "Wybierz schemat",
+                            "header": "Schemat",
+                            "inputs": "Dane wejściowe",
+                            "manage_blueprints": "Zarządzaj schematami",
+                            "no_blueprints": "Nie masz żadnych schematów",
+                            "no_inputs": "Ten schemat nie ma żadnych danych wejściowych"
+                        },
                         "conditions": {
                             "add": "Dodaj warunek",
                             "delete": "Usuń",
@@ -1367,6 +1394,9 @@
                             "language_note": "Uwaga: obecnie obsługiwany jest tylko język angielski."
                         }
                     }
+                },
+                "blueprint": {
+                    "caption": "Schematy"
                 },
                 "cloud": {
                     "account": {

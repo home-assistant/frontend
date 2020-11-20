@@ -547,6 +547,11 @@
                 "clear": "Wis",
                 "show_areas": "Toon gebieden"
             },
+            "blueprint-picker": {
+                "add_user": "Gebruiker toevoegen",
+                "remove_user": "Gebruiker verwijderen",
+                "select_blueprint": "Selecteer een blauwdruk"
+            },
             "data-table": {
                 "no-data": "Geen gegevens",
                 "search": "Zoek"
@@ -1046,6 +1051,20 @@
                 "automation": {
                     "caption": "Automatiseringen",
                     "description": "Het maken en bewerken van automatiseringen",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Gebruik een blauwdruk"
+                        },
+                        "header": "Een nieuwe automatisering maken",
+                        "how": "Hoe wilt u uw nieuwe automatisering creëren?",
+                        "start_empty": "Begin met een lege automatisering",
+                        "thingtalk": {
+                            "create": "Creëer",
+                            "header": "Beschrijf de automatisering die u wilt creëren",
+                            "input_label": "Wat moet deze automatisering doen?",
+                            "intro": "En we zullen proberen het voor je te maken. Bijvoorbeeld: doe de lichten uit als ik wegga."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Actie toevoegen",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "Geen UI-ondersteuning voor actie: {action}"
                         },
                         "alias": "Naam",
+                        "blueprint": {
+                            "blueprint_to_use": "Blauwdruk om te gebruiken",
+                            "header": "Blauwdruk",
+                            "inputs": "Ingangen",
+                            "manage_blueprints": "Beheer blauwdrukken",
+                            "no_blueprints": "Je hebt geen blauwdrukken",
+                            "no_inputs": "Deze blauwdruk heeft geen invoer."
+                        },
                         "conditions": {
                             "add": "Voorwaarde toevoegen",
                             "delete": "Verwijderen",
@@ -1366,6 +1393,31 @@
                             "introduction": "Typ hieronder wat deze automatisering zou moeten doen, en we zullen proberen om het om te zetten in een Home Assistant automatisering.",
                             "language_note": "Opmerking: voorlopig wordt alleen Engels ondersteund."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Voer de URL van de blauwdruk in.",
+                        "header": "Voeg een nieuwe blauwdruk toe",
+                        "import_btn": "Blauwdruk importeren",
+                        "import_header": "Importeer {name} ( {domain} )",
+                        "import_introduction": "U kunt blauwdrukken van andere gebruikers importeren vanuit Github en de communityforums. Voer de URL van de blauwdruk hieronder in.",
+                        "importing": "Blauwdruk importeren ...",
+                        "save_btn": "Bewaar blauwdruk",
+                        "saving": "Blauwdruk opslaan ...",
+                        "url": "URL van de blauwdruk"
+                    },
+                    "caption": "Blauwdrukken",
+                    "description": "Beheer blauwdrukken",
+                    "overview": {
+                        "confirm_delete_header": "Deze blauwdruk verwijderen?",
+                        "confirm_delete_text": "Weet u zeker dat u deze blauwdruk wilt verwijderen?",
+                        "header": "Blauwdrukeditor",
+                        "headers": {
+                            "name": "Naam"
+                        },
+                        "introduction": "Met de blauwdrukeditor kunt u blauwdrukken maken en bewerken.",
+                        "learn_more": "Meer informatie over blauwdrukken"
                     }
                 },
                 "cloud": {

@@ -547,6 +547,10 @@
                 "clear": "Vymazat",
                 "show_areas": "Zobrazit oblasti"
             },
+            "blueprint-picker": {
+                "add_user": "Přidat uživatele",
+                "remove_user": "Odebrat uživatele"
+            },
             "data-table": {
                 "no-data": "Žádná data",
                 "search": "Hledat"
@@ -1046,6 +1050,17 @@
                 "automation": {
                     "caption": "Automatizace",
                     "description": "Správa automatizací",
+                    "dialog_new": {
+                        "header": "Vytvoření automatizace",
+                        "how": "Jak chcete vytvořit svou novou automatizaci?",
+                        "start_empty": "Začněte s prázdnou automatizací",
+                        "thingtalk": {
+                            "create": "Vytvořit",
+                            "header": "Popište automatizaci, kterou chcete vytvořit",
+                            "input_label": "Co by měla tato automatizace dělat?",
+                            "intro": "A pokusíme se ji pro vás vytvořit. Například: Po odchodu zhasnout světla."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Přidat akci",
@@ -1126,6 +1141,9 @@
                             "unsupported_action": "Akce {action} není podporována v uživatelském rozhraní"
                         },
                         "alias": "Název",
+                        "blueprint": {
+                            "inputs": "Vstupy"
+                        },
                         "conditions": {
                             "add": "Přidat podmínku",
                             "delete": "Smazat",
@@ -1365,6 +1383,16 @@
                             "header": "Vytvoření nové automatizace",
                             "introduction": "Zadejte níže, co by tato automatizace měla dělat, a my se ji pokusíme převést na automatizaci Home Assistant.",
                             "language_note": "Poznámka: Prozatím je podporována pouze angličtina."
+                        }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "import_header": "Importovat {name} ({domain})"
+                    },
+                    "overview": {
+                        "headers": {
+                            "name": "Jméno"
                         }
                     }
                 },

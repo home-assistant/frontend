@@ -213,9 +213,9 @@
             "configured": "Configurato"
         },
         "cover": {
-            "closed": "Chiuso",
+            "closed": "Chiusa",
             "closing": "In chiusura",
-            "open": "Aperto",
+            "open": "Aperta",
             "opening": "In apertura",
             "stopped": "Arrestato"
         },
@@ -233,7 +233,7 @@
             "on": "Acceso"
         },
         "group": {
-            "closed": "Chiuso",
+            "closed": "Chiusi",
             "closing": "Chiusura",
             "home": "A casa",
             "locked": "Bloccato",
@@ -241,7 +241,7 @@
             "off": "Spento",
             "ok": "OK",
             "on": "Acceso",
-            "open": "Aperto",
+            "open": "Aperti",
             "opening": "Apertura",
             "problem": "Problema",
             "stopped": "Fermato",
@@ -392,7 +392,7 @@
                 }
             },
             "cover": {
-                "position": "Posizione",
+                "position": "Apertura",
                 "tilt_position": "Inclinazione"
             },
             "fan": {
@@ -546,6 +546,11 @@
                 "area": "Area",
                 "clear": "Cancella",
                 "show_areas": "Mostra le aree"
+            },
+            "blueprint-picker": {
+                "add_user": "Aggiungi utente",
+                "remove_user": "Rimuovi utente",
+                "select_blueprint": "Seleziona un progetto"
             },
             "data-table": {
                 "no-data": "Nessun dato",
@@ -741,7 +746,7 @@
                     "update": "Aggiorna"
                 },
                 "faq": "documentazione",
-                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente. Vedere {faq_link} per maggiori dettagli.",
+                "no_unique_id": "Questa entità (\"{entity_id}\") non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente. Vedere {faq_link} per maggiori dettagli.",
                 "related": "Relazionato",
                 "settings": "Impostazioni"
             },
@@ -805,11 +810,11 @@
             "more_info_control": {
                 "controls": "Controlli",
                 "cover": {
-                    "close_cover": "Chiudere gli scuri",
-                    "close_tile_cover": "Chiudere l'inclinazione della copertura",
-                    "open_cover": "Aprire gli scuri",
-                    "open_tilt_cover": "Aprire l'inclinazione della copertura",
-                    "stop_cover": "Fermare il movimento della copertura"
+                    "close_cover": "Chiudere la serranda",
+                    "close_tile_cover": "Chiudere l'inclinazione della serranda",
+                    "open_cover": "Aprire la serranda",
+                    "open_tilt_cover": "Aprire l'inclinazione della serranda",
+                    "stop_cover": "Fermare il movimento della serranda"
                 },
                 "details": "Dettagli",
                 "dismiss": "Chiudi finestra di dialogo",
@@ -1046,6 +1051,20 @@
                 "automation": {
                     "caption": "Automazioni",
                     "description": "Gestisci le automazioni",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Usa un progetto"
+                        },
+                        "header": "Crea una nuova automazione",
+                        "how": "Come vuoi creare la tua nuova automazione?",
+                        "start_empty": "Inizia con un'automazione vuota",
+                        "thingtalk": {
+                            "create": "Crea",
+                            "header": "Descrivi l'automazione che vuoi creare",
+                            "input_label": "Cosa dovrebbe fare questa automazione?",
+                            "intro": "E proveremo a crearlo per te. Ad esempio: spegni le luci quando esco."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Aggiungi azione",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "Nessun supporto dell'Interfaccia Utente per l'azione: {action}"
                         },
                         "alias": "Nome",
+                        "blueprint": {
+                            "blueprint_to_use": "Progetto da utilizzare",
+                            "header": "Progetto",
+                            "inputs": "Ingressi",
+                            "manage_blueprints": "Gestisci progetti",
+                            "no_blueprints": "Non hai progetti",
+                            "no_inputs": "Questo progetto non ha ingressi."
+                        },
                         "conditions": {
                             "add": "Aggiungi condizione",
                             "delete": "Elimina",
@@ -1366,6 +1393,31 @@
                             "introduction": "Digitare sotto ciò che questa automazione dovrebbe fare, e proveremo a convertirlo in un'automazione Home Assistant.",
                             "language_note": "Nota: per il momento è supportato solo l'inglese."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Inserisci l'URL del progetto.",
+                        "header": "Aggiungi un nuovo progetto",
+                        "import_btn": "Importa progetto",
+                        "import_header": "Importa {name} ({domain})",
+                        "import_introduction": "Puoi importare progetti di altri utenti da Github e dai forum della comunità. Immettere l'URL del progetto di seguito.",
+                        "importing": "Importazione del progetto in corso ...",
+                        "save_btn": "Salva progetto",
+                        "saving": "Salvataggio del progetto in corso ...",
+                        "url": "URL del progetto"
+                    },
+                    "caption": "Progetti",
+                    "description": "Gestisci i progetti",
+                    "overview": {
+                        "confirm_delete_header": "Eliminare questo progetto?",
+                        "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
+                        "header": "Editor del progetto",
+                        "headers": {
+                            "name": "Nome"
+                        },
+                        "introduction": "L'editor del progetto consente di creare e modificare i progetti.",
+                        "learn_more": "Per saperne di più sui progetti"
                     }
                 },
                 "cloud": {

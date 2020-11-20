@@ -547,6 +547,11 @@
                 "clear": "Esborra",
                 "show_areas": "Mostra àrees"
             },
+            "blueprint-picker": {
+                "add_user": "Afegeix usuari",
+                "remove_user": "Elimina usuari",
+                "select_blueprint": "Selecciona un plànol"
+            },
             "data-table": {
                 "no-data": "No hi ha dades",
                 "search": "Cerca"
@@ -1046,6 +1051,20 @@
                 "automation": {
                     "caption": "Automatització",
                     "description": "Gestiona les automatitzacions",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Utilitza un plànol"
+                        },
+                        "header": "Creació d'una nova automatització",
+                        "how": "Com vols crear la nova automatització?",
+                        "start_empty": "Comença amb una automatització buida",
+                        "thingtalk": {
+                            "create": "Crea",
+                            "header": "Descriu l'automatització que vols crear",
+                            "input_label": "Què vols que faci aquesta automatització?",
+                            "intro": "I intentarem crear-la per tu. Per exemple: \"Turn the light on when I leave\"."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Afegir acció",
@@ -1126,6 +1145,14 @@
                             "unsupported_action": "La UI no és compatible amb l'acció: {action}"
                         },
                         "alias": "Nom",
+                        "blueprint": {
+                            "blueprint_to_use": "Plànol a utilitzar",
+                            "header": "Plànol",
+                            "inputs": "Entrades",
+                            "manage_blueprints": "Gestiona els plànols",
+                            "no_blueprints": "No tens plànols",
+                            "no_inputs": "Aquest plànol no té entrades."
+                        },
                         "conditions": {
                             "add": "Afegir condició",
                             "delete": "Elimina",
@@ -1362,10 +1389,35 @@
                             "error_empty": "Introdueix alguna ordre o prem a omet.",
                             "error_unsupported": "No hem pogut crear una automatització per a això (encara?).",
                             "for_example": "Per exemple:",
-                            "header": "Crea una nova automatització",
+                            "header": "Creació d'una nova automatització",
                             "introduction": "Escriu a continuació el que hauria de fer l'automatització i intentarem convertir-ho en una automatització de Home Assistant.",
                             "language_note": "Nota: ara per are només s'admet en anglès"
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Introdueix l'URL del plànol.",
+                        "header": "Afegiu plànol nou",
+                        "import_btn": "Importa plànol",
+                        "import_header": "Importa {name} ({domain})",
+                        "import_introduction": "Pots importar plànols d'altres usuaris des de Github i fòrums de la comunitat. Introdueix, a sota,  l'URL del plànol.",
+                        "importing": "Important plànol",
+                        "save_btn": "Desa plànol",
+                        "saving": "Desant plànol...",
+                        "url": "URL del plànol"
+                    },
+                    "caption": "Plànols",
+                    "description": "Gestiona els plànols",
+                    "overview": {
+                        "confirm_delete_header": "Eliminar aquest plànol?",
+                        "confirm_delete_text": "Segur que vols eliminar aquest plànol?",
+                        "header": "Editor de plànols",
+                        "headers": {
+                            "name": "Nom"
+                        },
+                        "introduction": "L'editor de plànols et permet crear i editar plànols.",
+                        "learn_more": "Més informació sobre els plànols"
                     }
                 },
                 "cloud": {
