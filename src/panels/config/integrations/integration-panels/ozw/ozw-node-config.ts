@@ -1,8 +1,5 @@
 import "../../../../../components/ha-switch";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@material/mwc-button/mwc-button";
 import {
   css,
@@ -34,8 +31,8 @@ import {
 import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
 import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
 import { ozwNodeTabs } from "./ozw-node-router";
-import { HaForm } from "../../../../../components/ha-form/ha-form";
-import { Button } from "@material/mwc-button/mwc-button";
+import type { HaForm } from "../../../../../components/ha-form/ha-form";
+import type { Button } from "@material/mwc-button/mwc-button";
 
 @customElement("ozw-node-config")
 class OZWNodeConfig extends LitElement {
