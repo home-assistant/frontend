@@ -213,7 +213,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: MediaControlCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "media_player") {
-      throw new Error("Specify an entity from within the media_player domain.");
+      throw new Error("Specify an entity from within the media_player domain");
     }
 
     this._config = config;

@@ -73,7 +73,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: LightCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "light") {
-      throw new Error("Specify an entity from within the light domain.");
+      throw new Error("Specify an entity from within the light domain");
     }
 
     this._config = {
