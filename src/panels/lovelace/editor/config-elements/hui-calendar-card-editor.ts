@@ -1,5 +1,6 @@
 import {
-  CSSResult,
+  css,
+  CSSResultArray,
   customElement,
   html,
   internalProperty,
@@ -24,6 +25,7 @@ import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceCardEditor } from "../../types";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
+import "./../hui-config-element-template";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -40,6 +42,8 @@ const views = ["dayGridMonth", "dayGridDay", "listWeek"];
 export class HuiCalendarCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public isAdvanced?: boolean;
 
   @property({ attribute: false }) private _config?: CalendarCardConfig;
 
@@ -69,14 +73,15 @@ export class HuiCalendarCardEditor extends LitElement
     }
 
     return html`
-      <div class="card-config">
-        <div class="side-by-side">
+      <hui-config-element-template
+        .hass=${this.hass}
+        .isAdvanced=${this.isAdvanced}
+      >
+        <div class="card-config">
           <paper-input
-            .label="${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.title"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
+            )}
             .value=${this._title}
             .configValue=${"title"}
             @value-changed=${this._valueChanged}
@@ -105,28 +110,30 @@ export class HuiCalendarCardEditor extends LitElement
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <hui-theme-select-editor
-          .hass=${this.hass}
-          .value=${this._theme}
-          .configValue=${"theme"}
+        <h3>
+          ${`${this.hass.localize(
+            "ui.panel.lovelace.editor.card.calendar.calendar_entities"
+          )} (
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.required"
+          )})`}
+        </h3>
+        <ha-entities-picker
+          .hass=${this.hass!}
+          .value=${this._configEntities}
+          .includeDomains=${["calendar"]}
           @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
-      </div>
-      <h3>
-        ${this.hass.localize(
-          "ui.panel.lovelace.editor.card.calendar.calendar_entities"
-        ) +
-        " (" +
-        this.hass!.localize("ui.panel.lovelace.editor.card.config.required") +
-        ")"}
-      </h3>
-      <ha-entities-picker
-        .hass=${this.hass!}
-        .value=${this._configEntities}
-        .includeDomains=${["calendar"]}
-        @value-changed=${this._valueChanged}
-      >
-      </ha-entities-picker>
+        >
+        </ha-entities-picker>
+        <div slot="advanced" class="card-config">
+          <hui-theme-select-editor
+            .hass=${this.hass}
+            .value=${this._theme}
+            .configValue=${"theme"}
+            @value-changed=${this._valueChanged}
+          ></hui-theme-select-editor>
+        </div>
+      </hui-config-element-template>
     `;
   }
 
@@ -175,8 +182,15 @@ export class HuiCalendarCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
-    return configElementStyle;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        paper-dropdown-menu {
+          width: 100%;
+        }
+      `,
+    ];
   }
 }
 

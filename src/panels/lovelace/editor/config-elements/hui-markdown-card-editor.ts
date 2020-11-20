@@ -15,6 +15,7 @@ import { HomeAssistant } from "../../../../types";
 import { MarkdownCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import "../hui-config-element-template";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -29,6 +30,8 @@ const cardConfigStruct = object({
 export class HuiMarkdownCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public isAdvanced?: boolean;
 
   @internalProperty() private _config?: MarkdownCardConfig;
 
@@ -55,38 +58,43 @@ export class HuiMarkdownCardEditor extends LitElement
     }
 
     return html`
-      <div class="card-config">
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.title"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
-        <paper-textarea
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.markdown.content"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})"
-          .value="${this._content}"
-          .configValue="${"content"}"
-          @keydown=${this._ignoreKeydown}
-          @value-changed="${this._valueChanged}"
-          autocapitalize="none"
-          autocomplete="off"
-          spellcheck="false"
-        ></paper-textarea>
-        <hui-theme-select-editor
-          .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
-        ></hui-theme-select-editor>
-      </div>
+      <hui-config-element-template
+        .hass=${this.hass}
+        .isAdvanced=${this.isAdvanced}
+      >
+        <div class="card-config">
+          <paper-input
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.title"
+            )}
+            .value=${this._title}
+            .configValue=${"title"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+          <paper-textarea
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.markdown.content"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.required"
+            )})"
+            .value=${this._content}
+            .configValue=${"content"}
+            @keydown=${this._ignoreKeydown}
+            @value-changed=${this._valueChanged}
+            autocapitalize="none"
+            autocomplete="off"
+            spellcheck="false"
+          ></paper-textarea>
+        </div>
+        <div slot="advanced" class="card-config">
+          <hui-theme-select-editor
+            .hass=${this.hass}
+            .value=${this._theme}
+            .configValue=${"theme"}
+            @value-changed=${this._valueChanged}
+          ></hui-theme-select-editor>
+        </div>
+      </hui-config-element-template>
     `;
   }
 

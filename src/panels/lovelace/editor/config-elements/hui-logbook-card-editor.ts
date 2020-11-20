@@ -17,6 +17,7 @@ import { LogbookCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import "../hui-config-element-template";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -32,6 +33,8 @@ const cardConfigStruct = object({
 export class HuiLogbookCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public isAdvanced?: boolean;
 
   @internalProperty() private _config?: LogbookCardConfig;
 
@@ -65,50 +68,51 @@ export class HuiLogbookCardEditor extends LitElement
     }
 
     return html`
-      <div class="card-config">
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.title"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value=${this._title}
-          .configValue=${"title"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
-        <div class="side-by-side">
+      <hui-config-element-template
+        .hass=${this.hass}
+        .isAdvanced=${this.isAdvanced}
+      >
+        <div class="card-config">
+          <paper-input
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.title"
+            )}
+            .value=${this._title}
+            .configValue=${"title"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+          <paper-input
+            type="number"
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.hours_to_show"
+            )}
+            .value=${this._hours_to_show}
+            .configValue=${"hours_to_show"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+          <h3>
+            ${`${this.hass!.localize(
+              "ui.panel.lovelace.editor.card.generic.entities"
+            )} (${this.hass!.localize(
+              "ui.panel.lovelace.editor.card.config.required"
+            )})`}
+          </h3>
+          <ha-entities-picker
+            .hass=${this.hass}
+            .value=${this._configEntities}
+            @value-changed=${this._valueChanged}
+          >
+          </ha-entities-picker>
+        </div>
+        <div slot="advanced" class="card-config">
           <hui-theme-select-editor
             .hass=${this.hass}
             .value=${this._theme}
             .configValue=${"theme"}
             @value-changed=${this._valueChanged}
           ></hui-theme-select-editor>
-          <paper-input
-            type="number"
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.hours_to_show"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._hours_to_show}
-            .configValue=${"hours_to_show"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
         </div>
-        <h3>
-          ${`${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.entities"
-          )} (${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})`}
-        </h3>
-        <ha-entities-picker
-          .hass=${this.hass}
-          .value=${this._configEntities}
-          @value-changed=${this._valueChanged}
-        >
-        </ha-entities-picker>
-      </div>
+      </hui-config-element-template>
     `;
   }
 

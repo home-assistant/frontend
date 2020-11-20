@@ -1,18 +1,18 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../../../../types";
 import { MediaControlCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
-import { assert, object, string, optional } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -45,17 +45,17 @@ export class HuiMediaControlCardEditor extends LitElement
     return html`
       <div class="card-config">
         <ha-entity-picker
+          allow-custom-entity
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
-          @change="${this._valueChanged}"
-          allow-custom-entity
+          @change=${this._valueChanged}
         ></ha-entity-picker>
       </div>
     `;

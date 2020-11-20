@@ -4,19 +4,20 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { ShoppingListCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import "../hui-config-element-template";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
-import { string, assert, object, optional } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -28,6 +29,8 @@ const cardConfigStruct = object({
 export class HuiShoppingListEditor extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public isAdvanced?: boolean;
 
   @internalProperty() private _config?: ShoppingListCardConfig;
 
@@ -50,33 +53,38 @@ export class HuiShoppingListEditor extends LitElement
     }
 
     return html`
-      <div class="card-config">
-        ${!isComponentLoaded(this.hass, "shopping_list")
-          ? html`
-              <div class="error">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.card.shopping-list.integration_not_loaded"
-                )}
-              </div>
-            `
-          : ""}
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.title"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
-        <hui-theme-select-editor
-          .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
-        ></hui-theme-select-editor>
-      </div>
+      <hui-config-element-template
+        .hass=${this.hass}
+        .isAdvanced=${this.isAdvanced}
+      >
+        <div class="card-config">
+          ${!isComponentLoaded(this.hass, "shopping_list")
+            ? html`
+                <div class="error">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.shopping-list.integration_not_loaded"
+                  )}
+                </div>
+              `
+            : ""}
+          <paper-input
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.title"
+            )}
+            .value=${this._title}
+            .configValue=${"title"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+        </div>
+        <div slot="advanced" class="card-config">
+          <hui-theme-select-editor
+            .hass=${this.hass}
+            .value=${this._theme}
+            .configValue=${"theme"}
+            @value-changed=${this._valueChanged}
+          ></hui-theme-select-editor>
+        </div>
+      </hui-config-element-template>
     `;
   }
 

@@ -17,11 +17,13 @@ import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { SensorCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import "../hui-config-element-template";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -43,6 +45,8 @@ const includeDomains = ["sensor"];
 export class HuiSensorCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public isAdvanced?: boolean;
 
   @internalProperty() private _config?: SensorCardConfig;
 
@@ -91,105 +95,99 @@ export class HuiSensorCardEditor extends LitElement
     const graphs = ["line", "none"];
 
     return html`
-      <div class="card-config">
-        <ha-entity-picker
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.entity"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})"
-          .hass=${this.hass}
-          .value=${this._entity}
-          .configValue=${"entity"}
-          .includeDomains=${includeDomains}
-          @change=${this._valueChanged}
-          allow-custom-entity
-        ></ha-entity-picker>
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.name"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value=${this._name}
-          .configValue=${"name"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
-        <div class="side-by-side">
-          <ha-icon-input
+      <hui-config-element-template
+        .hass=${this.hass}
+        .isAdvanced=${this.isAdvanced}
+      >
+        <div class="card-config">
+          <ha-entity-picker
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.icon"
+              "ui.panel.lovelace.editor.card.generic.entity"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
+              "ui.panel.lovelace.editor.card.config.required"
             )})"
+            .hass=${this.hass}
+            .value=${this._entity}
+            .configValue=${"entity"}
+            .includeDomains=${includeDomains}
+            @change=${this._valueChanged}
+            allow-custom-entity
+          ></ha-entity-picker>
+          <paper-input
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.name"
+            )}
+            .value=${this._name}
+            .configValue=${"name"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+          <div class="side-by-side">
+            <paper-dropdown-menu
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.sensor.graph_type"
+              )}
+              .configValue=${"graph"}
+              @value-changed=${this._valueChanged}
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                .selected=${graphs.indexOf(this._graph)}
+              >
+                ${graphs.map((graph) => {
+                  return html`<paper-item>${graph}</paper-item>`;
+                })}
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <paper-input
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.hours_to_show"
+              )}
+              type="number"
+              .value=${this._hours_to_show}
+              .configValue=${"hours_to_show"}
+              @value-changed=${this._valueChanged}
+            ></paper-input>
+          </div>
+        </div>
+        <div slot="advanced" class="card-config">
+          <ha-settings-row three-line>
+            <span slot="heading">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.card.sensor.show_more_detail"
+              )}
+            </span>
+            <ha-switch
+              .checked=${this._detail === 2}
+              .configValue=${"detail"}
+              @change=${this._change}
+            ></ha-switch>
+          </ha-settings-row>
+          <paper-input
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.unit"
+            )}
+            .value=${this._unit}
+            .configValue=${"unit"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+          <ha-icon-input
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.icon"
+            )}
             .value=${this._icon}
             .placeholder=${this._icon ||
             stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-input>
-          <paper-dropdown-menu
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.sensor.graph_type"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .configValue=${"graph"}
-            @value-changed=${this._valueChanged}
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected=${graphs.indexOf(this._graph)}
-            >
-              ${graphs.map((graph) => {
-                return html`<paper-item>${graph}</paper-item>`;
-              })}
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
-        <div class="side-by-side">
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.unit"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._unit}
-            .configValue=${"unit"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
-          <ha-formfield
-            label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.sensor.show_more_detail"
-            )}
-          >
-            <ha-switch
-              .checked=${this._detail === 2}
-              .configValue=${"detail"}
-              @change=${this._change}
-            ></ha-switch>
-          </ha-formfield>
-        </div>
-        <div class="side-by-side">
           <hui-theme-select-editor
             .hass=${this.hass}
             .value=${this._theme}
             .configValue=${"theme"}
             @value-changed=${this._valueChanged}
           ></hui-theme-select-editor>
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.hours_to_show"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            type="number"
-            .value=${this._hours_to_show}
-            .configValue=${"hours_to_show"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
         </div>
-      </div>
+      </hui-config-element-template>
     `;
   }
 

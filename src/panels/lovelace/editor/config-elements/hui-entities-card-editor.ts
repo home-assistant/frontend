@@ -95,6 +95,7 @@ export class HuiEntitiesCardEditor extends LitElement
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
+          .isAdvancedUser=${this.isAdvanced}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubElementChanged}
         >
