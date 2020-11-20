@@ -34,6 +34,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 
 interface BlueprintMetaDataPath extends BlueprintMetaData {
   path: string;
+  error: boolean;
 }
 
 const createNewFunctions = {
@@ -61,10 +62,20 @@ class HaBlueprintOverview extends LitElement {
   @property() public blueprints!: Blueprints;
 
   private _processedBlueprints = memoizeOne((blueprints: Blueprints) => {
-    const result = Object.entries(blueprints).map(([path, blueprint]) => ({
-      ...blueprint.metadata,
-      path,
-    }));
+    const result = Object.entries(blueprints).map(([path, blueprint]) => {
+      if ("error" in blueprint) {
+        return {
+          name: blueprint.error,
+          error: true,
+          path,
+        };
+      }
+      return {
+        ...blueprint.metadata,
+        error: false,
+        path,
+      };
+    });
     return result;
   });
 
@@ -98,20 +109,26 @@ class HaBlueprintOverview extends LitElement {
       columns.create = {
         title: "",
         type: "icon-button",
-        template: (_, blueprint) => html`<mwc-icon-button
-          .blueprint=${blueprint}
-          @click=${(ev) => this._createNew(ev)}
-          ><ha-svg-icon .path=${mdiPlus}></ha-svg-icon
-        ></mwc-icon-button>`,
+        template: (_, blueprint: any) =>
+          blueprint.error
+            ? ""
+            : html`<mwc-icon-button
+                .blueprint=${blueprint}
+                @click=${(ev) => this._createNew(ev)}
+                ><ha-svg-icon .path=${mdiPlus}></ha-svg-icon
+              ></mwc-icon-button>`,
       };
       columns.delete = {
         title: "",
         type: "icon-button",
-        template: (_, blueprint) => html`<mwc-icon-button
-          .blueprint=${blueprint}
-          @click=${(ev) => this._delete(ev)}
-          ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-        ></mwc-icon-button>`,
+        template: (_, blueprint: any) =>
+          blueprint.error
+            ? ""
+            : html`<mwc-icon-button
+                .blueprint=${blueprint}
+                @click=${(ev) => this._delete(ev)}
+                ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
+              ></mwc-icon-button>`,
       };
       return columns;
     }
