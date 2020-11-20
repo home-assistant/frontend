@@ -20,48 +20,47 @@ class HaGallery extends PolymerElement {
   static get template() {
     return html`
       <style include="iron-positioning ha-style">
-      :host {
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
-      app-header-layout {
-        min-height: 100vh;
-      }
-      ha-icon-button.invisible {
-        visibility: hidden;
-      }
+        :host {
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
+        }
+        app-header-layout {
+          min-height: 100vh;
+        }
+        ha-icon-button.invisible {
+          visibility: hidden;
+        }
 
-      .pickers {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: start;
-      }
+        .pickers {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: start;
+        }
 
-      .pickers ha-card {
-        width: 400px;
-        display: block;
-        margin: 16px 8px;
-      }
+        .pickers ha-card {
+          width: 400px;
+          display: block;
+          margin: 16px 8px;
+        }
 
-      .pickers ha-card:last-child {
-        margin-bottom: 16px;
-      }
+        .pickers ha-card:last-child {
+          margin-bottom: 16px;
+        }
 
-      .intro {
-        margin: -1em 0;
-      }
+        .intro {
+          margin: -1em 0;
+        }
 
-      p a {
-        color: var(--primary-color);
-      }
+        p a {
+          color: var(--primary-color);
+        }
 
-      a {
-        color: var(--primary-text-color);
-        text-decoration: none;
-      }
-
+        a {
+          color: var(--primary-text-color);
+          text-decoration: none;
+        }
       </style>
 
       <app-header-layout>
@@ -70,32 +69,42 @@ class HaGallery extends PolymerElement {
             <ha-icon-button
               icon="hass:arrow-left"
               on-click="_backTapped"
-              class$='[[_computeHeaderButtonClass(_demo)]]'
+              class$="[[_computeHeaderButtonClass(_demo)]]"
             ></ha-icon-button>
-            <div main-title>[[_withDefault(_demo, "Home Assistant Gallery")]]</div>
+            <div main-title>
+              [[_withDefault(_demo, "Home Assistant Gallery")]]
+            </div>
           </app-toolbar>
         </app-header>
 
-        <div class='content'>
-          <div id='demo'></div>
-          <template is='dom-if' if='[[!_demo]]'>
-            <div class='pickers'>
-              <ha-card header="Lovelace card demos">
-                <div class='card-content intro'>
+        <div class="content">
+          <div id="demo"></div>
+          <template is="dom-if" if="[[!_demo]]">
+            <div class="pickers">
+              <ha-card header="Lovelace Card Demos">
+                <div class="card-content intro">
                   <p>
-                    Lovelace has many different cards. Each card allows the user to tell a different story about what is going on in their house. These cards are very customizable, as no household is the same.
+                    Lovelace has many different cards. Each card allows the user
+                    to tell a different story about what is going on in their
+                    house. These cards are very customizable, as no household is
+                    the same.
                   </p>
 
                   <p>
-                    This gallery helps our developers and designers to see all the different states that each card can be in.
+                    This gallery helps our developers and designers to see all
+                    the different states that each card can be in.
                   </p>
 
                   <p>
-                    Check <a href='https://www.home-assistant.io/lovelace'>the official website</a> for instructions on how to get started with Lovelace.</a>.
+                    Check
+                    <a href="https://www.home-assistant.io/lovelace"
+                      >the official website</a
+                    >
+                    for instructions on how to get started with Lovelace.
                   </p>
                 </div>
-                <template is='dom-repeat' items='[[_lovelaceDemos]]'>
-                  <a href='#[[item]]'>
+                <template is="dom-repeat" items="[[_lovelaceDemos]]">
+                  <a href="#[[item]]">
                     <paper-item>
                       <paper-item-body>{{ item }}</paper-item-body>
                       <ha-icon icon="hass:chevron-right"></ha-icon>
@@ -104,14 +113,14 @@ class HaGallery extends PolymerElement {
                 </template>
               </ha-card>
 
-              <ha-card header="More Info demos">
-                <div class='card-content intro'>
+              <ha-card header="More Info Demos">
+                <div class="card-content intro">
                   <p>
                     More info screens show up when an entity is clicked.
                   </p>
                 </div>
-                <template is='dom-repeat' items='[[_moreInfoDemos]]'>
-                  <a href='#[[item]]'>
+                <template is="dom-repeat" items="[[_moreInfoDemos]]">
+                  <a href="#[[item]]">
                     <paper-item>
                       <paper-item-body>{{ item }}</paper-item-body>
                       <ha-icon icon="hass:chevron-right"></ha-icon>
@@ -120,14 +129,14 @@ class HaGallery extends PolymerElement {
                 </template>
               </ha-card>
 
-              <ha-card header="Util demos">
-                <div class='card-content intro'>
+              <ha-card header="Util Demos">
+                <div class="card-content intro">
                   <p>
                     Test pages for our utility functions.
                   </p>
                 </div>
-                <template is='dom-repeat' items='[[_utilDemos]]'>
-                  <a href='#[[item]]'>
+                <template is="dom-repeat" items="[[_utilDemos]]">
+                  <a href="#[[item]]">
                     <paper-item>
                       <paper-item-body>{{ item }}</paper-item-body>
                       <ha-icon icon="hass:chevron-right"></ha-icon>
@@ -139,7 +148,10 @@ class HaGallery extends PolymerElement {
           </template>
         </div>
       </app-header-layout>
-      <notification-manager hass=[[_fakeHass]] id='notifications'></notification-manager>
+      <notification-manager
+        hass="[[_fakeHass]]"
+        id="notifications"
+      ></notification-manager>
     `;
   }
 

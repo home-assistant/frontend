@@ -26,8 +26,9 @@ class DemoMoreInfo extends PolymerElement {
 
         pre {
           width: 400px;
-          margin: 16px;
+          margin: 0 16px;
           overflow: auto;
+          color: var(--primary-text-color);
         }
 
         @media only screen and (max-width: 800px) {
@@ -35,7 +36,7 @@ class DemoMoreInfo extends PolymerElement {
             flex-direction: column;
           }
           pre {
-            margin-left: 0;
+            margin: 16px 0;
           }
         }
       </style>
