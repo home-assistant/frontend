@@ -18,6 +18,7 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
 import type { HomeAssistant } from "../../../types";
+import { UNAVAILABLE } from "../../../data/entity";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -72,12 +73,13 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: GaugeCardConfig): void {
-    if (!config || !config.entity) {
-      throw new Error("Invalid card configuration");
+    if (!config.entity) {
+      throw new Error("Entity must be specified");
     }
     if (!isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
+      throw new Error("Invalid entity");
     }
+
     this._config = { min: 0, max: 100, ...config };
   }
 
@@ -97,6 +99,18 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     const state = Number(stateObj.state);
+
+    if (stateObj.state === UNAVAILABLE) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_unavailable",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
+    }
 
     if (isNaN(state)) {
       return html`

@@ -81,7 +81,7 @@ export class HuiGraphHeaderFooter extends LitElement
   public setConfig(config: GraphHeaderFooterConfig): void {
     if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
       throw new Error(
-        "Invalid Configuration: An entity from within the sensor domain required"
+        "Invalid configuration: An entity from within the sensor domain required"
       );
     }
 

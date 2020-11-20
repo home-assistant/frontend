@@ -137,9 +137,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       throw new Error("Error in card configuration.");
     }
 
-    if (!config.entities && !config.geo_location_sources) {
+    if (!config.entities?.length && !config.geo_location_sources) {
       throw new Error(
-        "Either entities or geo_location_sources must be defined"
+        "Either entities or geo_location_sources must be specified"
       );
     }
     if (config.entities && !Array.isArray(config.entities)) {

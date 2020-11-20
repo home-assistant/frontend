@@ -8,15 +8,15 @@ export class HuiCallServiceRow extends HuiButtonRow {
     const callServiceConfig: CallServiceConfig = config;
 
     if (!callServiceConfig) {
-      throw new Error("Error in card configuration.");
+      throw new Error("Invalid configuration");
     }
 
     if (!callServiceConfig.name) {
-      throw new Error("Error in card configuration. No name specified.");
+      throw new Error("No name specified");
     }
 
     if (!callServiceConfig.service) {
-      throw new Error("Error in card configuration. No service specified.");
+      throw new Error("No service specified");
     }
 
     super.setConfig({

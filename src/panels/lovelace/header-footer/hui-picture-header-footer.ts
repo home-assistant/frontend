@@ -41,7 +41,7 @@ export class HuiPictureHeaderFooter extends LitElement
 
   public setConfig(config: PictureHeaderFooterConfig): void {
     if (!config || !config.image) {
-      throw new Error("Invalid Configuration: 'image' required");
+      throw new Error("Image required");
     }
 
     this._config = config;

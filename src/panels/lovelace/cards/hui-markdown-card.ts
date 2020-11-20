@@ -58,7 +58,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: MarkdownCardConfig): void {
     if (!config.content) {
-      throw new Error("Invalid Configuration: Content Required");
+      throw new Error("Content required");
     }
 
     if (this._config?.content !== config.content) {

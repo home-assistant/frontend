@@ -94,7 +94,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       !config.entity ||
       config.entity.split(".")[0] !== "alarm_control_panel"
     ) {
-      throw new Error("Invalid card configuration");
+      throw new Error("Invalid configuration");
     }
 
     const defaults = {

@@ -90,11 +90,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: WeatherForecastCardConfig): void {
-    if (!config || !config.entity) {
-      throw new Error("Invalid card configuration");
+    if (!config.entity) {
+      throw new Error("Entity must be specified");
     }
     if (!isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
+      throw new Error("Invalid entity");
     }
 
     this._config = config;

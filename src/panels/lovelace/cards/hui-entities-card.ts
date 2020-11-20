@@ -111,6 +111,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: EntitiesCardConfig): void {
+    if (!config || !config.entities.length) {
+      throw new Error("Entities must be specified");
+    }
+
     const entities = processConfigEntities(config.entities);
 
     this._config = config;
@@ -172,7 +176,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this._hass) {
+    if (!this._config || !this._hass || this._configEntities?.length === 0) {
       return html``;
     }
 

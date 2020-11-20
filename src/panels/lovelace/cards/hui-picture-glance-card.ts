@@ -86,7 +86,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       !(config.image || config.camera_image || config.state_image) ||
       (config.state_image && !config.entity)
     ) {
-      throw new Error("Invalid card configuration");
+      throw new Error("Invalid configuration");
     }
 
     const entities = processConfigEntities(config.entities);
