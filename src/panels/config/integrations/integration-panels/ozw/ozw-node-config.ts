@@ -211,7 +211,7 @@ class OZWNodeConfig extends LitElement {
               </p>
             `
           : ``}
-        ${!["Byte", "Short", "Int", "List", "BitSet"].includes(item.type)
+        ${!["Byte", "Short", "Int", "List"].includes(item.type)
           ? html`
               <p>${item.value}</p>
               <p>
