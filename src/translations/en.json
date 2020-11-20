@@ -2626,7 +2626,7 @@
               "name": "Name",
               "refresh_interval": "Refresh Interval",
               "show_icon": "Show/Hide the icon",
-              "show_name": "Show/Hide the Name of the entity",
+              "show_name": "Show/Hide the name of the entity",
               "show_state": "Show/Hide the state of the entity",
               "tap_action": "Tap Action",
               "title": "Title",
@@ -2642,7 +2642,7 @@
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation Sources",
-              "dark_mode": "Dark Mode?",
+              "dark_mode": "Change the map colors to a dark theme",
               "default_zoom": "Default Zoom",
               "hours_to_show": "Hours to Show",
               "source": "Source",
@@ -2667,7 +2667,8 @@
             },
             "picture-entity": {
               "name": "Picture Entity",
-              "description": "The Picture Entity card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of camera entities."
+              "description": "The Picture Entity card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of camera entities.",
+              "camera_options": "Camera Options"
             },
             "picture-glance": {
               "name": "Picture Glance",

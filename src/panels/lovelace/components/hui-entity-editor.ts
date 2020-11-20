@@ -1,4 +1,4 @@
-import { mdiDrag } from "@mdi/js";
+import { mdiDragVerticalVariant } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -68,7 +68,7 @@ export class HuiEntityEditor extends LitElement {
             : this.entities!.map((entityConf, index) => {
                 return html`
                   <div class="entity" data-entity-id=${entityConf.entity}>
-                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiDragVerticalVariant}></ha-svg-icon>
                     <ha-entity-picker
                       .hass=${this.hass}
                       .value=${entityConf.entity}
@@ -192,6 +192,7 @@ export class HuiEntityEditor extends LitElement {
         .entity ha-svg-icon {
           padding-right: 8px;
           cursor: move;
+          color: var(--secondary-text-color);
         }
         .entity ha-entity-picker {
           flex-grow: 1;

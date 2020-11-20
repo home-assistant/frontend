@@ -13,6 +13,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { IframeCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
+import "../hui-config-element-template";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -27,6 +28,8 @@ const cardConfigStruct = object({
 export class HuiIframeCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public isAdvanced?: boolean;
 
   @internalProperty() private _config?: IframeCardConfig;
 
@@ -53,40 +56,41 @@ export class HuiIframeCardEditor extends LitElement
     }
 
     return html`
-      <div class="card-config">
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.url"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})"
-          .value="${this._url}"
-          .configValue="${"url"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
-        <div class="side-by-side">
+      <hui-config-element-template
+        .hass=${this.hass}
+        .isAdvanced=${this.isAdvanced}
+      >
+        <div class="card-config">
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.title"
+              "ui.panel.lovelace.editor.card.generic.url"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
+              "ui.panel.lovelace.editor.card.config.required"
             )})"
-            .value="${this._title}"
-            .configValue="${"title"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._url}
+            .configValue=${"url"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.aspect_ratio"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value="${this._aspect_ratio}"
-            .configValue="${"aspect_ratio"}"
-            @value-changed="${this._valueChanged}"
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.title"
+            )}
+            .value=${this._title}
+            .configValue=${"title"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
-      </div>
+        <div slot="advanced" class="card-config">
+          <paper-input
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.aspect_ratio"
+            )}
+            .value=${this._aspect_ratio}
+            .configValue=${"aspect_ratio"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+        </div>
+      </hui-config-element-template>
     `;
   }
 

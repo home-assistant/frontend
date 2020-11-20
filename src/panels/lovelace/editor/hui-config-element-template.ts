@@ -1,5 +1,4 @@
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -9,6 +8,7 @@ import {
 } from "lit-element";
 import "../../../components/ha-expansion-panel";
 import { HomeAssistant } from "../../../types";
+import { configElementStyle } from "./config-elements/config-elements-style";
 
 @customElement("hui-config-element-template")
 export class HuiConfigElementTemplate extends LitElement {
@@ -22,7 +22,7 @@ export class HuiConfigElementTemplate extends LitElement {
       ${this.isAdvanced
         ? html`
             <ha-expansion-panel>
-              <span class="advanced-title" slot="title">
+              <span class="title" slot="title">
                 ${this.hass.localize(
                   `ui.panel.lovelace.editor.common.advanced_options`
                 )}
@@ -35,14 +35,7 @@ export class HuiConfigElementTemplate extends LitElement {
   }
 
   static get styles(): CSSResult {
-    return css`
-      ha-expansion-panel {
-        padding-top: 8px;
-      }
-      .advanced-title {
-        font-size: 16px;
-      }
-    `;
+    return configElementStyle;
   }
 }
 
