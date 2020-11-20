@@ -2721,7 +2721,8 @@
             },
             "picture-glance": {
               "name": "Picture Glance",
-              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog."
+              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog.",
+              "state_entity": "State Entity"
             },
             "plant-status": {
               "name": "Plant Status",
