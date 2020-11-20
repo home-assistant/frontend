@@ -1463,7 +1463,8 @@
             "import_btn": "Import blueprint",
             "saving": "Saving blueprint...",
             "save_btn": "Save blueprint",
-            "error_no_url": "Please enter the URL of the blueprint."
+            "error_no_url": "Please enter the URL of the blueprint.",
+            "unsupported_blueprint": "This blueprint is not supported"
           }
         },
         "script": {
