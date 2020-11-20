@@ -50,7 +50,7 @@ class OZWNodeConfig extends LitElement {
 
   @property() public nodeId?;
 
-  @property()
+  @internalProperty()
   private _configData: { [key: number]: any } = {};
 
   @internalProperty() private _node?: OZWDevice;
@@ -185,7 +185,7 @@ class OZWNodeConfig extends LitElement {
         ${["Byte", "Short", "Int", "List"].includes(item.type)
           ? html` <ha-form
               .schema=${item.schema}
-              .data=${item.data}
+              .data=${this._configData[item.parameter]}
               .parameter=${item.parameter}
               @value-changed=${this._configValueChanged}
             >
@@ -261,11 +261,13 @@ class OZWNodeConfig extends LitElement {
 
       this._config.forEach((item) => {
         if (item.type === "List") {
-          this._configData[item.parameter] = item.schema[0].options.find(
-            (opt: (number | string)[]) => opt[1] === item.value
-          )[0];
+          this._configData[item.parameter] = {
+            [item.label]: item.schema[0].options.find(
+              (opt: (number | string)[]) => opt[1] === item.value
+            )[0],
+          };
         } else {
-          this._configData[item.parameter] = item.value;
+          this._configData[item.parameter] = { [item.label]: item.value };
         }
       });
     } catch (err) {
@@ -278,8 +280,14 @@ class OZWNodeConfig extends LitElement {
   }
 
   private _configValueChanged(ev: CustomEvent) {
-    this._configData[(<OzwHaForm>ev.currentTarget)!.parameter] =
-      ev.detail.value[Object.keys(ev.detail.value)[0]];
+    this._configData = {
+      ...this._configData,
+      [(<OzwHaForm>ev.currentTarget)!.parameter]: {
+        [Object.keys(
+          this._configData[(<OzwHaForm>ev.currentTarget)!.parameter]
+        )[0]]: ev.detail.value[Object.keys(ev.detail.value)[0]],
+      },
+    };
   }
 
   private async _updateConfigOption(ev: CustomEvent) {
