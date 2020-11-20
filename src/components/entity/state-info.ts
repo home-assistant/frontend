@@ -120,7 +120,8 @@ class StateInfo extends LitElement {
       .name {
         @apply --paper-font-common-nowrap;
         color: var(--primary-text-color);
-        line-height: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .name[in-dialog],
