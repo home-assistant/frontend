@@ -21,7 +21,6 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
@@ -103,8 +102,6 @@ export class HuiGlanceCardEditor extends LitElement
     if (!this.hass || !this._config) {
       return html``;
     }
-
-    const dir = computeRTLDirection(this.hass!);
 
     return html`
       <hui-config-element-template
