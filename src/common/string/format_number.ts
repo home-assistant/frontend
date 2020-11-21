@@ -4,7 +4,7 @@
  * @param num The number to format
  * @param language The language to use when formatting the number
  */
-export const numberFormat = (
+export const formatNumber = (
   num: string | number,
   language: string
 ): string => {
