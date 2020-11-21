@@ -1405,6 +1405,7 @@
                         "importing": "Importing blueprint...",
                         "save_btn": "Save blueprint",
                         "saving": "Saving blueprint...",
+                        "unsupported_blueprint": "This blueprint is not supported",
                         "url": "URL of the blueprint"
                     },
                     "caption": "Blueprints",

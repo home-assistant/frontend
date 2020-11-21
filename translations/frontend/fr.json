@@ -636,7 +636,7 @@
                     "season": "Saison",
                     "track": "Piste",
                     "tv_show": "Émission de télévision",
-                    "url": "Url",
+                    "url": "URL",
                     "video": "Vidéo"
                 },
                 "content-type": {
@@ -689,21 +689,21 @@
                 },
                 "future": "Dans {time}",
                 "future_duration": {
-                    "day": "Dans {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "day": "Dans {count} {count, plural,\n  one {jour}\n  other {jours}\n}",
                     "hour": "Dans {count} {count, plural,\n  one {heure}\n  other {heures}\n}",
                     "minute": "Dans {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-                    "second": "Dans {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-                    "week": "Dans {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                    "second": "Dans {count} {count, plural,\n  one {seconde}\n  other {secondes}\n}",
+                    "week": "Dans {count} {count, plural,\n  one {semaine}\n  other {semaines}\n}"
                 },
                 "just_now": "Juste maintenant",
                 "never": "Jamais",
                 "past": "Il y a {time}",
                 "past_duration": {
-                    "day": "Il y a {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "day": "Il y a {count} {count, plural,\n  one {jour}\n  other {jours}\n}",
                     "hour": "Il y a {count} {count, plural,\n  one {heure}\n  other {heures}\n}",
                     "minute": "Il y a {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-                    "second": "Il y a {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-                    "week": "Il y a {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                    "second": "Il y a {count} {count, plural,\n  one {seconde}\n  other {secondes}\n}",
+                    "week": "Il y a {count} {count, plural,\n  one {semaine}\n  other {semaines}\n}"
                 }
             },
             "service-picker": {
@@ -746,7 +746,7 @@
                     "update": "Mise à jour"
                 },
                 "faq": "documentation",
-                "no_unique_id": "Cette entité n'a pas d'ID unique, par conséquent ses paramètres ne peuvent pas être gérés à partir de l'interface utilisateur. Consultez le {faq_link} pour plus de détails.",
+                "no_unique_id": "Cette entité (\"{entity_id}\") n'a pas d'ID unique, par conséquent ses paramètres ne peuvent pas être gérés à partir de l'interface utilisateur. Consultez le {faq_link} pour plus de détails.",
                 "related": "Liées",
                 "settings": "Réglages"
             },
@@ -811,7 +811,9 @@
                 "controls": "Contrôles",
                 "cover": {
                     "close_cover": "Fermer le volet",
+                    "close_tile_cover": "Fermer le volet",
                     "open_cover": "Ouvrir le volet",
+                    "open_tilt_cover": "Ouvrir le volet",
                     "stop_cover": "Arrêter le mouvement du volet"
                 },
                 "details": "Détails",
@@ -884,8 +886,11 @@
                         "customize": "Customisations",
                         "devices": "Appareils",
                         "entities": "Entités",
+                        "helpers": "Entrées",
+                        "info": "Info",
                         "integrations": "Intégrations",
                         "logs": "Journaux",
+                        "lovelace": "Tableaux de bord Lovelace",
                         "navigate_to": "Naviguer vers {panel}",
                         "navigate_to_config": "Naviguer à la configuration de {panel}",
                         "person": "Personnes",
@@ -1209,8 +1214,8 @@
                                     "weekdays": {
                                         "fri": "Vendredi",
                                         "mon": "Lundi",
-                                        "sat": "samedi",
-                                        "sun": "dimanche",
+                                        "sat": "Samedi",
+                                        "sun": "Dimanche",
                                         "thu": "Jeudi",
                                         "tue": "Mardi",
                                         "wed": "Mercredi"
@@ -1392,11 +1397,11 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Veuillez entrer l'adresse internet du plan",
+                        "error_no_url": "Veuillez entrer l'URL du plan",
                         "header": "Ajouter un nouveau plan",
                         "import_btn": "Importer un plan",
-                        "import_header": "Import {nom} ( {domaine} )",
-                        "import_introduction": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'url du plan ci-dessous.",
+                        "import_header": "Importer {name} ({domain})",
+                        "import_introduction": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'URL du plan ci-dessous.",
                         "importing": "Importation du plan ...",
                         "save_btn": "Sauver le plan",
                         "saving": "Enregistrement du plan ...",
@@ -1405,8 +1410,9 @@
                     "caption": "Plans",
                     "description": "Gérer les plans",
                     "overview": {
+                        "add_blueprint": "Ajouter un plan",
                         "confirm_delete_header": "Supprimer ce plan ?",
-                        "confirm_delete_text": "Êtes-vous sûr de vouloir supprimer ce plan",
+                        "confirm_delete_text": "Êtes-vous sûr de vouloir supprimer ce plan ?",
                         "header": "Éditeur de plans",
                         "headers": {
                             "name": "Nom"
@@ -1712,16 +1718,16 @@
                         "disable_selected": {
                             "button": "Désactiver la sélection",
                             "confirm_text": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
-                            "confirm_title": "Voulez-vous désactiver les {number} entités?"
+                            "confirm_title": "Voulez-vous désactiver {number} {number, plural,\n  one {entité}\n  other {entités}\n} ?"
                         },
                         "enable_selected": {
                             "button": "Activer la sélection",
                             "confirm_text": "Cela les rendra à nouveau disponibles dans Home Assistant s'ils sont maintenant désactivés.",
-                            "confirm_title": "Voulez-vous activer les {number} entités?"
+                            "confirm_title": "Voulez-vous activer {number} {number, plural,\n  one {entité}\n  other {entités}\n} ?"
                         },
                         "filter": {
                             "filter": "Filtre",
-                            "hidden_entities": "{number} caché {number, plural,\n  one {entity}\n  other {entities}\n}",
+                            "hidden_entities": "{number} caché {number, plural,\n  one {entité}\n  other {entités}\n}",
                             "show_all": "Afficher tout",
                             "show_disabled": "Afficher les entités désactivées",
                             "show_readonly": "Afficher les entités en lecture seule",
@@ -1739,9 +1745,9 @@
                         "remove_selected": {
                             "button": "Supprimer la sélection",
                             "confirm_partly_text": "Vous ne pouvez supprimer que {removable} des {selected} entités. Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités. Parfois, vous devez redémarrer Home Assistant avant de pouvoir supprimer les entités d'une intégration supprimée. Voulez-vous vraiment supprimer les entités obsolètes?",
-                            "confirm_partly_title": "Seules {number} entités sélectionnées peuvent être supprimées.",
+                            "confirm_partly_title": "Seulement {number} {number, plural,\n  one {entité sélectionnée peut être supprimée}\n  other {entités sélectionnées peuvent être supprimées}\n}.",
                             "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités.",
-                            "confirm_title": "Voulez-vous supprimer {number} entités ?"
+                            "confirm_title": "Voulez-vous supprimer {number} {number, plural,\n  one {entité}\n  other {entités}\n} ?"
                         },
                         "search": "Chercher les entités",
                         "selected": "{number} sélectionné",
@@ -1811,8 +1817,14 @@
                         "checks": {
                             "cloud": {
                                 "alexa_enabled": "Alexa activée",
+                                "can_reach_cert_server": "Accéder au serveur de certificats",
+                                "can_reach_cloud": "Accéder à Home Assistant Cloud",
+                                "can_reach_cloud_auth": "Accéder au serveur d'authentification",
                                 "google_enabled": "Google activé",
                                 "logged_in": "Connecté",
+                                "relayer_connected": "Relais connecté",
+                                "remote_connected": "Contrôle à distance connecté",
+                                "remote_enabled": "Contrôle à distance activé",
                                 "subscription_expiration": "Expiration de l'abonnement"
                             },
                             "homeassistant": {
@@ -1829,6 +1841,7 @@
                                 "virtualenv": "Environnement virtuel"
                             },
                             "lovelace": {
+                                "dashboards": "Tableaux de bord",
                                 "mode": "Mode",
                                 "resources": "Ressources"
                             }
@@ -1961,7 +1974,7 @@
                             "title": "Titre",
                             "title_required": "Le titre est requis.",
                             "update": "Mise à jour",
-                            "url": "Url",
+                            "url": "URL",
                             "url_error_msg": "L'url ne peut pas contenir d'espaces ni de caractères spéciaux, sauf pour _ et -"
                         },
                         "picker": {
@@ -1989,7 +2002,7 @@
                             "new_resource": "Ajouter une nouvelle ressource",
                             "type": "Type de ressource",
                             "update": "Mise à jour",
-                            "url": "Url",
+                            "url": "URL",
                             "url_error_msg": "L'URL est un champ obligatoire",
                             "warning_header": "Soyez prudents !",
                             "warning_text": "L'ajout de ressources peut être dangereux, assurez-vous de connaître la source de la ressource et faites-lui confiance. De mauvaises ressources peuvent sérieusement endommager votre système."
@@ -1998,7 +2011,7 @@
                             "add_resource": "Ajouter une ressource",
                             "headers": {
                                 "type": "Type",
-                                "url": "Url"
+                                "url": "URL"
                             },
                             "no_resources": "Pas de ressources"
                         },
@@ -2770,11 +2783,11 @@
                             "navigate": "Naviguer",
                             "none": "Pas d'action",
                             "toggle": "Interrupteur",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "editor_service_data": "Les informations sur les services ne peuvent être saisies que dans l'éditeur de code",
                         "navigation_path": "Chemin de navigation",
-                        "url_path": "Chemin de l'url"
+                        "url_path": "Chemin de l'URL"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2892,7 +2905,7 @@
                             "theme": "Thème",
                             "title": "Titre",
                             "unit": "Unité",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Colonnes",
