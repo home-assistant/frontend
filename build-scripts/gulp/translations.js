@@ -33,21 +33,10 @@ String.prototype.rsplit = function (sep, maxsplit) {
     : split;
 };
 
-// Panel translations which should be split from the core translations. These
-// should mirror the fragment definitions in polymer.json, so that we load
-// additional resources at equivalent points.
-const TRANSLATION_FRAGMENTS = [
-  "config",
-  "history",
-  "logbook",
-  "mailbox",
-  "profile",
-  "shopping-list",
-  "page-authorize",
-  "page-demo",
-  "page-onboarding",
-  "developer-tools",
-];
+// Panel translations which should be split from the core translations.
+const TRANSLATION_FRAGMENTS = Object.keys(
+  require("../../src/translations/en.json").ui.panel
+);
 
 function recursiveFlatten(prefix, data) {
   let output = {};
