@@ -66,7 +66,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: HumidifierCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "humidifier") {
-      throw new Error("Specify an entity from within the humidifier domain.");
+      throw new Error("Specify an entity from within the humidifier domain");
     }
 
     this._config = config;

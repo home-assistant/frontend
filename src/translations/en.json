@@ -65,7 +65,7 @@
       "unknown": "Unk",
       "unavailable": "Unavai",
       "error": "Error",
-      "entity_not_found": "Entity Not Found"
+      "entity_not_found": "Entity not found"
     },
     "alarm_control_panel": {
       "armed": "Armed",
@@ -1959,8 +1959,8 @@
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
             "unnamed_entry": "Unnamed entry",
-            "device_unavailable": "device unavailable",
-            "entity_unavailable": "entity unavailable",
+            "device_unavailable": "Device unavailable",
+            "entity_unavailable": "Entity unavailable",
             "area": "In {area}",
             "no_area": "No Area"
           },
@@ -2721,7 +2721,8 @@
             },
             "picture-glance": {
               "name": "Picture Glance",
-              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog."
+              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog.",
+              "state_entity": "State Entity"
             },
             "plant-status": {
               "name": "Plant Status",
@@ -2795,7 +2796,7 @@
           "attribute_not_found": "Attribute {attribute} not available in: {entity}",
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}",
-          "entity_unavailable": "{entity} is currently unavailable",
+          "entity_unavailable": "Entity is currently unavailable: {entity}",
           "starting": "Home Assistant is starting, not everything may be available yet"
         },
         "changed_toast": {

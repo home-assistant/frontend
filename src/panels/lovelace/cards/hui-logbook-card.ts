@@ -76,6 +76,10 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: LogbookCardConfig): void {
+    if (!config.entities.length) {
+      throw new Error("Entities must be specified");
+    }
+
     this._configEntities = processConfigEntities<EntityConfig>(config.entities);
 
     this._config = {

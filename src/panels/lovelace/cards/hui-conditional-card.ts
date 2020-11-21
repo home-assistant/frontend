@@ -28,7 +28,7 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
     this.validateConfig(config);
 
     if (!config.card) {
-      throw new Error("No card configured.");
+      throw new Error("No card configured");
     }
 
     this._element = this._createCardElement(config.card);

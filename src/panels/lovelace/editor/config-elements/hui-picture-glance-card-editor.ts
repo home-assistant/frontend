@@ -178,7 +178,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
         </div>
         <ha-entity-picker
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.entity"
+            "ui.panel.lovelace.editor.card.picture-glance.state_entity"
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"

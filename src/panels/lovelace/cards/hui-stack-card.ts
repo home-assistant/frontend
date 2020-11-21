@@ -42,7 +42,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   public setConfig(config: T): void {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
-      throw new Error("Card config incorrect");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
     this._cards = config.cards.map((card) => {
