@@ -6,7 +6,8 @@
  */
 export const formatNumber = (
   num: string | number,
-  language: string
+  language: string,
+  options?: Intl.NumberFormatOptions
 ): string => {
   // Polyfill for Number.isNaN, which is more reliable that the global isNaN()
   Number.isNaN =
@@ -16,7 +17,7 @@ export const formatNumber = (
     };
 
   if (!Number.isNaN(Number(num)) && Intl) {
-    return new Intl.NumberFormat(language).format(Number(num));
+    return new Intl.NumberFormat(language, options).format(Number(num));
   }
   return num.toString();
 };
