@@ -259,6 +259,7 @@ export class DialogAddUser extends LitElement {
       return;
     }
 
+    user.username = this._username;
     this._params!.userAddedCallback(user);
     this._close();
   }
