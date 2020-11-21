@@ -15,6 +15,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
 import type { HomeAssistant } from "../../../types";
@@ -116,6 +117,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .min=${this._config.min!}
           .max=${this._config.max!}
           .value=${state}
+          .valueFormatted=${formatNumber(state, this.hass!.language)}
           .label=${this._config!.unit ||
           this.hass?.states[this._config!.entity].attributes
             .unit_of_measurement ||
