@@ -1410,6 +1410,7 @@
                     "caption": "",
                     "description": "Kavandite haldamine",
                     "overview": {
+                        "add_blueprint": "Lisa kavand",
                         "confirm_delete_header": "Kas kustutada see kavand?",
                         "confirm_delete_text": "Kas soovid kindlasti selle kavandi kustutada?",
                         "header": "Kavandi redaktor",

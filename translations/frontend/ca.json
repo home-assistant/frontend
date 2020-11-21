@@ -1401,7 +1401,7 @@
                         "header": "Afegiu plànol nou",
                         "import_btn": "Importa plànol",
                         "import_header": "Importa {name} ({domain})",
-                        "import_introduction": "Pots importar plànols d'altres usuaris des de Github i fòrums de la comunitat. Introdueix, a sota,  l'URL del plànol.",
+                        "import_introduction": "Pots importar plànols d'altres usuaris des de Github i els fòrums de la comunitat. Introdueix, a sota,  l'URL del plànol.",
                         "importing": "Important plànol",
                         "save_btn": "Desa plànol",
                         "saving": "Desant plànol...",
@@ -1410,6 +1410,7 @@
                     "caption": "Plànols",
                     "description": "Gestiona els plànols",
                     "overview": {
+                        "add_blueprint": "Afegiu plànol",
                         "confirm_delete_header": "Eliminar aquest plànol?",
                         "confirm_delete_text": "Segur que vols eliminar aquest plànol?",
                         "header": "Editor de plànols",

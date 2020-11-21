@@ -547,6 +547,11 @@
                 "clear": "Tøm",
                 "show_areas": "Vis områder"
             },
+            "blueprint-picker": {
+                "add_user": "Legg til bruker",
+                "remove_user": "Fjern bruker",
+                "select_blueprint": "Velg et Blueprint"
+            },
             "data-table": {
                 "no-data": "Ingen data",
                 "search": "Søk"
@@ -1047,11 +1052,16 @@
                     "caption": "Automasjoner",
                     "description": "Administrer automasjoner",
                     "dialog_new": {
-                        "start_empty": "Start med en tom automatisering",
+                        "blueprint": {
+                            "use_blueprint": "Bruke en blueprint"
+                        },
+                        "header": "Opprette en ny automasjon",
+                        "how": "Hvordan vil du opprette din nye automasjon?",
+                        "start_empty": "Start med en tom automasjon",
                         "thingtalk": {
                             "create": "Opprett",
-                            "header": "Beskriv automatiseringen du vil opprette",
-                            "input_label": "Hva skal denne automatiseringen gjøre?",
+                            "header": "Beskriv automasjonen du vil opprette",
+                            "input_label": "Hva skal denne automasjonen gjøre?",
                             "intro": "Og vi vil prøve å skape det for deg. For eksempel: Slå av lysene når jeg drar."
                         }
                     },
@@ -1387,26 +1397,27 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Vennligst skriv inn url til blueprint.",
+                        "error_no_url": "Vennligst skriv inn URL-en til blueprint",
                         "header": "Legg til ny blueprint",
                         "import_btn": "Importer blueprint",
-                        "import_header": "Importer {name} ({domene})",
-                        "import_introduction": "Du kan importere Blueprints av andre brukere fra Github og fellesskapsforaene. Skriv inn nettadressen til Blueprint nedenfor.",
+                        "import_header": "Importer {name} ({domain})",
+                        "import_introduction": "Du kan importere blueprints av andre brukere fra Github og fellesskapsforumet. Skriv inn URL-en til blueprint nedenfor.",
                         "importing": "Importerer blueprint...",
                         "save_btn": "Lagre blueprint",
                         "saving": "Lagrer blueprint...",
-                        "url": "Url-adressen til blueprint"
+                        "url": "URL til blueprint"
                     },
                     "caption": "Blueprints",
                     "description": "Administrer blueprints",
                     "overview": {
-                        "confirm_delete_header": "Slette denne blueprint?",
-                        "confirm_delete_text": "Er du sikker på at du vil slette denne Blueprint",
+                        "add_blueprint": "Legg til blueprint",
+                        "confirm_delete_header": "Slette denne blueprint'en?",
+                        "confirm_delete_text": "Er du sikker på at du vil slette denne blueprint'en",
                         "header": "Blueprint Editor",
                         "headers": {
                             "name": "Navn"
                         },
-                        "introduction": "Med blueprint editor kan du opprette og redigere blueprints.",
+                        "introduction": "Med blueprint editor kan du opprette og redigere blueprints",
                         "learn_more": "Lær mer om blueprint"
                     }
                 },
@@ -3337,7 +3348,7 @@
                     "intro": "Enheter og tjenester er representert i Home Assistant som integrasjoner. Du kan sette dem opp nå eller gjøre det senere fra konfigurasjonen.",
                     "more_integrations": "Mer"
                 },
-                "intro": "Er du klar til å ta kontroll over hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av tinkerers?",
+                "intro": "Er du klar til å ta kontroll over hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av entusiaster?",
                 "restore": {
                     "description": "Alternativt kan du gjenopprette fra et forrige snapshot.",
                     "hide_log": "Skjul full logg",

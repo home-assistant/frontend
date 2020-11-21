@@ -514,7 +514,7 @@
             "disable": "Disattivare",
             "enable": "Attivare",
             "error_required": "Necessario",
-            "leave": "Partire",
+            "leave": "Esci",
             "loading": "Caricamento",
             "menu": "Menù",
             "next": "Avanti",
@@ -897,7 +897,7 @@
                         "scene": "Scene",
                         "script": "Script",
                         "server_control": "Controlli del Server",
-                        "tags": "Tag",
+                        "tags": "Etichette",
                         "users": "Utenti",
                         "zone": "Zone"
                     },
@@ -1410,6 +1410,7 @@
                     "caption": "Progetti",
                     "description": "Gestisci i progetti",
                     "overview": {
+                        "add_blueprint": "Aggiungi progetto",
                         "confirm_delete_header": "Eliminare questo progetto?",
                         "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
                         "header": "Editor del progetto",
@@ -1478,7 +1479,7 @@
                             "info": "Tutto ciò che è configurato per essere attivato da un webhook può essere dotato di un URL accessibile pubblicamente per consentire d'inviare i dati ad Home Assistant da qualsiasi luogo, senza esporre la vostra istanza a Internet.",
                             "link_learn_more": "Ulteriori informazioni sulla creazione di automazioni basate su webhook.",
                             "loading": "Caricamento in corso ...",
-                            "manage": "Gestire",
+                            "manage": "Gestisci",
                             "no_hooks_yet": "Sembra che tu non abbia ancora dei webhook. Per iniziare, configurare un ",
                             "no_hooks_yet_link_automation": "automazione webhook",
                             "no_hooks_yet_link_integration": "Integrazione basata su webhook",
@@ -1845,7 +1846,7 @@
                                 "resources": "Risorse"
                             }
                         },
-                        "manage": "Gestire",
+                        "manage": "Gestisci",
                         "more_info": "maggiori informazioni"
                     },
                     "title": "Informazioni"
@@ -1937,7 +1938,7 @@
                 "logs": {
                     "caption": "Registri",
                     "clear": "Pulisci",
-                    "description": "Vedi i logs di Home Assistant",
+                    "description": "Vedi i registri di Home Assistant",
                     "details": "Dettagli registro ({level})",
                     "load_full_log": "Carica il registro completo di Home Assistant",
                     "loading_log": "Caricamento del registro errori...",
@@ -2337,11 +2338,11 @@
                     }
                 },
                 "tags": {
-                    "add_tag": "Aggiungi Etichetta",
+                    "add_tag": "Aggiungi etichetta",
                     "automation_title": "L'etichetta {name} è scansionata",
-                    "caption": "Tag",
-                    "confirm_remove": "Sei sicuro di voler rimuovere il tag {tag}?",
-                    "confirm_remove_title": "Rimuovere il tag?",
+                    "caption": "Etichette",
+                    "confirm_remove": "Sei sicuro di voler rimuovere l'etichetta {tag}?",
+                    "confirm_remove_title": "Rimuovere l'etichetta?",
                     "create_automation": "Creare un'automazione con l'etichetta",
                     "description": "Gestisci le etichette",
                     "detail": {
@@ -2351,18 +2352,18 @@
                         "delete": "Cancella",
                         "description": "Descrizione",
                         "name": "Nome",
-                        "new_tag": "Nuova Etichetta",
-                        "tag_id": "Id Etichetta",
+                        "new_tag": "Nuova etichetta",
+                        "tag_id": "Id etichetta",
                         "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
                         "update": "Aggiorna",
-                        "usage": "Un tag può attivare un'automazione quando viene scansionato, puoi utilizzare tag NFC, codici QR o qualsiasi altro tipo di tag. Utilizza il nostro {companion_link} per scrivere questo tag su un tag NFC programmabile o crea un codice QR di seguito."
+                        "usage": "Una etichetta può attivare un'automazione quando viene scansionata, puoi utilizzare etichette NFC, codici QR o qualsiasi altro tipo di tag. Utilizza il nostro {companion_link} per scrivere questa etichetta su un tag NFC programmabile o crea un codice QR di seguito."
                     },
                     "edit": "Modifica",
                     "headers": {
                         "last_scanned": "Ultima scansione",
                         "name": "Nome"
                     },
-                    "learn_more": "Ulteriori informazioni sui tag",
+                    "learn_more": "Ulteriori informazioni sulle etichette",
                     "never_scanned": "Mai scansionato",
                     "no_tags": "Nessuna etichetta",
                     "write": "Scrivi"

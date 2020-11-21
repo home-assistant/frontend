@@ -1410,6 +1410,7 @@
                     "caption": "Planos",
                     "description": "Administrar planos",
                     "overview": {
+                        "add_blueprint": "Añadir plano",
                         "confirm_delete_header": "¿Eliminar este plano?",
                         "confirm_delete_text": "¿Estás seguro de que quieres borrar este plano?",
                         "header": "Editor de planos",

@@ -1388,12 +1388,24 @@
                 },
                 "blueprint": {
                     "add": {
-                        "import_header": "Importovat {name} ({domain})"
+                        "error_no_url": "Zadejte adresu URL šablonky konfigurace",
+                        "header": "Přidat novou šablonku konfigurace",
+                        "import_btn": "Importovat šablonku konfigurace",
+                        "import_header": "Importovat {name} ({domain})",
+                        "import_introduction": "Z Githubu a komunitních fór můžete importovat šablonky konfigurace sdílené ostatními uživateli. Zadejte adresu URL šablonky konfigurace.",
+                        "importing": "Importuje se šablonka konfigurace",
+                        "save_btn": "Uložit šablonku konfigurace",
+                        "saving": "Ukládání konfigurační šablonky",
+                        "url": "URL šablonky konfigurace"
                     },
                     "overview": {
+                        "add_blueprint": "Přidat šablonku konfigurace",
+                        "confirm_delete_header": "Odstranit tuto šablonku konfigurace?",
+                        "confirm_delete_text": "Opravdu chcete smazat tuto šablonku konfigurace?",
                         "headers": {
                             "name": "Jméno"
-                        }
+                        },
+                        "learn_more": "Další informace o šablonkách konfigurace"
                     }
                 },
                 "cloud": {

@@ -1396,7 +1396,30 @@
                     }
                 },
                 "blueprint": {
-                    "caption": "Schematy"
+                    "add": {
+                        "error_no_url": "Wprowadź adres URL schematu.",
+                        "header": "Dodaj nowy schemat",
+                        "import_btn": "Importuj schemat",
+                        "import_header": "Importuj {name} ({domain})",
+                        "import_introduction": "Możesz importować schematy innych użytkowników z Githuba i forów społecznościowych. Wprowadź poniżej adres URL schematu.",
+                        "importing": "Importowanie schematu...",
+                        "save_btn": "Zapisz schemat",
+                        "saving": "Zapisywanie schematu...",
+                        "url": "URL schematu"
+                    },
+                    "caption": "Schematy",
+                    "description": "Zarządzaj schematami",
+                    "overview": {
+                        "add_blueprint": "Dodaj schemat",
+                        "confirm_delete_header": "Usunąć ten schemat?",
+                        "confirm_delete_text": "Czy na pewno chcesz usunąć ten schemat?",
+                        "header": "Edytor schematów",
+                        "headers": {
+                            "name": "Nazwa"
+                        },
+                        "introduction": "Edytor schematów pozwala tworzyć i edytować schematy",
+                        "learn_more": "Dowiedz się więcej o schematach"
+                    }
                 },
                 "cloud": {
                     "account": {
