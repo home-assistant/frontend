@@ -37,6 +37,8 @@ class DialogUserDetail extends LitElement {
 
   @internalProperty() private _isAdmin?: boolean;
 
+  @internalProperty() private _isActive?: boolean;
+
   @internalProperty() private _error?: string;
 
   @internalProperty() private _params?: UserDetailDialogParams;
@@ -48,6 +50,7 @@ class DialogUserDetail extends LitElement {
     this._error = undefined;
     this._name = params.entry.name || "";
     this._isAdmin = params.entry.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+    this._isActive = params.entry.is_active;
     await this.updateComplete;
   }
 
@@ -91,15 +94,6 @@ class DialogUserDetail extends LitElement {
                   </span>
                 `
               : ""}
-            ${user.is_active
-              ? html`
-                  <span class="state"
-                    >${this.hass.localize(
-                      "ui.panel.config.users.editor.active"
-                    )}</span
-                  >
-                `
-              : ""}
           </div>
           <div class="form">
             <paper-input
@@ -129,6 +123,20 @@ class DialogUserDetail extends LitElement {
                   )}
                 `
               : ""}
+            <br />
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.config.users.editor.active"
+              )}
+              .dir=${computeRTLDirection(this.hass)}
+            >
+              <ha-switch
+                .disabled=${user.system_generated || user.is_owner}
+                .checked=${this._isActive}
+                @change=${this._activeChanged}
+              >
+              </ha-switch>
+            </ha-formfield>
           </div>
         </div>
 
@@ -192,11 +200,16 @@ class DialogUserDetail extends LitElement {
     this._isAdmin = ev.target.checked;
   }
 
+  private async _activeChanged(ev): Promise<void> {
+    this._isActive = ev.target.checked;
+  }
+
   private async _updateEntry() {
     this._submitting = true;
     try {
       await this._params!.updateEntry({
         name: this._name.trim(),
+        is_active: this._isActive,
         group_ids: [
           this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
         ],

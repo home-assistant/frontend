@@ -20,6 +20,7 @@ export interface User {
 
 export interface UpdateUserParams {
   name?: User["name"];
+  is_active?: User["is_active"];
   group_ids?: User["group_ids"];
 }
 
