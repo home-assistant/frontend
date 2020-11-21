@@ -288,7 +288,6 @@
       "overflow_menu": "Overflow menu",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
-
       "error_required": "Required",
       "copied": "Copied"
     },
@@ -507,7 +506,6 @@
           },
           "navigation": {
             "navigate_to": "Navigate to {panel}",
-            "navigate_to_config": "Navigate to {panel} configuration",
             "logs": "[%key:ui::panel::config::logs::caption%]",
             "automation": "[%key:ui::panel::config::automation::caption%]",
             "script": "[%key:ui::panel::config::script::caption%]",
@@ -525,6 +523,7 @@
             "users": "[%key:ui::panel::config::users::caption%]",
             "info": "[%key:ui::panel::config::info::caption%]",
             "customize": "[%key:ui::panel::config::customize::caption%]",
+            "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
             "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
         },
@@ -1118,8 +1117,9 @@
           "dialog_new": {
             "header": "Create a new automation",
             "how": "How do you want to create your new automation?",
-
-            "blueprint": { "use_blueprint": "Use a blueprint" },
+            "blueprint": {
+              "use_blueprint": "Use a blueprint"
+            },
             "thingtalk": {
               "header": "Describe the automation you want to create",
               "intro": "And we will try to create it for you. For example: Turn the lights off when I leave.",
