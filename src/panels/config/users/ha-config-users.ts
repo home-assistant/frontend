@@ -35,8 +35,8 @@ export class HaConfigUsers extends LitElement {
   @property() public route!: Route;
 
   private _columns = memoizeOne(
-    (_language): DataTableColumnContainer => {
-      return {
+    (narrow: boolean, _language): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer = {
         name: {
           title: this.hass.localize(
             "ui.panel.config.users.picker.headers.name"
@@ -75,37 +75,32 @@ export class HaConfigUsers extends LitElement {
             ${this.hass.localize(`groups.${groupIds[0]}`)}
           `,
         },
-        is_active: {
+      };
+      if (!narrow) {
+        columns.is_active = {
           title: this.hass.localize(
             "ui.panel.config.users.picker.headers.is_active"
           ),
           type: "icon",
           sortable: true,
           filterable: true,
+          width: "10%",
           template: (is_active) =>
             is_active ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
-        },
-        is_owner: {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.is_owner"
-          ),
-          type: "icon",
-          sortable: true,
-          filterable: true,
-          template: (is_owner) =>
-            is_owner ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
-        },
-        system_generated: {
+        };
+        columns.system_generated = {
           title: this.hass.localize(
             "ui.panel.config.users.picker.headers.system"
           ),
           type: "icon",
           sortable: true,
           filterable: true,
+          width: "15%",
           template: (generated) =>
             generated ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
-        },
-      };
+        };
+      }
+      return columns;
     }
   );
 
@@ -122,7 +117,7 @@ export class HaConfigUsers extends LitElement {
         .route=${this.route}
         backPath="/config"
         .tabs=${configSections.persons}
-        .columns=${this._columns(this.hass.language)}
+        .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._users}
         @row-click=${this._editUser}
         hasFab
@@ -142,6 +137,12 @@ export class HaConfigUsers extends LitElement {
 
   private async _fetchUsers() {
     this._users = await fetchUsers(this.hass);
+
+    this._users.forEach(function (user) {
+      if (user.is_owner) {
+        user.group_ids.unshift("owners");
+      }
+    });
   }
 
   private _editUser(ev: HASSDomEvent<RowClickedEvent>) {
