@@ -145,7 +145,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       let inputDevices = [...devices];
 
       inputDevices = inputDevices.filter(
-        (device) => device.id == includeDeviceId || !device.disabled_by
+        (device) => device.id == value || !device.disabled_by
       );
 
       if (includeDomains) {
