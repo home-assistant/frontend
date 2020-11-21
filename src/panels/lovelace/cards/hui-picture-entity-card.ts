@@ -69,7 +69,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: PictureEntityCardConfig): void {
     if (!config || !config.entity) {
-      throw new Error("Invalid Configuration: 'entity' required");
+      throw new Error("Entity must be specified");
     }
 
     if (
@@ -78,7 +78,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       !config.state_image &&
       !config.camera_image
     ) {
-      throw new Error("No image source configured.");
+      throw new Error("No image source configured");
     }
 
     this._config = { show_name: true, show_state: true, ...config };

@@ -68,7 +68,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: PlantStatusCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "plant") {
-      throw new Error("Specify an entity from within the plant domain.");
+      throw new Error("Specify an entity from within the plant domain");
     }
 
     this._config = config;

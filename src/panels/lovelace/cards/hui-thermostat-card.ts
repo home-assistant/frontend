@@ -87,7 +87,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: ThermostatCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "climate") {
-      throw new Error("Specify an entity from within the climate domain.");
+      throw new Error("Specify an entity from within the climate domain");
     }
 
     this._config = config;

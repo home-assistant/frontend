@@ -68,8 +68,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
   public setConfig(config: EntityCardConfig): void {
+    if (!config.entity) {
+      throw new Error("Entity must be specified");
+    }
     if (config.entity && !isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
+      throw new Error("Invalid entity");
     }
 
     this._config = config;

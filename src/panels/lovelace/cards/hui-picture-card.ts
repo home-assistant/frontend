@@ -48,7 +48,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: PictureCardConfig): void {
     if (!config || !config.image) {
-      throw new Error("Invalid Configuration: 'image' required");
+      throw new Error("Image required");
     }
 
     this._config = config;

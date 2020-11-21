@@ -44,7 +44,7 @@ class HuiSensorCard extends HuiEntityCard {
 
   public setConfig(config: SensorCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "sensor") {
-      throw new Error("Specify an entity from within the sensor domain.");
+      throw new Error("Specify an entity from within the sensor domain");
     }
 
     const { graph, detail, hours_to_show, ...cardConfig } = config;
