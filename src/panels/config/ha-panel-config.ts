@@ -293,9 +293,9 @@ class HaPanelConfig extends HassRouterPage {
           ),
       },
       zwave: {
-        tag: "ha-config-zwave",
+        tag: "zwave-config-router",
         load: () =>
-          import("./integrations/integration-panels/zwave/ha-config-zwave"),
+          import("./integrations/integration-panels/zwave/zwave-config-router"),
       },
       mqtt: {
         tag: "mqtt-config-panel",

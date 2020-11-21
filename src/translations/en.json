@@ -2308,6 +2308,10 @@
             "unknown": "unknown",
             "wakeup_interval": "Wakeup Interval"
           },
+          "migration": {
+            "header": "Migrate to OpenZWave",
+            "introduction": "This wizard will help you migrate from the legacy Z-Wave component to the new OpenZWave."
+          },
           "network_management": {
             "header": "Z-Wave Network Management",
             "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
