@@ -73,8 +73,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
-    if (!config.entities) {
-      throw new Error("Entities must be defined");
+    if (!config.entities.length) {
+      throw new Error("Entities must be specified");
     }
 
     if (config.entities && !Array.isArray(config.entities)) {
