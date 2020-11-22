@@ -65,7 +65,7 @@ class MoreInfoPerson extends LitElement {
       latitude: this.stateObj!.attributes.latitude,
       longitude: this.stateObj!.attributes.longitude,
     });
-    fireEvent(this, "hass-more-info", { entityId: null });
+    fireEvent(this, "hass-more-info", { entityId: undefined });
   }
 
   static get styles(): CSSResult {
