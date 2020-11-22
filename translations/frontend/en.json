@@ -78,7 +78,7 @@
             "triggered": "Trig"
         },
         "default": {
-            "entity_not_found": "Entity Not Found",
+            "entity_not_found": "Entity not found",
             "error": "Error",
             "unavailable": "Unavai",
             "unknown": "Unk"
@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "Areas",
                         "automation": "Automations",
+                        "blueprint": "Blueprints",
                         "core": "General",
                         "customize": "Customizations",
                         "devices": "Devices",
@@ -1866,11 +1867,11 @@
                         "delete": "Delete",
                         "delete_button": "Delete {integration}",
                         "delete_confirm": "Are you sure you want to delete this integration?",
-                        "device_unavailable": "device unavailable",
+                        "device_unavailable": "Device unavailable",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
                         "documentation": "Documentation",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
-                        "entity_unavailable": "entity unavailable",
+                        "entity_unavailable": "Entity unavailable",
                         "firmware": "Firmware: {version}",
                         "hub": "Connected via",
                         "manuf": "by {manufacturer}",
@@ -2969,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog.",
-                            "name": "Picture Glance"
+                            "name": "Picture Glance",
+                            "state_entity": "State Entity"
                         },
                         "picture": {
                             "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service.",
@@ -3180,7 +3182,7 @@
                     "attribute_not_found": "Attribute {attribute} not available in: {entity}",
                     "entity_non_numeric": "Entity is non-numeric: {entity}",
                     "entity_not_found": "Entity not available: {entity}",
-                    "entity_unavailable": "{entity} is currently unavailable",
+                    "entity_unavailable": "Entity is currently unavailable: {entity}",
                     "starting": "Home Assistant is starting, not everything may be available yet"
                 }
             },

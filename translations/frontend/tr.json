@@ -1405,6 +1405,7 @@
                         "importing": "Taslak içe aktarılıyor...",
                         "save_btn": "Taslağı kaydet",
                         "saving": "Taslak kaydediliyor...",
+                        "unsupported_blueprint": "Bu taslak desteklenmiyor",
                         "url": "Taslağın URL'si"
                     },
                     "caption": "Taslaklar",

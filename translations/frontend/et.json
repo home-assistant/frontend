@@ -1405,6 +1405,7 @@
                         "importing": "Kavandi importimine ...",
                         "save_btn": "Salvesta kavand",
                         "saving": "Kavandi salvestamine ...",
+                        "unsupported_blueprint": "Seda kavandit ei toetata",
                         "url": "Kavandi URL"
                     },
                     "caption": "",

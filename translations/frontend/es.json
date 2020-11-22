@@ -1405,6 +1405,7 @@
                         "importing": "Importando plano...",
                         "save_btn": "Guardar plano",
                         "saving": "Guardando plano...",
+                        "unsupported_blueprint": "Este plano no es compatible",
                         "url": "URL del plano"
                     },
                     "caption": "Planos",
