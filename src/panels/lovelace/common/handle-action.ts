@@ -60,9 +60,11 @@ export const handleAction = (
 
   switch (actionConfig.action) {
     case "more-info": {
+      console.log(actionConfig.actions);
       if (config.entity || config.camera_image) {
         fireEvent(node, "hass-more-info", {
           entityId: config.entity ? config.entity : config.camera_image!,
+          actions: actionConfig.actions,
         });
       }
       break;

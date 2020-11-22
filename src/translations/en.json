@@ -547,6 +547,7 @@
         "crop": "Crop"
       },
       "more_info_control": {
+        "actions": "Actions",
         "dismiss": "Dismiss dialog",
         "settings": "Entity settings",
         "edit": "Edit entity",

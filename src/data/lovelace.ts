@@ -138,6 +138,7 @@ export interface UrlActionConfig extends BaseActionConfig {
 
 export interface MoreInfoActionConfig extends BaseActionConfig {
   action: "more-info";
+  actions?: ActionConfig[];
 }
 
 export interface NoActionConfig extends BaseActionConfig {
@@ -150,6 +151,7 @@ export interface CustomActionConfig extends BaseActionConfig {
 
 export interface BaseActionConfig {
   confirmation?: ConfirmationRestrictionConfig;
+  name?: string;
 }
 
 export interface ConfirmationRestrictionConfig {

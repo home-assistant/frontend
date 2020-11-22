@@ -12,6 +12,7 @@ import {
   property,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
   DOMAINS_MORE_INFO_NO_HISTORY,
@@ -20,22 +21,25 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-
 import { navigate } from "../../common/navigate";
-import "../../components/ha-dialog";
-import "../../components/ha-header-bar";
-import "../../components/ha-svg-icon";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
 import { haStyleDialog } from "../../resources/styles";
-import "../../state-summary/state-card-content";
-import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { CONTINUOUS_DOMAINS } from "../../data/logbook";
+import { handleAction } from "../../panels/lovelace/common/handle-action";
+
+import "../../components/ha-dialog";
+import "../../components/ha-header-bar";
+import "../../components/ha-svg-icon";
+import "../../state-summary/state-card-content";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./controls/more-info-default";
-import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import "./more-info-content";
+
+import type { HomeAssistant } from "../../types";
+import type { ActionConfig, ActionHandlerEvent } from "../../data/lovelace";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
@@ -49,7 +53,8 @@ const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
 
 export interface MoreInfoDialogParams {
-  entityId: string | null;
+  entityId: string | undefined;
+  actions?: ActionConfig[] | undefined;
 }
 
 @customElement("ha-more-info-dialog")
@@ -58,21 +63,29 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @internalProperty() private _entityId?: string | null;
+  @internalProperty() private _entityId?: string | undefined;
 
   @internalProperty() private _currTabIndex = 0;
 
+  @internalProperty() private _actions: ActionConfig[] | undefined;
+
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
+    this._actions = params.actions;
+    console.log(params);
     if (!this._entityId) {
       this.closeDialog();
       return;
     }
     this.large = false;
+    if (params.actions) {
+      this._currTabIndex = 1;
+    }
   }
 
   public closeDialog() {
     this._entityId = undefined;
+    this._actions = undefined;
     this._currTabIndex = 0;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -165,6 +178,13 @@ export class MoreInfoDialog extends LitElement {
                       "ui.dialogs.more_info_control.details"
                     )}
                   ></mwc-tab>
+                  ${this._actions
+                    ? html`<mwc-tab
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.actions"
+                        )}
+                      ></mwc-tab>`
+                    : ""}
                   <mwc-tab
                     .label=${this.hass.localize(
                       "ui.dialogs.more_info_control.history"
@@ -228,6 +248,21 @@ export class MoreInfoDialog extends LitElement {
                       `
                     : ""}
                 `
+              : this._currTabIndex === 1 && this._actions
+              ? html`${this._actions.map(
+                  (action) =>
+                    html`
+                      <div>
+                        <mwc-button
+                          @click=${this._handleAction}
+                          .config=${action}
+                          tabindex="1"
+                        >
+                          ${action.name}
+                        </mwc-button>
+                      </div>
+                    `
+                )}`
               : html`
                   <ha-more-info-history
                     .hass=${this.hass}
@@ -319,6 +354,17 @@ export class MoreInfoDialog extends LitElement {
     }
 
     this._currTabIndex = ev.detail.index;
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    const config = (ev.currentTarget as any).config as ActionConfig;
+    handleAction(
+      this,
+      this.hass!,
+      { entity: this._entityId!, tap_action: config },
+      "tap"
+    );
+    this.closeDialog();
   }
 
   static get styles() {
