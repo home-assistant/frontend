@@ -9,9 +9,7 @@ import { ConditionalCardConfig } from "./types";
 @customElement("hui-conditional-card")
 class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-conditional-card-editor" */ "../editor/config-elements/hui-conditional-card-editor"
-    );
+    await import("../editor/config-elements/hui-conditional-card-editor");
     return document.createElement("hui-conditional-card-editor");
   }
 

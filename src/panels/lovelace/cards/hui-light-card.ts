@@ -37,9 +37,7 @@ import { LightCardConfig } from "./types";
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-light-card-editor" */ "../editor/config-elements/hui-light-card-editor"
-    );
+    await import("../editor/config-elements/hui-light-card-editor");
     return document.createElement("hui-light-card-editor");
   }
 

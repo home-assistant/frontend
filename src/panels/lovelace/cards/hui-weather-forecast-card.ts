@@ -41,9 +41,7 @@ const DAY_IN_MILLISECONDS = 86400000;
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-weather-forecast-card-editor" */ "../editor/config-elements/hui-weather-forecast-card-editor"
-    );
+    await import("../editor/config-elements/hui-weather-forecast-card-editor");
     return document.createElement("hui-weather-forecast-card-editor");
   }
 

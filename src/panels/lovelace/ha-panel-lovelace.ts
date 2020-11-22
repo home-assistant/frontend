@@ -289,7 +289,7 @@ class LovelacePanel extends LitElement {
       enableFullEditMode: () => {
         if (!editorLoaded) {
           editorLoaded = true;
-          import(/* webpackChunkName: "lovelace-yaml-editor" */ "./hui-editor");
+          import("./hui-editor");
         }
         this._state = "yaml-editor";
       },

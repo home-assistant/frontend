@@ -33,8 +33,7 @@ export interface DialogParams
   prompt?: boolean;
 }
 
-export const loadGenericDialog = () =>
-  import(/* webpackChunkName: "confirmation" */ "./dialog-box");
+export const loadGenericDialog = () => import("./dialog-box");
 
 const showDialogHelper = (
   element: HTMLElement,

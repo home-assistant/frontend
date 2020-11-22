@@ -13,10 +13,7 @@ export const showRepositoriesDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-hassio-repositories",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "dialog-hassio-repositories" */ "./dialog-hassio-repositories"
-      ),
+    dialogImport: () => import("./dialog-hassio-repositories"),
     dialogParams,
   });
 };
