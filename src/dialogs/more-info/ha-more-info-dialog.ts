@@ -72,7 +72,6 @@ export class MoreInfoDialog extends LitElement {
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     this._actions = params.actions;
-    console.log(params);
     if (!this._entityId) {
       this.closeDialog();
       return;
