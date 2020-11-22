@@ -38,7 +38,6 @@ class HaCoverTiltControls extends LitElement {
     if (!this._entityObj) {
       return html``;
     }
-    console.log("render");
 
     return html` <ha-icon-button
         class=${classMap({
