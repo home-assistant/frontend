@@ -290,17 +290,16 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   private renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
-    let config = entityConf as EntityConfig;
-
-    config = {
-      state_color: this._config!.state_color,
-      secondary_info: this._config!.secondary_info,
-      ...config,
-    } as EntityConfig;
-
     const element = createRowElement(
-      !("type" in entityConf) ? config : entityConf
+      !("type" in entityConf)
+        ? ({
+            state_color: this._config!.state_color,
+            secondary_info: this._config!.secondary_info,
+            ...(entityConf as EntityConfig),
+          } as EntityConfig)
+        : entityConf
     );
+
     if (this._hass) {
       element.hass = this._hass;
     }
