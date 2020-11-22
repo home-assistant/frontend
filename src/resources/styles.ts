@@ -243,25 +243,25 @@ export const haStyle = css`
     justify-content: space-between;
   }
 
-  .nested-level-0 {
+  .nesting-level-0 {
     background-color: var(--primary-background-color);
   }
-  .nested-level-1 {
+  .nesting-level-1 {
     background-color: var(--very-light-primary-color);
   }
-  .nested-level-2 {
+  .nesting-level-2 {
     background-color: var(--light-primary-color);
   }
-  .nested-level-3 {
+  .nesting-level-3 {
     background-color: var(--very-light-primary-color);
   }
-  .nested-level-4 {
+  .nesting-level-4 {
     background-color: var(--light-primary-color);
   }
-  .nested-level-5 {
+  .nesting-level-5 {
     background-color: var(--very-light-primary-color);
   }
-  .nested-level-6 {
+  .nesting-level-6 {
     background-color: var(--light-primary-color);
   }
 `;

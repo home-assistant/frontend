@@ -65,7 +65,7 @@ export default class HaAutomationConditionRow extends LitElement {
       return html``;
     }
     return html`
-      <ha-card class=${"nested-level-" + this.nestingLevel}>
+      <ha-card class=${"nesting-level-" + this.nestingLevel}>
         <div class="card-content">
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
