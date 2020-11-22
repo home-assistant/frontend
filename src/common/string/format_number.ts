@@ -34,7 +34,7 @@ const getDefaultFormatOptions = (
   num: string | number,
   options?: Intl.NumberFormatOptions
 ): Intl.NumberFormatOptions => {
-  let defaultOptions: Intl.NumberFormatOptions = options || {};
+  const defaultOptions: Intl.NumberFormatOptions = options || {};
 
   // Keep decimal trailing zeros if they are present
   if (
