@@ -550,7 +550,7 @@
             "blueprint-picker": {
                 "add_user": "添加用户",
                 "remove_user": "删除用户",
-                "select_blueprint": "选择蓝图"
+                "select_blueprint": "选择 Blueprint"
             },
             "data-table": {
                 "no-data": "没有数据",
@@ -1053,7 +1053,7 @@
                     "description": "管理自动化",
                     "dialog_new": {
                         "blueprint": {
-                            "use_blueprint": "使用蓝图"
+                            "use_blueprint": "使用 Blueprint"
                         },
                         "header": "创建新的自动化",
                         "how": "您想如何创建新的自动化？",
@@ -1146,12 +1146,12 @@
                         },
                         "alias": "名称",
                         "blueprint": {
-                            "blueprint_to_use": "要使用的蓝图",
-                            "header": "蓝图",
+                            "blueprint_to_use": "要使用的 Blueprint",
+                            "header": "Blueprint",
                             "inputs": "输入",
-                            "manage_blueprints": "管理蓝图",
-                            "no_blueprints": "您还没有蓝图。",
-                            "no_inputs": "该蓝图没有任何输入。"
+                            "manage_blueprints": "管理 Blueprint",
+                            "no_blueprints": "您还没有 Blueprint。",
+                            "no_inputs": "该 Blueprint 没有任何输入。"
                         },
                         "conditions": {
                             "add": "添加环境条件",
@@ -1397,27 +1397,29 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "请输入蓝图的网址。",
-                        "header": "添加新的蓝图",
-                        "import_btn": "导入蓝图",
+                        "error_no_url": "请输入 Blueprint 的网址。",
+                        "header": "添加新的 Blueprint",
+                        "import_btn": "导入 Blueprint",
                         "import_header": "导入 {name} ({domain})",
-                        "import_introduction": "您可以从 Github 和社区论坛导入其他用户的蓝图。请在下方输入 蓝图的网址。",
-                        "importing": "正在导入蓝图...",
-                        "save_btn": "保存蓝图",
-                        "saving": "正在保存蓝图...",
-                        "url": "蓝图 URL"
+                        "import_introduction": "您可以从 Github 和社区论坛导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
+                        "importing": "正在导入 Blueprint...",
+                        "save_btn": "保存 Blueprint",
+                        "saving": "正在保存 Blueprint...",
+                        "unsupported_blueprint": "此 Blueprint 不受支持",
+                        "url": "Blueprint URL"
                     },
-                    "caption": "蓝图",
-                    "description": "管理蓝图",
+                    "caption": "Blueprint",
+                    "description": "管理 Blueprint",
                     "overview": {
-                        "confirm_delete_header": "删除此蓝图？",
-                        "confirm_delete_text": "您确定要删除此蓝图吗？",
-                        "header": "蓝图编辑器",
+                        "add_blueprint": "添加 Blueprint",
+                        "confirm_delete_header": "删除此 Blueprint？",
+                        "confirm_delete_text": "您确定要删除此 Blueprint 吗？",
+                        "header": "Blueprint 编辑器",
                         "headers": {
                             "name": "名称"
                         },
-                        "introduction": "蓝图编辑器用于创建和编辑蓝图。",
-                        "learn_more": "详细了解蓝图"
+                        "introduction": "Blueprint 编辑器用于创建和编辑 Blueprint。",
+                        "learn_more": "详细了解 Blueprint"
                     }
                 },
                 "cloud": {

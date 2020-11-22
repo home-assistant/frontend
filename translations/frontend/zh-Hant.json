@@ -8,8 +8,8 @@
     },
     "groups": {
         "system-admin": "管理員",
-        "system-read-only": "唯讀用戶",
-        "system-users": "用戶"
+        "system-read-only": "唯讀使用者",
+        "system-users": "使用者"
     },
     "panel": {
         "calendar": "行事曆",
@@ -548,8 +548,8 @@
                 "show_areas": "顯示分區"
             },
             "blueprint-picker": {
-                "add_user": "新增用戶",
-                "remove_user": "移除用戶",
+                "add_user": "新增使用者",
+                "remove_user": "移除使用者",
                 "select_blueprint": "選擇 Blueprint"
             },
             "data-table": {
@@ -563,9 +563,9 @@
             },
             "device-picker": {
                 "clear": "清除",
-                "device": "設備",
+                "device": "裝置",
                 "no_area": "無分區",
-                "show_devices": "顯示設備",
+                "show_devices": "顯示裝置",
                 "toggle": "觸發"
             },
             "entity": {
@@ -671,7 +671,7 @@
             "related-items": {
                 "area": "分區",
                 "automation": "以下自動化部分",
-                "device": "設備",
+                "device": "裝置",
                 "entity": "相關實體",
                 "group": "以下群組部分",
                 "integration": "整合",
@@ -710,9 +710,9 @@
                 "service": "服務"
             },
             "user-picker": {
-                "add_user": "新增用戶",
-                "no_user": "沒有用戶",
-                "remove_user": "移除用戶"
+                "add_user": "新增使用者",
+                "no_user": "沒有使用者",
+                "remove_user": "移除使用者"
             }
         },
         "dialogs": {
@@ -884,7 +884,7 @@
                         "automation": "自動化",
                         "core": "一般設定",
                         "customize": "自訂化",
-                        "devices": "設備",
+                        "devices": "裝置",
                         "entities": "實體",
                         "helpers": "助手",
                         "info": "更多資訊",
@@ -898,7 +898,7 @@
                         "script": "腳本",
                         "server_control": "伺服器控制",
                         "tags": "標籤",
-                        "users": "用戶",
+                        "users": "使用者",
                         "zone": "區域"
                     },
                     "reload": {
@@ -952,16 +952,16 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "透過此設備新增設備",
+                    "add": "透過這個裝置來新增裝置",
                     "clusters": "管理叢集",
-                    "reconfigure": "重新設定設備",
-                    "remove": "移除設備",
-                    "zigbee_information": "Zigbee 設備簽章"
+                    "reconfigure": "重新設定裝置",
+                    "remove": "移除裝置",
+                    "zigbee_information": "Zigbee 裝置簽章"
                 },
                 "confirmations": {
                     "remove": "確定要移除此設備？"
                 },
-                "device_signature": "Zigbee 設備簽章",
+                "device_signature": "Zigbee 裝置簽章",
                 "last_seen": "上次出現",
                 "manuf": "由 {manufacturer}",
                 "no_area": "無分區",
@@ -969,14 +969,14 @@
                 "quirk": "Quirk",
                 "services": {
                     "reconfigure": "重新設定 ZHA Zibgee 設備（健康設備）。假如遇到設備問題，請使用此選項。假如有問題的設備為使用電池的設備，請先確定設備已喚醒並處於接受命令狀態。",
-                    "remove": "從 Zigbee 網路移除設備。",
+                    "remove": "從 Zigbee 網路移除裝置。",
                     "updateDeviceName": "於實體 ID 中自訂此設備名稱。",
-                    "zigbee_information": "檢視設備 Zigbee 資訊。"
+                    "zigbee_information": "檢視裝置的 Zigbee 資訊。"
                 },
                 "unknown": "未知",
                 "zha_device_card": {
                     "area_picker_label": "分區",
-                    "device_name_placeholder": "變更設備名稱",
+                    "device_name_placeholder": "變更裝置名稱",
                     "update_name_button": "更新名稱"
                 }
             }
@@ -1022,7 +1022,7 @@
                     "caption": "分區",
                     "data_table": {
                         "area": "分區",
-                        "devices": "設備"
+                        "devices": "裝置"
                     },
                     "delete": {
                         "confirmation_text": "所有該分區所屬設備都將變成未指派狀態。",
@@ -1098,7 +1098,7 @@
                                     "extra_fields": {
                                         "code": "碼"
                                     },
-                                    "label": "設備"
+                                    "label": "裝置"
                                 },
                                 "event": {
                                     "event": "事件：",
@@ -1174,7 +1174,7 @@
                                         "below": "在...之下",
                                         "for": "持續時間"
                                     },
-                                    "label": "設備"
+                                    "label": "裝置"
                                 },
                                 "not": {
                                     "label": "未"
@@ -1238,7 +1238,7 @@
                         "edit_ui": "以 UI 編輯",
                         "edit_yaml": "以 YAML 編輯",
                         "enable_disable": "開啟/關閉自動化",
-                        "introduction": "使用自動化來讓你的智能家居更有魅力吧。",
+                        "introduction": "使用自動化來讓你的智慧型家居更有魅力吧。",
                         "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
                         "load_error_unknown": "載入自動化錯誤（{err_no}）。",
                         "max": {
@@ -1274,12 +1274,12 @@
                                         "below": "在...之下",
                                         "for": "持續時間"
                                     },
-                                    "label": "設備",
+                                    "label": "裝置",
                                     "trigger": "觸發自動化"
                                 },
                                 "event": {
-                                    "context_user_pick": "選擇用戶",
-                                    "context_user_picked": "用戶觸發事件",
+                                    "context_user_pick": "選擇使用者",
+                                    "context_user_picked": "使用者觸發事件",
                                     "context_users": "限制觸發事件",
                                     "event_data": "事件資料",
                                     "event_type": "事件類別",
@@ -1382,7 +1382,7 @@
                         "create": "新增自動化",
                         "link_devices": {
                             "ambiguous_entities": "相符的實體具有一個以上的實體，請選擇所要使用的實體。",
-                            "header": "太好了！現在我們需要連結一些設備",
+                            "header": "太好了！現在我們需要連接一些裝置",
                             "unknown_placeholder": "未知 Placeholder"
                         },
                         "task_selection": {
@@ -1405,11 +1405,13 @@
                         "importing": "正在匯入 Blueprint...",
                         "save_btn": "儲存 Blueprint",
                         "saving": "正在儲存 Blueprint...",
+                        "unsupported_blueprint": "不支援此 Blueprint",
                         "url": "Blueprint 之 URL"
                     },
                     "caption": "Blueprint",
                     "description": "管理 Blueprint",
                     "overview": {
+                        "add_blueprint": "新增 Blueprint",
                         "confirm_delete_header": "刪除此 Blueprint？",
                         "confirm_delete_text": "確定要刪除此 Blueprint",
                         "header": "Blueprint 編輯器",
@@ -1441,7 +1443,7 @@
                         "fetching_subscription": "取得訂閱狀態中...",
                         "google": {
                             "config_documentation": "設定文件",
-                            "devices_pin": "加密設備 Pin",
+                            "devices_pin": "安全裝置密碼",
                             "enable_ha_skill": "啟用 Home Assistant skill for Google Assistant",
                             "enable_state_reporting": "開啟狀態回報",
                             "enter_pin_error": "無法儲存 Pin：",
@@ -1450,7 +1452,7 @@
                             "info": "藉由 Home Assistant Cloud 雲服務  Google Assistant 整合，將能透過 Google Assistant 支援設備以控制所有 Home Assistant 設備。",
                             "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Google。以確保於 Google app 中設備永遠保持最新狀態、並藉以創建例行自動化。",
                             "manage_entities": "管理實體",
-                            "security_devices": "加密設備",
+                            "security_devices": "安全裝置",
                             "sync_entities": "與 Google 同步實體",
                             "sync_entities_404_message": "與 Google 同步實體失敗，使用「Hey Google, sync my devices」以要求 Google 同步實體。",
                             "title": "Google Assistant"
@@ -1500,7 +1502,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "整合 Alexa 及 Google 助理，遠端控制智能家居",
+                    "description_features": "整合 Alexa 及 Google 助理，遠端控制智慧型家居",
                     "description_login": "登入帳號：{email}",
                     "description_not_login": "未登入",
                     "dialog_certificate": {
@@ -1643,7 +1645,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "此設備尚未添加任何 {name}。可點選上方的 + 按鈕進行新增。",
+                    "add_prompt": "還沒有新增任何一個 {name}過。請點選上方的 + 按鈕進行新增。",
                     "automation": {
                         "actions": {
                             "caption": "當某實體被觸發時...",
@@ -1667,33 +1669,33 @@
                         "unknown_automation": "未知自動化"
                     },
                     "cant_edit": "只能編輯於 UI 中新增的實體。",
-                    "caption": "設備",
-                    "confirm_delete": "確定要刪除此設備？",
+                    "caption": "裝置",
+                    "confirm_delete": "確定要刪除這個裝置？",
                     "confirm_rename_entity_ids": "是否也要變更實體的實體 ID？",
                     "confirm_rename_entity_ids_warning": "將不會變更任何實體正在使用的設定（例如自動化、腳本、場景與 Lovelace），必須使用新實體 ID 自行更新。",
                     "data_table": {
                         "area": "分區",
                         "battery": "電量",
-                        "device": "設備",
+                        "device": "裝置",
                         "integration": "整合",
                         "manufacturer": "廠牌",
                         "model": "型號",
                         "no_area": "無分區",
-                        "no_devices": "沒有設備"
+                        "no_devices": "沒有任何裝置"
                     },
                     "delete": "刪除",
-                    "description": "管理已連線設備",
-                    "device_info": "設備資訊",
-                    "device_not_found": "未找到設備。",
+                    "description": "管理已連線的裝置",
+                    "device_info": "裝置資訊",
+                    "device_not_found": "找不到裝置。",
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
                         "disabled_entities": "{count} {count, plural,\n  one {個已關閉實體}\n  other {個已關閉實體}\n}",
                         "entities": "實體列表面板",
                         "hide_disabled": "隱藏已關閉實體",
-                        "none": "此設備沒有實體。"
+                        "none": "此裝置沒有實體。"
                     },
                     "name": "名稱",
-                    "no_devices": "沒有設備",
+                    "no_devices": "沒有任何裝置",
                     "scene": {
                         "create": "以設備新增場景",
                         "no_scenes": "沒有場景",
@@ -1707,7 +1709,7 @@
                     },
                     "scripts": "腳本",
                     "unknown_error": "未知錯誤",
-                    "unnamed_device": "未命名設備",
+                    "unnamed_device": "未命名的裝置",
                     "update": "更新"
                 },
                 "entities": {
@@ -1864,8 +1866,8 @@
                         "delete": "刪除",
                         "delete_button": "刪除 {integration}",
                         "delete_confirm": "確定要刪除此整合？",
-                        "device_unavailable": "設備不可用",
-                        "devices": "{count} {count, plural,\n  one {個設備}\n  other {個設備}\n}",
+                        "device_unavailable": "裝置是不可用",
+                        "devices": "{count} {count, plural,\n  one {個裝置}\n  other {個裝置}\n}",
                         "documentation": "相關文件",
                         "entities": "{count} {count, plural,\n  one {個實體}\n  other {個實體}\n}",
                         "entity_unavailable": "實體不可用",
@@ -1873,8 +1875,8 @@
                         "hub": "連線：",
                         "manuf": "廠牌：{manufacturer}",
                         "no_area": "無分區",
-                        "no_device": "實體沒有設備",
-                        "no_devices": "此整合沒有任何設備。",
+                        "no_device": "沒有裝置的實體",
+                        "no_devices": "這個整合沒有任何的裝置。",
                         "options": "選項",
                         "reload": "重新載入",
                         "reload_confirm": "整合已重新載入",
@@ -2042,10 +2044,10 @@
                     "button": "設定",
                     "common": {
                         "controller": "控制器",
-                        "instance": "設備",
+                        "instance": "裝置",
                         "network": "網路",
                         "node_id": "節點 ID",
-                        "ozw_instance": "OpenZWave 設備",
+                        "ozw_instance": "OpenZWave 裝置",
                         "query_stage": "查詢階段",
                         "wakeup_instructions": "喚醒說明",
                         "zwave": "Z-Wave"
@@ -2062,7 +2064,7 @@
                             "dashboard": "主面板"
                         },
                         "nodes": "節點",
-                        "select_instance": "選擇設備"
+                        "select_instance": "選擇實體"
                     },
                     "network_status": {
                         "details": {
@@ -2093,7 +2095,7 @@
                         "header": "節點設定",
                         "help_source": "設定參數說明與協助由 Openzwave 專案所提供。",
                         "introduction": "管理 Z-Wave 節點不同設定參數。",
-                        "wakeup_help": "電池供電的節點必須喚醒才能更改其設定。如果該節點未喚醒，OpenZWave 將在下次喚醒時，嘗試更新該節點的設定，可能需要幾個小時（或幾天）。請按照以下步驟喚醒設備："
+                        "wakeup_help": "電池供電的節點必須喚醒才能更改其設定。如果該節點未喚醒，OpenZWave 將在下次喚醒時，嘗試更新該節點的設定，可能需要幾個小時（或幾天）。請按照以下步驟喚醒裝置："
                     },
                     "node_metadata": {
                         "product_manual": "產品手冊"
@@ -2104,16 +2106,16 @@
                         "complete": "探訪過程完成",
                         "configuration": "由節點獲得設定值",
                         "dynamic": "由節點獲得頻率變更值",
-                        "instances": "獲得設備或頻道支援的詳細資料",
+                        "instances": "正在從裝置取得有支援的實體或頻道的詳細資料中",
                         "manufacturerspecific1": "由節點獲得製造廠商與產品 ID 代碼",
                         "manufacturerspecific2": "由節點獲得附加製造商與產品 ID 代碼",
-                        "neighbors": "獲得節點週邊設備列表",
+                        "neighbors": "正在取得節點的週邊裝置列表",
                         "nodeinfo": "由節點獲得支援命令 Class",
                         "nodeplusinfo": "由節點獲得 Z-Wave+ 資訊",
                         "probe": "檢查節點是否為喚醒狀態",
                         "protocolinfo": "由控制器獲得此節點基本 Z-Wave 相容性資訊",
                         "session": "由節點獲得非頻率變更值",
-                        "static": "由設備獲得靜態值",
+                        "static": "正在從裝置取靜態數據中",
                         "versions": "獲得韌體與命令 Class 版本資訊",
                         "wakeup": "設定喚醒序列與訊息之支援"
                     },
@@ -2140,12 +2142,12 @@
                         "step": "階段",
                         "title": "更新節點資訊",
                         "wakeup_header": "喚醒說明",
-                        "wakeup_instructions_source": "喚醒說明為來自 OpenZWave 社群的設備資料庫。"
+                        "wakeup_instructions_source": "喚醒說明為來自 OpenZWave 社群的裝置資料庫。"
                     },
                     "select_instance": {
-                        "header": "選擇 OpenZWave 設備",
-                        "introduction": "超過一個以上的 OpenZWave 設備執行中，要管理哪個設備？",
-                        "none_found": "找不到 Openzwave 設備。假如您認為有問題，請再確認 Openzwave 與 MQTT 設定、並確定 Home Assistant 能夠與 MQTT Broker 進行通訊。"
+                        "header": "選擇一個 OpenZWave 實體",
+                        "introduction": "超過一個以上的 OpenZWave 實體正在執行中，要管理哪個實體？",
+                        "none_found": "找不到 Openzwave 實體。假如您認為有問題，請再確認 Openzwave 與 MQTT 設定、並確定 Home Assistant 能夠與 MQTT Broker 進行通訊。"
                     },
                     "services": {
                         "add_node": "新增節點",
@@ -2167,11 +2169,11 @@
                         "create": "新增",
                         "delete": "刪除",
                         "device_tracker_intro": "選擇此人員所擁有的設備。",
-                        "device_tracker_pick": "選擇追蹤設備",
-                        "device_tracker_picked": "追蹤設備",
+                        "device_tracker_pick": "選擇要追蹤的裝置",
+                        "device_tracker_picked": "追蹤裝置",
                         "link_integrations_page": "整合頁面",
                         "link_presence_detection_integrations": "人員偵測整合",
-                        "linked_user": "已連結用戶",
+                        "linked_user": "已連結的使用者",
                         "name": "名稱",
                         "name_error_msg": "必須輸入名稱",
                         "new_person": "新人員",
@@ -2192,9 +2194,9 @@
                     "editor": {
                         "default_name": "新場景",
                         "devices": {
-                            "add": "新增設備",
-                            "delete": "刪除設備",
-                            "header": "設備",
+                            "add": "新增裝置",
+                            "delete": "移除裝置",
+                            "header": "裝置",
                             "introduction": "新增所要包含於場景中的設備，設定所有設備成此場景中所希望的狀態。"
                         },
                         "entities": {
@@ -2206,7 +2208,7 @@
                             "without_device": "無設備實體"
                         },
                         "icon": "圖示",
-                        "introduction": "使用場景來讓你的智能家居更有魅力吧。",
+                        "introduction": "使用場景來讓你的智慧型家居更有魅力吧。",
                         "load_error_not_editable": "僅有於 scenes.yaml 檔案內的場景、方能進行編輯。",
                         "load_error_unknown": "載入場景錯誤（{err_no}）。",
                         "name": "名稱",
@@ -2369,7 +2371,7 @@
                 },
                 "users": {
                     "add_user": {
-                        "caption": "新增用戶",
+                        "caption": "新增使用者",
                         "create": "新增",
                         "name": "名稱",
                         "password": "密碼",
@@ -2377,17 +2379,17 @@
                         "password_not_match": "密碼不相符",
                         "username": "使用者名稱"
                     },
-                    "caption": "用戶",
-                    "description": "用戶管理",
+                    "caption": "使用者",
+                    "description": "使用者管理",
                     "editor": {
-                        "activate_user": "激活用戶",
+                        "activate_user": "啟用使用者",
                         "active": "啟用",
                         "admin": "管理員",
-                        "caption": "檢視用戶",
+                        "caption": "檢視使用者",
                         "change_password": "更改密碼",
                         "confirm_user_deletion": "確定要刪除 {name}？",
-                        "deactivate_user": "停用用戶",
-                        "delete_user": "刪除用戶",
+                        "deactivate_user": "停用使用者",
+                        "delete_user": "刪除使用者",
                         "group": "群組",
                         "id": "ID",
                         "name": "名稱",
@@ -2395,13 +2397,13 @@
                         "owner": "擁有者",
                         "password_changed": "密碼變更成功",
                         "system_generated": "系統產生",
-                        "system_generated_users_not_editable": "無法更新系統產生用戶",
-                        "system_generated_users_not_removable": "無法移除系統產生用戶",
-                        "unnamed_user": "未命名用戶",
+                        "system_generated_users_not_editable": "無法更新系統產生的使用者",
+                        "system_generated_users_not_removable": "無法移除系統產生的使用者",
+                        "unnamed_user": "未命名的使用者",
                         "update_user": "更新"
                     },
                     "picker": {
-                        "add_user": "新增用戶",
+                        "add_user": "新增使用者",
                         "headers": {
                             "group": "群組",
                             "name": "名稱",
@@ -2412,7 +2414,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovered_text": "於探索到設備後將顯示於此處。",
+                        "discovered_text": "在探索到裝置後將顯示於此處。",
                         "discovery_text": "所發現的設備將會顯示於此。跟隨設備的指示並將其設定為配對模式。",
                         "header": "Zigbee 家庭自動化 - 新增設備",
                         "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保持喚醒狀態。",
@@ -2421,7 +2423,7 @@
                         "spinner": "正在搜尋 ZHA Zigbee 設備..."
                     },
                     "add": {
-                        "caption": "新增設備",
+                        "caption": "新增裝置",
                         "description": "新增設備至 Zigbee 網路"
                     },
                     "button": "設定",
@@ -2449,9 +2451,9 @@
                         "introduction": "叢集為 Zigbee 功能的構建基礎，能夠將功能分為邏輯單位。具有客戶端與伺服端類型、由屬性與命令所組成。"
                     },
                     "common": {
-                        "add_devices": "新增設備",
+                        "add_devices": "新增裝置",
                         "clusters": "叢集",
-                        "devices": "設備",
+                        "devices": "裝置",
                         "manufacturer_code_override": "製造商代碼覆寫",
                         "value": "數值"
                     },
@@ -2507,10 +2509,10 @@
                         "caption": "網路"
                     },
                     "node_management": {
-                        "header": "設備管理",
+                        "header": "裝置管理",
                         "help_node_dropdown": "選擇設備以檢視該設備選項。",
                         "hint_battery_devices": "請注意：對設備執行命令時，需喚醒處於睡眠狀態的設備（使用電池供電），通常可以藉由觸發以喚醒設備。",
-                        "hint_wakeup": "某些設備（例如小米傳感器）擁有喚醒按鈕、可藉由每隔約 5 秒按一下、以保持設備處於喚醒狀態以進行互動。",
+                        "hint_wakeup": "在您進行互動時某些裝置（例如小米感應器）有喚醒按鈕、可藉由每隔約 5 秒按一下、以保持該裝置處於喚醒狀態。",
                         "introduction": "執行 ZHA 命命將影響單一設備。選擇設備以檢視該設備可使用之命令。"
                     },
                     "title": "Zigbee 家庭自動化"
@@ -2549,7 +2551,7 @@
                     "caption": "Z-Wave",
                     "common": {
                         "index": "指數",
-                        "instance": "設備",
+                        "instance": "裝置",
                         "unknown": "未知",
                         "value": "數值",
                         "wakeup_interval": "喚醒間隔"
@@ -3275,7 +3277,7 @@
                                     "data": {
                                         "user": "使用者"
                                     },
-                                    "description": "請選擇所要登錄的用戶："
+                                    "description": "請選擇要登入的使用者："
                                 }
                             }
                         }
@@ -3347,7 +3349,7 @@
                     "intro": "將會於 Home Assistant 整合中呈現的設備與服務。可以現在進行設定，或者稍後於設定選單中進行。",
                     "more_integrations": "更多"
                 },
-                "intro": "準備喚醒您的智能家庭、取得隱私自主權，並加入由全球愛好者共同維護的社群了嗎？",
+                "intro": "準備喚醒您的智慧型家庭、取得隱私自主權，並加入由全球愛好者共同維護的社群了嗎？",
                 "restore": {
                     "description": "或者可以自之前的 Snapshot 進行回復。",
                     "hide_log": "隱藏完整日誌",
@@ -3391,7 +3393,7 @@
                     "header": "自側邊列中變更順序或隱藏項目"
                 },
                 "dashboard": {
-                    "description": "選擇此設備的預設主面板。",
+                    "description": "選擇這個裝置的預設主面板。",
                     "dropdown_label": "主面板",
                     "header": "主面板"
                 },
@@ -3444,10 +3446,10 @@
                 },
                 "push_notifications": {
                     "add_device_prompt": {
-                        "input_label": "設備名稱",
-                        "title": "為該設備命名？"
+                        "input_label": "裝置名稱",
+                        "title": "要幫這個裝置取什麼名子呢？"
                     },
-                    "description": "傳送通知推送至此設備。",
+                    "description": "推送通知到這個裝置。",
                     "error_load_platform": "設定 notify.html5。",
                     "error_use_https": "需要啟用前端 SSL 加密。",
                     "header": "通知推送",

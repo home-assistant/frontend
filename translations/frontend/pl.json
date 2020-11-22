@@ -597,7 +597,7 @@
                     "turned_off": "nastąpiło wyłączenie",
                     "turned_on": "nastąpiło włączenie",
                     "was_at_home": "nastąpiła zmiana stanu na \"w domu\"",
-                    "was_at_state": "nastąpiła zmiana stanu na {state}",
+                    "was_at_state": "nastąpiła zmiana stanu na \"{state}\"",
                     "was_away": "nastąpiła zmiana stanu na \"poza domem\"",
                     "was_closed": "nastąpiło zamknięcie",
                     "was_connected": "nastąpiło podłączenie",
@@ -1405,6 +1405,7 @@
                         "importing": "Importowanie schematu...",
                         "save_btn": "Zapisz schemat",
                         "saving": "Zapisywanie schematu...",
+                        "unsupported_blueprint": "Ten schemat nie jest obsługiwany",
                         "url": "URL schematu"
                     },
                     "caption": "Schematy",
