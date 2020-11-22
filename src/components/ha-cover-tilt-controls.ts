@@ -38,10 +38,11 @@ class HaCoverTiltControls extends LitElement {
     if (!this._entityObj) {
       return html``;
     }
+    console.log("render");
 
     return html` <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStop,
+          invisible: !this._entityObj.supportsOpenTilt,
         })}
         label=${this.hass.localize(
           "ui.dialogs.more_info_control.open_tilt_cover"
@@ -61,7 +62,7 @@ class HaCoverTiltControls extends LitElement {
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStop,
+          invisible: !this._entityObj.supportsCloseTilt,
         })}
         label=${this.hass.localize(
           "ui.dialogs.more_info_control.open_tilt_cover"
