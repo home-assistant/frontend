@@ -23,7 +23,6 @@ import { haStyle } from "../../../../resources/styles";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
-  nestingLevel: number;
 }
 
 export const handleChangeEvent = (
