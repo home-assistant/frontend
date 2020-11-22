@@ -64,7 +64,7 @@ class HaCoverTiltControls extends LitElement {
           invisible: !this._entityObj.supportsCloseTilt,
         })}
         label=${this.hass.localize(
-          "ui.dialogs.more_info_control.open_tilt_cover"
+          "ui.dialogs.more_info_control.close_tilt_cover"
         )}
         icon="hass:arrow-bottom-left"
         @click=${this._onCloseTiltTap}
