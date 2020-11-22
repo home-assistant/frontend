@@ -28,7 +28,8 @@ documentContainer.innerHTML = `<custom-style>
       /* main interface colors */
       --primary-color: #03a9f4;
       --dark-primary-color: #0288d1;
-      --light-primary-color: #b3e5fC;
+      --light-primary-color: #b3e5fc;
+      --very-light-primary-color: #e4f6fe;
       --accent-color: #ff9800;
       --divider-color: rgba(0, 0, 0, .12);
 

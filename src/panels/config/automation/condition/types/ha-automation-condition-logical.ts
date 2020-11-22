@@ -11,6 +11,8 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
 
   @property() public condition!: LogicalCondition;
 
+  @property() public nestingLevel!: number;
+
   public static get defaultConfig() {
     return { conditions: [{ condition: "state" }] };
   }
@@ -21,6 +23,7 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
         .conditions=${this.condition.conditions || []}
         @value-changed=${this._valueChanged}
         .hass=${this.hass}
+        .nestingLevel=${+this.nestingLevel + +1}
       ></ha-automation-condition>
     `;
   }

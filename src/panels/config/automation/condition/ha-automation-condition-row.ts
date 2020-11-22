@@ -23,6 +23,7 @@ import { haStyle } from "../../../../resources/styles";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
+  nestingLevel: number;
 }
 
 export const handleChangeEvent = (
@@ -56,6 +57,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property() public condition!: Condition;
 
+  @property() public nestingLevel!: number;
+
   @internalProperty() private _yamlMode = false;
 
   protected render() {
@@ -63,7 +66,7 @@ export default class HaAutomationConditionRow extends LitElement {
       return html``;
     }
     return html`
-      <ha-card>
+      <ha-card class=${"nested-level-" + this.nestingLevel}>
         <div class="card-content">
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
@@ -98,6 +101,7 @@ export default class HaAutomationConditionRow extends LitElement {
             .yamlMode=${this._yamlMode}
             .hass=${this.hass}
             .condition=${this.condition}
+            .nestingLevel=${this.nestingLevel}
           ></ha-automation-condition-editor>
         </div>
       </ha-card>

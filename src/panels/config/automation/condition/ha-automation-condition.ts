@@ -21,6 +21,8 @@ export default class HaAutomationCondition extends LitElement {
 
   @property() public conditions!: Condition[];
 
+  @property() public nestingLevel!: number;
+
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("conditions")) {
       return;
@@ -60,6 +62,9 @@ export default class HaAutomationCondition extends LitElement {
             @duplicate=${this._duplicateCondition}
             @value-changed=${this._conditionChanged}
             .hass=${this.hass}
+            .nestingLevel=${["and", "not", "or"].includes(cond.condition)
+              ? this.nestingLevel
+              : 0}
           ></ha-automation-condition-row>
         `
       )}

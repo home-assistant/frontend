@@ -242,6 +242,28 @@ export const haStyle = css`
   .layout.justified {
     justify-content: space-between;
   }
+
+  .nested-level-0 {
+    background-color: var(--primary-background-color);
+  }
+  .nested-level-1 {
+    background-color: var(--very-light-primary-color);
+  }
+  .nested-level-2 {
+    background-color: var(--light-primary-color);
+  }
+  .nested-level-3 {
+    background-color: var(--very-light-primary-color);
+  }
+  .nested-level-4 {
+    background-color: var(--light-primary-color);
+  }
+  .nested-level-5 {
+    background-color: var(--very-light-primary-color);
+  }
+  .nested-level-6 {
+    background-color: var(--light-primary-color);
+  }
 `;
 
 export const haStyleDialog = css`

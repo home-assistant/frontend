@@ -206,6 +206,7 @@ export class HaManualAutomationEditor extends LitElement {
           .conditions=${this.config.condition || []}
           @value-changed=${this._conditionChanged}
           .hass=${this.hass}
+          nestingLevel="1"
         ></ha-automation-condition>
       </ha-config-section>
 

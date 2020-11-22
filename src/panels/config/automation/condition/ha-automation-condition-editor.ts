@@ -46,6 +46,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property() public condition!: Condition;
 
+  @property() public nestingLevel!: number;
+
   @property() public yamlMode = false;
 
   protected render() {
@@ -95,7 +97,11 @@ export default class HaAutomationConditionEditor extends LitElement {
             <div>
               ${dynamicElement(
                 `ha-automation-condition-${this.condition.condition}`,
-                { hass: this.hass, condition: this.condition }
+                {
+                  hass: this.hass,
+                  condition: this.condition,
+                  nestingLevel: this.nestingLevel,
+                }
               )}
             </div>
           `}
