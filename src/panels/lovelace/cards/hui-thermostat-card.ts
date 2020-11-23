@@ -49,9 +49,7 @@ const modeIcons: { [mode in HvacMode]: string } = {
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-thermostat-card-editor" */ "../editor/config-elements/hui-thermostat-card-editor"
-    );
+    await import("../editor/config-elements/hui-thermostat-card-editor");
     return document.createElement("hui-thermostat-card-editor");
   }
 

@@ -13,10 +13,7 @@ export const showSnapshotUploadDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-hassio-snapshot-upload",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "dialog-hassio-snapshot-upload" */ "./dialog-hassio-snapshot-upload"
-      ),
+    dialogImport: () => import("./dialog-hassio-snapshot-upload"),
     dialogParams,
   });
 };

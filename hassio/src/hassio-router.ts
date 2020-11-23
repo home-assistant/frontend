@@ -51,17 +51,11 @@ class HassioRouter extends HassRouterPage {
       system: "dashboard",
       addon: {
         tag: "hassio-addon-dashboard",
-        load: () =>
-          import(
-            /* webpackChunkName: "hassio-addon-dashboard" */ "./addon-view/hassio-addon-dashboard"
-          ),
+        load: () => import("./addon-view/hassio-addon-dashboard"),
       },
       ingress: {
         tag: "hassio-ingress-view",
-        load: () =>
-          import(
-            /* webpackChunkName: "hassio-ingress-view" */ "./ingress-view/hassio-ingress-view"
-          ),
+        load: () => import("./ingress-view/hassio-ingress-view"),
       },
     },
   };

@@ -107,9 +107,7 @@ class HaHLSPlayer extends LitElement {
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
-    const hls = ((await import(
-      /* webpackChunkName: "hls.js" */ "hls.js"
-    )) as any).default as HLSModule;
+    const hls = ((await import("hls.js")) as any).default as HLSModule;
     let hlsSupported = hls.isSupported();
 
     if (!hlsSupported) {

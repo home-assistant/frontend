@@ -32,9 +32,7 @@ import { PictureEntityCardConfig } from "./types";
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-picture-entity-card-editor" */ "../editor/config-elements/hui-picture-entity-card-editor"
-    );
+    await import("../editor/config-elements/hui-picture-entity-card-editor");
     return document.createElement("hui-picture-entity-card-editor");
   }
 

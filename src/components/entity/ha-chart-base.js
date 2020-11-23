@@ -230,9 +230,7 @@ class HaChartBase extends mixinBehaviors(
     }
 
     if (scriptsLoaded === null) {
-      scriptsLoaded = import(
-        /* webpackChunkName: "load_chart" */ "../../resources/ha-chart-scripts.js"
-      );
+      scriptsLoaded = import("../../resources/ha-chart-scripts.js");
     }
     scriptsLoaded.then((ChartModule) => {
       this.ChartClass = ChartModule.default;

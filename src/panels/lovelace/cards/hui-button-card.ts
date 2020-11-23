@@ -41,9 +41,7 @@ import { ButtonCardConfig } from "./types";
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-button-card-editor" */ "../editor/config-elements/hui-button-card-editor"
-    );
+    await import("../editor/config-elements/hui-button-card-editor");
     return document.createElement("hui-button-card-editor");
   }
 

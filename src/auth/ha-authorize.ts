@@ -18,7 +18,7 @@ import "./ha-auth-flow";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import punycode from "punycode";
 
-import(/* webpackChunkName: "pick-auth-provider" */ "./ha-pick-auth-provider");
+import("./ha-pick-auth-provider");
 
 class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   @property() public clientId?: string;

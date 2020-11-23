@@ -27,9 +27,7 @@ const DAY = 86400000;
 export class HuiGraphHeaderFooter extends LitElement
   implements LovelaceHeaderFooter {
   public static async getConfigElement(): Promise<LovelaceHeaderFooterEditor> {
-    await import(
-      /* webpackChunkName: "hui-graph-footer-editor" */ "../editor/config-elements/hui-graph-footer-editor"
-    );
+    await import("../editor/config-elements/hui-graph-footer-editor");
     return document.createElement("hui-graph-footer-editor");
   }
 

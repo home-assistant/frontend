@@ -47,32 +47,22 @@ class HaConfigCloud extends HassRouterPage {
       },
       register: {
         tag: "cloud-register",
-        load: () =>
-          import(
-            /* webpackChunkName: "cloud-register" */ "./register/cloud-register"
-          ),
+        load: () => import("./register/cloud-register"),
       },
       "forgot-password": {
         tag: "cloud-forgot-password",
-        load: () =>
-          import(
-            /* webpackChunkName: "cloud-forgot-password" */ "./forgot-password/cloud-forgot-password"
-          ),
+        load: () => import("./forgot-password/cloud-forgot-password"),
       },
       account: {
         tag: "cloud-account",
       },
       "google-assistant": {
         tag: "cloud-google-assistant",
-        load: () =>
-          import(
-            /* webpackChunkName: "cloud-google-assistant" */ "./google-assistant/cloud-google-assistant"
-          ),
+        load: () => import("./google-assistant/cloud-google-assistant"),
       },
       alexa: {
         tag: "cloud-alexa",
-        load: () =>
-          import(/* webpackChunkName: "cloud-alexa" */ "./alexa/cloud-alexa"),
+        load: () => import("./alexa/cloud-alexa"),
       },
     },
   };

@@ -15,9 +15,7 @@ declare global {
 let moreInfoImportPromise;
 const importMoreInfo = () => {
   if (!moreInfoImportPromise) {
-    moreInfoImportPromise = import(
-      /* webpackChunkName: "more-info-dialog" */ "../dialogs/more-info/ha-more-info-dialog"
-    );
+    moreInfoImportPromise = import("../dialogs/more-info/ha-more-info-dialog");
   }
   return moreInfoImportPromise;
 };

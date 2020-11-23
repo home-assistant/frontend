@@ -45,9 +45,7 @@ import { MapCardConfig } from "./types";
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
-    await import(
-      /* webpackChunkName: "hui-map-card-editor" */ "../editor/config-elements/hui-map-card-editor"
-    );
+    await import("../editor/config-elements/hui-map-card-editor");
     return document.createElement("hui-map-card-editor");
   }
 
