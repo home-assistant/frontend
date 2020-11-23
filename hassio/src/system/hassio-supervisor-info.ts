@@ -19,6 +19,7 @@ import {
   fetchHassioSupervisorInfo,
   HassioSupervisorInfo as HassioSupervisorInfoType,
   reloadSupervisor,
+  restartSupervisor,
   setSupervisorOption,
   SupervisorOptions,
   updateSupervisor,
@@ -32,7 +33,7 @@ import { HomeAssistant } from "../../../src/types";
 import { documentationUrl } from "../../../src/util/documentation-url";
 import { hassioStyle } from "../resources/hassio-style";
 
-const ISSUES = {
+const UNSUPPORTED_REASON = {
   container: {
     title: "Containers known to cause issues",
     url: "/more-info/unsupported/container",
@@ -59,6 +60,25 @@ const ISSUES = {
   systemd: { title: "Systemd", url: "/more-info/unsupported/systemd" },
 };
 
+const UNHEALTHY_REASON = {
+  privileged: {
+    title: "Supervisor is not privileged",
+    url: "/more-info/unsupported/privileged",
+  },
+  supervisor: {
+    title: "Supervisor was not able to update",
+    url: "/more-info/unhealthy/supervisor",
+  },
+  setup: {
+    title: "Setup of the Supervisor failed",
+    url: "/more-info/unhealthy/setup",
+  },
+  docker: {
+    title: "The Docker environment is not working properly",
+    url: "/more-info/unhealthy/docker",
+  },
+};
+
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -66,9 +86,12 @@ class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false })
   public supervisorInfo!: HassioSupervisorInfoType;
 
-  @property() public hostInfo!: HassioHostInfoType;
+  @property({ attribute: false }) public hostInfo!: HassioHostInfoType;
 
   protected render(): TemplateResult | void {
+    if (!this.hass || !this.supervisorInfo || !this.hostInfo) {
+      return html``;
+    }
     return html`
       <ha-card header="Supervisor">
         <div class="card-content">
@@ -126,7 +149,7 @@ class HassioSupervisorInfo extends LitElement {
               : ""}
           </ha-settings-row>
 
-          ${this.supervisorInfo?.supported
+          ${this.supervisorInfo.supported
             ? html` <ha-settings-row three-line>
                 <span slot="heading">
                   Share Diagnostics
@@ -157,13 +180,32 @@ class HassioSupervisorInfo extends LitElement {
                   Learn more
                 </button>
               </div>`}
+          ${!this.supervisorInfo.healthy
+            ? html`<div class="error">
+                Your installtion is running in an unhealthy state.
+                <button
+                  class="link"
+                  title="Learn more about why your system is marked as unhealthy"
+                  @click=${this._unhealthyDialog}
+                >
+                  Learn more
+                </button>
+              </div>`
+            : ""}
         </div>
         <div class="card-actions">
           <ha-progress-button
             @click=${this._supervisorReload}
-            title="Reload parts of the supervisor"
+            title="Reload parts of the Supervisor"
           >
             Reload
+          </ha-progress-button>
+          <ha-progress-button
+            class="warning"
+            @click=${this._supervisorRestart}
+            title="Restart the Supervisor"
+          >
+            Restart
           </ha-progress-button>
         </div>
       </ha-card>
@@ -213,8 +255,9 @@ class HassioSupervisorInfo extends LitElement {
         title: "Failed to set supervisor option",
         text: extractApiErrorMessage(err),
       });
+    } finally {
+      button.progress = false;
     }
-    button.progress = false;
   }
 
   private async _supervisorReload(ev: CustomEvent): Promise<void> {
@@ -229,8 +272,25 @@ class HassioSupervisorInfo extends LitElement {
         title: "Failed to reload the supervisor",
         text: extractApiErrorMessage(err),
       });
+    } finally {
+      button.progress = false;
     }
-    button.progress = false;
+  }
+
+  private async _supervisorRestart(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    try {
+      await restartSupervisor(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to restart the supervisor",
+        text: extractApiErrorMessage(err),
+      });
+    } finally {
+      button.progress = false;
+    }
   }
 
   private async _supervisorUpdate(ev: CustomEvent): Promise<void> {
@@ -256,8 +316,9 @@ class HassioSupervisorInfo extends LitElement {
         title: "Failed to update the supervisor",
         text: extractApiErrorMessage(err),
       });
+    } finally {
+      button.progress = false;
     }
-    button.progress = false;
   }
 
   private async _diagnosticsInformationDialog(): Promise<void> {
@@ -285,13 +346,46 @@ class HassioSupervisorInfo extends LitElement {
           ${resolution.unsupported.map(
             (issue) => html`
               <li>
-                ${ISSUES[issue]
+                ${UNSUPPORTED_REASON[issue]
                   ? html`<a
-                      href="${documentationUrl(this.hass, ISSUES[issue].url)}"
+                      href="${documentationUrl(
+                        this.hass,
+                        UNSUPPORTED_REASON[issue].url
+                      )}"
                       target="_blank"
                       rel="noreferrer"
                     >
-                      ${ISSUES[issue].title}
+                      ${UNSUPPORTED_REASON[issue].title}
+                    </a>`
+                  : issue}
+              </li>
+            `
+          )}
+        </ul>`,
+    });
+  }
+
+  private async _unhealthyDialog(): Promise<void> {
+    const resolution = await fetchHassioResolution(this.hass);
+    await showAlertDialog(this, {
+      title: "Your installation is unhealthy",
+      text: html`Running an unhealthy installation will cause issues. Below is a
+        list of issues found with your installation, click on the links to learn
+        how you can resolve the issues. <br /><br />
+        <ul>
+          ${resolution.unhealthy.map(
+            (issue) => html`
+              <li>
+                ${UNHEALTHY_REASON[issue]
+                  ? html`<a
+                      href="${documentationUrl(
+                        this.hass,
+                        UNHEALTHY_REASON[issue].url
+                      )}"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${UNHEALTHY_REASON[issue].title}
                     </a>`
                   : issue}
               </li>
