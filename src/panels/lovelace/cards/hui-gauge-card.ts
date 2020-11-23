@@ -117,7 +117,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .min=${this._config.min!}
           .max=${this._config.max!}
           .value=${state}
-          .valueFormatted=${formatNumber(state, this.hass!.language)}
+          .language=${this.hass!.language}
           .label=${this._config!.unit ||
           this.hass?.states[this._config!.entity].attributes
             .unit_of_measurement ||
