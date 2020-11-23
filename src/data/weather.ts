@@ -11,7 +11,6 @@ import { formatNumber } from "../common/string/format_number";
 import "../components/ha-icon";
 import "../components/ha-svg-icon";
 import type { HomeAssistant, WeatherEntity } from "../types";
-import { roundWithOneDecimal } from "../util/calculate";
 
 export const weatherSVGs = new Set<string>([
   "clear-night",
