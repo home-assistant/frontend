@@ -391,24 +391,29 @@ export class DialogHassioNetwork extends LitElement
           nameservers: this._toArray(this._interface![version]?.nameservers),
         };
       }
-      if (this._wifiConfiguration) {
-        interfaceOptions = {
-          ...interfaceOptions,
-          enabled: true,
-          wifi: {
-            ssid: this._wifiConfiguration.ssid,
-            mode: this._wifiConfiguration.mode,
-            auth: this._wifiConfiguration.auth || "open",
-          },
-        };
-        if (interfaceOptions.wifi!.auth !== "open") {
-          interfaceOptions.wifi = {
-            ...interfaceOptions.wifi,
-            psk: this._wifiConfiguration.psk,
-          };
-        }
-      }
     });
+
+    if (this._wifiConfiguration) {
+      interfaceOptions = {
+        ...interfaceOptions,
+        wifi: {
+          ssid: this._wifiConfiguration.ssid,
+          mode: this._wifiConfiguration.mode,
+          auth: this._wifiConfiguration.auth || "open",
+        },
+      };
+      if (interfaceOptions.wifi!.auth !== "open") {
+        interfaceOptions.wifi = {
+          ...interfaceOptions.wifi,
+          psk: this._wifiConfiguration.psk,
+        };
+      }
+    }
+
+    interfaceOptions.enabled =
+      this._wifiConfiguration !== undefined ||
+      interfaceOptions.ipv4?.method !== "disabled" ||
+      interfaceOptions.ipv6?.method !== "disabled";
 
     try {
       await updateNetworkInterface(
