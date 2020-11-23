@@ -1,6 +1,5 @@
 // We import the minified bundle because the unminified bundle
-// has some quirks that break wds.
-// See #7784 for unminified version.
+// has some quirks that break wds. See #7784 for unminified version.
 import Vibrant from "node-vibrant/dist/vibrant";
 import type { Swatch, Vec3 } from "@vibrant/color";
 import { getRGBContrastRatio } from "../color/rgb";
