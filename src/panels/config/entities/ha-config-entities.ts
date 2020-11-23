@@ -31,7 +31,6 @@ import "../../../common/search/search-input";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
-  DataTableColumnData,
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
