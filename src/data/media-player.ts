@@ -36,7 +36,6 @@ export const SUPPORT_STOP = 4096;
 export const SUPPORT_PLAY = 16384;
 export const SUPPORT_SELECT_SOUND_MODE = 65536;
 export const SUPPORT_BROWSE_MEDIA = 131072;
-export const CONTRAST_RATIO = 4.5;
 
 export type MediaPlayerBrowseAction = "pick" | "play";
 
