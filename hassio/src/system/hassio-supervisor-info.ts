@@ -369,7 +369,7 @@ class HassioSupervisorInfo extends LitElement {
     const resolution = await fetchHassioResolution(this.hass);
     await showAlertDialog(this, {
       title: "Your installation is unhealthy",
-      text: html`Running an unhealty installation will cause issues. Below is a
+      text: html`Running an unhealthy installation will cause issues. Below is a
         list of issues found with your installation, click on the links to learn
         how you can resolve the issues. <br /><br />
         <ul>
