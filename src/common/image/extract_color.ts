@@ -2,7 +2,7 @@ import Vibrant from "node-vibrant/lib/browser";
 import MMCQ from "@vibrant/quantizer-mmcq";
 import { BasicPipeline } from "@vibrant/core/lib/pipeline";
 import { Swatch, Vec3 } from "@vibrant/color";
-import { rgbContrast } from "../color/rgb";
+import { getRGBContrastRatio } from "../color/rgb";
 
 const CONTRAST_RATIO = 4.5;
 
@@ -12,13 +12,6 @@ const COLOR_SIMILARITY_THRESHOLD = 150;
 
 // For debug purposes, is being tree shaken.
 const DEBUG_COLOR = __DEV__ && false;
-
-function getContrastRatio(
-  rgb1: [number, number, number],
-  rgb2: [number, number, number]
-): number {
-  return Math.round((rgbContrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
-}
 
 const logColor = (
   color: Swatch,
@@ -39,7 +32,7 @@ const customGenerator = (colors: Swatch[]) => {
   const contrastRatios = new Map<string, number>();
   const approvedContrastRatio = (hex: string, rgb: Swatch["rgb"]) => {
     if (!contrastRatios.has(hex)) {
-      contrastRatios.set(hex, getContrastRatio(backgroundColor.rgb, rgb));
+      contrastRatios.set(hex, getRGBContrastRatio(backgroundColor.rgb, rgb));
     }
 
     return contrastRatios.get(hex)! > CONTRAST_RATIO;
