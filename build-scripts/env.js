@@ -6,6 +6,9 @@ module.exports = {
   useRollup() {
     return process.env.ROLLUP === "1";
   },
+  useWDS() {
+    return process.env.WDS === "1";
+  },
   isProdBuild() {
     return (
       process.env.NODE_ENV === "production" || module.exports.isStatsBuild()

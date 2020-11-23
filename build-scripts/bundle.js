@@ -117,7 +117,7 @@ BundleConfig {
 */
 
 module.exports.config = {
-  app({ isProdBuild, latestBuild, isStatsBuild }) {
+  app({ isProdBuild, latestBuild, isStatsBuild, isWDS }) {
     return {
       entry: {
         service_worker: "./src/entrypoints/service_worker.ts",
@@ -132,6 +132,7 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isWDS,
     };
   },
 
