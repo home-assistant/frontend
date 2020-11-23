@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "Alad",
                         "automation": "Automatiseeringud",
+                        "blueprint": "Kavandid",
                         "core": "Üldine",
                         "customize": "Kohandamised",
                         "devices": "Seadmed",
@@ -1866,11 +1867,11 @@
                         "delete": "Kustuta",
                         "delete_button": "Kustuta {integration}",
                         "delete_confirm": "Oled kindel, et soovid selle sidumise kustutada?",
-                        "device_unavailable": "seade pole saadaval",
+                        "device_unavailable": "Seade pole saadaval",
                         "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
                         "documentation": "Vaata dokumentatsiooni",
                         "entities": "{count} {count, plural,\n  one {olem}\n  other{olemit}\n}",
-                        "entity_unavailable": "olem pole saadaval",
+                        "entity_unavailable": "Olem pole saadaval",
                         "firmware": "Püsivara: {version}",
                         "hub": "Ühendatud",
                         "manuf": "{manufacturer}",
@@ -2969,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "Kaardil Picture Glance kuvatakse pilt ja vastav olem ikoonina. Paremal asuvatel olemitel on lubatud tumblertoimingud, teised näitavad teabedialoogi.",
-                            "name": "Pildi pilk"
+                            "name": "Pildi pilk",
+                            "state_entity": "Oleku olem"
                         },
                         "picture": {
                             "description": "Pildikaart võimaldab teil määrata pildi mida kasutatakse liidese erinevatesse kohtadesse navigeerimiseks või teenuse väljakutsumiseks.",

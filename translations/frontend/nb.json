@@ -581,12 +581,12 @@
             },
             "history_charts": {
                 "loading_history": "Laster statushistorikk...",
-                "no_history_found": "Ingen statushistorikk funnet."
+                "no_history_found": "Ingen statushistorikk funnet"
             },
             "logbook": {
                 "by": "av",
-                "by_service": "etter tjeneste",
-                "entries_not_found": "Ingen loggbokoppføringer funnet.",
+                "by_service": "av tjenesten",
+                "entries_not_found": "Finner ingen loggbokoppføringer",
                 "messages": {
                     "became_unavailable": "ble utilgjengelig",
                     "changed_to_state": "endret til {state}",
@@ -599,17 +599,17 @@
                     "was_at_home": "var hjemme",
                     "was_at_state": "var {state}",
                     "was_away": "var borte",
-                    "was_closed": "ble stengt",
-                    "was_connected": "var koblet til",
-                    "was_disconnected": "ble koblet fra",
+                    "was_closed": "ble lukket",
+                    "was_connected": "var tilkoblet",
+                    "was_disconnected": "ble frakoblet",
                     "was_locked": "ble låst",
                     "was_low": "var lav",
-                    "was_normal": "var normalt",
+                    "was_normal": "var normal",
                     "was_opened": "ble åpnet",
-                    "was_plugged_in": "ble koblet til",
+                    "was_plugged_in": "ble tilkoblet",
                     "was_safe": "var trygg",
                     "was_unlocked": "ble låst opp",
-                    "was_unplugged": "ble koblet fra",
+                    "was_unplugged": "ble frakoblet",
                     "was_unsafe": "var utrygt"
                 }
             },
@@ -797,7 +797,7 @@
                     "pattern": "Regex-mønster for validering på klientsiden",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "Integrasjonen av {platform} er ikke lastet. Legg den til i konfigurasjonen din enten ved å legge til 'default_config:' eller '' {platform} : ''.",
+                "platform_not_loaded": "Integrasjonen av {platform} er ikke lastet. Legg den til i konfigurasjonen din enten ved å legge til 'default_config:' eller ''{platform}:''.",
                 "required_error_msg": "Dette feltet er påkrevd",
                 "timer": {
                     "duration": "Varighet"
@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "Områder",
                         "automation": "Automasjoner",
+                        "blueprint": "Blueprints",
                         "core": "Generelt",
                         "customize": "Tilpasninger",
                         "devices": "Enheter",
@@ -956,12 +957,12 @@
                     "clusters": "Behandle Clusters",
                     "reconfigure": "Rekonfigurer enhet",
                     "remove": "Fjern enhet",
-                    "zigbee_information": "Zigbee-enhetssignatur"
+                    "zigbee_information": "ZigBee-enhetssignatur"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på at du vil fjerne enheten?"
                 },
-                "device_signature": "Zigbee-enhetssignatur",
+                "device_signature": "ZigBee-enhetssignatur",
                 "last_seen": "Sist sett",
                 "manuf": "av {manufacturer}",
                 "no_area": "Intet område",
@@ -969,9 +970,9 @@
                 "quirk": "",
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
-                    "remove": "Fjern en enhet fra Zigbee-nettverket.",
+                    "remove": "Fjern en enhet fra ZigBee-nettverket.",
                     "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
-                    "zigbee_information": "Vis Zigbee-informasjon for enheten."
+                    "zigbee_information": "Vis ZigBee-informasjon for enheten."
                 },
                 "unknown": "Ukjent",
                 "zha_device_card": {
@@ -1405,6 +1406,7 @@
                         "importing": "Importerer blueprint...",
                         "save_btn": "Lagre blueprint",
                         "saving": "Lagrer blueprint...",
+                        "unsupported_blueprint": "Denne blueprinten støttes ikke",
                         "url": "URL til blueprint"
                     },
                     "caption": "Blueprints",
@@ -2415,15 +2417,15 @@
                     "add_device_page": {
                         "discovered_text": "Enheter vises her når de er oppdaget.",
                         "discovery_text": "Automatisk oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus.",
-                        "header": "Zigbee Home Automation - Legg til enheter",
+                        "header": "ZigBee Hjemmeautomasjon - Legg til enheter",
                         "no_devices_found": "Ingen enheter ble funnet, sørg for at de er i paring-modus og hold dem våkne mens oppdagelsen kjører.",
                         "pairing_mode": "Kontroller at enhetene er i paringsmodus. Sjekk instruksjonene til enheten om hvordan du gjør dette.",
                         "search_again": "Søk på nytt",
-                        "spinner": "Søker etter ZHA Zigbee-enheter..."
+                        "spinner": "Søker etter ZHA ZigBee-enheter..."
                     },
                     "add": {
                         "caption": "Legg til enheter",
-                        "description": "Legg til enheter i Zigbee-nettverket"
+                        "description": "Legg til enheter i ZigBee-nettverket"
                     },
                     "button": "Konfigurer",
                     "caption": "",
@@ -2435,19 +2437,19 @@
                         "help_get_zigbee_attribute": "Hent verdien for det valgte attributtet.",
                         "help_set_zigbee_attribute": "Angi attributtverdi for den spesifiserte klyngen på den angitte entiteten.",
                         "introduction": "Se og rediger klyngeattributter.",
-                        "set_zigbee_attribute": "Angi Zigbee-attributt"
+                        "set_zigbee_attribute": "Angi ZigBee-attributt"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Kommandoer for den valgte klyngen",
                         "header": "Klynge kommandoer",
                         "help_command_dropdown": "Velg en kommando du vil samhandle med.",
                         "introduction": "Se og utgi klyngekommandoer.",
-                        "issue_zigbee_command": "Send Zigbee-kommando"
+                        "issue_zigbee_command": "Send ZigBee-kommando"
                     },
                     "clusters": {
                         "header": "Klynger",
                         "help_cluster_dropdown": "Velg en klynge for å vise attributter og kommandoer.",
-                        "introduction": "Klynger er byggesteinene for Zigbee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient- og servertyper, og som består av attributter og kommandoer."
+                        "introduction": "Klynger er byggesteinene for ZigBee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient- og servertyper, og som består av attributter og kommandoer."
                     },
                     "common": {
                         "add_devices": "Legg til enheter",
@@ -2456,9 +2458,9 @@
                         "manufacturer_code_override": "Overstyring av produsent kode",
                         "value": "Verdi"
                     },
-                    "description": "Zigbee Home Automation nettverksadministrasjon",
+                    "description": "ZigBee Hjemmeautomasjon nettverksadministrasjon",
                     "devices": {
-                        "header": "Zigbee Hjemme Automasjon - Enhet"
+                        "header": "ZigBee Hjemmeautomasjon - Enhet"
                     },
                     "group_binding": {
                         "bind_button_help": "Bind den valgte gruppen til de valgte enhetsklyngene.",
@@ -2476,21 +2478,21 @@
                         "adding_members": "Legger til medlemmer",
                         "caption": "Grupper",
                         "create": "Opprett gruppe",
-                        "create_group": "ZigBee Hjemme Automasjon - Opprett gruppe",
-                        "create_group_details": "Angi de nødvendige detaljene for å opprette en ny Zigbee-gruppe",
+                        "create_group": "ZigBee Hjemmeautomasjon - Opprett gruppe",
+                        "create_group_details": "Angi de nødvendige detaljene for å opprette en ny ZigBee-gruppe",
                         "creating_group": "Oppretter gruppe",
-                        "description": "Administrer Zigbee-grupper",
-                        "group_details": "Her er alle detaljene for den valgte Zigbee-gruppen.",
+                        "description": "Administrer ZigBee-grupper",
+                        "group_details": "Her er alle detaljene for den valgte ZigBee-gruppen.",
                         "group_id": "Gruppe-ID",
                         "group_info": "Gruppeinformasjon",
                         "group_name_placeholder": "Gruppenavn",
                         "group_not_found": "Gruppe ikke funnet!",
-                        "group-header": "Zigbee Hjemme Automasjon - Gruppedetaljer",
+                        "group-header": "ZigBee Hjemmeautomasjon - Gruppedetaljer",
                         "groups": "Grupper",
-                        "groups-header": "Zigbee Hjemme Automasjon - Gruppeadministrasjon",
-                        "header": "Zigbee Hjemme Automasjon - Gruppeadministrasjon",
-                        "introduction": "Opprett og modifiser Zigbee-grupper",
-                        "manage_groups": "Administrer Zigbee-grupper",
+                        "groups-header": "ZigBee Hjemmeautomasjon - Gruppeadministrasjon",
+                        "header": "ZigBee Hjemmeautomasjon - Gruppeadministrasjon",
+                        "introduction": "Opprett og modifiser ZigBee-grupper",
+                        "manage_groups": "Administrer ZigBee-grupper",
                         "members": "Medlemmer",
                         "remove_groups": "Fjern grupper",
                         "remove_members": "Fjern medlemmer",
@@ -2498,7 +2500,7 @@
                         "removing_members": "Fjerner medlemmer",
                         "zha_zigbee_groups": "ZHA ZigBee grupper"
                     },
-                    "header": "Konfigurer Zigbee Hjemme Automasjon",
+                    "header": "Konfigurer ZigBee Hjemmeautomasjon",
                     "introduction": "Her er det mulig å konfigurere ZHA-komponenten. Ikke alt er mulig å konfigurere fra brukergrensesnittet ennå, men vi jobber med det.",
                     "network_management": {
                         "header": "Nettverksadministrasjon",
@@ -2514,7 +2516,7 @@
                         "hint_wakeup": "Noen enheter, for eksempel Xiaomi-sensorer, har en vekkingsknapp som du kan trykke på med intervaller på ~ 5 sekunder for å holde enheter våkne mens du samhandler med dem.",
                         "introduction": "Kjør ZHA-kommandoer som påvirker en enkelt enhet. Velg en enhet for å se en liste over tilgjengelige kommandoer."
                     },
-                    "title": "ZigBee Hjemme Automasjon"
+                    "title": "ZigBee Hjemmeautomasjon"
                 },
                 "zone": {
                     "add_zone": "Legg til sone",
@@ -2721,7 +2723,7 @@
                 "showing_entries": "Viser oppføringer for"
             },
             "logbook": {
-                "entries_not_found": "Finner ingen loggbokoppføringer.",
+                "entries_not_found": "Finner ingen loggbokoppføringer",
                 "period": "Periode",
                 "ranges": {
                     "last_week": "Forrige uke",
@@ -2917,8 +2919,8 @@
                             "name": "Rutenettet"
                         },
                         "history-graph": {
-                            "description": "Med History Graph-kortet kan du vise en graf for hver av enhetene som er oppført.",
-                            "name": "Historikk graf"
+                            "description": "Med Historikkgraf-kortet kan du vise en graf for hver av enhetene som er oppført.",
+                            "name": "Historikkgraf"
                         },
                         "horizontal-stack": {
                             "description": "Horisontal Stabel kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
@@ -2937,7 +2939,7 @@
                             "name": "Lys"
                         },
                         "logbook": {
-                            "description": "Loggbokskortet viser en liste over hendelser for entiteter",
+                            "description": "Loggbok-kortet viser en liste over hendelser for entiteter",
                             "name": "Loggbok"
                         },
                         "map": {
@@ -2968,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "Picture Glance-kortet viser et bilde og tilhørende entitetstilstander som et ikon. Entitetene på høyre side tillater veksling av handlinger, andre viser dialogboksen mer informasjon.",
-                            "name": "Bilde blikk"
+                            "name": "Bilde blikk",
+                            "state_entity": "Statusentitet"
                         },
                         "picture": {
                             "description": "Bildekortet lar deg stille inn et bilde som skal brukes til navigasjon til forskjellige baner i grensesnittet ditt eller for å tilkalle en tjeneste.",
