@@ -22,3 +22,8 @@ export const rgbContrast = (
 
   return (lum2 + 0.05) / (lum1 + 0.05);
 };
+
+export const getRGBContrastRatio = (
+  rgb1: [number, number, number],
+  rgb2: [number, number, number]
+) => Math.round((rgbContrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
