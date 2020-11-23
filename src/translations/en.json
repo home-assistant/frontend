@@ -1448,12 +1448,14 @@
             "introduction": "The blueprint editor allows you to create and edit blueprints.",
             "learn_more": "Learn more about blueprints",
             "headers": {
-              "name": "Name"
+              "name": "Name",
+              "domain": "Domain",
+              "file_name": "File name"
             },
             "confirm_delete_header": "Delete this blueprint?",
             "confirm_delete_text": "Are you sure you want to delete this blueprint?",
             "add_blueprint": "Add blueprint",
-            "use_blueprint": "Create automation from blueprint",
+            "use_blueprint": "Create automation",
             "delete_blueprint": "Delete blueprint"
           },
           "add": {

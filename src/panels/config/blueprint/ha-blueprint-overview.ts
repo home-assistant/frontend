@@ -93,14 +93,18 @@ class HaBlueprintOverview extends LitElement {
         },
       };
       columns.domain = {
-        title: "Domain",
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.headers.domain"
+        ),
         sortable: true,
         filterable: true,
         direction: "asc",
-        width: "20%",
+        width: "15%",
       };
       columns.path = {
-        title: "Path",
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.headers.file_name"
+        ),
         sortable: true,
         filterable: true,
         direction: "asc",
@@ -108,21 +112,18 @@ class HaBlueprintOverview extends LitElement {
       };
       columns.create = {
         title: "",
-        type: "icon-button",
+        width: "15%",
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
-            : html`<mwc-icon-button
+            : html` <mwc-button
                 .blueprint=${blueprint}
-                .label=${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.use_blueprint"
-                )}
-                title=${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.use_blueprint"
-                )}
                 @click=${(ev) => this._createNew(ev)}
-                ><ha-svg-icon .path=${mdiRobot}></ha-svg-icon
-              ></mwc-icon-button>`,
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.use_blueprint"
+                )}
+              </mwc-button>`,
       };
       columns.delete = {
         title: "",
@@ -130,7 +131,7 @@ class HaBlueprintOverview extends LitElement {
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
-            : html`<mwc-icon-button
+            : html` <mwc-icon-button
                 .blueprint=${blueprint}
                 .label=${this.hass.localize(
                   "ui.panel.config.blueprint.overview.delete_blueprint"
