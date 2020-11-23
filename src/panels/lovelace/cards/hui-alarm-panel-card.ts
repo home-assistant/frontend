@@ -287,7 +287,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         color: var(--alarm-state-color);
         position: absolute;
         right: 12px;
-        top: 12px;
+        top: 8px;
         cursor: pointer;
       }
 
