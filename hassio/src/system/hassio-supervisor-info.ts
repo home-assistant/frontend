@@ -89,6 +89,9 @@ class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false }) public hostInfo!: HassioHostInfoType;
 
   protected render(): TemplateResult | void {
+    if (!this.hass || !this.supervisorInfo || !this.hostInfo) {
+      return html``;
+    }
     return html`
       <ha-card header="Supervisor">
         <div class="card-content">
@@ -146,7 +149,7 @@ class HassioSupervisorInfo extends LitElement {
               : ""}
           </ha-settings-row>
 
-          ${this.supervisorInfo?.supported
+          ${this.supervisorInfo.supported
             ? html` <ha-settings-row three-line>
                 <span slot="heading">
                   Share Diagnostics
@@ -177,7 +180,7 @@ class HassioSupervisorInfo extends LitElement {
                   Learn more
                 </button>
               </div>`}
-          ${!this.supervisorInfo?.healthy
+          ${!this.supervisorInfo.healthy
             ? html`<div class="error">
                 Your installtion is running in an unhealthy state.
                 <button
