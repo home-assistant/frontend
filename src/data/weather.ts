@@ -180,7 +180,7 @@ export const getSecondaryWeatherAttribute = (
           <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
         `
       : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
-    ${formatNumber(roundWithOneDecimal(value), hass!.language)}
+    ${formatNumber(value, hass!.language, { maximumFractionDigits: 1 })}
     ${getWeatherUnit(hass!, attribute)}
   `;
 };
