@@ -255,8 +255,9 @@ class HassioSupervisorInfo extends LitElement {
         title: "Failed to set supervisor option",
         text: extractApiErrorMessage(err),
       });
+    } finally {
+      button.progress = false;
     }
-    button.progress = false;
   }
 
   private async _supervisorReload(ev: CustomEvent): Promise<void> {
@@ -271,8 +272,9 @@ class HassioSupervisorInfo extends LitElement {
         title: "Failed to reload the supervisor",
         text: extractApiErrorMessage(err),
       });
+    } finally {
+      button.progress = false;
     }
-    button.progress = false;
   }
 
   private async _supervisorRestart(ev: CustomEvent): Promise<void> {
@@ -286,8 +288,9 @@ class HassioSupervisorInfo extends LitElement {
         title: "Failed to restart the supervisor",
         text: extractApiErrorMessage(err),
       });
+    } finally {
+      button.progress = false;
     }
-    button.progress = false;
   }
 
   private async _supervisorUpdate(ev: CustomEvent): Promise<void> {
@@ -313,8 +316,9 @@ class HassioSupervisorInfo extends LitElement {
         title: "Failed to update the supervisor",
         text: extractApiErrorMessage(err),
       });
+    } finally {
+      button.progress = false;
     }
-    button.progress = false;
   }
 
   private async _diagnosticsInformationDialog(): Promise<void> {
