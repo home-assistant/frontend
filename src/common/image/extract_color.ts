@@ -2,7 +2,7 @@ import Vibrant from "node-vibrant/lib/browser";
 import MMCQ from "@vibrant/quantizer-mmcq";
 import { BasicPipeline } from "@vibrant/core/lib/pipeline";
 import { Swatch, Vec3 } from "@vibrant/color";
-import { contrast } from "../color/contrast";
+import { rgbContrast } from "../color/rgb";
 
 const CONTRAST_RATIO = 4.5;
 
@@ -17,7 +17,7 @@ function getContrastRatio(
   rgb1: [number, number, number],
   rgb2: [number, number, number]
 ): number {
-  return Math.round((contrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
+  return Math.round((rgbContrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
 }
 
 const logColor = (
