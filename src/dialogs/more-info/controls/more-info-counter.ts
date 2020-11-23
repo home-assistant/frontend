@@ -53,7 +53,7 @@ class MoreInfoCounter extends LitElement {
   static get styles(): CSSResult {
     return css`
       .actions {
-        margin: 0 8px;
+        margin: 0;
         padding-top: 20px;
         display: flex;
         flex-wrap: wrap;

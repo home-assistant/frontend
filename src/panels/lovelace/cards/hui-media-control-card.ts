@@ -691,7 +691,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .more-info {
         position: absolute;
-        top: 8px;
+        top: 4px;
         right: 0px;
       }
 

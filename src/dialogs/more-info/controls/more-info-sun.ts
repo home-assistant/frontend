@@ -67,7 +67,7 @@ class MoreInfoSun extends LitElement {
   static get styles(): CSSResult {
     return css`
       .row {
-        margin: 0 8px;
+        margin: 0;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
