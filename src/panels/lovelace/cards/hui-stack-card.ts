@@ -18,9 +18,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-stack-card-editor" */ "../editor/config-elements/hui-stack-card-editor"
-    );
+    await import("../editor/config-elements/hui-stack-card-editor");
     return document.createElement("hui-stack-card-editor");
   }
 

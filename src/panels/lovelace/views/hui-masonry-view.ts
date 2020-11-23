@@ -114,9 +114,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
-      import(
-        /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
-      );
+      import("./default-view-editable");
     }
 
     if (changedProperties.has("hass")) {

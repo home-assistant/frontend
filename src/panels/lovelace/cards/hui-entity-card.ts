@@ -35,9 +35,7 @@ import { computeCardSize } from "../common/compute-card-size";
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-entity-card-editor" */ "../editor/config-elements/hui-entity-card-editor"
-    );
+    await import("../editor/config-elements/hui-entity-card-editor");
     return document.createElement("hui-entity-card-editor");
   }
 

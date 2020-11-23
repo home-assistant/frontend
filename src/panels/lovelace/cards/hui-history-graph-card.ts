@@ -26,9 +26,7 @@ import { HistoryGraphCardConfig } from "./types";
 @customElement("hui-history-graph-card")
 export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
-    await import(
-      /* webpackChunkName: "hui-history-graph-card-editor" */ "../editor/config-elements/hui-history-graph-card-editor"
-    );
+    await import("../editor/config-elements/hui-history-graph-card-editor");
     return document.createElement("hui-history-graph-card-editor");
   }
 

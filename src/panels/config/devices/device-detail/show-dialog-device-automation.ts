@@ -6,9 +6,7 @@ export interface DeviceAutomationDialogParams {
 }
 
 export const loadDeviceAutomationDialog = () =>
-  import(
-    /* webpackChunkName: "device-automation-dialog" */ "./ha-device-automation-dialog"
-  );
+  import("./ha-device-automation-dialog");
 
 export const showDeviceAutomationDialog = (
   element: HTMLElement,

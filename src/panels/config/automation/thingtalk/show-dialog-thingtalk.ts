@@ -6,8 +6,7 @@ export interface ThingtalkDialogParams {
   input?: string;
 }
 
-export const loadThingtalkDialog = () =>
-  import(/* webpackChunkName: "thingtalk-dialog" */ "./dialog-thingtalk");
+export const loadThingtalkDialog = () => import("./dialog-thingtalk");
 
 export const showThingtalkDialog = (
   element: HTMLElement,

@@ -35,9 +35,7 @@ import type { CalendarCardConfig } from "./types";
 @customElement("hui-calendar-card")
 export class HuiCalendarCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-calendar-card-editor" */ "../editor/config-elements/hui-calendar-card-editor"
-    );
+    await import("../editor/config-elements/hui-calendar-card-editor");
     return document.createElement("hui-calendar-card-editor");
   }
 

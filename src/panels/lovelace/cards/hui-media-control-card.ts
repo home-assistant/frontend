@@ -161,9 +161,7 @@ const customGenerator = (colors: Swatch[]) => {
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-media-control-card-editor" */ "../editor/config-elements/hui-media-control-card-editor"
-    );
+    await import("../editor/config-elements/hui-media-control-card-editor");
     return document.createElement("hui-media-control-card-editor");
   }
 

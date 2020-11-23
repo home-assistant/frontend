@@ -40,9 +40,7 @@ import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-glance-card-editor" */ "../editor/config-elements/hui-glance-card-editor"
-    );
+    await import("../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
   }
 
