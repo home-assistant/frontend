@@ -69,10 +69,10 @@ const doneHandler = (done) => (err, stats) => {
 
 const prodBuild = (conf) =>
   new Promise((resolve) => {
-    const compiler = webpack(
+    webpack(
       conf,
-      // At end of stats printing, close compiler and resolve promise
-      doneHandler(() => compiler.close(resolve))
+      // Resolve promise when done. Because we pass a callback, webpack closes itself
+      doneHandler(resolve)
     );
   });
 
