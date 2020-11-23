@@ -168,49 +168,34 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
                   ? svg`
-                      ${formatNumber(
-                        this._setTemp[0].toFixed(),
-                        this.hass!.language
-                      )} -
-                      ${formatNumber(
-                        this._setTemp[1].toFixed(),
-                        this.hass!.language
-                      )}
+                      ${formatNumber(this._setTemp[0], this.hass!.language, {
+                        maximumFractionDigits: 0,
+                      })} -
+                      ${formatNumber(this._setTemp[1], this.hass!.language, {
+                        maximumFractionDigits: 0,
+                      })}
                       `
                   : svg`
-                      ${formatNumber(
-                        this._setTemp[0].toFixed(1),
-                        this.hass!.language,
-                        {
-                          minimumFractionDigits: 1,
-                          maximumFractionDigits: 1,
-                        }
-                      )} -
-                      ${formatNumber(
-                        this._setTemp[1].toFixed(1),
-                        this.hass!.language,
-                        {
-                          minimumFractionDigits: 1,
-                          maximumFractionDigits: 1,
-                        }
-                      )}
+                      ${formatNumber(this._setTemp[0], this.hass!.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      })} -
+                      ${formatNumber(this._setTemp[1], this.hass!.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      })}
                       `
                 : this._stepSize === 1
                 ? svg`
-                      ${formatNumber(
-                        this._setTemp.toFixed(),
-                        this.hass!.language
-                      )}
+                      ${formatNumber(this._setTemp, this.hass!.language, {
+                        maximumFractionDigits: 0,
+                      })}
                       `
                 : svg`
-                      ${formatNumber(
-                        this._setTemp.toFixed(1),
-                        this.hass!.language,
-                        {
-                          minimumFractionDigits: 1,
-                          maximumFractionDigits: 1,
-                        }
-                      )}
+                      ${formatNumber(this._setTemp, this.hass!.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      })}
                       `
             }
           </text>
