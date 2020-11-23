@@ -235,6 +235,9 @@ class HassioSnapshotDialog extends LitElement {
           display: block;
           margin: 4px;
         }
+        mwc-button ha-svg-icon {
+          margin-right: 4px;
+        }
         .button-row {
           display: grid;
           gap: 8px;
