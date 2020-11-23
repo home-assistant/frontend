@@ -76,6 +76,10 @@ export const reloadSupervisor = async (hass: HomeAssistant) => {
   await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/reload`);
 };
 
+export const restartSupervisor = async (hass: HomeAssistant) => {
+  await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/restart`);
+};
+
 export const updateSupervisor = async (hass: HomeAssistant) => {
   await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/update`);
 };
