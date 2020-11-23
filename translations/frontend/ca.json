@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "Àrees",
                         "automation": "Automatització",
+                        "blueprint": "Plànols",
                         "core": "General",
                         "customize": "Personalització",
                         "devices": "Dispositius",
@@ -1142,7 +1143,7 @@
                                     "wait_template": "Plantilla d'espera"
                                 }
                             },
-                            "unsupported_action": "La UI no és compatible amb l'acció: {action}"
+                            "unsupported_action": "La IU no és compatible amb l'acció: {action}"
                         },
                         "alias": "Nom",
                         "blueprint": {
@@ -1227,7 +1228,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "La UI no és compatible amb la condició: {condition}"
+                            "unsupported_condition": "La IU no és compatible amb la condició: {condition}"
                         },
                         "copy_to_clipboard": "Copia al porta-retalls",
                         "default_name": "Nova automatització",
@@ -1356,7 +1357,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "La UI no és compatible amb la plataforma: {platform}"
+                            "unsupported_platform": "La IU no és compatible amb la plataforma: {platform}"
                         },
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?"
                     },
@@ -1405,6 +1406,7 @@
                         "importing": "Important plànol",
                         "save_btn": "Desa plànol",
                         "saving": "Desant plànol...",
+                        "unsupported_blueprint": "Aquest plànols no és compatible",
                         "url": "URL del plànol"
                     },
                     "caption": "Plànols",
@@ -1488,7 +1490,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "L'edició de quines entitats estan exposades a través de la UI està desactivada perquè hi ha filtres d'entitats configurats a configuration.yaml.",
+                        "banner": "L'edició de quines entitats estan exposades a través de la IU està desactivada perquè hi ha filtres d'entitats configurats a configuration.yaml.",
                         "dont_expose_entity": "No exposis l'entitat",
                         "expose": "Exposa a Alexa",
                         "expose_entity": "Exposa l'entitat",
@@ -1532,7 +1534,7 @@
                         "title": "Oblit de la contrasenya"
                     },
                     "google": {
-                        "banner": "L'edició de quines entitats estan exposades a través de la UI està desactivada perquè hi ha filtres d'entitats configurats a configuration.yaml.",
+                        "banner": "L'edició de quines entitats estan exposades a través de la IU està desactivada perquè hi ha filtres d'entitats configurats a configuration.yaml.",
                         "disable_2FA": "Desactiva l'autenticació en dos passos",
                         "dont_expose_entity": "No exposis l'entitat",
                         "expose": "Exposa a Google Assistant",
@@ -1740,7 +1742,7 @@
                             "name": "Nom",
                             "status": "Estat"
                         },
-                        "introduction": "Home Assistant manté un registre de totes les entitats que ha detectat alguna vegada les quals tenen una identificació única. Cadascuna d'aquestes entitats té un identificador (ID) assignat que està reservat només per a ella.",
+                        "introduction": "Home Assistant manté un registre de totes les entitats que ha detectat alguna vegada les quals tenen una identificació única. Cadascuna d'aquestes entitats té un identificador, ID, assignat que està reservat només per a ella.",
                         "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant.",
                         "remove_selected": {
                             "button": "Elimina seleccionada/es",
@@ -1865,11 +1867,11 @@
                         "delete": "Elimina",
                         "delete_button": "Elimina {integration}",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta integració?",
-                        "device_unavailable": "dispositiu no disponible",
+                        "device_unavailable": "Dispositiu no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositiu}\n  other {dispositius}\n}",
                         "documentation": "Documentació",
                         "entities": "{count} {count, plural,\n  one {entitat}\n  other {entitats}\n}",
-                        "entity_unavailable": "entitat no disponible",
+                        "entity_unavailable": "Entitat no disponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connectat a través de",
                         "manuf": "de {manufacturer}",
@@ -1927,7 +1929,7 @@
                     "none": "Encara no hi ha res configurat",
                     "none_found": "No s'han trobat integracions",
                     "none_found_detail": "Ajusta els paràmetres de cerca.",
-                    "note_about_integrations": "Encara no es poden configurar totes les integracions a través de la UI.",
+                    "note_about_integrations": "Encara no es poden configurar totes les integracions a través de la IU.",
                     "note_about_website_reference": "En pots trobar més al ",
                     "reconfigure": "Reconfigura",
                     "rename_dialog": "Edita el nom de l'entrada de configuració",
@@ -1955,7 +1957,7 @@
                         "cant_edit_yaml": "Els panells Lovelace definits en YAML no poden ser editats des de la interfñicie d'usuari. Edita'ls des de 'configuration.yaml'.",
                         "caption": "Panells",
                         "conf_mode": {
-                            "storage": "Controlat per la UI",
+                            "storage": "Controlat per la IU",
                             "yaml": "Fitxer YAML"
                         },
                         "confirm_delete": "Estàs segur que vols eliminar aquest panell?",
@@ -2182,7 +2184,7 @@
                     "introduction": "Aquí pots definir cada persona d'interès en Home Assistant.",
                     "learn_more": "Obté més informació sobre persones",
                     "no_persons_created_yet": "Sembla que encara no has creat cap persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar des de la UI.",
+                    "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar des de la IU.",
                     "person_not_found": "No s'ha pogut trobar la persona que vols editar.",
                     "person_not_found_title": "Persona no trobada"
                 },
@@ -2519,7 +2521,7 @@
                 "zone": {
                     "add_zone": "Afegeix zona",
                     "caption": "Zones",
-                    "configured_in_yaml": "Les zones configurades mitjançant configuration.yaml no es poden editar des de la UI.",
+                    "configured_in_yaml": "Les zones configurades mitjançant configuration.yaml no es poden editar des de la IU.",
                     "confirm_delete": "Estàs segur que vols eliminar aquesta zona?",
                     "create_zone": "Crea zona",
                     "description": "Gestiona les zones en les quals vols fer seguiment de persones",
@@ -2733,8 +2735,8 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Només pots utilitzar aquesta funció quan tinguis el control de la UI Lovelace.",
-                    "saving_failed": "S'ha produït un error en desar la configuració de la UI Lovelace.",
+                    "generated_unsupported": "Només pots utilitzar aquesta funció quan tinguis el control de la IU Lovelace.",
+                    "saving_failed": "S'ha produït un error en desar la configuració de la IU Lovelace.",
                     "yaml_unsupported": "Només pots utilitzar aquesta funció si fas servir Lovelace en mode YAML."
                 },
                 "cards": {
@@ -2771,7 +2773,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "S'ha actualitzat la configuració de la UI Lovelace d'aquest panell. Vols actualitzar-lo per veure els canvis?",
+                    "message": "S'ha actualitzat la configuració de la IU Lovelace d'aquest panell. Vols actualitzar-lo per veure els canvis?",
                     "refresh": "Actualitza"
                 },
                 "editor": {
@@ -2968,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "La targeta visualització d'imatge mostra una imatge i els estats de les entitats escollides corresponents a través d'una icona. Les entitats situades a la dreta permeten ser commutades, altres mostren el diàleg de més informació.",
-                            "name": "Visualització d'imatge"
+                            "name": "Visualització d'imatge",
+                            "state_entity": "Entitat d'estat"
                         },
                         "picture": {
                             "description": "La targeta d'imatge et permet establir una imatge utilitzada per a navegar a diversos llocs de la interfície o tambe cridar un servei concret.",
@@ -3029,7 +3032,7 @@
                         "duplicate": "Duplica targeta",
                         "edit": "Editar",
                         "header": "Configuració de la targeta",
-                        "move": "Moure a la Vista",
+                        "move": "Moure a visualització",
                         "move_after": "Mou targeta després",
                         "move_before": "Mou targeta abans",
                         "options": "Més opcions",
@@ -3060,7 +3063,7 @@
                         "tab_settings": "Configuració",
                         "tab_visibility": "Visibilitat",
                         "visibility": {
-                            "select_users": "Selecciona quins usuaris podran veure aquesta vista a la navegació"
+                            "select_users": "Selecciona quins usuaris podran veure aquesta visualització a la navegació"
                         }
                     },
                     "header": "Editar la interfície d'usuari (UI)",
@@ -3091,7 +3094,7 @@
                         "para_no_id": "Aquest element no té ID. Afegeix un ID per aquest element a 'ui-lovelace.yaml'."
                     },
                     "move_card": {
-                        "header": "Trieu una vista per desplaçar la tarjeta a"
+                        "header": "Tria una visualització on desplaçar la tarjeta"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Si elimines la configuració de la interfície d'usuari Lovelace es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
@@ -3118,11 +3121,11 @@
                         "save": "Prendre el control",
                         "yaml_config": "Per ajudar a familiaritzar-te, aquí tens la configuració actual del teu panell Lovelace:",
                         "yaml_control": "Per configurar el panell en mode YAML, crea un fitxer YAML amb el nom que hagis establert a la configuració del panell, o bé el nom per defecte 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Estàs utilitzant el mode YAML per aquest panell, per tant no pots editar-lo des de la interfície d'usuari. Si vols poder editar-lo des de la UI, elimina 'mode: yaml' del fitxer 'configuration.yaml' en l'apartat de configuració de Lovelace."
+                        "yaml_mode": "Estàs utilitzant el mode YAML per aquest panell, per tant no pots editar-lo des de la interfície d'usuari. Si vols poder editar-lo des de la IU, elimina 'mode: yaml' del fitxer 'configuration.yaml' en l'apartat de configuració de Lovelace."
                     },
                     "select_view": {
                         "dashboard_label": "Panell",
-                        "header": "Trieu una vista"
+                        "header": "Tria una visualització"
                     },
                     "sub-element-editor": {
                         "types": {
@@ -3132,7 +3135,7 @@
                         }
                     },
                     "suggest_card": {
-                        "add": "Afegeix a la UI Lovelace",
+                        "add": "Afegeix a la IU Lovelace",
                         "create_own": "Escull una targeta diferent",
                         "header": "T'hem creat un suggeriment"
                     },
@@ -3140,7 +3143,7 @@
                         "panel_mode": {
                             "description": "Això renderitza la primera targeta a amplada completa. Les altres targetes i insígnies d'aquesta visualització no es renderitzaran.",
                             "title": "Mode panell?",
-                            "warning_multiple_cards": "Aquesta vista conté més d'una targeta, però una vista en mode panell només pot mostrar una targeta."
+                            "warning_multiple_cards": "Aquesta visualització conté més d'una targeta, però les visualitzacions en mode panell només poden mostrar una targeta."
                         }
                     }
                 },
@@ -3171,15 +3174,15 @@
                 },
                 "views": {
                     "confirm_delete": "Esborrar visualització?",
-                    "confirm_delete_existing_cards": "Si elimines aquesta vista, també s'eliminaran les targetes que conté",
-                    "confirm_delete_existing_cards_text": "Estàs segur que vols eliminar la vista ''{name}''? La vista conté {number} targetes que també s'eliminaran. Aquesta acció no és reversible.",
-                    "confirm_delete_text": "Estàs segur que vols eliminar la vista \"{name}\"?"
+                    "confirm_delete_existing_cards": "Si elimines aquesta visualització, també s'eliminaran les targetes que conté",
+                    "confirm_delete_existing_cards_text": "Estàs segur que vols eliminar la visualització ''{name}''? La visualització conté {number} targetes que s'eliminaran. Aquesta acció és irreversible.",
+                    "confirm_delete_text": "Estàs segur que vols eliminar la visualització \"{name}\"?"
                 },
                 "warning": {
                     "attribute_not_found": "L'atribut {attribute} de {entity} no és disponible.",
                     "entity_non_numeric": "Entitat no numèrica: {entity}",
                     "entity_not_found": "Entitat no disponible: {entity}",
-                    "entity_unavailable": "{entity} no està disponible actualment",
+                    "entity_unavailable": "Entitat actualment no disponible: {entity}",
                     "starting": "Home Assistant està iniciant-se, pot ser que encara no estigui tot disponible"
                 }
             },

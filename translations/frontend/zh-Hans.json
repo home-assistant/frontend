@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "区域注册表",
                         "automation": "自动化",
+                        "blueprint": "Blueprint",
                         "core": "通用",
                         "customize": "自定义",
                         "devices": "设备",
@@ -1418,7 +1419,7 @@
                         "headers": {
                             "name": "名称"
                         },
-                        "introduction": "Blueprint 编辑器用于创建和编辑 Blueprint。",
+                        "introduction": "Blueprint 编辑器方便您创建和编辑 Blueprint。",
                         "learn_more": "详细了解 Blueprint"
                     }
                 },
@@ -2969,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "“图片概览”卡片显示图像和相应的实体状态作为图标。右侧的实体允许切换操作，其他实体则显示“更多信息”对话框。",
-                            "name": "图片概览"
+                            "name": "图片概览",
+                            "state_entity": "状态实体"
                         },
                         "picture": {
                             "description": "“图片”卡片可设置图像，以用于前往界面路径或调用服务。",
@@ -3067,8 +3069,8 @@
                     "header": "编辑 UI",
                     "header-footer": {
                         "choose_header_footer": "请选择{type}",
-                        "footer": "页脚",
-                        "header": "页眉",
+                        "footer": "尾部",
+                        "header": "头部",
                         "types": {
                             "buttons": {
                                 "name": "按钮"
@@ -3127,8 +3129,8 @@
                     },
                     "sub-element-editor": {
                         "types": {
-                            "footer": "页脚编辑器",
-                            "header": "页眉编辑器",
+                            "footer": "尾部编辑器",
+                            "header": "头部编辑器",
                             "row": "实体行编辑器"
                         }
                     },
@@ -3180,7 +3182,7 @@
                     "attribute_not_found": "属性 {attribute} 对 {entity} 不可用",
                     "entity_non_numeric": "实体 {entity} 非数值",
                     "entity_not_found": "实体 {entity} 不可用",
-                    "entity_unavailable": "{entity} 当前不可用",
+                    "entity_unavailable": "实体当前不可用: {entity}",
                     "starting": "Home Assistant 正在启动，部分功能暂不可用"
                 }
             },

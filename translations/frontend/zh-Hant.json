@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "分區",
                         "automation": "自動化",
+                        "blueprint": "Blueprint",
                         "core": "一般設定",
                         "customize": "自訂化",
                         "devices": "裝置",
@@ -1866,7 +1867,7 @@
                         "delete": "刪除",
                         "delete_button": "刪除 {integration}",
                         "delete_confirm": "確定要刪除此整合？",
-                        "device_unavailable": "裝置是不可用",
+                        "device_unavailable": "設備不可用",
                         "devices": "{count} {count, plural,\n  one {個裝置}\n  other {個裝置}\n}",
                         "documentation": "相關文件",
                         "entities": "{count} {count, plural,\n  one {個實體}\n  other {個實體}\n}",
@@ -2969,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "圖片簡略式面板顯示圖像與以圖示顯示的實體狀態。於右側的實體可切換動作、其他則為顯示更詳細資訊。",
-                            "name": "圖片簡略式面板"
+                            "name": "圖片簡略式面板",
+                            "state_entity": "狀態實體"
                         },
                         "picture": {
                             "description": "圖片面板可供設定圖片、進而導向不同的介面或呼叫服務。",
@@ -3180,7 +3182,7 @@
                     "attribute_not_found": "無法使用屬性 {attribute} 之實體：{entity}",
                     "entity_non_numeric": "實體為非數字：{entity}",
                     "entity_not_found": "實體不可用：{entity}",
-                    "entity_unavailable": "{entity} 目前不可用",
+                    "entity_unavailable": "實體目前不可用：{entity}",
                     "starting": "Home Assistant 正在啟動，可能無法顯示所有功能。"
                 }
             },

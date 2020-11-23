@@ -868,6 +868,7 @@
                     "navigation": {
                         "areas": "エリア",
                         "automation": "オートメーション",
+                        "blueprint": "設計図",
                         "core": "一般",
                         "customize": "カスタマイズ",
                         "devices": "デバイス",
@@ -1135,7 +1136,8 @@
                             "blueprint_to_use": "使用する設計図",
                             "header": "設計図",
                             "manage_blueprints": "設計図の管理",
-                            "no_blueprints": "設計図はありません"
+                            "no_blueprints": "設計図はありません",
+                            "no_inputs": "この設計図には入力がありません。"
                         },
                         "conditions": {
                             "add": "条件を追加",
@@ -1381,7 +1383,26 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "設計図のURLを入力してください。"
+                        "error_no_url": "設計図のURLを入力してください。",
+                        "header": "新しい設計図を追加する",
+                        "import_btn": "設計図をインポートする",
+                        "import_header": "インポート{name} （ {domain} ）",
+                        "import_introduction": "Github やコミュニティフォーラムから他のユーザーの設計図をインポートできます。以下に、設計図の URL を入力します。",
+                        "importing": "設計図をインポートしています...",
+                        "save_btn": "設計図の保存",
+                        "saving": "設計図を保存しています...",
+                        "unsupported_blueprint": "この設計図はサポートされていません",
+                        "url": "設計図のURL"
+                    },
+                    "caption": "設計図",
+                    "description": "設計図の管理",
+                    "overview": {
+                        "add_blueprint": "設計図を追加する",
+                        "confirm_delete_header": "この設計図を削除しますか?",
+                        "confirm_delete_text": "この設計図を削除してもよ思いますか?",
+                        "header": "設計図エディタ",
+                        "introduction": "設計図エディターを使用すると、設計図を作成および編集できます。",
+                        "learn_more": "設計図の詳細"
                     }
                 },
                 "cloud": {
@@ -2929,7 +2950,8 @@
                         },
                         "picture-glance": {
                             "description": "画像の一覧カードは、イメージと対応するエンティティの状態をアイコンで示します。右側のエンティティは切り替えアクションを許可し、他のエンティティは詳細ダイアログを表示します。",
-                            "name": "画像一覧"
+                            "name": "画像一覧",
+                            "state_entity": "状態エンティティ"
                         },
                         "picture": {
                             "description": "ピクチャーカードを使用すると、インターフェイスのさまざまなパスへのナビゲーションに使用する画像を設定したり、サービスを呼び出したりできます。",

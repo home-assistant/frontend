@@ -1852,11 +1852,11 @@
                         "delete": "Smazat",
                         "delete_button": "Smazat {integration}",
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
-                        "device_unavailable": "zařízení není k dispozici",
+                        "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
                         "documentation": "Dokumentace",
                         "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
-                        "entity_unavailable": "entita není k dispozici",
+                        "entity_unavailable": "Entita není dostupná",
                         "firmware": "Firmware: {version}",
                         "hub": "Připojeno přes",
                         "manuf": "od {manufacturer}",
@@ -2955,7 +2955,8 @@
                         },
                         "picture-glance": {
                             "description": "Karta Obrázkový náhled zobrazuje obrázek a odpovídající stav entity jako ikonu. Entity na pravé straně umožňují přepínání, jiné zobrazují dialogové okno s více informacemi.",
-                            "name": "Obrázkový náhled"
+                            "name": "Obrázkový náhled",
+                            "state_entity": "Stav entity"
                         },
                         "picture": {
                             "description": "Karta Obrázek vám umožňuje nastavit obrázek, který se použije pro navigaci na různá místa v rozhraní nebo pro volání služby.",
@@ -3166,7 +3167,7 @@
                     "attribute_not_found": "Atribut {attribute} není k dispozici v: {entity}",
                     "entity_non_numeric": "Entita není číselná: {entity}",
                     "entity_not_found": "Entita není k dispozici: {entity}",
-                    "entity_unavailable": "Entita {entity} není aktuálně k dispozici.",
+                    "entity_unavailable": "Entita není aktuálně dostupná: {entity}",
                     "starting": "Home Assistant se spouští, vše ještě nemusí být dostupné"
                 }
             },

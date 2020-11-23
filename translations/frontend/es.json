@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "Áreas",
                         "automation": "Automatizaciones",
+                        "blueprint": "Planos",
                         "core": "Configuración general",
                         "customize": "Personalizaciones",
                         "devices": "Dispositivos",
@@ -1866,11 +1867,11 @@
                         "delete": "Eliminar",
                         "delete_button": "Eliminar {integration}",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
-                        "device_unavailable": "dispositivo no disponible",
+                        "device_unavailable": "Dispositivo no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
                         "documentation": "Documentación",
                         "entities": "{count} {count, plural,\n  one {entidad}\n  other {entidades}\n}",
-                        "entity_unavailable": "entidad no disponible",
+                        "entity_unavailable": "Entidad no disponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado a través de",
                         "manuf": "por {manufacturer}",
@@ -2969,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "La tarjeta Vistazo de Imagen muestra una imagen y los estados de entidad correspondientes como un icono. Las entidades en el lado derecho permiten alternar acciones, otras muestran el diálogo de más información.",
-                            "name": "Vistazo de imagen"
+                            "name": "Vistazo de imagen",
+                            "state_entity": "Entidad de estado"
                         },
                         "picture": {
                             "description": "La tarjeta Imagen le permite configurar una imagen para usarla para navegar por varias rutas en su interfaz o para llamar a un servicio.",
@@ -3180,7 +3182,7 @@
                     "attribute_not_found": "El atributo {attribute} no está disponible en: {entity}",
                     "entity_non_numeric": "La entidad no es numérica: {entity}",
                     "entity_not_found": "La entidad no está disponible: {entity}",
-                    "entity_unavailable": "{entity} no está disponible actualmente",
+                    "entity_unavailable": "La entidad no está disponible actualmente: {entity}",
                     "starting": "Home Assistant se está iniciando, puede que no todo esté disponible todavía"
                 }
             },
