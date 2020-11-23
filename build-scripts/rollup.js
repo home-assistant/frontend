@@ -3,7 +3,7 @@ const path = require("path");
 const commonjs = require("@rollup/plugin-commonjs");
 const resolve = require("@rollup/plugin-node-resolve");
 const json = require("@rollup/plugin-json");
-const babel = require("rollup-plugin-babel");
+const babel = require("@rollup/plugin-babel").babel;
 const replace = require("@rollup/plugin-replace");
 const visualizer = require("rollup-plugin-visualizer");
 const { string } = require("rollup-plugin-string");
@@ -61,6 +61,7 @@ const createRollupConfig = ({
           ...bundle.babelOptions({ latestBuild }),
           extensions,
           exclude: bundle.babelExclude(),
+          babelHelpers: "bundled",
         }),
         string({
           // Import certain extensions as strings
