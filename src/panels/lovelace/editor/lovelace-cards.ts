@@ -22,6 +22,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "fan",
+    showElement: true,
+  },
+  {
     type: "gauge",
     showElement: true,
   },

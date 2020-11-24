@@ -8,6 +8,7 @@ import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
 import "../cards/hui-light-card";
+import "../cards/hui-fan-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-vertical-stack-card";
@@ -27,6 +28,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "history-graph",
   "horizontal-stack",
   "light",
+  "fan",
   "sensor",
   "thermostat",
   "vertical-stack",

@@ -274,6 +274,16 @@ export type LightEntity = HassEntityBase & {
   };
 };
 
+export type FanEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    friendly_name: string;
+    speed: string;
+    speed_list: string[];
+    oscillating: number;
+    direction: string;
+  };
+};
+
 export type GroupEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
     entity_id: string[];

@@ -169,6 +169,16 @@ export interface LightCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface FanCardConfig extends LovelaceCardConfig {
+  entity: string;
+  name?: string;
+  theme?: string;
+  icon?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
 export interface LogbookCardConfig extends LovelaceCardConfig {
   type: "logbook";
   entities: string[];
