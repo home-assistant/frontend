@@ -17,7 +17,6 @@ import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import { Network, Edge, Node, EdgeOptions } from "vis-network";
 import "vis-network/styles/vis-network.css";
-import "../../../ha-config-section";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -94,9 +93,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           "ui.panel.config.zha.visualization.header"
         )}
       >
-        <ha-config-section .isWide=${!this.narrow}>
-          <div id="visualization"></div>
-        </ha-config-section>
+        <div id="visualization"></div>
       </hass-subpage>
     `;
   }
@@ -212,10 +209,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
           letter-spacing: var(--paper-font-display1_-_letter-spacing);
           line-height: var(--paper-font-display1_-_line-height);
           opacity: var(--dark-primary-opacity);
-        }
-
-        ha-config-section *:last-child {
-          padding-bottom: 24px;
         }
       `,
     ];
