@@ -47,6 +47,10 @@ const UNSUPPORTED_REASON = {
     title: "Docker Version",
     url: "/more-info/unsupported/docker_version",
   },
+  job_conditions: {
+    title: "Ignored job conditions",
+    url: "/more-info/unsupported/job_conditions",
+  },
   lxc: { title: "LXC", url: "/more-info/unsupported/lxc" },
   network_manager: {
     title: "Network Manager",
