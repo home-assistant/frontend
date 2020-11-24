@@ -23,7 +23,7 @@ export interface FlowConfig {
   handleFlowStep(
     hass: HomeAssistant,
     flowId: string,
-    data: { [key: string]: any }
+    data: Record<string, any>
   ): Promise<DataEntryFlowStep>;
 
   deleteFlow(hass: HomeAssistant, flowId: string): Promise<unknown>;

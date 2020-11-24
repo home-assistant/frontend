@@ -13,10 +13,10 @@ import { rgbContrast } from "../color/rgb";
 
 interface ProcessedTheme {
   keys: { [key: string]: "" };
-  styles: { [key: string]: string };
+  styles: Record<string, string>;
 }
 
-let PROCESSED_THEMES: { [key: string]: ProcessedTheme } = {};
+let PROCESSED_THEMES: Record<string, ProcessedTheme> = {};
 
 /**
  * Apply a theme to an element by setting the CSS variables on it.

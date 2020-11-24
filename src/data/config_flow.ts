@@ -31,7 +31,7 @@ export const fetchConfigFlow = (hass: HomeAssistant, flowId: string) =>
 export const handleConfigFlowStep = (
   hass: HomeAssistant,
   flowId: string,
-  data: { [key: string]: any }
+  data: Record<string, any>
 ) =>
   hass.callApi<DataEntryFlowStep>(
     "POST",

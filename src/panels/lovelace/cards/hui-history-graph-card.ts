@@ -56,7 +56,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _configEntities?: EntityConfig[];
 
-  private _names: { [key: string]: string } = {};
+  private _names: Record<string, string> = {};
 
   private _cacheConfig?: CacheConfig;
 
