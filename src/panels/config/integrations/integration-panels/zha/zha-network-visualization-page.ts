@@ -195,15 +195,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
     let label =
       regDevices.length > 0 && regDevices[0].user_given_name !== null
-        ? "<b>" + regDevices[0].user_given_name + "</b>\n"
+        ? `<b>${regDevices[0].user_given_name}</b>\n`
         : "";
-    label += "<b>IEEE: </b>" + device.ieee;
-    label += "\n<b>Device Type: </b>" + device.device_type.replace("_", " ");
+    label += `<b>IEEE: </b>${device.ieee}`;
+    label += `\n<b>Device Type: </b>${device.device_type.replace("_", " ")}`;
     if (device.nwk != null) {
-      label += "\n<b>NWK: </b>" + device.nwk;
+      label += `\n<b>NWK: </b>${device.nwk}`;
     }
     if (device.manufacturer != null && device.model != null) {
-      label += "\n<b>Device: </b>" + device.manufacturer + " " + device.model;
+      label += `\n<b>Device: </b>${device.manufacturer} ${device.model}`;
     } else {
       label += "\n<b>Device is not in <i>'zigbee.db'</i></b>";
     }
