@@ -8,12 +8,12 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -27,8 +27,6 @@ import {
   changeHostOptions,
   configSyncOS,
   fetchHassioHostInfo,
-  HassioHassOSInfo,
-  HassioHostInfo as HassioHostInfoType,
   rebootHost,
   shutdownHost,
   updateOS,
@@ -38,6 +36,7 @@ import {
   NetworkInfo,
 } from "../../../src/data/hassio/network";
 import { HassioInfo } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -53,28 +52,24 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioHostInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public hostInfo!: HassioHostInfoType;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public hassioInfo!: HassioInfo;
 
-  @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
-
-  @internalProperty() public _networkInfo?: NetworkInfo;
-
   protected render(): TemplateResult | void {
-    const primaryIpAddress = this.hostInfo.features.includes("network")
-      ? this._primaryIpAddress(this._networkInfo!)
+    const primaryIpAddress = this.supervisor.host.features.includes("network")
+      ? this._primaryIpAddress(this.supervisor.network!)
       : "";
     return html`
       <ha-card header="Host System">
         <div class="card-content">
-          ${this.hostInfo.features.includes("hostname")
+          ${this.supervisor.host.features.includes("hostname")
             ? html`<ha-settings-row>
                 <span slot="heading">
                   Hostname
                 </span>
                 <span slot="description">
-                  ${this.hostInfo.hostname}
+                  ${this.supervisor.host.hostname}
                 </span>
                 <mwc-button
                   title="Change the hostname"
@@ -84,7 +79,7 @@ class HassioHostInfo extends LitElement {
                 </mwc-button>
               </ha-settings-row>`
             : ""}
-          ${this.hostInfo.features.includes("network")
+          ${this.supervisor.host.features.includes("network")
             ? html` <ha-settings-row>
                 <span slot="heading">
                   IP Address
@@ -106,10 +101,9 @@ class HassioHostInfo extends LitElement {
               Operating System
             </span>
             <span slot="description">
-              ${this.hostInfo.operating_system}
+              ${this.supervisor.host.operating_system}
             </span>
-            ${this.hostInfo.features.includes("hassos") &&
-            this.hassOsInfo.update_available
+            ${this.supervisor.os.update_available
               ? html`
                   <ha-progress-button
                     title="Update the host OS"
@@ -120,7 +114,7 @@ class HassioHostInfo extends LitElement {
                 `
               : ""}
           </ha-settings-row>
-          ${!this.hostInfo.features.includes("hassos")
+          ${!this.supervisor.host.features.includes("hassos")
             ? html`<ha-settings-row>
                 <span slot="heading">
                   Docker version
@@ -130,19 +124,19 @@ class HassioHostInfo extends LitElement {
                 </span>
               </ha-settings-row>`
             : ""}
-          ${this.hostInfo.deployment
+          ${this.supervisor.host.deployment
             ? html`<ha-settings-row>
                 <span slot="heading">
                   Deployment
                 </span>
                 <span slot="description">
-                  ${this.hostInfo.deployment}
+                  ${this.supervisor.host.deployment}
                 </span>
               </ha-settings-row>`
             : ""}
         </div>
         <div class="card-actions">
-          ${this.hostInfo.features.includes("reboot")
+          ${this.supervisor.host.features.includes("reboot")
             ? html`
                 <ha-progress-button
                   title="Reboot the host OS"
@@ -153,7 +147,7 @@ class HassioHostInfo extends LitElement {
                 </ha-progress-button>
               `
             : ""}
-          ${this.hostInfo.features.includes("shutdown")
+          ${this.supervisor.host.features.includes("shutdown")
             ? html`
                 <ha-progress-button
                   title="Shutdown the host OS"
@@ -175,7 +169,7 @@ class HassioHostInfo extends LitElement {
             <mwc-list-item title="Show a list of hardware">
               Hardware
             </mwc-list-item>
-            ${this.hostInfo.features.includes("hassos")
+            ${this.supervisor.host.features.includes("hassos")
               ? html`<mwc-list-item
                   title="Load HassOS configs or updates from USB"
                 >
@@ -314,13 +308,13 @@ class HassioHostInfo extends LitElement {
 
   private async _changeNetworkClicked(): Promise<void> {
     showNetworkDialog(this, {
-      network: this._networkInfo!,
+      network: this.supervisor.network!,
       loadData: () => this._loadData(),
     });
   }
 
   private async _changeHostnameClicked(): Promise<void> {
-    const curHostname: string = this.hostInfo.hostname;
+    const curHostname: string = this.supervisor.host.hostname;
     const hostname = await showPromptDialog(this, {
       title: "Change Hostname",
       inputLabel: "Please enter a new hostname:",
@@ -331,7 +325,8 @@ class HassioHostInfo extends LitElement {
     if (hostname && hostname !== curHostname) {
       try {
         await changeHostOptions(this.hass, { hostname });
-        this.hostInfo = await fetchHassioHostInfo(this.hass);
+        const host = await fetchHassioHostInfo(this.hass);
+        fireEvent(this, "supervisor-update", { host });
       } catch (err) {
         showAlertDialog(this, {
           title: "Setting hostname failed",
@@ -344,7 +339,8 @@ class HassioHostInfo extends LitElement {
   private async _importFromUSB(): Promise<void> {
     try {
       await configSyncOS(this.hass);
-      this.hostInfo = await fetchHassioHostInfo(this.hass);
+      const host = await fetchHassioHostInfo(this.hass);
+      fireEvent(this, "supervisor-update", { host });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to import from USB",
@@ -354,7 +350,8 @@ class HassioHostInfo extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
-    this._networkInfo = await fetchNetworkInfo(this.hass);
+    const network = await fetchNetworkInfo(this.hass);
+    fireEvent(this, "supervisor-update", { network });
   }
 
   static get styles(): CSSResult[] {

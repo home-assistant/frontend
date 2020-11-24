@@ -1,18 +1,13 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  css,
-  CSSResult,
 } from "lit-element";
-import { HassioHassOSInfo, HassioHostInfo } from "../../src/data/hassio/host";
-import {
-  HassioHomeAssistantInfo,
-  HassioSupervisorInfo,
-  HassioInfo,
-} from "../../src/data/hassio/supervisor";
+import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
 
@@ -20,34 +15,19 @@ import "./hassio-panel-router";
 class HassioPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public supervisorInfo!: HassioSupervisorInfo;
-
-  @property({ attribute: false }) public hassioInfo!: HassioInfo;
-
-  @property({ attribute: false }) public hostInfo!: HassioHostInfo;
-
-  @property({ attribute: false }) public hassInfo!: HassioHomeAssistantInfo;
-
-  @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
-
   protected render(): TemplateResult {
-    if (!this.supervisorInfo) {
-      return html``;
-    }
     return html`
       <hassio-panel-router
-        .route=${this.route}
         .hass=${this.hass}
+        .supervisor=${this.supervisor}
+        .route=${this.route}
         .narrow=${this.narrow}
-        .supervisorInfo=${this.supervisorInfo}
-        .hassioInfo=${this.hassioInfo}
-        .hostInfo=${this.hostInfo}
-        .hassInfo=${this.hassInfo}
-        .hassOsInfo=${this.hassOsInfo}
       ></hassio-panel-router>
     `;
   }

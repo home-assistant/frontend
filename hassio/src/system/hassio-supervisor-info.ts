@@ -13,17 +13,15 @@ import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-switch";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { HassioHostInfo as HassioHostInfoType } from "../../../src/data/hassio/host";
-import { fetchHassioResolution } from "../../../src/data/hassio/resolution";
 import {
   fetchHassioSupervisorInfo,
-  HassioSupervisorInfo as HassioSupervisorInfoType,
   reloadSupervisor,
   restartSupervisor,
   setSupervisorOption,
   SupervisorOptions,
   updateSupervisor,
 } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -83,15 +81,9 @@ const UNHEALTHY_REASON = {
 class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false })
-  public supervisorInfo!: HassioSupervisorInfoType;
-
-  @property({ attribute: false }) public hostInfo!: HassioHostInfoType;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   protected render(): TemplateResult | void {
-    if (!this.hass || !this.supervisorInfo || !this.hostInfo) {
-      return html``;
-    }
     return html`
       <ha-card header="Supervisor">
         <div class="card-content">
@@ -100,7 +92,7 @@ class HassioSupervisorInfo extends LitElement {
               Version
             </span>
             <span slot="description">
-              ${this.supervisorInfo.version}
+              ${this.supervisor.supervisor.version}
             </span>
           </ha-settings-row>
           <ha-settings-row>
@@ -108,9 +100,9 @@ class HassioSupervisorInfo extends LitElement {
               Newest Version
             </span>
             <span slot="description">
-              ${this.supervisorInfo.version_latest}
+              ${this.supervisor.supervisor.version_latest}
             </span>
-            ${this.supervisorInfo.update_available
+            ${this.supervisor.supervisor.update_available
               ? html`
                   <ha-progress-button
                     title="Update the supervisor"
@@ -126,9 +118,9 @@ class HassioSupervisorInfo extends LitElement {
               Channel
             </span>
             <span slot="description">
-              ${this.supervisorInfo.channel}
+              ${this.supervisor.supervisor.channel}
             </span>
-            ${this.supervisorInfo.channel === "beta"
+            ${this.supervisor.supervisor.channel === "beta"
               ? html`
                   <ha-progress-button
                     @click=${this._toggleBeta}
@@ -137,7 +129,7 @@ class HassioSupervisorInfo extends LitElement {
                     Leave beta channel
                   </ha-progress-button>
                 `
-              : this.supervisorInfo.channel === "stable"
+              : this.supervisor.supervisor.channel === "stable"
               ? html`
                   <ha-progress-button
                     @click=${this._toggleBeta}
@@ -149,7 +141,7 @@ class HassioSupervisorInfo extends LitElement {
               : ""}
           </ha-settings-row>
 
-          ${this.supervisorInfo.supported
+          ${this.supervisor.supervisor.supported
             ? html` <ha-settings-row three-line>
                 <span slot="heading">
                   Share Diagnostics
@@ -166,7 +158,7 @@ class HassioSupervisorInfo extends LitElement {
                 </div>
                 <ha-switch
                   haptic
-                  .checked=${this.supervisorInfo.diagnostics}
+                  .checked=${this.supervisor.supervisor.diagnostics}
                   @change=${this._toggleDiagnostics}
                 ></ha-switch>
               </ha-settings-row>`
@@ -180,7 +172,7 @@ class HassioSupervisorInfo extends LitElement {
                   Learn more
                 </button>
               </div>`}
-          ${!this.supervisorInfo.healthy
+          ${!this.supervisor.supervisor.healthy
             ? html`<div class="error">
                 Your installtion is running in an unhealthy state.
                 <button
@@ -216,7 +208,7 @@ class HassioSupervisorInfo extends LitElement {
     const button = ev.currentTarget as any;
     button.progress = true;
 
-    if (this.supervisorInfo.channel === "stable") {
+    if (this.supervisor.supervisor.channel === "stable") {
       const confirmed = await showConfirmationDialog(this, {
         title: "WARNING",
         text: html` Beta releases are for testers and early adopters and can
@@ -245,11 +237,11 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       const data: Partial<SupervisorOptions> = {
-        channel: this.supervisorInfo.channel === "stable" ? "beta" : "stable",
+        channel:
+          this.supervisor.supervisor.channel === "stable" ? "beta" : "stable",
       };
       await setSupervisorOption(this.hass, data);
-      await reloadSupervisor(this.hass);
-      fireEvent(this, "hass-api-called", { success: true, response: null });
+      await this._reloadSupervisor();
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",
@@ -265,8 +257,7 @@ class HassioSupervisorInfo extends LitElement {
     button.progress = true;
 
     try {
-      await reloadSupervisor(this.hass);
-      this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+      await this._reloadSupervisor();
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to reload the supervisor",
@@ -275,6 +266,12 @@ class HassioSupervisorInfo extends LitElement {
     } finally {
       button.progress = false;
     }
+  }
+
+  private async _reloadSupervisor(): Promise<void> {
+    await reloadSupervisor(this.hass);
+    const supervisor = await fetchHassioSupervisorInfo(this.hass);
+    fireEvent(this, "supervisor-update", { supervisor });
   }
 
   private async _supervisorRestart(ev: CustomEvent): Promise<void> {
@@ -299,7 +296,7 @@ class HassioSupervisorInfo extends LitElement {
 
     const confirmed = await showConfirmationDialog(this, {
       title: "Update Supervisor",
-      text: `Are you sure you want to update supervisor to version ${this.supervisorInfo.version_latest}?`,
+      text: `Are you sure you want to update supervisor to version ${this.supervisor.supervisor.version_latest}?`,
       confirmText: "update",
       dismissText: "cancel",
     });
@@ -337,13 +334,12 @@ class HassioSupervisorInfo extends LitElement {
   }
 
   private async _unsupportedDialog(): Promise<void> {
-    const resolution = await fetchHassioResolution(this.hass);
     await showAlertDialog(this, {
       title: "You are running an unsupported installation",
       text: html`Below is a list of issues found with your installation, click
         on the links to learn how you can resolve the issues. <br /><br />
         <ul>
-          ${resolution.unsupported.map(
+          ${this.supervisor.resolution.unsupported.map(
             (issue) => html`
               <li>
                 ${UNSUPPORTED_REASON[issue]
@@ -366,14 +362,13 @@ class HassioSupervisorInfo extends LitElement {
   }
 
   private async _unhealthyDialog(): Promise<void> {
-    const resolution = await fetchHassioResolution(this.hass);
     await showAlertDialog(this, {
       title: "Your installation is unhealthy",
       text: html`Running an unhealthy installation will cause issues. Below is a
         list of issues found with your installation, click on the links to learn
         how you can resolve the issues. <br /><br />
         <ul>
-          ${resolution.unhealthy.map(
+          ${this.supervisor.resolution.unhealthy.map(
             (issue) => html`
               <li>
                 ${UNHEALTHY_REASON[issue]
@@ -398,7 +393,7 @@ class HassioSupervisorInfo extends LitElement {
   private async _toggleDiagnostics(): Promise<void> {
     try {
       const data: SupervisorOptions = {
-        diagnostics: !this.supervisorInfo?.diagnostics,
+        diagnostics: !this.supervisor.supervisor?.diagnostics,
       };
       await setSupervisorOption(this.hass, data);
     } catch (err) {
