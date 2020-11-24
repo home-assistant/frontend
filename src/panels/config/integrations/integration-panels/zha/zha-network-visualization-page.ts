@@ -29,20 +29,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _visualization!: HTMLElement;
 
   @internalProperty()
-  private _firstUpdatedCalled = false;
-
-  @internalProperty()
   private _devices: Map<string, ZHADevice> = new Map();
 
   @internalProperty()
   private _network!: Network;
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hass && this._firstUpdatedCalled) {
-      this._fetchData();
-    }
-  }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -94,7 +84,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
         }
       }
     });
-    this._firstUpdatedCalled = true;
   }
 
   protected render() {
