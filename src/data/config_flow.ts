@@ -17,7 +17,7 @@ export const DISCOVERY_SOURCES = [
 export const ATTENTION_SOURCES = ["reauth"];
 
 const HEADERS = {
-  frontend_base: `${location.protocol}//${location.host}`,
+  "HA-Frontend-Base": `${location.protocol}//${location.host}`,
 };
 
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
