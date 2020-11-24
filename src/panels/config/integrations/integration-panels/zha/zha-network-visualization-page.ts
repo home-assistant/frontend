@@ -32,7 +32,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _firstUpdatedCalled = false;
 
   @internalProperty()
-  private _devices: ZHADevice[] = [];
+  private _devices: Map<string, ZHADevice> = new Map();
 
   @internalProperty()
   private _network!: Network;
@@ -84,13 +84,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._network.on("doubleClick", (properties) => {
       const ieee = properties.nodes[0];
       if (ieee) {
-        const devices = this._devices.filter((regDev) => {
-          return regDev.ieee === ieee;
-        });
-        if (devices[0]) {
+        const device = this._devices.get(ieee);
+        if (device) {
           navigate(
             this,
-            "/config/devices/device/" + devices[0].device_reg_id,
+            `/config/devices/device/${device.device_reg_id}`,
             false
           );
         }
@@ -115,8 +113,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private async _fetchData() {
-    this._devices = await fetchDevices(this.hass!);
-    this._updateDevices(this._devices);
+    const devices = await fetchDevices(this.hass!);
+    this._devices = new Map(
+      devices.map((device: ZHADevice) => [device.ieee, device])
+    );
+    this._updateDevices(devices);
   }
 
   private _updateDevices(devices: ZHADevice[]) {
@@ -189,13 +190,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _buildLabel(device: ZHADevice): string {
-    const regDevices = this._devices.filter((regDev) => {
-      return regDev.ieee === device.ieee;
-    });
-
     let label =
-      regDevices.length > 0 && regDevices[0].user_given_name !== null
-        ? `<b>${regDevices[0].user_given_name}</b>\n`
+      device.user_given_name !== null
+        ? `<b>${device.user_given_name}</b>\n`
         : "";
     label += `<b>IEEE: </b>${device.ieee}`;
     label += `\n<b>Device Type: </b>${device.device_type.replace("_", " ")}`;
