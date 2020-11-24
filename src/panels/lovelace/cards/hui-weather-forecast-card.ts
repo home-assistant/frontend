@@ -27,8 +27,9 @@ import {
   getWind,
   weatherAttrIcons,
   weatherSVGStyles,
+  WeatherEntity,
 } from "../../../data/weather";
-import type { HomeAssistant, WeatherEntity } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";

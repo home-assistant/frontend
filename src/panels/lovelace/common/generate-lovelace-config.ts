@@ -26,6 +26,7 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import { GroupEntity } from "../../../data/group";
 import { domainToName } from "../../../data/integration";
 import {
   LovelaceCardConfig,
@@ -33,7 +34,7 @@ import {
   LovelaceViewConfig,
 } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_BATTERY } from "../../../data/sensor";
-import { GroupEntity, HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import {
   AlarmPanelCardConfig,
   EntitiesCardConfig,

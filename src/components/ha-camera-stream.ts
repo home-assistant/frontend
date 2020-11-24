@@ -13,11 +13,12 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
+  CameraEntity,
   CAMERA_SUPPORT_STREAM,
   computeMJPEGStreamUrl,
   fetchStreamUrl,
 } from "../data/camera";
-import { CameraEntity, HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import "./ha-hls-player";
 
 @customElement("ha-camera-stream")

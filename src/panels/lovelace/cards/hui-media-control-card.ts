@@ -37,8 +37,9 @@ import {
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_SEEK,
   SUPPORT_TURN_ON,
+  MediaPlayerEntity,
 } from "../../../data/media-player";
-import type { HomeAssistant, MediaEntity } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { installResizeObserver } from "../common/install-resize-observer";
@@ -499,8 +500,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private get _stateObj(): MediaEntity | undefined {
-    return this.hass!.states[this._config!.entity] as MediaEntity;
+  private get _stateObj(): MediaPlayerEntity | undefined {
+    return this.hass!.states[this._config!.entity] as MediaPlayerEntity;
   }
 
   private _handleSeek(e: MouseEvent): void {
