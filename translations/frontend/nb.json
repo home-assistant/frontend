@@ -78,7 +78,7 @@
             "triggered": "Utløs"
         },
         "default": {
-            "entity_not_found": "Entitet ikke funnet",
+            "entity_not_found": "Enheten ble ikke funnet",
             "error": "Feil",
             "unavailable": "Utilgj",
             "unknown": "Ukjent"
@@ -1867,11 +1867,11 @@
                         "delete": "Slett",
                         "delete_button": "Slett {integration}",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
-                        "device_unavailable": "enheten er utilgjengelig",
+                        "device_unavailable": "Enheten er utilgjengelig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "documentation": "Dokumentasjon",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
-                        "entity_unavailable": "entiteten er utilgjengelig",
+                        "entity_unavailable": "Enhet utilgjengelig",
                         "firmware": "Fastvare: {version}",
                         "hub": "Tilkoblet via",
                         "manuf": "av {manufacturer}",
@@ -3182,7 +3182,7 @@
                     "attribute_not_found": "Attributtet {attribute} er ikke tilgjengelig i: {entity}",
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgjengelig: {entity}",
-                    "entity_unavailable": "{entity} er for øyeblikket utilgjengelig",
+                    "entity_unavailable": "Enheten er for øyeblikket ikke tilgjengelig: {entity}",
                     "starting": "Home Assistant starter, kanskje ikke alt er tilgjengelig ennå"
                 }
             },

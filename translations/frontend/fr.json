@@ -1865,7 +1865,7 @@
                         "delete": "Supprimer",
                         "delete_button": "Supprimer {integration}",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
-                        "device_unavailable": "appareil indisponible",
+                        "device_unavailable": "Appareil non disponible",
                         "devices": "{count} {count, plural,\n  zero {appareil}\n  one {appareil}\n  other {appareils}\n}",
                         "documentation": "Documentation",
                         "entities": "{count} {count, plural,\n  zero {entité}\n  one {entité}\n  other {entités}\n}",
@@ -3179,7 +3179,7 @@
                     "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}",
                     "entity_not_found": "Entité non disponible: {entity}",
-                    "entity_unavailable": "{entity} n'est pas disponible actuellement",
+                    "entity_unavailable": "Entité non disponible actuellement : {entity}",
                     "starting": "Home Assistant démarre, tout n'est peut-être pas encore disponible"
                 }
             },
