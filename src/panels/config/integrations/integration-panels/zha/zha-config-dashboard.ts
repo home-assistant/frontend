@@ -32,6 +32,11 @@ export const zhaTabs: PageNavigation[] = [
     path: `/config/zha/groups`,
     iconPath: mdiFolderMultipleOutline,
   },
+  {
+    translationKey: "ui.panel.config.zha.visualization.caption",
+    path: `/config/zha/visualization`,
+    iconPath: mdiFolderMultipleOutline,
+  },
 ];
 
 @customElement("zha-config-dashboard")

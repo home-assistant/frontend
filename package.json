@@ -123,6 +123,8 @@
     "superstruct": "^0.10.12",
     "tinykeys": "^1.1.1",
     "unfetch": "^4.1.0",
+    "vis-data": "^7.1.1",
+    "vis-network": "^8.5.4",
     "vue": "^2.6.11",
     "vue2-daterange-picker": "^0.5.1",
     "web-animations-js": "^2.3.2",
