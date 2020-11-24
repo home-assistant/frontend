@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "Alanlar",
                         "automation": "Otomasyonlar",
+                        "blueprint": "Taslaklar",
                         "core": "Genel",
                         "customize": "Özelleştirmeler",
                         "devices": "Cihazlar",
@@ -1866,11 +1867,11 @@
                         "delete": "Sil",
                         "delete_button": "{Entegrasyon} sil",
                         "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
-                        "device_unavailable": "aygıt kullanılamıyor",
+                        "device_unavailable": "Cihaz kullanılamıyor",
                         "devices": "{count} {count, plural,\n  one {cihaz}\n  other {cihazlar}\n}",
                         "documentation": "Dökümanlar",
                         "entities": "{count} {count, plural,\n  one {varlık}\n  other {varlıklar}\n}",
-                        "entity_unavailable": "varlık kullanılamıyor",
+                        "entity_unavailable": "Varlık kullanılamıyor",
                         "firmware": "Aygıt yazılımı: {version}",
                         "hub": "Şununla bağlı:",
                         "manuf": "üretici: {manufacturer}",
@@ -2969,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "Picture Glance kartı bir resmi ve karşılık gelen varlık durumlarını bir simge olarak gösterir. Sağ taraftaki varlıklar durum değiştirme işlemlerine izin verir, diğerleri daha fazla bilgi iletişim kutusunu gösterir.",
-                            "name": "Resimli Bakış"
+                            "name": "Resimli Bakış",
+                            "state_entity": "Varlık Durumu"
                         },
                         "picture": {
                             "description": "Resim kartı, arabiriminizdeki çeşitli yollarda gezinmek veya bir servisi çağırmak için kullanılacak bir görüntü ayarlamanızı sağlar.",
@@ -3180,7 +3182,7 @@
                     "attribute_not_found": "Nitelik {attribute} {entity} içinde mevcut değil",
                     "entity_non_numeric": "Varlık sayısal değil: {entity}",
                     "entity_not_found": "Varlık mevcut değil: {entity}",
-                    "entity_unavailable": "{entity} şu anda kullanılamıyor",
+                    "entity_unavailable": "Varlık şu anda kullanılamıyor: {entity}",
                     "starting": "Home Assistant başlıyor, arayüzün yüklenmesi için bekleyiniz"
                 }
             },

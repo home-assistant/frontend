@@ -545,6 +545,10 @@
                 "clear": "Limpar",
                 "show_areas": "Mostrar áreas"
             },
+            "blueprint-picker": {
+                "add_user": "Adicionar Usuário",
+                "remove_user": "Remover usuário"
+            },
             "data-table": {
                 "no-data": "Sem dados",
                 "search": "Procurar"
@@ -956,6 +960,15 @@
                 "automation": {
                     "caption": "Automações",
                     "description": "Criar e editar automações",
+                    "dialog_new": {
+                        "header": "Criar nova automação",
+                        "how": "Como você quer criar sua nova automação?",
+                        "thingtalk": {
+                            "header": "Descreva a automação que você deseja criar",
+                            "input_label": "O que essa automação deve fazer?",
+                            "intro": "E vamos tentar criar isso para você. Por exemplo: Apague as luzes quando eu sair."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Adicionar ação",
@@ -1669,11 +1682,11 @@
                         "delete": "Excluir",
                         "delete_button": "Excluir {integration}",
                         "delete_confirm": "Tem certeza de que deseja excluir essa integração?",
-                        "device_unavailable": "dispositivo indisponível",
+                        "device_unavailable": "Dispositivo indisponível",
                         "devices": "{count} {count, plural,\none {dispositivo}\nother {dispositivos}\n}",
                         "documentation": "Documentação",
                         "entities": "{count} {count, plural,\none {entidade}\nother {entidades}\n}",
-                        "entity_unavailable": "entidade indisponível",
+                        "entity_unavailable": "Entidade indisponível",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado via",
                         "manuf": "por {manufacturer}",
@@ -1930,7 +1943,7 @@
                 "scene": {
                     "activated": "Cena ativada {name}.",
                     "caption": "Cenas",
-                    "description": "Crie e edite cenas",
+                    "description": "Gerenciar cenas",
                     "editor": {
                         "default_name": "Nova cena",
                         "devices": {
@@ -2725,8 +2738,8 @@
                         "add": "Adicionar Cartão",
                         "clear": "Limpar",
                         "confirm_cancel": "Tem certeza de que deseja cancelar?",
-                        "delete": "Excluir Cartão",
-                        "duplicate": "Duplicar",
+                        "delete": "Excluir cartão",
+                        "duplicate": "Duplicar cartão",
                         "edit": "Editar",
                         "header": "Configuração de cartão",
                         "move": "Mover para Visualização",

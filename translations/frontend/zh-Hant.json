@@ -590,8 +590,8 @@
                 "messages": {
                     "became_unavailable": "變成不可用",
                     "changed_to_state": "變更為{state}",
-                    "cleared_device_class": "安全（無{device_class}偵測）",
-                    "detected_device_class": "偵測到{device_class}",
+                    "cleared_device_class": "安全（未偵測到 {device_class}）",
+                    "detected_device_class": "偵測到 {device_class}",
                     "rose": "升高",
                     "set": "設定",
                     "turned_off": "關閉",
