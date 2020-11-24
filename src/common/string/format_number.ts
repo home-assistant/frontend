@@ -36,15 +36,16 @@ const getDefaultFormatOptions = (
 ): Intl.NumberFormatOptions => {
   const defaultOptions: Intl.NumberFormatOptions = options || {};
 
-  // Keep decimal trailing zeros if they are present
+  if (typeof num !== "string") {
+    return defaultOptions;
+  }
+
+  // Keep decimal trailing zeros if they are present in a string numeric value
   if (
     !options ||
     (!options.minimumFractionDigits && !options.maximumFractionDigits)
   ) {
-    const digits =
-      num.toString().indexOf(".") > -1
-        ? num.toString().split(".")[1].length
-        : 0;
+    const digits = num.indexOf(".") > -1 ? num.split(".")[1].length : 0;
     defaultOptions.minimumFractionDigits = digits;
     defaultOptions.maximumFractionDigits = digits;
   }
