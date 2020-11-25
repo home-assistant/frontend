@@ -11,6 +11,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 
 import { CLIMATE_PRESET_NONE } from "../data/climate";
 import type { HomeAssistant } from "../types";
+import { formatNumber } from "../common/string/format_number";
 
 @customElement("ha-climate-state")
 class HaClimateState extends LitElement {
@@ -51,11 +52,17 @@ class HaClimateState extends LitElement {
     }
 
     if (this.stateObj.attributes.current_temperature != null) {
-      return `${this.stateObj.attributes.current_temperature} ${this.hass.config.unit_system.temperature}`;
+      return `${formatNumber(
+        this.stateObj.attributes.current_temperature,
+        this.hass!.language
+      )} ${this.hass.config.unit_system.temperature}`;
     }
 
     if (this.stateObj.attributes.current_humidity != null) {
-      return `${this.stateObj.attributes.current_humidity} %`;
+      return `${formatNumber(
+        this.stateObj.attributes.current_humidity,
+        this.hass!.language
+      )} %`;
     }
 
     return undefined;
@@ -70,21 +77,39 @@ class HaClimateState extends LitElement {
       this.stateObj.attributes.target_temp_low != null &&
       this.stateObj.attributes.target_temp_high != null
     ) {
-      return `${this.stateObj.attributes.target_temp_low}-${this.stateObj.attributes.target_temp_high} ${this.hass.config.unit_system.temperature}`;
+      return `${formatNumber(
+        this.stateObj.attributes.target_temp_low,
+        this.hass!.language
+      )}-${formatNumber(
+        this.stateObj.attributes.target_temp_high,
+        this.hass!.language
+      )} ${this.hass.config.unit_system.temperature}`;
     }
 
     if (this.stateObj.attributes.temperature != null) {
-      return `${this.stateObj.attributes.temperature} ${this.hass.config.unit_system.temperature}`;
+      return `${formatNumber(
+        this.stateObj.attributes.temperature,
+        this.hass!.language
+      )} ${this.hass.config.unit_system.temperature}`;
     }
     if (
       this.stateObj.attributes.target_humidity_low != null &&
       this.stateObj.attributes.target_humidity_high != null
     ) {
-      return `${this.stateObj.attributes.target_humidity_low}-${this.stateObj.attributes.target_humidity_high}%`;
+      return `${formatNumber(
+        this.stateObj.attributes.target_humidity_low,
+        this.hass!.language
+      )}-${formatNumber(
+        this.stateObj.attributes.target_humidity_high,
+        this.hass!.language
+      )}%`;
     }
 
     if (this.stateObj.attributes.humidity != null) {
-      return `${this.stateObj.attributes.humidity} %`;
+      return `${formatNumber(
+        this.stateObj.attributes.humidity,
+        this.hass!.language
+      )} %`;
     }
 
     return "";
