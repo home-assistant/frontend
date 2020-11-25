@@ -11,6 +11,7 @@ export interface Blueprint {
 export interface BlueprintMetaData {
   domain: string;
   name: string;
+  description?: string;
   input: Record<string, BlueprintInput | null>;
 }
 
