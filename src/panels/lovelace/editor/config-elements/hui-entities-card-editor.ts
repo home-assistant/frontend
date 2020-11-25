@@ -13,6 +13,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import {
+  any,
   array,
   assert,
   boolean,
@@ -53,6 +54,7 @@ const cardConfigStruct = object({
   show_header_toggle: optional(boolean()),
   state_color: optional(boolean()),
   entities: array(entitiesConfigStruct),
+  style: optional(any()),
   header: optional(headerFooterConfigStructs),
   footer: optional(headerFooterConfigStructs),
 });
