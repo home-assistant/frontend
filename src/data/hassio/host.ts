@@ -15,11 +15,11 @@ export type HassioHostInfo = {
 };
 
 export interface HassioHassOSInfo {
-  board: string;
-  boot: string;
+  board: string | null;
+  boot: string | null;
   update_available: boolean;
-  version_latest: string;
-  version: string;
+  version_latest: string | null;
+  version: string | null;
 }
 
 export const fetchHassioHostInfo = async (hass: HomeAssistant) => {
