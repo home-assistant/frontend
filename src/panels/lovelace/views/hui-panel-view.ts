@@ -135,6 +135,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         height: 100%;
+        background: var(--primary-background-color);
       }
 
       mwc-fab {
