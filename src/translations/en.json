@@ -2247,7 +2247,7 @@
             "creating_group": "Creating Group"
           },
           "visualization": {
-            "header": "Zigbee Home Automation - Visualization",
+            "header": "Network Visualization",
             "caption": "Visualization"
           },
           "group_binding": {
