@@ -506,6 +506,19 @@ export class HaConfigDevicePage extends LitElement {
     integrations: string[]
   ): TemplateResult[] {
     const templates: TemplateResult[] = [];
+    if (integrations.includes("cast")) {
+      import(
+        "./device-detail/integration-elements/cast/ha-device-actions-cast"
+      );
+      templates.push(html`
+        <div class="card-actions" slot="actions">
+          <ha-device-actions-cast
+            .hass=${this.hass}
+            .device=${device}
+          ></ha-device-actions-cast>
+        </div>
+      `);
+    }
     if (integrations.includes("mqtt")) {
       import(
         "./device-detail/integration-elements/mqtt/ha-device-actions-mqtt"
