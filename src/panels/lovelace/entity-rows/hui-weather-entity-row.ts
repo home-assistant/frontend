@@ -20,8 +20,9 @@ import {
   getWeatherUnit,
   getWeatherStateIcon,
   weatherSVGStyles,
+  WeatherEntity,
 } from "../../../data/weather";
-import type { HomeAssistant, WeatherEntity } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
