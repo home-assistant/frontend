@@ -153,7 +153,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return { color: "#bfbfbf", highlight: "#bfbfbf" };
   }
 
-  private _getMass(device: ZHADevice) {
+  private _getMass(device: ZHADevice): number {
     if (device.device_type === "Coordinator") {
       return 2;
     }
