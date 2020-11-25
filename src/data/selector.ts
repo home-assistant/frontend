@@ -4,6 +4,7 @@ export interface EntitySelector {
   entity: {
     integration?: string;
     domain?: string;
+    device_class?: string;
   };
 }
 

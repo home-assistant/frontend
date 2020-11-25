@@ -56,6 +56,14 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         return false;
       }
     }
+    if (this.selector.entity.device_class) {
+      if (
+        !entity.attributes.device_class ||
+        entity.attributes.device_class !== this.selector.entity.device_class
+      ) {
+        return false;
+      }
+    }
     if (this.selector.entity.integration) {
       if (
         !this._entities ||
