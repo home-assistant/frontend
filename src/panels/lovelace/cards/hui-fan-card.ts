@@ -99,7 +99,15 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const max_speed = stateObj.attributes.speed_list.length;
+    let min_speed = 0;
+    const max_speed = stateObj.attributes.speed_list.length - 1;
+
+    const speed_list = stateObj.attributes.speed_list.map((name) =>
+      name.toLowerCase()
+    );
+    if (speed_list.indexOf("off") === -1) {
+      min_speed = -1;
+    }
 
     const speed = stateObj.attributes.speed_list.indexOf(
       stateObj.attributes.speed
@@ -123,7 +131,7 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
           <div id="controls">
             <div id="slider">
               <round-slider
-                min="0"
+                min=${min_speed}
                 .max=${max_speed}
                 .value=${speed}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
@@ -203,11 +211,11 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[this._config!.entity] as FanEntity;
     const speedElement = this._speedElement;
     if (speedElement) {
-      if (e.detail.value < 1) {
+      if (e.detail.value < 0) {
         speedElement.innerHTML = `Off`;
       } else {
         speedElement.innerHTML = `${
-          stateObj.attributes.speed_list[e.detail.value - 1]
+          stateObj.attributes.speed_list[e.detail.value]
         }`;
       }
     }
@@ -234,14 +242,15 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
 
   private _setSpeed(e: any): void {
     const stateObj = this.hass!.states[this._config!.entity] as FanEntity;
-    if (e.detail.value < 1) {
+    const speed = stateObj.attributes.speed_list[e.detail.value];
+    if (e.detail.value < 0 || speed.toLowerCase() === "off") {
       this.hass!.callService("fan", "turn_off", {
         entity_id: this._config!.entity,
       });
     } else {
       this.hass!.callService("fan", "turn_on", {
         entity_id: this._config!.entity,
-        speed: stateObj.attributes.speed_list[e.detail.value - 1],
+        speed: stateObj.attributes.speed_list[e.detail.value],
       });
     }
   }
