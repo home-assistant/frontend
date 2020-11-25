@@ -78,7 +78,7 @@
             "triggered": "Attiv."
         },
         "default": {
-            "entity_not_found": "Entità non trovata!",
+            "entity_not_found": "Entità non trovata",
             "error": "Errore",
             "unavailable": "Non disp.",
             "unknown": "Ignoto"
@@ -882,6 +882,7 @@
                     "navigation": {
                         "areas": "Aree",
                         "automation": "Automazioni",
+                        "blueprint": "Progetti",
                         "core": "Generale",
                         "customize": "Personalizzazioni",
                         "devices": "Dispositivi",
@@ -1405,6 +1406,7 @@
                         "importing": "Importazione del progetto in corso ...",
                         "save_btn": "Salva progetto",
                         "saving": "Salvataggio del progetto in corso ...",
+                        "unsupported_blueprint": "Questo progetto non è supportato",
                         "url": "URL del progetto"
                     },
                     "caption": "Progetti",
@@ -1865,11 +1867,11 @@
                         "delete": "Elimina",
                         "delete_button": "Elimina {integration}",
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
-                        "device_unavailable": "dispositivo non disponibile",
+                        "device_unavailable": "Dispositivo non disponibile",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
                         "documentation": "Documentazione",
                         "entities": "{count} {count, plural, \none {entità}\nother {entità }\n}",
-                        "entity_unavailable": "entità non disponibile",
+                        "entity_unavailable": "Entità non disponibile",
                         "firmware": "Firmware: {version}",
                         "hub": "Connesso tramite",
                         "manuf": "da {manufacturer}",
@@ -1889,7 +1891,7 @@
                         "unnamed_entry": "Voce senza nome"
                     },
                     "config_flow": {
-                        "aborted": "Interrotto",
+                        "aborted": "Terminato",
                         "close": "Chiudi",
                         "created_config": "Configurazione creata per {name}.",
                         "dismiss": "Chiudi finestra di dialogo",
@@ -2968,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "La scheda Occhiata Immagine mostra un'immagine e gli stati dell'entità corrispondenti come una icona. Le entità sul lato destro consentono azioni di commutazione, altre mostrano più informazioni di dialogo.",
-                            "name": "Vista immagine"
+                            "name": "Vista immagine",
+                            "state_entity": "Stato Entità"
                         },
                         "picture": {
                             "description": "La scheda Immagine consente di impostare un'immagine da utilizzare per la navigazione su vari percorsi nell'interfaccia o per chiamare un servizio.",
@@ -3179,7 +3182,7 @@
                     "attribute_not_found": "Attributo {attribute} non disponibile in: {entity}",
                     "entity_non_numeric": "L'entità non è numerica: {entity}",
                     "entity_not_found": "Entità non disponibile: {entity}",
-                    "entity_unavailable": "{entity} non è al momento disponibile",
+                    "entity_unavailable": "L'entità non è attualmente disponibile: {entity}",
                     "starting": "Home Assistant si sta avviando, non tutto potrebbe essere subito disponibile"
                 }
             },

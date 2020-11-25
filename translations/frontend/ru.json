@@ -583,7 +583,7 @@
                 "no_history_found": "История не найдена."
             },
             "logbook": {
-                "by": "пользователем",
+                "by": "от",
                 "by_service": "службой",
                 "entries_not_found": "В журнале нет записей.",
                 "messages": {
@@ -808,6 +808,10 @@
             },
             "more_info_control": {
                 "controls": "Управление",
+                "cover": {
+                    "close_cover": "Закрыть",
+                    "open_cover": "Открыть"
+                },
                 "details": "Свойства",
                 "dismiss": "Закрыть диалог",
                 "edit": "Изменить объект",
