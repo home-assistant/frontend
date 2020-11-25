@@ -1,4 +1,16 @@
+import {
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
+
+interface InputSelectEntityAttributes extends HassEntityAttributeBase {
+  options: string[];
+}
+
+export interface InputSelectEntity extends HassEntityBase {
+  attributes: InputSelectEntityAttributes;
+}
 
 export interface InputSelect {
   id: string;

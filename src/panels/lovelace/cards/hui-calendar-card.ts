@@ -16,9 +16,8 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { fetchCalendarEvents } from "../../../data/calendar";
+import { Calendar, fetchCalendarEvents } from "../../../data/calendar";
 import type {
-  Calendar,
   CalendarEvent,
   CalendarViewChanged,
   FullCalendarView,

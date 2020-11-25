@@ -18,11 +18,14 @@ import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
-import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
+import {
+  Calendar,
+  fetchCalendarEvents,
+  getCalendars,
+} from "../../data/calendar";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type {
-  Calendar,
   CalendarEvent,
   CalendarViewChanged,
   HomeAssistant,

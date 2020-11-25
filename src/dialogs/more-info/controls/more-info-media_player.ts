@@ -34,14 +34,15 @@ import {
   SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
+  MediaPlayerEntity,
 } from "../../../data/media-player";
-import { HomeAssistant, MediaEntity } from "../../../types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: MediaEntity;
+  @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
   @query("#ttsInput") private _ttsInput?: HTMLInputElement;
 

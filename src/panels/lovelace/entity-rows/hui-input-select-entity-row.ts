@@ -21,9 +21,12 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-paper-dropdown-menu";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
-import { setInputSelectOption } from "../../../data/input_select";
+import {
+  InputSelectEntity,
+  setInputSelectOption,
+} from "../../../data/input_select";
 import { ActionHandlerEvent } from "../../../data/lovelace";
-import { HomeAssistant, InputSelectEntity } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
