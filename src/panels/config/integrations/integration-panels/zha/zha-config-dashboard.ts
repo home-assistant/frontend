@@ -40,7 +40,7 @@ export const zhaTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.zha.visualization.caption",
     path: `/config/zha/visualization`,
-    iconPath: mdiApacheKafka,
+    iconPath: mdiLan,
   },
 ];
 
