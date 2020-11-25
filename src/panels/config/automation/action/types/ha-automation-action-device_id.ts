@@ -40,7 +40,7 @@ export class HaDeviceAction extends LitElement {
 
   private _extraFieldsData = memoizeOne(
     (action: DeviceAction, capabilities: DeviceCapabilities) => {
-      const extraFieldsData: { [key: string]: any } = {};
+      const extraFieldsData: Record<string, any> = {};
       capabilities.extra_fields.forEach((item) => {
         if (action[item.name] !== undefined) {
           extraFieldsData![item.name] = action[item.name];

@@ -98,7 +98,7 @@ export interface Theme {
 export interface Themes {
   default_theme: string;
   default_dark_theme: string | null;
-  themes: { [key: string]: Theme };
+  themes: Record<string, Theme>;
   darkMode: boolean;
 }
 
@@ -188,7 +188,7 @@ export interface Notification {
 }
 
 export interface Resources {
-  [language: string]: { [key: string]: string };
+  [language: string]: Record<string, string>;
 }
 
 export interface Context {
@@ -204,7 +204,7 @@ export interface ServiceCallResponse {
 export interface ServiceCallRequest {
   domain: string;
   service: string;
-  serviceData?: { [key: string]: any };
+  serviceData?: Record<string, any>;
 }
 
 export interface HomeAssistant {
@@ -248,9 +248,9 @@ export interface HomeAssistant {
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
-    parameters?: { [key: string]: any }
+    parameters?: Record<string, any>
   ): Promise<T>;
-  fetchWithAuth(path: string, init?: { [key: string]: any }): Promise<Response>;
+  fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;
   callWS<T>(msg: MessageBase): Promise<T>;
   loadBackendTranslation(
