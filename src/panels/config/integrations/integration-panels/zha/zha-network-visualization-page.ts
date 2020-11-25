@@ -31,7 +31,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _devices: Map<string, ZHADevice> = new Map();
 
   @internalProperty()
-  private _network!: Network;
+  private _network?: Network;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
