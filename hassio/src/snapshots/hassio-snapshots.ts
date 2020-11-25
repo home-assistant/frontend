@@ -26,7 +26,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { atLeastVersion } from "../../../src/common/config/version";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -41,7 +40,7 @@ import {
   HassioSnapshot,
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
-import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
@@ -67,7 +66,7 @@ class HassioSnapshots extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public supervisorInfo!: HassioSupervisorInfo;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @internalProperty() private _snapshotName = "";
 
@@ -266,7 +265,7 @@ class HassioSnapshots extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("supervisorInfo")) {
-      this._addonList = this.supervisorInfo.addons
+      this._addonList = this.supervisor.supervisor.addons
         .map((addon) => ({
           slug: addon.slug,
           name: addon.name,
@@ -372,7 +371,6 @@ class HassioSnapshots extends LitElement {
         await createHassioPartialSnapshot(this.hass, data);
       }
       this._updateSnapshots();
-      fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }
