@@ -25,7 +25,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @query("#visualization", true)
-  private _visualization!: HTMLElement;
+  private _visualization?: HTMLElement;
 
   @internalProperty()
   private _devices: Map<string, ZHADevice> = new Map();
