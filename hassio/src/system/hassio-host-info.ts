@@ -35,7 +35,6 @@ import {
   fetchNetworkInfo,
   NetworkInfo,
 } from "../../../src/data/hassio/network";
-import { HassioInfo } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -53,8 +52,6 @@ class HassioHostInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
-
-  @property({ attribute: false }) public hassioInfo!: HassioInfo;
 
   protected render(): TemplateResult | void {
     const primaryIpAddress = this.supervisor.host.features.includes("network")
@@ -120,7 +117,7 @@ class HassioHostInfo extends LitElement {
                   Docker version
                 </span>
                 <span slot="description">
-                  ${this.hassioInfo.docker}
+                  ${this.supervisor.info.docker}
                 </span>
               </ha-settings-row>`
             : ""}

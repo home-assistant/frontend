@@ -26,15 +26,15 @@ export class SupervisorBaseElement extends urlSyncMixin(
   @property({ attribute: false }) public supervisor?: Supervisor;
 
   protected _updateSupervisor(obj: Partial<Supervisor>): void {
-    this.supervisor = { ...this.supervisor, ...obj };
+    this.supervisor = { ...this.supervisor!, ...obj };
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+    this._initSupervisor();
     this.addEventListener("supervisor-update", (ev) =>
       this._updateSupervisor(ev.detail)
     );
-    this._initSupervisor();
   }
 
   private async _initSupervisor(): Promise<void> {
@@ -56,7 +56,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       fetchHassioResolution(this.hass),
     ]);
 
-    this._updateSupervisor({
+    this.supervisor = {
       supervisor,
       host,
       core,
@@ -64,6 +64,6 @@ export class SupervisorBaseElement extends urlSyncMixin(
       os,
       network,
       resolution,
-    });
+    };
   }
 }
