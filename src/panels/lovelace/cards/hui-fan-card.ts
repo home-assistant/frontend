@@ -9,6 +9,7 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -62,6 +63,8 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @internalProperty() private _config?: FanCardConfig;
+
+  @query(".speed", true) private _speedElement?: HTMLElement;
 
   private _speedTimeout?: number;
 
@@ -121,18 +124,15 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
             <div id="slider">
               <round-slider
                 min="0"
-                max=${max_speed}
+                .max=${max_speed}
                 .value=${speed}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setSpeed}
-                style=${styleMap({
-                  visibility: "visible",
-                })}
               ></round-slider>
               <ha-icon-button
-                class="fan-button ${classMap({
-                  "slider-center": true,
+                class="fan-button slider-center
+                ${classMap({
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
@@ -162,7 +162,7 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
                     )}
                   </div>
                 `
-              : html` <div class="speed"></div> `}
+              : html`<div class="speed"></div>`}
             ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
@@ -202,9 +202,9 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
   private _dragEvent(e: any): void {
     const stateObj = this.hass!.states[this._config!.entity] as FanEntity;
     if (e.detail.value < 1) {
-      this.shadowRoot!.querySelector(".speed")!.innerHTML = `Off`;
+      this._speedElement.innerHTML = `Off`;
     } else {
-      this.shadowRoot!.querySelector(".speed")!.innerHTML = `${
+      this._speedElement.innerHTML = `${
         stateObj.attributes.speed_list[e.detail.value - 1]
       }`;
     }
@@ -214,12 +214,12 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
 
   private _showspeed(): void {
     clearTimeout(this._speedTimeout);
-    this.shadowRoot!.querySelector(".speed")!.classList.add("show_speed");
+    this._speedElement.classList.add("show_speed");
   }
 
   private _hidespeed(): void {
     this._speedTimeout = window.setTimeout(() => {
-      this.shadowRoot!.querySelector(".speed")!.classList.remove("show_speed");
+      this._speedElement.classList.remove("show_speed");
     }, 500);
   }
 
@@ -238,11 +238,9 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
   }
 
   private _computeSpeed(stateObj: FanEntity): string {
-    if (stateObj.state === "off" || !stateObj.attributes.speed_list) {
-      return "off";
-    }
-
-    return `${stateObj.attributes.speed}`;
+    return stateObj.state === "off" || !stateObj.attributes.speed_list
+      ? "off"
+      : `${stateObj.attributes.speed}`;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
