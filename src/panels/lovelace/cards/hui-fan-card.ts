@@ -201,12 +201,15 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
 
   private _dragEvent(e: any): void {
     const stateObj = this.hass!.states[this._config!.entity] as FanEntity;
-    if (e.detail.value < 1) {
-      this._speedElement.innerHTML = `Off`;
-    } else {
-      this._speedElement.innerHTML = `${
-        stateObj.attributes.speed_list[e.detail.value - 1]
-      }`;
+    const speedElement = this._speedElement;
+    if (speedElement) {
+      if (e.detail.value < 1) {
+        speedElement.innerHTML = `Off`;
+      } else {
+        speedElement.innerHTML = `${
+          stateObj.attributes.speed_list[e.detail.value - 1]
+        }`;
+      }
     }
     this._showspeed();
     this._hidespeed();
@@ -214,13 +217,19 @@ export class HuiFanCard extends LitElement implements LovelaceCard {
 
   private _showspeed(): void {
     clearTimeout(this._speedTimeout);
-    this._speedElement.classList.add("show_speed");
+    const speedElement = this._speedElement;
+    if (speedElement) {
+      speedElement.classList.add("show_speed");
+    }
   }
 
   private _hidespeed(): void {
-    this._speedTimeout = window.setTimeout(() => {
-      this._speedElement.classList.remove("show_speed");
-    }, 500);
+    const speedElement = this._speedElement;
+    if (speedElement) {
+      this._speedTimeout = window.setTimeout(() => {
+        speedElement.classList.remove("show_speed");
+      }, 500);
+    }
   }
 
   private _setSpeed(e: any): void {
