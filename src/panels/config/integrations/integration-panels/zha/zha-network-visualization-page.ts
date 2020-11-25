@@ -12,11 +12,9 @@ import {
 
 import { navigate } from "../../../../../common/navigate";
 import { fetchDevices, ZHADevice } from "../../../../../data/zha";
-import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import { Network, Edge, Node, EdgeOptions } from "vis-network";
-import "vis-network/styles/vis-network.css";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
