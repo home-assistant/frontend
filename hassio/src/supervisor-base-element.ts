@@ -23,7 +23,7 @@ declare global {
 export class SupervisorBaseElement extends urlSyncMixin(
   ProvideHassLitMixin(LitElement)
 ) {
-  @property({ attribute: false }) public supervisor!: Supervisor;
+  @property({ attribute: false }) public supervisor?: Supervisor;
 
   protected _updateSupervisor(obj: Partial<Supervisor>): void {
     this.supervisor = { ...this.supervisor, ...obj };

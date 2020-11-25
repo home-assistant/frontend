@@ -64,18 +64,18 @@ export class HassioUpdate extends LitElement {
         <div class="card-group">
           ${this._renderUpdateCard(
             "Home Assistant Core",
-            this.supervisor.core!,
+            this.supervisor.core,
             "hassio/homeassistant/update",
             `https://${
-              this.supervisor.core?.version_latest.includes("b") ? "rc" : "www"
+              this.supervisor.core.version_latest.includes("b") ? "rc" : "www"
             }.home-assistant.io/latest-release-notes/`
           )}
           ${this._renderUpdateCard(
             "Supervisor",
-            this.supervisor.supervisor!,
+            this.supervisor.supervisor,
             "hassio/supervisor/update",
             `https://github.com//home-assistant/hassio/releases/tag/${
-              this.supervisor.supervisor!.version_latest
+              this.supervisor.supervisor.version_latest
             }`
           )}
           ${this.supervisor.host.features.includes("hassos")
