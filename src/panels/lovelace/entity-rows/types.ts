@@ -17,7 +17,7 @@ export interface EntityFilterEntityConfig extends EntityConfig {
 }
 export interface DividerConfig {
   type: "divider";
-  style: { [key: string]: string };
+  style: Record<string, string>;
 }
 export interface SectionConfig {
   type: "section";
@@ -38,7 +38,7 @@ export interface TextConfig {
 export interface CallServiceConfig extends EntityConfig {
   type: "call-service";
   service: string;
-  service_data?: { [key: string]: any };
+  service_data?: Record<string, any>;
   action_name?: string;
 }
 export interface ButtonRowConfig extends EntityConfig {

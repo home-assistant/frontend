@@ -111,7 +111,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _mapPaths: Array<Polyline | CircleMarker> = [];
 
-  private _colorDict: { [key: string]: string } = {};
+  private _colorDict: Record<string, string> = {};
 
   private _colorIndex = 0;
 
