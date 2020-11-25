@@ -6,6 +6,7 @@ import {
   internalProperty,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
 import "../../../components/ha-date-input";
 import type { HaDateInput } from "../../../components/ha-date-input";
@@ -24,6 +25,10 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @internalProperty() private _config?: EntityConfig;
+
+  @query("paper-time-input") private _timeInputEl?: PaperTimeInput;
+
+  @query("ha-date-input") private _dateInputEl?: HaDateInput;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -90,24 +95,14 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     ev.stopPropagation();
   }
 
-  private get _timeInputEl(): PaperTimeInput {
-    return this.shadowRoot!.querySelector("paper-time-input")!;
-  }
-
-  private get _dateInputEl(): HaDateInput {
-    return this.shadowRoot!.querySelector("ha-date-input")!;
-  }
-
   private _selectedValueChanged(ev): void {
     const stateObj = this.hass!.states[this._config!.entity];
 
-    const time =
-      this._timeInputEl !== null
-        ? this._timeInputEl.value.trim() + ":00"
-        : undefined;
+    const time = this._timeInputEl
+      ? this._timeInputEl.value?.trim() + ":00"
+      : undefined;
 
-    const date =
-      this._dateInputEl !== null ? this._dateInputEl.value : undefined;
+    const date = this._dateInputEl ? this._dateInputEl.value : undefined;
 
     if (time !== stateObj.state) {
       setInputDateTimeValue(this.hass!, stateObj.entity_id, time, date);

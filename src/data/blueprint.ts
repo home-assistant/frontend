@@ -19,6 +19,7 @@ export interface BlueprintInput {
   name?: string;
   description?: string;
   selector?: Selector;
+  default?: any;
 }
 
 export interface BlueprintImportResult {

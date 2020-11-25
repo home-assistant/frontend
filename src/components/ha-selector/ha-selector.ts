@@ -4,6 +4,9 @@ import { HomeAssistant } from "../../types";
 
 import "./ha-selector-entity";
 import "./ha-selector-device";
+import "./ha-selector-number";
+import "./ha-selector-boolean";
+import "./ha-selector-datetime";
 import { Selector } from "../../data/selector";
 
 @customElement("ha-selector")
