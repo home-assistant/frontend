@@ -248,7 +248,8 @@ export interface HomeAssistant {
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
-    parameters?: Record<string, any>
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>
   ): Promise<T>;
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;

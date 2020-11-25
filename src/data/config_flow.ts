@@ -16,16 +16,27 @@ export const DISCOVERY_SOURCES = [
 
 export const ATTENTION_SOURCES = ["reauth"];
 
+const HEADERS = {
+  "HA-Frontend-Base": `${location.protocol}//${location.host}`,
+};
+
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
-  hass.callApi<DataEntryFlowStep>("POST", "config/config_entries/flow", {
-    handler,
-    show_advanced_options: Boolean(hass.userData?.showAdvanced),
-  });
+  hass.callApi<DataEntryFlowStep>(
+    "POST",
+    "config/config_entries/flow",
+    {
+      handler,
+      show_advanced_options: Boolean(hass.userData?.showAdvanced),
+    },
+    HEADERS
+  );
 
 export const fetchConfigFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi<DataEntryFlowStep>(
     "GET",
-    `config/config_entries/flow/${flowId}`
+    `config/config_entries/flow/${flowId}`,
+    undefined,
+    HEADERS
   );
 
 export const handleConfigFlowStep = (
@@ -36,7 +47,8 @@ export const handleConfigFlowStep = (
   hass.callApi<DataEntryFlowStep>(
     "POST",
     `config/config_entries/flow/${flowId}`,
-    data
+    data,
+    HEADERS
   );
 
 export const ignoreConfigFlow = (hass: HomeAssistant, flowId: string) =>
