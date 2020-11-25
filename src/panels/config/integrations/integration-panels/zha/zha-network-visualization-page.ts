@@ -39,7 +39,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       this._fetchData();
     }
     this._network = new Network(
-      this._visualization,
+      this._visualization!,
       {},
       {
         autoResize: true,
@@ -139,7 +139,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     });
 
-    this._network.setData({ nodes: nodes, edges: edges });
+    this._network?.setData({ nodes: nodes, edges: edges });
   }
 
   private _getLQI(lqi: number): EdgeOptions["color"] {
