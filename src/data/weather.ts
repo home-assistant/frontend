@@ -7,10 +7,10 @@ import {
 } from "@mdi/js";
 import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
+import { formatNumber } from "../common/string/format_number";
 import "../components/ha-icon";
 import "../components/ha-svg-icon";
 import type { HomeAssistant, WeatherEntity } from "../types";
-import { roundWithOneDecimal } from "../util/calculate";
 
 export const weatherSVGs = new Set<string>([
   "clear-night",
@@ -106,15 +106,19 @@ export const getWind = (
   speed: string,
   bearing: string
 ): string => {
+  const speedText = `${formatNumber(speed, hass!.language)} ${getWeatherUnit(
+    hass!,
+    "wind_speed"
+  )}`;
   if (bearing !== null) {
     const cardinalDirection = getWindBearing(bearing);
-    return `${speed} ${getWeatherUnit(hass!, "wind_speed")} (${
+    return `${speedText} (${
       hass.localize(
         `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
       ) || cardinalDirection
     })`;
   }
-  return `${speed} ${getWeatherUnit(hass!, "wind_speed")}`;
+  return speedText;
 };
 
 export const getWeatherUnit = (
@@ -175,7 +179,8 @@ export const getSecondaryWeatherAttribute = (
           <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
         `
       : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
-    ${roundWithOneDecimal(value)} ${getWeatherUnit(hass!, attribute)}
+    ${formatNumber(value, hass!.language, { maximumFractionDigits: 1 })}
+    ${getWeatherUnit(hass!, attribute)}
   `;
 };
 

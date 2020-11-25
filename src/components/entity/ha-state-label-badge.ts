@@ -21,6 +21,7 @@ import { timerTimeRemaining } from "../../common/entity/timer_time_remaining";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { formatNumber } from "../../common/string/format_number";
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {
@@ -115,7 +116,7 @@ export class HaStateLabelBadge extends LitElement {
           : state.state === UNKNOWN
           ? "-"
           : state.attributes.unit_of_measurement
-          ? state.state
+          ? formatNumber(state.state, this.hass!.language)
           : computeStateDisplay(
               this.hass!.localize,
               state,

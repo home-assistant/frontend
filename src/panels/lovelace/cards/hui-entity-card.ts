@@ -31,6 +31,7 @@ import {
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
 import { computeCardSize } from "../common/compute-card-size";
+import { formatNumber } from "../../../common/string/format_number";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -128,7 +129,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               ? stateObj.attributes[this._config.attribute!] ??
                 this.hass.localize("state.default.unknown")
               : stateObj.attributes.unit_of_measurement
-              ? stateObj.state
+              ? formatNumber(stateObj.state, this.hass!.language)
               : computeStateDisplay(
                   this.hass.localize,
                   stateObj,
