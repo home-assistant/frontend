@@ -89,7 +89,7 @@
     }
   },
   "groups": {
-    "owners": "Owners",
+    "owner": "Owner",
     "system-admin": "Administrators",
     "system-users": "Users",
     "system-read-only": "Read-Only Users"

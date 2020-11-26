@@ -129,7 +129,7 @@ export class HaConfigUsers extends LitElement {
 
     this._users.forEach(function (user) {
       if (user.is_owner) {
-        user.group_ids.unshift("owners");
+        user.group_ids.unshift("owner");
       }
     });
   }
