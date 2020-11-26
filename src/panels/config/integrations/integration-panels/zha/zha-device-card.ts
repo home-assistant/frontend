@@ -32,7 +32,7 @@ import {
 import memoizeOne from "memoize-one";
 import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
 import { compare } from "../../../../../common/string/compare";
-import { getIeeeTail } from "./functions";
+import { getIeeeTail, formatAsPaddedHex } from "./functions";
 import { slugify } from "../../../../../common/string/slugify";
 
 @customElement("zha-device-card")
@@ -80,45 +80,67 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
       this._entities
     );
 
+    const header =
+      this.device.pairing_status === "PAIRED"
+        ? "Device Discovered"
+        : this.device.pairing_status === "INTERVIEW_COMPLETE"
+        ? "Device Interview Complete"
+        : this.device.user_given_name || this.device.name;
+
     return html`
-      <ha-card .header=${this.device.user_given_name || this.device.name}>
+      <ha-card .header=${header}>
         <div class="card-content">
           <div class="info">
-            <div class="model">${this.device.model}</div>
-            <div class="manuf">
-              ${this.hass.localize(
-                "ui.dialogs.zha_device_info.manuf",
-                "manufacturer",
-                this.device.manufacturer
-              )}
-            </div>
+            ${this.device.pairing_status === "PAIRED"
+              ? html`
+                  <div class="model">IEEE: ${this.device.ieee}</div>
+                  <div class="model">
+                    NWK: ${formatAsPaddedHex(this.device.nwk)}
+                  </div>
+                `
+              : html`
+                  <div class="model">${this.device.model}</div>
+                  <div class="manuf">
+                    ${this.hass.localize(
+                      "ui.dialogs.zha_device_info.manuf",
+                      "manufacturer",
+                      this.device.manufacturer
+                    )}
+                  </div>
+                `}
           </div>
 
-          <div class="device-entities">
-            ${entities.map(
-              (entity) => html`
-                <state-badge
-                  @click="${this._openMoreInfo}"
-                  .title=${entity.stateName!}
-                  .stateObj="${this.hass!.states[entity.entity_id]}"
-                  slot="item-icon"
-                ></state-badge>
+          ${this.device.pairing_status === "CONFIGURED" ||
+          this.device.pairing_status === "INITIALIZED" ||
+          this.device.pairing_status === null
+            ? html`
+                <div class="device-entities">
+                  ${entities.map(
+                    (entity) => html`
+                      <state-badge
+                        @click="${this._openMoreInfo}"
+                        .title=${entity.stateName!}
+                        .stateObj="${this.hass!.states[entity.entity_id]}"
+                        slot="item-icon"
+                      ></state-badge>
+                    `
+                  )}
+                </div>
+                <paper-input
+                  type="string"
+                  @change=${this._rename}
+                  .value=${this.device.user_given_name || this.device.name}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
+                  )}
+                ></paper-input>
+                <ha-area-picker
+                  .hass=${this.hass}
+                  .device=${this.device.device_reg_id}
+                  @value-changed=${this._areaPicked}
+                ></ha-area-picker>
               `
-            )}
-          </div>
-          <paper-input
-            type="string"
-            @change=${this._rename}
-            .value=${this.device.user_given_name || this.device.name}
-            .label=${this.hass.localize(
-              "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
-            )}
-          ></paper-input>
-          <ha-area-picker
-            .hass=${this.hass}
-            .device=${this.device.device_reg_id}
-            @value-changed=${this._areaPicked}
-          ></ha-area-picker>
+            : html``}
         </div>
       </ha-card>
     `;

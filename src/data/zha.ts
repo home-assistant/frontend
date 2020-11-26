@@ -27,6 +27,7 @@ export interface ZHADevice {
   device_type: string;
   signature: any;
   neighbors: Neighbor[];
+  pairing_status?: string;
 }
 
 export interface Neighbor {

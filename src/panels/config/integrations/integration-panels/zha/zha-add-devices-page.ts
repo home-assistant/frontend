@@ -14,7 +14,6 @@ import {
 } from "lit-element";
 import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
-import { ZHADevice } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
@@ -34,7 +33,7 @@ class ZHAAddDevicesPage extends LitElement {
 
   @internalProperty() private _error?: string;
 
-  @internalProperty() private _discoveredDevices: ZHADevice[] = [];
+  @internalProperty() private _discoveredDevices = {};
 
   @internalProperty() private _formattedEvents = "";
 
@@ -64,7 +63,7 @@ class ZHAAddDevicesPage extends LitElement {
     super.disconnectedCallback();
     this._unsubscribe();
     this._error = undefined;
-    this._discoveredDevices = [];
+    this._discoveredDevices = {};
     this._formattedEvents = "";
   }
 
@@ -115,7 +114,7 @@ class ZHAAddDevicesPage extends LitElement {
         </div>
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
         <div class="content">
-          ${this._discoveredDevices.length < 1
+          ${Object.keys(this._discoveredDevices).length < 1
             ? html`
                 <div class="discovery-text">
                   <h4>
@@ -133,7 +132,7 @@ class ZHAAddDevicesPage extends LitElement {
                 </div>
               `
             : html`
-                ${this._discoveredDevices.map(
+                ${Object.values(this._discoveredDevices).map(
                   (device) => html`
                     <zha-device-card
                       class="card"
@@ -175,8 +174,15 @@ class ZHAAddDevicesPage extends LitElement {
         }
       }
     }
-    if (message.type && message.type === "device_fully_initialized") {
-      this._discoveredDevices.push(message.device_info);
+    if (
+      message.type &&
+      [
+        "device_joined",
+        "raw_device_initialized",
+        "device_fully_initialized",
+      ].includes(message.type)
+    ) {
+      this._discoveredDevices[message.device_info.ieee] = message.device_info;
     }
   }
 
