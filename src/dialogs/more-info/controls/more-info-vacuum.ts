@@ -229,7 +229,6 @@ class MoreInfoVacuum extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        @apply --paper-font-body1;
         line-height: 1.5;
       }
       .status-subtitle {
