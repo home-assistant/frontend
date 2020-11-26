@@ -602,7 +602,8 @@ class HaChartBase extends mixinBehaviors(
     ];
     function getColorIndex(idx) {
       // Reuse the color if index too large.
-      return Color("#" + palette[idx % palette.length]);
+      const styles = getComputedStyle(document.body);
+      return Color(styles.getPropertyValue(`--graph-color-${idx % palette.length}`) || "#" + palette[idx % palette.length]);
     }
     const colorDict = {};
     let colorIndex = 0;
