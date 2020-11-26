@@ -134,6 +134,9 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
         width: 100%;
         max-width: 200px;
       }
+      :host {
+        cursor: pointer;
+      }
     `;
   }
 
