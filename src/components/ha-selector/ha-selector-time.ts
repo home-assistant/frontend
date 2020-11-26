@@ -27,7 +27,7 @@ export class HaTimeSelector extends LitElement {
         .hour=${useAMPM && Number(hours) > 12 ? Number(hours) - 12 : hours}
         .min=${parts[1] ?? "00"}
         .sec=${parts[2] ?? "00"}
-        .format=${useAMPM ? "12" : "24"}
+        .format=${useAMPM ? 12 : 24}
         .amPm=${useAMPM && (Number(hours) > 12 ? "PM" : "AM")}
         @change=${this._timeChanged}
         @am-pm-changed=${this._timeChanged}
