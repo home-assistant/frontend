@@ -21,8 +21,7 @@ import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
-import { mdiClose, mdiCloudLock } from "@mdi/js";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { mdiCloudLock } from "@mdi/js";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -142,33 +141,6 @@ class HaConfigDashboard extends LitElement {
         ${content}
       </ha-app-layout>
     `;
-  }
-
-  private async _dismissConference() {
-    if (
-      await showConfirmationDialog(this, {
-        title: "Home Assistant Conference",
-        text: html`
-          If you've
-          <a
-            target="_blank"
-            href="https://hopin.to/events/home-assistant-conference"
-            rel="noopener noreferrer"
-            >bought your ticket</a
-          >
-          or have
-          <a
-            target="_blank"
-            href="https://www.youtube.com/watch?v=xSB_MuKkgxE"
-            rel="noopener noreferrer"
-            >subscribed to the livestream</a
-          >, you might want to dismiss this banner. Do you want to continue?
-        `,
-      })
-    ) {
-      localStorage.dismissConf2020 = "1";
-      this.requestUpdate();
-    }
   }
 
   static get styles(): CSSResultArray {
