@@ -11,6 +11,7 @@ import { NumberSelector } from "../../data/selector";
 import "@polymer/paper-input/paper-input";
 import "../ha-slider";
 import { fireEvent } from "../../common/dom/fire_event";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
@@ -23,31 +24,40 @@ export class HaNumberSelector extends LitElement {
   @property() public label?: string;
 
   protected render() {
-    if (this.selector.number.mode === "slider") {
-      return html`${this.label}<ha-slider
-          .min=${this.selector.number.min}
-          .max=${this.selector.number.max}
-          .value=${this._value}
-          .step=${this.selector.number.step}
-          pin
-          editable
-          ignore-bar-touch
-          @change=${this._handleSliderChange}
-        >
-        </ha-slider>`;
-    }
-    return html`<paper-input
-      pattern="[0-9]+([\\.][0-9]+)?"
-      .label=${this.label}
-      .min=${this.selector.number.min}
-      .max=${this.selector.number.max}
-      .value=${this._value}
-      .step=${this.selector.number.step}
-      type="number"
-      auto-validate
-      @value-changed=${this._handleInputChange}
-    >
-    </paper-input>`;
+    return html`${this.label}
+      ${this.selector.number.mode === "slider"
+        ? html`<ha-slider
+            .min=${this.selector.number.min}
+            .max=${this.selector.number.max}
+            .value=${this._value}
+            .step=${this.selector.number.step}
+            pin
+            ignore-bar-touch
+            @change=${this._handleSliderChange}
+          >
+          </ha-slider>`
+        : ""}
+      <paper-input
+        pattern="[0-9]+([\\.][0-9]+)?"
+        .label=${this.selector.number.mode === "slider"
+          ? undefined
+          : this.label}
+        .noLabelFloat=${this.selector.number.mode === "slider"}
+        class=${classMap({ single: this.selector.number.mode === "box" })}
+        .min=${this.selector.number.min}
+        .max=${this.selector.number.max}
+        .value=${this._value}
+        .step=${this.selector.number.step}
+        type="number"
+        auto-validate
+        @value-changed=${this._handleInputChange}
+      >
+        ${this.selector.number.unit_of_measurement
+          ? html`<div slot="suffix">
+              ${this.selector.number.unit_of_measurement}
+            </div>`
+          : ""}
+      </paper-input>`;
   }
 
   private get _value() {
@@ -78,7 +88,10 @@ export class HaNumberSelector extends LitElement {
         align-items: center;
       }
       ha-slider {
-        width: 100%;
+        flex: 1;
+      }
+      .single {
+        flex: 1;
       }
     `;
   }

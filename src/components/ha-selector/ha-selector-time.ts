@@ -1,11 +1,4 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { customElement, html, LitElement, property } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { TimeSelector } from "../../data/selector";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -24,8 +17,9 @@ export class HaTimeSelector extends LitElement {
   protected render() {
     const parts = this.value?.split(":") || [];
 
-    return html`${this.label}
+    return html`
       <paper-time-input
+        .label=${this.label}
         .hour=${parts[0] ?? "0"}
         .min=${parts[1] ?? "00"}
         .sec=${parts[2] ?? "00"}
@@ -34,23 +28,14 @@ export class HaTimeSelector extends LitElement {
         hide-label
         enable-second
         format="24"
-      ></paper-time-input> `;
+      ></paper-time-input>
+    `;
   }
 
   private _timeChanged(ev) {
     fireEvent(this, "value-changed", {
       value: ev.target.value,
     });
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-    `;
   }
 }
 

@@ -1,6 +1,7 @@
 export type Selector =
   | EntitySelector
   | DeviceSelector
+  | AreaSelector
   | NumberSelector
   | BooleanSelector
   | TimeSelector;
@@ -18,7 +19,13 @@ export interface DeviceSelector {
     integration?: string;
     manufacturer?: string;
     model?: string;
+    entity?: EntitySelector["entity"];
   };
+}
+
+export interface AreaSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  area: {};
 }
 
 export interface NumberSelector {
@@ -32,9 +39,11 @@ export interface NumberSelector {
 }
 
 export interface BooleanSelector {
-  boolean: undefined;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  boolean: {};
 }
 
 export interface TimeSelector {
-  datetime: undefined;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  time: {};
 }

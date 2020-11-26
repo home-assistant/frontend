@@ -23,6 +23,7 @@ import {
   importBlueprint,
   saveBlueprint,
 } from "../../../data/blueprint";
+import "../../../components/ha-expansion-panel";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -71,7 +72,9 @@ class DialogImportBlueprint extends LitElement {
                   html`<b>${this._result.blueprint.metadata.name}</b>`,
                   "domain",
                   this._result.blueprint.metadata.domain
-                )} <br /><br />
+                )}
+                <br />
+                ${this._result.blueprint.metadata.description}
                 ${this._result.validation_errors
                   ? html`
                       <p class="error">
@@ -94,7 +97,14 @@ class DialogImportBlueprint extends LitElement {
                         )}
                       ></paper-input>
                     `}
-                <pre>${this._result.raw_data}</pre>`
+                <ha-expansion-panel>
+                  <span slot="title"
+                    >${this.hass.localize(
+                      "ui.panel.config.blueprint.add.raw_blueprint"
+                    )}</span
+                  >
+                  <pre>${this._result.raw_data}</pre>
+                </ha-expansion-panel>`
             : html`${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_introduction"
                 )}<paper-input
@@ -180,7 +190,7 @@ class DialogImportBlueprint extends LitElement {
         this._result!.blueprint.metadata.domain,
         filename,
         this._result!.raw_data,
-        this._result!.url
+        this._result!.blueprint.metadata.source_url
       );
       this._params.importedCallback();
       this.closeDialog();
@@ -192,7 +202,14 @@ class DialogImportBlueprint extends LitElement {
   }
 
   static get styles(): CSSResult[] {
-    return [haStyleDialog, css``];
+    return [
+      haStyleDialog,
+      css`
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0;
+        }
+      `,
+    ];
   }
 }
 
