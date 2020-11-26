@@ -76,7 +76,7 @@ class HaExpansionPanel extends LitElement {
 
       .summary {
         display: flex;
-        padding: 0px 16px;
+        padding: var(--expansion-panel-summary-padding, 0px 16px);
         min-height: 48px;
         align-items: center;
         cursor: pointer;
