@@ -94,7 +94,6 @@ class StateInfo extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        @apply --paper-font-body1;
         min-width: 120px;
         white-space: nowrap;
       }
@@ -118,9 +117,10 @@ class StateInfo extends LitElement {
       }
 
       .name {
-        @apply --paper-font-common-nowrap;
         color: var(--primary-text-color);
-        line-height: 40px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .name[in-dialog],
@@ -131,8 +131,10 @@ class StateInfo extends LitElement {
       .time-ago,
       .extra-info,
       .extra-info > * {
-        @apply --paper-font-common-nowrap;
         color: var(--secondary-text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .row {
