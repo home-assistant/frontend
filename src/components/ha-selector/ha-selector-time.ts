@@ -5,7 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../paper-time-input";
 
 const test = new Date().toLocaleString();
-const useAMPM = !test.includes("AM") || !test.includes("PM");
+const useAMPM = test.includes("AM") || test.includes("PM");
 
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
