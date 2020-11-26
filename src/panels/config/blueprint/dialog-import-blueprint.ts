@@ -71,7 +71,7 @@ class DialogImportBlueprint extends LitElement {
                   html`<b>${this._result.blueprint.metadata.name}</b>`,
                   "domain",
                   this._result.blueprint.metadata.domain
-                )}
+                )} <br /><br />
                 ${this._result.validation_errors
                   ? html`
                       <p class="error">
@@ -89,7 +89,9 @@ class DialogImportBlueprint extends LitElement {
                       <paper-input
                         id="input"
                         .value=${this._result.suggested_filename}
-                        label="Filename"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.blueprint.add.file_name"
+                        )}
                       ></paper-input>
                     `}
                 <pre>${this._result.raw_data}</pre>`

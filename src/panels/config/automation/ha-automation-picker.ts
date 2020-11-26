@@ -132,7 +132,7 @@ class HaAutomationPicker extends LitElement {
                 : "hass:pencil-off"}
               .disabled=${!automation.attributes.id}
               title="${this.hass.localize(
-                "ui.panel.config.automation.picker.show_info_automation"
+                "ui.panel.config.automation.picker.edit_automation"
               )}"
             ></ha-icon-button>
           </a>
