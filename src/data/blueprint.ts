@@ -11,18 +11,19 @@ export interface Blueprint {
 export interface BlueprintMetaData {
   domain: string;
   name: string;
+  input?: Record<string, BlueprintInput | null>;
   description?: string;
-  input: Record<string, BlueprintInput | null>;
+  source_url?: string;
 }
 
 export interface BlueprintInput {
   name?: string;
   description?: string;
   selector?: Selector;
+  default?: any;
 }
 
 export interface BlueprintImportResult {
-  url: string;
   suggested_filename: string;
   raw_data: string;
   blueprint: Blueprint;

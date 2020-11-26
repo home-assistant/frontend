@@ -205,12 +205,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                       ${"use_blueprint" in this._config
                         ? html`<blueprint-automation-editor
                             .hass=${this.hass}
+                            .narrow=${this.narrow}
                             .stateObj=${stateObj}
                             .config=${this._config}
                             @value-changed=${this._valueChanged}
                           ></blueprint-automation-editor>`
                         : html`<manual-automation-editor
                             .hass=${this.hass}
+                            .narrow=${this.narrow}
                             .stateObj=${stateObj}
                             .config=${this._config}
                             @value-changed=${this._valueChanged}
