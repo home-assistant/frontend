@@ -84,7 +84,7 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "15%",
+          width: "160px",
           template: (generated) =>
             generated ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
         };
