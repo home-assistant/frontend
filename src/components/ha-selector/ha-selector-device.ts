@@ -39,10 +39,10 @@ export class HaDeviceSelector extends LitElement {
       .label=${this.label}
       .deviceFilter=${(device) => this._filterDevices(device)}
       .includeDeviceClasses=${this.selector.device.entity?.device_class
-        ? [this.selector.device.entity?.device_class]
+        ? [this.selector.device.entity.device_class]
         : undefined}
       .includeDomains=${this.selector.device.entity?.domain
-        ? [this.selector.device.entity?.domain]
+        ? [this.selector.device.entity.domain]
         : undefined}
       allow-custom-entity
     ></ha-device-picker>`;

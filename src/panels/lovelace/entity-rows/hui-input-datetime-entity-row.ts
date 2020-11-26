@@ -79,7 +79,6 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                 .min=${stateObj.state === UNKNOWN
                   ? ""
                   : ("0" + stateObj.attributes.minute).slice(-2)}
-                .amPm=${false}
                 @change=${this._selectedValueChanged}
                 @click=${this._stopEventPropagation}
                 hide-label
@@ -99,7 +98,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     const stateObj = this.hass!.states[this._config!.entity];
 
     const time = this._timeInputEl
-      ? this._timeInputEl.value?.trim() + ":00"
+      ? this._timeInputEl.value?.trim()
       : undefined;
 
     const date = this._dateInputEl ? this._dateInputEl.value : undefined;
