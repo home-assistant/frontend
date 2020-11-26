@@ -1129,7 +1129,7 @@
           },
           "editor": {
             "enable_disable": "Enable/Disable automation",
-            "introduction": "Use automations to bring your home alive.",
+            "introduction": "Use automations to bring your home to live.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
             "load_error_unknown": "Error loading automation ({err_no}).",
@@ -1447,15 +1447,19 @@
             "introduction": "The blueprint editor allows you to create and edit blueprints.",
             "learn_more": "Learn more about blueprints",
             "headers": {
-              "name": "Name"
+              "name": "Name",
+              "domain": "Domain",
+              "file_name": "File name"
             },
             "confirm_delete_header": "Delete this blueprint?",
-            "confirm_delete_text": "Are you sure you want to delete this blueprint",
-            "add_blueprint": "Add blueprint"
+            "confirm_delete_text": "Are you sure you want to delete this blueprint?",
+            "add_blueprint": "Add blueprint",
+            "use_blueprint": "Create automation",
+            "delete_blueprint": "Delete blueprint"
           },
           "add": {
             "header": "Add new blueprint",
-            "import_header": "Import {name} ({domain})",
+            "import_header": "Import \"{name}\" (type: {domain})",
             "import_introduction": "You can import blueprints of other users from Github and the community forums. Enter the URL of the blueprint below.",
             "url": "URL of the blueprint",
             "importing": "Importing blueprint...",
@@ -1463,7 +1467,8 @@
             "saving": "Saving blueprint...",
             "save_btn": "Save blueprint",
             "error_no_url": "Please enter the URL of the blueprint.",
-            "unsupported_blueprint": "This blueprint is not supported"
+            "unsupported_blueprint": "This blueprint is not supported",
+            "file_name": "Local blueprint file name"
           }
         },
         "script": {
@@ -1537,7 +1542,7 @@
             }
           },
           "editor": {
-            "introduction": "Use scenes to bring your home alive.",
+            "introduction": "Use scenes to bring your home to live.",
             "default_name": "New Scene",
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",

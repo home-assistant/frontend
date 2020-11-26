@@ -1,6 +1,6 @@
 import "@material/mwc-fab";
 import "@material/mwc-icon-button";
-import { mdiPlus, mdiHelpCircle, mdiDelete } from "@mdi/js";
+import { mdiPlus, mdiHelpCircle, mdiDelete, mdiRobot } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -80,7 +80,7 @@ class HaBlueprintOverview extends LitElement {
   });
 
   private _columns = memoizeOne(
-    (_language): DataTableColumnContainer => {
+    (narrow, _language): DataTableColumnContainer => {
       const columns: DataTableColumnContainer = {
         name: {
           title: this.hass.localize(
@@ -92,44 +92,77 @@ class HaBlueprintOverview extends LitElement {
           grows: true,
         },
       };
-      columns.domain = {
-        title: "Domain",
-        sortable: true,
-        filterable: true,
-        direction: "asc",
-        width: "20%",
-      };
-      columns.path = {
-        title: "Path",
-        sortable: true,
-        filterable: true,
-        direction: "asc",
-        width: "20%",
-      };
-      columns.create = {
-        title: "",
-        type: "icon-button",
-        template: (_, blueprint: any) =>
-          blueprint.error
-            ? ""
-            : html`<mwc-icon-button
-                .blueprint=${blueprint}
-                @click=${(ev) => this._createNew(ev)}
-                ><ha-svg-icon .path=${mdiPlus}></ha-svg-icon
-              ></mwc-icon-button>`,
-      };
+
+      if (narrow) {
+        columns.name.template = (name, entity: any) => {
+          return html`
+            ${name}<br />
+            <div class="secondary">
+              ${entity.path}
+            </div>
+          `;
+        };
+        columns.create = {
+          title: "",
+          type: "icon-button",
+          template: (_, blueprint: any) =>
+            blueprint.error
+              ? ""
+              : html` <mwc-icon-button
+                  .blueprint=${blueprint}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.blueprint.overview.use_blueprint"
+                  )}
+                  title=${this.hass.localize(
+                    "ui.panel.config.blueprint.overview.use_blueprint"
+                  )}
+                  @click=${(ev) => this._createNew(ev)}
+                  ><ha-svg-icon .path=${mdiRobot}></ha-svg-icon
+                ></mwc-icon-button>`,
+        };
+      } else {
+        columns.path = {
+          title: this.hass.localize(
+            "ui.panel.config.blueprint.overview.headers.file_name"
+          ),
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          width: "25%",
+        };
+        columns.create = {
+          title: "",
+          width: "180px",
+          template: (_, blueprint: any) =>
+            blueprint.error
+              ? ""
+              : html` <mwc-button
+                  .blueprint=${blueprint}
+                  @click=${(ev) => this._createNew(ev)}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.blueprint.overview.use_blueprint"
+                  )}
+                </mwc-button>`,
+        };
+      }
+
       columns.delete = {
         title: "",
         type: "icon-button",
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
-            : html`<mwc-icon-button
+            : html` <mwc-icon-button
                 .blueprint=${blueprint}
+                .label=${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.delete_blueprint"
+                )}
                 @click=${(ev) => this._delete(ev)}
                 ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
               ></mwc-icon-button>`,
       };
+
       return columns;
     }
   );
@@ -142,7 +175,7 @@ class HaBlueprintOverview extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
-        .columns=${this._columns(this.hass.language)}
+        .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._processedBlueprints(this.blueprints)}
         id="entity_id"
         .noDataText=${this.hass.localize(
