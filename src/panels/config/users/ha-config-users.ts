@@ -77,17 +77,6 @@ export class HaConfigUsers extends LitElement {
         },
       };
       if (!narrow) {
-        columns.is_active = {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.is_active"
-          ),
-          type: "icon",
-          sortable: true,
-          filterable: true,
-          width: "10%",
-          template: (is_active) =>
-            is_active ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
-        };
         columns.system_generated = {
           title: this.hass.localize(
             "ui.panel.config.users.picker.headers.system"
