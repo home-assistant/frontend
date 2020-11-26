@@ -2215,6 +2215,10 @@
             "create": "Create Group",
             "creating_group": "Creating Group"
           },
+          "visualization": {
+            "header": "Network Visualization",
+            "caption": "Visualization"
+          },
           "group_binding": {
             "header": "Group Binding",
             "introduction": "Bind and unbind groups.",
