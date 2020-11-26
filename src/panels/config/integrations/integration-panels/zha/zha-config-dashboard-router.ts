@@ -42,6 +42,10 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
         tag: "zha-add-group-page",
         load: () => import("./zha-add-group-page"),
       },
+      visualization: {
+        tag: "zha-network-visualization-page",
+        load: () => import("./zha-network-visualization-page"),
+      },
     },
   };
 

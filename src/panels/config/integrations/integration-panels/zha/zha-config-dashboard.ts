@@ -15,7 +15,7 @@ import "../../../../../components/ha-icon-next";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import { mdiNetwork, mdiFolderMultipleOutline, mdiPlus } from "@mdi/js";
+import { mdiNetwork, mdiFolderMultipleOutline, mdiPlus, mdiLan } from "@mdi/js";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
@@ -31,6 +31,11 @@ export const zhaTabs: PageNavigation[] = [
     translationKey: "ui.panel.config.zha.groups.caption",
     path: `/config/zha/groups`,
     iconPath: mdiFolderMultipleOutline,
+  },
+  {
+    translationKey: "ui.panel.config.zha.visualization.caption",
+    path: `/config/zha/visualization`,
+    iconPath: mdiLan,
   },
 ];
 
