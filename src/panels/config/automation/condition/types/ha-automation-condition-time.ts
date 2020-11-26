@@ -94,6 +94,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             .value=${after?.startsWith("input_datetime.") ? after : ""}
             @value-changed=${this._valueChanged}
             .hass=${this.hass}
+            allow-custom-entity
           ></ha-entity-picker>`
         : html`<paper-input
             .label=${this.hass.localize(

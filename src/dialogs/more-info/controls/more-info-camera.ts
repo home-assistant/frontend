@@ -17,8 +17,9 @@ import {
   CAMERA_SUPPORT_STREAM,
   fetchCameraPrefs,
   updateCameraPrefs,
+  CameraEntity,
 } from "../../../data/camera";
-import type { CameraEntity, HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;

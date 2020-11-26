@@ -23,6 +23,7 @@ import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -35,31 +36,20 @@ import { hassioStyle } from "../resources/hassio-style";
 export class HassioUpdate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public hassInfo?: HassioHomeAssistantInfo;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ attribute: false }) public hassOsInfo?: HassioHassOSInfo;
-
-  @property({ attribute: false }) public supervisorInfo?: HassioSupervisorInfo;
-
-  private _pendingUpdates = memoizeOne(
-    (
-      core?: HassioHomeAssistantInfo,
-      supervisor?: HassioSupervisorInfo,
-      os?: HassioHassOSInfo
-    ): number => {
-      return [core, supervisor, os].filter(
-        (value) => !!value && value?.update_available
-      ).length;
-    }
-  );
+  private _pendingUpdates = memoizeOne((supervisor: Supervisor): number => {
+    return Object.keys(supervisor).filter(
+      (value) => supervisor[value].update_available
+    ).length;
+  });
 
   protected render(): TemplateResult {
-    const updatesAvailable = this._pendingUpdates(
-      this.hassInfo,
-      this.supervisorInfo,
-      this.hassOsInfo
-    );
+    if (!this.supervisor) {
+      return html``;
+    }
 
+    const updatesAvailable = this._pendingUpdates(this.supervisor);
     if (!updatesAvailable) {
       return html``;
     }
@@ -74,26 +64,26 @@ export class HassioUpdate extends LitElement {
         <div class="card-group">
           ${this._renderUpdateCard(
             "Home Assistant Core",
-            this.hassInfo!,
+            this.supervisor.core,
             "hassio/homeassistant/update",
             `https://${
-              this.hassInfo?.version_latest.includes("b") ? "rc" : "www"
+              this.supervisor.core.version_latest.includes("b") ? "rc" : "www"
             }.home-assistant.io/latest-release-notes/`
           )}
           ${this._renderUpdateCard(
             "Supervisor",
-            this.supervisorInfo!,
+            this.supervisor.supervisor,
             "hassio/supervisor/update",
             `https://github.com//home-assistant/hassio/releases/tag/${
-              this.supervisorInfo!.version_latest
+              this.supervisor.supervisor.version_latest
             }`
           )}
-          ${this.hassOsInfo
+          ${this.supervisor.host.features.includes("hassos")
             ? this._renderUpdateCard(
                 "Operating System",
-                this.hassOsInfo,
+                this.supervisor.os,
                 "hassio/os/update",
-                `https://github.com//home-assistant/hassos/releases/tag/${this.hassOsInfo.version_latest}`
+                `https://github.com//home-assistant/hassos/releases/tag/${this.supervisor.os.version_latest}`
               )
             : ""}
         </div>

@@ -19,7 +19,7 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: SectionConfig): void {
     if (!config) {
-      throw new Error("Error in card configuration.");
+      throw new Error("Invalid configuration");
     }
 
     this._config = config;

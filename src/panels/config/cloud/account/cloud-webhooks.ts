@@ -20,9 +20,9 @@ import {
   createCloudhook,
   deleteCloudhook,
 } from "../../../../data/cloud";
-import { fetchWebhooks, Webhook } from "../../../../data/webhook";
+import { fetchWebhooks, Webhook, WebhookError } from "../../../../data/webhook";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant, WebhookError } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import { showManageCloudhookDialog } from "../dialog-manage-cloudhook/show-dialog-manage-cloudhook";
 
 @customElement("cloud-webhooks")

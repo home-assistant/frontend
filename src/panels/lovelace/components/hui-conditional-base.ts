@@ -27,15 +27,15 @@ export class HuiConditionalBase extends UpdatingElement {
     config: ConditionalCardConfig | ConditionalRowConfig
   ): void {
     if (!config.conditions) {
-      throw new Error("No conditions configured.");
+      throw new Error("No conditions configured");
     }
 
     if (!Array.isArray(config.conditions)) {
-      throw new Error("Conditions should be in an array.");
+      throw new Error("Conditions need to be an array");
     }
 
     if (!validateConditionalConfig(config.conditions)) {
-      throw new Error("Conditions are invalid.");
+      throw new Error("Conditions are invalid");
     }
 
     if (this.lastChild) {

@@ -23,9 +23,7 @@ import { PictureCardConfig } from "./types";
 @customElement("hui-picture-card")
 export class HuiPictureCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-picture-card-editor" */ "../editor/config-elements/hui-picture-card-editor"
-    );
+    await import("../editor/config-elements/hui-picture-card-editor");
     return document.createElement("hui-picture-card-editor");
   }
 
@@ -48,7 +46,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: PictureCardConfig): void {
     if (!config || !config.image) {
-      throw new Error("Invalid Configuration: 'image' required");
+      throw new Error("Image required");
     }
 
     this._config = config;

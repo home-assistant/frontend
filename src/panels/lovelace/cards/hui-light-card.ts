@@ -22,9 +22,9 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
-import { SUPPORT_BRIGHTNESS } from "../../../data/light";
+import { LightEntity, SUPPORT_BRIGHTNESS } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
-import { HomeAssistant, LightEntity } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { handleAction } from "../common/handle-action";
@@ -37,9 +37,7 @@ import { LightCardConfig } from "./types";
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-light-card-editor" */ "../editor/config-elements/hui-light-card-editor"
-    );
+    await import("../editor/config-elements/hui-light-card-editor");
     return document.createElement("hui-light-card-editor");
   }
 
@@ -73,7 +71,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: LightCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "light") {
-      throw new Error("Specify an entity from within the light domain.");
+      throw new Error("Specify an entity from within the light domain");
     }
 
     this._config = {

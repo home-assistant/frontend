@@ -12,9 +12,7 @@ export interface DeviceRegistryDetailDialogParams {
 }
 
 export const loadDeviceRegistryDetailDialog = () =>
-  import(
-    /* webpackChunkName: "device-registry-detail-dialog" */ "./dialog-device-registry-detail"
-  );
+  import("./dialog-device-registry-detail");
 
 export const showDeviceRegistryDetailDialog = (
   element: HTMLElement,

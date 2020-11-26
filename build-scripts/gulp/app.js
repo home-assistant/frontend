@@ -12,6 +12,7 @@ require("./webpack.js");
 require("./service-worker.js");
 require("./entry-html.js");
 require("./rollup.js");
+require("./wds.js");
 
 gulp.task(
   "develop-app",
@@ -28,7 +29,11 @@ gulp.task(
       "build-translations"
     ),
     "copy-static-app",
-    env.useRollup() ? "rollup-watch-app" : "webpack-watch-app"
+    env.useWDS()
+      ? "wds-watch-app"
+      : env.useRollup()
+      ? "rollup-watch-app"
+      : "webpack-watch-app"
   )
 );
 

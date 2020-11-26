@@ -5,8 +5,7 @@ export interface QuickBarParams {
   commandMode?: boolean;
 }
 
-export const loadQuickBar = () =>
-  import(/* webpackChunkName: "quick-bar-dialog" */ "./ha-quick-bar");
+export const loadQuickBar = () => import("./ha-quick-bar");
 
 export const showQuickBar = (
   element: HTMLElement,

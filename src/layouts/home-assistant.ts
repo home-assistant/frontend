@@ -59,9 +59,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     this._initialize();
     setTimeout(() => registerServiceWorker(this), 1000);
     /* polyfill for paper-dropdown */
-    import(
-      /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
-    );
+    import("web-animations-js/web-animations-next-lite.min");
     this.addEventListener("hass-suspend-when-hidden", (ev) => {
       this._updateHass({ suspendWhenHidden: ev.detail.suspend });
       storeState(this.hass!);

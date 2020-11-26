@@ -19,6 +19,7 @@ import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import { fetchHassioStats, HassioStats } from "../../../src/data/hassio/common";
 import { HassioHostInfo } from "../../../src/data/hassio/host";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { bytesToString } from "../../../src/util/bytes-to-string";
@@ -32,7 +33,7 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioSystemMetrics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public hostInfo!: HassioHostInfo;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @internalProperty() private _supervisorMetrics?: HassioStats;
 
@@ -64,8 +65,8 @@ class HassioSystemMetrics extends LitElement {
       },
       {
         description: "Used Space",
-        value: this._getUsedSpace(this.hostInfo),
-        tooltip: `${this.hostInfo.disk_used} GB/${this.hostInfo.disk_total} GB`,
+        value: this._getUsedSpace(this.supervisor.host),
+        tooltip: `${this.supervisor.host.disk_used} GB/${this.supervisor.host.disk_total} GB`,
       },
     ];
 

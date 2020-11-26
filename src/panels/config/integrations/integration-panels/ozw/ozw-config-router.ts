@@ -37,17 +37,11 @@ class OZWConfigRouter extends HassRouterPage {
     routes: {
       dashboard: {
         tag: "ozw-config-dashboard",
-        load: () =>
-          import(
-            /* webpackChunkName: "ozw-config-dashboard" */ "./ozw-config-dashboard"
-          ),
+        load: () => import("./ozw-config-dashboard"),
       },
       network: {
         tag: "ozw-network-router",
-        load: () =>
-          import(
-            /* webpackChunkName: "ozw-network-router" */ "./ozw-network-router"
-          ),
+        load: () => import("./ozw-network-router"),
       },
     },
   };

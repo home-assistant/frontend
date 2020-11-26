@@ -44,7 +44,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
 });
 
 module.exports.terserOptions = (latestBuild) => ({
-  safari10: true,
+  safari10: !latestBuild,
   ecma: latestBuild ? undefined : 5,
   output: { comments: false },
 });
@@ -117,7 +117,7 @@ BundleConfig {
 */
 
 module.exports.config = {
-  app({ isProdBuild, latestBuild, isStatsBuild }) {
+  app({ isProdBuild, latestBuild, isStatsBuild, isWDS }) {
     return {
       entry: {
         service_worker: "./src/entrypoints/service_worker.ts",
@@ -132,6 +132,7 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isWDS,
     };
   },
 

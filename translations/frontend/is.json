@@ -480,6 +480,7 @@
             "previous": "Fyrri",
             "refresh": "Endurnýja",
             "save": "Vista",
+            "skip": "Sleppa",
             "undo": "Afturkalla",
             "yes": "Já"
         },
@@ -493,6 +494,10 @@
                 "area": "Svæði",
                 "clear": "Hreinsa",
                 "show_areas": "Birta svæði"
+            },
+            "blueprint-picker": {
+                "add_user": "Bæta við notanda",
+                "remove_user": "Fjarlægja notanda"
             },
             "data-table": {
                 "search": "Leita"
@@ -605,6 +610,7 @@
             "more_info_control": {
                 "edit": "Breyta einingu",
                 "history": "Saga",
+                "last_changed": "Síðast breytt",
                 "restored": {
                     "confirm_remove_title": "Fjarlægja einingu?",
                     "remove_action": "Fjarlægja einingu"
@@ -639,6 +645,26 @@
             "options_flow": {
                 "form": {
                     "header": "Valkostir"
+                }
+            },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "automation": "Sjálfvirkni",
+                        "core": "Almennt",
+                        "devices": "Tæki",
+                        "entities": "Einingar",
+                        "helpers": "Hjálp",
+                        "info": "Upplýsingar",
+                        "integrations": "Samþættingar",
+                        "lovelace": "Skjáborð",
+                        "person": "Persónur",
+                        "scene": "Senur",
+                        "script": "Skriftur",
+                        "tags": "Strikamerki",
+                        "users": "Notendur",
+                        "zone": "Svæði"
+                    }
                 }
             },
             "voice_command": {
@@ -721,6 +747,14 @@
                 "automation": {
                     "caption": "Sjálfvirkni",
                     "description": "Stofna og breyta sjálfvirkni",
+                    "dialog_new": {
+                        "how": "Hvernig viltu búa til nýju sjálfvirknina?",
+                        "thingtalk": {
+                            "create": "Stofna",
+                            "header": "Lýstu sjálfvirkninni sem þú vilt búa til",
+                            "input_label": "Hvað ætti þessi sjálfvirkni að gera?"
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Bæta við aðgerð",
@@ -961,6 +995,21 @@
                         "only_editable": "Eingöngu er hægt að breyta sjálfvirkni sem skilgreind er í automations.yaml",
                         "pick_automation": "Veldu sjálfvirkni sem á að breyta",
                         "show_info_automation": "Sýna upplýsingar um sjálfvirkni"
+                    },
+                    "thingtalk": {
+                        "create": "Búa til sjálfvirkni",
+                        "task_selection": {
+                            "for_example": "Til dæmis:",
+                            "header": "Búa til nýja sjálfvirkni",
+                            "language_note": "Athugið: Aðeins enska er studd í bili."
+                        }
+                    }
+                },
+                "blueprint": {
+                    "overview": {
+                        "headers": {
+                            "name": "Nafn"
+                        }
                     }
                 },
                 "cloud": {
@@ -1476,6 +1525,7 @@
                         "update_user": "Uppfæra"
                     },
                     "picker": {
+                        "add_user": "Bæta við notanda",
                         "headers": {
                             "group": "Hópur",
                             "name": "Nafn",
@@ -1614,6 +1664,8 @@
                     "states": {
                         "current_entities": "Tiltækar einingar",
                         "entity": "Eining",
+                        "last_changed": "Síðast breytt",
+                        "last_updated": "Síðast uppfært",
                         "more_info": "Frekari upplýsingar",
                         "no_entities": "Engar einingar",
                         "set_state": "Setja stöðu",
@@ -1758,6 +1810,9 @@
                         "light": {
                             "name": "Ljós"
                         },
+                        "logbook": {
+                            "name": "Skráningarsaga"
+                        },
                         "map": {
                             "dark_mode": "Dökkur hamur?",
                             "default_zoom": "Sjálfgefinn aðdráttur",
@@ -1799,6 +1854,7 @@
                     },
                     "edit_card": {
                         "add": "Bæta við spjaldi",
+                        "clear": "Tæma",
                         "confirm_cancel": "Ertu viss um að þú viljir hætta við?",
                         "delete": "Eyða",
                         "edit": "Breyta",
@@ -1824,6 +1880,9 @@
                         "tab_visibility": "Sýnileiki"
                     },
                     "header": "Breyta notendaviðmóti",
+                    "header-footer": {
+                        "header": "Haus"
+                    },
                     "menu": {
                         "raw_editor": "Ritill fyrir hráar stillingar"
                     },
@@ -2137,6 +2196,9 @@
                     "description": "Kveikja eða slökkva á titringi í þessu tæki þegar þú stjórnar tækjum.",
                     "header": "Titra"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Hefja samtal"
             },
             "shopping-list": {
                 "add_item": "Bæta við hlut",
