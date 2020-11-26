@@ -2159,13 +2159,8 @@
         },
         "zha": {
           "button": "Configure",
-          "header": "Configure Zigbee Home Automation",
-          "introduction": "Here it is possible to configure the ZHA component. Not everything is possible to configure from the UI yet, but we're working on it.",
-          "description": "Zigbee Home Automation network management",
           "common": {
-            "add_devices": "Add Devices",
             "clusters": "Clusters",
-            "devices": "Devices",
             "manufacturer_code_override": "Manufacturer Code Override",
             "value": "Value"
           },
@@ -2176,24 +2171,7 @@
             "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
             "search_again": "Search Again"
           },
-          "network_management": {
-            "header": "Network Management",
-            "introduction": "Commands that affect the entire network"
-          },
-          "add": {
-            "caption": "Add Devices",
-            "description": "Add devices to the Zigbee network"
-          },
-          "devices": {
-            "header": "Zigbee Home Automation - Device"
-          },
-          "node_management": {
-            "header": "Device Management",
-            "introduction": "Run ZHA commands that affect a single device. Pick a device to see a list of available commands.",
-            "hint_battery_devices": "Note: Sleepy (battery powered) devices need to be awake when executing commands against them. You can generally wake a sleepy device by triggering it.",
-            "hint_wakeup": "Some devices such as Xiaomi sensors have a wake up button that you can press at ~5 second intervals that keep devices awake while you interact with them.",
-            "help_node_dropdown": "Select a device to view per-device options."
-          },
+          "add_device": "Add Device",
           "clusters": {
             "header": "Clusters",
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
@@ -2220,25 +2198,16 @@
             "caption": "Network"
           },
           "groups": {
+            "add_group": "Add Group",
             "caption": "Groups",
-            "description": "Manage Zigbee groups",
-            "zha_zigbee_groups": "ZHA Zigbee Groups",
-            "manage_groups": "Manage Zigbee Groups",
             "groups": "Groups",
             "group_id": "Group ID",
             "members": "Members",
-            "header": "Zigbee Home Automation - Group Management",
-            "groups-header": "Zigbee Home Automation - Group Management",
-            "group-header": "Zigbee Home Automation - Group Details",
-            "introduction": "Create and modify zigbee groups",
-            "remove_groups": "Remove Groups",
-            "removing_groups": "Removing Groups",
             "group_info": "Group Information",
             "group_details": "Here are all the details for the selected Zigbee group.",
             "group_not_found": "Group not found!",
             "add_members": "Add Members",
             "remove_members": "Remove Members",
-            "adding_members": "Adding Members",
             "removing_members": "Removing Members",
             "create_group_details": "Enter the required details to create a new zigbee group",
             "group_name_placeholder": "Group Name",
