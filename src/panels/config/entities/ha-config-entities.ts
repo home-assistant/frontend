@@ -229,9 +229,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         columns.name.template = (name, entity: any) => {
           return html`
             ${name}<br />
-            ${entity.entity_id} |
-            ${this.hass.localize(`component.${entity.platform}.title`) ||
-            entity.platform}
+            <div class="secondary">
+              ${entity.entity_id} |
+              ${this.hass.localize(`component.${entity.platform}.title`) ||
+              entity.platform}
+            </div>
           `;
         };
         columns.status = statusColumn;
