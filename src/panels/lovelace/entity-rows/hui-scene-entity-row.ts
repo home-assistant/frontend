@@ -70,6 +70,9 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
       mwc-button {
         margin-right: -0.57em;
       }
+      :host {
+        cursor: pointer;
+      }
     `;
   }
 
