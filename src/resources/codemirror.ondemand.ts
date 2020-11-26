@@ -7,7 +7,7 @@ let loaded: Promise<LoadedCodeMirror>;
 
 export const loadCodeMirror = async (): Promise<LoadedCodeMirror> => {
   if (!loaded) {
-    loaded = import(/* webpackChunkName: "codemirror" */ "./codemirror");
+    loaded = import("./codemirror");
   }
   return loaded;
 };

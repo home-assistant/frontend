@@ -21,7 +21,7 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
-      throw new Error("Invalid Configuration: 'entity' required");
+      throw new Error("Entity must be specified");
     }
 
     this._config = config;

@@ -367,7 +367,7 @@
             },
             "climate": {
                 "aux_heat": "Дополнительный нагрев",
-                "away_mode": "Режим ожидания",
+                "away_mode": "Режим \"не дома\"",
                 "cooling": "{name} охлаждение",
                 "current_temperature": "{name} текущая температура",
                 "currently": "Сейчас",
@@ -377,7 +377,7 @@
                 "low": "низкий",
                 "on_off": "Вкл / Выкл",
                 "operation": "Режим работы",
-                "preset_mode": "Предустановка",
+                "preset_mode": "Пресет",
                 "swing_mode": "Режим качания воздушных шторок",
                 "target_humidity": "Заданная влажность",
                 "target_temperature": "Заданная температура",
@@ -514,7 +514,7 @@
             "disable": "Отключить",
             "enable": "Включить",
             "error_required": "Обязательное поле",
-            "leave": "Покинуть",
+            "leave": "Выйти",
             "loading": "Загрузка",
             "menu": "Меню",
             "next": "Далее",
@@ -546,6 +546,10 @@
                 "area": "Помещение",
                 "clear": "Очистить",
                 "show_areas": "Показать помещения"
+            },
+            "blueprint-picker": {
+                "add_user": "Добавить пользователя",
+                "remove_user": "Удалить пользователя"
             },
             "data-table": {
                 "no-data": "Нет данных",
@@ -594,13 +598,13 @@
                     "was_at_home": "дома",
                     "was_at_state": "{state}",
                     "was_away": "не дома",
-                    "was_closed": "закрывается",
+                    "was_closed": "Закрыто",
                     "was_connected": "подключается",
                     "was_disconnected": "отключается",
                     "was_locked": "блокируется",
                     "was_low": "регистрирует низкий заряд",
                     "was_normal": "регистрирует нормальный заряд",
-                    "was_opened": "открывается",
+                    "was_opened": "Открыто",
                     "was_plugged_in": "подключается",
                     "was_safe": "регистрирует безопасность",
                     "was_unlocked": "разблокируется",
@@ -728,8 +732,10 @@
                     "confirm_delete": "Вы уверены, что хотите удалить эту запись?",
                     "delete": "Удалить",
                     "enabled_cause": "Инициатор: {cause}.",
+                    "enabled_delay_confirm": "Объекты будут добавлены в Home Assistant через {delay} секунд",
                     "enabled_description": "Скрытые объекты не будут доступны в Home Assistant.",
                     "enabled_label": "Отображать объект",
+                    "enabled_restart_confirm": "Перезапустите Home Assistant, чтобы завершить изменение объектов",
                     "entity_id": "ID объекта",
                     "icon": "Значок",
                     "icon_error": "Параметр должен быть в формате 'prefix:iconname' (например: 'mdi:home')",
@@ -739,7 +745,7 @@
                     "update": "Обновить"
                 },
                 "faq": "документацией",
-                "no_unique_id": "У этого объекта нет уникального идентификатора, поэтому его настройками нельзя управлять из пользовательского интерфейса. Ознакомьтесь с {faq_link} для получения более подробной информации.",
+                "no_unique_id": "У этого объекта (\"{entity_id}\") нет уникального идентификатора, поэтому его настройками нельзя управлять из пользовательского интерфейса. Ознакомьтесь с {faq_link} для получения более подробной информации.",
                 "related": "Зависимости",
                 "settings": "Настройки"
             },
@@ -802,6 +808,10 @@
             },
             "more_info_control": {
                 "controls": "Управление",
+                "cover": {
+                    "close_cover": "Закрыть",
+                    "open_cover": "Открыть"
+                },
                 "details": "Свойства",
                 "dismiss": "Закрыть диалог",
                 "edit": "Изменить объект",
@@ -865,6 +875,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Помещения",
+                        "automation": "Автоматизация",
+                        "core": "Общие",
+                        "customize": "Кастомизация",
+                        "devices": "Устройства",
+                        "entities": "Объекты",
+                        "helpers": "Вспомогательное",
+                        "info": "О системе",
+                        "integrations": "Интеграции",
+                        "logs": "Журнал сервера",
+                        "lovelace": "Панели Lovelace",
+                        "navigate_to": "Открыть \"{panel}\"",
+                        "navigate_to_config": "Перейти в раздел \"{panel}\"",
+                        "person": "Люди",
+                        "scene": "Сцены",
+                        "script": "Сценарии",
+                        "server_control": "Сервер",
+                        "tags": "Метки",
+                        "users": "Пользователи",
+                        "zone": "Зоны"
+                    },
                     "reload": {
                         "automation": "Перезагрузить автоматизации",
                         "command_line": "Перезагрузить объекты интеграции \"Command Line\"",
@@ -1015,12 +1047,15 @@
                 "automation": {
                     "caption": "Автоматизация",
                     "description": "Управление правилами автоматизации",
+                    "dialog_new": {
+                        "header": "Новая автоматизация"
+                    },
                     "editor": {
                         "actions": {
                             "add": "Добавить действие",
                             "delete": "Удалить",
                             "delete_confirm": "Вы уверены, что хотите удалить?",
-                            "duplicate": "Копировать",
+                            "duplicate": "Дублировать",
                             "header": "Действия",
                             "introduction": "Действия — это то, что сделает Home Assistant, когда правило автоматизации сработает.",
                             "learn_more": "Узнайте больше о действиях",
@@ -1099,7 +1134,7 @@
                             "add": "Добавить условие",
                             "delete": "Удалить",
                             "delete_confirm": "Вы уверены, что хотите удалить?",
-                            "duplicate": "Копировать",
+                            "duplicate": "Дублировать",
                             "header": "Условия",
                             "introduction": "Условия — это необязательная часть правила автоматизации. Действие автоматизации не будет выполнено, пока не будут удовлетворены все условия.",
                             "learn_more": "Узнайте больше об условиях",
@@ -1203,7 +1238,7 @@
                             "add": "Добавить триггер",
                             "delete": "Удалить",
                             "delete_confirm": "Вы уверены, что хотите удалить?",
-                            "duplicate": "Копировать",
+                            "duplicate": "Дублировать",
                             "header": "Триггеры",
                             "introduction": "Триггеры — это то, что запускает процесс автоматизации. Можно указать несколько триггеров на одно и то же правило. Когда триггер сработает, Home Assistant будет проверять условия (если таковые имеются), и выполнять действия.",
                             "learn_more": "Узнайте больше о триггерах",
@@ -1306,8 +1341,8 @@
                         "add_automation": "Добавить автоматизацию",
                         "delete_automation": "Удалить автоматизацию",
                         "delete_confirm": "Вы уверены, что хотите удалить эту автоматизацию?",
-                        "duplicate": "Копировать",
-                        "duplicate_automation": "Копировать автоматизацию",
+                        "duplicate": "Дублировать",
+                        "duplicate_automation": "Дублировать",
                         "edit_automation": "Редактировать автоматизацию",
                         "header": "Редактор автоматизаций",
                         "headers": {
@@ -1634,12 +1669,12 @@
                         "disable_selected": {
                             "button": "Скрыть выбранные",
                             "confirm_text": "Скрытые объекты не будут доступны в Home Assistant.",
-                            "confirm_title": "Вы уверены, что хотите скрыть {number} выбранных объектов?"
+                            "confirm_title": "Вы уверены, что хотите скрыть {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
                         },
                         "enable_selected": {
                             "button": "Отображать выбранные",
                             "confirm_text": "Если эти объекты ранее были скрыты, они снова будут отображаться в Home Assistant.",
-                            "confirm_title": "Отображать {number} выбранных объектов?"
+                            "confirm_title": "Отображать {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
                         },
                         "filter": {
                             "filter": "Фильтр",
@@ -1661,9 +1696,9 @@
                         "remove_selected": {
                             "button": "Удалить выбранные",
                             "confirm_partly_text": "Вы можете удалить только {removable} из выбранных {selected} объектов. Объекты могут быть удалены только когда интеграция больше не предоставляет объекты. В некоторых случаях Вам нужно будет перезапустить Home Assistant, чтобы удалить объекты удаленной интеграции. Вы уверены, что хотите удалить объекты?",
-                            "confirm_partly_title": "Только {number} выбранных объектов могут быть удалены.",
+                            "confirm_partly_title": "Только {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n} могут быть удалены.",
                             "confirm_text": "Вы должны удалить эти объекты из конфигурации Lovelace и из правил автоматизации.",
-                            "confirm_title": "Вы уверены, что хотите удалить выбранные объекты? ({number})"
+                            "confirm_title": "Вы уверены, что хотите удалить {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
                         },
                         "search": "Поиск объектов",
                         "selected": "Выбрано: {number}",
@@ -1712,6 +1747,8 @@
                 "info": {
                     "built_using": "Создано с использованием",
                     "caption": "О системе",
+                    "copy_github": "Для GitHub",
+                    "copy_raw": "Необработанный текст",
                     "custom_uis": "Кастомные интерфейсы:",
                     "description": "Информация о системе",
                     "developed_by": "Разработано множеством замечательных людей.",
@@ -1727,6 +1764,42 @@
                     "server": "сервер",
                     "source": "Исходный код:",
                     "system_health_error": "Компонент System Health не загружен. Добавьте 'system_health:' в файл configuration.yaml.",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Интеграция с Alexa",
+                                "can_reach_cert_server": "Доступ к серверу сертификатов",
+                                "can_reach_cloud": "Доступ к Home Assistant Cloud",
+                                "can_reach_cloud_auth": "Доступ к серверу аутентификации",
+                                "google_enabled": "Интеграция с Google",
+                                "logged_in": "Вход в систему",
+                                "relayer_connected": "Relayer подключен",
+                                "remote_connected": "Удалённый доступ подключен",
+                                "remote_enabled": "Удалённый доступ активирован",
+                                "subscription_expiration": "Срок действия подписки"
+                            },
+                            "homeassistant": {
+                                "arch": "Архитектура ЦП",
+                                "dev": "Среда разработки",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Тип установки",
+                                "os_name": "Название операционной системы",
+                                "os_version": "Версия операционной системы",
+                                "python_version": "Версия Python",
+                                "timezone": "Часовой пояс",
+                                "version": "Версия",
+                                "virtualenv": "Виртуальное окружение"
+                            },
+                            "lovelace": {
+                                "dashboards": "Панели",
+                                "mode": "Режим",
+                                "resources": "Ресурсы"
+                            }
+                        },
+                        "manage": "Управление",
+                        "more_info": "дополнительная информация"
+                    },
                     "title": "О системе"
                 },
                 "integration_panel_move": {
@@ -1743,11 +1816,11 @@
                         "delete": "Удалить",
                         "delete_button": "Удалить интеграцию {integration}",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
-                        "device_unavailable": "устройство недоступно",
+                        "device_unavailable": "Устройство недоступно",
                         "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройств}\n}",
                         "documentation": "Документация",
                         "entities": "{count} {count, plural,\n  one {объект}\n  other {объектов}\n}",
-                        "entity_unavailable": "объект недоступен",
+                        "entity_unavailable": "Объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
                         "manuf": "{manufacturer}",
@@ -2144,6 +2217,8 @@
                     },
                     "picker": {
                         "add_script": "Добавить сценарий",
+                        "duplicate": "Дублировать",
+                        "duplicate_script": "Дублировать",
                         "edit_script": "Редактировать сценарий",
                         "header": "Редактор сценариев",
                         "headers": {
@@ -2217,6 +2292,8 @@
                     "add_tag": "Добавить метку",
                     "automation_title": "Считана метка {name}",
                     "caption": "Метки",
+                    "confirm_remove": "Вы уверены, что хотите удалить метку {tag}?",
+                    "confirm_remove_title": "Удалить метку?",
                     "create_automation": "Создать автоматизацию с меткой",
                     "description": "Управление метками",
                     "detail": {
@@ -2276,6 +2353,7 @@
                         "update_user": "Обновить"
                     },
                     "picker": {
+                        "add_user": "Добавить пользователя",
                         "headers": {
                             "group": "Группа",
                             "name": "Имя",
@@ -2556,6 +2634,8 @@
                         "filter_attributes": "Поиск",
                         "filter_entities": "Поиск",
                         "filter_states": "Поиск",
+                        "last_changed": "Последнее изменение",
+                        "last_updated": "Последнее обновление",
                         "more_info": "Подробнее",
                         "no_entities": "Не найдено",
                         "set_state": "Задать состояние",
@@ -2667,7 +2747,7 @@
                             "name": "Панель сигнализации"
                         },
                         "button": {
-                            "default_action_help": "Действие по умолчанию зависит от возможностей объекта. Это может быть переключение состояния, либо будет отображение дополнительной информации.",
+                            "default_action_help": "Действие по умолчанию зависит от возможностей объекта. Это может быть переключение состояния, либо отображение дополнительной информации.",
                             "description": "Позволяет добавлять кнопки для выполнения каких-либо задач.",
                             "name": "Кнопка"
                         },
@@ -2807,6 +2887,10 @@
                             "description": "Позволяет контролировать источник света, изменять яркость.",
                             "name": "Освещение"
                         },
+                        "logbook": {
+                            "description": "Отображает список событий для объектов.",
+                            "name": "Журнал событий"
+                        },
                         "map": {
                             "dark_mode": "Тёмная тема",
                             "default_zoom": "Масштаб по умолчанию",
@@ -2879,14 +2963,21 @@
                         "entity": "Объект",
                         "no_description": "Описание недоступно."
                     },
+                    "common": {
+                        "add": "Добавить",
+                        "clear": "Очистить",
+                        "edit": "Изменить",
+                        "none": "Не выбрано"
+                    },
                     "edit_badges": {
                         "panel_mode": "В режиме панели значки на вкладке отображаться не будут."
                     },
                     "edit_card": {
                         "add": "Добавить карточку",
+                        "clear": "Очистить",
                         "confirm_cancel": "Вы уверены, что хотите отменить?",
                         "delete": "Удалить",
-                        "duplicate": "Копировать",
+                        "duplicate": "Дублировать",
                         "edit": "Изменить",
                         "header": "Настройка карточки",
                         "move": "Переместить",
@@ -2924,6 +3015,22 @@
                         }
                     },
                     "header": "Редактирование интерфейса",
+                    "header-footer": {
+                        "choose_header_footer": "Выберите {type}",
+                        "footer": "Footer",
+                        "header": "Header",
+                        "types": {
+                            "buttons": {
+                                "name": "Кнопки"
+                            },
+                            "graph": {
+                                "name": "График"
+                            },
+                            "picture": {
+                                "name": "Изображение"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Открыть меню пользовательского интерфейса Lovelace",
                         "raw_editor": "Текстовый редактор"
@@ -2967,6 +3074,13 @@
                     "select_view": {
                         "dashboard_label": "Панель",
                         "header": "Выберите вкладку"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Footer",
+                            "header": "Header",
+                            "row": "Редактор строки объекта"
+                        }
                     },
                     "suggest_card": {
                         "add": "Подтвердить",

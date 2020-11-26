@@ -27,7 +27,7 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: ActionRowConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
   }
@@ -69,6 +69,9 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     return css`
       mwc-button {
         margin-right: -0.57em;
+      }
+      :host {
+        cursor: pointer;
       }
     `;
   }

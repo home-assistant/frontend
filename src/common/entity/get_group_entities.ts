@@ -1,5 +1,5 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { GroupEntity } from "../../types";
+import { GroupEntity } from "../../data/group";
 
 export const getGroupEntities = (
   entities: HassEntities,

@@ -78,7 +78,7 @@
             "triggered": "Trig"
         },
         "default": {
-            "entity_not_found": "Entity Not Found",
+            "entity_not_found": "Entity not found",
             "error": "Error",
             "unavailable": "Unavai",
             "unknown": "Unk"
@@ -547,6 +547,11 @@
                 "clear": "Clear",
                 "show_areas": "Show areas"
             },
+            "blueprint-picker": {
+                "add_user": "Add user",
+                "remove_user": "Remove user",
+                "select_blueprint": "Select a Blueprint"
+            },
             "data-table": {
                 "no-data": "No data",
                 "search": "Search"
@@ -741,7 +746,7 @@
                     "update": "Update"
                 },
                 "faq": "documentation",
-                "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
+                "no_unique_id": "This entity (\"{entity_id}\") does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
                 "related": "Related",
                 "settings": "Settings"
             },
@@ -805,7 +810,9 @@
             "more_info_control": {
                 "controls": "Controls",
                 "cover": {
+                    "close_cover": "Close cover",
                     "close_tile_cover": "Close cover tilt",
+                    "open_cover": "Open cover",
                     "open_tilt_cover": "Open cover tilt",
                     "stop_cover": "Stop cover from moving"
                 },
@@ -872,6 +879,29 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Areas",
+                        "automation": "Automations",
+                        "blueprint": "Blueprints",
+                        "core": "General",
+                        "customize": "Customizations",
+                        "devices": "Devices",
+                        "entities": "Entities",
+                        "helpers": "Helpers",
+                        "info": "Info",
+                        "integrations": "Integrations",
+                        "logs": "Logs",
+                        "lovelace": "Lovelace Dashboards",
+                        "navigate_to": "Navigate to {panel}",
+                        "navigate_to_config": "Navigate to {panel} configuration",
+                        "person": "People",
+                        "scene": "Scenes",
+                        "script": "Scripts",
+                        "server_control": "Server Controls",
+                        "tags": "Tags",
+                        "users": "Users",
+                        "zone": "Zones"
+                    },
                     "reload": {
                         "automation": "Reload automations",
                         "command_line": "Reload command line entities",
@@ -1022,6 +1052,20 @@
                 "automation": {
                     "caption": "Automations",
                     "description": "Manage automations",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Use a blueprint"
+                        },
+                        "header": "Create a new automation",
+                        "how": "How do you want to create your new automation?",
+                        "start_empty": "Start with an empty automation",
+                        "thingtalk": {
+                            "create": "Create",
+                            "header": "Describe the automation you want to create",
+                            "input_label": "What should this automation do?",
+                            "intro": "And we will try to create it for you. For example: Turn the lights off when I leave."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Add action",
@@ -1102,6 +1146,14 @@
                             "unsupported_action": "No UI support for action: {action}"
                         },
                         "alias": "Name",
+                        "blueprint": {
+                            "blueprint_to_use": "Blueprint to use",
+                            "header": "Blueprint",
+                            "inputs": "Inputs",
+                            "manage_blueprints": "Manage Blueprints",
+                            "no_blueprints": "You don't have any blueprints",
+                            "no_inputs": "This blueprint doesn't have any inputs."
+                        },
                         "conditions": {
                             "add": "Add condition",
                             "delete": "Delete",
@@ -1342,6 +1394,33 @@
                             "introduction": "Type below what this automation should do, and we will try to convert it into a Home Assistant automation.",
                             "language_note": "Note: Only English is supported for now."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Please enter the URL of the blueprint.",
+                        "header": "Add new blueprint",
+                        "import_btn": "Import blueprint",
+                        "import_header": "Import {name} ({domain})",
+                        "import_introduction": "You can import blueprints of other users from Github and the community forums. Enter the URL of the blueprint below.",
+                        "importing": "Importing blueprint...",
+                        "save_btn": "Save blueprint",
+                        "saving": "Saving blueprint...",
+                        "unsupported_blueprint": "This blueprint is not supported",
+                        "url": "URL of the blueprint"
+                    },
+                    "caption": "Blueprints",
+                    "description": "Manage blueprints",
+                    "overview": {
+                        "add_blueprint": "Add blueprint",
+                        "confirm_delete_header": "Delete this blueprint?",
+                        "confirm_delete_text": "Are you sure you want to delete this blueprint",
+                        "header": "Blueprint Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
+                        "introduction": "The blueprint editor allows you to create and edit blueprints.",
+                        "learn_more": "Learn more about blueprints"
                     }
                 },
                 "cloud": {
@@ -1719,6 +1798,8 @@
                 "info": {
                     "built_using": "Built using",
                     "caption": "Info",
+                    "copy_github": "For GitHub",
+                    "copy_raw": "Raw Text",
                     "custom_uis": "Custom UIs:",
                     "description": "View info about your Home Assistant installation",
                     "developed_by": "Developed by a bunch of awesome people.",
@@ -1786,11 +1867,11 @@
                         "delete": "Delete",
                         "delete_button": "Delete {integration}",
                         "delete_confirm": "Are you sure you want to delete this integration?",
-                        "device_unavailable": "device unavailable",
+                        "device_unavailable": "Device unavailable",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
                         "documentation": "Documentation",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
-                        "entity_unavailable": "entity unavailable",
+                        "entity_unavailable": "Entity unavailable",
                         "firmware": "Firmware: {version}",
                         "hub": "Connected via",
                         "manuf": "by {manufacturer}",
@@ -2323,6 +2404,7 @@
                         "update_user": "Update"
                     },
                     "picker": {
+                        "add_user": "Add user",
                         "headers": {
                             "group": "Group",
                             "name": "Name",
@@ -2603,6 +2685,8 @@
                         "filter_attributes": "Filter attributes",
                         "filter_entities": "Filter entities",
                         "filter_states": "Filter states",
+                        "last_changed": "Last changed",
+                        "last_updated": "Last updated",
                         "more_info": "More Info",
                         "no_entities": "No entities",
                         "set_state": "Set State",
@@ -2854,6 +2938,10 @@
                             "description": "The Light card allows you to change the brightness of the light.",
                             "name": "Light"
                         },
+                        "logbook": {
+                            "description": "The Logbook card shows a list of events for entities.",
+                            "name": "Logbook"
+                        },
                         "map": {
                             "dark_mode": "Dark Mode?",
                             "default_zoom": "Default Zoom",
@@ -2882,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog.",
-                            "name": "Picture Glance"
+                            "name": "Picture Glance",
+                            "state_entity": "State Entity"
                         },
                         "picture": {
                             "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service.",
@@ -3093,7 +3182,7 @@
                     "attribute_not_found": "Attribute {attribute} not available in: {entity}",
                     "entity_non_numeric": "Entity is non-numeric: {entity}",
                     "entity_not_found": "Entity not available: {entity}",
-                    "entity_unavailable": "{entity} is currently unavailable",
+                    "entity_unavailable": "Entity is currently unavailable: {entity}",
                     "starting": "Home Assistant is starting, not everything may be available yet"
                 }
             },

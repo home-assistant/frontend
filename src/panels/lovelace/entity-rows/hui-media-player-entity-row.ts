@@ -28,6 +28,7 @@ import {
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
   computeMediaDescription,
+  MediaPlayerEntity,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -51,7 +52,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
-      throw new Error("Invalid Configuration: 'entity' required");
+      throw new Error("Entity must be specified");
     }
 
     this._config = config;
@@ -80,7 +81,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity] as MediaPlayerEntity;
     const state = stateObj.state;
 
     if (!stateObj) {

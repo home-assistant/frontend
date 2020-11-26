@@ -547,6 +547,11 @@
                 "clear": "Puhasta",
                 "show_areas": "Näita alasid"
             },
+            "blueprint-picker": {
+                "add_user": "Lisa kasutaja",
+                "remove_user": "Kustuta kasutaja",
+                "select_blueprint": "Kavandi valimine"
+            },
             "data-table": {
                 "no-data": "Andmeid pole",
                 "search": "Otsing"
@@ -741,7 +746,7 @@
                     "update": "Uuenda"
                 },
                 "faq": "dokumentatsioon",
-                "no_unique_id": "Sellel olemil puudub unikaalne ID-d. Seetõttu ei saa selle seadeid kasutajaliidesest hallata. Lisainfot vaata {faq_link}.",
+                "no_unique_id": "Olemil (\"{entity_id}\") puudub unikaalne ID-d. Seetõttu ei saa selle seadeid kasutajaliidesest hallata. Lisainfot vaata {faq_link}.",
                 "related": "Seotud",
                 "settings": "Seaded"
             },
@@ -805,7 +810,9 @@
             "more_info_control": {
                 "controls": "Juhtelemendid",
                 "cover": {
+                    "close_cover": "Sulge kate",
                     "close_tile_cover": "Sulge katte ribid",
+                    "open_cover": "Ava kate",
                     "open_tilt_cover": "Ava katte ribid",
                     "stop_cover": "Peata katte liikumine"
                 },
@@ -872,6 +879,29 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Alad",
+                        "automation": "Automatiseeringud",
+                        "blueprint": "Kavandid",
+                        "core": "Üldine",
+                        "customize": "Kohandamised",
+                        "devices": "Seadmed",
+                        "entities": "Olemid",
+                        "helpers": "Abimehed",
+                        "info": "Info",
+                        "integrations": "Sidumised",
+                        "logs": "Logid",
+                        "lovelace": "Lovelace vaated",
+                        "navigate_to": "Mine vaatesse {panel}",
+                        "navigate_to_config": "Mine vaate {panel} sätetesse",
+                        "person": "Isikud",
+                        "scene": "Stseenid",
+                        "script": "Scriptid",
+                        "server_control": "Serveri juhtimine",
+                        "tags": "Märgised",
+                        "users": "Kasutajad",
+                        "zone": "Tsoonid"
+                    },
                     "reload": {
                         "automation": "Taaslae automatiseeringud",
                         "command_line": "Taaslae käsurea olemid",
@@ -903,7 +933,7 @@
                         "template": "Taaslae mallisisestused",
                         "trend": "Taaslae trendide olemid",
                         "universal": "Taaslae meediumimängija olemid",
-                        "zone": "Tasslae tsoonid"
+                        "zone": "Taaslae tsoonid"
                     },
                     "server_control": {
                         "perform_action": "{action} server",
@@ -1022,6 +1052,20 @@
                 "automation": {
                     "caption": "Automatiseeringud",
                     "description": "Loo ja redigeeri automatiseeringuid",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Kasuta kavandit"
+                        },
+                        "header": "Loo uus automatiseering",
+                        "how": "Kuidas soovid luua oma uue automaatiseeringu?",
+                        "start_empty": "Loo tühi automaatiseering",
+                        "thingtalk": {
+                            "create": "Loo",
+                            "header": "Kirjelda automatiseeringut mida soovid luua",
+                            "input_label": "Mida peaks see automatiseering tegema?",
+                            "intro": "Me püüame selle Sulle luua. Näiteks: lülita tuled välja kui ma lahkun."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Lisa toiming",
@@ -1102,6 +1146,14 @@
                             "unsupported_action": "Kasutajaliides ei toeta tegevust: {action}"
                         },
                         "alias": "Nimi",
+                        "blueprint": {
+                            "blueprint_to_use": "Kasutatav kavand",
+                            "header": "",
+                            "inputs": "Sisendid",
+                            "manage_blueprints": "Kavandite haldamine",
+                            "no_blueprints": "Kavandid puuduvad",
+                            "no_inputs": "Sellel kavandil puuduvad sisendid."
+                        },
                         "conditions": {
                             "add": "Lisa tingimus",
                             "delete": "Kustuta",
@@ -1340,8 +1392,35 @@
                             "for_example": "Näiteks:",
                             "header": "Loo uus automatiseering",
                             "introduction": "Sisesta allpool, mida see automaatiseering peaks tegema, ja proovime selle teisendada Home Assistanti automaatiseeringuks.",
-                            "language_note": "Märkus. Praegu toetatakse ainult inglise keelt."
+                            "language_note": "Märkus: praegu toetatakse ainult inglise keelt."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Sisesta kavandi URL.",
+                        "header": "Uue kavandi lisamine",
+                        "import_btn": "Impordi kavand",
+                        "import_header": "Impordi {name} ( {domain} )",
+                        "import_introduction": "Teiste kasutajate kavandeid saad importida Githubist ja kogukonna foorumitest. Sisesta alloleva kavandi URL.",
+                        "importing": "Kavandi importimine ...",
+                        "save_btn": "Salvesta kavand",
+                        "saving": "Kavandi salvestamine ...",
+                        "unsupported_blueprint": "Seda kavandit ei toetata",
+                        "url": "Kavandi URL"
+                    },
+                    "caption": "",
+                    "description": "Kavandite haldamine",
+                    "overview": {
+                        "add_blueprint": "Lisa kavand",
+                        "confirm_delete_header": "Kas kustutada see kavand?",
+                        "confirm_delete_text": "Kas soovid kindlasti selle kavandi kustutada?",
+                        "header": "Kavandi redaktor",
+                        "headers": {
+                            "name": "Nimi"
+                        },
+                        "introduction": "Kavandite redaktor võimaldab luua ja muuta kavandeid.",
+                        "learn_more": "Lisateave kavandite kohta"
                     }
                 },
                 "cloud": {
@@ -1719,6 +1798,8 @@
                 "info": {
                     "built_using": "Ehitatud kasutades",
                     "caption": "Info",
+                    "copy_github": "GitHubi jaoks",
+                    "copy_raw": "Ainult tekst",
                     "custom_uis": "Kohandatud kasutajaliidesed:",
                     "description": "Kuva Home Assistant'i info",
                     "developed_by": "Tehtud paljude lahedate inimeste poolt.",
@@ -1786,11 +1867,11 @@
                         "delete": "Kustuta",
                         "delete_button": "Kustuta {integration}",
                         "delete_confirm": "Oled kindel, et soovid selle sidumise kustutada?",
-                        "device_unavailable": "seade pole saadaval",
+                        "device_unavailable": "Seade pole saadaval",
                         "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
                         "documentation": "Vaata dokumentatsiooni",
                         "entities": "{count} {count, plural,\n  one {olem}\n  other{olemit}\n}",
-                        "entity_unavailable": "olem pole saadaval",
+                        "entity_unavailable": "Olem pole saadaval",
                         "firmware": "Püsivara: {version}",
                         "hub": "Ühendatud",
                         "manuf": "{manufacturer}",
@@ -2187,6 +2268,8 @@
                     },
                     "picker": {
                         "add_script": "Lisa uus skript",
+                        "duplicate": "Klooni",
+                        "duplicate_script": "Klooni skript",
                         "edit_script": "Muuda skripti",
                         "header": "Skriptiredaktor",
                         "headers": {
@@ -2231,7 +2314,7 @@
                             "rpi_gpio": "Taaslae Raspberry Pi GPIO üksused",
                             "scene": "Taaslae stseenid",
                             "script": "Taaslae skriptid",
-                            "smtp": "TAASLAE SMTP TEAVITUSED",
+                            "smtp": "TAASLAE SMTP TEAVITUSTEENUSED",
                             "statistics": "TAASLAE STATISTIKAOLEMID",
                             "telegram": "TAASLAE TELEGRAM TEAVITUSE OLEMID",
                             "template": "TAASLAE MALLIOLEMID",
@@ -2321,6 +2404,7 @@
                         "update_user": "Uuenda"
                     },
                     "picker": {
+                        "add_user": "Lisa kasutaja",
                         "headers": {
                             "group": "Grupp",
                             "name": "Nimi",
@@ -2601,6 +2685,8 @@
                         "filter_attributes": "Filtreeri atribuute",
                         "filter_entities": "Filtreeri olemeid",
                         "filter_states": "Filtreeri olekuid",
+                        "last_changed": "Viimati muudetud",
+                        "last_updated": "Viimati uuendatud",
                         "more_info": "Rohkem infot",
                         "no_entities": "Olemid puuduvad",
                         "set_state": "Määra olek",
@@ -2764,7 +2850,7 @@
                                 "last-changed": "Viimati muudetud",
                                 "last-triggered": "Viimati vallandunud",
                                 "last-updated": "Viimati uuendatud",
-                                "none": "Teisene teave puudub",
+                                "none": "Lisateave puudub",
                                 "position": "Asend",
                                 "tilt-position": "Kalle"
                             },
@@ -2852,6 +2938,10 @@
                             "description": "Valgustikaart võimaldab muuta valguse heledust.",
                             "name": "Valgusti"
                         },
+                        "logbook": {
+                            "description": "Logiraamatu kaardil kuvatakse olemite sündmuste loend.",
+                            "name": "Logiraamat"
+                        },
                         "map": {
                             "dark_mode": "Tume režiim?",
                             "default_zoom": "Vaikesuurendus",
@@ -2880,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "Kaardil Picture Glance kuvatakse pilt ja vastav olem ikoonina. Paremal asuvatel olemitel on lubatud tumblertoimingud, teised näitavad teabedialoogi.",
-                            "name": "Pildi pilk"
+                            "name": "Pildi pilk",
+                            "state_entity": "Oleku olem"
                         },
                         "picture": {
                             "description": "Pildikaart võimaldab teil määrata pildi mida kasutatakse liidese erinevatesse kohtadesse navigeerimiseks või teenuse väljakutsumiseks.",

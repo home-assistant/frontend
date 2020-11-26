@@ -547,6 +547,11 @@
                 "clear": "Limpiar",
                 "show_areas": "Mostrar áreas"
             },
+            "blueprint-picker": {
+                "add_user": "Añadir usuario",
+                "remove_user": "Eliminar usuario",
+                "select_blueprint": "Selecciona un plano"
+            },
             "data-table": {
                 "no-data": "Sin datos",
                 "search": "Buscar"
@@ -588,7 +593,7 @@
                     "cleared_device_class": "no detectado (no se detecta {device_class})",
                     "detected_device_class": "detectado {device_class}",
                     "rose": "salió",
-                    "set": "Establecer",
+                    "set": "se puso",
                     "turned_off": "apagado",
                     "turned_on": "encendido",
                     "was_at_home": "estaba en casa",
@@ -741,7 +746,7 @@
                     "update": "Actualizar"
                 },
                 "faq": "documentación",
-                "no_unique_id": "Esta entidad no tiene una ID única, por lo que su configuración no se puede administrar desde la IU. Consulta {faq_link} para más detalles.",
+                "no_unique_id": "Esta entidad (\"{entity_id}\") no tiene un ID único, por lo tanto, su configuración no se puede administrar desde la IU. Consulta el {faq_link} para obtener más detalles.",
                 "related": "Relacionado",
                 "settings": "Configuración"
             },
@@ -805,7 +810,9 @@
             "more_info_control": {
                 "controls": "Controles",
                 "cover": {
+                    "close_cover": "Cerrar persiana",
                     "close_tile_cover": "Cerrar la inclinación de la persiana",
+                    "open_cover": "Abrir persiana",
                     "open_tilt_cover": "Inclinación de la persiana abierta",
                     "stop_cover": "Detener el movimiento de la persiana"
                 },
@@ -872,6 +879,29 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Áreas",
+                        "automation": "Automatizaciones",
+                        "blueprint": "Planos",
+                        "core": "Configuración general",
+                        "customize": "Personalizaciones",
+                        "devices": "Dispositivos",
+                        "entities": "Entidades",
+                        "helpers": "Ayudantes",
+                        "info": "Información",
+                        "integrations": "Integraciones",
+                        "logs": "Registros",
+                        "lovelace": "Paneles de Control Lovelace",
+                        "navigate_to": "Navegar a {panel}",
+                        "navigate_to_config": "Navegar a la configuración de {panel}",
+                        "person": "Personas",
+                        "scene": "Escenas",
+                        "script": "Scripts",
+                        "server_control": "Controles del servidor",
+                        "tags": "Etiquetas",
+                        "users": "Usuarios",
+                        "zone": "Zonas"
+                    },
                     "reload": {
                         "automation": "Recargar automatizaciones",
                         "command_line": "Recargar entidades de línea de comandos",
@@ -889,7 +919,7 @@
                         "input_select": "Recargar los campos desplegables",
                         "input_text": "Recargar los campos de texto",
                         "min_max": "Recargar entidades min/max",
-                        "mqtt": "Recargar entidades mqtt configuradas manualmente",
+                        "mqtt": "Recargar entidades MQTT configuradas manualmente",
                         "person": "Recargar personas",
                         "ping": "Recargar entidades de sensor binario de ping",
                         "reload": "Recargar {domain}",
@@ -897,7 +927,7 @@
                         "rpi_gpio": "Recargar entidades GPIO de Raspberry Pi",
                         "scene": "Recargar escenas",
                         "script": "Recargar scripts",
-                        "smtp": "Recargar servicios de notificación smtp",
+                        "smtp": "Recargar servicios de notificación SMTP",
                         "statistics": "Recargar entidades de estadísticas",
                         "telegram": "Recargar servicios de notificación de telegram",
                         "template": "Recargar entidades de plantilla",
@@ -1022,6 +1052,20 @@
                 "automation": {
                     "caption": "Automatizaciones",
                     "description": "Administra las automatizaciones",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Usa un plano"
+                        },
+                        "header": "Crear una nueva automatización",
+                        "how": "¿Cómo quieres crear tu nueva automatización?",
+                        "start_empty": "Empezar con una automatización vacía",
+                        "thingtalk": {
+                            "create": "Crear",
+                            "header": "Describe la automatización que quieres crear",
+                            "input_label": "¿Qué debería hacer esta automatización?",
+                            "intro": "E intentaremos crearla para ti. Por ejemplo: Apaga las luces cuando me vaya."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Añadir acción",
@@ -1102,6 +1146,14 @@
                             "unsupported_action": "No hay soporte en la IU para la acción: {action}"
                         },
                         "alias": "Nombre",
+                        "blueprint": {
+                            "blueprint_to_use": "Plano a utilizar",
+                            "header": "Plano",
+                            "inputs": "Entradas",
+                            "manage_blueprints": "Administrar planos",
+                            "no_blueprints": "No tienes ningún plano",
+                            "no_inputs": "Este plano no tiene ninguna entrada."
+                        },
                         "conditions": {
                             "add": "Añadir condición",
                             "delete": "Eliminar",
@@ -1342,6 +1394,33 @@
                             "introduction": "Escribe a continuación lo que debe hacer esta automatización, e intentaremos convertirlo en una automatización de Home Assistant.",
                             "language_note": "Nota: Solo se admite Inglés por ahora."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Por favor, introduce la URL del plano.",
+                        "header": "Añadir nuevo plano",
+                        "import_btn": "Importar plano",
+                        "import_header": "Importar {name} ({domain})",
+                        "import_introduction": "Puedes importar planos de otros usuarios desde Github y los foros de la comunidad. Introduce la URL del plano a continuación.",
+                        "importing": "Importando plano...",
+                        "save_btn": "Guardar plano",
+                        "saving": "Guardando plano...",
+                        "unsupported_blueprint": "Este plano no es compatible",
+                        "url": "URL del plano"
+                    },
+                    "caption": "Planos",
+                    "description": "Administrar planos",
+                    "overview": {
+                        "add_blueprint": "Añadir plano",
+                        "confirm_delete_header": "¿Eliminar este plano?",
+                        "confirm_delete_text": "¿Estás seguro de que quieres borrar este plano?",
+                        "header": "Editor de planos",
+                        "headers": {
+                            "name": "Nombre"
+                        },
+                        "introduction": "El editor de planos te permite crear y editar planos.",
+                        "learn_more": "Más información sobre planos"
                     }
                 },
                 "cloud": {
@@ -1719,6 +1798,8 @@
                 "info": {
                     "built_using": "Construido usando",
                     "caption": "Información",
+                    "copy_github": "Para GitHub",
+                    "copy_raw": "Texto sin procesar",
                     "custom_uis": "IU personalizadas:",
                     "description": "Ver información sobre tu instalación de Home Assistant",
                     "developed_by": "Desarrollado por un montón de gente impresionante.",
@@ -1786,11 +1867,11 @@
                         "delete": "Eliminar",
                         "delete_button": "Eliminar {integration}",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
-                        "device_unavailable": "dispositivo no disponible",
+                        "device_unavailable": "Dispositivo no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
                         "documentation": "Documentación",
                         "entities": "{count} {count, plural,\n  one {entidad}\n  other {entidades}\n}",
-                        "entity_unavailable": "entidad no disponible",
+                        "entity_unavailable": "Entidad no disponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado a través de",
                         "manuf": "por {manufacturer}",
@@ -2187,6 +2268,8 @@
                     },
                     "picker": {
                         "add_script": "Añadir script",
+                        "duplicate": "Duplicar",
+                        "duplicate_script": "Duplicar script",
                         "edit_script": "Editar script",
                         "header": "Editor de scripts",
                         "headers": {
@@ -2223,7 +2306,7 @@
                             "input_text": "Recargar los campos de texto",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
                             "min_max": "Recargar entidades min/max",
-                            "mqtt": "Recargar entidades mqtt configuradas manualmente",
+                            "mqtt": "Recargar entidades MQTT configuradas manualmente",
                             "person": "Recargar personas",
                             "ping": "Recargar entidades de sensor binario de ping",
                             "reload": "Recargar {domain}",
@@ -2231,7 +2314,7 @@
                             "rpi_gpio": "Recargar entidades GPIO de Raspberry Pi",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",
-                            "smtp": "Recargar servicios de notificación smtp",
+                            "smtp": "Recargar servicios de notificación SMTP",
                             "statistics": "Recargar entidades de estadísticas",
                             "telegram": "Recargar servicios de notificación de telegram",
                             "template": "Recargar entidades de plantilla",
@@ -2321,6 +2404,7 @@
                         "update_user": "Actualizar"
                     },
                     "picker": {
+                        "add_user": "Añadir usuario",
                         "headers": {
                             "group": "Grupo",
                             "name": "Nombre",
@@ -2601,6 +2685,8 @@
                         "filter_attributes": "Filtrar atributos",
                         "filter_entities": "Filtrar entidades",
                         "filter_states": "Filtrar estados",
+                        "last_changed": "Último cambio",
+                        "last_updated": "Última actualización",
                         "more_info": "Más Información",
                         "no_entities": "Sin entidades",
                         "set_state": "Establecer estado",
@@ -2852,6 +2938,10 @@
                             "description": "La tarjeta de luz te permite cambiar la intensidad de la luz.",
                             "name": "Luz"
                         },
+                        "logbook": {
+                            "description": "La tarjeta Registro muestra una lista de eventos para las entidades.",
+                            "name": "Registro"
+                        },
                         "map": {
                             "dark_mode": "¿Modo oscuro?",
                             "default_zoom": "Zoom predeterminado",
@@ -2880,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "La tarjeta Vistazo de Imagen muestra una imagen y los estados de entidad correspondientes como un icono. Las entidades en el lado derecho permiten alternar acciones, otras muestran el diálogo de más información.",
-                            "name": "Vistazo de imagen"
+                            "name": "Vistazo de imagen",
+                            "state_entity": "Entidad de estado"
                         },
                         "picture": {
                             "description": "La tarjeta Imagen le permite configurar una imagen para usarla para navegar por varias rutas en su interfaz o para llamar a un servicio.",
@@ -3091,7 +3182,7 @@
                     "attribute_not_found": "El atributo {attribute} no está disponible en: {entity}",
                     "entity_non_numeric": "La entidad no es numérica: {entity}",
                     "entity_not_found": "La entidad no está disponible: {entity}",
-                    "entity_unavailable": "{entity} no está disponible actualmente",
+                    "entity_unavailable": "La entidad no está disponible actualmente: {entity}",
                     "starting": "Home Assistant se está iniciando, puede que no todo esté disponible todavía"
                 }
             },

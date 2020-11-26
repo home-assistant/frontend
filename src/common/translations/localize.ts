@@ -102,7 +102,7 @@ export const computeLocalize = async (
 export const localizeKey = (
   localize: LocalizeFunc,
   key: string,
-  placeholders?: { [key: string]: string }
+  placeholders?: Record<string, string>
 ) => {
   const args: [string, ...string[]] = [key];
   if (placeholders) {

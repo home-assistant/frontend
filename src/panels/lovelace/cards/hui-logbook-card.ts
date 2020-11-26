@@ -29,9 +29,7 @@ import type { LogbookCardConfig } from "./types";
 @customElement("hui-logbook-card")
 export class HuiLogbookCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-logbook-card-editor" */ "../editor/config-elements/hui-logbook-card-editor"
-    );
+    await import("../editor/config-elements/hui-logbook-card-editor");
     return document.createElement("hui-logbook-card-editor");
   }
 
@@ -76,6 +74,10 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: LogbookCardConfig): void {
+    if (!config.entities.length) {
+      throw new Error("Entities must be specified");
+    }
+
     this._configEntities = processConfigEntities<EntityConfig>(config.entities);
 
     this._config = {

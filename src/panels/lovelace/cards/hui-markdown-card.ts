@@ -25,9 +25,7 @@ import type { MarkdownCardConfig } from "./types";
 @customElement("hui-markdown-card")
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-markdown-card-editor" */ "../editor/config-elements/hui-markdown-card-editor"
-    );
+    await import("../editor/config-elements/hui-markdown-card-editor");
     return document.createElement("hui-markdown-card-editor");
   }
 
@@ -58,7 +56,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: MarkdownCardConfig): void {
     if (!config.content) {
-      throw new Error("Invalid Configuration: Content Required");
+      throw new Error("Content required");
     }
 
     if (this._config?.content !== config.content) {

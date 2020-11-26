@@ -32,7 +32,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: CastConfig): void {
     if (!config || config.view === undefined || config.view === null) {
-      throw new Error("Invalid Configuration: 'view' required");
+      throw new Error("View required");
     }
 
     this._config = {

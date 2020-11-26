@@ -26,9 +26,7 @@ import { HistoryGraphCardConfig } from "./types";
 @customElement("hui-history-graph-card")
 export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
-    await import(
-      /* webpackChunkName: "hui-history-graph-card-editor" */ "../editor/config-elements/hui-history-graph-card-editor"
-    );
+    await import("../editor/config-elements/hui-history-graph-card-editor");
     return document.createElement("hui-history-graph-card-editor");
   }
 
@@ -58,7 +56,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _configEntities?: EntityConfig[];
 
-  private _names: { [key: string]: string } = {};
+  private _names: Record<string, string> = {};
 
   private _cacheConfig?: CacheConfig;
 
@@ -73,8 +71,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
-    if (!config.entities) {
-      throw new Error("Entities must be defined");
+    if (!config.entities.length) {
+      throw new Error("Entities must be specified");
     }
 
     if (config.entities && !Array.isArray(config.entities)) {

@@ -34,9 +34,7 @@ import { EntitiesCardConfig } from "./types";
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-entities-card-editor" */ "../editor/config-elements/hui-entities-card-editor"
-    );
+    await import("../editor/config-elements/hui-entities-card-editor");
     return document.createElement("hui-entities-card-editor");
   }
 
@@ -111,6 +109,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: EntitiesCardConfig): void {
+    if (!config || !config.entities.length) {
+      throw new Error("Entities must be specified");
+    }
+
     const entities = processConfigEntities(config.entities);
 
     this._config = config;

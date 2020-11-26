@@ -29,14 +29,14 @@ export interface ScriptConfig {
 
 export interface EventAction {
   event: string;
-  event_data?: { [key: string]: any };
-  event_data_template?: { [key: string]: any };
+  event_data?: Record<string, any>;
+  event_data_template?: Record<string, any>;
 }
 
 export interface ServiceAction {
   service: string;
   entity_id?: string;
-  data?: { [key: string]: any };
+  data?: Record<string, any>;
 }
 
 export interface DeviceAction {

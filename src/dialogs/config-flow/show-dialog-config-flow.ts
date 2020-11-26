@@ -162,7 +162,11 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormProgressHeader(hass, step) {
-      return hass.localize(`component.${step.handler}.title`);
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.title`
+        ) || hass.localize(`component.${step.handler}.title`)
+      );
     },
 
     renderShowFormProgressDescription(hass, step) {

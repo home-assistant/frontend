@@ -31,7 +31,6 @@ import "../../../common/search/search-input";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
-  DataTableColumnData,
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
@@ -156,27 +155,53 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoize(
-    (narrow, _language): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
-        icon: {
-          title: "",
-          type: "icon",
-          template: (icon) => html`
-            <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
-          `,
-        },
-        name: {
-          title: this.hass.localize(
-            "ui.panel.config.entities.picker.headers.name"
-          ),
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-          grows: true,
-        },
-      };
-
-      const statusColumn: DataTableColumnData = {
+    (narrow, _language): DataTableColumnContainer => ({
+      icon: {
+        title: "",
+        type: "icon",
+        template: (icon) => html`
+          <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
+        `,
+      },
+      name: {
+        title: this.hass.localize(
+          "ui.panel.config.entities.picker.headers.name"
+        ),
+        sortable: true,
+        filterable: true,
+        direction: "asc",
+        grows: true,
+        template: narrow
+          ? (name, entity: any) =>
+              html`
+                ${name}<br />
+                ${entity.entity_id} |
+                ${this.hass.localize(`component.${entity.platform}.title`) ||
+                entity.platform}
+              `
+          : undefined,
+      },
+      entity_id: {
+        title: this.hass.localize(
+          "ui.panel.config.entities.picker.headers.entity_id"
+        ),
+        hidden: narrow,
+        sortable: true,
+        filterable: true,
+        width: "25%",
+      },
+      platform: {
+        title: this.hass.localize(
+          "ui.panel.config.entities.picker.headers.integration"
+        ),
+        hidden: narrow,
+        sortable: true,
+        filterable: true,
+        width: "20%",
+        template: (platform) =>
+          this.hass.localize(`component.${platform}.title`) || platform,
+      },
+      status: {
         title: this.hass.localize(
           "ui.panel.config.entities.picker.headers.status"
         ),
@@ -223,43 +248,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 </div>
               `
             : "",
-      };
-
-      if (narrow) {
-        columns.name.template = (name, entity: any) => {
-          return html`
-            ${name}<br />
-            ${entity.entity_id} |
-            ${this.hass.localize(`component.${entity.platform}.title`) ||
-            entity.platform}
-          `;
-        };
-        columns.status = statusColumn;
-        return columns;
-      }
-
-      columns.entity_id = {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.entity_id"
-        ),
-        sortable: true,
-        filterable: true,
-        width: "25%",
-      };
-      columns.platform = {
-        title: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.integration"
-        ),
-        sortable: true,
-        filterable: true,
-        width: "20%",
-        template: (platform) =>
-          this.hass.localize(`component.${platform}.title`) || platform,
-      };
-      columns.status = statusColumn;
-
-      return columns;
-    }
+      },
+    })
   );
 
   private _filteredEntities = memoize(

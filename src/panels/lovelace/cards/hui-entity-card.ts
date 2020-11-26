@@ -31,13 +31,12 @@ import {
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
 import { computeCardSize } from "../common/compute-card-size";
+import { formatNumber } from "../../../common/string/format_number";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-entity-card-editor" */ "../editor/config-elements/hui-entity-card-editor"
-    );
+    await import("../editor/config-elements/hui-entity-card-editor");
     return document.createElement("hui-entity-card-editor");
   }
 
@@ -68,8 +67,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
   public setConfig(config: EntityCardConfig): void {
+    if (!config.entity) {
+      throw new Error("Entity must be specified");
+    }
     if (config.entity && !isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
+      throw new Error("Invalid entity");
     }
 
     this._config = config;
@@ -127,7 +129,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               ? stateObj.attributes[this._config.attribute!] ??
                 this.hass.localize("state.default.unknown")
               : stateObj.attributes.unit_of_measurement
-              ? stateObj.state
+              ? formatNumber(stateObj.state, this.hass!.language)
               : computeStateDisplay(
                   this.hass.localize,
                   stateObj,

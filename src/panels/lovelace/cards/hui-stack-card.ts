@@ -18,9 +18,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-stack-card-editor" */ "../editor/config-elements/hui-stack-card-editor"
-    );
+    await import("../editor/config-elements/hui-stack-card-editor");
     return document.createElement("hui-stack-card-editor");
   }
 
@@ -42,7 +40,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   public setConfig(config: T): void {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
-      throw new Error("Card config incorrect");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
     this._cards = config.cards.map((card) => {

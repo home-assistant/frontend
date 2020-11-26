@@ -547,6 +547,11 @@
                 "clear": "Wis",
                 "show_areas": "Toon gebieden"
             },
+            "blueprint-picker": {
+                "add_user": "Gebruiker toevoegen",
+                "remove_user": "Gebruiker verwijderen",
+                "select_blueprint": "Selecteer een blauwdruk"
+            },
             "data-table": {
                 "no-data": "Geen gegevens",
                 "search": "Zoek"
@@ -588,7 +593,7 @@
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
                     "detected_device_class": "gedetecteerd {device_class}",
                     "rose": "opkomst",
-                    "set": "stel  in",
+                    "set": "ondergang",
                     "turned_off": "is uitgeschakeld",
                     "turned_on": "is ingeschakeld",
                     "was_at_home": "was thuis",
@@ -741,7 +746,7 @@
                     "update": "Bijwerken"
                 },
                 "faq": "documentatie",
-                "no_unique_id": "Deze entiteit heeft geen unieke ID, daarom kunnen de instellingen niet worden beheerd vanuit de gebruikersinterface. Zie de {faq_link} voor meer details",
+                "no_unique_id": "Deze entiteit (\" {entity_id} \") heeft geen unieke ID, daarom kunnen de instellingen ervan niet worden beheerd vanuit de gebruikersinterface. Zie de {faq_link} voor meer details.",
                 "related": "Gerelateerd",
                 "settings": "instellingen"
             },
@@ -804,6 +809,13 @@
             },
             "more_info_control": {
                 "controls": "Besturing",
+                "cover": {
+                    "close_cover": "Sluit zonnewering",
+                    "close_tile_cover": "Sluit klep",
+                    "open_cover": "Open zonnewering",
+                    "open_tilt_cover": "Open klep",
+                    "stop_cover": "Stop beweging van zonnewering"
+                },
                 "details": "Details",
                 "dismiss": "Dialoogvenster sluiten",
                 "edit": "Entiteit bewerken",
@@ -867,6 +879,28 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Gebieden",
+                        "automation": "Automatiseringen",
+                        "core": "Algemeen",
+                        "customize": "Aanpassingen",
+                        "devices": "Apparaten",
+                        "entities": "Entiteiten",
+                        "helpers": "Helpers",
+                        "info": "Info",
+                        "integrations": "Integraties",
+                        "logs": "Logs",
+                        "lovelace": "Lovelace Dashboards",
+                        "navigate_to": "Navigeer naar {panel}",
+                        "navigate_to_config": "Navigeer naar {panel} configuratie",
+                        "person": "Personen",
+                        "scene": "Scènes",
+                        "script": "Scripts",
+                        "server_control": "Server Controls",
+                        "tags": "Tags",
+                        "users": "Gebruikers",
+                        "zone": "Zones"
+                    },
                     "reload": {
                         "automation": "Herlaad automatiseringen",
                         "command_line": "Herlaad commandline entiteiten",
@@ -962,7 +996,7 @@
         "notification_drawer": {
             "click_to_configure": "Klik op de knop om {entity} te configureren",
             "close": "Sluiten",
-            "dismiss_all": "Alles afkeuren",
+            "dismiss_all": "Alles verbergen",
             "empty": "Geen notificaties",
             "title": "Notificaties"
         },
@@ -1017,6 +1051,20 @@
                 "automation": {
                     "caption": "Automatiseringen",
                     "description": "Het maken en bewerken van automatiseringen",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Gebruik een blauwdruk"
+                        },
+                        "header": "Een nieuwe automatisering maken",
+                        "how": "Hoe wilt u uw nieuwe automatisering creëren?",
+                        "start_empty": "Begin met een lege automatisering",
+                        "thingtalk": {
+                            "create": "Creëer",
+                            "header": "Beschrijf de automatisering die u wilt creëren",
+                            "input_label": "Wat moet deze automatisering doen?",
+                            "intro": "En we zullen proberen het voor je te maken. Bijvoorbeeld: doe de lichten uit als ik wegga."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Actie toevoegen",
@@ -1097,6 +1145,14 @@
                             "unsupported_action": "Geen UI-ondersteuning voor actie: {action}"
                         },
                         "alias": "Naam",
+                        "blueprint": {
+                            "blueprint_to_use": "Blauwdruk om te gebruiken",
+                            "header": "Blauwdruk",
+                            "inputs": "Ingangen",
+                            "manage_blueprints": "Beheer blauwdrukken",
+                            "no_blueprints": "Je hebt geen blauwdrukken",
+                            "no_inputs": "Deze blauwdruk heeft geen invoer."
+                        },
                         "conditions": {
                             "add": "Voorwaarde toevoegen",
                             "delete": "Verwijderen",
@@ -1269,7 +1325,7 @@
                                     "sunset": "Zonsondergang"
                                 },
                                 "tag": {
-                                    "label": "Label"
+                                    "label": "Tag"
                                 },
                                 "template": {
                                     "label": "Sjabloon",
@@ -1323,7 +1379,7 @@
                         "show_info_automation": "Informatie weergeven over automatisering"
                     },
                     "thingtalk": {
-                        "create": "Creëer automatisering",
+                        "create": "Automatisering maken",
                         "link_devices": {
                             "ambiguous_entities": "Een of meer apparaten hebben meer dan één overeenkomende entiteit. Kies het apparaat dat u wilt gebruiken.",
                             "header": "Geweldig! Nu moeten we enkele apparaten koppelen",
@@ -1333,10 +1389,35 @@
                             "error_empty": "Voer een commando in of druk op overslaan.",
                             "error_unsupported": "Daar konden we (nog) geen automatisering voor maken.",
                             "for_example": "Bijvoorbeeld:",
-                            "header": "Creëer een nieuwe automatisering",
+                            "header": "Een nieuwe automatisering maken",
                             "introduction": "Typ hieronder wat deze automatisering zou moeten doen, en we zullen proberen om het om te zetten in een Home Assistant automatisering.",
                             "language_note": "Opmerking: voorlopig wordt alleen Engels ondersteund."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Voer de URL van de blauwdruk in.",
+                        "header": "Voeg een nieuwe blauwdruk toe",
+                        "import_btn": "Blauwdruk importeren",
+                        "import_header": "Importeer {name} ( {domain} )",
+                        "import_introduction": "U kunt blauwdrukken van andere gebruikers importeren vanuit Github en de communityforums. Voer de URL van de blauwdruk hieronder in.",
+                        "importing": "Blauwdruk importeren ...",
+                        "save_btn": "Bewaar blauwdruk",
+                        "saving": "Blauwdruk opslaan ...",
+                        "url": "URL van de blauwdruk"
+                    },
+                    "caption": "Blauwdrukken",
+                    "description": "Beheer blauwdrukken",
+                    "overview": {
+                        "confirm_delete_header": "Deze blauwdruk verwijderen?",
+                        "confirm_delete_text": "Weet u zeker dat u deze blauwdruk wilt verwijderen?",
+                        "header": "Blauwdrukeditor",
+                        "headers": {
+                            "name": "Naam"
+                        },
+                        "introduction": "Met de blauwdrukeditor kunt u blauwdrukken maken en bewerken.",
+                        "learn_more": "Meer informatie over blauwdrukken"
                     }
                 },
                 "cloud": {
@@ -1714,6 +1795,8 @@
                 "info": {
                     "built_using": "Gebouwd met behulp van",
                     "caption": "Info",
+                    "copy_github": "Voor GitHub",
+                    "copy_raw": "Ruwe tekst",
                     "custom_uis": "Aangepaste UI's:",
                     "description": "Informatie over je Home Assistant installatie",
                     "developed_by": "Ontwikkeld door een stel geweldige mensen.",
@@ -1733,11 +1816,15 @@
                         "checks": {
                             "cloud": {
                                 "alexa_enabled": "Alexa ingeschakeld",
-                                "can_reach_cert_server": "Bereik de certificaatserver",
+                                "can_reach_cert_server": "Bereik de certificaat server",
                                 "can_reach_cloud": "Bereik Home Assistant Cloud",
                                 "can_reach_cloud_auth": "Bereik authenticatieserver",
+                                "google_enabled": "Google ingeschakeld",
+                                "logged_in": "Ingelogd",
+                                "relayer_connected": "Relayer verbonden",
                                 "remote_connected": "Op afstand verbonden",
-                                "remote_enabled": "Op afstand ingeschakeld"
+                                "remote_enabled": "Op afstand ingeschakeld",
+                                "subscription_expiration": "Abonnement vervalt"
                             },
                             "homeassistant": {
                                 "arch": "CPU-architectuur",
@@ -1751,6 +1838,11 @@
                                 "timezone": "Tijdzone",
                                 "version": "Versie",
                                 "virtualenv": "Virtuele omgeving"
+                            },
+                            "lovelace": {
+                                "dashboards": "Dashboards",
+                                "mode": "Mode",
+                                "resources": "Bronnen"
                             }
                         },
                         "manage": "Beheer",
@@ -2173,6 +2265,8 @@
                     },
                     "picker": {
                         "add_script": "Voeg script toe",
+                        "duplicate": "Dupliceer",
+                        "duplicate_script": "Script dupliceren",
                         "edit_script": "Bewerk script",
                         "header": "Script Editor",
                         "headers": {
@@ -2209,7 +2303,7 @@
                             "input_text": "Herlaad input texts",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
                             "min_max": "Herlaad min/max entiteiten",
-                            "mqtt": "Herlaad handmatig geconfigureerde mqtt-entiteiten",
+                            "mqtt": "Herlaad handmatig geconfigureerde MQTT-entiteiten",
                             "person": "Herlaad personen",
                             "ping": "Herlaad ping binaire sensor entiteiten",
                             "reload": "Herlaad {domain}",
@@ -2217,7 +2311,7 @@
                             "rpi_gpio": "Herlaad Raspberry Pi GPIO-entiteiten",
                             "scene": "Herlaad scenes",
                             "script": "Herlaad scripts",
-                            "smtp": "Herlaad smtp notify services",
+                            "smtp": "Laad de SMTP-meldingsservices opnieuw",
                             "statistics": "Herlaad statistische entiteiten",
                             "telegram": "Herlaad telegram notify services",
                             "template": "Herlaad template entiteiten",
@@ -2307,6 +2401,7 @@
                         "update_user": "Bijwerken"
                     },
                     "picker": {
+                        "add_user": "Gebruiker toevoegen",
                         "headers": {
                             "group": "Groep",
                             "name": "Naam",
@@ -2587,6 +2682,8 @@
                         "filter_attributes": "Filter attributen",
                         "filter_entities": "Filter entiteiten",
                         "filter_states": "Filter toestanden",
+                        "last_changed": "Laatst gewijzigd",
+                        "last_updated": "Laatst bijgewerkt",
                         "more_info": "Meer informatie",
                         "no_entities": "Geen entiteiten",
                         "set_state": "Definieer toestand",
@@ -2838,6 +2935,10 @@
                             "description": "Met de Light-kaart kunt u de helderheid van het licht wijzigen.",
                             "name": "Lamp"
                         },
+                        "logbook": {
+                            "description": "De Logboekkaart toont een lijst met gebeurtenissen voor entiteiten.",
+                            "name": "Logboek"
+                        },
                         "map": {
                             "dark_mode": "Donkere modus?",
                             "default_zoom": "Standaard zoom",
@@ -2910,11 +3011,18 @@
                         "entity": "Entiteit",
                         "no_description": "Er is geen beschrijving beschikbaar"
                     },
+                    "common": {
+                        "add": "Toevoegen",
+                        "clear": "Wis",
+                        "edit": "Bewerk",
+                        "none": "Geen"
+                    },
                     "edit_badges": {
                         "panel_mode": "Deze badges worden niet weergegeven omdat deze weergave zich in de \"Paneelmodus\" bevindt."
                     },
                     "edit_card": {
                         "add": "Kaart toevoegen",
+                        "clear": "Leegmaken",
                         "confirm_cancel": "Weet u zeker dat u wilt afbreken?",
                         "delete": "Verwijder kaart",
                         "duplicate": "Dupliceer kaart",
@@ -2956,10 +3064,15 @@
                     },
                     "header": "Bewerk UI",
                     "header-footer": {
-                        "header": "Header",
+                        "choose_header_footer": "Kies een {type}",
+                        "footer": "Voettekst",
+                        "header": "Koptekst",
                         "types": {
                             "buttons": {
                                 "name": "Knoppen"
+                            },
+                            "graph": {
+                                "name": "Grafiek"
                             },
                             "picture": {
                                 "name": "Afbeelding"
@@ -3013,7 +3126,7 @@
                     "sub-element-editor": {
                         "types": {
                             "footer": "Voettekst Editor",
-                            "header": "Header Editor",
+                            "header": "Koptekst Editor",
                             "row": "Entiteitsrij Editor"
                         }
                     },
@@ -3331,7 +3444,7 @@
                 },
                 "push_notifications": {
                     "add_device_prompt": {
-                        "input_label": "Apparaatnaam",
+                        "input_label": "Naam van het apparaat",
                         "title": "Hoe moet dit apparaat genoemd worden?"
                     },
                     "description": "Verstuur meldingen naar dit apparaat.",

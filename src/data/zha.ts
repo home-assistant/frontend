@@ -7,6 +7,7 @@ export interface ZHAEntityReference extends HassEntity {
 }
 
 export interface ZHADevice {
+  available: boolean;
   name: string;
   ieee: string;
   nwk: string;
@@ -25,6 +26,13 @@ export interface ZHADevice {
   area_id?: string;
   device_type: string;
   signature: any;
+  neighbors: Neighbor[];
+}
+
+export interface Neighbor {
+  ieee: string;
+  nwk: string;
+  lqi: number;
 }
 
 export interface ZHADeviceEndpoint {

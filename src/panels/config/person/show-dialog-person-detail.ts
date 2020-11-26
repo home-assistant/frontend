@@ -11,10 +11,7 @@ export interface PersonDetailDialogParams {
   removeEntry: () => Promise<boolean>;
 }
 
-export const loadPersonDetailDialog = () =>
-  import(
-    /* webpackChunkName: "person-detail-dialog" */ "./dialog-person-detail"
-  );
+export const loadPersonDetailDialog = () => import("./dialog-person-detail");
 
 export const showPersonDetailDialog = (
   element: HTMLElement,

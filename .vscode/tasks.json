@@ -1,0 +1,208 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Develop Frontend",
+      "type": "gulp",
+      "task": "develop-app",
+      // Sync changes here to other tasks until issue resolved
+      // https://github.com/Microsoft/vscode/issues/61497
+      "problemMatcher": {
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Changes detected. Starting compilation",
+          "endsPattern": "Build done @"
+        }
+      },
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Develop Supervisor panel",
+      "type": "gulp",
+      "task": "develop-hassio",
+      "problemMatcher": {
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Changes detected. Starting compilation",
+          "endsPattern": "Build done @"
+        }
+      },
+      "isBackground": true,
+      "group": "build",
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Develop Gallery",
+      "type": "gulp",
+      "task": "develop-gallery",
+      "problemMatcher": {
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Changes detected. Starting compilation",
+          "endsPattern": "Build done @"
+        }
+      },
+
+      "isBackground": true,
+      "group": "build",
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Develop Demo",
+      "type": "gulp",
+      "task": "develop-demo",
+      "problemMatcher": {
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Changes detected. Starting compilation",
+          "endsPattern": "Build done @"
+        }
+      },
+
+      "isBackground": true,
+      "group": "build",
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Develop Cast",
+      "type": "gulp",
+      "task": "develop-cast",
+      "problemMatcher": {
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Changes detected. Starting compilation",
+          "endsPattern": "Build done @"
+        }
+      },
+
+      "isBackground": true,
+      "group": "build",
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Run HA Core in devcontainer",
+      "type": "shell",
+      "command": "script/core",
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Run HA Core for Supervisor in devcontainer",
+      "type": "shell",
+      "command": "HASSIO=${input:supervisorHost} HASSIO_TOKEN=${input:supervisorToken} script/core",
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "supervisorHost",
+      "type": "promptString",
+      "description": "The IP of the Supervisor host running the Remote API proxy add-on"
+    },
+    {
+      "id": "supervisorToken",
+      "type": "promptString",
+      "description": "The token for the Remote API proxy add-on"
+    }
+  ]
+}
