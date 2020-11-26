@@ -1401,6 +1401,9 @@
                         "confirm_delete_header": "この設計図を削除しますか?",
                         "confirm_delete_text": "この設計図を削除してもよ思いますか?",
                         "header": "設計図エディタ",
+                        "headers": {
+                            "name": "名前"
+                        },
                         "introduction": "設計図エディターを使用すると、設計図を作成および編集できます。",
                         "learn_more": "設計図の詳細"
                     }
