@@ -3,7 +3,7 @@ export type Selector =
   | DeviceSelector
   | NumberSelector
   | BooleanSelector
-  | DateTimeSelector;
+  | TimeSelector;
 
 export interface EntitySelector {
   entity: {
@@ -35,9 +35,6 @@ export interface BooleanSelector {
   boolean: undefined;
 }
 
-export interface DateTimeSelector {
-  datetime: {
-    has_date?: boolean;
-    has_time?: boolean;
-  };
+export interface TimeSelector {
+  datetime: undefined;
 }

@@ -6,7 +6,7 @@ import "./ha-selector-entity";
 import "./ha-selector-device";
 import "./ha-selector-number";
 import "./ha-selector-boolean";
-import "./ha-selector-datetime";
+import "./ha-selector-time";
 import { Selector } from "../../data/selector";
 
 @customElement("ha-selector")
