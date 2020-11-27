@@ -328,7 +328,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
       onEnd: async (evt) => {
         // Since this is `onEnd` event, it's possible that
         // an item wa dragged away and was put back to its original position.
-        if (evt.oldIndex != evt.newIndex) {
+        if (evt.oldIndex !== evt.newIndex) {
           reorderItems(this.hass!, this._sortable.toArray()).catch(() =>
             this._fetchData()
           );
