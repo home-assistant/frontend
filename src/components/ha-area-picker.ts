@@ -28,6 +28,7 @@ import {
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
+import memoizeOne from "memoize-one";
 
 const rowRenderer = (
   root: HTMLElement,
@@ -67,6 +68,8 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
   @property() public label?: string;
 
   @property() public value?: string;
+
+  @property() public placeholder?: string;
 
   @property() public _areas?: AreaRegistryEntry[];
 
@@ -110,6 +113,9 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           .label=${this.label === undefined && this.hass
             ? this.hass.localize("ui.components.area-picker.area")
             : this.label}
+          .placeholder=${this.placeholder
+            ? this._area(this.placeholder)?.name
+            : undefined}
           class="input"
           autocapitalize="none"
           autocomplete="off"
@@ -150,6 +156,12 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       </vaadin-combo-box-light>
     `;
   }
+
+  private _area = memoizeOne((areaId: string):
+    | AreaRegistryEntry
+    | undefined => {
+    return this._areas?.find((area) => area.area_id === areaId);
+  });
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();

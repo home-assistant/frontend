@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -31,9 +31,15 @@ import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import "../../../components/ha-area-picker";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 @customElement("entity-registry-settings")
-export class EntityRegistrySettings extends LitElement {
+export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entry!: ExtEntityRegistryEntry;
@@ -44,13 +50,33 @@ export class EntityRegistrySettings extends LitElement {
 
   @internalProperty() private _entityId!: string;
 
+  @internalProperty() private _areaId?: string;
+
   @internalProperty() private _disabledBy!: string | null;
+
+  private _deviceLookup?: Record<string, DeviceRegistryEntry>;
+
+  @internalProperty() private _device?: DeviceRegistryEntry;
 
   @internalProperty() private _error?: string;
 
   @internalProperty() private _submitting?: boolean;
 
   private _origEntityId!: string;
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
+        this._deviceLookup = {};
+        for (const device of devices) {
+          this._deviceLookup[device.id] = device;
+        }
+        if (!this._device && this.entry.device_id) {
+          this._device = this._deviceLookup[this.entry.device_id];
+        }
+      }),
+    ];
+  }
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -59,8 +85,13 @@ export class EntityRegistrySettings extends LitElement {
       this._name = this.entry.name || "";
       this._icon = this.entry.icon || "";
       this._origEntityId = this.entry.entity_id;
+      this._areaId = this.entry.area_id;
       this._entityId = this.entry.entity_id;
       this._disabledBy = this.entry.disabled_by;
+      this._device =
+        this.entry.device_id && this._deviceLookup
+          ? this._deviceLookup[this.entry.device_id]
+          : undefined;
     }
   }
 
@@ -117,6 +148,12 @@ export class EntityRegistrySettings extends LitElement {
           .invalid=${invalidDomainUpdate}
           .disabled=${this._submitting}
         ></paper-input>
+        <ha-area-picker
+          .hass=${this.hass}
+          .value=${this._areaId}
+          .placeholder=${this._device?.area_id}
+          @value-changed=${this._areaPicked}
+        ></ha-area-picker>
         <div class="row">
           <ha-switch
             .checked=${!this._disabledBy}
@@ -183,14 +220,23 @@ export class EntityRegistrySettings extends LitElement {
     this._entityId = ev.detail.value;
   }
 
+  private _areaPicked(ev: CustomEvent) {
+    this._error = undefined;
+    this._areaId = ev.detail.value;
+  }
+
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
     const params: Partial<EntityRegistryEntryUpdateParams> = {
       name: this._name.trim() || null,
       icon: this._icon.trim() || null,
+      area_id: this._areaId || null,
       new_entity_id: this._entityId.trim(),
     };
-    if (this._disabledBy === null || this._disabledBy === "user") {
+    if (
+      this.entry.disabled_by !== this._disabledBy &&
+      (this._disabledBy === null || this._disabledBy === "user")
+    ) {
       params.disabled_by = this._disabledBy;
     }
     try {
