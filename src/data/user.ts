@@ -9,6 +9,7 @@ export const GROUPS = [SYSTEM_GROUP_ID_USER, SYSTEM_GROUP_ID_ADMIN];
 
 export interface User {
   id: string;
+  username: string | null;
   name: string;
   is_owner: boolean;
   is_active: boolean;

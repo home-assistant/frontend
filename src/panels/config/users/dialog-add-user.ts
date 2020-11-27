@@ -98,7 +98,7 @@ export class DialogAddUser extends LitElement {
                 class="name"
                 name="name"
                 .label=${this.hass.localize(
-                  "ui.panel.config.users.add_user.name"
+                  "ui.panel.config.users.editor.name"
                 )}
                 .value=${this._name}
                 required
@@ -113,7 +113,7 @@ export class DialogAddUser extends LitElement {
             class="username"
             name="username"
             .label=${this.hass.localize(
-              "ui.panel.config.users.add_user.username"
+              "ui.panel.config.users.editor.username"
             )}
             .value=${this._username}
             required
@@ -259,6 +259,7 @@ export class DialogAddUser extends LitElement {
       return;
     }
 
+    user.username = this._username;
     this._params!.userAddedCallback(user);
     this._close();
   }
