@@ -128,6 +128,9 @@ class DialogUserDetail extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.users.editor.active"
               )}
+              title=${this.hass.localize(
+                "ui.panel.config.users.editor.active_tooltip"
+              )}
               .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
