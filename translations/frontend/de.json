@@ -1398,7 +1398,7 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Bitte gebe die URL des Blueprints ein.",
+                        "error_no_url": "Bitte gebe die URL des Bauplans ein.",
                         "header": "Neuen Bauplan hinzufügen",
                         "import_btn": "Bauplan importieren",
                         "import_header": "{name}({domain}) importieren",
@@ -1407,7 +1407,7 @@
                         "save_btn": "Bauplan speichern",
                         "saving": "Bauplan wir gespeichert...",
                         "unsupported_blueprint": "Dieser Bauplan wird nicht unterstützt",
-                        "url": "URL des Blueprints"
+                        "url": "URL des Bauplans"
                     },
                     "caption": "Baupläne",
                     "description": "Baupläne verwalten",
@@ -3401,7 +3401,7 @@
                 },
                 "enable_shortcuts": {
                     "description": "Aktiviere oder deaktiviere Tastaturkürzel, um verschiedene Aktionen in der Benutzeroberfläche auszuführen.",
-                    "header": "Tastatürkürzel"
+                    "header": "Tastaturkürzel"
                 },
                 "force_narrow": {
                     "description": "Dies blendet die Seitenleiste standardmäßig aus, ähnlich der Nutzung auf Mobilgeräten.",

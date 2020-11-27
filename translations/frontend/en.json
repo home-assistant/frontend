@@ -1239,7 +1239,7 @@
                         "edit_ui": "Edit with UI",
                         "edit_yaml": "Edit as YAML",
                         "enable_disable": "Enable/Disable automation",
-                        "introduction": "Use automations to bring your home alive.",
+                        "introduction": "Use automations to bring your home to live.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
                         "load_error_unknown": "Error loading automation ({err_no}).",
                         "max": {
@@ -1399,11 +1399,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Please enter the URL of the blueprint.",
+                        "file_name": "Local blueprint file name",
                         "header": "Add new blueprint",
                         "import_btn": "Import blueprint",
-                        "import_header": "Import {name} ({domain})",
+                        "import_header": "Import \"{name}\" (type: {domain})",
                         "import_introduction": "You can import blueprints of other users from Github and the community forums. Enter the URL of the blueprint below.",
                         "importing": "Importing blueprint...",
+                        "raw_blueprint": "Blueprint content",
                         "save_btn": "Save blueprint",
                         "saving": "Saving blueprint...",
                         "unsupported_blueprint": "This blueprint is not supported",
@@ -1412,15 +1414,19 @@
                     "caption": "Blueprints",
                     "description": "Manage blueprints",
                     "overview": {
-                        "add_blueprint": "Add blueprint",
+                        "add_blueprint": "Import blueprint",
                         "confirm_delete_header": "Delete this blueprint?",
-                        "confirm_delete_text": "Are you sure you want to delete this blueprint",
+                        "confirm_delete_text": "Are you sure you want to delete this blueprint?",
+                        "delete_blueprint": "Delete blueprint",
                         "header": "Blueprint Editor",
                         "headers": {
+                            "domain": "Domain",
+                            "file_name": "File name",
                             "name": "Name"
                         },
                         "introduction": "The blueprint editor allows you to create and edit blueprints.",
-                        "learn_more": "Learn more about blueprints"
+                        "learn_more": "Learn more about blueprints",
+                        "use_blueprint": "Create automation"
                     }
                 },
                 "cloud": {
@@ -2209,7 +2215,7 @@
                             "without_device": "Entities without device"
                         },
                         "icon": "Icon",
-                        "introduction": "Use scenes to bring your home alive.",
+                        "introduction": "Use scenes to bring your home to live.",
                         "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
                         "load_error_unknown": "Error loading scene ({err_no}).",
                         "name": "Name",
@@ -2414,6 +2420,7 @@
                     "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators."
                 },
                 "zha": {
+                    "add_device": "Add Device",
                     "add_device_page": {
                         "discovered_text": "Devices will show up here once discovered.",
                         "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
@@ -2474,6 +2481,7 @@
                         "unbind_button_label": "Unbind Group"
                     },
                     "groups": {
+                        "add_group": "Add Group",
                         "add_members": "Add Members",
                         "adding_members": "Adding Members",
                         "caption": "Groups",
@@ -2516,7 +2524,11 @@
                         "hint_wakeup": "Some devices such as Xiaomi sensors have a wake up button that you can press at ~5 second intervals that keep devices awake while you interact with them.",
                         "introduction": "Run ZHA commands that affect a single device. Pick a device to see a list of available commands."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualization",
+                        "header": "Network Visualization"
+                    }
                 },
                 "zone": {
                     "add_zone": "Add Zone",

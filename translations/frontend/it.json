@@ -217,7 +217,7 @@
             "closing": "In chiusura",
             "open": "Aperta",
             "opening": "In apertura",
-            "stopped": "Arrestato"
+            "stopped": "Arrestata"
         },
         "default": {
             "off": "Spento",
@@ -234,18 +234,18 @@
         },
         "group": {
             "closed": "Chiusi",
-            "closing": "Chiusura",
+            "closing": "In Chiusura",
             "home": "A casa",
-            "locked": "Bloccato",
+            "locked": "Bloccati",
             "not_home": "Fuori casa",
             "off": "Spento",
             "ok": "OK",
             "on": "Acceso",
             "open": "Aperti",
-            "opening": "Apertura",
+            "opening": "In Apertura",
             "problem": "Problema",
-            "stopped": "Fermato",
-            "unlocked": "Sbloccato"
+            "stopped": "Fermati",
+            "unlocked": "Sbloccati"
         },
         "input_boolean": {
             "off": "Spento",
@@ -332,13 +332,13 @@
         "zwave": {
             "default": {
                 "dead": "Disattivo",
-                "initializing": "Avvio",
+                "initializing": "In avvio",
                 "ready": "Pronto",
                 "sleeping": "In attesa"
             },
             "query_stage": {
                 "dead": "Disattivo ({query_stage})",
-                "initializing": "Avvio ({query_stage})"
+                "initializing": "In avvio ({query_stage})"
             }
         }
     },
@@ -1051,7 +1051,7 @@
                 },
                 "automation": {
                     "caption": "Automazioni",
-                    "description": "Gestisci le automazioni",
+                    "description": "Gestisci le Automazioni",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Usa un progetto"
@@ -1070,7 +1070,7 @@
                         "actions": {
                             "add": "Aggiungi azione",
                             "delete": "Elimina",
-                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Azioni",
                             "introduction": "Le azioni sono ciò che Home Assistant eseguirà quando un'attivazione (o trigger) avvia un'automazione.",
@@ -1157,7 +1157,7 @@
                         "conditions": {
                             "add": "Aggiungi condizione",
                             "delete": "Elimina",
-                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
                             "introduction": "Le condizioni sono facoltative e impediranno un'ulteriore esecuzione se non saranno soddisfatte tutte.",
@@ -1181,8 +1181,8 @@
                                     "label": "Non"
                                 },
                                 "numeric_state": {
-                                    "above": "Superiore",
-                                    "below": "Inferiore",
+                                    "above": "Maggiore di",
+                                    "below": "Minore di",
                                     "label": "Valore numerico",
                                     "value_template": "Valore modello (opzionale)"
                                 },
@@ -1209,7 +1209,7 @@
                                 "time": {
                                     "after": "Dopo",
                                     "before": "Prima",
-                                    "label": "Tempo",
+                                    "label": "Ora",
                                     "type_input": "Valore di un aiutante data/ora",
                                     "type_value": "Tempo fisso",
                                     "weekdays": {
@@ -1319,7 +1319,7 @@
                                     "to": "A"
                                 },
                                 "sun": {
-                                    "event": "Evento",
+                                    "event": "Evento:",
                                     "label": "Sole",
                                     "offset": "Scostamento (opzionale)",
                                     "sunrise": "Alba",
@@ -1351,7 +1351,7 @@
                                 "zone": {
                                     "enter": "Entrata",
                                     "entity": "Entità con posizione",
-                                    "event": "Evento",
+                                    "event": "Evento:",
                                     "label": "Zona",
                                     "leave": "Uscita",
                                     "zone": "Zona"
@@ -1593,7 +1593,7 @@
                 },
                 "common": {
                     "editor": {
-                        "confirm_unsaved": "Hai dei cambiamenti non salvati. Sei sicuro di voler andare via?"
+                        "confirm_unsaved": "Hai dei cambiamenti non salvati. Sei sicuro di voler uscire?"
                     }
                 },
                 "core": {

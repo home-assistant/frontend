@@ -2284,7 +2284,7 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Server Kontrolleri",
+                    "caption": "Sunucu Kontrolleri",
                     "description": "Home Assistant sunucusunu yeniden başlatın veya durdurun",
                     "section": {
                         "reloading": {
@@ -2326,7 +2326,7 @@
                             "confirm_restart": "Home Assistant'ı yeniden başlatmak istediğinizden emin misiniz?",
                             "confirm_stop": "Home Assistant'ı durdurmak istediğinizden emin misin?",
                             "heading": "Sunucu yönetimi",
-                            "introduction": "Home Assistant sunucunuzu kontrol edin.. Home Assistant üzerinden",
+                            "introduction": "Home Assistant sunucunuzu kontrol edin... Home Assistant üzerinden",
                             "restart": "Yeniden başlat",
                             "stop": "Durdur"
                         },
