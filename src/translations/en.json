@@ -89,6 +89,7 @@
     }
   },
   "groups": {
+    "owner": "Owner",
     "system-admin": "Administrators",
     "system-users": "Users",
     "system-read-only": "Read-Only Users"
@@ -1991,15 +1992,19 @@
           "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
           "picker": {
             "headers": {
-              "name": "Name",
+              "name": "Display name",
+              "username": "Username",
               "group": "Group",
-              "system": "System"
+              "system": "System generated",
+              "is_active": "Active",
+              "is_owner": "Owner"
             },
             "add_user": "Add user"
           },
           "editor": {
             "caption": "View user",
-            "name": "Name",
+            "name": "Display name",
+            "username": "Username",
             "change_password": "Change password",
             "new_password": "New Password",
             "password_changed": "Password was changed successfully",
@@ -2020,8 +2025,6 @@
           },
           "add_user": {
             "caption": "Add user",
-            "name": "Name",
-            "username": "Username",
             "password": "Password",
             "password_confirm": "Confirm Password",
             "password_not_match": "Passwords don't match",
