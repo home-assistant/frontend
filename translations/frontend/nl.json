@@ -2677,7 +2677,7 @@
                         "attributes": "Attributen",
                         "current_entities": "Huidige entiteiten",
                         "description1": "Stelt de weergave van een apparaat in Home Assistant in.",
-                        "description2": "Er vindt geen communicatie met het daadwerkelijke apparaat plaat.",
+                        "description2": "Er vindt geen communicatie met het daadwerkelijke apparaat plaats.",
                         "entity": "Entiteit",
                         "filter_attributes": "Filter attributen",
                         "filter_entities": "Filter entiteiten",
