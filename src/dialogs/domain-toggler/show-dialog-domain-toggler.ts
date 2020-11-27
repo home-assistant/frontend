@@ -7,10 +7,7 @@ export interface HaDomainTogglerDialogParams {
   resetDomain: (domain: string) => void;
 }
 
-export const loadDomainTogglerDialog = () =>
-  import(
-    /* webpackChunkName: "dialog-domain-toggler" */ "./dialog-domain-toggler"
-  );
+export const loadDomainTogglerDialog = () => import("./dialog-domain-toggler");
 
 export const showDomainTogglerDialog = (
   element: HTMLElement,

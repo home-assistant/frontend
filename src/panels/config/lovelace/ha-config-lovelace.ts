@@ -34,18 +34,12 @@ class HaConfigLovelace extends HassRouterPage {
     routes: {
       dashboards: {
         tag: "ha-config-lovelace-dashboards",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-lovelace-dashboards" */ "./dashboards/ha-config-lovelace-dashboards"
-          ),
+        load: () => import("./dashboards/ha-config-lovelace-dashboards"),
         cache: true,
       },
       resources: {
         tag: "ha-config-lovelace-resources",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-lovelace-resources" */ "./resources/ha-config-lovelace-resources"
-          ),
+        load: () => import("./resources/ha-config-lovelace-resources"),
       },
     },
   };

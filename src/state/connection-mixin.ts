@@ -85,8 +85,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             throw err;
           }
         },
-        callApi: async (method, path, parameters) =>
-          hassCallApi(auth, method, path, parameters),
+        callApi: async (method, path, parameters, headers) =>
+          hassCallApi(auth, method, path, parameters, headers),
         fetchWithAuth: (
           path: string,
           init: Parameters<typeof fetchWithAuth>[2]

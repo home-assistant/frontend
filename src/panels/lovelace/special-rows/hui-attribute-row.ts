@@ -23,13 +23,13 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: AttributeRowConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     if (!config.entity) {
-      throw new Error("Entity not defined");
+      throw new Error("Entity not specified");
     }
     if (!config.attribute) {
-      throw new Error("Attribute not defined");
+      throw new Error("Attribute not specified");
     }
     this._config = config;
   }

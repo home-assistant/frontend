@@ -6,10 +6,7 @@ export interface DeleteCardDialogParams {
   cardConfig?: LovelaceCardConfig;
 }
 
-const importDeleteCardDialog = () =>
-  import(
-    /* webpackChunkName: "hui-dialog-delete-card" */ "./hui-dialog-delete-card"
-  );
+const importDeleteCardDialog = () => import("./hui-dialog-delete-card");
 
 export const showDeleteCardDialog = (
   element: HTMLElement,

@@ -78,7 +78,7 @@
             "triggered": "Attiv."
         },
         "default": {
-            "entity_not_found": "Entità non trovata!",
+            "entity_not_found": "Entità non trovata",
             "error": "Errore",
             "unavailable": "Non disp.",
             "unknown": "Ignoto"
@@ -213,11 +213,11 @@
             "configured": "Configurato"
         },
         "cover": {
-            "closed": "Chiuso",
+            "closed": "Chiusa",
             "closing": "In chiusura",
-            "open": "Aperto",
+            "open": "Aperta",
             "opening": "In apertura",
-            "stopped": "Arrestato"
+            "stopped": "Arrestata"
         },
         "default": {
             "off": "Spento",
@@ -233,19 +233,19 @@
             "on": "Acceso"
         },
         "group": {
-            "closed": "Chiuso",
-            "closing": "Chiusura",
+            "closed": "Chiusi",
+            "closing": "In Chiusura",
             "home": "A casa",
-            "locked": "Bloccato",
+            "locked": "Bloccati",
             "not_home": "Fuori casa",
             "off": "Spento",
             "ok": "OK",
             "on": "Acceso",
-            "open": "Aperto",
-            "opening": "Apertura",
+            "open": "Aperti",
+            "opening": "In Apertura",
             "problem": "Problema",
-            "stopped": "Fermato",
-            "unlocked": "Sbloccato"
+            "stopped": "Fermati",
+            "unlocked": "Sbloccati"
         },
         "input_boolean": {
             "off": "Spento",
@@ -332,13 +332,13 @@
         "zwave": {
             "default": {
                 "dead": "Disattivo",
-                "initializing": "Avvio",
+                "initializing": "In avvio",
                 "ready": "Pronto",
                 "sleeping": "In attesa"
             },
             "query_stage": {
                 "dead": "Disattivo ({query_stage})",
-                "initializing": "Avvio ({query_stage})"
+                "initializing": "In avvio ({query_stage})"
             }
         }
     },
@@ -392,7 +392,7 @@
                 }
             },
             "cover": {
-                "position": "Posizione",
+                "position": "Apertura",
                 "tilt_position": "Inclinazione"
             },
             "fan": {
@@ -514,7 +514,7 @@
             "disable": "Disattivare",
             "enable": "Attivare",
             "error_required": "Necessario",
-            "leave": "Partire",
+            "leave": "Esci",
             "loading": "Caricamento",
             "menu": "Menù",
             "next": "Avanti",
@@ -546,6 +546,11 @@
                 "area": "Area",
                 "clear": "Cancella",
                 "show_areas": "Mostra le aree"
+            },
+            "blueprint-picker": {
+                "add_user": "Aggiungi utente",
+                "remove_user": "Rimuovi utente",
+                "select_blueprint": "Seleziona un progetto"
             },
             "data-table": {
                 "no-data": "Nessun dato",
@@ -741,7 +746,7 @@
                     "update": "Aggiorna"
                 },
                 "faq": "documentazione",
-                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente. Vedere {faq_link} per maggiori dettagli.",
+                "no_unique_id": "Questa entità (\"{entity_id}\") non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente. Vedere {faq_link} per maggiori dettagli.",
                 "related": "Relazionato",
                 "settings": "Impostazioni"
             },
@@ -805,11 +810,11 @@
             "more_info_control": {
                 "controls": "Controlli",
                 "cover": {
-                    "close_cover": "Chiudere gli scuri",
-                    "close_tile_cover": "Chiudere l'inclinazione della copertura",
-                    "open_cover": "Aprire gli scuri",
-                    "open_tilt_cover": "Aprire l'inclinazione della copertura",
-                    "stop_cover": "Fermare il movimento della copertura"
+                    "close_cover": "Chiudere la serranda",
+                    "close_tile_cover": "Chiudere l'inclinazione della serranda",
+                    "open_cover": "Aprire la serranda",
+                    "open_tilt_cover": "Aprire l'inclinazione della serranda",
+                    "stop_cover": "Fermare il movimento della serranda"
                 },
                 "details": "Dettagli",
                 "dismiss": "Chiudi finestra di dialogo",
@@ -877,6 +882,7 @@
                     "navigation": {
                         "areas": "Aree",
                         "automation": "Automazioni",
+                        "blueprint": "Progetti",
                         "core": "Generale",
                         "customize": "Personalizzazioni",
                         "devices": "Dispositivi",
@@ -892,7 +898,7 @@
                         "scene": "Scene",
                         "script": "Script",
                         "server_control": "Controlli del Server",
-                        "tags": "Tag",
+                        "tags": "Etichette",
                         "users": "Utenti",
                         "zone": "Zone"
                     },
@@ -1045,12 +1051,26 @@
                 },
                 "automation": {
                     "caption": "Automazioni",
-                    "description": "Gestisci le automazioni",
+                    "description": "Gestisci le Automazioni",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Usa un progetto"
+                        },
+                        "header": "Crea una nuova automazione",
+                        "how": "Come vuoi creare la tua nuova automazione?",
+                        "start_empty": "Inizia con un'automazione vuota",
+                        "thingtalk": {
+                            "create": "Crea",
+                            "header": "Descrivi l'automazione che vuoi creare",
+                            "input_label": "Cosa dovrebbe fare questa automazione?",
+                            "intro": "E proveremo a crearlo per te. Ad esempio: spegni le luci quando esco."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Aggiungi azione",
                             "delete": "Elimina",
-                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Azioni",
                             "introduction": "Le azioni sono ciò che Home Assistant eseguirà quando un'attivazione (o trigger) avvia un'automazione.",
@@ -1126,10 +1146,18 @@
                             "unsupported_action": "Nessun supporto dell'Interfaccia Utente per l'azione: {action}"
                         },
                         "alias": "Nome",
+                        "blueprint": {
+                            "blueprint_to_use": "Progetto da utilizzare",
+                            "header": "Progetto",
+                            "inputs": "Ingressi",
+                            "manage_blueprints": "Gestisci progetti",
+                            "no_blueprints": "Non hai progetti",
+                            "no_inputs": "Questo progetto non ha ingressi."
+                        },
                         "conditions": {
                             "add": "Aggiungi condizione",
                             "delete": "Elimina",
-                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
                             "introduction": "Le condizioni sono facoltative e impediranno un'ulteriore esecuzione se non saranno soddisfatte tutte.",
@@ -1153,8 +1181,8 @@
                                     "label": "Non"
                                 },
                                 "numeric_state": {
-                                    "above": "Superiore",
-                                    "below": "Inferiore",
+                                    "above": "Maggiore di",
+                                    "below": "Minore di",
                                     "label": "Valore numerico",
                                     "value_template": "Valore modello (opzionale)"
                                 },
@@ -1181,7 +1209,7 @@
                                 "time": {
                                     "after": "Dopo",
                                     "before": "Prima",
-                                    "label": "Tempo",
+                                    "label": "Ora",
                                     "type_input": "Valore di un aiutante data/ora",
                                     "type_value": "Tempo fisso",
                                     "weekdays": {
@@ -1291,7 +1319,7 @@
                                     "to": "A"
                                 },
                                 "sun": {
-                                    "event": "Evento",
+                                    "event": "Evento:",
                                     "label": "Sole",
                                     "offset": "Scostamento (opzionale)",
                                     "sunrise": "Alba",
@@ -1323,7 +1351,7 @@
                                 "zone": {
                                     "enter": "Entrata",
                                     "entity": "Entità con posizione",
-                                    "event": "Evento",
+                                    "event": "Evento:",
                                     "label": "Zona",
                                     "leave": "Uscita",
                                     "zone": "Zona"
@@ -1366,6 +1394,33 @@
                             "introduction": "Digitare sotto ciò che questa automazione dovrebbe fare, e proveremo a convertirlo in un'automazione Home Assistant.",
                             "language_note": "Nota: per il momento è supportato solo l'inglese."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Inserisci l'URL del progetto.",
+                        "header": "Aggiungi un nuovo progetto",
+                        "import_btn": "Importa progetto",
+                        "import_header": "Importa {name} ({domain})",
+                        "import_introduction": "Puoi importare progetti di altri utenti da Github e dai forum della comunità. Immettere l'URL del progetto di seguito.",
+                        "importing": "Importazione del progetto in corso ...",
+                        "save_btn": "Salva progetto",
+                        "saving": "Salvataggio del progetto in corso ...",
+                        "unsupported_blueprint": "Questo progetto non è supportato",
+                        "url": "URL del progetto"
+                    },
+                    "caption": "Progetti",
+                    "description": "Gestisci i progetti",
+                    "overview": {
+                        "add_blueprint": "Aggiungi progetto",
+                        "confirm_delete_header": "Eliminare questo progetto?",
+                        "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
+                        "header": "Editor del progetto",
+                        "headers": {
+                            "name": "Nome"
+                        },
+                        "introduction": "L'editor del progetto consente di creare e modificare i progetti.",
+                        "learn_more": "Per saperne di più sui progetti"
                     }
                 },
                 "cloud": {
@@ -1426,7 +1481,7 @@
                             "info": "Tutto ciò che è configurato per essere attivato da un webhook può essere dotato di un URL accessibile pubblicamente per consentire d'inviare i dati ad Home Assistant da qualsiasi luogo, senza esporre la vostra istanza a Internet.",
                             "link_learn_more": "Ulteriori informazioni sulla creazione di automazioni basate su webhook.",
                             "loading": "Caricamento in corso ...",
-                            "manage": "Gestire",
+                            "manage": "Gestisci",
                             "no_hooks_yet": "Sembra che tu non abbia ancora dei webhook. Per iniziare, configurare un ",
                             "no_hooks_yet_link_automation": "automazione webhook",
                             "no_hooks_yet_link_integration": "Integrazione basata su webhook",
@@ -1538,7 +1593,7 @@
                 },
                 "common": {
                     "editor": {
-                        "confirm_unsaved": "Hai dei cambiamenti non salvati. Sei sicuro di voler andare via?"
+                        "confirm_unsaved": "Hai dei cambiamenti non salvati. Sei sicuro di voler uscire?"
                     }
                 },
                 "core": {
@@ -1793,7 +1848,7 @@
                                 "resources": "Risorse"
                             }
                         },
-                        "manage": "Gestire",
+                        "manage": "Gestisci",
                         "more_info": "maggiori informazioni"
                     },
                     "title": "Informazioni"
@@ -1812,11 +1867,11 @@
                         "delete": "Elimina",
                         "delete_button": "Elimina {integration}",
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
-                        "device_unavailable": "dispositivo non disponibile",
+                        "device_unavailable": "Dispositivo non disponibile",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
                         "documentation": "Documentazione",
                         "entities": "{count} {count, plural, \none {entità}\nother {entità }\n}",
-                        "entity_unavailable": "entità non disponibile",
+                        "entity_unavailable": "Entità non disponibile",
                         "firmware": "Firmware: {version}",
                         "hub": "Connesso tramite",
                         "manuf": "da {manufacturer}",
@@ -1836,7 +1891,7 @@
                         "unnamed_entry": "Voce senza nome"
                     },
                     "config_flow": {
-                        "aborted": "Interrotto",
+                        "aborted": "Terminato",
                         "close": "Chiudi",
                         "created_config": "Configurazione creata per {name}.",
                         "dismiss": "Chiudi finestra di dialogo",
@@ -1885,7 +1940,7 @@
                 "logs": {
                     "caption": "Registri",
                     "clear": "Pulisci",
-                    "description": "Vedi i logs di Home Assistant",
+                    "description": "Vedi i registri di Home Assistant",
                     "details": "Dettagli registro ({level})",
                     "load_full_log": "Carica il registro completo di Home Assistant",
                     "loading_log": "Caricamento del registro errori...",
@@ -2285,11 +2340,11 @@
                     }
                 },
                 "tags": {
-                    "add_tag": "Aggiungi Etichetta",
+                    "add_tag": "Aggiungi etichetta",
                     "automation_title": "L'etichetta {name} è scansionata",
-                    "caption": "Tag",
-                    "confirm_remove": "Sei sicuro di voler rimuovere il tag {tag}?",
-                    "confirm_remove_title": "Rimuovere il tag?",
+                    "caption": "Etichette",
+                    "confirm_remove": "Sei sicuro di voler rimuovere l'etichetta {tag}?",
+                    "confirm_remove_title": "Rimuovere l'etichetta?",
                     "create_automation": "Creare un'automazione con l'etichetta",
                     "description": "Gestisci le etichette",
                     "detail": {
@@ -2299,18 +2354,18 @@
                         "delete": "Cancella",
                         "description": "Descrizione",
                         "name": "Nome",
-                        "new_tag": "Nuova Etichetta",
-                        "tag_id": "Id Etichetta",
+                        "new_tag": "Nuova etichetta",
+                        "tag_id": "Id etichetta",
                         "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
                         "update": "Aggiorna",
-                        "usage": "Un tag può attivare un'automazione quando viene scansionato, puoi utilizzare tag NFC, codici QR o qualsiasi altro tipo di tag. Utilizza il nostro {companion_link} per scrivere questo tag su un tag NFC programmabile o crea un codice QR di seguito."
+                        "usage": "Una etichetta può attivare un'automazione quando viene scansionata, puoi utilizzare etichette NFC, codici QR o qualsiasi altro tipo di tag. Utilizza il nostro {companion_link} per scrivere questa etichetta su un tag NFC programmabile o crea un codice QR di seguito."
                     },
                     "edit": "Modifica",
                     "headers": {
                         "last_scanned": "Ultima scansione",
                         "name": "Nome"
                     },
-                    "learn_more": "Ulteriori informazioni sui tag",
+                    "learn_more": "Ulteriori informazioni sulle etichette",
                     "never_scanned": "Mai scansionato",
                     "no_tags": "Nessuna etichetta",
                     "write": "Scrivi"
@@ -2915,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "La scheda Occhiata Immagine mostra un'immagine e gli stati dell'entità corrispondenti come una icona. Le entità sul lato destro consentono azioni di commutazione, altre mostrano più informazioni di dialogo.",
-                            "name": "Vista immagine"
+                            "name": "Vista immagine",
+                            "state_entity": "Stato Entità"
                         },
                         "picture": {
                             "description": "La scheda Immagine consente di impostare un'immagine da utilizzare per la navigazione su vari percorsi nell'interfaccia o per chiamare un servizio.",
@@ -3126,7 +3182,7 @@
                     "attribute_not_found": "Attributo {attribute} non disponibile in: {entity}",
                     "entity_non_numeric": "L'entità non è numerica: {entity}",
                     "entity_not_found": "Entità non disponibile: {entity}",
-                    "entity_unavailable": "{entity} non è al momento disponibile",
+                    "entity_unavailable": "L'entità non è attualmente disponibile: {entity}",
                     "starting": "Home Assistant si sta avviando, non tutto potrebbe essere subito disponibile"
                 }
             },

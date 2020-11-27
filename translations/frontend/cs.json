@@ -547,6 +547,10 @@
                 "clear": "Vymazat",
                 "show_areas": "Zobrazit oblasti"
             },
+            "blueprint-picker": {
+                "add_user": "Přidat uživatele",
+                "remove_user": "Odebrat uživatele"
+            },
             "data-table": {
                 "no-data": "Žádná data",
                 "search": "Hledat"
@@ -583,7 +587,7 @@
                 "by_service": "službou",
                 "entries_not_found": "Nenalezeny žádné záznamy.",
                 "messages": {
-                    "became_unavailable": "stalo se nedostupným",
+                    "became_unavailable": "bylo nedostupné",
                     "changed_to_state": "změněno na {state}",
                     "cleared_device_class": "zrušeno (nebylo zjištěno {device_class})",
                     "detected_device_class": "zjištěno {device_class}",
@@ -741,7 +745,7 @@
                     "update": "Aktualizovat"
                 },
                 "faq": "dokumentace",
-                "no_unique_id": "Tato entita nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní. Další podrobnosti naleznete na stránce {faq_link}.",
+                "no_unique_id": "Tato entita (\"{entity_id}\") nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní. Další podrobnosti naleznete na stránce {faq_link}.",
                 "related": "Související",
                 "settings": "Nastavení"
             },
@@ -1046,6 +1050,17 @@
                 "automation": {
                     "caption": "Automatizace",
                     "description": "Správa automatizací",
+                    "dialog_new": {
+                        "header": "Vytvoření automatizace",
+                        "how": "Jak chcete vytvořit svou novou automatizaci?",
+                        "start_empty": "Začněte s prázdnou automatizací",
+                        "thingtalk": {
+                            "create": "Vytvořit",
+                            "header": "Popište automatizaci, kterou chcete vytvořit",
+                            "input_label": "Co by měla tato automatizace dělat?",
+                            "intro": "A pokusíme se ji pro vás vytvořit. Například: Po odchodu zhasnout světla."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Přidat akci",
@@ -1053,7 +1068,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Akce",
-                            "introduction": "Akce jsou to, co Home Assistant provede při spuštění automatizace. \n\n [Více informací o akcích.] (Https://home-assistant.io/docs/automation/action/)",
+                            "introduction": "Akce jsou to, co Home Assistant provede při spuštění automatizace.",
                             "learn_more": "Další informace o akcích",
                             "name": "Akce",
                             "type_select": "Typ akce",
@@ -1126,13 +1141,16 @@
                             "unsupported_action": "Akce {action} není podporována v uživatelském rozhraní"
                         },
                         "alias": "Název",
+                        "blueprint": {
+                            "inputs": "Vstupy"
+                        },
                         "conditions": {
                             "add": "Přidat podmínku",
                             "delete": "Smazat",
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Podmínky",
-                            "introduction": "Podmínky jsou volitelnou součástí automatizačního pravidla a mohou být použity k zabránění spuštění akce. Podmínky vypadají velmi podobně jako spouštěče, ale jsou velmi odlišné. Spouštěč se podívá na události, ke kterým dochází v systému, zatímco podmínka se zabývá pouze tím, jak systém vypadá právě teď. Pro spouštěč se může jevit že je spínač zapnutý. Stav může vidět pouze tehdy, je-li přepínač aktuálně zapnutý nebo vypnutý. \n\n [Další informace o podmínkách.] (Https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "Podmínky jsou volitelné a pokud nejsou všechny splněny, zabrání dalšímu provádění automatizace.",
                             "learn_more": "Další informace o podmínkách",
                             "name": "Podmínka",
                             "type_select": "Typ podmínky",
@@ -1236,7 +1254,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Spouštěče",
-                            "introduction": "Spouštěče spouštějí zpracování automatizačního pravidla. Pro stejné pravidlo je možné zadat více spouštěčů. Po spuštění spouštěče ověří Home Assistant případné podmínky a zavolá akci. \n\n [Další informace o spouštěčích.] (Https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Spouštěče spouštějí automatizaci. Pro jednu automatizaci je možné zadat více spouštěčů. Po spuštění ověří Home Assistant případné podmínky a zavolá akci.",
                             "learn_more": "Další informace o spouštěčích",
                             "name": "Spouštěč",
                             "type_select": "Typ spouštěče",
@@ -1366,6 +1384,28 @@
                             "introduction": "Zadejte níže, co by tato automatizace měla dělat, a my se ji pokusíme převést na automatizaci Home Assistant.",
                             "language_note": "Poznámka: Prozatím je podporována pouze angličtina."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Zadejte adresu URL šablonky konfigurace",
+                        "header": "Přidat novou šablonku konfigurace",
+                        "import_btn": "Importovat šablonku konfigurace",
+                        "import_header": "Importovat {name} ({domain})",
+                        "import_introduction": "Z Githubu a komunitních fór můžete importovat šablonky konfigurace sdílené ostatními uživateli. Zadejte adresu URL šablonky konfigurace.",
+                        "importing": "Importuje se šablonka konfigurace",
+                        "save_btn": "Uložit šablonku konfigurace",
+                        "saving": "Ukládání konfigurační šablonky",
+                        "url": "URL šablonky konfigurace"
+                    },
+                    "overview": {
+                        "add_blueprint": "Přidat šablonku konfigurace",
+                        "confirm_delete_header": "Odstranit tuto šablonku konfigurace?",
+                        "confirm_delete_text": "Opravdu chcete smazat tuto šablonku konfigurace?",
+                        "headers": {
+                            "name": "Jméno"
+                        },
+                        "learn_more": "Další informace o šablonkách konfigurace"
                     }
                 },
                 "cloud": {
@@ -1812,11 +1852,11 @@
                         "delete": "Smazat",
                         "delete_button": "Smazat {integration}",
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
-                        "device_unavailable": "zařízení není k dispozici",
+                        "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
                         "documentation": "Dokumentace",
                         "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
-                        "entity_unavailable": "entita není k dispozici",
+                        "entity_unavailable": "Entita není dostupná",
                         "firmware": "Firmware: {version}",
                         "hub": "Připojeno přes",
                         "manuf": "od {manufacturer}",
@@ -2915,7 +2955,8 @@
                         },
                         "picture-glance": {
                             "description": "Karta Obrázkový náhled zobrazuje obrázek a odpovídající stav entity jako ikonu. Entity na pravé straně umožňují přepínání, jiné zobrazují dialogové okno s více informacemi.",
-                            "name": "Obrázkový náhled"
+                            "name": "Obrázkový náhled",
+                            "state_entity": "Stav entity"
                         },
                         "picture": {
                             "description": "Karta Obrázek vám umožňuje nastavit obrázek, který se použije pro navigaci na různá místa v rozhraní nebo pro volání služby.",
@@ -3126,7 +3167,7 @@
                     "attribute_not_found": "Atribut {attribute} není k dispozici v: {entity}",
                     "entity_non_numeric": "Entita není číselná: {entity}",
                     "entity_not_found": "Entita není k dispozici: {entity}",
-                    "entity_unavailable": "Entita {entity} není aktuálně k dispozici.",
+                    "entity_unavailable": "Entita není aktuálně dostupná: {entity}",
                     "starting": "Home Assistant se spouští, vše ještě nemusí být dostupné"
                 }
             },

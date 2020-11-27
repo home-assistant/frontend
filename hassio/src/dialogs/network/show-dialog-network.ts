@@ -13,10 +13,7 @@ export const showNetworkDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-hassio-network",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "dialog-hassio-network" */ "./dialog-hassio-network"
-      ),
+    dialogImport: () => import("./dialog-hassio-network"),
     dialogParams,
   });
 };

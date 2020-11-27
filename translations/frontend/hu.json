@@ -547,6 +547,11 @@
                 "clear": "Törlés",
                 "show_areas": "Területek megjelenítése"
             },
+            "blueprint-picker": {
+                "add_user": "Felhasználó hozzáadása",
+                "remove_user": "Felhasználó eltávolítása",
+                "select_blueprint": "Tervrajz kiválasztása"
+            },
             "data-table": {
                 "no-data": "Nincs adat",
                 "search": "Keresés"
@@ -741,7 +746,7 @@
                     "update": "Frissítés"
                 },
                 "faq": "dokumentáció",
-                "no_unique_id": "Ennek az entitásnak nincs egyedi azonosítója, ezért a beállításait nem lehet kezelni a felhasználói felületről. További részletek a {faq_link} oldalon találhatók.",
+                "no_unique_id": "Ennek az entitásnak (\"{entity_id}\") nincs egyedi azonosítója, ezért a beállításait nem lehet kezelni a felhasználói felületről. További részletekért tekintsd meg a {faq_link} oldalt.",
                 "related": "Kapcsolatok",
                 "settings": "Beállítások"
             },
@@ -877,6 +882,7 @@
                     "navigation": {
                         "areas": "Területek",
                         "automation": "Automatizálások",
+                        "blueprint": "Tervrajzok",
                         "core": "Általános",
                         "customize": "Testreszabások",
                         "devices": "Eszközök",
@@ -886,8 +892,8 @@
                         "integrations": "Integrációk",
                         "logs": "Napló",
                         "lovelace": "Lovelace Irányítópultok",
-                        "navigate_to": "Ugrás {panel}",
-                        "navigate_to_config": "Ugrás a(z) {panel} konfigurációra",
+                        "navigate_to": "Ugrás ide: {panel}",
+                        "navigate_to_config": "Ugrás ide: {panel} konfiguráció",
                         "person": "Személyek",
                         "scene": "Jelenetek",
                         "script": "Szkriptek",
@@ -1046,6 +1052,20 @@
                 "automation": {
                     "caption": "Automatizálások",
                     "description": "Automatizálások kezelése",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Tervrajz használata"
+                        },
+                        "header": "Új automatizálás létrehozása",
+                        "how": "Hogyan szeretnéd létrehozni az új automatizálást?",
+                        "start_empty": "Kezdés üres automatizálással",
+                        "thingtalk": {
+                            "create": "Létrehozás",
+                            "header": "Írd le az automatizálást, amit létre szeretnél hozni",
+                            "input_label": "Mit kell tennie ennek az automatizálásnak?",
+                            "intro": "És megpróbáljuk létrehozni neked. Például: Kapcsold le a villanyt, amikor távozom."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Művelet hozzáadása",
@@ -1126,6 +1146,14 @@
                             "unsupported_action": "Nincs felhasználói felület támogatás a művelethez: {action}"
                         },
                         "alias": "Név",
+                        "blueprint": {
+                            "blueprint_to_use": "Használni kívánt tervrajz",
+                            "header": "Tervrajz",
+                            "inputs": "Bemenetek",
+                            "manage_blueprints": "Tervrajzok kezelése",
+                            "no_blueprints": "Nincsenek tervrajzaid",
+                            "no_inputs": "Ennek a tervrajznak nincsenek bemenetei."
+                        },
                         "conditions": {
                             "add": "Feltétel hozzáadása",
                             "delete": "Törlés",
@@ -1366,6 +1394,33 @@
                             "introduction": "Írd be alább, hogy mit kellene tennie ennek az automatizálásnak, és megpróbáljuk átalakítani Home Assistant automatizálássá.",
                             "language_note": "Megjegyzés: Egyelőre csak az angol nyelv támogatott."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Add meg a tervrajz URL címét.",
+                        "header": "Új tervrajz hozzáadása",
+                        "import_btn": "Tervrajz importálása",
+                        "import_header": "{name} importálása ({domain})",
+                        "import_introduction": "Importálhatod más felhasználók tervrajzait a Githubról és a közösségi fórumról. Írd be alább a terv URL címét.",
+                        "importing": "Tervrajz importálása...",
+                        "save_btn": "Tervrajz mentése",
+                        "saving": "Tervrajz mentése...",
+                        "unsupported_blueprint": "Ez a tervrajz nem támogatott",
+                        "url": "A tervrajz URL-címe"
+                    },
+                    "caption": "Tervrajzok",
+                    "description": "Tervrajzok kezelése",
+                    "overview": {
+                        "add_blueprint": "Tervrajz hozzáadása",
+                        "confirm_delete_header": "Törlöd ezt a tervrajzot?",
+                        "confirm_delete_text": "Biztosan törölni szeretnéd ezt a tervrajzot?",
+                        "header": "Tervrajz szerkesztő",
+                        "headers": {
+                            "name": "Név"
+                        },
+                        "introduction": "A tervrajz-szerkesztő lehetővé teszi tervrajzok létrehozását és szerkesztését.",
+                        "learn_more": "Tudj meg többet a tervrajzokról"
                     }
                 },
                 "cloud": {
@@ -1769,6 +1824,9 @@
                                 "can_reach_cloud_auth": "Hitelesítési kiszolgáló elérése",
                                 "google_enabled": "Google engedélyezve",
                                 "logged_in": "Bejelentkezve",
+                                "relayer_connected": "Közvetítő csatlakoztatva",
+                                "remote_connected": "Távoli csatlakozás",
+                                "remote_enabled": "Távoli hozzáférés engedélyezve",
                                 "subscription_expiration": "Előfizetés lejárata"
                             },
                             "homeassistant": {
@@ -1809,11 +1867,11 @@
                         "delete": "Törlés",
                         "delete_button": "Törlés: {integration}",
                         "delete_confirm": "Biztosan törölni szeretnéd ezt az integrációt?",
-                        "device_unavailable": "eszköz nem érhető el",
+                        "device_unavailable": "Eszköz nem érhető el",
                         "devices": "{count} {count, plural,\n  one {eszköz}\n  other {eszköz}\n}",
                         "documentation": "Dokumentáció",
                         "entities": "{count} {count, plural,\n  one {entitás}\n  other {entitás}\n}",
-                        "entity_unavailable": "entitás nem érhető el",
+                        "entity_unavailable": "Entitás nem érhető el",
                         "firmware": "Firmware: {version}",
                         "hub": "Kapcsolódva",
                         "manuf": "{manufacturer} által",
@@ -2912,7 +2970,8 @@
                         },
                         "picture-glance": {
                             "description": "A Kép Pillantás kártya egy képet és a meghatározott entitások állapotát ikonként jeleníti meg. A jobb oldali entitások lehetővé teszik a műveletek váltását, a többi pedig a további infók párbeszédpanelt nyitja meg.",
-                            "name": "Kép pillantás"
+                            "name": "Kép pillantás",
+                            "state_entity": "Állapot entitás"
                         },
                         "picture": {
                             "description": "A Képkártya lehetővé teszi, hogy beállíts egy képet hivatkozásként a felületen való navigáláshoz, vagy hogy meghívj egy szolgáltatást.",
@@ -3123,7 +3182,7 @@
                     "attribute_not_found": "A(z) {attribute} attribútum nem érhető el a(z) {entity} entitásban.",
                     "entity_non_numeric": "Entitás nem numerikus: {entity}",
                     "entity_not_found": "Entitás nem elérhető: {entity}",
-                    "entity_unavailable": "{entity} jelenleg nem elérhető",
+                    "entity_unavailable": "Az entitás jelenleg nem érhető el: {entity}",
                     "starting": "A Home Assistant indítása folyamatban van, ezért lehet hogy még nem minden érhető el."
                 }
             },

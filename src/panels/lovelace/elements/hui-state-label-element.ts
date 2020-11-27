@@ -30,7 +30,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
   public setConfig(config: StateLabelElementConfig): void {
     if (!config.entity) {
-      throw Error("Invalid Configuration: 'entity' required");
+      throw Error("Entity required");
     }
 
     this._config = { hold_action: { action: "more-info" }, ...config };

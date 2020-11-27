@@ -24,8 +24,9 @@ import {
   SUPPORT_COLOR_TEMP,
   SUPPORT_EFFECT,
   SUPPORT_WHITE_VALUE,
+  LightEntity,
 } from "../../../data/light";
-import type { HomeAssistant, LightEntity } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 interface HueSatColor {
   h: number;

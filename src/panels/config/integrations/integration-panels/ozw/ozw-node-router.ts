@@ -48,15 +48,11 @@ class OZWNodeRouter extends HassRouterPage {
     routes: {
       dashboard: {
         tag: "ozw-node-dashboard",
-        load: () =>
-          import(
-            /* webpackChunkName: "ozw-node-dashboard" */ "./ozw-node-dashboard"
-          ),
+        load: () => import("./ozw-node-dashboard"),
       },
       config: {
         tag: "ozw-node-config",
-        load: () =>
-          import(/* webpackChunkName: "ozw-node-config" */ "./ozw-node-config"),
+        load: () => import("./ozw-node-config"),
       },
     },
   };

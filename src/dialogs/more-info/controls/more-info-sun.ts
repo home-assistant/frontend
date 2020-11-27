@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { formatTime } from "../../../common/datetime/format_time";
+import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/ha-relative-time";
 import { HomeAssistant } from "../../../types";
 
@@ -59,7 +60,12 @@ class MoreInfoSun extends LitElement {
         <div class="key">
           ${this.hass.localize("ui.dialogs.more_info_control.sun.elevation")}
         </div>
-        <div class="value">${this.stateObj.attributes.elevation}</div>
+        <div class="value">
+          ${formatNumber(
+            this.stateObj.attributes.elevation,
+            this.hass!.language
+          )}
+        </div>
       </div>
     `;
   }
@@ -67,7 +73,7 @@ class MoreInfoSun extends LitElement {
   static get styles(): CSSResult {
     return css`
       .row {
-        margin: 0 8px;
+        margin: 0;
         display: flex;
         flex-direction: row;
         justify-content: space-between;

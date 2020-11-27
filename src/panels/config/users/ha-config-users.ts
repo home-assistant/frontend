@@ -46,10 +46,17 @@ export class HaConfigUsers extends LitElement {
           width: "25%",
           direction: "asc",
           grows: true,
-          template: (name) => html`
-            ${name ||
-            this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
-          `,
+          template: (name, user: any) =>
+            narrow
+              ? html` ${name}<br />
+                  <div class="secondary">
+                    ${user.username} |
+                    ${this.hass.localize(`groups.${user.group_ids[0]}`)}
+                  </div>`
+              : html` ${name ||
+                this.hass!.localize(
+                  "ui.panel.config.users.editor.unnamed_user"
+                )}`,
         },
       };
 
@@ -69,23 +76,15 @@ export class HaConfigUsers extends LitElement {
         };
         columns.group_ids = {
           title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.group"
+            "ui.panel.config.users.picker.headers.username"
           ),
           sortable: true,
           filterable: true,
           width: "20%",
-          template: (groupIds) =>
-            html`${this.hass.localize(`groups.${groupIds[0]}`)}`,
-        };
-      } else {
-        columns.name.template = (name, user: any) => {
-          return html`
-            ${name}<br />
-            <div class="secondary">
-              ${user.username} |
-              ${this.hass.localize(`groups.${user.group_ids[0]}`)}
-            </div>
-          `;
+          direction: "asc",
+          template: (groupIds) => html`
+            ${this.hass.localize(`groups.${groupIds[0]}`)}
+          `,
         };
       }
 
@@ -152,7 +151,7 @@ export class HaConfigUsers extends LitElement {
 
     this._users.forEach(function (user) {
       if (user.is_owner) {
-        user.group_ids.unshift("owners");
+        user.group_ids.unshift("owner");
       }
     });
   }

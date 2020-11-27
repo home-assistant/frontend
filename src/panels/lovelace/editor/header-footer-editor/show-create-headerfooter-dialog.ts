@@ -8,9 +8,7 @@ export interface CreateHeaderFooterDialogParams {
 }
 
 const importCreateHeaderFooterDialog = () =>
-  import(
-    /* webpackChunkName: "hui-dialog-create-headerfooter" */ "./hui-dialog-create-headerfooter"
-  );
+  import("./hui-dialog-create-headerfooter");
 
 export const showCreateHeaderFooterDialog = (
   element: HTMLElement,

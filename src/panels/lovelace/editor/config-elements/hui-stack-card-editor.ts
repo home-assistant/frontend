@@ -12,7 +12,16 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { any, array, assert, object, optional, string } from "superstruct";
+import {
+  any,
+  array,
+  assert,
+  object,
+  optional,
+  string,
+  boolean,
+  number,
+} from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -28,6 +37,8 @@ const cardConfigStruct = object({
   type: string(),
   cards: array(any()),
   title: optional(string()),
+  square: optional(boolean()),
+  columns: optional(number()),
 });
 
 @customElement("hui-stack-card-editor")
