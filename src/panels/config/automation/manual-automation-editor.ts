@@ -326,12 +326,12 @@ export class HaManualAutomationEditor extends LitElement {
         ha-entity-toggle {
           margin-right: 8px;
         }
-        mwc-fab {
+        ha-fab {
           position: relative;
           bottom: calc(-80px - env(safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
-        mwc-fab.dirty {
+        ha-fab.dirty {
           bottom: 0;
         }
         .selected_menu_item {
