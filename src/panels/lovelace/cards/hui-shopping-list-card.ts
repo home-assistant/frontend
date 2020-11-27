@@ -325,16 +325,20 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
       fallbackClass: "sortable-fallback",
       dataIdAttr: "item-id",
       handle: "ha-svg-icon",
-      onSort: async (evt) => {
-        reorderItems(this.hass!, this._sortable.toArray()).catch(() =>
-          this._fetchData()
-        );
-        // Move the shopping list item in memory.
-        this._uncheckedItems!.splice(
-          evt.newIndex,
-          0,
-          this._uncheckedItems!.splice(evt.oldIndex, 1)[0]
-        );
+      onEnd: async (evt) => {
+        // Since this is `onEnd` event, it's possible that
+        // an item wa dragged away and was put back to its original position.
+        if (evt.oldIndex != evt.newIndex) {
+          reorderItems(this.hass!, this._sortable.toArray()).catch(() =>
+            this._fetchData()
+          );
+          // Move the shopping list item in memory.
+          this._uncheckedItems!.splice(
+            evt.newIndex,
+            0,
+            this._uncheckedItems!.splice(evt.oldIndex, 1)[0]
+          );
+        }
         this._renderEmptySortable = true;
         await this.updateComplete;
         while (sortableEl?.lastElementChild) {
