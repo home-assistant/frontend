@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../../components/ha-fab";
 import {
   css,
   CSSResult,
@@ -108,13 +108,13 @@ export class HuiUnusedEntities extends LitElement {
           selected: this._selectedEntities.length,
         })}"
       >
-        <mwc-fab
+        <ha-fab
           .label=${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}
           extended
           @click=${this._addToLovelaceView}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </div>
     `;
   }
@@ -189,12 +189,12 @@ export class HuiUnusedEntities extends LitElement {
         padding-right: 16px;
         padding-left: calc(16px + env(safe-area-inset-left));
       }
-      mwc-fab {
+      ha-fab {
         position: relative;
         bottom: calc(-80px - env(safe-area-inset-bottom));
         transition: bottom 0.3s;
       }
-      .fab.selected mwc-fab {
+      .fab.selected ha-fab {
         bottom: 0;
       }
     `;

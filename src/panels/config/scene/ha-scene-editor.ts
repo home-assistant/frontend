@@ -25,7 +25,7 @@ import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-input";
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -403,7 +403,7 @@ export class HaSceneEditor extends SubscribeMixin(
               `
             : ""}
         </div>
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.scene.editor.save")}
           extended
@@ -411,7 +411,7 @@ export class HaSceneEditor extends SubscribeMixin(
           class=${classMap({ dirty: this._dirty })}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -786,12 +786,12 @@ export class HaSceneEditor extends SubscribeMixin(
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
-        mwc-fab {
+        ha-fab {
           position: relative;
           bottom: calc(-80px - env(safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
-        mwc-fab.dirty {
+        ha-fab.dirty {
           bottom: 0;
         }
       `,

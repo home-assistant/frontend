@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
@@ -474,7 +474,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               `
             : ""}
         </div>
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.integrations.add_integration"
@@ -483,7 +483,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           @click=${this._createFlow}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }

@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import { mdiPlus, mdiHelpCircle, mdiDelete, mdiRobot } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -174,7 +174,7 @@ class HaBlueprintOverview extends LitElement {
         <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
         </mwc-icon-button>
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
@@ -183,7 +183,7 @@ class HaBlueprintOverview extends LitElement {
           @click=${this._addBlueprint}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }
