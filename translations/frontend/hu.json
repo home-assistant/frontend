@@ -1399,11 +1399,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Add meg a tervrajz URL címét.",
+                        "file_name": "Helyi tervrajz neve",
                         "header": "Új tervrajz hozzáadása",
                         "import_btn": "Tervrajz importálása",
                         "import_header": "{name} importálása ({domain})",
                         "import_introduction": "Importálhatod más felhasználók tervrajzait a Githubról és a közösségi fórumról. Írd be alább a terv URL címét.",
                         "importing": "Tervrajz importálása...",
+                        "raw_blueprint": "Tervrajz tartalma",
                         "save_btn": "Tervrajz mentése",
                         "saving": "Tervrajz mentése...",
                         "unsupported_blueprint": "Ez a tervrajz nem támogatott",
@@ -1415,12 +1417,16 @@
                         "add_blueprint": "Tervrajz hozzáadása",
                         "confirm_delete_header": "Törlöd ezt a tervrajzot?",
                         "confirm_delete_text": "Biztosan törölni szeretnéd ezt a tervrajzot?",
+                        "delete_blueprint": "Tervrajz törlése",
                         "header": "Tervrajz szerkesztő",
                         "headers": {
+                            "domain": "Tartomány",
+                            "file_name": "Fájl név",
                             "name": "Név"
                         },
                         "introduction": "A tervrajz-szerkesztő lehetővé teszi tervrajzok létrehozását és szerkesztését.",
-                        "learn_more": "Tudj meg többet a tervrajzokról"
+                        "learn_more": "Tudj meg többet a tervrajzokról",
+                        "use_blueprint": "Automatizálás létrehozása"
                     }
                 },
                 "cloud": {
@@ -2414,6 +2420,7 @@
                     "users_privileges_note": "A felhasználói csoport funkció jelenleg is fejlesztés alatt áll. A felhasználó nem tudja kezelni a példányt a felhasználói felületen keresztül. Folyamatosan ellenőrizzük az összes felügyeleti API-végpontot annak érdekében, hogy azok helyesen korlátozzák a hozzáférést az adminisztrátorok részére."
                 },
                 "zha": {
+                    "add_device": "Eszköz hozzáadása",
                     "add_device_page": {
                         "discovered_text": "Az eszközök itt fognak megjelenni, ha felfedezésre kerültek.",
                         "discovery_text": "A felfedezett eszközök itt fognak megjelenni. A készülékek használati utasításai alapján állítsd őket párosítási módba.",
@@ -2474,6 +2481,7 @@
                         "unbind_button_label": "Csoport bontás"
                     },
                     "groups": {
+                        "add_group": "Csoport hozzáadása",
                         "add_members": "Tagok hozzáadása",
                         "adding_members": "Tagok hozzáadása",
                         "caption": "Csoportok",
@@ -2516,7 +2524,11 @@
                         "hint_wakeup": "Egyes eszközöknek, például a Xiaomi szenzoroknak van ébresztő gombjuk, amit kb. 5 másodperces szünetekkel nyomkodva éber állapotban tarthatók a kommunikáció idejére.",
                         "introduction": "Egy eszközt érintő ZHA parancs futtatása. Válassz ki egy eszközt az elérhető parancsok megtekintéséhez."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Megjelenítés",
+                        "header": "Hálózati megjelenítés"
+                    }
                 },
                 "zone": {
                     "add_zone": "Zóna hozzáadása",
