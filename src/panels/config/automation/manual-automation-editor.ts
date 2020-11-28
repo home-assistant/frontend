@@ -309,14 +309,6 @@ export class HaManualAutomationEditor extends LitElement {
         ha-card {
           overflow: hidden;
         }
-        .errors {
-          padding: 20px;
-          font-weight: bold;
-          color: var(--error-color);
-        }
-        .content {
-          padding-bottom: 20px;
-        }
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
@@ -325,20 +317,6 @@ export class HaManualAutomationEditor extends LitElement {
         }
         ha-entity-toggle {
           margin-right: 8px;
-        }
-        mwc-fab {
-          position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        mwc-fab.dirty {
-          bottom: 0;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
-        }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
         }
       `,
     ];

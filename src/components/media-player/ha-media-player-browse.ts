@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-fab/mwc-fab";
+import "../ha-fab";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowLeft, mdiClose, mdiPlay, mdiPlus } from "@mdi/js";
@@ -170,7 +170,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 >
                   ${this._narrow && currentItem?.can_play
                     ? html`
-                        <mwc-fab
+                        <ha-fab
                           mini
                           .item=${currentItem}
                           @click=${this._actionClicked}
@@ -185,7 +185,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           ${this.hass.localize(
                             `ui.components.media-browser.${this.action}`
                           )}
-                        </mwc-fab>
+                        </ha-fab>
                       `
                     : ""}
                 </div>
@@ -927,7 +927,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           transition: width 0.4s, height 0.4s, padding-bottom 0.4s;
         }
 
-        mwc-fab {
+        ha-fab {
           position: absolute;
           --mdc-theme-secondary: var(--primary-color);
           bottom: -20px;
@@ -1011,7 +1011,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           margin-bottom: 0;
         }
 
-        :host([scroll]) mwc-fab {
+        :host([scroll]) ha-fab {
           bottom: 4px;
           right: 4px;
           --mdc-fab-box-shadow: none;

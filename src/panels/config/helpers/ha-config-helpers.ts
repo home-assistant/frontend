@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -158,7 +158,7 @@ export class HaConfigHelpers extends LitElement {
           "ui.panel.config.helpers.picker.no_helpers"
         )}
       >
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.helpers.picker.add_helper"
@@ -167,7 +167,7 @@ export class HaConfigHelpers extends LitElement {
           @click=${this._createHelpler}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }

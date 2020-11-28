@@ -278,16 +278,8 @@ export class HaBlueprintAutomationEditor extends LitElement {
         ha-card {
           overflow: hidden;
         }
-        .errors {
-          padding: 20px;
-          font-weight: bold;
-          color: var(--error-color);
-        }
         .padding {
           padding: 16px;
-        }
-        .content {
-          padding-bottom: 20px;
         }
         .blueprint-picker-container {
           padding: 16px;
@@ -316,20 +308,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
         }
         :host(:not([narrow])) ha-settings-row ha-selector {
           width: 50%;
-        }
-        mwc-fab {
-          position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        mwc-fab.dirty {
-          bottom: 0;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
-        }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
         }
       `,
     ];

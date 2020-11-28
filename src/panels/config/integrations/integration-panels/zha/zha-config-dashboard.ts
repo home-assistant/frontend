@@ -1,6 +1,6 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@material/mwc-fab";
+import "../../../../../components/ha-fab";
 import {
   css,
   CSSResultArray,
@@ -88,13 +88,13 @@ class ZHAConfigDashboard extends LitElement {
             : ""}
         </ha-card>
         <a href="/config/zha/add" slot="fab">
-          <mwc-fab
+          <ha-fab
             .label=${this.hass.localize("ui.panel.config.zha.add_device")}
             extended
             ?rtl=${computeRTL(this.hass)}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </mwc-fab>
+          </ha-fab>
         </a>
       </hass-tabs-subpage>
     `;
