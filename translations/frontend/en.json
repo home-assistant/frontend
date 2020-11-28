@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Owner",
         "system-admin": "Administrators",
         "system-read-only": "Read-Only Users",
         "system-users": "Users"
@@ -2399,7 +2400,7 @@
                         "delete_user": "Delete user",
                         "group": "Group",
                         "id": "ID",
-                        "name": "Name",
+                        "name": "Display name",
                         "new_password": "New Password",
                         "owner": "Owner",
                         "password_changed": "Password was changed successfully",
@@ -2407,14 +2408,18 @@
                         "system_generated_users_not_editable": "Unable to update system generated users.",
                         "system_generated_users_not_removable": "Unable to remove system generated users.",
                         "unnamed_user": "Unnamed User",
-                        "update_user": "Update"
+                        "update_user": "Update",
+                        "username": "Username"
                     },
                     "picker": {
                         "add_user": "Add user",
                         "headers": {
                             "group": "Group",
-                            "name": "Name",
-                            "system": "System"
+                            "is_active": "Active",
+                            "is_owner": "Owner",
+                            "name": "Display name",
+                            "system": "System generated",
+                            "username": "Username"
                         }
                     },
                     "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators."

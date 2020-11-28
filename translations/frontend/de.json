@@ -1417,10 +1417,13 @@
                         "confirm_delete_text": "Bist du sicher, dass du diesen Bauplan löschen möchtest?",
                         "header": "Bauplan-Editor",
                         "headers": {
+                            "domain": "Domain",
+                            "file_name": "Dateiname",
                             "name": "Name"
                         },
                         "introduction": "Mit dem Bauplan-Editor kannst du Baupläne erstellen und bearbeiten.",
-                        "learn_more": "Erfahre mehr über Baupläne"
+                        "learn_more": "Erfahre mehr über Baupläne",
+                        "use_blueprint": "Automatisierung erstellen"
                     }
                 },
                 "cloud": {
@@ -2414,6 +2417,7 @@
                     "users_privileges_note": "Benutzergruppen sind derzeit noch in Entwicklung. Der Benutzer wird nicht in der Lage sein, Änderungen an der Instanz über das UI vorzunehmen. Derzeit überprüfen wir noch alle API Endpunkte um sicherzustellen dass diese nur von Administratoren genutzt werden können."
                 },
                 "zha": {
+                    "add_device": "Gerät hinzufügen",
                     "add_device_page": {
                         "discovered_text": "Geräte werden hier angezeigt sobald sie erkannt worden sind.",
                         "discovery_text": "Erkannte Geräte werden hier angezeigt. Befolgen Sie die Anweisungen für Ihr Gerät und versetzen Sie das Gerät in den Pairing-Modus.",
@@ -2474,6 +2478,7 @@
                         "unbind_button_label": "Gruppe auflösen"
                     },
                     "groups": {
+                        "add_group": "Gruppe hinzufügen",
                         "add_members": "Mitglieder hinzufügen",
                         "adding_members": "Füge Mitglieder hinzu",
                         "caption": "Gruppen",
@@ -2516,7 +2521,11 @@
                         "hint_wakeup": "Einige Geräte, z. B. Xiaomi-Sensoren, verfügen über eine Wecktaste, die in Intervallen von ~5 Sekunden gedrückt werden kann, um die Geräte wach zu halten, während mit ihnen interagiert wird.",
                         "introduction": "ZHA-Befehle ausführen, die sich auf ein einzelnes Gerät auswirken. Wählen Sie ein Gerät aus, um eine Liste der verfügbaren Befehle anzuzeigen."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualisierung",
+                        "header": "Netzwerkvisualisierung"
+                    }
                 },
                 "zone": {
                     "add_zone": "Zone hinzufügen",

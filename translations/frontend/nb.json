@@ -1239,7 +1239,7 @@
                         "edit_ui": "Rediger med brukergrensesnittet",
                         "edit_yaml": "Rediger som YAML",
                         "enable_disable": "Aktivere/deaktivere automasjon",
-                        "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
+                        "introduction": "Bruk automatisering for å bringe hjemmet ditt til live.",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
                         "max": {
@@ -1399,11 +1399,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Vennligst skriv inn URL-en til blueprint",
+                        "file_name": "Lokalt blueprint filnavn",
                         "header": "Legg til ny blueprint",
                         "import_btn": "Importer blueprint",
-                        "import_header": "Importer {name} ({domain})",
+                        "import_header": "Importer {name} (type: {domain})",
                         "import_introduction": "Du kan importere blueprints av andre brukere fra Github og fellesskapsforumet. Skriv inn URL-en til blueprint nedenfor.",
                         "importing": "Importerer blueprint...",
+                        "raw_blueprint": "Blueprint innhold",
                         "save_btn": "Lagre blueprint",
                         "saving": "Lagrer blueprint...",
                         "unsupported_blueprint": "Denne blueprinten støttes ikke",
@@ -1412,15 +1414,19 @@
                     "caption": "Blueprints",
                     "description": "Administrer blueprints",
                     "overview": {
-                        "add_blueprint": "Legg til blueprint",
+                        "add_blueprint": "Importer blueprint",
                         "confirm_delete_header": "Slette denne blueprint'en?",
-                        "confirm_delete_text": "Er du sikker på at du vil slette denne blueprint'en",
+                        "confirm_delete_text": "Er du sikker på at du vil slette denne blueprint",
+                        "delete_blueprint": "Slett blueprint",
                         "header": "Blueprint Editor",
                         "headers": {
+                            "domain": "Domene",
+                            "file_name": "Filnavn",
                             "name": "Navn"
                         },
                         "introduction": "Med blueprint editor kan du opprette og redigere blueprints",
-                        "learn_more": "Lær mer om blueprint"
+                        "learn_more": "Lær mer om blueprint",
+                        "use_blueprint": "Opprett automasjon"
                     }
                 },
                 "cloud": {
@@ -2209,7 +2215,7 @@
                             "without_device": "Entiteter uten enhet"
                         },
                         "icon": "Ikon",
-                        "introduction": "Bruk scener for å gjøre hjemmet ditt mer levende.",
+                        "introduction": "Bruk scener for å bringe hjemmet ditt til live.",
                         "load_error_not_editable": "Bare scener i scenes.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av scene ({err_no}).",
                         "name": "Navn",
@@ -2414,6 +2420,7 @@
                     "users_privileges_note": "Brukergruppefunksjonen er et pågående arbeid. Brukeren vil ikke kunne administrere forekomsten via brukergrensesnittet. Vi overvåker fortsatt alle administrasjons-API-endepunkter for å sikre at de begrenser tilgangen til administratorer på riktig måte."
                 },
                 "zha": {
+                    "add_device": "Legg til enhet",
                     "add_device_page": {
                         "discovered_text": "Enheter vises her når de er oppdaget.",
                         "discovery_text": "Automatisk oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus.",
@@ -2474,6 +2481,7 @@
                         "unbind_button_label": "Frigi gruppe"
                     },
                     "groups": {
+                        "add_group": "Legg til gruppe",
                         "add_members": "Legg til medlemmer",
                         "adding_members": "Legger til medlemmer",
                         "caption": "Grupper",
@@ -2516,7 +2524,11 @@
                         "hint_wakeup": "Noen enheter, for eksempel Xiaomi-sensorer, har en vekkingsknapp som du kan trykke på med intervaller på ~ 5 sekunder for å holde enheter våkne mens du samhandler med dem.",
                         "introduction": "Kjør ZHA-kommandoer som påvirker en enkelt enhet. Velg en enhet for å se en liste over tilgjengelige kommandoer."
                     },
-                    "title": "ZigBee Hjemmeautomasjon"
+                    "title": "ZigBee Hjemmeautomasjon",
+                    "visualization": {
+                        "caption": "Visualisering",
+                        "header": "Nettverksvisualisering"
+                    }
                 },
                 "zone": {
                     "add_zone": "Legg til sone",
