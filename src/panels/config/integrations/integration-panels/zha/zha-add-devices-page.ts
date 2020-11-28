@@ -17,7 +17,7 @@ import "@polymer/paper-input/paper-textarea";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
-import "./zha-device-card";
+import "./zha-device-pairing-status-card";
 import { zhaTabs } from "./zha-config-dashboard";
 import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 
@@ -134,13 +134,13 @@ class ZHAAddDevicesPage extends LitElement {
             : html`
                 ${Object.values(this._discoveredDevices).map(
                   (device) => html`
-                    <zha-device-card
+                    <zha-device-pairing-status-card
                       class="card"
                       .hass=${this.hass}
                       .device=${device}
                       .narrow=${this.narrow}
                       .showHelp=${this._showHelp}
-                    ></zha-device-card>
+                    ></zha-device-pairing-status-card>
                   `
                 )}
               `}
