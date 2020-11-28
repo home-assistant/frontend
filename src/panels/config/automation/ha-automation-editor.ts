@@ -524,9 +524,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         .content {
           padding-bottom: 20px;
         }
-        span[slot="introduction"] a {
-          color: var(--primary-color);
-        }
         p {
           margin-bottom: 0;
         }

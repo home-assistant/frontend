@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "../../../../../components/ha-fab";
 import { mdiCheckCircle, mdiCircle, mdiCloseCircle, mdiZWave } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";

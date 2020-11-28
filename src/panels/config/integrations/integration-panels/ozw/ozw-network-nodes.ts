@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "../../../../../components/ha-fab";
 import { mdiAlert, mdiCheck } from "@mdi/js";
 import {
   CSSResult,
