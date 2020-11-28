@@ -37,7 +37,11 @@ class ZHADevicePairingStatusCard extends LitElement {
     }
 
     return html`
-      <ha-card outlined class="discovered"
+      <ha-card
+        outlined
+        class=${this.device.pairing_status === "INITIALIZED"
+          ? "discovered"
+          : "discovered-progress"}
         ><div class="header">
           <h1>
             ${this.hass!.localize(
@@ -97,9 +101,19 @@ class ZHADevicePairingStatusCard extends LitElement {
       haStyle,
       css`
         .discovered {
-          --ha-card-border-color: var(--primary-color);
+          --ha-card-border-color: var(--success-color);
         }
         .discovered .header {
+          background: var(--success-color);
+          color: var(--text-primary-color);
+          padding: 8px;
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .discovered-progress {
+          --ha-card-border-color: var(--primary-color);
+        }
+        .discovered-progress .header {
           background: var(--primary-color);
           color: var(--text-primary-color);
           padding: 8px;
