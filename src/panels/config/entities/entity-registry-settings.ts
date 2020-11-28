@@ -35,8 +35,11 @@ import "../../../components/ha-area-picker";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
+  updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import "../../../components/ha-expansion-panel";
+import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -50,7 +53,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _entityId!: string;
 
-  @internalProperty() private _areaId?: string;
+  @internalProperty() private _areaId?: string | null;
 
   @internalProperty() private _disabledBy!: string | null;
 
@@ -71,7 +74,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         for (const device of devices) {
           this._deviceLookup[device.id] = device;
         }
-        if (!this._device && this.entry.device_id) {
+        if (this.entry.device_id) {
           this._device = this._deviceLookup[this.entry.device_id];
         }
       }),
@@ -148,12 +151,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           .invalid=${invalidDomainUpdate}
           .disabled=${this._submitting}
         ></paper-input>
-        <ha-area-picker
-          .hass=${this.hass}
-          .value=${this._areaId}
-          .placeholder=${this._device?.area_id}
-          @value-changed=${this._areaPicked}
-        ></ha-area-picker>
+        ${!this.entry.device_id
+          ? html`<ha-area-picker
+              .hass=${this.hass}
+              .value=${this._areaId}
+              @value-changed=${this._areaPicked}
+            ></ha-area-picker>`
+          : ""}
         <div class="row">
           <ha-switch
             .checked=${!this._disabledBy}
@@ -185,6 +189,31 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             </div>
           </div>
         </div>
+
+        ${this.entry.device_id
+          ? html`<ha-expansion-panel .header=${"Advanced"}>
+              <p>
+                By default the entities of a device are in the same area as the
+                device. If you change the area of this entity, it will no longer
+                follow the area of the device.
+              </p>
+              ${this._areaId
+                ? html`<mwc-button @click=${this._clearArea}
+                    >Follow device area</mwc-button
+                  >`
+                : this._device
+                ? html`<mwc-button @click=${this._openDeviceSettings}
+                    >Change device area</mwc-button
+                  >`
+                : ""}
+              <ha-area-picker
+                .hass=${this.hass}
+                .value=${this._areaId}
+                .placeholder=${this._device?.area_id}
+                @value-changed=${this._areaPicked}
+              ></ha-area-picker
+            ></ha-expansion-panel>`
+          : ""}
       </div>
       <div class="buttons">
         <mwc-button
@@ -223,6 +252,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private _areaPicked(ev: CustomEvent) {
     this._error = undefined;
     this._areaId = ev.detail.value;
+  }
+
+  private _clearArea() {
+    this._error = undefined;
+    this._areaId = null;
+  }
+
+  private _openDeviceSettings() {
+    showDeviceRegistryDetailDialog(this, {
+      device: this._device!,
+      updateEntry: async (updates) => {
+        await updateDeviceRegistryEntry(this.hass, this._device!.id, updates);
+      },
+    });
   }
 
   private async _updateEntry(): Promise<void> {
