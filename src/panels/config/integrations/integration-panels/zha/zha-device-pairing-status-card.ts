@@ -50,9 +50,7 @@ class ZHADevicePairingStatusCard extends LitElement {
           initialized: this.device.pairing_status === INITIALIZED,
         })}"
         ><div
-          class="header ${classMap({
-            success: this.device.pairing_status === INITIALIZED,
-          })}"
+          class="header"
         >
           <h1>
             ${this.hass!.localize(
