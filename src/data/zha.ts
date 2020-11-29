@@ -27,6 +27,7 @@ export interface ZHADevice {
   device_type: string;
   signature: any;
   neighbors: Neighbor[];
+  pairing_status?: string;
 }
 
 export interface Neighbor {
@@ -270,3 +271,23 @@ export const addGroup = (
     group_name: groupName,
     members: membersToAdd,
   });
+
+export const INITIALIZED = "INITIALIZED";
+export const INTERVIEW_COMPLETE = "INTERVIEW_COMPLETE";
+export const CONFIGURED = "CONFIGURED";
+export const PAIRED = "PAIRED";
+export const INCOMPLETE_PAIRING_STATUSES = [
+  PAIRED,
+  CONFIGURED,
+  INTERVIEW_COMPLETE,
+];
+
+export const DEVICE_JOINED = "device_joined";
+export const RAW_DEVICE_INITIALIZED = "raw_device_initialized";
+export const DEVICE_FULLY_INITIALIZED = "device_fully_initialized";
+export const DEVICE_MESSAGE_TYPES = [
+  DEVICE_JOINED,
+  RAW_DEVICE_INITIALIZED,
+  DEVICE_FULLY_INITIALIZED,
+];
+export const LOG_OUTPUT = "log_output";

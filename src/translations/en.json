@@ -2198,6 +2198,16 @@
             "issue_zigbee_command": "Issue Zigbee Command",
             "help_command_dropdown": "Select a command to interact with."
           },
+          "device_pairing_card": {
+            "PAIRED": "Device Found",
+            "PAIRED_status_text": "Starting Interview",
+            "INTERVIEW_COMPLETE": "Interview Complete",
+            "INTERVIEW_COMPLETE_status_text": "Configuring",
+            "CONFIGURED": "Configuration Complete",
+            "CONFIGURED_status_text": "Initializing",
+            "INITIALIZED": "Initialization Complete",
+            "INITIALIZED_status_text": "The device is ready to use"
+          },
           "network": {
             "caption": "Network"
           },
