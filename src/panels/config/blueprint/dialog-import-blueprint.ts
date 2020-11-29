@@ -4,7 +4,6 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "../../../components/ha-circular-progress";
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -97,12 +96,11 @@ class DialogImportBlueprint extends LitElement {
                         )}
                       ></paper-input>
                     `}
-                <ha-expansion-panel>
-                  <span slot="title"
-                    >${this.hass.localize(
-                      "ui.panel.config.blueprint.add.raw_blueprint"
-                    )}</span
-                  >
+                <ha-expansion-panel
+                  .header=${this.hass.localize(
+                    "ui.panel.config.blueprint.add.raw_blueprint"
+                  )}
+                >
                   <pre>${this._result.raw_data}</pre>
                 </ha-expansion-panel>`
             : html`${this.hass.localize(
@@ -201,15 +199,8 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      haStyleDialog,
-      css`
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return haStyleDialog;
   }
 }
 

@@ -62,6 +62,14 @@ import {
 } from "./show-dialog-entity-editor";
 import { haStyle } from "../../../resources/styles";
 import { UNAVAILABLE } from "../../../data/entity";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
+import {
+  AreaRegistryEntry,
+  subscribeAreaRegistry,
+} from "../../../data/area_registry";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -73,6 +81,7 @@ export interface EntityRow extends StateEntity {
   unavailable: boolean;
   restored: boolean;
   status: string;
+  area?: string;
 }
 
 @customElement("ha-config-entities")
@@ -86,6 +95,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() public route!: Route;
 
   @internalProperty() private _entities?: EntityRegistryEntry[];
+
+  @internalProperty() private _devices?: DeviceRegistryEntry[];
+
+  @internalProperty() private _areas: AreaRegistryEntry[] = [];
 
   @internalProperty() private _stateEntities: StateEntity[] = [];
 
@@ -201,6 +214,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         template: (platform) =>
           this.hass.localize(`component.${platform}.title`) || platform,
       },
+      area: {
+        title: this.hass.localize(
+          "ui.panel.config.entities.picker.headers.area"
+        ),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      },
       status: {
         title: this.hass.localize(
           "ui.panel.config.entities.picker.headers.status"
@@ -255,6 +277,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   private _filteredEntities = memoize(
     (
       entities: EntityRegistryEntry[],
+      devices: DeviceRegistryEntry[] | undefined,
+      areas: AreaRegistryEntry[] | undefined,
       stateEntities: StateEntity[],
       filters: URLSearchParams,
       showDisabled: boolean,
@@ -262,21 +286,42 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showReadOnly: boolean
     ): EntityRow[] => {
       const result: EntityRow[] = [];
+
       // If nothing gets filtered, this is our correct count of entities
       let startLength = entities.length + stateEntities.length;
 
-      entities = showReadOnly ? entities.concat(stateEntities) : entities;
+      const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
+      const deviceLookup: { [deviceId: string]: DeviceRegistryEntry } = {};
+
+      if (areas) {
+        for (const area of areas) {
+          areaLookup[area.area_id] = area;
+        }
+        if (devices) {
+          for (const device of devices) {
+            deviceLookup[device.id] = device;
+          }
+        }
+      }
+
+      entities.forEach((entity) => {
+        return entity;
+      });
+
+      let filteredEntities = showReadOnly
+        ? entities.concat(stateEntities)
+        : entities;
 
       filters.forEach((value, key) => {
         switch (key) {
           case "config_entry":
-            entities = entities.filter(
+            filteredEntities = filteredEntities.filter(
               (entity) => entity.config_entry_id === value
             );
             // If we have an active filter and `showReadOnly` is true, the length of `entities` is correct.
             // If however, the read-only entities were not added before, we need to check how many would
             // have matched the active filter and add that number to the count.
-            startLength = entities.length;
+            startLength = filteredEntities.length;
             if (!showReadOnly) {
               startLength += stateEntities.filter(
                 (entity) => entity.config_entry_id === value
@@ -287,13 +332,17 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       });
 
       if (!showDisabled) {
-        entities = entities.filter((entity) => !entity.disabled_by);
+        filteredEntities = filteredEntities.filter(
+          (entity) => !entity.disabled_by
+        );
       }
 
-      for (const entry of entities) {
+      for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
         const restored = entity?.attributes.restored;
+        const areaId = entry.area_id ?? deviceLookup[entry.device_id!]?.area_id;
+        const area = areaId ? areaLookup[areaId] : undefined;
 
         if (!showUnavailable && unavailable) {
           continue;
@@ -309,6 +358,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             this.hass.localize("state.default.unavailable"),
           unavailable,
           restored,
+          area: area ? area.name : undefined,
           status: restored
             ? this.hass.localize(
                 "ui.panel.config.entities.picker.status.restored"
@@ -345,6 +395,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
         this._entities = entities;
       }),
+      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
+        this._devices = devices;
+      }),
+      subscribeAreaRegistry(this.hass.connection, (areas) => {
+        this._areas = areas;
+      }),
     ];
   }
 
@@ -372,6 +428,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
     const entityData = this._filteredEntities(
       this._entities,
+      this._devices,
+      this._areas,
       this._stateEntities,
       this._searchParms,
       this._showDisabled,
