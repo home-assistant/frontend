@@ -100,7 +100,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
   );
 
-  private _devices = memoizeOne(
+  private _devicesAndFilterDomains = memoizeOne(
     (
       devices: DeviceRegistryEntry[],
       entries: ConfigEntry[],
@@ -299,6 +299,18 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const devicesAndFilterDomains = this._devicesAndFilterDomains(
+      this.devices,
+      this.entries,
+      this.entities,
+      this.areas,
+      this._searchParms,
+      this.hass.localize
+    );
+
+    const devicesOutput = devicesAndFilterDomains.devices;
+    const filteredDomains = devicesAndFilterDomains.filterDomains;
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -309,14 +321,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         .tabs=${configSections.integrations}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
-        .data=${this._devices(
-          this.devices,
-          this.entries,
-          this.entities,
-          this.areas,
-          this._searchParms,
-          this.hass.localize
-        ).devices}
+        .data=${devicesOutput}
         .activeFilters=${this._activeFilters(
           this.entries,
           this._searchParms,
@@ -326,14 +331,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         clickable
         .hasFab=${this._hasFab}
       >
-        ${this._devices(
-          this.devices,
-          this.entries,
-          this.entities,
-          this.areas,
-          this._searchParms,
-          this.hass.localize
-        ).filterDomains.includes("zha")
+        ${filteredDomains.includes("zha")
           ? html`<a href="/config/zha/add" slot="fab">
               <ha-fab
                 .label=${this.hass.localize("ui.panel.config.zha.add_device")}
