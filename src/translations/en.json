@@ -1830,6 +1830,7 @@
               "name": "Name",
               "entity_id": "Entity ID",
               "integration": "Integration",
+              "area": "Area",
               "status": "Status"
             },
             "selected": "{number} selected",
