@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiFilterVariant } from "@mdi/js";
+import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
@@ -70,6 +70,7 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../../data/area_registry";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -164,6 +165,34 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
       });
       return filterTexts.length ? filterTexts : undefined;
+    }
+  );
+
+  private _activeFilterDomains = memoize(
+    (
+      filters: URLSearchParams,
+      entries?: ConfigEntry[]
+    ): string[] | undefined => {
+      const filterDomains: string[] = [];
+      filters.forEach((value, key) => {
+        switch (key) {
+          case "config_entry": {
+            if (!entries) {
+              this._loadConfigEntries();
+              break;
+            }
+            const configEntry = entries.find(
+              (entry) => entry.entry_id === value
+            );
+            if (!configEntry) {
+              break;
+            }
+            filterDomains.push(configEntry.domain);
+            break;
+          }
+        }
+      });
+      return filterDomains.length ? filterDomains : [];
     }
   );
 
@@ -659,6 +688,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         >
           ${headerToolbar}
         </div>
+        ${this._activeFilterDomains(this._searchParms, this._entries)?.includes(
+          "zha"
+        )
+          ? html`<a href="/config/zha/add" slot="fab">
+              <mwc-fab
+                .label=${this.hass.localize("ui.panel.config.zha.add_device")}
+                extended
+                ?rtl=${computeRTL(this.hass)}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </mwc-fab>
+            </a>`
+          : html``}
       </hass-tabs-subpage-data-table>
     `;
   }
