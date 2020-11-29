@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Propietario",
         "system-admin": "Administradores",
         "system-read-only": "Usuarios de solo lectura",
         "system-users": "Usuarios"
@@ -2215,7 +2216,7 @@
                             "without_device": "Entidades sin dispositivo"
                         },
                         "icon": "Icono",
-                        "introduction": "Usa escenas para dar vida a tu hogar.",
+                        "introduction": "Usa escenas para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las escenas de scenes.yaml son editables.",
                         "load_error_unknown": "Error al cargar la escena ({err_no}).",
                         "name": "Nombre",
@@ -2399,7 +2400,7 @@
                         "delete_user": "Eliminar usuario",
                         "group": "Grupo",
                         "id": "ID",
-                        "name": "Nombre",
+                        "name": "Nombre para mostrar",
                         "new_password": "Nueva contraseña",
                         "owner": "Propietario",
                         "password_changed": "La contraseña se ha cambiado correctamente",
@@ -2407,14 +2408,18 @@
                         "system_generated_users_not_editable": "No se pueden actualizar los usuarios generados por el sistema.",
                         "system_generated_users_not_removable": "No se pueden eliminar los usuarios generados por el sistema.",
                         "unnamed_user": "Usuario sin nombre",
-                        "update_user": "Actualizar"
+                        "update_user": "Actualizar",
+                        "username": "Nombre de usuario"
                     },
                     "picker": {
                         "add_user": "Añadir usuario",
                         "headers": {
                             "group": "Grupo",
-                            "name": "Nombre",
-                            "system": "Sistema"
+                            "is_active": "Activo",
+                            "is_owner": "Propietario",
+                            "name": "Nombre para mostrar",
+                            "system": "Generado por el sistema",
+                            "username": "Nombre de usuario"
                         }
                     },
                     "users_privileges_note": "El grupo de usuarios es un trabajo en progreso. El usuario no podrá administrar la instancia a través de la IU. Todavía estamos auditando todos los endpoints de la API de administración para garantizar que se limita correctamente el acceso sólo a los administradores."

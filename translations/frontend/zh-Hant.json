@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "擁有者",
         "system-admin": "管理員",
         "system-read-only": "唯讀使用者",
         "system-users": "使用者"
@@ -2399,7 +2400,7 @@
                         "delete_user": "刪除使用者",
                         "group": "群組",
                         "id": "ID",
-                        "name": "名稱",
+                        "name": "顯示名稱",
                         "new_password": "新密碼",
                         "owner": "擁有者",
                         "password_changed": "密碼變更成功",
@@ -2407,14 +2408,18 @@
                         "system_generated_users_not_editable": "無法更新系統產生的使用者",
                         "system_generated_users_not_removable": "無法移除系統產生的使用者",
                         "unnamed_user": "未命名的使用者",
-                        "update_user": "更新"
+                        "update_user": "更新",
+                        "username": "使用者名稱"
                     },
                     "picker": {
                         "add_user": "新增使用者",
                         "headers": {
                             "group": "群組",
-                            "name": "名稱",
-                            "system": "系統"
+                            "is_active": "啟用",
+                            "is_owner": "擁有者",
+                            "name": "顯示名稱",
+                            "system": "系統產生",
+                            "username": "使用者名稱"
                         }
                     },
                     "users_privileges_note": "使用者群組功能仍在開發中。將無法透過 UI 進行使用者管理，仍在檢視所有管理  API Endpoint 以確保能夠正確符合管理員存取需求。"

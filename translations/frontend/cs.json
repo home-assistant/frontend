@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Vlastník",
         "system-admin": "Správci",
         "system-read-only": "Uživatelé jen pro čtení",
         "system-users": "Uživatelé"
@@ -1229,7 +1230,7 @@
                         "edit_ui": "Upravit pomocí uživatelského rozhraní",
                         "edit_yaml": "Upravit jako YAML",
                         "enable_disable": "Povolit / zakázat automatizaci",
-                        "introduction": "Použijte automatizace k oživení svého domova",
+                        "introduction": "Pomocí automatizací oživte svůj domov.",
                         "load_error_not_editable": "Lze upravovat pouze automatizace v automations.yaml.",
                         "load_error_unknown": "Chyba při načítání automatizace ({err_no}).",
                         "max": {
@@ -1391,7 +1392,7 @@
                         "error_no_url": "Zadejte adresu URL šablonky konfigurace",
                         "header": "Přidat novou šablonku konfigurace",
                         "import_btn": "Importovat šablonku konfigurace",
-                        "import_header": "Importovat {name} ({domain})",
+                        "import_header": "Importovat \"{name}\" (typ: {domain})",
                         "import_introduction": "Z Githubu a komunitních fór můžete importovat šablonky konfigurace sdílené ostatními uživateli. Zadejte adresu URL šablonky konfigurace.",
                         "importing": "Importuje se šablonka konfigurace",
                         "save_btn": "Uložit šablonku konfigurace",
@@ -1399,10 +1400,10 @@
                         "url": "URL šablonky konfigurace"
                     },
                     "overview": {
-                        "add_blueprint": "Přidat šablonku konfigurace",
                         "confirm_delete_header": "Odstranit tuto šablonku konfigurace?",
-                        "confirm_delete_text": "Opravdu chcete smazat tuto šablonku konfigurace?",
                         "headers": {
+                            "domain": "Doména",
+                            "file_name": "Název souboru",
                             "name": "Jméno"
                         },
                         "learn_more": "Další informace o šablonkách konfigurace"
@@ -2378,7 +2379,7 @@
                         "delete_user": "Odstranit uživatele",
                         "group": "Skupina",
                         "id": "ID",
-                        "name": "Jméno",
+                        "name": "Zobrazované jméno",
                         "new_password": "Nové heslo",
                         "owner": "Vlastník",
                         "password_changed": "Heslo bylo změněno",
@@ -2386,19 +2387,24 @@
                         "system_generated_users_not_editable": "Nelze aktualizovat uživatele generované systémem.",
                         "system_generated_users_not_removable": "Nelze odebrat uživatele generované systémem.",
                         "unnamed_user": "Nepojmenovaný uživatel",
-                        "update_user": "Aktualizovat"
+                        "update_user": "Aktualizovat",
+                        "username": "Uživatelské jméno"
                     },
                     "picker": {
                         "add_user": "Přidat uživatele",
                         "headers": {
                             "group": "Skupina",
-                            "name": "Název",
-                            "system": "Systémový"
+                            "is_active": "Aktivní",
+                            "is_owner": "Vlastník",
+                            "name": "Zobrazované jméno",
+                            "system": "Vygenerovaný systémem",
+                            "username": "Uživatelské jméno"
                         }
                     },
                     "users_privileges_note": "Skupiny uživatelů jsou v přípravě. Uživatel je nebude moci spravovat prostřednictvím uživatelského rozhraní. Stále kontrolujeme API pro správu, abychom zajistili, že správně omezuje přístup pouze pro administrátory."
                 },
                 "zha": {
+                    "add_device": "Přidat zařízení",
                     "add_device_page": {
                         "discovered_text": "Jakmile se objeví nalezne, zobrazí se zde.",
                         "discovery_text": "Zde se objeví nalezená zařízení. Postupujte dle pokynů pro vaše zařízení a uveďte je do režimu párování.",
@@ -2459,6 +2465,7 @@
                         "unbind_button_label": "Odpojit skupinu"
                     },
                     "groups": {
+                        "add_group": "Přidat do skupiny",
                         "add_members": "Přidání členů",
                         "adding_members": "Přidání členů",
                         "caption": "Skupiny",
@@ -2501,7 +2508,11 @@
                         "hint_wakeup": "Některá zařízení, jako jsou senzory Xiaomi, mají tlačítko probuzení, které můžete stisknout v intervalu ~ 5 sekund, které udržuje zařízení probuzené, když s nimi komunikujete.",
                         "introduction": "Spouštějte ZHA příkazy, které ovlivňují specifické zařízení. Vyberte zařízení pro zobrazení seznamu dostupných příkazů."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Vizualizace",
+                        "header": "Vizualizace sítě"
+                    }
                 },
                 "zone": {
                     "add_zone": "Přidat zónu",

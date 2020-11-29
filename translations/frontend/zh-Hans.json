@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "所有者",
         "system-admin": "管理员",
         "system-read-only": "只读用户",
         "system-users": "用户"
@@ -2399,7 +2400,7 @@
                         "delete_user": "删除用户",
                         "group": "群组",
                         "id": "ID",
-                        "name": "名称",
+                        "name": "显示名称",
                         "new_password": "新密码",
                         "owner": "所有者",
                         "password_changed": "密码修改成功",
@@ -2407,14 +2408,18 @@
                         "system_generated_users_not_editable": "无法更新系统生成的用户。",
                         "system_generated_users_not_removable": "无法删除系统生成的用户。",
                         "unnamed_user": "未命名的用户",
-                        "update_user": "更新"
+                        "update_user": "更新",
+                        "username": "用户名"
                     },
                     "picker": {
                         "add_user": "添加用户",
                         "headers": {
                             "group": "群组",
-                            "name": "名称",
-                            "system": "系统"
+                            "is_active": "已激活",
+                            "is_owner": "所有者",
+                            "name": "显示名称",
+                            "system": "系统生成",
+                            "username": "用户名"
                         }
                     },
                     "users_privileges_note": "用户组功能正在开发中。该功能使普通用户无法通过 UI 进行管理操作。我们正在审计所有管理 API，确保其仅限管理员访问。"
