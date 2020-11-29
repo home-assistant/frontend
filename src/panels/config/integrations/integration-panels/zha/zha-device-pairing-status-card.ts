@@ -108,13 +108,12 @@ class ZHADevicePairingStatusCard extends LitElement {
     return [
       haStyle,
       css`
-        .discovered-progress {
+        .discovered {
           --ha-card-border-color: var(--primary-color);
         }
-        .discovered-progress.discovered {
+        .discovered.initialized {
           --ha-card-border-color: var(--success-color);
         }
-        .discovered-progress .header,
         .discovered .header {
           background: var(--primary-color);
           color: var(--text-primary-color);
@@ -122,7 +121,7 @@ class ZHADevicePairingStatusCard extends LitElement {
           text-align: center;
           margin-bottom: 20px;
         }
-        .discovered .header.success {
+        .discovered.initialized .header {
           background: var(--success-color);
         }
         h1 {
