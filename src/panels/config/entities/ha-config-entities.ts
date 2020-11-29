@@ -168,34 +168,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     }
   );
 
-  private _activeFilterDomains = memoize(
-    (
-      filters: URLSearchParams,
-      entries?: ConfigEntry[]
-    ): string[] | undefined => {
-      const filterDomains: string[] = [];
-      filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry": {
-            if (!entries) {
-              this._loadConfigEntries();
-              break;
-            }
-            const configEntry = entries.find(
-              (entry) => entry.entry_id === value
-            );
-            if (!configEntry) {
-              break;
-            }
-            filterDomains.push(configEntry.domain);
-            break;
-          }
-        }
-      });
-      return filterDomains.length ? filterDomains : [];
-    }
-  );
-
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => ({
       icon: {
@@ -303,7 +275,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     })
   );
 
-  private _filteredEntities = memoize(
+  private _filteredEntitiesAndDomains = memoize(
     (
       entities: EntityRegistryEntry[],
       devices: DeviceRegistryEntry[] | undefined,
@@ -312,8 +284,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       filters: URLSearchParams,
       showDisabled: boolean,
       showUnavailable: boolean,
-      showReadOnly: boolean
-    ): EntityRow[] => {
+      showReadOnly: boolean,
+      entries?: ConfigEntry[]
+    ) => {
       const result: EntityRow[] = [];
 
       // If nothing gets filtered, this is our correct count of entities
@@ -341,6 +314,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ? entities.concat(stateEntities)
         : entities;
 
+      let configEntry: ConfigEntry | undefined;
+      const filteredDomains: string[] = [];
+
       filters.forEach((value, key) => {
         switch (key) {
           case "config_entry":
@@ -355,6 +331,17 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               startLength += stateEntities.filter(
                 (entity) => entity.config_entry_id === value
               ).length;
+            }
+
+            if (!entries) {
+              this._loadConfigEntries();
+              break;
+            }
+
+            configEntry = entries.find((entry) => entry.entry_id === value);
+
+            if (configEntry) {
+              filteredDomains.push(configEntry.domain);
             }
             break;
         }
@@ -405,7 +392,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       }
 
       this._numHiddenEntities = startLength - result.length;
-      return result;
+      return { filteredEntities: result, filteredDomains: filteredDomains };
     }
   );
 
@@ -455,7 +442,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this._entries
     );
 
-    const entityData = this._filteredEntities(
+    const {
+      filteredEntities,
+      filteredDomains,
+    } = this._filteredEntitiesAndDomains(
       this._entities,
       this._devices,
       this._areas,
@@ -463,9 +453,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this._searchParms,
       this._showDisabled,
       this._showUnavailable,
-      this._showReadOnly
+      this._showReadOnly,
+      this._entries
     );
 
+    const includeZHAFab = filteredDomains.includes("zha");
     const headerToolbar = this._selectedEntities.length
       ? html`
           <p class="selected-txt">
@@ -671,13 +663,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.integrations}
         .columns=${this._columns(this.narrow, this.hass.language)}
-        .data=${entityData}
+        .data=${filteredEntities}
         .filter=${this._filter}
         selectable
         clickable
         @selection-changed=${this._handleSelectionChanged}
         @row-click=${this._openEditEntry}
         id="entity_id"
+        .hasFab=${includeZHAFab}
       >
         <div
           class=${classMap({
@@ -688,9 +681,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         >
           ${headerToolbar}
         </div>
-        ${this._activeFilterDomains(this._searchParms, this._entries)?.includes(
-          "zha"
-        )
+        ${includeZHAFab
           ? html`<a href="/config/zha/add" slot="fab">
               <ha-fab
                 .label=${this.hass.localize("ui.panel.config.zha.add_device")}
