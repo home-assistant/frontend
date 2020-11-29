@@ -185,7 +185,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         };
       });
 
-      return { devices: outputDevices, filterDomains: filterDomains };
+      return { devicesOutput: outputDevices, filteredDomains: filterDomains };
     }
   );
 
@@ -295,7 +295,7 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const devicesAndFilterDomains = this._devicesAndFilterDomains(
+    const { devicesOutput, filteredDomains } = this._devicesAndFilterDomains(
       this.devices,
       this.entries,
       this.entities,
@@ -303,9 +303,6 @@ export class HaConfigDeviceDashboard extends LitElement {
       this._searchParms,
       this.hass.localize
     );
-
-    const devicesOutput = devicesAndFilterDomains.devices;
-    const filteredDomains = devicesAndFilterDomains.filterDomains;
     const includeZHAFab = filteredDomains.includes("zha");
 
     return html`
