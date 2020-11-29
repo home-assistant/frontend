@@ -20,7 +20,11 @@ import { HomeAssistant, Route } from "../../../../../types";
 import "./zha-device-pairing-status-card";
 import { zhaTabs } from "./zha-config-dashboard";
 import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
-import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
+import {
+  DEVICE_MESSAGE_TYPES,
+  LOG_OUTPUT,
+  ZHADevice,
+} from "../../../../../data/zha";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
@@ -34,7 +38,10 @@ class ZHAAddDevicesPage extends LitElement {
 
   @internalProperty() private _error?: string;
 
-  @internalProperty() private _discoveredDevices = {};
+  @internalProperty() private _discoveredDevices: Record<
+    string,
+    ZHADevice
+  > = {};
 
   @internalProperty() private _formattedEvents = "";
 

@@ -26,6 +26,7 @@ import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-area-picker";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("zha-device-pairing-status-card")
 class ZHADevicePairingStatusCard extends LitElement {
@@ -45,10 +46,14 @@ class ZHADevicePairingStatusCard extends LitElement {
     return html`
       <ha-card
         outlined
-        class=${this.device.pairing_status === INITIALIZED
-          ? "discovered"
-          : "discovered-progress"}
-        ><div class="header">
+        class="discovered-progress ${classMap({
+          discovered: this.device.pairing_status === INITIALIZED,
+        })}"
+        ><div
+          class="header ${classMap({
+            success: this.device.pairing_status === INITIALIZED,
+          })}"
+        >
           <h1>
             ${this.hass!.localize(
               `ui.panel.config.zha.device_pairing_card.${this.device.pairing_status}`
@@ -61,8 +66,9 @@ class ZHADevicePairingStatusCard extends LitElement {
           </h4>
         </div>
         <div class="card-content">
-          ${this.device.pairing_status === INTERVIEW_COMPLETE ||
-          this.device.pairing_status === CONFIGURED
+          ${[INTERVIEW_COMPLETE, CONFIGURED].includes(
+            this.device.pairing_status!
+          )
             ? html`
                 <div class="model">${this.device.model}</div>
                 <div class="manuf">
@@ -104,25 +110,22 @@ class ZHADevicePairingStatusCard extends LitElement {
     return [
       haStyle,
       css`
-        .discovered {
-          --ha-card-border-color: var(--success-color);
-        }
-        .discovered .header {
-          background: var(--success-color);
-          color: var(--text-primary-color);
-          padding: 8px;
-          text-align: center;
-          margin-bottom: 20px;
-        }
         .discovered-progress {
           --ha-card-border-color: var(--primary-color);
         }
-        .discovered-progress .header {
+        .discovered-progress.discovered {
+          --ha-card-border-color: var(--success-color);
+        }
+        .discovered-progress .header,
+        .discovered .header {
           background: var(--primary-color);
           color: var(--text-primary-color);
           padding: 8px;
           text-align: center;
           margin-bottom: 20px;
+        }
+        .discovered .header.success {
+          background: var(--success-color);
         }
         h1 {
           margin: 0;
