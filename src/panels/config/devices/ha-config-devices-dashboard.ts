@@ -139,19 +139,16 @@ export class HaConfigDeviceDashboard extends LitElement {
       }
 
       const filterDomains: string[] = [];
-      let configEntry: ConfigEntry | undefined;
 
       filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry":
-            outputDevices = outputDevices.filter((device) =>
-              device.config_entries.includes(value)
-            );
-            configEntry = entries.find((entry) => entry.entry_id === value);
-            if (configEntry) {
-              filterDomains.push(configEntry.domain);
-            }
-            break;
+        if (key === "config_entry") {
+          outputDevices = outputDevices.filter((device) =>
+            device.config_entries.includes(value)
+          );
+          const configEntry = entries.find((entry) => entry.entry_id === value);
+          if (configEntry) {
+            filterDomains.push(configEntry.domain);
+          }
         }
       });
 

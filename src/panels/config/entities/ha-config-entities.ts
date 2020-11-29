@@ -314,36 +314,33 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ? entities.concat(stateEntities)
         : entities;
 
-      let configEntry: ConfigEntry | undefined;
       const filteredDomains: string[] = [];
 
       filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry":
-            filteredEntities = filteredEntities.filter(
+        if (key === "config_entry") {
+          filteredEntities = filteredEntities.filter(
+            (entity) => entity.config_entry_id === value
+          );
+          // If we have an active filter and `showReadOnly` is true, the length of `entities` is correct.
+          // If however, the read-only entities were not added before, we need to check how many would
+          // have matched the active filter and add that number to the count.
+          startLength = filteredEntities.length;
+          if (!showReadOnly) {
+            startLength += stateEntities.filter(
               (entity) => entity.config_entry_id === value
-            );
-            // If we have an active filter and `showReadOnly` is true, the length of `entities` is correct.
-            // If however, the read-only entities were not added before, we need to check how many would
-            // have matched the active filter and add that number to the count.
-            startLength = filteredEntities.length;
-            if (!showReadOnly) {
-              startLength += stateEntities.filter(
-                (entity) => entity.config_entry_id === value
-              ).length;
-            }
+            ).length;
+          }
 
-            if (!entries) {
-              this._loadConfigEntries();
-              break;
-            }
+          if (!entries) {
+            this._loadConfigEntries();
+            return;
+          }
 
-            configEntry = entries.find((entry) => entry.entry_id === value);
+          const configEntry = entries.find((entry) => entry.entry_id === value);
 
-            if (configEntry) {
-              filteredDomains.push(configEntry.domain);
-            }
-            break;
+          if (configEntry) {
+            filteredDomains.push(configEntry.domain);
+          }
         }
       });
 
