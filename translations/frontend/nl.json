@@ -1056,11 +1056,11 @@
                             "use_blueprint": "Gebruik een blauwdruk"
                         },
                         "header": "Een nieuwe automatisering maken",
-                        "how": "Hoe wilt u uw nieuwe automatisering creëren?",
+                        "how": "Hoe wil je je nieuwe automatisering maken?",
                         "start_empty": "Begin met een lege automatisering",
                         "thingtalk": {
                             "create": "Creëer",
-                            "header": "Beschrijf de automatisering die u wilt creëren",
+                            "header": "Beschrijf de automatisering die je wilt maken",
                             "input_label": "Wat moet deze automatisering doen?",
                             "intro": "En we zullen proberen het voor je te maken. Bijvoorbeeld: doe de lichten uit als ik wegga."
                         }
@@ -1148,10 +1148,10 @@
                         "blueprint": {
                             "blueprint_to_use": "Blauwdruk om te gebruiken",
                             "header": "Blauwdruk",
-                            "inputs": "Ingangen",
+                            "inputs": "Inputs",
                             "manage_blueprints": "Beheer blauwdrukken",
                             "no_blueprints": "Je hebt geen blauwdrukken",
-                            "no_inputs": "Deze blauwdruk heeft geen invoer."
+                            "no_inputs": "Deze blauwdruk heeft geen inputs."
                         },
                         "conditions": {
                             "add": "Voorwaarde toevoegen",
@@ -1371,7 +1371,7 @@
                         "headers": {
                             "name": "Naam"
                         },
-                        "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Volg de link hieronder om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
+                        "introduction": "Met de automatiseringseditor editor kun je automatiseringen maken en bewerken. Volg de link hieronder om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
                         "learn_more": "Meer informatie over automatiseringen",
                         "no_automations": "We konden geen bewerkbare automatiseringen vinden",
                         "only_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
@@ -1411,12 +1411,12 @@
                     "description": "Beheer blauwdrukken",
                     "overview": {
                         "confirm_delete_header": "Deze blauwdruk verwijderen?",
-                        "confirm_delete_text": "Weet u zeker dat u deze blauwdruk wilt verwijderen?",
+                        "confirm_delete_text": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
                         "header": "Blauwdrukeditor",
                         "headers": {
                             "name": "Naam"
                         },
-                        "introduction": "Met de blauwdrukeditor kunt u blauwdrukken maken en bewerken.",
+                        "introduction": "Met de blauwdrukeditor kunt je blauwdrukken maken en bewerken.",
                         "learn_more": "Meer informatie over blauwdrukken"
                     }
                 },
@@ -1573,7 +1573,7 @@
                         "feature_google_home": "Integratie met Google Assistent",
                         "feature_remote_control": "Beheer van Home Assistant van buitenaf",
                         "feature_webhook_apps": "Eenvoudige integratie met webhook gebaseerde apps zoals OwnTracks",
-                        "headline": "Start uw gratis proefperiode",
+                        "headline": "Start je gratis proefperiode",
                         "information": "Maak een account om uw gratis proefperiode van een maand te starten met Home Assistant Cloud. Geen betalingsinformatie nodig.",
                         "information2": "De proefversie geeft u toegang tot alle voordelen van Home Assistant Cloud, waaronder:",
                         "information3": "Deze service wordt uitgevoerd door onze partner",
@@ -1722,7 +1722,7 @@
                         "enable_selected": {
                             "button": "Geselecteerde inschakelen",
                             "confirm_text": "Dit maakt ze weer beschikbaar in Home Assistant als ze nu zijn uitgeschakeld.",
-                            "confirm_title": "Wilt u het volgende inschakelen {number} {number, plural,\n  one {entiteit}\n  other {entiteiten}\n}?"
+                            "confirm_title": "Wilt je {number} {number, plural,\n  one {entiteit}\n  other {entiteiten}\n} inschakelen?"
                         },
                         "filter": {
                             "filter": "filter",
@@ -2093,7 +2093,7 @@
                         "header": "Node Configuratie",
                         "help_source": "Configuratieparameterbeschrijvingen en helptekst worden geleverd door het OpenZWave-project.",
                         "introduction": "Beheer de verschillende configuratieparameters voor een Z-Wave-Node.",
-                        "wakeup_help": "Batterijgevoede Nodes moeten wakker zijn om hun configuratie te wijzigen. Als de Node niet wakker is, zal OpenZWave proberen de configuratie van de Node bij te werken de volgende keer dat het ontwaakt, wat meerdere uren (of dagen) later kan zijn. Volg deze stappen om uw apparaat uit de slaapstand te halen:"
+                        "wakeup_help": "Batterijgevoede Nodes moeten wakker zijn om hun configuratie te wijzigen. Als de Node niet wakker is, zal OpenZWave proberen de configuratie van de Node bij te werken de volgende keer dat het ontwaakt, wat meerdere uren (of dagen) later kan zijn. Volg deze stappen om je apparaat uit de slaapstand te halen:"
                     },
                     "node_metadata": {
                         "product_manual": "Producthandleiding"
@@ -2340,7 +2340,7 @@
                     "add_tag": "Tag toevoegen",
                     "automation_title": "Tag {name} is gescand",
                     "caption": "Tags",
-                    "confirm_remove": "Weet u zeker dat u tag {tag} wilt verwijderen?",
+                    "confirm_remove": "Weet je zeker dat je tag {tag} wilt verwijderen?",
                     "confirm_remove_title": "Tag verwijderen?",
                     "create_automation": "Creëer automatisering met tag",
                     "description": "Beheer tags",
@@ -3086,7 +3086,7 @@
                     "migrate": {
                         "header": "Configuratie incompatibel",
                         "migrate": "Configuratie migreren",
-                        "para_migrate": "Home Assistant kan automatisch ID's aan al uw kaarten en weergaven toevoegen door op de knop 'Configuratie migreren' te drukken.",
+                        "para_migrate": "Home Assistant kan automatisch ID's aan al je kaarten en weergaven toevoegen door op de knop 'Configuratie migreren' te drukken.",
                         "para_no_id": "Dit element heeft geen ID. Voeg een ID toe aan dit element in 'ui-lovelace.yaml'."
                     },
                     "move_card": {
@@ -3094,7 +3094,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "We zullen je Lovelace gebruikersinterface automatisch genereren met je gebieden en apparaten als je de huidige Lovelace gebruikersinterface verwijdert.",
-                        "confirm_remove_config_title": "Weet u zeker dat u uw Lovelace UI-configuratie wilt verwijderen?",
+                        "confirm_remove_config_title": "Weet je zeker dat je je Lovelace UI-configuratie wilt verwijderen?",
                         "confirm_unsaved_changes": "Er zijn nog niet-opgeslagen wijzigingen, weet je zeker dat je wilt afsluiten?",
                         "confirm_unsaved_comments": "Uw configuratie bevat opmerkingen, deze worden niet opgeslagen. Wil je doorgaan?",
                         "error_invalid_config": "Uw configuratie is niet geldig: {error}",
@@ -3349,7 +3349,7 @@
                 },
                 "intro": "Ben je klaar om je huis wakker te maken, je privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
                 "restore": {
-                    "description": "Als alternatief kunt u herstellen vanaf een eerdere snapshot",
+                    "description": "Je kunt ook herstellen vanaf een eerdere snapshot.",
                     "hide_log": "Verberg volledig logboek",
                     "in_progress": "Herstel in uitvoering",
                     "show_log": "Volledig logboek weergeven"

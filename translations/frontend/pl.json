@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Właściciel",
         "system-admin": "Administratorzy",
         "system-read-only": "Użytkownicy (tylko odczyt)",
         "system-users": "Użytkownicy"
@@ -2399,7 +2400,7 @@
                         "delete_user": "Usuń użytkownika",
                         "group": "Grupa",
                         "id": "Identyfikator",
-                        "name": "Nazwa",
+                        "name": "Wyświetlana nazwa",
                         "new_password": "Nowe hasło",
                         "owner": "Właściciel",
                         "password_changed": "Hasło zostało zmienione pomyślnie",
@@ -2407,14 +2408,18 @@
                         "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
                         "system_generated_users_not_removable": "Nie można usunąć użytkowników wygenerowanych przez system.",
                         "unnamed_user": "Nienazwany użytkownik",
-                        "update_user": "Aktualizuj"
+                        "update_user": "Aktualizuj",
+                        "username": "Nazwa użytkownika"
                     },
                     "picker": {
                         "add_user": "Dodaj użytkownika",
                         "headers": {
                             "group": "Grupa",
-                            "name": "Nazwa",
-                            "system": "System"
+                            "is_active": "Aktywny",
+                            "is_owner": "Właściciel",
+                            "name": "Wyświetlana nazwa",
+                            "system": "Wygenerowany przez system",
+                            "username": "Nazwa użytkownika"
                         }
                     },
                     "users_privileges_note": "Prace nad grupami użytkowników trwają. Użytkownik nie może administrować instancją za pomocą interfejsu użytkownika. Nadal kontrolujemy wszystkie punkty końcowe interfejsu API zarządzania, aby upewnić się, że poprawnie ograniczają dostęp tylko dla administratorów."
