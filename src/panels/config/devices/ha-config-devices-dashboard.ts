@@ -64,6 +64,8 @@ export class HaConfigDeviceDashboard extends LitElement {
     window.location.search
   );
 
+  @internalProperty() private _hasFab = false;
+
   private _activeFilters = memoizeOne(
     (
       entries: ConfigEntry[],
@@ -95,30 +97,6 @@ export class HaConfigDeviceDashboard extends LitElement {
         }
       });
       return filterTexts.length ? filterTexts : undefined;
-    }
-  );
-
-  private _activeFilterDomains = memoizeOne(
-    (
-      entries: ConfigEntry[],
-      filters: URLSearchParams
-    ): string[] | undefined => {
-      const filterDomains: string[] = [];
-      filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry": {
-            const configEntry = entries.find(
-              (entry) => entry.entry_id === value
-            );
-            if (!configEntry) {
-              break;
-            }
-            filterDomains.push(configEntry.domain);
-            break;
-          }
-        }
-      });
-      return filterDomains.length ? filterDomains : [];
     }
   );
 
@@ -162,12 +140,19 @@ export class HaConfigDeviceDashboard extends LitElement {
         areaLookup[area.area_id] = area;
       }
 
+      const filterDomains: string[] = [];
+      let configEntry: ConfigEntry | undefined;
+
       filters.forEach((value, key) => {
         switch (key) {
           case "config_entry":
             outputDevices = outputDevices.filter((device) =>
               device.config_entries.includes(value)
             );
+            configEntry = entries.find((entry) => entry.entry_id === value);
+            if (configEntry) {
+              filterDomains.push(configEntry.domain);
+            }
             break;
         }
       });
@@ -202,7 +187,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         };
       });
 
-      return outputDevices;
+      this._hasFab = filterDomains.includes("zha");
+
+      return { devices: outputDevices, filterDomains: filterDomains };
     }
   );
 
@@ -329,7 +316,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           this.areas,
           this._searchParms,
           this.hass.localize
-        )}
+        ).devices}
         .activeFilters=${this._activeFilters(
           this.entries,
           this._searchParms,
@@ -337,10 +324,16 @@ export class HaConfigDeviceDashboard extends LitElement {
         )}
         @row-click=${this._handleRowClicked}
         clickable
+        .hasFab=${this._hasFab}
       >
-        ${this._activeFilterDomains(this.entries, this._searchParms)?.includes(
-          "zha"
-        )
+        ${this._devices(
+          this.devices,
+          this.entries,
+          this.entities,
+          this.areas,
+          this._searchParms,
+          this.hass.localize
+        ).filterDomains.includes("zha")
           ? html`<a href="/config/zha/add" slot="fab">
               <ha-fab
                 .label=${this.hass.localize("ui.panel.config.zha.add_device")}
