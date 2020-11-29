@@ -47,7 +47,7 @@ class ZHADevicePairingStatusCard extends LitElement {
       <ha-card
         outlined
         class="discovered ${classMap({
-          discovered: this.device.pairing_status === INITIALIZED,
+          initialized: this.device.pairing_status === INITIALIZED,
         })}"
         ><div
           class="header ${classMap({
