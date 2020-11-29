@@ -20,6 +20,7 @@ import { HomeAssistant, Route } from "../../../../../types";
 import "./zha-device-pairing-status-card";
 import { zhaTabs } from "./zha-config-dashboard";
 import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
+import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
@@ -163,7 +164,7 @@ class ZHAAddDevicesPage extends LitElement {
   }
 
   private _handleMessage(message: any): void {
-    if (message.type === "log_output") {
+    if (message.type === LOG_OUTPUT) {
       this._formattedEvents += message.log_entry.message + "\n";
       if (this.shadowRoot) {
         const paperTextArea = this.shadowRoot.querySelector("paper-textarea");
@@ -174,14 +175,7 @@ class ZHAAddDevicesPage extends LitElement {
         }
       }
     }
-    if (
-      message.type &&
-      [
-        "device_joined",
-        "raw_device_initialized",
-        "device_fully_initialized",
-      ].includes(message.type)
-    ) {
+    if (message.type && DEVICE_MESSAGE_TYPES.includes(message.type)) {
       this._discoveredDevices[message.device_info.ieee] = message.device_info;
     }
   }

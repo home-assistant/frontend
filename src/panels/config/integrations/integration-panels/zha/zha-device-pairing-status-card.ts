@@ -14,7 +14,13 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-service-description";
-import { ZHADevice } from "../../../../../data/zha";
+import {
+  CONFIGURED,
+  INCOMPLETE_PAIRING_STATUSES,
+  INITIALIZED,
+  INTERVIEW_COMPLETE,
+  ZHADevice,
+} from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-area-picker";
@@ -39,7 +45,7 @@ class ZHADevicePairingStatusCard extends LitElement {
     return html`
       <ha-card
         outlined
-        class=${this.device.pairing_status === "INITIALIZED"
+        class=${this.device.pairing_status === INITIALIZED
           ? "discovered"
           : "discovered-progress"}
         ><div class="header">
@@ -55,8 +61,8 @@ class ZHADevicePairingStatusCard extends LitElement {
           </h4>
         </div>
         <div class="card-content">
-          ${this.device.pairing_status === "INTERVIEW_COMPLETE" ||
-          this.device.pairing_status === "CONFIGURED"
+          ${this.device.pairing_status === INTERVIEW_COMPLETE ||
+          this.device.pairing_status === CONFIGURED
             ? html`
                 <div class="model">${this.device.model}</div>
                 <div class="manuf">
@@ -69,9 +75,7 @@ class ZHADevicePairingStatusCard extends LitElement {
               `
             : html``}
           <div class="info">
-            ${["PAIRED", "CONFIGURED", "INTERVIEW_COMPLETE"].includes(
-              this.device.pairing_status!
-            )
+            ${INCOMPLETE_PAIRING_STATUSES.includes(this.device.pairing_status!)
               ? html`
                   <div class="text">IEEE: ${this.device.ieee}</div>
                   <div class="text">
@@ -80,7 +84,7 @@ class ZHADevicePairingStatusCard extends LitElement {
                 `
               : html``}
           </div>
-          ${this.device.pairing_status === "INITIALIZED"
+          ${this.device.pairing_status === INITIALIZED
             ? html`
                 <zha-device-card
                   class="card"
