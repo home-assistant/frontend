@@ -692,13 +692,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           "zha"
         )
           ? html`<a href="/config/zha/add" slot="fab">
-              <mwc-fab
+              <ha-fab
                 .label=${this.hass.localize("ui.panel.config.zha.add_device")}
                 extended
                 ?rtl=${computeRTL(this.hass)}
               >
                 <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-              </mwc-fab>
+              </ha-fab>
             </a>`
           : html``}
       </hass-tabs-subpage-data-table>
