@@ -64,8 +64,6 @@ export class HaConfigDeviceDashboard extends LitElement {
     window.location.search
   );
 
-  @internalProperty() private _hasFab = false;
-
   private _activeFilters = memoizeOne(
     (
       entries: ConfigEntry[],
@@ -186,8 +184,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           ],
         };
       });
-
-      this._hasFab = filterDomains.includes("zha");
 
       return { devices: outputDevices, filterDomains: filterDomains };
     }
@@ -310,6 +306,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
     const devicesOutput = devicesAndFilterDomains.devices;
     const filteredDomains = devicesAndFilterDomains.filterDomains;
+    const includeZHAFab = filteredDomains.includes("zha");
 
     return html`
       <hass-tabs-subpage-data-table
@@ -329,9 +326,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         )}
         @row-click=${this._handleRowClicked}
         clickable
-        .hasFab=${this._hasFab}
+        .hasFab=${includeZHAFab}
       >
-        ${filteredDomains.includes("zha")
+        ${includeZHAFab
           ? html`<a href="/config/zha/add" slot="fab">
               <ha-fab
                 .label=${this.hass.localize("ui.panel.config.zha.add_device")}
