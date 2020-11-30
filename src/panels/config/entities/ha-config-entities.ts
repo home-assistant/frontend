@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiFilterVariant } from "@mdi/js";
+import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
@@ -70,6 +70,7 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../../data/area_registry";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -274,7 +275,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     })
   );
 
-  private _filteredEntities = memoize(
+  private _filteredEntitiesAndDomains = memoize(
     (
       entities: EntityRegistryEntry[],
       devices: DeviceRegistryEntry[] | undefined,
@@ -283,8 +284,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       filters: URLSearchParams,
       showDisabled: boolean,
       showUnavailable: boolean,
-      showReadOnly: boolean
-    ): EntityRow[] => {
+      showReadOnly: boolean,
+      entries?: ConfigEntry[]
+    ) => {
       const result: EntityRow[] = [];
 
       // If nothing gets filtered, this is our correct count of entities
@@ -312,22 +314,33 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ? entities.concat(stateEntities)
         : entities;
 
+      const filteredDomains: string[] = [];
+
       filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry":
-            filteredEntities = filteredEntities.filter(
+        if (key === "config_entry") {
+          filteredEntities = filteredEntities.filter(
+            (entity) => entity.config_entry_id === value
+          );
+          // If we have an active filter and `showReadOnly` is true, the length of `entities` is correct.
+          // If however, the read-only entities were not added before, we need to check how many would
+          // have matched the active filter and add that number to the count.
+          startLength = filteredEntities.length;
+          if (!showReadOnly) {
+            startLength += stateEntities.filter(
               (entity) => entity.config_entry_id === value
-            );
-            // If we have an active filter and `showReadOnly` is true, the length of `entities` is correct.
-            // If however, the read-only entities were not added before, we need to check how many would
-            // have matched the active filter and add that number to the count.
-            startLength = filteredEntities.length;
-            if (!showReadOnly) {
-              startLength += stateEntities.filter(
-                (entity) => entity.config_entry_id === value
-              ).length;
-            }
-            break;
+            ).length;
+          }
+
+          if (!entries) {
+            this._loadConfigEntries();
+            return;
+          }
+
+          const configEntry = entries.find((entry) => entry.entry_id === value);
+
+          if (configEntry) {
+            filteredDomains.push(configEntry.domain);
+          }
         }
       });
 
@@ -376,7 +389,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       }
 
       this._numHiddenEntities = startLength - result.length;
-      return result;
+      return { filteredEntities: result, filteredDomains: filteredDomains };
     }
   );
 
@@ -426,7 +439,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this._entries
     );
 
-    const entityData = this._filteredEntities(
+    const {
+      filteredEntities,
+      filteredDomains,
+    } = this._filteredEntitiesAndDomains(
       this._entities,
       this._devices,
       this._areas,
@@ -434,9 +450,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this._searchParms,
       this._showDisabled,
       this._showUnavailable,
-      this._showReadOnly
+      this._showReadOnly,
+      this._entries
     );
 
+    const includeZHAFab = filteredDomains.includes("zha");
     const headerToolbar = this._selectedEntities.length
       ? html`
           <p class="selected-txt">
@@ -642,13 +660,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.integrations}
         .columns=${this._columns(this.narrow, this.hass.language)}
-        .data=${entityData}
+        .data=${filteredEntities}
         .filter=${this._filter}
         selectable
         clickable
         @selection-changed=${this._handleSelectionChanged}
         @row-click=${this._openEditEntry}
         id="entity_id"
+        .hasFab=${includeZHAFab}
       >
         <div
           class=${classMap({
@@ -659,6 +678,17 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         >
           ${headerToolbar}
         </div>
+        ${includeZHAFab
+          ? html`<a href="/config/zha/add" slot="fab">
+              <ha-fab
+                .label=${this.hass.localize("ui.panel.config.zha.add_device")}
+                extended
+                ?rtl=${computeRTL(this.hass)}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            </a>`
+          : html``}
       </hass-tabs-subpage-data-table>
     `;
   }
