@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Proprietario",
         "system-admin": "Amministratori",
         "system-read-only": "Utenti di sola lettura",
         "system-users": "Utenti"
@@ -1239,7 +1240,7 @@
                         "edit_ui": "Modifica con l'Interfaccia Utente",
                         "edit_yaml": "Modifica come YAML",
                         "enable_disable": "Abilitare/Disabilitare l'automazione",
-                        "introduction": "Usa le automazioni per dare vita alla tua casa.",
+                        "introduction": "Usa le automazioni per far vivere la tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
                         "max": {
@@ -1399,11 +1400,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Inserisci l'URL del progetto.",
+                        "file_name": "Nome del file di progetto locale",
                         "header": "Aggiungi un nuovo progetto",
                         "import_btn": "Importa progetto",
-                        "import_header": "Importa {name} ({domain})",
+                        "import_header": "Importa \"{name}\" (tipo: {domain})",
                         "import_introduction": "Puoi importare progetti di altri utenti da Github e dai forum della comunità. Immettere l'URL del progetto di seguito.",
                         "importing": "Importazione del progetto in corso ...",
+                        "raw_blueprint": "Contenuto del progetto",
                         "save_btn": "Salva progetto",
                         "saving": "Salvataggio del progetto in corso ...",
                         "unsupported_blueprint": "Questo progetto non è supportato",
@@ -1412,15 +1415,19 @@
                     "caption": "Progetti",
                     "description": "Gestisci i progetti",
                     "overview": {
-                        "add_blueprint": "Aggiungi progetto",
+                        "add_blueprint": "Importa progetto",
                         "confirm_delete_header": "Eliminare questo progetto?",
                         "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
+                        "delete_blueprint": "Elimina progetto",
                         "header": "Editor del progetto",
                         "headers": {
+                            "domain": "Dominio",
+                            "file_name": "Nome file",
                             "name": "Nome"
                         },
                         "introduction": "L'editor del progetto consente di creare e modificare i progetti.",
-                        "learn_more": "Per saperne di più sui progetti"
+                        "learn_more": "Per saperne di più sui progetti",
+                        "use_blueprint": "Crea automazione"
                     }
                 },
                 "cloud": {
@@ -2209,7 +2216,7 @@
                             "without_device": "Entità senza dispositivo"
                         },
                         "icon": "Icona",
-                        "introduction": "Usa le scene per dare vita alla tua casa.",
+                        "introduction": "Usa le scene per far vivere la tua casa.",
                         "load_error_not_editable": "Solo le scene in scene.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento della scena ({err_no}).",
                         "name": "Nome",
@@ -2393,7 +2400,7 @@
                         "delete_user": "Elimina utente",
                         "group": "Gruppo",
                         "id": "ID",
-                        "name": "Nome",
+                        "name": "Nome da visualizzare",
                         "new_password": "Nuova password",
                         "owner": "Proprietario",
                         "password_changed": "La password è stata modificata con successo",
@@ -2401,19 +2408,24 @@
                         "system_generated_users_not_editable": "Impossibile aggiornare gli utenti generati dal sistema.",
                         "system_generated_users_not_removable": "Impossibile rimuovere gli utenti generati dal sistema.",
                         "unnamed_user": "Utente senza nome",
-                        "update_user": "Aggiorna"
+                        "update_user": "Aggiorna",
+                        "username": "Nome utente"
                     },
                     "picker": {
                         "add_user": "Aggiungi utente",
                         "headers": {
                             "group": "Gruppo",
-                            "name": "Nome",
-                            "system": "Sistema"
+                            "is_active": "Attivo",
+                            "is_owner": "Proprietario",
+                            "name": "Nome da visualizzare",
+                            "system": "Generato dal sistema",
+                            "username": "Nome utente"
                         }
                     },
                     "users_privileges_note": "La funzionalità del gruppo di utenti è in fase di elaborazione. L'utente non sarà in grado di amministrare l'istanza tramite l'Interfaccia Utente. Stiamo ancora verificando tutti gli endpoint dell'API di gestione per garantire che limitino correttamente l'accesso solo agli amministratori."
                 },
                 "zha": {
+                    "add_device": "Aggiungi dispositivo",
                     "add_device_page": {
                         "discovered_text": "I dispositivi verranno visualizzati qui una volta rilevati.",
                         "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
@@ -2474,6 +2486,7 @@
                         "unbind_button_label": "Scollega gruppo"
                     },
                     "groups": {
+                        "add_group": "Aggiungi gruppo",
                         "add_members": "Aggiungi membri",
                         "adding_members": "Aggiunta di membri",
                         "caption": "Gruppi",
@@ -2516,7 +2529,11 @@
                         "hint_wakeup": "Alcuni dispositivi, come i sensori Xiaomi, hanno un pulsante di riattivazione che è possibile premere a intervalli di 5 secondi che mantengono i dispositivi svegli mentre si interagisce con loro.",
                         "introduction": "Eseguire i comandi ZHA che interessano un singolo dispositivo. Scegliere un dispositivo per visualizzare un elenco di comandi disponibili."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualizzazione",
+                        "header": "Visualizzazione di rete"
+                    }
                 },
                 "zone": {
                     "add_zone": "Aggiungi zona",

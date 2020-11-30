@@ -2827,7 +2827,7 @@
                             "views": {
                                 "dayGridDay": "Jour",
                                 "dayGridMonth": "Mois",
-                                "listWeek": "liste"
+                                "listWeek": "Liste"
                             }
                         },
                         "conditional": {
@@ -2987,7 +2987,8 @@
                         },
                         "picture-glance": {
                             "description": "La carte Coup d'œil affiche une image et les états d'entité correspondants sous forme d'icône. Les entités sur le côté droit permettent de basculer entre les actions, d'autres affichent la boîte de dialogue plus d'informations.",
-                            "name": "Coup d'œil en image"
+                            "name": "Coup d'œil en image",
+                            "state_entity": "État entité"
                         },
                         "picture": {
                             "description": "La carte Image vous permet de définir une image à utiliser pour la navigation vers divers chemins de votre interface ou d'appeler un service.",

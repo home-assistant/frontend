@@ -932,7 +932,7 @@
                         "telegram": "Telegram-Benachrichtigungsdienst neu laden",
                         "template": "Templates neu laden",
                         "trend": "Trend Entitäten neu laden",
-                        "universal": "Universelle Medien Player Entitäten neu laden ",
+                        "universal": "Universelle Medien Player Entitäten neu laden",
                         "zone": "Zonen neu laden"
                     },
                     "server_control": {
@@ -1239,7 +1239,7 @@
                         "edit_ui": "Mit der Benutzeroberfläche bearbeiten",
                         "edit_yaml": "Als YAML bearbeiten",
                         "enable_disable": "Automatisierung aktivieren / deaktivieren",
-                        "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
+                        "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen.",
                         "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no}).",
                         "max": {
