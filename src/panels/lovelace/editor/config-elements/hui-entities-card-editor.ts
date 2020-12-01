@@ -271,6 +271,7 @@ export class HuiEntitiesCardEditor extends LitElement
 
   private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
     this._subElementEditorConfig = ev.detail.subElementConfig;
+    fireEvent(this, "scroll-to-pos", { x: 0, y: 0 });
   }
 
   private _goBack(): void {

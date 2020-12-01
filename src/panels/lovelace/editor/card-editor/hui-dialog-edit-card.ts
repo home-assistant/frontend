@@ -55,6 +55,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "reload-lovelace": undefined;
+    "scroll-to-pos": { x: number; y: number };
   }
   // for add event listener
   interface HTMLElementEventMap {
@@ -291,6 +292,7 @@ export class HuiDialogEditCard extends LitElement
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
+              @scroll-to-pos=${this._scrollToPos}
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
@@ -344,6 +346,13 @@ export class HuiDialogEditCard extends LitElement
 
   private _ignoreKeydown(ev: KeyboardEvent) {
     ev.stopPropagation();
+  }
+
+  private _scrollToPos(ev: CustomEvent): void {
+    this.shadowRoot!.querySelector("ha-dialog")?.scrollToPos(
+      ev.detail.x,
+      ev.detail.y
+    );
   }
 
   private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
@@ -477,14 +486,14 @@ export class HuiDialogEditCard extends LitElement
 
         @media (min-width: 1200px) {
           ha-dialog {
-            --mdc-dialog-max-width: 1100px;
+            --mdc-dialog-max-width: 1250px;
             --dialog-surface-position: fixed;
           }
         }
 
         ha-dialog {
           --dialog-z-index: 5;
-          --mdc-dialog-max-height: 650px;
+          --mdc-dialog-max-height: 750px;
         }
 
         :host([large]) ha-dialog {
