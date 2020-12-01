@@ -1744,6 +1744,7 @@
                         },
                         "header": "Rejestr encji",
                         "headers": {
+                            "area": "Obszar",
                             "entity_id": "Identyfikator encji",
                             "integration": "Integracja",
                             "name": "Nazwa",
@@ -2471,6 +2472,16 @@
                         "value": "Wartość"
                     },
                     "description": "Zarządzanie siecią Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfigurowanie zakończona",
+                        "CONFIGURED_status_text": "Inicjalizacja",
+                        "INITIALIZED": "Inicjalizacja zakończona",
+                        "INITIALIZED_status_text": "Urządzenie jest gotowe do użycia",
+                        "INTERVIEW_COMPLETE": "Odpytywanie zakończone",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurowanie",
+                        "PAIRED": "Znaleziono urządzenie",
+                        "PAIRED_status_text": "Rozpoczęcie odpytywania"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - urządzenie"
                     },

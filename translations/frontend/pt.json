@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Proprietário",
         "system-admin": "Administradores",
         "system-read-only": "Utilizadores só com permissões de leitura",
         "system-users": "Utilizadores"
@@ -547,6 +548,11 @@
                 "clear": "Limpar",
                 "show_areas": "Mostrar áreas"
             },
+            "blueprint-picker": {
+                "add_user": "Adicionar um utilizador",
+                "remove_user": "Remover utilizador",
+                "select_blueprint": "Escolhe um projeto"
+            },
             "data-table": {
                 "no-data": "Dados do evento",
                 "search": "Procurar"
@@ -732,15 +738,15 @@
                     "enabled_label": "Ativar entidade",
                     "enabled_restart_confirm": "Reinicie o Home Assistant para ativar as entidades",
                     "entity_id": "Identificação da entidade",
-                    "icon": "Substituição do ícone",
+                    "icon": "Ícone",
                     "icon_error": "Os ícones devem estar no formato 'prefixo:nome do ícone', por exemplo 'mdi:home'.",
-                    "name": "Substituição do nome",
+                    "name": "Nome",
                     "note": "Nota: isto pode ainda não funcionar com todas as integrações.",
                     "unavailable": "Esta entidade não está atualmente disponível.",
                     "update": "Atualizar"
                 },
                 "faq": "Documentação",
-                "no_unique_id": "Esta entidade não tem uma identificação única, portanto suas configurações não podem ser geridas a partir da UI. Para mais informações, ver {faq_link}.",
+                "no_unique_id": "Esta entidade (\"{entity_id}\") não tem uma identificação única, portanto suas configurações não podem ser geridas a partir da UI. Para mais informações, ver {faq_link}.",
                 "related": "Relacionadas",
                 "settings": "Definições"
             },
@@ -872,6 +878,7 @@
                     "navigation": {
                         "areas": "Áreas",
                         "automation": "Automação",
+                        "blueprint": "Projecto",
                         "core": "Geral",
                         "customize": "Personalização",
                         "devices": "Dispositivos",
@@ -1041,6 +1048,20 @@
                 "automation": {
                     "caption": "Automação",
                     "description": "Gerir Automações",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Utilize o projeto"
+                        },
+                        "header": "Criar uma automatização",
+                        "how": "Como quer criar uma automatização?",
+                        "start_empty": "Começar com uma automatização vazia",
+                        "thingtalk": {
+                            "create": "Criar",
+                            "header": "Descreva a automatização que pretende criar",
+                            "input_label": "O que deve fazer esta automatização?",
+                            "intro": "E nós vamos tentar criar por ti. Por exemplo: Desliga as luzes quando eu sair."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Adicionar ação",
@@ -1121,6 +1142,14 @@
                             "unsupported_action": "Ação não suportada: {action}"
                         },
                         "alias": "Nome",
+                        "blueprint": {
+                            "blueprint_to_use": "Projeto a usar",
+                            "header": "Projeto",
+                            "inputs": "Entrada",
+                            "manage_blueprints": "Gerir projetos",
+                            "no_blueprints": "Tu nao tens nenhum projeto",
+                            "no_inputs": "Este projeto não tem nenhuma entrada"
+                        },
                         "conditions": {
                             "add": "Acrescentar condição",
                             "delete": "Apagar",
@@ -1206,7 +1235,7 @@
                         "edit_ui": "Editar com IU",
                         "edit_yaml": "Editar como YAML",
                         "enable_disable": "Habilitar/desabilitar automação",
-                        "introduction": "Crie automações para dar vida à sua casa",
+                        "introduction": "Utilize automações para dar vida à sua casa",
                         "load_error_not_editable": "Apenas as automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
                         "max": {
@@ -1356,6 +1385,39 @@
                             "header": "Criar uma nova automação",
                             "language_note": "Nota: Por enquanto, apenas o inglês é suportado."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Por favor introduza o URL do projeto",
+                        "file_name": "Nome do ficheiro do projeto local",
+                        "header": "Adicionar novo projeto",
+                        "import_btn": "Importar projeto",
+                        "import_header": "Importar \"{name}\" (tipo: {domain})",
+                        "import_introduction": "Você pode importar projetos de outros utilizadores pelo Github e pelo fórum da comunidade. introduza o URL do projeto abaixo",
+                        "importing": "A importar projeto...",
+                        "raw_blueprint": "Conteúdo do projeto",
+                        "save_btn": "Projeto guardado",
+                        "saving": "A guardar projecto...",
+                        "unsupported_blueprint": "Projeto não suportado",
+                        "url": "URL do projeto"
+                    },
+                    "caption": "Projeto",
+                    "description": "Gerir projeto",
+                    "overview": {
+                        "add_blueprint": "Importar projeto",
+                        "confirm_delete_header": "Apagar projeto",
+                        "confirm_delete_text": "Tem a certeza que pretende apagar este projeto?",
+                        "delete_blueprint": "Excluir projeto",
+                        "header": "Editor de projetos",
+                        "headers": {
+                            "domain": "Domínio",
+                            "file_name": "Nome do ficheiro",
+                            "name": "Nome"
+                        },
+                        "introduction": "Este editor de projetos permite criar e editar projetos.",
+                        "learn_more": "Aprenda mais sobre projetos",
+                        "use_blueprint": "Criar automação"
                     }
                 },
                 "cloud": {
@@ -1670,6 +1732,7 @@
                         },
                         "header": "Entidades",
                         "headers": {
+                            "area": "Área",
                             "entity_id": "ID da Entidade",
                             "integration": "Integração",
                             "name": "Nome",
@@ -1682,7 +1745,7 @@
                             "confirm_partly_text": "Você pode remover apenas {removable} das {selected} entidades selecionadas. As entidades só podem ser removidas quando a integração deixar de suportá-las. Por vezes é necessário reiniciar o Home Assistant antes de poder remover as entidades de uma integração removida. Tem a certeza de que deseja remover as entidades removíveis?",
                             "confirm_partly_title": "Apenas {number} {number, plural,\n  uma {selected entity} pode ser removida \n  outras {selected entities} podem ser removidas \n}.",
                             "confirm_text": "Deve remover da configuração do Lovelace e das automações se contêm estas entidades",
-                            "confirm_title": "Deseja remover {number} entidades?"
+                            "confirm_title": "Deseja remover {number} {number, plural,\n  one {entidade}\n  other {entidades}\n}?"
                         },
                         "search": "Procurar entidades",
                         "selected": "Selecionou {number}",
@@ -1732,6 +1795,7 @@
                     "built_using": "Construído com",
                     "caption": "Informação",
                     "copy_github": "Para GitHub",
+                    "copy_raw": "Texto simples",
                     "custom_uis": "IUs personalizados:",
                     "description": "Ver informações sobre a instalação do Home Assistant",
                     "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
@@ -2126,7 +2190,7 @@
                             "without_device": "Entidades sem dispositivo"
                         },
                         "icon": "Ícone",
-                        "introduction": "Crie cenários para dar vida à sua casa.",
+                        "introduction": "Utilize cenários para dar vida à sua casa.",
                         "load_error_not_editable": "Apenas cenários em scenes.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar cena ({err_no}).",
                         "name": "Nome",
@@ -2309,7 +2373,7 @@
                         "delete_user": "Apagar utilizador",
                         "group": "Grupo",
                         "id": "ID",
-                        "name": "Nome",
+                        "name": "Nome em Exibição",
                         "new_password": "Nova senha",
                         "owner": "Proprietário",
                         "password_changed": "A senha foi alterada com sucesso",
@@ -2317,19 +2381,24 @@
                         "system_generated_users_not_editable": "Não foi possível atualizar os utilizadores gerados pelo sistema.",
                         "system_generated_users_not_removable": "Não é possível remover utilizadores gerados pelo sistema.",
                         "unnamed_user": "Utilizador sem nome",
-                        "update_user": "Atualizar"
+                        "update_user": "Atualizar",
+                        "username": "Nome de Utilizador"
                     },
                     "picker": {
                         "add_user": "Adicionar Utilizador",
                         "headers": {
                             "group": "Grupo",
-                            "name": "Nome",
-                            "system": "Sistema"
+                            "is_active": "Ativo",
+                            "is_owner": "Proprietário",
+                            "name": "Nome em Exibição",
+                            "system": "Gerado pelo sistema",
+                            "username": "Nome de Utilizador"
                         }
                     },
                     "users_privileges_note": "O grupo de utilizadores é um trabalho em progresso. O utilizador não poderá administrar a instância por meio da interface de utilizador. Ainda estamos a auditar todos os endpoints da API de gestão para garantir que eles limitam corretamente o acesso aos administradores."
                 },
                 "zha": {
+                    "add_device": "Adicionar Dispositivo",
                     "add_device_page": {
                         "discovered_text": "Os dispositivos aparecem aqui uma vez descobertos.",
                         "discovery_text": "Os dispositivos descobertos aparecerão aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) em modo de emparelhamento.",
@@ -2375,6 +2444,16 @@
                         "value": "Valor"
                     },
                     "description": "Gestão de rede Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configuração Completa",
+                        "CONFIGURED_status_text": "A inicializar",
+                        "INITIALIZED": "Inicialização completa",
+                        "INITIALIZED_status_text": "O dispositivo está pronto para uso",
+                        "INTERVIEW_COMPLETE": "Entrevista Completa",
+                        "INTERVIEW_COMPLETE_status_text": "Configurando",
+                        "PAIRED": "Dispositivo encontrado",
+                        "PAIRED_status_text": "A iniciar entrevista"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Dispositivo"
                     },
@@ -2390,6 +2469,7 @@
                         "unbind_button_label": "Desvincular grupo"
                     },
                     "groups": {
+                        "add_group": "Adicionar grupo",
                         "add_members": "Adicionar membros",
                         "adding_members": "A Adicionar membros",
                         "caption": "Grupos",
@@ -2432,7 +2512,11 @@
                         "hint_wakeup": "Alguns dispositivos, como os sensores Xiaomi, têm um botão de ativação que você pode pressionar em intervalos de ~ 5 segundos para manter os dispositivos acordados enquanto você interage com eles.",
                         "introduction": "Execute comandos ZHA que afetem um único dispositivo. Escolha um dispositivo para ver uma lista de comandos disponíveis."
                     },
-                    "title": "Automação residencial zigbee"
+                    "title": "Automação residencial zigbee",
+                    "visualization": {
+                        "caption": "Visualização",
+                        "header": "Visualização de rede"
+                    }
                 },
                 "zone": {
                     "add_zone": "Adicionar zona",
@@ -2622,6 +2706,7 @@
                         "reset": "Redefinir para modelo de demonstração",
                         "result_type": "Tipo de resultado",
                         "template_extensions": "Extensões de templates do Home Assistant",
+                        "time": "Este modelo atualiza ao início de cada minuto",
                         "title": "Template",
                         "unknown_error_template": "Erro desconhecido ao processar o template"
                     }
@@ -2688,7 +2773,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "A configuração do Lovelace foi atualizada para este painel, gostaria de atualizar?",
+                    "message": "A configuração do Lovelace foi atualizada para este painel, gostaria de atualizar para verificar as alterações?",
                     "refresh": "Atualizar"
                 },
                 "editor": {
@@ -2852,6 +2937,10 @@
                             "description": "O cartão Luz permite alterar o brilho da luz.",
                             "name": "Luz"
                         },
+                        "logbook": {
+                            "description": "O cartão dos registos mostra a lista de eventos para as entidades",
+                            "name": "Registos"
+                        },
                         "map": {
                             "dark_mode": "Modo escuro?",
                             "default_zoom": "Zoom padrão",
@@ -2880,7 +2969,8 @@
                         },
                         "picture-glance": {
                             "description": "O cartão Vista de imagem  mostra uma imagem e os estados das entidades correspondentes como um ícone. As entidades do lado direito permitem alternar ações, outras mostram a opção mais informações.",
-                            "name": "Vista sobre imagem"
+                            "name": "Vista sobre imagem",
+                            "state_entity": "Estado da entidade"
                         },
                         "picture": {
                             "description": "O cartão de imagem permite definir uma imagem a ser usada para navegação em vários pontos na sua interface ou para chamar um serviço.",

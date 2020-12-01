@@ -1744,6 +1744,7 @@
                         },
                         "header": "Entidades",
                         "headers": {
+                            "area": "Área",
                             "entity_id": "ID de entidad",
                             "integration": "Integración",
                             "name": "Nombre",
@@ -2471,6 +2472,16 @@
                         "value": "Valor"
                     },
                     "description": "Administración de red de Domótica Zigbee",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configuración completada",
+                        "CONFIGURED_status_text": "Inicializando",
+                        "INITIALIZED": "Inicialización completada",
+                        "INITIALIZED_status_text": "El dispositivo está listo para ser usado",
+                        "INTERVIEW_COMPLETE": "Entrevista completada",
+                        "INTERVIEW_COMPLETE_status_text": "Configurando",
+                        "PAIRED": "Dispositivo encontrado",
+                        "PAIRED_status_text": "Iniciando entrevista"
+                    },
                     "devices": {
                         "header": "Domótica Zigbee - Dispositivo"
                     },

@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Eigenaar",
         "system-admin": "Beheerders",
         "system-read-only": "Alleen-lezen gebruikers",
         "system-users": "Gebruikers"
@@ -1400,7 +1401,7 @@
                         "error_no_url": "Voer de URL van de blauwdruk in.",
                         "header": "Voeg een nieuwe blauwdruk toe",
                         "import_btn": "Blauwdruk importeren",
-                        "import_header": "Importeer {name} ( {domain} )",
+                        "import_header": "Importeer \"{name}\" (type: {domain})",
                         "import_introduction": "U kunt blauwdrukken van andere gebruikers importeren vanuit Github en de communityforums. Voer de URL van de blauwdruk hieronder in.",
                         "importing": "Blauwdruk importeren ...",
                         "save_btn": "Bewaar blauwdruk",
@@ -1410,14 +1411,18 @@
                     "caption": "Blauwdrukken",
                     "description": "Beheer blauwdrukken",
                     "overview": {
+                        "add_blueprint": "Blauwdruk importeren",
                         "confirm_delete_header": "Deze blauwdruk verwijderen?",
                         "confirm_delete_text": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
                         "header": "Blauwdrukeditor",
                         "headers": {
+                            "domain": "Domein",
+                            "file_name": "Bestandsnaam",
                             "name": "Naam"
                         },
                         "introduction": "Met de blauwdrukeditor kunt je blauwdrukken maken en bewerken.",
-                        "learn_more": "Meer informatie over blauwdrukken"
+                        "learn_more": "Meer informatie over blauwdrukken",
+                        "use_blueprint": "Automatisering maken"
                     }
                 },
                 "cloud": {
@@ -1734,6 +1739,7 @@
                         },
                         "header": "Entiteiten",
                         "headers": {
+                            "area": "Gebied",
                             "entity_id": "Entiteits-ID",
                             "integration": "Integratie",
                             "name": "Naam",
@@ -1864,11 +1870,11 @@
                         "delete": "Verwijder",
                         "delete_button": "Verwijder {integration}.",
                         "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
-                        "device_unavailable": "apparaat niet beschikbaar",
+                        "device_unavailable": "Apparaat niet beschikbaar",
                         "devices": "{count} {count, plural,\n  one {apparaat}\n  other {apparaten}\n}",
                         "documentation": "Documentatie",
                         "entities": "{count} {count, plural,\n  one {entiteit}\n  other {entiteiten}\n}",
-                        "entity_unavailable": "entiteit niet beschikbaar",
+                        "entity_unavailable": "Entiteit niet beschikbaar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonden via",
                         "manuf": "door {manufacturer}",
@@ -2390,7 +2396,7 @@
                         "delete_user": "Verwijder gebruiker",
                         "group": "Groep",
                         "id": "ID",
-                        "name": "Naam",
+                        "name": "Weergavenaam",
                         "new_password": "Nieuw wachtwoord",
                         "owner": "Eigenaar",
                         "password_changed": "Het wachtwoord is gewijzigd!",
@@ -2398,19 +2404,24 @@
                         "system_generated_users_not_editable": "Kan door het systeem gegenereerde gebruikers niet bijwerken.",
                         "system_generated_users_not_removable": "Kan door het systeem gegenereerde gebruikers niet verwijderen.",
                         "unnamed_user": "Naamloze gebruiker",
-                        "update_user": "Bijwerken"
+                        "update_user": "Bijwerken",
+                        "username": "Gebruikersnaam"
                     },
                     "picker": {
                         "add_user": "Gebruiker toevoegen",
                         "headers": {
                             "group": "Groep",
-                            "name": "Naam",
-                            "system": "Systeem"
+                            "is_active": "Actief",
+                            "is_owner": "Eigenaar",
+                            "name": "Weergavenaam",
+                            "system": "Systeem gegenereerd",
+                            "username": "Gebruikersnaam"
                         }
                     },
                     "users_privileges_note": "Gebruikersgroepen zijn nog in ontwikkeling. De gebruiker kan de instantie niet beheren via de interface. We controleren nog steeds alle beheer API eindpunten om ervoor te zorgen dat ze de toegang tot beheerders correct beperken."
                 },
                 "zha": {
+                    "add_device": "Apparaat toevoegen",
                     "add_device_page": {
                         "discovered_text": "Apparaten zullen hier verschijnen zodra ze zijn ontdekt.",
                         "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus.",
@@ -2456,6 +2467,14 @@
                         "value": "Waarde"
                     },
                     "description": "Zigbee Home Automation netwerkbeheer",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configuratie voltooid",
+                        "CONFIGURED_status_text": "Initialiseren",
+                        "INITIALIZED": "Initialisatie voltooid",
+                        "INITIALIZED_status_text": "Het apparaat is klaar voor gebruik",
+                        "INTERVIEW_COMPLETE_status_text": "Configureren",
+                        "PAIRED": "Apparaat gevonden"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Apparaat"
                     },
@@ -2471,6 +2490,7 @@
                         "unbind_button_label": "Ontkoppel groep"
                     },
                     "groups": {
+                        "add_group": "Groep toevoegen",
                         "add_members": "Leden toevoegen",
                         "adding_members": "Leden toevoegen",
                         "caption": "Groepen",
@@ -2967,7 +2987,8 @@
                         },
                         "picture-glance": {
                             "description": "De Picture Glance-kaart toont een afbeelding en de bijbehorende entiteitstoestanden als een pictogram. De entiteiten aan de rechterkant staan schakelacties toe, andere tonen het dialoogvenster met meer informatie.",
-                            "name": "Afbeelding oogopslag"
+                            "name": "Afbeelding oogopslag",
+                            "state_entity": "Status entiteit"
                         },
                         "picture": {
                             "description": "Met de Picture-kaart kunt u een afbeelding instellen voor navigatie naar verschillende paden in uw interface of om een service te activeren.",
@@ -3178,7 +3199,7 @@
                     "attribute_not_found": "Kenmerk {attribute} niet beschikbaar in: {entity}",
                     "entity_non_numeric": "Entiteit is niet-numeriek: {entity}",
                     "entity_not_found": "Entiteit niet beschikbaar: {entity}",
-                    "entity_unavailable": "{entity} is momenteel niet beschikbaar",
+                    "entity_unavailable": "Entiteit is momenteel niet beschikbaar: {entity}",
                     "starting": "Home Assistant is aan het opstarten, wellicht is nog niet alles beschikbaar"
                 }
             },

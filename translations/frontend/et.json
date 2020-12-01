@@ -1744,6 +1744,7 @@
                         },
                         "header": "Olemid",
                         "headers": {
+                            "area": "Ala",
                             "entity_id": "Olemi ID",
                             "integration": "Sidumine",
                             "name": "Nimi",
@@ -2471,6 +2472,16 @@
                         "value": "Väärtus"
                     },
                     "description": "Zigbee Home Automation võrgu haldamine",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Seadistamine on lõpetatud",
+                        "CONFIGURED_status_text": "Lähtestan",
+                        "INITIALIZED": "Lähtestamine on lõpetatud",
+                        "INITIALIZED_status_text": "Seade on kasutamiseks valmis",
+                        "INTERVIEW_COMPLETE": "Küsitlemine on  lõpetatud",
+                        "INTERVIEW_COMPLETE_status_text": "Seadistan",
+                        "PAIRED": "Seade on leitud",
+                        "PAIRED_status_text": "Alustan küsitlemist"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Seade"
                     },

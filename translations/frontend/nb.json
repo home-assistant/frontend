@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Eier",
         "system-admin": "Administratorer",
         "system-read-only": "Brukere med lesetilgang",
         "system-users": "Brukere"
@@ -1743,6 +1744,7 @@
                         },
                         "header": "Entiteter",
                         "headers": {
+                            "area": "Område",
                             "entity_id": "Entitets-ID",
                             "integration": "Integrasjon",
                             "name": "Navn",
@@ -2399,7 +2401,7 @@
                         "delete_user": "Slett bruker",
                         "group": "Gruppe",
                         "id": "Id",
-                        "name": "Navn",
+                        "name": "Visningsnavn",
                         "new_password": "Nytt passord",
                         "owner": "Eier",
                         "password_changed": "Passordet ble endret",
@@ -2407,14 +2409,18 @@
                         "system_generated_users_not_editable": "Kan ikke oppdatere systemopprettede brukere.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemopprettede brukere.",
                         "unnamed_user": "Bruker uten navn",
-                        "update_user": "Oppdater"
+                        "update_user": "Oppdater",
+                        "username": "Brukernavn"
                     },
                     "picker": {
                         "add_user": "Legg til bruker",
                         "headers": {
                             "group": "Gruppe",
-                            "name": "Navn",
-                            "system": ""
+                            "is_active": "Aktiv",
+                            "is_owner": "Eier",
+                            "name": "Visningsnavn",
+                            "system": "System generert",
+                            "username": "Brukernavn"
                         }
                     },
                     "users_privileges_note": "Brukergruppefunksjonen er et pågående arbeid. Brukeren vil ikke kunne administrere forekomsten via brukergrensesnittet. Vi overvåker fortsatt alle administrasjons-API-endepunkter for å sikre at de begrenser tilgangen til administratorer på riktig måte."
@@ -2466,6 +2472,16 @@
                         "value": "Verdi"
                     },
                     "description": "ZigBee Hjemmeautomasjon nettverksadministrasjon",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfigurasjonen er fullført",
+                        "CONFIGURED_status_text": "Initialiserer",
+                        "INITIALIZED": "Initialiseringen er fullført",
+                        "INITIALIZED_status_text": "Enheten er klar til bruk",
+                        "INTERVIEW_COMPLETE": "Intervju fullført",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurerer",
+                        "PAIRED": "Enhet funnet",
+                        "PAIRED_status_text": "Starter intervju"
+                    },
                     "devices": {
                         "header": "ZigBee Hjemmeautomasjon - Enhet"
                     },
