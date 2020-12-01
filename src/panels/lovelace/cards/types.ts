@@ -71,6 +71,10 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   header?: LovelaceHeaderFooterConfig;
   footer?: LovelaceHeaderFooterConfig;
   state_color?: boolean;
+  // A regular entities-card requires entities to be provided. However, some special cases
+  // (e.g. an entities-card created by an entity-filter-card) needs to work with empty arrays as well.
+  // This flag then prevents the errors.
+  allow_empty?: boolean;
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
