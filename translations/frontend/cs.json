@@ -1723,6 +1723,7 @@
                         },
                         "header": "Entity",
                         "headers": {
+                            "area": "Oblast",
                             "entity_id": "ID entity",
                             "integration": "Integrace",
                             "name": "Název",
@@ -2450,6 +2451,16 @@
                         "value": "Hodnota"
                     },
                     "description": "Správa Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Nastavení dokončeno",
+                        "CONFIGURED_status_text": "Inicializuji",
+                        "INITIALIZED": "Inicializace dokončena",
+                        "INITIALIZED_status_text": "Zařízení je připraveno k použití",
+                        "INTERVIEW_COMPLETE": "Dotazování dokončeno",
+                        "INTERVIEW_COMPLETE_status_text": "Nastavuji",
+                        "PAIRED": "Zařízení nalezeno",
+                        "PAIRED_status_text": "Začínám dotazování"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Zařízení"
                     },

@@ -1744,6 +1744,7 @@
                         },
                         "header": "實體",
                         "headers": {
+                            "area": "分區",
                             "entity_id": "實體 ID",
                             "integration": "整合",
                             "name": "名稱",
@@ -2471,6 +2472,16 @@
                         "value": "數值"
                     },
                     "description": "Zigbee 家庭自動化網路管理",
+                    "device_pairing_card": {
+                        "CONFIGURED": "設定完成",
+                        "CONFIGURED_status_text": "初始化中",
+                        "INITIALIZED": "初始化完成",
+                        "INITIALIZED_status_text": "設備已準備就緒",
+                        "INTERVIEW_COMPLETE": "探訪完成",
+                        "INTERVIEW_COMPLETE_status_text": "設定中",
+                        "PAIRED": "找到設備",
+                        "PAIRED_status_text": "開始探訪"
+                    },
                     "devices": {
                         "header": "Zigbee 家庭自動化 - 設備"
                     },

@@ -1744,6 +1744,7 @@
                         },
                         "header": "Entità",
                         "headers": {
+                            "area": "Area",
                             "entity_id": "ID entità",
                             "integration": "Integrazione",
                             "name": "Nome",
@@ -2471,6 +2472,16 @@
                         "value": "Valore"
                     },
                     "description": "Gestione rete Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configurazione completata",
+                        "CONFIGURED_status_text": "Inizializzazione",
+                        "INITIALIZED": "Inizializzazione completata",
+                        "INITIALIZED_status_text": "Il dispositivo è pronto per l'uso",
+                        "INTERVIEW_COMPLETE": "Interrogazione completata",
+                        "INTERVIEW_COMPLETE_status_text": "Configurazione",
+                        "PAIRED": "Dispositivo trovato",
+                        "PAIRED_status_text": "Inizio interrogazione"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Dispositivo"
                     },
@@ -2811,8 +2822,8 @@
                     "card": {
                         "alarm-panel": {
                             "available_states": "Stati disponibili",
-                            "description": "La scheda del pannello di allarme consente di Attivare e Disattivare le tue integrazioni del pannello di controllo di allarme.",
-                            "name": "Pannello di allarme"
+                            "description": "La scheda del Pannello di Allarme consente di attivare e disattivare le tue integrazioni del pannello di controllo allarme.",
+                            "name": "Pannello di Allarme"
                         },
                         "button": {
                             "default_action_help": "L'azione predefinita dipende dalle capacità dell'entità, verrà attivata o disattivata o verranno mostrate più informazioni.",
@@ -2876,7 +2887,7 @@
                             "toggle": "Attiva/disattiva entità."
                         },
                         "entity-filter": {
-                            "description": "La scheda Filtro Entità consente di definire un elenco di entità che si desidera monitorare solo in un determinato stato.",
+                            "description": "La scheda Filtro Entità consente di definire un elenco di entità che si desidera monitorare quando sono solamente in un determinato stato.",
                             "name": "Filtro Entità"
                         },
                         "entity": {
@@ -2884,10 +2895,10 @@
                             "name": "Entità"
                         },
                         "gauge": {
-                            "description": "La scheda Indicatore è una scheda di base che consente di visualizzare visivamente i dati del sensore.",
+                            "description": "La scheda Indicatore è una scheda di base che consente di visualizzare i dati di un sensore.",
                             "name": "Indicatore",
                             "severity": {
-                                "define": "Definire la gravità?",
+                                "define": "Definire l'intensità?",
                                 "green": "Verde",
                                 "red": "Rosso",
                                 "yellow": "Giallo"
@@ -2899,15 +2910,15 @@
                             "camera_image": "Entità Fotocamera",
                             "camera_view": "Vista fotocamera",
                             "double_tap_action": "Azione doppio tocco",
-                            "entities": "Entità",
-                            "entity": "Entità",
-                            "hold_action": "Azione di attesa",
+                            "entities": "Molte Entità",
+                            "entity": "Singola Entità",
+                            "hold_action": "Azione tocco prolungato",
                             "hours_to_show": "Ore da mostrare",
                             "icon": "Icona",
                             "icon_height": "Altezza icona",
                             "image": "Percorso immagine",
                             "manual": "Manuale",
-                            "manual_description": "Devi aggiungere una scheda personalizzata o semplicemente si vuole scrivere manualmente il file in yaml?",
+                            "manual_description": "Devi aggiungere una scheda personalizzata o vuoi semplicemente scrivere manualmente il file in yaml?",
                             "maximum": "Massimo",
                             "minimum": "Minimo",
                             "name": "Nome",
@@ -2920,7 +2931,7 @@
                             "show_state": "Mostrare lo stato?",
                             "state": "Stato",
                             "state_color": "Colorare le icone in base allo stato?",
-                            "tap_action": "Tocca Azione",
+                            "tap_action": "Azione tocco",
                             "theme": "Tema",
                             "title": "Titolo",
                             "unit": "Unità",
@@ -2937,27 +2948,27 @@
                         },
                         "history-graph": {
                             "description": "La scheda Grafico Storico consente di visualizzare un grafico per ciascuna delle entità elencate.",
-                            "name": "Grafico cronologico"
+                            "name": "Grafico Storico"
                         },
                         "horizontal-stack": {
                             "description": "La scheda Pila Orizzontale consente di raggruppare insieme più schede, in modo che siano sempre l'una accanto all'altra nello spazio di una colonna.",
                             "name": "Pila orizzontale"
                         },
                         "humidifier": {
-                            "description": "La scheda Umidificatore fornisce il controllo della tua entità umidificatore, consentendo di modificare l'umidità e la modalità dell'entità.",
+                            "description": "La scheda Umidificatore fornisce il controllo della tua entità umidificatore. Ti consente di modificare l'umidità e la modalità di funzionamento dell'entità.",
                             "name": "Umidificatore"
                         },
                         "iframe": {
-                            "description": "La scheda Pagina Web consente di incorporare la pagina Web preferita direttamente in Home Assistant.",
-                            "name": "Pagina web"
+                            "description": "La scheda Pagina Web consente di incorporare la tua pagina web preferita direttamente in Home Assistant.",
+                            "name": "Pagina Web"
                         },
                         "light": {
                             "description": "La scheda Luce consente di modificare la luminosità della luce.",
                             "name": "Luce"
                         },
                         "logbook": {
-                            "description": "La scheda del Diario di bordo mostra un elenco di eventi per le entità.",
-                            "name": "Diario di bordo"
+                            "description": "La scheda Registro mostra un elenco di eventi per le entità.",
+                            "name": "Registro"
                         },
                         "map": {
                             "dark_mode": "Modalità scura?",
@@ -2970,7 +2981,7 @@
                         },
                         "markdown": {
                             "content": "Contenuto",
-                            "description": "La scheda Ribassi viene utilizzata per presentare i ribassi.",
+                            "description": "La scheda Markdown viene utilizzata per eseguire il rendering di testo scritto in linguaggio Markdown per una gradevole formattazione della visualizzazione.",
                             "name": "Markdown"
                         },
                         "media-control": {
@@ -2987,7 +2998,7 @@
                         },
                         "picture-glance": {
                             "description": "La scheda Occhiata Immagine mostra un'immagine e gli stati dell'entità corrispondenti come una icona. Le entità sul lato destro consentono azioni di commutazione, altre mostrano più informazioni di dialogo.",
-                            "name": "Vista immagine",
+                            "name": "Sguardo d'Immagine",
                             "state_entity": "Stato Entità"
                         },
                         "picture": {
@@ -2996,7 +3007,7 @@
                         },
                         "plant-status": {
                             "description": "La scheda dello Stato della Pianta è per tutti gli adorabili botanici là fuori.",
-                            "name": "Stato pianta"
+                            "name": "Stato della Pianta"
                         },
                         "sensor": {
                             "description": "La scheda Sensore offre una rapida panoramica dello stato dei sensori con un grafico opzionale per visualizzare il cambiamento nel tempo.",
@@ -3006,7 +3017,7 @@
                             "show_more_detail": "Mostra ulteriori dettagli"
                         },
                         "shopping-list": {
-                            "description": "La scheda della Lista della Spesa consente di aggiungere, modificare, selezionare e cancellare gli articoli dalla lista della spesa.",
+                            "description": "La scheda Lista della Spesa consente di aggiungere, modificare, selezionare e cancellare gli articoli dalla tua lista della spesa.",
                             "integration_not_loaded": "Questa carta richiede l'integrazione \"shopping_list\" per essere configurata.",
                             "name": "Lista della spesa"
                         },
@@ -3055,7 +3066,7 @@
                         "options": "Altre opzioni",
                         "pick_card": "Quale scheda vorresti aggiungere?",
                         "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?",
-                        "search_cards": "Schede di ricerca",
+                        "search_cards": "Cerca schede",
                         "show_code_editor": "Mostra Editor di Codice",
                         "show_visual_editor": "Mostra Editor Visivo",
                         "toggle_editor": "Attiva / disattiva l'editor",

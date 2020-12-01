@@ -1687,6 +1687,7 @@
                         },
                         "header": "Объекты",
                         "headers": {
+                            "area": "Помещение",
                             "entity_id": "ID объекта",
                             "integration": "Интеграция",
                             "name": "Название",
@@ -2414,6 +2415,16 @@
                         "value": "Значение"
                     },
                     "description": "Управление сетью Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Настройка завершена",
+                        "CONFIGURED_status_text": "Инициализация",
+                        "INITIALIZED": "Инициализация завершена",
+                        "INITIALIZED_status_text": "Устройство готово к использованию",
+                        "INTERVIEW_COMPLETE": "Опрос завершен",
+                        "INTERVIEW_COMPLETE_status_text": "Настройка",
+                        "PAIRED": "Найдено устройство",
+                        "PAIRED_status_text": "Опрос начат"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Устройство"
                     },

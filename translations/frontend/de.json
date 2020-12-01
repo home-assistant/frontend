@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Besitzer",
         "system-admin": "Administratoren",
         "system-read-only": "Nur-Lesen Benutzer",
         "system-users": "Benutzer"
@@ -1740,6 +1741,7 @@
                         },
                         "header": "Entitäten",
                         "headers": {
+                            "area": "Bereich",
                             "entity_id": "Entitäts-ID",
                             "integration": "Integration",
                             "name": "Name",
@@ -2404,14 +2406,18 @@
                         "system_generated_users_not_editable": "Systemgenerierte Benutzer können nicht aktualisiert werden.",
                         "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
                         "unnamed_user": "Unbenannter Benutzer",
-                        "update_user": "Aktualisieren"
+                        "update_user": "Aktualisieren",
+                        "username": "Benutzername"
                     },
                     "picker": {
                         "add_user": "Benutzer hinzufügen",
                         "headers": {
                             "group": "Gruppe",
+                            "is_active": "Aktiv",
+                            "is_owner": "Besitzer",
                             "name": "Name",
-                            "system": "System"
+                            "system": "System",
+                            "username": "Benutzername"
                         }
                     },
                     "users_privileges_note": "Benutzergruppen sind derzeit noch in Entwicklung. Der Benutzer wird nicht in der Lage sein, Änderungen an der Instanz über das UI vorzunehmen. Derzeit überprüfen wir noch alle API Endpunkte um sicherzustellen dass diese nur von Administratoren genutzt werden können."
@@ -2463,6 +2469,14 @@
                         "value": "Wert"
                     },
                     "description": "Zigbee Home Automation Netzwerkmanagement",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfiguration abgeschlossen",
+                        "CONFIGURED_status_text": "Initialisieren",
+                        "INITIALIZED": "Initialisierung abgeschlossen",
+                        "INITIALIZED_status_text": "Das Gerät ist einsatzbereit",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurieren",
+                        "PAIRED": "Gerät gefunden"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Gerät"
                     },
