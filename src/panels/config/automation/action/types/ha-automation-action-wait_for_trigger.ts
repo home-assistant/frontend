@@ -17,7 +17,7 @@ export class HaWaitForTriggerAction extends LitElement
   @property() public action!: WaitForTriggerAction;
 
   public static get defaultConfig() {
-    return { wait_for_trigger: [] };
+    return { wait_for_trigger: [], continue_on_timeout: false };
   }
 
   protected render() {
