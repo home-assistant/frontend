@@ -10,7 +10,6 @@ import { HomeAssistant } from "../../types";
 import { SequenceSelector } from "../../data/selector";
 import { Action } from "../../data/script";
 import "../../panels/config/automation/action/ha-automation-action";
-import { HaDeviceAction } from "../../panels/config/automation/action/types/ha-automation-action-device_id";
 
 @customElement("ha-selector-sequence")
 export class HaSequenceSelector extends LitElement {
