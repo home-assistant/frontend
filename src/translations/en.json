@@ -340,9 +340,9 @@
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
-        "add_area_id": "Add area",
-        "add_device_id": "Add device",
-        "add_entity_id": "Add entity"
+        "add_area_id": "Select area",
+        "add_device_id": "Select device",
+        "add_entity_id": "Select entity"
       },
       "user-picker": {
         "no_user": "No user",

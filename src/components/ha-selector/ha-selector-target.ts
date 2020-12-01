@@ -1,4 +1,6 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -132,6 +134,15 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     this._configEntries = (await getConfigEntries(this.hass)).filter(
       (entry) => entry.domain === this.selector.target.device?.integration
     );
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-target-picker {
+        margin: 0 -8px;
+        display: block;
+      }
+    `;
   }
 }
 
