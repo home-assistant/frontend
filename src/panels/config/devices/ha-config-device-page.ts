@@ -251,11 +251,14 @@ export class HaConfigDevicePage extends LitElement {
                   ? html`
                       <div>
                         <p>
-                          The device is disabled by "${device.disabled_by}", do
-                          you want to enable it?
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.enabled_cause",
+                            "cause",
+                            device.disabled_by
+                          )}
                         </p>
                         <mwc-button @click=${this._enableDevice}>
-                          Enable
+                          ${this.hass.localize("ui.common.enable")}
                         </mwc-button>
                       </div>
                     `
