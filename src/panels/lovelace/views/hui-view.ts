@@ -20,10 +20,22 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
 import { createViewElement } from "../create-element/create-view-element";
+import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { confDeleteCard } from "../editor/delete-card";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 const DEFAULT_VIEW_LAYOUT = "masonry";
 const PANEL_VIEW_LAYOUT = "panel";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "view-create-card": undefined;
+    "view-edit-card": { path: [number] | [number, number] };
+    "view-delete-card": { path: [number] | [number, number] };
+  }
+}
 
 @customElement("hui-view")
 export class HUIView extends UpdatingElement {
@@ -106,6 +118,16 @@ export class HUIView extends UpdatingElement {
 
     if (configChanged && !this._layoutElement) {
       this._layoutElement = createViewElement(viewConfig!);
+      this._layoutElement.addEventListener(
+        "view-create-card",
+        this._showCreateCardDialog
+      );
+      this._layoutElement.addEventListener("view-edit-card", (ev) =>
+        this._showEditCardDialog(ev)
+      );
+      this._layoutElement.addEventListener("view-delete-card", (ev) =>
+        this._showDeleteCardDialog(ev)
+      );
     }
 
     if (configChanged) {
@@ -227,6 +249,26 @@ export class HUIView extends UpdatingElement {
     this._badges = this._badges!.map((curBadgeEl) =>
       curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
     );
+  }
+
+  private _showCreateCardDialog(): void {
+    showCreateCardDialog(this, {
+      lovelaceConfig: this.lovelace!.config,
+      saveConfig: this.lovelace!.saveConfig,
+      path: [this.index!],
+    });
+  }
+
+  private _showEditCardDialog(ev: CustomEvent): void {
+    showEditCardDialog(this, {
+      lovelaceConfig: this.lovelace!.config,
+      saveConfig: this.lovelace!.saveConfig,
+      path: ev.detail.path,
+    });
+  }
+
+  private _showDeleteCardDialog(ev: CustomEvent): void {
+    confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
   }
 }
 
