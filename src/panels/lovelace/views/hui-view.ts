@@ -20,6 +20,9 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
 import { createViewElement } from "../create-element/create-view-element";
+import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { confDeleteCard } from "../editor/delete-card";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 const DEFAULT_VIEW_LAYOUT = "masonry";
@@ -251,10 +254,7 @@ export class HUIView extends UpdatingElement {
   }
 
   private async _showCreateCardDialog(): Promise<void> {
-    const showCreateCardDialogImport = await import(
-      "../editor/card-editor/show-create-card-dialog"
-    );
-    showCreateCardDialogImport.showCreateCardDialog(this, {
+    showCreateCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
       path: [this.index!],
@@ -262,10 +262,7 @@ export class HUIView extends UpdatingElement {
   }
 
   private async _showEditCardDialog(ev): Promise<void> {
-    const showEditCardDialogImport = await import(
-      "../editor/card-editor/show-edit-card-dialog"
-    );
-    showEditCardDialogImport.showEditCardDialog(this, {
+    showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
       path: ev.detail.path,
@@ -273,13 +270,7 @@ export class HUIView extends UpdatingElement {
   }
 
   private async _showDeleteCardDialog(ev): Promise<void> {
-    const showDeleteCardDialogImport = await import("../editor/delete-card");
-    showDeleteCardDialogImport.confDeleteCard(
-      this,
-      this.hass!,
-      this.lovelace!,
-      ev.detail.path
-    );
+    confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
   }
 }
 
