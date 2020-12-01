@@ -7,15 +7,15 @@ import {
   property,
 } from "lit-element";
 import { HomeAssistant } from "../../types";
-import { SequenceSelector } from "../../data/selector";
+import { ActionSelector } from "../../data/selector";
 import { Action } from "../../data/script";
 import "../../panels/config/automation/action/ha-automation-action";
 
-@customElement("ha-selector-sequence")
-export class HaSequenceSelector extends LitElement {
+@customElement("ha-selector-action")
+export class HaActionSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public selector!: SequenceSelector;
+  @property() public selector!: ActionSelector;
 
   @property() public value?: Action;
 
@@ -40,6 +40,6 @@ export class HaSequenceSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-sequence": HaSequenceSelector;
+    "ha-selector-action": HaActionSelector;
   }
 }
