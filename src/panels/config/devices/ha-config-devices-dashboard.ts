@@ -1,4 +1,4 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiFilterVariant } from "@mdi/js";
 import "@material/mwc-list/mwc-list-item";
 import {
   css,
@@ -13,7 +13,6 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiFilterVariant } from "@mdi/js";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -326,22 +325,13 @@ export class HaConfigDeviceDashboard extends LitElement {
       this.entities,
       this.areas,
       this._searchParms,
+      this._showDisabled,
       this.hass.localize
     );
     const includeZHAFab = filteredDomains.includes("zha");
     const activeFilters = this._activeFilters(
       this.entries,
       this._searchParms,
-      this.hass.localize
-    );
-
-    const deviceData = this._devices(
-      this.devices,
-      this.entries,
-      this.entities,
-      this.areas,
-      this._searchParms,
-      this._showDisabled,
       this.hass.localize
     );
 
