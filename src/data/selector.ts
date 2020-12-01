@@ -5,7 +5,8 @@ export type Selector =
   | TargetSelector
   | NumberSelector
   | BooleanSelector
-  | TimeSelector;
+  | TimeSelector
+  | SequenceSelector;
 
 export interface EntitySelector {
   entity: {
@@ -75,4 +76,9 @@ export interface BooleanSelector {
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   time: {};
+}
+
+export interface SequenceSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  sequence: {};
 }

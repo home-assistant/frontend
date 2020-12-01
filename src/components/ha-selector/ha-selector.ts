@@ -9,6 +9,7 @@ import "./ha-selector-target";
 import "./ha-selector-number";
 import "./ha-selector-boolean";
 import "./ha-selector-time";
+import "./ha-selector-sequence";
 import { Selector } from "../../data/selector";
 
 @customElement("ha-selector")

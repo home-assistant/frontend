@@ -21,9 +21,10 @@ import { Target } from "../../data/target";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 
 @customElement("ha-selector-target")
-export class HaTargetSelector extends LitElement {
+export class HaTargetSelector extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
 
   @property() public selector!: TargetSelector;
@@ -32,7 +33,7 @@ export class HaTargetSelector extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _entities?: Record<string, string>;
+  @internalProperty() private _entityPlaformLookup?: Record<string, string>;
 
   @internalProperty() private _configEntries?: ConfigEntry[];
 
@@ -46,7 +47,7 @@ export class HaTargetSelector extends LitElement {
           }
           entityLookup[confEnt.entity_id] = confEnt.platform;
         }
-        this._entities = entityLookup;
+        this._entityPlaformLookup = entityLookup;
       }),
     ];
   }
@@ -68,8 +69,9 @@ export class HaTargetSelector extends LitElement {
       .hass=${this.hass}
       .value=${this.value}
       .deviceFilter=${(device) => this._filterDevices(device)}
-      .entityRegFilter=${(entity) => this._filterRegEntities(entity)}
-      .entityFilter=${(entity) => this._filterEntities(entity)}
+      .entityRegFilter=${(entity: EntityRegistryEntry) =>
+        this._filterRegEntities(entity)}
+      .entityFilter=${(entity: HassEntity) => this._filterEntities(entity)}
       .includeDeviceClasses=${this.selector.target.entity?.device_class
         ? [this.selector.target.entity.device_class]
         : undefined}
@@ -82,8 +84,8 @@ export class HaTargetSelector extends LitElement {
   private _filterEntities(entity: HassEntity): boolean {
     if (this.selector.target.entity?.integration) {
       if (
-        !this._entities ||
-        this._entities[entity.entity_id] !==
+        !this._entityPlaformLookup ||
+        this._entityPlaformLookup[entity.entity_id] !==
           this.selector.target.entity.integration
       ) {
         return false;
