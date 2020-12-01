@@ -334,6 +334,16 @@
           "show_attributes": "Show attributes"
         }
       },
+      "target-picker": {
+        "expand_area_id": "Expand this area in the seperate device and entities that it contains. It will update when the area changes.",
+        "expand_device_id": "Expand this device in seperate entities.",
+        "remove_area_id": "Remove area",
+        "remove_device_id": "Remove device",
+        "remove_entity_id": "Remove entity",
+        "add_area_id": "Add area",
+        "add_device_id": "Add device",
+        "add_entity_id": "Add entity"
+      },
       "user-picker": {
         "no_user": "No user",
         "add_user": "Add user",

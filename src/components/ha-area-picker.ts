@@ -135,6 +135,18 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
+  public open() {
+    this.updateComplete.then(() => {
+      (this.shadowRoot?.querySelector("vaadin-combo-box-light") as any)?.open();
+    });
+  }
+
+  public focus() {
+    this.updateComplete.then(() => {
+      this.shadowRoot?.querySelector("paper-input")?.focus();
+    });
+  }
+
   private _getAreas = memoizeOne(
     (
       areas: AreaRegistryEntry[],
@@ -162,11 +174,11 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           deviceEntityLookup[entity.device_id].push(entity);
         }
         inputDevices = [...devices];
-        inputEntities = entities.filter((entity) => !entity.device_id);
+        inputEntities = entities.filter((entity) => entity.area_id);
       } else if (deviceFilter) {
         inputDevices = [...devices];
       } else if (entityFilter) {
-        inputEntities = entities.filter((entity) => !entity.device_id);
+        inputEntities = entities.filter((entity) => entity.area_id);
       }
 
       if (includeDomains) {

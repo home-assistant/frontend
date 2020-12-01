@@ -111,6 +111,18 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private _opened?: boolean;
 
+  public open() {
+    this.updateComplete.then(() => {
+      (this.shadowRoot?.querySelector("vaadin-combo-box-light") as any)?.open();
+    });
+  }
+
+  public focus() {
+    this.updateComplete.then(() => {
+      this.shadowRoot?.querySelector("paper-input")?.focus();
+    });
+  }
+
   private _getDevices = memoizeOne(
     (
       devices: DeviceRegistryEntry[],

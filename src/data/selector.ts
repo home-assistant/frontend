@@ -2,6 +2,7 @@ export type Selector =
   | EntitySelector
   | DeviceSelector
   | AreaSelector
+  | TargetSelector
   | NumberSelector
   | BooleanSelector
   | TimeSelector;
@@ -28,6 +29,21 @@ export interface DeviceSelector {
 
 export interface AreaSelector {
   area: {
+    entity?: {
+      integration?: EntitySelector["entity"]["integration"];
+      domain?: EntitySelector["entity"]["domain"];
+      device_class?: EntitySelector["entity"]["device_class"];
+    };
+    device?: {
+      integration?: DeviceSelector["device"]["integration"];
+      manufacturer?: DeviceSelector["device"]["manufacturer"];
+      model?: DeviceSelector["device"]["model"];
+    };
+  };
+}
+
+export interface TargetSelector {
+  target: {
     entity?: {
       integration?: EntitySelector["entity"]["integration"];
       domain?: EntitySelector["entity"]["domain"];

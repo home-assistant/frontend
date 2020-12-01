@@ -5,6 +5,7 @@ import { HomeAssistant } from "../../types";
 import "./ha-selector-entity";
 import "./ha-selector-device";
 import "./ha-selector-area";
+import "./ha-selector-target";
 import "./ha-selector-number";
 import "./ha-selector-boolean";
 import "./ha-selector-time";

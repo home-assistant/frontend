@@ -63,7 +63,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   protected render() {
     const blueprint = this._blueprint;
-    return html`<ha-config-section .isWide=${this.isWide}>
+    return html`<ha-config-section vertical .isWide=${this.isWide}>
         ${!this.narrow
           ? html` <span slot="header">${this.config.alias}</span> `
           : ""}
@@ -119,7 +119,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
         </ha-card>
       </ha-config-section>
 
-      <ha-config-section .isWide=${this.isWide}>
+      <ha-config-section vertical .isWide=${this.isWide}>
         <span slot="header"
           >${this.hass.localize(
             "ui.panel.config.automation.editor.blueprint.header"
@@ -275,9 +275,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
-          overflow: hidden;
-        }
         .padding {
           padding: 16px;
         }
@@ -304,10 +301,10 @@ export class HaBlueprintAutomationEditor extends LitElement {
           border-top: 1px solid var(--divider-color);
         }
         :host(:not([narrow])) ha-settings-row paper-input {
-          width: 50%;
+          width: 60%;
         }
         :host(:not([narrow])) ha-settings-row ha-selector {
-          width: 50%;
+          width: 60%;
         }
       `,
     ];
