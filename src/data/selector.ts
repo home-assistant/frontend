@@ -19,13 +19,26 @@ export interface DeviceSelector {
     integration?: string;
     manufacturer?: string;
     model?: string;
-    entity?: EntitySelector["entity"];
+    entity?: {
+      domain?: EntitySelector["entity"]["domain"];
+      device_class?: EntitySelector["entity"]["device_class"];
+    };
   };
 }
 
 export interface AreaSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  area: {};
+  area: {
+    entity?: {
+      integration?: EntitySelector["entity"]["integration"];
+      domain?: EntitySelector["entity"]["domain"];
+      device_class?: EntitySelector["entity"]["device_class"];
+    };
+    device?: {
+      integration?: DeviceSelector["device"]["integration"];
+      manufacturer?: DeviceSelector["device"]["manufacturer"];
+      model?: DeviceSelector["device"]["model"];
+    };
+  };
 }
 
 export interface NumberSelector {

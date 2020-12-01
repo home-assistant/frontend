@@ -126,14 +126,17 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       }
 
       const deviceEntityLookup: DeviceEntityLookup = {};
-      for (const entity of entities) {
-        if (!entity.device_id) {
-          continue;
+
+      if (includeDomains || excludeDomains || includeDeviceClasses) {
+        for (const entity of entities) {
+          if (!entity.device_id) {
+            continue;
+          }
+          if (!(entity.device_id in deviceEntityLookup)) {
+            deviceEntityLookup[entity.device_id] = [];
+          }
+          deviceEntityLookup[entity.device_id].push(entity);
         }
-        if (!(entity.device_id in deviceEntityLookup)) {
-          deviceEntityLookup[entity.device_id] = [];
-        }
-        deviceEntityLookup[entity.device_id].push(entity);
       }
 
       const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
