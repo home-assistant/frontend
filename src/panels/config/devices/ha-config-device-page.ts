@@ -246,8 +246,21 @@ export class HaConfigDevicePage extends LitElement {
                 .devices=${this.devices}
                 .device=${device}
               >
-              ${this._renderIntegrationInfo(device, integrations)}
-              </ha-device-info-card>
+              ${
+                device.disabled_by
+                  ? html`
+                      <div class="card-actions" slot="actions">
+                        The device is disabled by "${
+                          device.disabled_by
+                        }", do you want to enable it?
+                        <mwc-button @click=${this._enableDevice}>
+                            Enable
+                        </mwc-button>
+                      </div>
+                      ${this._renderIntegrationInfo(device, integrations)}
+                      </ha-device-info-card>`
+                  : html``
+              }
 
             ${
               entities.length
@@ -272,6 +285,7 @@ export class HaConfigDevicePage extends LitElement {
                         )}
                         <ha-icon-button
                           @click=${this._showAutomationDialog}
+                          .disabled=${device.disabled_by}
                           title=${this.hass.localize(
                             "ui.panel.config.devices.automation.create"
                           )}
@@ -342,6 +356,7 @@ export class HaConfigDevicePage extends LitElement {
 
                                   <ha-icon-button
                                     @click=${this._createScene}
+                                    .disabled=${device.disabled_by}
                                     title=${this.hass.localize(
                                       "ui.panel.config.devices.scene.create"
                                     )}
@@ -415,6 +430,7 @@ export class HaConfigDevicePage extends LitElement {
                           )}
                           <ha-icon-button
                             @click=${this._showScriptDialog}
+                            .disabled=${device.disabled_by}
                             title=${this.hass.localize(
                               "ui.panel.config.devices.script.create"
                             )}
@@ -629,6 +645,12 @@ export class HaConfigDevicePage extends LitElement {
         });
         await Promise.all(updateProms);
       },
+    });
+  }
+
+  private async _enableDevice(): Promise<void> {
+    await updateDeviceRegistryEntry(this.hass, this.deviceId, {
+      disabled_by: null,
     });
   }
 
