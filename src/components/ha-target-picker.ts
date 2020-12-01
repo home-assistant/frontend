@@ -150,6 +150,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           );
         })}
       </div>
+      ${this._renderPicker()}
       <div class="mdc-chip-set">
         <div
           class="mdc-chip area_id add"
@@ -211,8 +212,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             </span>
           </span>
         </div>
-      </div>
-      ${this._renderPicker()}`;
+      </div>`;
   }
 
   private async _showPicker(ev) {
