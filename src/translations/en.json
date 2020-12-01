@@ -1753,6 +1753,7 @@
             "no_automations": "No automations",
             "unknown_automation": "Unknown automation",
             "create": "Create automation with device",
+            "create_disable": "Can't create automation with disabled device",
             "triggers": {
               "caption": "Do something when...",
               "no_triggers": "No triggers",
@@ -1773,12 +1774,14 @@
           "script": {
             "scripts": "Scripts",
             "no_scripts": "No scripts",
-            "create": "Create script with device"
+            "create": "Create script with device",
+            "create_disable": "Can't create script with disabled device"
           },
           "scene": {
             "scenes": "Scenes",
             "no_scenes": "No scenes",
-            "create": "Create scene with device"
+            "create": "Create scene with device",
+            "create_disable": "Can't create scene with disabled device"
           },
           "cant_edit": "You can only edit items that are created in the UI.",
           "device_not_found": "Device not found.",

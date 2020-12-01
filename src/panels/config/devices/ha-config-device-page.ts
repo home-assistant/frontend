@@ -249,18 +249,20 @@ export class HaConfigDevicePage extends LitElement {
               ${
                 device.disabled_by
                   ? html`
-                      <div class="card-actions" slot="actions">
-                        The device is disabled by "${
-                          device.disabled_by
-                        }", do you want to enable it?
+                      <div>
+                        <p>
+                          The device is disabled by "${device.disabled_by}", do
+                          you want to enable it?
+                        </p>
                         <mwc-button @click=${this._enableDevice}>
-                            Enable
+                          Enable
                         </mwc-button>
                       </div>
-                      ${this._renderIntegrationInfo(device, integrations)}
-                      </ha-device-info-card>`
+                    `
                   : html``
               }
+              ${this._renderIntegrationInfo(device, integrations)}
+              </ha-device-info-card>
 
             ${
               entities.length
@@ -286,9 +288,13 @@ export class HaConfigDevicePage extends LitElement {
                         <ha-icon-button
                           @click=${this._showAutomationDialog}
                           .disabled=${device.disabled_by}
-                          title=${this.hass.localize(
-                            "ui.panel.config.devices.automation.create"
-                          )}
+                          title=${device.disabled_by
+                            ? this.hass.localize(
+                                "ui.panel.config.devices.automation.create_disabled"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.devices.automation.create"
+                              )}
                           icon="hass:plus-circle"
                         ></ha-icon-button>
                       </h1>
@@ -357,9 +363,15 @@ export class HaConfigDevicePage extends LitElement {
                                   <ha-icon-button
                                     @click=${this._createScene}
                                     .disabled=${device.disabled_by}
-                                    title=${this.hass.localize(
-                                      "ui.panel.config.devices.scene.create"
-                                    )}
+                                    title=${
+                                      device.disabled_by
+                                        ? this.hass.localize(
+                                            "ui.panel.config.devices.scene.create_disabled"
+                                          )
+                                        : this.hass.localize(
+                                            "ui.panel.config.devices.scene.create"
+                                          )
+                                    }
                                     icon="hass:plus-circle"
                                   ></ha-icon-button>
                         </h1>
@@ -431,9 +443,13 @@ export class HaConfigDevicePage extends LitElement {
                           <ha-icon-button
                             @click=${this._showScriptDialog}
                             .disabled=${device.disabled_by}
-                            title=${this.hass.localize(
-                              "ui.panel.config.devices.script.create"
-                            )}
+                            title=${device.disabled_by
+                              ? this.hass.localize(
+                                  "ui.panel.config.devices.script.create_disabled"
+                                )
+                              : this.hass.localize(
+                                  "ui.panel.config.devices.script.create"
+                                )}
                             icon="hass:plus-circle"
                           ></ha-icon-button>
                         </h1>
