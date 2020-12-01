@@ -118,18 +118,23 @@ export class HUIView extends UpdatingElement {
 
     if (configChanged && !this._layoutElement) {
       this._layoutElement = createViewElement(viewConfig!);
-      this._layoutElement.addEventListener(
-        "ll-create-card",
-        this._showCreateCardDialog
-      );
-      this._layoutElement.addEventListener(
-        "ll-edit-card",
-        this._showEditCardDialog
-      );
-      this._layoutElement.addEventListener(
-        "ll-delete-card",
-        this._showDeleteCardDialog
-      );
+      this._layoutElement.addEventListener("ll-create-card", () => {
+        showCreateCardDialog(this, {
+          lovelaceConfig: this.lovelace!.config,
+          saveConfig: this.lovelace!.saveConfig,
+          path: [this.index!],
+        });
+      });
+      this._layoutElement.addEventListener("ll-edit-card", (ev) => {
+        showEditCardDialog(this, {
+          lovelaceConfig: this.lovelace!.config,
+          saveConfig: this.lovelace!.saveConfig,
+          path: ev.detail.path,
+        });
+      });
+      this._layoutElement.addEventListener("ll-delete-card", (ev) => {
+        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+      });
     }
 
     if (configChanged) {
@@ -251,26 +256,6 @@ export class HUIView extends UpdatingElement {
     this._badges = this._badges!.map((curBadgeEl) =>
       curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
     );
-  }
-
-  private async _showCreateCardDialog(): Promise<void> {
-    showCreateCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: [this.index!],
-    });
-  }
-
-  private async _showEditCardDialog(ev): Promise<void> {
-    showEditCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: ev.detail.path,
-    });
-  }
-
-  private async _showDeleteCardDialog(ev): Promise<void> {
-    confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
   }
 }
 
