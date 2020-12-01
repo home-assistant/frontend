@@ -52,7 +52,7 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
 
       ${this.stateInfoTemplate}
       <div class$="[[computeClassNames(stateObj)]]">
-        [[computeStateDisplay(localize, stateObj, language)]]
+        [[computeStateDisplay(localize, stateObj, hass.language)]]
       </div>
     `;
   }

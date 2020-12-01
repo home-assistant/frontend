@@ -34,9 +34,7 @@ const SENSORS = {
 @customElement("hui-plant-status-card")
 class HuiPlantStatusCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-plant-status-card-editor" */ "../editor/config-elements/hui-plant-status-card-editor"
-    );
+    await import("../editor/config-elements/hui-plant-status-card-editor");
     return document.createElement("hui-plant-status-card-editor");
   }
 
@@ -68,7 +66,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: PlantStatusCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "plant") {
-      throw new Error("Specify an entity from within the plant domain.");
+      throw new Error("Specify an entity from within the plant domain");
     }
 
     this._config = config;

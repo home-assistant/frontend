@@ -12,6 +12,7 @@ import { afterNextRender } from "../common/util/render-status";
 import { ifDefined } from "lit-html/directives/if-defined";
 
 import { getValueInPercentage, normalize } from "../util/calculate";
+import { formatNumber } from "../common/string/format_number";
 
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);
@@ -28,6 +29,8 @@ export class Gauge extends LitElement {
   @property({ type: Number }) public max = 100;
 
   @property({ type: Number }) public value = 0;
+
+  @property({ type: String }) public language = "";
 
   @property() public label = "";
 
@@ -88,7 +91,7 @@ export class Gauge extends LitElement {
       </svg>
       <svg class="text">
         <text class="value-text">
-          ${this.value} ${this.label}
+          ${formatNumber(this.value, this.language)} ${this.label}
         </text>
       </svg>`;
   }

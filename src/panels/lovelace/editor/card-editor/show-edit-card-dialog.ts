@@ -8,10 +8,7 @@ export interface EditCardDialogParams {
   cardConfig?: LovelaceCardConfig;
 }
 
-const importEditCardDialog = () =>
-  import(
-    /* webpackChunkName: "hui-dialog-edit-card" */ "./hui-dialog-edit-card"
-  );
+const importEditCardDialog = () => import("./hui-dialog-edit-card");
 
 export const showEditCardDialog = (
   element: HTMLElement,

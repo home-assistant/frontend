@@ -12,7 +12,7 @@ import {
   computeDeviceName,
   DeviceRegistryEntry,
 } from "../../../../data/device_registry";
-import { loadDeviceRegistryDetailDialog } from "../../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
+import { loadDeviceRegistryDetailDialog } from "../device-registry-detail/show-dialog-device-registry-detail";
 import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-device-info-card")

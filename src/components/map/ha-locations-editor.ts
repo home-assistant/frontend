@@ -66,7 +66,7 @@ export class HaLocationsEditor extends LitElement {
 
   private _locationMarkers?: { [key: string]: Marker | Circle };
 
-  private _circles: { [key: string]: Circle } = {};
+  private _circles: Record<string, Circle> = {};
 
   public fitMap(): void {
     if (

@@ -8,8 +8,8 @@ export interface HassioHardwareAudioDevice {
 
 interface HassioHardwareAudioList {
   audio: {
-    input: { [key: string]: string };
-    output: { [key: string]: string };
+    input: Record<string, string>;
+    output: Record<string, string>;
   };
 }
 

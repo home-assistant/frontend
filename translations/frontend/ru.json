@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Владелец",
         "system-admin": "Администраторы",
         "system-read-only": "Системные пользователи",
         "system-users": "Пользователи"
@@ -367,7 +368,7 @@
             },
             "climate": {
                 "aux_heat": "Дополнительный нагрев",
-                "away_mode": "Режим ожидания",
+                "away_mode": "Режим \"не дома\"",
                 "cooling": "{name} охлаждение",
                 "current_temperature": "{name} текущая температура",
                 "currently": "Сейчас",
@@ -377,7 +378,7 @@
                 "low": "низкий",
                 "on_off": "Вкл / Выкл",
                 "operation": "Режим работы",
-                "preset_mode": "Предустановка",
+                "preset_mode": "Пресет",
                 "swing_mode": "Режим качания воздушных шторок",
                 "target_humidity": "Заданная влажность",
                 "target_temperature": "Заданная температура",
@@ -514,7 +515,7 @@
             "disable": "Отключить",
             "enable": "Включить",
             "error_required": "Обязательное поле",
-            "leave": "Покинуть",
+            "leave": "Выйти",
             "loading": "Загрузка",
             "menu": "Меню",
             "next": "Далее",
@@ -546,6 +547,10 @@
                 "area": "Помещение",
                 "clear": "Очистить",
                 "show_areas": "Показать помещения"
+            },
+            "blueprint-picker": {
+                "add_user": "Добавить пользователя",
+                "remove_user": "Удалить пользователя"
             },
             "data-table": {
                 "no-data": "Нет данных",
@@ -594,13 +599,13 @@
                     "was_at_home": "дома",
                     "was_at_state": "{state}",
                     "was_away": "не дома",
-                    "was_closed": "закрывается",
+                    "was_closed": "Закрыто",
                     "was_connected": "подключается",
                     "was_disconnected": "отключается",
                     "was_locked": "блокируется",
                     "was_low": "регистрирует низкий заряд",
                     "was_normal": "регистрирует нормальный заряд",
-                    "was_opened": "открывается",
+                    "was_opened": "Открыто",
                     "was_plugged_in": "подключается",
                     "was_safe": "регистрирует безопасность",
                     "was_unlocked": "разблокируется",
@@ -741,7 +746,7 @@
                     "update": "Обновить"
                 },
                 "faq": "документацией",
-                "no_unique_id": "У этого объекта нет уникального идентификатора, поэтому его настройками нельзя управлять из пользовательского интерфейса. Ознакомьтесь с {faq_link} для получения более подробной информации.",
+                "no_unique_id": "У этого объекта (\"{entity_id}\") нет уникального идентификатора, поэтому его настройками нельзя управлять из пользовательского интерфейса. Ознакомьтесь с {faq_link} для получения более подробной информации.",
                 "related": "Зависимости",
                 "settings": "Настройки"
             },
@@ -804,6 +809,10 @@
             },
             "more_info_control": {
                 "controls": "Управление",
+                "cover": {
+                    "close_cover": "Закрыть",
+                    "open_cover": "Открыть"
+                },
                 "details": "Свойства",
                 "dismiss": "Закрыть диалог",
                 "edit": "Изменить объект",
@@ -1039,6 +1048,9 @@
                 "automation": {
                     "caption": "Автоматизация",
                     "description": "Управление правилами автоматизации",
+                    "dialog_new": {
+                        "header": "Новая автоматизация"
+                    },
                     "editor": {
                         "actions": {
                             "add": "Добавить действие",
@@ -1675,6 +1687,7 @@
                         },
                         "header": "Объекты",
                         "headers": {
+                            "area": "Помещение",
                             "entity_id": "ID объекта",
                             "integration": "Интеграция",
                             "name": "Название",
@@ -1736,6 +1749,8 @@
                 "info": {
                     "built_using": "Создано с использованием",
                     "caption": "О системе",
+                    "copy_github": "Для GitHub",
+                    "copy_raw": "Необработанный текст",
                     "custom_uis": "Кастомные интерфейсы:",
                     "description": "Информация о системе",
                     "developed_by": "Разработано множеством замечательных людей.",
@@ -1754,9 +1769,15 @@
                     "system_health": {
                         "checks": {
                             "cloud": {
+                                "alexa_enabled": "Интеграция с Alexa",
                                 "can_reach_cert_server": "Доступ к серверу сертификатов",
                                 "can_reach_cloud": "Доступ к Home Assistant Cloud",
                                 "can_reach_cloud_auth": "Доступ к серверу аутентификации",
+                                "google_enabled": "Интеграция с Google",
+                                "logged_in": "Вход в систему",
+                                "relayer_connected": "Relayer подключен",
+                                "remote_connected": "Удалённый доступ подключен",
+                                "remote_enabled": "Удалённый доступ активирован",
                                 "subscription_expiration": "Срок действия подписки"
                             },
                             "homeassistant": {
@@ -1797,11 +1818,11 @@
                         "delete": "Удалить",
                         "delete_button": "Удалить интеграцию {integration}",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
-                        "device_unavailable": "устройство недоступно",
+                        "device_unavailable": "Устройство недоступно",
                         "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройств}\n}",
                         "documentation": "Документация",
                         "entities": "{count} {count, plural,\n  one {объект}\n  other {объектов}\n}",
-                        "entity_unavailable": "объект недоступен",
+                        "entity_unavailable": "Объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
                         "manuf": "{manufacturer}",
@@ -2331,19 +2352,24 @@
                         "system_generated_users_not_editable": "Системные пользователи защищены от редактирования",
                         "system_generated_users_not_removable": "Системные пользователи защищены от удаления",
                         "unnamed_user": "Безымянный пользователь",
-                        "update_user": "Обновить"
+                        "update_user": "Обновить",
+                        "username": "Логин"
                     },
                     "picker": {
                         "add_user": "Добавить пользователя",
                         "headers": {
                             "group": "Группа",
+                            "is_active": "Активен",
+                            "is_owner": "Владелец",
                             "name": "Имя",
-                            "system": "Системный"
+                            "system": "Системный",
+                            "username": "Логин"
                         }
                     },
                     "users_privileges_note": "Функционал пользователей всё ещё в стадии разработки. В дальнейшем пользователи не смогут администрировать сервер через пользовательский интерфейс. Мы все еще проверяем все конечные точки API управления, чтобы убедиться, что они правильно ограничивают доступ."
                 },
                 "zha": {
+                    "add_device": "Добавить устройство",
                     "add_device_page": {
                         "discovered_text": "Устройства появятся здесь, когда будут обнаружены.",
                         "discovery_text": "Здесь будут отображаться обнаруженные устройства. Следуйте инструкциям для Вашего устройства, чтобы включить режим сопряжения.",
@@ -2389,6 +2415,16 @@
                         "value": "Значение"
                     },
                     "description": "Управление сетью Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Настройка завершена",
+                        "CONFIGURED_status_text": "Инициализация",
+                        "INITIALIZED": "Инициализация завершена",
+                        "INITIALIZED_status_text": "Устройство готово к использованию",
+                        "INTERVIEW_COMPLETE": "Опрос завершен",
+                        "INTERVIEW_COMPLETE_status_text": "Настройка",
+                        "PAIRED": "Найдено устройство",
+                        "PAIRED_status_text": "Опрос начат"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Устройство"
                     },
@@ -2404,6 +2440,7 @@
                         "unbind_button_label": "Отвязать группу"
                     },
                     "groups": {
+                        "add_group": "Добавить группу",
                         "add_members": "Добавить участников",
                         "adding_members": "Добавление участников",
                         "caption": "Группы",
@@ -2446,7 +2483,11 @@
                         "hint_wakeup": "Некоторые устройства, такие как датчики Xiaomi, имеют кнопку пробуждения, которую Вы можете нажимать с интервалом ~ 5 секунд, чтобы держать устройства в активном состоянии во время взаимодействия с ними.",
                         "introduction": "Команды ZHA, которые влияют на одно устройство. Выберите устройство, чтобы увидеть список доступных команд."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Визуализация",
+                        "header": "Визуализация сети"
+                    }
                 },
                 "zone": {
                     "add_zone": "Добавить зону",

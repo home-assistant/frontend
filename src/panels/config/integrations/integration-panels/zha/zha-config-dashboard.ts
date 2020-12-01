@@ -1,6 +1,6 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@material/mwc-fab";
+import "../../../../../components/ha-fab";
 import {
   css,
   CSSResultArray,
@@ -15,7 +15,7 @@ import "../../../../../components/ha-icon-next";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import { mdiNetwork, mdiFolderMultipleOutline, mdiPlus } from "@mdi/js";
+import { mdiNetwork, mdiFolderMultipleOutline, mdiPlus, mdiLan } from "@mdi/js";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
@@ -31,6 +31,11 @@ export const zhaTabs: PageNavigation[] = [
     translationKey: "ui.panel.config.zha.groups.caption",
     path: `/config/zha/groups`,
     iconPath: mdiFolderMultipleOutline,
+  },
+  {
+    translationKey: "ui.panel.config.zha.visualization.caption",
+    path: `/config/zha/visualization`,
+    iconPath: mdiLan,
   },
 ];
 
@@ -83,13 +88,13 @@ class ZHAConfigDashboard extends LitElement {
             : ""}
         </ha-card>
         <a href="/config/zha/add" slot="fab">
-          <mwc-fab
+          <ha-fab
             .label=${this.hass.localize("ui.panel.config.zha.add_device")}
             extended
             ?rtl=${computeRTL(this.hass)}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </mwc-fab>
+          </ha-fab>
         </a>
       </hass-tabs-subpage>
     `;

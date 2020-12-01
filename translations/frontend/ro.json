@@ -835,6 +835,7 @@
                     "description": "Privire de ansamblu asupra tuturor zonelor din casa ta.",
                     "editor": {
                         "create": "Creează",
+                        "default_name": "Zona nouă",
                         "delete": "Șterge",
                         "update": "Actualizare"
                     },
@@ -843,12 +844,13 @@
                         "header": "Zone",
                         "integrations_page": "Pagina de integrari",
                         "introduction": "Zonele sunt folosite pentru a organiza unde sunt dispozitivele. Aceste informații vor fi utilizate de către Home Assistant pentru a vă ajuta să vă organizați interfața, permisiunile și integrarea cu alte sisteme.",
-                        "introduction2": "Pentru a plasa dispozitive într-o zonă, utilizați link-ul de mai jos pentru a naviga la pagina de integrare și apoi faceți clic pe o integrare configurată pentru a ajunge la cardurile dispozitivului."
+                        "introduction2": "Pentru a plasa dispozitive într-o zonă, utilizați link-ul de mai jos pentru a naviga la pagina de integrare și apoi faceți clic pe o integrare configurată pentru a ajunge la cardurile dispozitivului.",
+                        "no_areas": "Se pare că nu ai nici o zonă încă!"
                     }
                 },
                 "automation": {
                     "caption": "Automatizări",
-                    "description": "Creați și editați scripturi",
+                    "description": "Gestionarea automatizărilor",
                     "editor": {
                         "actions": {
                             "add": "Adăugați o acțiune",
@@ -942,7 +944,8 @@
                                 "device": {
                                     "extra_fields": {
                                         "above": "De mai sus",
-                                        "below": "De mai jos"
+                                        "below": "De mai jos",
+                                        "for": "Durată"
                                     },
                                     "label": "Dispozitiv"
                                 },
@@ -1035,6 +1038,7 @@
                                     "label": "Dispozitiv"
                                 },
                                 "event": {
+                                    "context_user_pick": "Selectare utilizatorul",
                                     "event_data": "Date eveniment",
                                     "event_type": "Tip eveniment",
                                     "label": "Eveniment"
@@ -1125,23 +1129,63 @@
                         "show_info_automation": "Afișați informații despre automatizare"
                     }
                 },
+                "blueprint": {
+                    "add": {
+                        "url": "Adresa URL a planului"
+                    },
+                    "overview": {
+                        "add_blueprint": "Importați planul",
+                        "confirm_delete_text": "Sigur doriți să ștergeți acest plan?"
+                    }
+                },
                 "cloud": {
                     "account": {
                         "alexa": {
                             "config_documentation": "Documentație de configurare",
+                            "enable_ha_skill": "Activați abilitatea Home Assistant pentru Alexa",
                             "manage_entities": "Gestionați entități",
                             "state_reporting_error": "Imposibil de {enable_disable} stare raport.",
-                            "sync_entities_error": "Sincronizarea entităților nu a reușit:"
+                            "sync_entities": "Sincronizează entități",
+                            "sync_entities_error": "Sincronizarea entităților nu a reușit:",
+                            "title": "Alexa"
                         },
+                        "fetching_subscription": "Preluare abonament...",
                         "google": {
                             "config_documentation": "Documentație de configurare",
                             "sync_entities_404_message": "Sincronizarea entităților cu Google nu a reușit, cereți Google \"Hey Google, sync my devices\" să vă sincronizeze entitățile."
+                        },
+                        "not_connected": "Nu este conectat",
+                        "remote": {
+                            "certificate_info": "Informații despre certificat",
+                            "link_learn_how_it_works": "Aflați cum funcționează"
                         }
                     },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Controlați-vă casa de la distanta, integrați-vă cu Alexa și Asistentul Google.",
                     "description_login": "Logat ca {email}",
-                    "description_not_login": "Nu sunteți conectat (ă)"
+                    "description_not_login": "Nu sunteți conectat (ă)",
+                    "forgot_password": {
+                        "instructions": "Introduceți adresa de e-mail și vă vom trimite un link pentru a vă reseta parola.",
+                        "subtitle": "Ti-ai uitat parola",
+                        "title": "Parolă uitată"
+                    },
+                    "login": {
+                        "alert_email_confirm_necessary": "Trebuie să vă confirmați adresa de e-mail înainte de a vă conecta.",
+                        "alert_password_change_required": "Trebuie să vă schimbați parola înainte de a vă conecta.",
+                        "email": "E-mail",
+                        "email_error_msg": "E-mail invalid",
+                        "forgot_password": "Ați uitat parola?",
+                        "introduction": "Home Assistant Cloud vă oferă o conexiune la distanță sigură la instanța dvs. în timp ce sunteți departe de casă. De asemenea, vă permite să vă conectați cu servicii numai cloud: Amazon Alexa și Google Assistant.",
+                        "introduction2": "Acest serviciu este administrat de partenerul nostru ",
+                        "introduction2a": ", o companie fondată de fondatorii Home Assistant și Hass.io.",
+                        "introduction3": "Home Assistant Cloud este un serviciu de abonament cu o perioadă de încercare gratuită de o lună. Nu sunt necesare informații de plată.",
+                        "learn_more_link": "Aflați mai multe despre Cloud Assistant Home",
+                        "password": "Parolă",
+                        "password_error_msg": "Parolele au cel puțin 8 caractere",
+                        "sign_in": "Conectează-te",
+                        "start_trial": "Începeți perioada de încercare gratuită de 1 lună",
+                        "trial_info": "Nu sunt necesare informații de plată"
+                    }
                 },
                 "core": {
                     "caption": "General",
@@ -1337,6 +1381,19 @@
                     "license": "Publicat sub licenta Apache 2.0",
                     "server": "Server",
                     "source": "Sursă:",
+                    "system_health": {
+                        "checks": {
+                            "homeassistant": {
+                                "hassio": "HassOS",
+                                "installation_type": "Tipul de instalare",
+                                "timezone": "Fus orar",
+                                "version": "Versiune"
+                            },
+                            "lovelace": {
+                                "resources": "Resurse"
+                            }
+                        }
+                    },
                     "title": "Info"
                 },
                 "integration_panel_move": {
@@ -1632,6 +1689,7 @@
                             "heading": "Reîncărcarea configurației YAML",
                             "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va descărca configurația actuală și va încărca noua configurație.",
                             "person": "Reîncărcare persoane",
+                            "rest": "Reîncărcați entitățile în repaus și notificați serviciile",
                             "scene": "Reîncărcați scenarii",
                             "script": "Reîncărcați script-uri",
                             "zone": "Reîncărcare zone"
@@ -2040,6 +2098,10 @@
                             "state_equal": "Starea este egala cu",
                             "state_not_equal": "Starea nu este egala cu"
                         },
+                        "config": {
+                            "optional": "Opțional",
+                            "required": "Necesar"
+                        },
                         "entities": {
                             "description": "Cardul Entities este cel mai comun tip de card. Acesta grupează elementele împreună în liste.",
                             "edit_special_row": "Vizualizați detaliile acestui rând făcând clic pe butonul de editare",
@@ -2064,11 +2126,20 @@
                             "name": "Entitate"
                         },
                         "gauge": {
-                            "description": "Cardul Gauge este un card de bază care permite vizualizarea vizuală a datelor senzorilor."
+                            "description": "Cardul Gauge este un card de bază care permite vizualizarea vizuală a datelor senzorilor.",
+                            "severity": {
+                                "green": "Verde",
+                                "red": "Roşu",
+                                "yellow": "Galben"
+                            }
                         },
                         "generic": {
+                            "aspect_ratio": "Raport de aspect",
                             "attribute": "Atribut",
+                            "camera_image": "Entitate cameră",
+                            "camera_view": "Vizualizare cameră",
                             "double_tap_action": "Acțiune atingere dublă",
+                            "entities": "Entități",
                             "entity": "Entitate",
                             "hold_action": "Suspendare acțiunii",
                             "hours_to_show": "Ore de afișat",
@@ -2078,14 +2149,23 @@
                             "manual": "Manual",
                             "manual_description": "Trebuie să adăugați un card personalizat sau doriți doar să scrieți manual yaml?",
                             "maximum": "Maximă",
+                            "minimum": "Valoare minimă",
+                            "name": "Nume",
                             "no_theme": "Nicio temă",
+                            "refresh_interval": "Interval de reîmprospătare",
                             "search": "Căutare",
                             "secondary_info_attribute": "Atribut informații secundare",
+                            "show_icon": "Afișați pictograma?",
+                            "show_name": "Arată numele?",
+                            "show_state": "Arată de starea?",
                             "state": "Stare",
+                            "theme": "Tema",
+                            "title": "Titlu",
                             "unit": "Unitate",
                             "url": "Url"
                         },
                         "glance": {
+                            "columns": "Coloane",
                             "description": "Cardul Glance este util pentru a grupa mai mulți senzori într-o imagine de ansamblu compactă.",
                             "name": "Privire rapida"
                         },
@@ -2108,12 +2188,15 @@
                         },
                         "map": {
                             "dark_mode": "Modul întunecat?",
+                            "default_zoom": "Zoom implicit",
                             "description": "Cardul Map care vă permite să afișați entități pe o hartă.",
                             "geo_location_sources": "Surse de geolocalizare",
                             "hours_to_show": "Ore de afisat",
-                            "name": "Hartă"
+                            "name": "Hartă",
+                            "source": "Sursă"
                         },
                         "markdown": {
+                            "content": "Conţinut",
                             "description": "Cardul Markdown este utilizat pentru a reda Markdown."
                         },
                         "media-control": {
@@ -2137,6 +2220,8 @@
                         },
                         "sensor": {
                             "description": "Cardul Senzor vă oferă o imagine de ansamblu rapidă a stării senzorilor cu un grafic opțional pentru a vizualiza schimbarea în timp.",
+                            "graph_detail": "Detaliu grafic",
+                            "graph_type": "Tip grafic",
                             "name": "Senzor",
                             "show_more_detail": "Afișați mai multe detalii"
                         },
@@ -2194,6 +2279,13 @@
                         }
                     },
                     "header": "Editați interfața utilizator",
+                    "header-footer": {
+                        "types": {
+                            "graph": {
+                                "name": "Grafic"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Deschideți meniul Lovelace UI",
                         "raw_editor": "Editor de configurare brut"
@@ -2577,6 +2669,10 @@
                     "link_promo": "Aflați mai multe despre teme",
                     "primary_color": "Culoare primară",
                     "reset": "Resetați"
+                },
+                "vibrate": {
+                    "description": "Activați sau dezactivați vibrațiile de pe acest dispozitiv atunci când controlați dispozitivele.",
+                    "header": "Vibrați"
                 }
             },
             "shopping-list": {

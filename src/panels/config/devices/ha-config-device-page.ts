@@ -35,7 +35,7 @@ import { findRelated, RelatedResult } from "../../../data/search";
 import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
-} from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
+} from "./device-registry-detail/show-dialog-device-registry-detail";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-tabs-subpage";

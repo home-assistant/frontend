@@ -20,7 +20,7 @@ import { convertThingTalk } from "../../../../data/cloud";
 import type { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import type { ThingtalkDialogParams } from "../show-dialog-thingtalk";
+import type { ThingtalkDialogParams } from "./show-dialog-thingtalk";
 import "./ha-thingtalk-placeholders";
 import type { PlaceholderValues } from "./ha-thingtalk-placeholders";
 
@@ -50,16 +50,21 @@ class DialogThingtalk extends LitElement {
 
   @internalProperty() private _placeholders?: PlaceholderContainer;
 
-  @query("#input", true) private _input?: PaperInputElement;
+  @query("#input") private _input?: PaperInputElement;
 
-  private _value!: string;
+  private _value?: string;
 
   private _config!: Partial<AutomationConfig>;
 
-  public showDialog(params: ThingtalkDialogParams): void {
+  public async showDialog(params: ThingtalkDialogParams): Promise<void> {
     this._params = params;
     this._error = undefined;
     this._opened = true;
+    if (params.input) {
+      this._value = params.input;
+      await this.updateComplete;
+      this._generate();
+    }
   }
 
   protected render(): TemplateResult {
@@ -126,6 +131,7 @@ class DialogThingtalk extends LitElement {
           <paper-input
             id="input"
             label="What should this automation do?"
+            .value=${this._value}
             autofocus
             @keyup=${this._handleKeyUp}
           ></paper-input>

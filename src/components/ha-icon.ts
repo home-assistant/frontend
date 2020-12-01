@@ -39,7 +39,7 @@ checkCacheVersion();
 
 const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 
-const cachedIcons: { [key: string]: string } = {};
+const cachedIcons: Record<string, string> = {};
 
 @customElement("ha-icon")
 export class HaIcon extends LitElement {

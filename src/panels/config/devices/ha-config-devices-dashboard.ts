@@ -1,3 +1,4 @@
+import { mdiPlus } from "@mdi/js";
 import {
   customElement,
   html,
@@ -10,6 +11,7 @@ import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   DataTableRowData,
@@ -96,7 +98,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
   );
 
-  private _devices = memoizeOne(
+  private _devicesAndFilterDomains = memoizeOne(
     (
       devices: DeviceRegistryEntry[],
       entries: ConfigEntry[],
@@ -136,13 +138,17 @@ export class HaConfigDeviceDashboard extends LitElement {
         areaLookup[area.area_id] = area;
       }
 
+      const filterDomains: string[] = [];
+
       filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry":
-            outputDevices = outputDevices.filter((device) =>
-              device.config_entries.includes(value)
-            );
-            break;
+        if (key === "config_entry") {
+          outputDevices = outputDevices.filter((device) =>
+            device.config_entries.includes(value)
+          );
+          const configEntry = entries.find((entry) => entry.entry_id === value);
+          if (configEntry) {
+            filterDomains.push(configEntry.domain);
+          }
         }
       });
 
@@ -176,7 +182,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         };
       });
 
-      return outputDevices;
+      return { devicesOutput: outputDevices, filteredDomains: filterDomains };
     }
   );
 
@@ -286,6 +292,16 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const { devicesOutput, filteredDomains } = this._devicesAndFilterDomains(
+      this.devices,
+      this.entries,
+      this.entities,
+      this.areas,
+      this._searchParms,
+      this.hass.localize
+    );
+    const includeZHAFab = filteredDomains.includes("zha");
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -296,14 +312,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         .tabs=${configSections.integrations}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
-        .data=${this._devices(
-          this.devices,
-          this.entries,
-          this.entities,
-          this.areas,
-          this._searchParms,
-          this.hass.localize
-        )}
+        .data=${devicesOutput}
         .activeFilters=${this._activeFilters(
           this.entries,
           this._searchParms,
@@ -311,7 +320,19 @@ export class HaConfigDeviceDashboard extends LitElement {
         )}
         @row-click=${this._handleRowClicked}
         clickable
+        .hasFab=${includeZHAFab}
       >
+        ${includeZHAFab
+          ? html`<a href="/config/zha/add" slot="fab">
+              <ha-fab
+                .label=${this.hass.localize("ui.panel.config.zha.add_device")}
+                extended
+                ?rtl=${computeRTL(this.hass)}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            </a>`
+          : html``}
       </hass-tabs-subpage-data-table>
     `;
   }

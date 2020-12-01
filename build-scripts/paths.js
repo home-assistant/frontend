@@ -1,4 +1,4 @@
-var path = require("path");
+const path = require("path");
 
 module.exports = {
   polymer_dir: path.resolve(__dirname, ".."),

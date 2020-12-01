@@ -30,9 +30,7 @@ import { HumidifierCardConfig } from "./types";
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-humidifier-card-editor" */ "../editor/config-elements/hui-humidifier-card-editor"
-    );
+    await import("../editor/config-elements/hui-humidifier-card-editor");
     return document.createElement("hui-humidifier-card-editor");
   }
 
@@ -66,7 +64,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: HumidifierCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "humidifier") {
-      throw new Error("Specify an entity from within the humidifier domain.");
+      throw new Error("Specify an entity from within the humidifier domain");
     }
 
     this._config = config;

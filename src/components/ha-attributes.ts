@@ -107,7 +107,7 @@ class HaAttributes extends LitElement {
       (!Array.isArray(value) && value instanceof Object)
     ) {
       if (!jsYamlPromise) {
-        jsYamlPromise = import(/* webpackChunkName: "js-yaml" */ "js-yaml");
+        jsYamlPromise = import("js-yaml");
       }
       const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
       return html` <pre>${until(yaml, "")}</pre> `;

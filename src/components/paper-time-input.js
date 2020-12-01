@@ -97,6 +97,7 @@ export class PaperTimeInput extends PolymerElement {
         .time-input-wrap {
           @apply --layout-horizontal;
           @apply --layout-no-wrap;
+          justify-content: var(--paper-time-input-justify-content, normal);
         }
 
         [hidden] {

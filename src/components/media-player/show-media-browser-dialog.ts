@@ -18,10 +18,7 @@ export const showMediaBrowserDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-media-player-browse",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "dialog-media-player-browse" */ "./dialog-media-player-browse"
-      ),
+    dialogImport: () => import("./dialog-media-player-browse"),
     dialogParams,
   });
 };

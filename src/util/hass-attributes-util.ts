@@ -32,6 +32,7 @@ const hassAttributeUtil = {
       "damper",
       "door",
       "garage",
+      "gate",
       "shade",
       "shutter",
       "window",

@@ -32,7 +32,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
   }

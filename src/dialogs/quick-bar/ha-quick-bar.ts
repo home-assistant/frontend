@@ -205,8 +205,10 @@ export class QuickBar extends LitElement {
       <mwc-list-item
         .twoline=${Boolean(item.altText)}
         .item=${item}
+        hasMeta
         index=${ifDefined(index)}
         graphic="icon"
+        class=${this._commandMode ? "command-item" : ""}
       >
         ${item.iconPath
           ? html`<ha-svg-icon
@@ -426,9 +428,9 @@ export class QuickBar extends LitElement {
         `ui.dialogs.quick-bar.commands.navigation.${page.component}`
       );
 
-      if (page.translationKey) {
+      if (page.translationKey && shortCaption) {
         const caption = this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.navigate_to_config",
+          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
           "panel",
           shortCaption
         );
@@ -526,6 +528,9 @@ export class QuickBar extends LitElement {
 
         mwc-list-item {
           width: 100%;
+        }
+
+        mwc-list-item.command-item {
           text-transform: capitalize;
         }
       `,

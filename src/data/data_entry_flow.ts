@@ -14,7 +14,7 @@ export interface DataEntryFlowProgress {
   handler: string;
   step_id: string;
   context: {
-    title_placeholders: { [key: string]: string };
+    title_placeholders: Record<string, string>;
     [key: string]: any;
   };
 }
@@ -25,8 +25,8 @@ export interface DataEntryFlowStepForm {
   handler: string;
   step_id: string;
   data_schema: HaFormSchema[];
-  errors: { [key: string]: string };
-  description_placeholders: { [key: string]: string };
+  errors: Record<string, string>;
+  description_placeholders: Record<string, string>;
 }
 
 export interface DataEntryFlowStepExternal {
@@ -35,7 +35,7 @@ export interface DataEntryFlowStepExternal {
   handler: string;
   step_id: string;
   url: string;
-  description_placeholders: { [key: string]: string };
+  description_placeholders: Record<string, string>;
 }
 
 export interface DataEntryFlowStepCreateEntry {
@@ -47,7 +47,7 @@ export interface DataEntryFlowStepCreateEntry {
   // Config entry ID
   result: string;
   description: string;
-  description_placeholders: { [key: string]: string };
+  description_placeholders: Record<string, string>;
 }
 
 export interface DataEntryFlowStepAbort {
@@ -55,7 +55,7 @@ export interface DataEntryFlowStepAbort {
   flow_id: string;
   handler: string;
   reason: string;
-  description_placeholders: { [key: string]: string };
+  description_placeholders: Record<string, string>;
 }
 
 export interface DataEntryFlowStepProgress {
@@ -64,7 +64,7 @@ export interface DataEntryFlowStepProgress {
   handler: string;
   step_id: string;
   progress_action: string;
-  description_placeholders: { [key: string]: string };
+  description_placeholders: Record<string, string>;
 }
 
 export type DataEntryFlowStep =

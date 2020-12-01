@@ -43,22 +43,15 @@ class OZWNetworkRouter extends HassRouterPage {
     routes: {
       dashboard: {
         tag: "ozw-network-dashboard",
-        load: () =>
-          import(
-            /* webpackChunkName: "ozw-network-dashboard" */ "./ozw-network-dashboard"
-          ),
+        load: () => import("./ozw-network-dashboard"),
       },
       nodes: {
         tag: "ozw-network-nodes",
-        load: () =>
-          import(
-            /* webpackChunkName: "ozw-network-nodes" */ "./ozw-network-nodes"
-          ),
+        load: () => import("./ozw-network-nodes"),
       },
       node: {
         tag: "ozw-node-router",
-        load: () =>
-          import(/* webpackChunkName: "ozw-node-router" */ "./ozw-node-router"),
+        load: () => import("./ozw-node-router"),
       },
     },
   };

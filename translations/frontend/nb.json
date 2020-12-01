@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Eier",
         "system-admin": "Administratorer",
         "system-read-only": "Brukere med lesetilgang",
         "system-users": "Brukere"
@@ -78,7 +79,7 @@
             "triggered": "Utløs"
         },
         "default": {
-            "entity_not_found": "Entitet ikke funnet",
+            "entity_not_found": "Enheten ble ikke funnet",
             "error": "Feil",
             "unavailable": "Utilgj",
             "unknown": "Ukjent"
@@ -547,6 +548,11 @@
                 "clear": "Tøm",
                 "show_areas": "Vis områder"
             },
+            "blueprint-picker": {
+                "add_user": "Legg til bruker",
+                "remove_user": "Fjern bruker",
+                "select_blueprint": "Velg et Blueprint"
+            },
             "data-table": {
                 "no-data": "Ingen data",
                 "search": "Søk"
@@ -576,12 +582,12 @@
             },
             "history_charts": {
                 "loading_history": "Laster statushistorikk...",
-                "no_history_found": "Ingen statushistorikk funnet."
+                "no_history_found": "Ingen statushistorikk funnet"
             },
             "logbook": {
                 "by": "av",
-                "by_service": "etter tjeneste",
-                "entries_not_found": "Ingen loggbokoppføringer funnet.",
+                "by_service": "av tjenesten",
+                "entries_not_found": "Finner ingen loggbokoppføringer",
                 "messages": {
                     "became_unavailable": "ble utilgjengelig",
                     "changed_to_state": "endret til {state}",
@@ -594,17 +600,17 @@
                     "was_at_home": "var hjemme",
                     "was_at_state": "var {state}",
                     "was_away": "var borte",
-                    "was_closed": "ble stengt",
-                    "was_connected": "var koblet til",
-                    "was_disconnected": "ble koblet fra",
+                    "was_closed": "ble lukket",
+                    "was_connected": "var tilkoblet",
+                    "was_disconnected": "ble frakoblet",
                     "was_locked": "ble låst",
                     "was_low": "var lav",
-                    "was_normal": "var normalt",
+                    "was_normal": "var normal",
                     "was_opened": "ble åpnet",
-                    "was_plugged_in": "ble koblet til",
+                    "was_plugged_in": "ble tilkoblet",
                     "was_safe": "var trygg",
                     "was_unlocked": "ble låst opp",
-                    "was_unplugged": "ble koblet fra",
+                    "was_unplugged": "ble frakoblet",
                     "was_unsafe": "var utrygt"
                 }
             },
@@ -741,7 +747,7 @@
                     "update": "Oppdater"
                 },
                 "faq": "dokumentasjon",
-                "no_unique_id": "Denne enheten har ikke en unik ID, og innstillingene kan derfor ikke administreres fra brukergrensesnittet. Se {faq_link} for mer informasjon.",
+                "no_unique_id": "Denne enheten ({entity_id}) har ikke en unik ID, derfor kan ikke innstillingene administreres fra brukergrensesnittet. Se {faq_link} hvis du vil ha mer informasjon.",
                 "related": "Relaterte",
                 "settings": "Innstillinger"
             },
@@ -792,7 +798,7 @@
                     "pattern": "Regex-mønster for validering på klientsiden",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "Integrasjonen av {platform} er ikke lastet. Legg den til i konfigurasjonen din enten ved å legge til 'default_config:' eller '' {platform} : ''.",
+                "platform_not_loaded": "Integrasjonen av {platform} er ikke lastet. Legg den til i konfigurasjonen din enten ved å legge til 'default_config:' eller ''{platform}:''.",
                 "required_error_msg": "Dette feltet er påkrevd",
                 "timer": {
                     "duration": "Varighet"
@@ -805,7 +811,9 @@
             "more_info_control": {
                 "controls": "Kontroller",
                 "cover": {
+                    "close_cover": "Lukk dekselet",
                     "close_tile_cover": "Lukk dekkevinkel",
+                    "open_cover": "Åpne dekselet",
                     "open_tilt_cover": "Åpne dekkevinkel",
                     "stop_cover": "Stopp dekke fra å bevege seg"
                 },
@@ -875,6 +883,7 @@
                     "navigation": {
                         "areas": "Områder",
                         "automation": "Automasjoner",
+                        "blueprint": "Blueprints",
                         "core": "Generelt",
                         "customize": "Tilpasninger",
                         "devices": "Enheter",
@@ -949,12 +958,12 @@
                     "clusters": "Behandle Clusters",
                     "reconfigure": "Rekonfigurer enhet",
                     "remove": "Fjern enhet",
-                    "zigbee_information": "Zigbee-enhetssignatur"
+                    "zigbee_information": "ZigBee-enhetssignatur"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på at du vil fjerne enheten?"
                 },
-                "device_signature": "Zigbee-enhetssignatur",
+                "device_signature": "ZigBee-enhetssignatur",
                 "last_seen": "Sist sett",
                 "manuf": "av {manufacturer}",
                 "no_area": "Intet område",
@@ -962,9 +971,9 @@
                 "quirk": "",
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
-                    "remove": "Fjern en enhet fra Zigbee-nettverket.",
+                    "remove": "Fjern en enhet fra ZigBee-nettverket.",
                     "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
-                    "zigbee_information": "Vis Zigbee-informasjon for enheten."
+                    "zigbee_information": "Vis ZigBee-informasjon for enheten."
                 },
                 "unknown": "Ukjent",
                 "zha_device_card": {
@@ -1044,6 +1053,20 @@
                 "automation": {
                     "caption": "Automasjoner",
                     "description": "Administrer automasjoner",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Bruke en blueprint"
+                        },
+                        "header": "Opprette en ny automasjon",
+                        "how": "Hvordan vil du opprette din nye automasjon?",
+                        "start_empty": "Start med en tom automasjon",
+                        "thingtalk": {
+                            "create": "Opprett",
+                            "header": "Beskriv automasjonen du vil opprette",
+                            "input_label": "Hva skal denne automasjonen gjøre?",
+                            "intro": "Og vi vil prøve å skape det for deg. For eksempel: Slå av lysene når jeg drar."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Legg til handling",
@@ -1124,6 +1147,14 @@
                             "unsupported_action": "Ingen brukergrensesnitt for handling: {action}"
                         },
                         "alias": "Navn",
+                        "blueprint": {
+                            "blueprint_to_use": "Blueprint å bruke",
+                            "header": "Blueprint",
+                            "inputs": "Innganger",
+                            "manage_blueprints": "Administrer Blueprints",
+                            "no_blueprints": "Du har ingen blueprints",
+                            "no_inputs": "Denne blueprint har ingen innganger."
+                        },
                         "conditions": {
                             "add": "Legg til betingelse",
                             "delete": "Slett",
@@ -1209,7 +1240,7 @@
                         "edit_ui": "Rediger med brukergrensesnittet",
                         "edit_yaml": "Rediger som YAML",
                         "enable_disable": "Aktivere/deaktivere automasjon",
-                        "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
+                        "introduction": "Bruk automatisering for å bringe hjemmet ditt til live.",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
                         "max": {
@@ -1364,6 +1395,39 @@
                             "introduction": "Skriv nedenfor hva denne automasjonen skal gjøre, og vi vil prøve å konvertere den til en Home Assistant automasjon",
                             "language_note": "Merk: Bare engelsk støttes foreløpig."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Vennligst skriv inn URL-en til blueprint",
+                        "file_name": "Lokalt blueprint filnavn",
+                        "header": "Legg til ny blueprint",
+                        "import_btn": "Importer blueprint",
+                        "import_header": "Importer {name} (type: {domain})",
+                        "import_introduction": "Du kan importere blueprints av andre brukere fra Github og fellesskapsforumet. Skriv inn URL-en til blueprint nedenfor.",
+                        "importing": "Importerer blueprint...",
+                        "raw_blueprint": "Blueprint innhold",
+                        "save_btn": "Lagre blueprint",
+                        "saving": "Lagrer blueprint...",
+                        "unsupported_blueprint": "Denne blueprinten støttes ikke",
+                        "url": "URL til blueprint"
+                    },
+                    "caption": "Blueprints",
+                    "description": "Administrer blueprints",
+                    "overview": {
+                        "add_blueprint": "Importer blueprint",
+                        "confirm_delete_header": "Slette denne blueprint'en?",
+                        "confirm_delete_text": "Er du sikker på at du vil slette denne blueprint",
+                        "delete_blueprint": "Slett blueprint",
+                        "header": "Blueprint Editor",
+                        "headers": {
+                            "domain": "Domene",
+                            "file_name": "Filnavn",
+                            "name": "Navn"
+                        },
+                        "introduction": "Med blueprint editor kan du opprette og redigere blueprints",
+                        "learn_more": "Lær mer om blueprint",
+                        "use_blueprint": "Opprett automasjon"
                     }
                 },
                 "cloud": {
@@ -1680,6 +1744,7 @@
                         },
                         "header": "Entiteter",
                         "headers": {
+                            "area": "Område",
                             "entity_id": "Entitets-ID",
                             "integration": "Integrasjon",
                             "name": "Navn",
@@ -1741,6 +1806,8 @@
                 "info": {
                     "built_using": "Bygget med",
                     "caption": "Informasjon",
+                    "copy_github": "",
+                    "copy_raw": "Rå tekst",
                     "custom_uis": "Tilpassede brukergrensesnitt:",
                     "description": "Vise informasjon om installasjonen av Home Assistant",
                     "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
@@ -1808,11 +1875,11 @@
                         "delete": "Slett",
                         "delete_button": "Slett {integration}",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
-                        "device_unavailable": "enheten er utilgjengelig",
+                        "device_unavailable": "Enheten er utilgjengelig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "documentation": "Dokumentasjon",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
-                        "entity_unavailable": "entiteten er utilgjengelig",
+                        "entity_unavailable": "Enhet utilgjengelig",
                         "firmware": "Fastvare: {version}",
                         "hub": "Tilkoblet via",
                         "manuf": "av {manufacturer}",
@@ -2150,7 +2217,7 @@
                             "without_device": "Entiteter uten enhet"
                         },
                         "icon": "Ikon",
-                        "introduction": "Bruk scener for å gjøre hjemmet ditt mer levende.",
+                        "introduction": "Bruk scener for å bringe hjemmet ditt til live.",
                         "load_error_not_editable": "Bare scener i scenes.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av scene ({err_no}).",
                         "name": "Navn",
@@ -2334,7 +2401,7 @@
                         "delete_user": "Slett bruker",
                         "group": "Gruppe",
                         "id": "Id",
-                        "name": "Navn",
+                        "name": "Visningsnavn",
                         "new_password": "Nytt passord",
                         "owner": "Eier",
                         "password_changed": "Passordet ble endret",
@@ -2342,31 +2409,36 @@
                         "system_generated_users_not_editable": "Kan ikke oppdatere systemopprettede brukere.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemopprettede brukere.",
                         "unnamed_user": "Bruker uten navn",
-                        "update_user": "Oppdater"
+                        "update_user": "Oppdater",
+                        "username": "Brukernavn"
                     },
                     "picker": {
                         "add_user": "Legg til bruker",
                         "headers": {
                             "group": "Gruppe",
-                            "name": "Navn",
-                            "system": ""
+                            "is_active": "Aktiv",
+                            "is_owner": "Eier",
+                            "name": "Visningsnavn",
+                            "system": "System generert",
+                            "username": "Brukernavn"
                         }
                     },
                     "users_privileges_note": "Brukergruppefunksjonen er et pågående arbeid. Brukeren vil ikke kunne administrere forekomsten via brukergrensesnittet. Vi overvåker fortsatt alle administrasjons-API-endepunkter for å sikre at de begrenser tilgangen til administratorer på riktig måte."
                 },
                 "zha": {
+                    "add_device": "Legg til enhet",
                     "add_device_page": {
                         "discovered_text": "Enheter vises her når de er oppdaget.",
                         "discovery_text": "Automatisk oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus.",
-                        "header": "Zigbee Home Automation - Legg til enheter",
+                        "header": "ZigBee Hjemmeautomasjon - Legg til enheter",
                         "no_devices_found": "Ingen enheter ble funnet, sørg for at de er i paring-modus og hold dem våkne mens oppdagelsen kjører.",
                         "pairing_mode": "Kontroller at enhetene er i paringsmodus. Sjekk instruksjonene til enheten om hvordan du gjør dette.",
                         "search_again": "Søk på nytt",
-                        "spinner": "Søker etter ZHA Zigbee-enheter..."
+                        "spinner": "Søker etter ZHA ZigBee-enheter..."
                     },
                     "add": {
                         "caption": "Legg til enheter",
-                        "description": "Legg til enheter i Zigbee-nettverket"
+                        "description": "Legg til enheter i ZigBee-nettverket"
                     },
                     "button": "Konfigurer",
                     "caption": "",
@@ -2378,19 +2450,19 @@
                         "help_get_zigbee_attribute": "Hent verdien for det valgte attributtet.",
                         "help_set_zigbee_attribute": "Angi attributtverdi for den spesifiserte klyngen på den angitte entiteten.",
                         "introduction": "Se og rediger klyngeattributter.",
-                        "set_zigbee_attribute": "Angi Zigbee-attributt"
+                        "set_zigbee_attribute": "Angi ZigBee-attributt"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Kommandoer for den valgte klyngen",
                         "header": "Klynge kommandoer",
                         "help_command_dropdown": "Velg en kommando du vil samhandle med.",
                         "introduction": "Se og utgi klyngekommandoer.",
-                        "issue_zigbee_command": "Send Zigbee-kommando"
+                        "issue_zigbee_command": "Send ZigBee-kommando"
                     },
                     "clusters": {
                         "header": "Klynger",
                         "help_cluster_dropdown": "Velg en klynge for å vise attributter og kommandoer.",
-                        "introduction": "Klynger er byggesteinene for Zigbee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient- og servertyper, og som består av attributter og kommandoer."
+                        "introduction": "Klynger er byggesteinene for ZigBee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient- og servertyper, og som består av attributter og kommandoer."
                     },
                     "common": {
                         "add_devices": "Legg til enheter",
@@ -2399,9 +2471,19 @@
                         "manufacturer_code_override": "Overstyring av produsent kode",
                         "value": "Verdi"
                     },
-                    "description": "Zigbee Home Automation nettverksadministrasjon",
+                    "description": "ZigBee Hjemmeautomasjon nettverksadministrasjon",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfigurasjonen er fullført",
+                        "CONFIGURED_status_text": "Initialiserer",
+                        "INITIALIZED": "Initialiseringen er fullført",
+                        "INITIALIZED_status_text": "Enheten er klar til bruk",
+                        "INTERVIEW_COMPLETE": "Intervju fullført",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurerer",
+                        "PAIRED": "Enhet funnet",
+                        "PAIRED_status_text": "Starter intervju"
+                    },
                     "devices": {
-                        "header": "Zigbee Hjemme Automasjon - Enhet"
+                        "header": "ZigBee Hjemmeautomasjon - Enhet"
                     },
                     "group_binding": {
                         "bind_button_help": "Bind den valgte gruppen til de valgte enhetsklyngene.",
@@ -2415,25 +2497,26 @@
                         "unbind_button_label": "Frigi gruppe"
                     },
                     "groups": {
+                        "add_group": "Legg til gruppe",
                         "add_members": "Legg til medlemmer",
                         "adding_members": "Legger til medlemmer",
                         "caption": "Grupper",
                         "create": "Opprett gruppe",
-                        "create_group": "ZigBee Hjemme Automasjon - Opprett gruppe",
-                        "create_group_details": "Angi de nødvendige detaljene for å opprette en ny Zigbee-gruppe",
+                        "create_group": "ZigBee Hjemmeautomasjon - Opprett gruppe",
+                        "create_group_details": "Angi de nødvendige detaljene for å opprette en ny ZigBee-gruppe",
                         "creating_group": "Oppretter gruppe",
-                        "description": "Administrer Zigbee-grupper",
-                        "group_details": "Her er alle detaljene for den valgte Zigbee-gruppen.",
+                        "description": "Administrer ZigBee-grupper",
+                        "group_details": "Her er alle detaljene for den valgte ZigBee-gruppen.",
                         "group_id": "Gruppe-ID",
                         "group_info": "Gruppeinformasjon",
                         "group_name_placeholder": "Gruppenavn",
                         "group_not_found": "Gruppe ikke funnet!",
-                        "group-header": "Zigbee Hjemme Automasjon - Gruppedetaljer",
+                        "group-header": "ZigBee Hjemmeautomasjon - Gruppedetaljer",
                         "groups": "Grupper",
-                        "groups-header": "Zigbee Hjemme Automasjon - Gruppeadministrasjon",
-                        "header": "Zigbee Hjemme Automasjon - Gruppeadministrasjon",
-                        "introduction": "Opprett og modifiser Zigbee-grupper",
-                        "manage_groups": "Administrer Zigbee-grupper",
+                        "groups-header": "ZigBee Hjemmeautomasjon - Gruppeadministrasjon",
+                        "header": "ZigBee Hjemmeautomasjon - Gruppeadministrasjon",
+                        "introduction": "Opprett og modifiser ZigBee-grupper",
+                        "manage_groups": "Administrer ZigBee-grupper",
                         "members": "Medlemmer",
                         "remove_groups": "Fjern grupper",
                         "remove_members": "Fjern medlemmer",
@@ -2441,7 +2524,7 @@
                         "removing_members": "Fjerner medlemmer",
                         "zha_zigbee_groups": "ZHA ZigBee grupper"
                     },
-                    "header": "Konfigurer Zigbee Hjemme Automasjon",
+                    "header": "Konfigurer ZigBee Hjemmeautomasjon",
                     "introduction": "Her er det mulig å konfigurere ZHA-komponenten. Ikke alt er mulig å konfigurere fra brukergrensesnittet ennå, men vi jobber med det.",
                     "network_management": {
                         "header": "Nettverksadministrasjon",
@@ -2457,7 +2540,11 @@
                         "hint_wakeup": "Noen enheter, for eksempel Xiaomi-sensorer, har en vekkingsknapp som du kan trykke på med intervaller på ~ 5 sekunder for å holde enheter våkne mens du samhandler med dem.",
                         "introduction": "Kjør ZHA-kommandoer som påvirker en enkelt enhet. Velg en enhet for å se en liste over tilgjengelige kommandoer."
                     },
-                    "title": "ZigBee Hjemme Automasjon"
+                    "title": "ZigBee Hjemmeautomasjon",
+                    "visualization": {
+                        "caption": "Visualisering",
+                        "header": "Nettverksvisualisering"
+                    }
                 },
                 "zone": {
                     "add_zone": "Legg til sone",
@@ -2664,7 +2751,7 @@
                 "showing_entries": "Viser oppføringer for"
             },
             "logbook": {
-                "entries_not_found": "Finner ingen loggbokoppføringer.",
+                "entries_not_found": "Finner ingen loggbokoppføringer",
                 "period": "Periode",
                 "ranges": {
                     "last_week": "Forrige uke",
@@ -2860,8 +2947,8 @@
                             "name": "Rutenettet"
                         },
                         "history-graph": {
-                            "description": "Med History Graph-kortet kan du vise en graf for hver av enhetene som er oppført.",
-                            "name": "Historikk graf"
+                            "description": "Med Historikkgraf-kortet kan du vise en graf for hver av enhetene som er oppført.",
+                            "name": "Historikkgraf"
                         },
                         "horizontal-stack": {
                             "description": "Horisontal Stabel kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
@@ -2880,7 +2967,7 @@
                             "name": "Lys"
                         },
                         "logbook": {
-                            "description": "Loggbokskortet viser en liste over hendelser for entiteter",
+                            "description": "Loggbok-kortet viser en liste over hendelser for entiteter",
                             "name": "Loggbok"
                         },
                         "map": {
@@ -2911,7 +2998,8 @@
                         },
                         "picture-glance": {
                             "description": "Picture Glance-kortet viser et bilde og tilhørende entitetstilstander som et ikon. Entitetene på høyre side tillater veksling av handlinger, andre viser dialogboksen mer informasjon.",
-                            "name": "Bilde blikk"
+                            "name": "Bilde blikk",
+                            "state_entity": "Statusentitet"
                         },
                         "picture": {
                             "description": "Bildekortet lar deg stille inn et bilde som skal brukes til navigasjon til forskjellige baner i grensesnittet ditt eller for å tilkalle en tjeneste.",
@@ -3122,7 +3210,7 @@
                     "attribute_not_found": "Attributtet {attribute} er ikke tilgjengelig i: {entity}",
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgjengelig: {entity}",
-                    "entity_unavailable": "{entity} er for øyeblikket utilgjengelig",
+                    "entity_unavailable": "Enheten er for øyeblikket ikke tilgjengelig: {entity}",
                     "starting": "Home Assistant starter, kanskje ikke alt er tilgjengelig ennå"
                 }
             },
@@ -3291,7 +3379,7 @@
                     "intro": "Enheter og tjenester er representert i Home Assistant som integrasjoner. Du kan sette dem opp nå eller gjøre det senere fra konfigurasjonen.",
                     "more_integrations": "Mer"
                 },
-                "intro": "Er du klar til å ta kontroll over hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av tinkerers?",
+                "intro": "Er du klar til å ta kontroll over hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av entusiaster?",
                 "restore": {
                     "description": "Alternativt kan du gjenopprette fra et forrige snapshot.",
                     "hide_log": "Skjul full logg",

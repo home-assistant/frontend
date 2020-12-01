@@ -15,6 +15,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { formatNumber } from "../../../common/string/format_number";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -26,8 +27,9 @@ import {
   getWind,
   weatherAttrIcons,
   weatherSVGStyles,
+  WeatherEntity,
 } from "../../../data/weather";
-import type { HomeAssistant, WeatherEntity } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -41,9 +43,7 @@ const DAY_IN_MILLISECONDS = 86400000;
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-weather-forecast-card-editor" */ "../editor/config-elements/hui-weather-forecast-card-editor"
-    );
+    await import("../editor/config-elements/hui-weather-forecast-card-editor");
     return document.createElement("hui-weather-forecast-card-editor");
   }
 
@@ -90,11 +90,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: WeatherForecastCardConfig): void {
-    if (!config || !config.entity) {
-      throw new Error("Invalid card configuration");
+    if (!config.entity) {
+      throw new Error("Entity must be specified");
     }
     if (!isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
+      throw new Error("Invalid entity");
     }
 
     this._config = config;
@@ -216,9 +216,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
             </div>
             <div class="temp-attribute">
               <div class="temp">
-                ${stateObj.attributes.temperature}<span
-                  >${getWeatherUnit(this.hass, "temperature")}</span
-                >
+                ${formatNumber(
+                  stateObj.attributes.temperature,
+                  this.hass!.language
+                )}<span>${getWeatherUnit(this.hass, "temperature")}</span>
               </div>
               <div class="attribute">
                 ${this._config.secondary_info_attribute !== undefined
@@ -243,9 +244,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             stateObj.attributes.wind_bearing
                           )
                         : html`
-                            ${stateObj.attributes[
-                              this._config.secondary_info_attribute
-                            ]}
+                            ${formatNumber(
+                              stateObj.attributes[
+                                this._config.secondary_info_attribute
+                              ],
+                              this.hass!.language
+                            )}
                             ${getWeatherUnit(
                               this.hass,
                               this._config.secondary_info_attribute
@@ -309,14 +313,20 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       item.temperature !== null
                         ? html`
                             <div class="temp">
-                              ${item.temperature}°
+                              ${formatNumber(
+                                item.temperature,
+                                this.hass!.language
+                              )}°
                             </div>
                           `
                         : ""}
                       ${item.templow !== undefined && item.templow !== null
                         ? html`
                             <div class="templow">
-                              ${item.templow}°
+                              ${formatNumber(
+                                item.templow,
+                                this.hass!.language
+                              )}°
                             </div>
                           `
                         : ""}

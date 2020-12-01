@@ -117,12 +117,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
     this._fetchDiscoveryInformation();
-    import(
-      /* webpackChunkName: "onboarding-integrations" */ "./onboarding-integrations"
-    );
-    import(
-      /* webpackChunkName: "onboarding-core-config" */ "./onboarding-core-config"
-    );
+    import("./onboarding-integrations");
+    import("./onboarding-core-config");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
   }
@@ -157,9 +153,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       ].includes(response.installation_type);
       if (this._supervisor) {
         // Only load if we have supervisor
-        import(
-          /* webpackChunkName: "onboarding-restore-snapshot" */ "./onboarding-restore-snapshot"
-        );
+        import("./onboarding-restore-snapshot");
       }
     } catch (err) {
       // eslint-disable-next-line no-console
