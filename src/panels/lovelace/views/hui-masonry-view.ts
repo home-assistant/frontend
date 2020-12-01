@@ -148,7 +148,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    fireEvent(this, "view-create-card");
+    fireEvent(this, "ll-create-card");
   }
 
   private async _createColumns() {

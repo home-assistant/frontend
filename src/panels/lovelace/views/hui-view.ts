@@ -31,9 +31,9 @@ const PANEL_VIEW_LAYOUT = "panel";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "view-create-card": undefined;
-    "view-edit-card": { path: [number] | [number, number] };
-    "view-delete-card": { path: [number] | [number, number] };
+    "ll-create-card": undefined;
+    "ll-edit-card": { path: [number] | [number, number] };
+    "ll-delete-card": { path: [number] | [number, number] };
   }
 }
 
@@ -119,14 +119,16 @@ export class HUIView extends UpdatingElement {
     if (configChanged && !this._layoutElement) {
       this._layoutElement = createViewElement(viewConfig!);
       this._layoutElement.addEventListener(
-        "view-create-card",
+        "ll-create-card",
         this._showCreateCardDialog
       );
-      this._layoutElement.addEventListener("view-edit-card", (ev) =>
-        this._showEditCardDialog(ev)
+      this._layoutElement.addEventListener(
+        "ll-edit-card",
+        this._showEditCardDialog
       );
-      this._layoutElement.addEventListener("view-delete-card", (ev) =>
-        this._showDeleteCardDialog(ev)
+      this._layoutElement.addEventListener(
+        "ll-delete-card",
+        this._showDeleteCardDialog
       );
     }
 
@@ -259,7 +261,7 @@ export class HUIView extends UpdatingElement {
     });
   }
 
-  private _showEditCardDialog(ev: CustomEvent): void {
+  private _showEditCardDialog(ev): void {
     showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
@@ -267,7 +269,7 @@ export class HUIView extends UpdatingElement {
     });
   }
 
-  private _showDeleteCardDialog(ev: CustomEvent): void {
+  private _showDeleteCardDialog(ev): void {
     confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
   }
 }

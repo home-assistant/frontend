@@ -168,7 +168,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _editCard(): void {
-    fireEvent(this, "view-edit-card", { path: this.path! });
+    fireEvent(this, "ll-edit-card", { path: this.path! });
   }
 
   private _cardUp(): void {
