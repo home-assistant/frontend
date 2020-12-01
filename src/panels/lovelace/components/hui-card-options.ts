@@ -225,7 +225,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _deleteCard(): void {
-    fireEvent(this, "view-delete-card", { path: this.path! });
+    fireEvent(this, "ll-delete-card", { path: this.path! });
   }
 }
 
