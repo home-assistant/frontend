@@ -60,34 +60,31 @@ export class HaConfigUsers extends LitElement {
         },
       };
 
-      if (!narrow) {
-        columns.username = {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.username"
-          ),
-          sortable: true,
-          filterable: true,
-          width: "20%",
-          direction: "asc",
-          template: (username) => html`
-            ${username ||
-            this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
-          `,
-        };
-        columns.group_ids = {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.username"
-          ),
-          sortable: true,
-          filterable: true,
-          width: "20%",
-          direction: "asc",
-          template: (groupIds) => html`
-            ${this.hass.localize(`groups.${groupIds[0]}`)}
-          `,
-        };
-      }
-
+      columns.username = {
+        title: this.hass.localize(
+          "ui.panel.config.users.picker.headers.username"
+        ),
+        sortable: true,
+        filterable: true,
+        width: "20%",
+        direction: "asc",
+        hidden: narrow,
+        template: (username) => html`
+          ${username ||
+          this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
+        `,
+      };
+      columns.group_ids = {
+        title: this.hass.localize("ui.panel.config.users.picker.headers.group"),
+        sortable: true,
+        filterable: true,
+        width: "20%",
+        direction: "asc",
+        hidden: narrow,
+        template: (groupIds) => html`
+          ${this.hass.localize(`groups.${groupIds[0]}`)}
+        `,
+      };
       columns.is_active = {
         title: this.hass.localize(
           "ui.panel.config.users.picker.headers.is_active"

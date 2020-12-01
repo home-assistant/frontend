@@ -13,6 +13,7 @@ import {
 } from "lit-element";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-help-tooltip";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import { adminChangePassword } from "../../../data/auth";
@@ -104,17 +105,21 @@ class DialogUserDetail extends LitElement {
                 "ui.panel.config.users.editor.name"
               )}"
             ></paper-input>
-            <ha-formfield
-              .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
-              .dir=${computeRTLDirection(this.hass)}
-            >
-              <ha-switch
-                .disabled=${user.system_generated || user.is_owner}
-                .checked=${this._isAdmin}
-                @change=${this._adminChanged}
+            <div class="row">
+              <ha-formfield
+                .label=${this.hass.localize(
+                  "ui.panel.config.users.editor.admin"
+                )}
+                .dir=${computeRTLDirection(this.hass)}
               >
-              </ha-switch>
-            </ha-formfield>
+                <ha-switch
+                  .disabled=${user.system_generated || user.is_owner}
+                  .checked=${this._isAdmin}
+                  @change=${this._adminChanged}
+                >
+                </ha-switch>
+              </ha-formfield>
+            </div>
             ${!this._isAdmin
               ? html`
                   <br />
@@ -123,23 +128,27 @@ class DialogUserDetail extends LitElement {
                   )}
                 `
               : ""}
-            <br />
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.config.users.editor.active"
-              )}
-              title=${this.hass.localize(
-                "ui.panel.config.users.editor.active_tooltip"
-              )}
-              .dir=${computeRTLDirection(this.hass)}
-            >
-              <ha-switch
-                .disabled=${user.system_generated || user.is_owner}
-                .checked=${this._isActive}
-                @change=${this._activeChanged}
+            <div class="row">
+              <ha-formfield
+                .label=${this.hass.localize(
+                  "ui.panel.config.users.editor.active"
+                )}
+                .dir=${computeRTLDirection(this.hass)}
               >
-              </ha-switch>
-            </ha-formfield>
+                <ha-switch
+                  .disabled=${user.system_generated || user.is_owner}
+                  .checked=${this._isActive}
+                  @change=${this._activeChanged}
+                >
+                </ha-switch>
+              </ha-formfield>
+              <ha-help-tooltip
+                .label=${this.hass.localize(
+                  "ui.panel.config.users.editor.active_tooltip"
+                )}
+              >
+              </ha-help-tooltip>
+            </div>
           </div>
         </div>
 
@@ -309,8 +318,13 @@ class DialogUserDetail extends LitElement {
         .state:not(:first-child) {
           margin-left: 8px;
         }
-        ha-switch {
-          margin-top: 8px;
+        .row {
+          display: flex;
+          padding: 8px 0;
+        }
+        ha-help-tooltip {
+          margin-left: 4px;
+          position: relative;
         }
       `,
     ];
