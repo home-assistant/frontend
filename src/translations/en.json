@@ -723,6 +723,9 @@
         "triggers": "Triggers"
       }
     },
+    "tasmota_device_info": {
+      "unknown": "Unknown"
+    },
     "duration": {
       "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
       "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",

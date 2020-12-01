@@ -539,7 +539,14 @@ export class HaConfigDevicePage extends LitElement {
       import(
         "./device-detail/integration-elements/tasmota/ha-device-actions-tasmota"
       );
+      import(
+        "./device-detail/integration-elements/tasmota/ha-device-info-tasmota"
+      );
       templates.push(html`
+        <ha-device-info-tasmota
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-tasmota>
         <div class="card-actions" slot="actions">
           <ha-device-actions-tasmota
             .hass=${this.hass}
