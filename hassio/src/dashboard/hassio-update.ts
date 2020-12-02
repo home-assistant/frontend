@@ -74,9 +74,7 @@ export class HassioUpdate extends LitElement {
             "Supervisor",
             this.supervisor.supervisor,
             "hassio/supervisor/update",
-            `https://github.com//home-assistant/hassio/releases/tag/${
-              this.supervisor.supervisor.version_latest
-            }`
+            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisor.supervisor.version_latest}`
           )}
           ${this.supervisor.host.features.includes("hassos")
             ? this._renderUpdateCard(

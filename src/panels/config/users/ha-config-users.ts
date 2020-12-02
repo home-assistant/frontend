@@ -46,10 +46,17 @@ export class HaConfigUsers extends LitElement {
           width: "25%",
           direction: "asc",
           grows: true,
-          template: (name) => html`
-            ${name ||
-            this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
-          `,
+          template: (name, user: any) =>
+            narrow
+              ? html` ${name}<br />
+                  <div class="secondary">
+                    ${user.username} |
+                    ${this.hass.localize(`groups.${user.group_ids[0]}`)}
+                  </div>`
+              : html` ${name ||
+                this.hass!.localize(
+                  "ui.panel.config.users.editor.unnamed_user"
+                )}`,
         },
         username: {
           title: this.hass.localize(
@@ -59,6 +66,7 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "20%",
           direction: "asc",
+          hidden: narrow,
           template: (username) => html`
             ${username ||
             this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
@@ -71,13 +79,24 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           width: "20%",
+          direction: "asc",
+          hidden: narrow,
           template: (groupIds) => html`
             ${this.hass.localize(`groups.${groupIds[0]}`)}
           `,
         },
-      };
-      if (!narrow) {
-        columns.system_generated = {
+        is_active: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.is_active"
+          ),
+          type: "icon",
+          sortable: true,
+          filterable: true,
+          width: "80px",
+          template: (is_active) =>
+            is_active ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
+        },
+        system_generated: {
           title: this.hass.localize(
             "ui.panel.config.users.picker.headers.system"
           ),
@@ -87,8 +106,9 @@ export class HaConfigUsers extends LitElement {
           width: "160px",
           template: (generated) =>
             generated ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
-        };
-      }
+        },
+      };
+
       return columns;
     }
   );
