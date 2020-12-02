@@ -310,9 +310,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       if (showDisabled) {
         columns.disabled_by = {
           title: "",
-          sortable: true,
           type: "icon",
-          width: "68px",
           template: (disabled_by) =>
             disabled_by
               ? html`<div

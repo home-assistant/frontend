@@ -118,9 +118,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               ${this._device?.disabled_by
                 ? html`<br />${this.hass!.localize(
                       "ui.dialogs.entity_registry.editor.device_disabled"
-                    )}<br /><mwc-button @click=${this._openDeviceSettings}
-                      >Go to device settings</mwc-button
-                    >`
+                    )}<br /><mwc-button @click=${this._openDeviceSettings}>
+                      ${this.hass!.localize(
+                        "ui.dialogs.entity_registry.editor.open_device_settings"
+                      )}
+                    </mwc-button>`
                 : ""}
             </div>
           `
