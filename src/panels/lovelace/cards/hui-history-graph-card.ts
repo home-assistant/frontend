@@ -16,7 +16,6 @@ import "../../../components/state-history-charts";
 import { CacheConfig, getRecentWithCache } from "../../../data/cached-history";
 import { HistoryResult } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
@@ -30,22 +29,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-history-graph-card-editor");
   }
 
-  public static getStubConfig(
-    hass: HomeAssistant,
-    entities: string[],
-    entitiesFallback: string[]
-  ): HistoryGraphCardConfig {
-    const includeDomains = ["sensor"];
-    const maxEntities = 1;
-    const foundEntities = findEntities(
-      hass,
-      maxEntities,
-      entities,
-      entitiesFallback,
-      includeDomains
-    );
-
-    return { type: "history-graph", entities: foundEntities };
+  public static getStubConfig(): HistoryGraphCardConfig {
+    // Hard coded to sun.sun to prevent high server load when it would pick an entity with a lot of state changes
+    return { type: "history-graph", entities: ["sun.sun"] };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -71,12 +57,12 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
-    if (!config.entities.length) {
-      throw new Error("Entities must be specified");
+    if (!config.entities || !Array.isArray(config.entities)) {
+      throw new Error("Entities need to be an array");
     }
 
-    if (config.entities && !Array.isArray(config.entities)) {
-      throw new Error("Entities need to be an array");
+    if (!config.entities.length) {
+      throw new Error("You must include at least one entity");
     }
 
     this._config = config;
