@@ -268,7 +268,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               >
                 <ha-svg-icon .path=${mdiUnfoldMoreVertical}></ha-svg-icon>
               </mwc-icon-button>
-              <paper-tooltip animation-delay="0"
+              <paper-tooltip class="expand" animation-delay="0"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
                 )}</paper-tooltip
@@ -581,7 +581,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .mdc-chip:hover {
         z-index: 5;
       }
-      paper-tooltip {
+      paper-tooltip.expand {
         min-width: 200px;
       }
     `;
