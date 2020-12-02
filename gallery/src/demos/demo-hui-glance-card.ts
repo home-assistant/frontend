@@ -63,6 +63,7 @@ const CONFIGS = [
     heading: "Basic example",
     config: `
 - type: glance
+  columns: 4
   entities:
     - device_tracker.demo_paulus
     - media_player.living_room
@@ -74,10 +75,12 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "With title",
+    heading: "With title + icon",
     config: `
 - type: glance
-  title: This is glance
+  title: Custom title
+  icon: mdi:clock
+  columns: 4
   entities:
     - device_tracker.demo_paulus
     - media_player.living_room
@@ -107,6 +110,7 @@ const CONFIGS = [
     heading: "No name",
     config: `
 - type: glance
+  columns: 4
   show_name: false
   entities:
     - device_tracker.demo_paulus
@@ -119,9 +123,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "No state",
+    heading: "No state label",
     config: `
 - type: glance
+  columns: 4
   show_state: false
   entities:
     - device_tracker.demo_paulus
@@ -134,9 +139,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "No name and no state",
+    heading: "No name and no state label",
     config: `
 - type: glance
+  columns: 4
   show_name: false
   show_state: false
   entities:
@@ -153,15 +159,46 @@ const CONFIGS = [
     heading: "Custom name, custom icon",
     config: `
 - type: glance
+  columns: 4
   entities:
     - entity: device_tracker.demo_paulus
       name: ¯\\_(ツ)_/¯
       icon: mdi:home-assistant
+    - entity: media_player.living_room
+      name: ¯\\_(ツ)_/¯
+      icon: mdi:home-assistant
+    `,
+  },
+  {
+    heading: "Selectively hidden name",
+    config: `
+- type: glance
+  columns: 4
+  entities:
+    - device_tracker.demo_paulus
+    - entity: media_player.living_room
+      name:
+    - sun.sun
+    - entity: cover.kitchen_window
+      name:
+    - light.kitchen_lights
+    - entity: lock.kitchen_door
+      name: 
+    - light.ceiling_lights
+    `,
+  },
+  {
+    heading: "Primary theme",
+    config: `
+- type: glance
+  columns: 4
+  theming: primary
+  entities:
+    - device_tracker.demo_paulus
     - media_player.living_room
     - sun.sun
     - cover.kitchen_window
-    - entity: light.kitchen_lights
-      icon: mdi:alarm-light
+    - light.kitchen_lights
     - lock.kitchen_door
     - light.ceiling_lights
     `,
@@ -170,6 +207,7 @@ const CONFIGS = [
     heading: "Custom tap action",
     config: `
 - type: glance
+  columns: 4  
   entities:
     - entity: lock.kitchen_door
       tap_action:
@@ -187,38 +225,9 @@ const CONFIGS = [
     - light.kitchen_lights
     `,
   },
-  {
-    heading: "Selectively hidden name",
-    config: `
-- type: glance
-  entities:
-    - device_tracker.demo_paulus
-    - entity: media_player.living_room
-      name:
-    - sun.sun
-    - entity: cover.kitchen_window
-      name:
-    - light.kitchen_lights
-    `,
-  },
-  {
-    heading: "Primary theme",
-    config: `
-- type: glance
-  theming: primary
-  entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
-  },
 ];
 
-class DemoPicEntity extends PolymerElement {
+class DemoGlanceEntity extends PolymerElement {
   static get template() {
     return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
@@ -240,4 +249,4 @@ class DemoPicEntity extends PolymerElement {
   }
 }
 
-customElements.define("demo-hui-glance-card", DemoPicEntity);
+customElements.define("demo-hui-glance-card", DemoGlanceEntity);

@@ -89,7 +89,6 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
-  title?: string;
   entities: Array<EntityFilterEntityConfig | string>;
   state_filter: Array<{ key: string } | string>;
   card: Partial<LovelaceCardConfig>;
@@ -142,6 +141,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   show_state?: boolean;
   show_icon?: boolean;
   title?: string;
+  icon?: string;
   theme?: string;
   entities: Array<string | ConfigEntity>;
   columns?: number;

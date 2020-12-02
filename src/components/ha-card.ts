@@ -7,10 +7,13 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "./ha-icon";
 
 @customElement("ha-card")
 export class HaCard extends LitElement {
   @property() public header?: string;
+
+  @property() public icon?: string;
 
   @property({ type: Boolean, reflect: true }) public outlined = false;
 
@@ -72,13 +75,24 @@ export class HaCard extends LitElement {
         border-top: 1px solid var(--divider-color, #e8e8e8);
         padding: 5px 16px;
       }
+
+      .icon {
+        padding: 0px 18px 0px 8px;
+      }
     `;
   }
 
   protected render(): TemplateResult {
     return html`
       ${this.header
-        ? html`<h1 class="card-header">${this.header}</h1>`
+        ? html` <h1 class="card-header">
+            <div class="name">
+              ${this.icon
+                ? html` <ha-icon class="icon" .icon=${this.icon}></ha-icon> `
+                : ""}
+              ${this.header}
+            </div>
+          </h1>`
         : html``}
       <slot></slot>
     `;
