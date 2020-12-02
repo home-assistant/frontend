@@ -2032,7 +2032,8 @@
             "system_generated_users_not_removable": "Unable to remove system generated users.",
             "system_generated_users_not_editable": "Unable to update system generated users.",
             "unnamed_user": "Unnamed User",
-            "confirm_user_deletion": "Are you sure you want to delete {name}?"
+            "confirm_user_deletion": "Are you sure you want to delete {name}?",
+            "active_tooltip": "Controls if user can login"
           },
           "add_user": {
             "caption": "Add user",
