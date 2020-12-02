@@ -2,9 +2,11 @@ export type Selector =
   | EntitySelector
   | DeviceSelector
   | AreaSelector
+  | TargetSelector
   | NumberSelector
   | BooleanSelector
-  | TimeSelector;
+  | TimeSelector
+  | ActionSelector;
 
 export interface EntitySelector {
   entity: {
@@ -19,13 +21,41 @@ export interface DeviceSelector {
     integration?: string;
     manufacturer?: string;
     model?: string;
-    entity?: EntitySelector["entity"];
+    entity?: {
+      domain?: EntitySelector["entity"]["domain"];
+      device_class?: EntitySelector["entity"]["device_class"];
+    };
   };
 }
 
 export interface AreaSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  area: {};
+  area: {
+    entity?: {
+      integration?: EntitySelector["entity"]["integration"];
+      domain?: EntitySelector["entity"]["domain"];
+      device_class?: EntitySelector["entity"]["device_class"];
+    };
+    device?: {
+      integration?: DeviceSelector["device"]["integration"];
+      manufacturer?: DeviceSelector["device"]["manufacturer"];
+      model?: DeviceSelector["device"]["model"];
+    };
+  };
+}
+
+export interface TargetSelector {
+  target: {
+    entity?: {
+      integration?: EntitySelector["entity"]["integration"];
+      domain?: EntitySelector["entity"]["domain"];
+      device_class?: EntitySelector["entity"]["device_class"];
+    };
+    device?: {
+      integration?: DeviceSelector["device"]["integration"];
+      manufacturer?: DeviceSelector["device"]["manufacturer"];
+      model?: DeviceSelector["device"]["model"];
+    };
+  };
 }
 
 export interface NumberSelector {
@@ -46,4 +76,9 @@ export interface BooleanSelector {
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   time: {};
+}
+
+export interface ActionSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  action: {};
 }
