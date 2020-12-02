@@ -335,8 +335,8 @@
         }
       },
       "target-picker": {
-        "expand_area_id": "Expand this area in the seperate device and entities that it contains. It will update when the area changes.",
-        "expand_device_id": "Expand this device in seperate entities.",
+        "expand_area_id": "Expand this area in the seperate devices and entities that it contains. After expanding it will not update the devices and entities when the area changes.",
+        "expand_device_id": "Expand this device in seperate entities. After expanding it will not update the entities when the device changes.",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
