@@ -1406,7 +1406,8 @@
                             "file_name": "Název souboru",
                             "name": "Jméno"
                         },
-                        "learn_more": "Další informace o šablonkách konfigurace"
+                        "learn_more": "Další informace o šablonkách konfigurace",
+                        "use_blueprint": "Vytvořit automatizaci"
                     }
                 },
                 "cloud": {
