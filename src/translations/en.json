@@ -98,7 +98,8 @@
     "disabled_by": {
       "user": "User",
       "integration": "Integration",
-      "config_entry": "Config Entry"
+      "config_entry": "Config Entry",
+      "device": "Device"
     }
   },
   "ui": {
