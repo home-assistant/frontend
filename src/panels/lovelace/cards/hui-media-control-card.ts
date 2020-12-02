@@ -246,78 +246,73 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
           ${!isUnavailable &&
           (mediaDescription || stateObj.attributes.media_title || showControls)
             ? html`
-                <div
-                  class="title-controls"
-                  style=${styleMap({
-                    paddingRight: isOffState
-                      ? "0"
-                      : `${this._cardHeight - 40}px`,
-                  })}
-                >
-                  ${!mediaDescription && !stateObj.attributes.media_title
-                    ? ""
-                    : html`
-                        <div class="media-info">
-                          <hui-marquee
-                            .text=${stateObj.attributes.media_title ||
-                            mediaDescription}
-                            .active=${this._marqueeActive}
-                            @mouseover=${this._marqueeMouseOver}
-                            @mouseleave=${this._marqueeMouseLeave}
-                          ></hui-marquee>
-                          ${!stateObj.attributes.media_title
-                            ? ""
-                            : mediaDescription}
-                        </div>
-                      `}
-                  ${!showControls
-                    ? ""
-                    : html`
-                        <div class="controls">
-                          ${controls!.map(
-                            (control) => html`
-                              <ha-icon-button
-                                .title=${this.hass.localize(
-                                  `ui.card.media_player.${control.action}`
-                                )}
-                                .icon=${control.icon}
-                                action=${control.action}
-                                @click=${this._handleClick}
-                              ></ha-icon-button>
-                            `
-                          )}
-                          ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
-                            ? html`
-                                <mwc-icon-button
-                                  class="browse-media"
+                <div>
+                  <div class="title-controls">
+                    ${!mediaDescription && !stateObj.attributes.media_title
+                      ? ""
+                      : html`
+                          <div class="media-info">
+                            <hui-marquee
+                              .text=${stateObj.attributes.media_title ||
+                              mediaDescription}
+                              .active=${this._marqueeActive}
+                              @mouseover=${this._marqueeMouseOver}
+                              @mouseleave=${this._marqueeMouseLeave}
+                            ></hui-marquee>
+                            ${!stateObj.attributes.media_title
+                              ? ""
+                              : mediaDescription}
+                          </div>
+                        `}
+                    ${!showControls
+                      ? ""
+                      : html`
+                          <div class="controls">
+                            ${controls!.map(
+                              (control) => html`
+                                <ha-icon-button
                                   .title=${this.hass.localize(
-                                    "ui.card.media_player.browse_media"
+                                    `ui.card.media_player.${control.action}`
                                   )}
-                                  @click=${this._handleBrowseMedia}
-                                  ><ha-svg-icon
-                                    .path=${mdiPlayBoxMultiple}
-                                  ></ha-svg-icon
-                                ></mwc-icon-button>
+                                  .icon=${control.icon}
+                                  action=${control.action}
+                                  @click=${this._handleClick}
+                                ></ha-icon-button>
                               `
-                            : ""}
-                        </div>
+                            )}
+                            ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+                              ? html`
+                                  <mwc-icon-button
+                                    class="browse-media"
+                                    .title=${this.hass.localize(
+                                      "ui.card.media_player.browse_media"
+                                    )}
+                                    @click=${this._handleBrowseMedia}
+                                    ><ha-svg-icon
+                                      .path=${mdiPlayBoxMultiple}
+                                    ></ha-svg-icon
+                                  ></mwc-icon-button>
+                                `
+                              : ""}
+                          </div>
+                        `}
+                  </div>
+                  ${!this._showProgressBar
+                    ? ""
+                    : html`
+                        <paper-progress
+                          .max=${stateObj.attributes.media_duration}
+                          style=${styleMap({
+                            "--paper-progress-active-color":
+                              this._foregroundColor || "var(--accent-color)",
+                            cursor: supportsFeature(stateObj, SUPPORT_SEEK)
+                              ? "pointer"
+                              : "initial",
+                          })}
+                          @click=${this._handleSeek}
+                        ></paper-progress>
                       `}
                 </div>
-                ${!this._showProgressBar
-                  ? ""
-                  : html`
-                      <paper-progress
-                        .max=${stateObj.attributes.media_duration}
-                        style=${styleMap({
-                          "--paper-progress-active-color":
-                            this._foregroundColor || "var(--accent-color)",
-                          cursor: supportsFeature(stateObj, SUPPORT_SEEK)
-                            ? "pointer"
-                            : "initial",
-                        })}
-                        @click=${this._handleSeek}
-                      ></paper-progress>
-                    `}
               `
             : ""}
         </div>
@@ -635,6 +630,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .player {
         position: relative;
         padding: 16px;
+        height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         color: var(--text-primary-color);
         transition-property: color, padding;
         transition-duration: 0.4s;
@@ -671,7 +671,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       mwc-icon-button.browse-media {
         position: absolute;
-        right: 0;
+        right: 4px;
         --mdc-icon-size: 24px;
       }
 
@@ -693,7 +693,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .more-info {
         position: absolute;
         top: 4px;
-        right: 0px;
+        right: 4px;
       }
 
       .media-info {
