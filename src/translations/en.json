@@ -1755,11 +1755,15 @@
           "name": "Name",
           "update": "Update",
           "no_devices": "No devices",
+          "enabled_label": "Enable device",
+          "enabled_cause": "Disabled by {cause}.",
+          "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
             "unknown_automation": "Unknown automation",
             "create": "Create automation with device",
+            "create_disable": "Can't create automation with disabled device",
             "triggers": {
               "caption": "Do something when...",
               "no_triggers": "No triggers",
@@ -1780,12 +1784,14 @@
           "script": {
             "scripts": "Scripts",
             "no_scripts": "No scripts",
-            "create": "Create script with device"
+            "create": "Create script with device",
+            "create_disable": "Can't create script with disabled device"
           },
           "scene": {
             "scenes": "Scenes",
             "no_scenes": "No scenes",
-            "create": "Create scene with device"
+            "create": "Create scene with device",
+            "create_disable": "Can't create scene with disabled device"
           },
           "cant_edit": "You can only edit items that are created in the UI.",
           "device_not_found": "Device not found.",
@@ -1811,7 +1817,16 @@
             "no_area": "No area"
           },
           "delete": "Delete",
-          "confirm_delete": "Are you sure you want to delete this device?"
+          "confirm_delete": "Are you sure you want to delete this device?",
+          "picker": {
+            "search": "Search devices",
+            "filter": {
+              "filter": "Filter",
+              "show_disabled": "Show disabled devices",
+              "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+              "show_all": "Show all"
+            }
+          }
         },
         "entities": {
           "caption": "Entities",
