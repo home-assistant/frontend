@@ -25,7 +25,7 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
           >[[localize('ui.panel.profile.push_notifications.header')]]</span
         >
         <span slot="description">
-          [[_description(_platformLoaded, _pushSupported)]]
+          [[localize(_descrLocalizeKey)]]
           <a
             href="[[_computeDocumentationUrl(hass)]]"
             target="_blank"
@@ -45,6 +45,10 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
     return {
       hass: Object,
       narrow: Boolean,
+      _descrLocalizeKey: {
+        type: String,
+        computed: "_descriptionKey(_platformLoaded, _pushSupported)",
+      },
       _platformLoaded: {
         type: Boolean,
         computed: "_compPlatformLoaded(hass)",
@@ -72,7 +76,7 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
     return !platformLoaded || !pushSupported_;
   }
 
-  _description(platformLoaded, pushSupported_) {
+  _descriptionKey(platformLoaded, pushSupported_) {
     let key;
     if (!pushSupported_) {
       key = "error_use_https";
@@ -81,7 +85,7 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
     } else {
       key = "description";
     }
-    return this.localize(`ui.panel.profile.push_notifications.${key}`);
+    return `ui.panel.profile.push_notifications.${key}`;
   }
 }
 
