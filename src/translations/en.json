@@ -800,7 +800,7 @@
         },
         "areas": {
           "caption": "Areas",
-          "description": "Group devices into areas",
+          "description": "Group devices and entities into areas",
           "data_table": {
             "area": "Area",
             "devices": "Devices"
