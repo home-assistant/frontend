@@ -56,7 +56,7 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
     this._config = config;
     this._baseCardConfig = {
       type: "entities",
-      name: this._config.name,
+      title: this._config.title,
       entities: [],
       ...this._config.card,
     };
