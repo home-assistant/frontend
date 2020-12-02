@@ -63,6 +63,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   light: "toggle",
   lock: "lock",
   media_player: "media-player",
+  number: "input-number",
   remote: "toggle",
   scene: "scene",
   script: "script",
