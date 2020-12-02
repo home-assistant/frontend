@@ -623,6 +623,8 @@
           "unavailable": "This entity is not currently available.",
           "enabled_label": "Enable entity",
           "enabled_cause": "Disabled by {cause}.",
+          "device_disabled": "The device of this entity is disabled.",
+          "open_device_settings": "Open device settings",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
@@ -1757,7 +1759,12 @@
           "update": "Update",
           "no_devices": "No devices",
           "enabled_label": "Enable device",
-          "enabled_cause": "Disabled by {cause}.",
+          "enabled_cause": "The device is disabled by {cause}.",
+          "disabled_by": {
+            "user": "User",
+            "integration": "Integration",
+            "config_entry": "Config Entry"
+          },
           "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
           "automation": {
             "automations": "Automations",
@@ -1807,6 +1814,7 @@
           "scenes": "Scenes",
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
+          "disabled": "Disabled",
           "data_table": {
             "device": "Device",
             "manufacturer": "Manufacturer",
