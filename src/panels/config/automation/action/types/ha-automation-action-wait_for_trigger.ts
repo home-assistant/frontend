@@ -17,7 +17,7 @@ export class HaWaitForTriggerAction extends LitElement
   @property() public action!: WaitForTriggerAction;
 
   public static get defaultConfig() {
-    return { wait_for_trigger: [], continue_on_timeout: false };
+    return { wait_for_trigger: [] };
   }
 
   protected render() {
@@ -39,7 +39,7 @@ export class HaWaitForTriggerAction extends LitElement
         )}
       >
         <ha-switch
-          .checked=${continue_on_timeout}
+          .checked=${continue_on_timeout ?? true}
           @change=${this._continueChanged}
         ></ha-switch>
       </ha-formfield>
