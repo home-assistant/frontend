@@ -8,7 +8,6 @@ import {
   html,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -225,5 +224,11 @@ export class HaDeviceEntitiesCard extends LitElement {
         text-decoration: underline;
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-entities-card": HaDeviceEntitiesCard;
   }
 }
