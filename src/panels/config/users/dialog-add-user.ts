@@ -241,7 +241,7 @@ export class DialogAddUser extends LitElement {
       user = userResponse.user;
     } catch (err) {
       this._loading = false;
-      this._error = err.code;
+      this._error = err.message;
       return;
     }
 
@@ -255,7 +255,7 @@ export class DialogAddUser extends LitElement {
     } catch (err) {
       await deleteUser(this.hass, user.id);
       this._loading = false;
-      this._error = err.code;
+      this._error = err.message;
       return;
     }
 
