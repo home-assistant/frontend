@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Propriétaire",
         "system-admin": "Administrateurs",
         "system-read-only": "Utilisateurs en lecture seule",
         "system-users": "Utilisateurs"
@@ -593,7 +594,7 @@
                     "cleared_device_class": "effacé (no {device_class} detected)",
                     "detected_device_class": "détecté {device_class}",
                     "rose": "aube",
-                    "set": "Défini",
+                    "set": "Coucher",
                     "turned_off": "éteint",
                     "turned_on": "activé",
                     "was_at_home": "Présent",
@@ -882,6 +883,7 @@
                     "navigation": {
                         "areas": "Zones",
                         "automation": "Automatisations",
+                        "blueprint": "Plans",
                         "core": "Général",
                         "customize": "Customisations",
                         "devices": "Appareils",
@@ -1398,27 +1400,34 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Veuillez entrer l'URL du plan",
+                        "file_name": "Nom du fichier de plan local",
                         "header": "Ajouter un nouveau plan",
                         "import_btn": "Importer un plan",
-                        "import_header": "Importer {name} ({domain})",
+                        "import_header": "Importer \" {name} \" (type: {domain} )",
                         "import_introduction": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'URL du plan ci-dessous.",
                         "importing": "Importation du plan ...",
+                        "raw_blueprint": "Contenu du plan",
                         "save_btn": "Sauver le plan",
                         "saving": "Enregistrement du plan ...",
+                        "unsupported_blueprint": "Ce plan n'est pas pris en charge",
                         "url": "URL du plan"
                     },
                     "caption": "Plans",
                     "description": "Gérer les plans",
                     "overview": {
-                        "add_blueprint": "Ajouter un plan",
+                        "add_blueprint": "Importer un plan",
                         "confirm_delete_header": "Supprimer ce plan ?",
                         "confirm_delete_text": "Êtes-vous sûr de vouloir supprimer ce plan ?",
+                        "delete_blueprint": "Supprimer le plan",
                         "header": "Éditeur de plans",
                         "headers": {
+                            "domain": "Domaine",
+                            "file_name": "Nom de fichier",
                             "name": "Nom"
                         },
                         "introduction": "L’éditeur de plans vous permet de créer et de modifier des plans.",
-                        "learn_more": "En savoir plus sur les plans"
+                        "learn_more": "En savoir plus sur les plans",
+                        "use_blueprint": "Créer une automatisation"
                     }
                 },
                 "cloud": {
@@ -1869,7 +1878,7 @@
                         "devices": "{count} {count, plural,\n  zero {appareil}\n  one {appareil}\n  other {appareils}\n}",
                         "documentation": "Documentation",
                         "entities": "{count} {count, plural,\n  zero {entité}\n  one {entité}\n  other {entités}\n}",
-                        "entity_unavailable": "entité indisponible",
+                        "entity_unavailable": "Entité indisponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connecté via",
                         "manuf": "par {manufacturer}",
@@ -2399,19 +2408,24 @@
                         "system_generated_users_not_editable": "Impossible de mettre à jour les utilisateurs générés par le système.",
                         "system_generated_users_not_removable": "Impossible de supprimer les utilisateurs générés par le système.",
                         "unnamed_user": "Utilisateur sans nom",
-                        "update_user": "Mise à jour"
+                        "update_user": "Mise à jour",
+                        "username": "Nom d'utilisateur"
                     },
                     "picker": {
                         "add_user": "Ajouter un utilisateur",
                         "headers": {
                             "group": "Groupe",
+                            "is_active": "Actif",
+                            "is_owner": "Propriétaire",
                             "name": "Nom",
-                            "system": "Système"
+                            "system": "Généré par le système",
+                            "username": "Nom d'utilisateur"
                         }
                     },
                     "users_privileges_note": "La fonctionnalité de groupe d'utilisateurs est en cours de développement. L'utilisateur ne pourra pas gérer l'instance via l'interface. Nous vérifions toujours tous les points terminaisons d'API pour assurer que les accès soient limités aux administrateurs."
                 },
                 "zha": {
+                    "add_device": "Ajouter un appareil",
                     "add_device_page": {
                         "discovered_text": "Les appareils s'afficheront ici une fois découverts.",
                         "discovery_text": "Les appareils découverts apparaîtront ici. Suivez les instructions pour votre / vos appareil(s) et placez-le(s) en mode de couplage.",
@@ -2472,6 +2486,7 @@
                         "unbind_button_label": "Délier Groupe"
                     },
                     "groups": {
+                        "add_group": "Ajouter un groupe",
                         "add_members": "Ajouter des membres",
                         "adding_members": "Ajout de membres",
                         "caption": "Groupes",
@@ -2514,7 +2529,11 @@
                         "hint_wakeup": "Certains appareils, tels que les capteurs Xiaomi, disposent d'un bouton de réveil sur lequel vous pouvez appuyer à environ 5 secondes d'intervalle pour que les appareils restent éveillés lorsque vous interagissez avec eux.",
                         "introduction": "Exécutez les commandes ZHA qui affectent un seul périphérique. Choisissez un appareil pour voir une liste des commandes disponibles."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualisation",
+                        "header": "Visualisation du réseau"
+                    }
                 },
                 "zone": {
                     "add_zone": "Ajouter une zone",
@@ -2808,7 +2827,7 @@
                             "views": {
                                 "dayGridDay": "Jour",
                                 "dayGridMonth": "Mois",
-                                "listWeek": "liste"
+                                "listWeek": "Liste"
                             }
                         },
                         "conditional": {
@@ -2968,7 +2987,8 @@
                         },
                         "picture-glance": {
                             "description": "La carte Coup d'œil affiche une image et les états d'entité correspondants sous forme d'icône. Les entités sur le côté droit permettent de basculer entre les actions, d'autres affichent la boîte de dialogue plus d'informations.",
-                            "name": "Coup d'œil en image"
+                            "name": "Coup d'œil en image",
+                            "state_entity": "État entité"
                         },
                         "picture": {
                             "description": "La carte Image vous permet de définir une image à utiliser pour la navigation vers divers chemins de votre interface ou d'appeler un service.",

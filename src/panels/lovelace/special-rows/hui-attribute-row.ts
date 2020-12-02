@@ -57,7 +57,8 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div>
-          ${this._config.prefix} ${attribute || "-"} ${this._config.suffix}
+          ${this._config.prefix} ${attribute ?? "-"}
+          ${this._config.suffix}
         </div>
       </hui-generic-entity-row>
     `;

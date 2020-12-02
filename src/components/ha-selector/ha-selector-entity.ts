@@ -19,7 +19,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
 
   @property() public selector!: EntitySelector;
 
-  @internalProperty() private _entities?: Record<string, string>;
+  @internalProperty() private _entityPlaformLookup?: Record<string, string>;
 
   @property() public value?: any;
 
@@ -45,7 +45,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
           }
           entityLookup[confEnt.entity_id] = confEnt.platform;
         }
-        this._entities = entityLookup;
+        this._entityPlaformLookup = entityLookup;
       }),
     ];
   }
@@ -66,8 +66,9 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
     }
     if (this.selector.entity.integration) {
       if (
-        !this._entities ||
-        this._entities[entity.entity_id] !== this.selector.entity.integration
+        !this._entityPlaformLookup ||
+        this._entityPlaformLookup[entity.entity_id] !==
+          this.selector.entity.integration
       ) {
         return false;
       }

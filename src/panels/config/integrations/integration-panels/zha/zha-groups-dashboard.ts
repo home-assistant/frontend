@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-fab";
+import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import memoizeOne from "memoize-one";
 import {
@@ -127,14 +127,14 @@ export class ZHAGroupsDashboard extends LitElement {
         clickable
       >
         <a href="/config/zha/group-add" slot="fab">
-          <mwc-fab
+          <ha-fab
             .label=${this.hass!.localize(
               "ui.panel.config.zha.groups.add_group"
             )}
             extended
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </mwc-fab>
+          </ha-fab>
         </a>
       </hass-tabs-subpage-data-table>
     `;

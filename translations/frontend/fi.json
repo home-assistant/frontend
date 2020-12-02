@@ -1171,7 +1171,7 @@
                                     "trigger": "Laukaisin"
                                 },
                                 "event": {
-                                    "context_user_pick": "Lisää käyttäjä",
+                                    "context_user_pick": "Valitse käyttäjä",
                                     "context_user_picked": "Käyttäjän laukaisutapahtuma",
                                     "context_users": "Rajoita tapahtumiin, jotka ovat käynnistäneet",
                                     "event_data": "Tapahtuman tietosisältö",
@@ -2113,6 +2113,7 @@
                             "person": "Lataa henkilöt uudelleen",
                             "ping": "Lataa ping-binaarianturin entiteetit uudelleen",
                             "reload": "Lataa uudelleen {domain}",
+                            "rest": "Uudelleenlataa rest-entiteetit ja ilmoita palveluiden kuuntelijoille",
                             "rpi_gpio": "Lataa Raspberry Pi GPIO -entiteetit uudelleen",
                             "scene": "Lataa tilanteet uudelleen",
                             "script": "Lataa skriptit uudelleen",
@@ -2862,7 +2863,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Lovelace käyttöliittymän näkymät luodaan automaattisesti alueistasi ja laitteistasi, jos poistat nykyisen määrityksen.",
-                        "confirm_remove_config_title": "Haluatko varmasti poistaa Lovelace-käyttöliittymän asetukset? Lovelace käyttöliittymän asetukset luodaan automaattisesti alueistasi ja laitteistasi.",
+                        "confirm_remove_config_title": "Haluatko varmasti poistaa Lovelace-käyttöliittymän asetukset?",
                         "confirm_unsaved_changes": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?",
                         "confirm_unsaved_comments": "Asetuksesi sisältää kommentoituja rivejä. Kommentoituja rivejä ei tallenneta. Haluatko  jatkaa?",
                         "error_invalid_config": "Asetuksesi ovat virheelliset: {error}",
@@ -2906,7 +2907,7 @@
                 },
                 "menu": {
                     "close": "Sulje",
-                    "configure_ui": "Määrittele käyttöliittymä",
+                    "configure_ui": "Muokkaa käyttöliittymää",
                     "exit_edit_mode": "Poistu käyttöliittymän muokkaustilasta",
                     "help": "Apua",
                     "refresh": "Päivitä",
@@ -2915,7 +2916,7 @@
                 },
                 "reload_lovelace": "Lataa Lovelace uudelleen",
                 "reload_resources": {
-                    "refresh_body": "Sinun täytyy päivittää sivu viimeistelläksesi uudelleenlatauksen, haluatko päivittää nyt?",
+                    "refresh_body": "Sinun täytyy päivittää sivu viimeistelläksesi uudelleenlatauksen. Haluatko päivittää nyt?",
                     "refresh_header": "Haluatko päivittää?"
                 },
                 "unused_entities": {

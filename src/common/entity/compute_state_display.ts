@@ -67,6 +67,10 @@ export const computeStateDisplay = (
     }
   }
 
+  if (domain === "counter") {
+    return formatNumber(compareState, language);
+  }
+
   return (
     // Return device class translation
     (stateObj.attributes.device_class &&

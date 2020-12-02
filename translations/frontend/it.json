@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Proprietario",
         "system-admin": "Amministratori",
         "system-read-only": "Utenti di sola lettura",
         "system-users": "Utenti"
@@ -217,7 +218,7 @@
             "closing": "In chiusura",
             "open": "Aperta",
             "opening": "In apertura",
-            "stopped": "Arrestato"
+            "stopped": "Arrestata"
         },
         "default": {
             "off": "Spento",
@@ -234,18 +235,18 @@
         },
         "group": {
             "closed": "Chiusi",
-            "closing": "Chiusura",
+            "closing": "In Chiusura",
             "home": "A casa",
-            "locked": "Bloccato",
+            "locked": "Bloccati",
             "not_home": "Fuori casa",
             "off": "Spento",
             "ok": "OK",
             "on": "Acceso",
             "open": "Aperti",
-            "opening": "Apertura",
+            "opening": "In Apertura",
             "problem": "Problema",
-            "stopped": "Fermato",
-            "unlocked": "Sbloccato"
+            "stopped": "Fermati",
+            "unlocked": "Sbloccati"
         },
         "input_boolean": {
             "off": "Spento",
@@ -332,13 +333,13 @@
         "zwave": {
             "default": {
                 "dead": "Disattivo",
-                "initializing": "Avvio",
+                "initializing": "In avvio",
                 "ready": "Pronto",
                 "sleeping": "In attesa"
             },
             "query_stage": {
                 "dead": "Disattivo ({query_stage})",
-                "initializing": "Avvio ({query_stage})"
+                "initializing": "In avvio ({query_stage})"
             }
         }
     },
@@ -1051,7 +1052,7 @@
                 },
                 "automation": {
                     "caption": "Automazioni",
-                    "description": "Gestisci le automazioni",
+                    "description": "Gestisci le Automazioni",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Usa un progetto"
@@ -1070,7 +1071,7 @@
                         "actions": {
                             "add": "Aggiungi azione",
                             "delete": "Elimina",
-                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Azioni",
                             "introduction": "Le azioni sono ciò che Home Assistant eseguirà quando un'attivazione (o trigger) avvia un'automazione.",
@@ -1157,7 +1158,7 @@
                         "conditions": {
                             "add": "Aggiungi condizione",
                             "delete": "Elimina",
-                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
                             "introduction": "Le condizioni sono facoltative e impediranno un'ulteriore esecuzione se non saranno soddisfatte tutte.",
@@ -1181,8 +1182,8 @@
                                     "label": "Non"
                                 },
                                 "numeric_state": {
-                                    "above": "Superiore",
-                                    "below": "Inferiore",
+                                    "above": "Maggiore di",
+                                    "below": "Minore di",
                                     "label": "Valore numerico",
                                     "value_template": "Valore modello (opzionale)"
                                 },
@@ -1209,7 +1210,7 @@
                                 "time": {
                                     "after": "Dopo",
                                     "before": "Prima",
-                                    "label": "Tempo",
+                                    "label": "Ora",
                                     "type_input": "Valore di un aiutante data/ora",
                                     "type_value": "Tempo fisso",
                                     "weekdays": {
@@ -1239,7 +1240,7 @@
                         "edit_ui": "Modifica con l'Interfaccia Utente",
                         "edit_yaml": "Modifica come YAML",
                         "enable_disable": "Abilitare/Disabilitare l'automazione",
-                        "introduction": "Usa le automazioni per dare vita alla tua casa.",
+                        "introduction": "Usa le automazioni per far vivere la tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
                         "max": {
@@ -1319,7 +1320,7 @@
                                     "to": "A"
                                 },
                                 "sun": {
-                                    "event": "Evento",
+                                    "event": "Evento:",
                                     "label": "Sole",
                                     "offset": "Scostamento (opzionale)",
                                     "sunrise": "Alba",
@@ -1351,7 +1352,7 @@
                                 "zone": {
                                     "enter": "Entrata",
                                     "entity": "Entità con posizione",
-                                    "event": "Evento",
+                                    "event": "Evento:",
                                     "label": "Zona",
                                     "leave": "Uscita",
                                     "zone": "Zona"
@@ -1399,11 +1400,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Inserisci l'URL del progetto.",
+                        "file_name": "Nome del file di progetto locale",
                         "header": "Aggiungi un nuovo progetto",
                         "import_btn": "Importa progetto",
-                        "import_header": "Importa {name} ({domain})",
+                        "import_header": "Importa \"{name}\" (tipo: {domain})",
                         "import_introduction": "Puoi importare progetti di altri utenti da Github e dai forum della comunità. Immettere l'URL del progetto di seguito.",
                         "importing": "Importazione del progetto in corso ...",
+                        "raw_blueprint": "Contenuto del progetto",
                         "save_btn": "Salva progetto",
                         "saving": "Salvataggio del progetto in corso ...",
                         "unsupported_blueprint": "Questo progetto non è supportato",
@@ -1412,15 +1415,19 @@
                     "caption": "Progetti",
                     "description": "Gestisci i progetti",
                     "overview": {
-                        "add_blueprint": "Aggiungi progetto",
+                        "add_blueprint": "Importa progetto",
                         "confirm_delete_header": "Eliminare questo progetto?",
                         "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
+                        "delete_blueprint": "Elimina progetto",
                         "header": "Editor del progetto",
                         "headers": {
+                            "domain": "Dominio",
+                            "file_name": "Nome file",
                             "name": "Nome"
                         },
                         "introduction": "L'editor del progetto consente di creare e modificare i progetti.",
-                        "learn_more": "Per saperne di più sui progetti"
+                        "learn_more": "Per saperne di più sui progetti",
+                        "use_blueprint": "Crea automazione"
                     }
                 },
                 "cloud": {
@@ -1593,7 +1600,7 @@
                 },
                 "common": {
                     "editor": {
-                        "confirm_unsaved": "Hai dei cambiamenti non salvati. Sei sicuro di voler andare via?"
+                        "confirm_unsaved": "Hai dei cambiamenti non salvati. Sei sicuro di voler uscire?"
                     }
                 },
                 "core": {
@@ -1737,6 +1744,7 @@
                         },
                         "header": "Entità",
                         "headers": {
+                            "area": "Area",
                             "entity_id": "ID entità",
                             "integration": "Integrazione",
                             "name": "Nome",
@@ -2209,7 +2217,7 @@
                             "without_device": "Entità senza dispositivo"
                         },
                         "icon": "Icona",
-                        "introduction": "Usa le scene per dare vita alla tua casa.",
+                        "introduction": "Usa le scene per far vivere la tua casa.",
                         "load_error_not_editable": "Solo le scene in scene.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento della scena ({err_no}).",
                         "name": "Nome",
@@ -2393,7 +2401,7 @@
                         "delete_user": "Elimina utente",
                         "group": "Gruppo",
                         "id": "ID",
-                        "name": "Nome",
+                        "name": "Nome da visualizzare",
                         "new_password": "Nuova password",
                         "owner": "Proprietario",
                         "password_changed": "La password è stata modificata con successo",
@@ -2401,19 +2409,24 @@
                         "system_generated_users_not_editable": "Impossibile aggiornare gli utenti generati dal sistema.",
                         "system_generated_users_not_removable": "Impossibile rimuovere gli utenti generati dal sistema.",
                         "unnamed_user": "Utente senza nome",
-                        "update_user": "Aggiorna"
+                        "update_user": "Aggiorna",
+                        "username": "Nome utente"
                     },
                     "picker": {
                         "add_user": "Aggiungi utente",
                         "headers": {
                             "group": "Gruppo",
-                            "name": "Nome",
-                            "system": "Sistema"
+                            "is_active": "Attivo",
+                            "is_owner": "Proprietario",
+                            "name": "Nome da visualizzare",
+                            "system": "Generato dal sistema",
+                            "username": "Nome utente"
                         }
                     },
                     "users_privileges_note": "La funzionalità del gruppo di utenti è in fase di elaborazione. L'utente non sarà in grado di amministrare l'istanza tramite l'Interfaccia Utente. Stiamo ancora verificando tutti gli endpoint dell'API di gestione per garantire che limitino correttamente l'accesso solo agli amministratori."
                 },
                 "zha": {
+                    "add_device": "Aggiungi dispositivo",
                     "add_device_page": {
                         "discovered_text": "I dispositivi verranno visualizzati qui una volta rilevati.",
                         "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
@@ -2459,6 +2472,16 @@
                         "value": "Valore"
                     },
                     "description": "Gestione rete Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configurazione completata",
+                        "CONFIGURED_status_text": "Inizializzazione",
+                        "INITIALIZED": "Inizializzazione completata",
+                        "INITIALIZED_status_text": "Il dispositivo è pronto per l'uso",
+                        "INTERVIEW_COMPLETE": "Interrogazione completata",
+                        "INTERVIEW_COMPLETE_status_text": "Configurazione",
+                        "PAIRED": "Dispositivo trovato",
+                        "PAIRED_status_text": "Inizio interrogazione"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Dispositivo"
                     },
@@ -2474,6 +2497,7 @@
                         "unbind_button_label": "Scollega gruppo"
                     },
                     "groups": {
+                        "add_group": "Aggiungi gruppo",
                         "add_members": "Aggiungi membri",
                         "adding_members": "Aggiunta di membri",
                         "caption": "Gruppi",
@@ -2516,7 +2540,11 @@
                         "hint_wakeup": "Alcuni dispositivi, come i sensori Xiaomi, hanno un pulsante di riattivazione che è possibile premere a intervalli di 5 secondi che mantengono i dispositivi svegli mentre si interagisce con loro.",
                         "introduction": "Eseguire i comandi ZHA che interessano un singolo dispositivo. Scegliere un dispositivo per visualizzare un elenco di comandi disponibili."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualizzazione",
+                        "header": "Visualizzazione di rete"
+                    }
                 },
                 "zone": {
                     "add_zone": "Aggiungi zona",
@@ -2794,8 +2822,8 @@
                     "card": {
                         "alarm-panel": {
                             "available_states": "Stati disponibili",
-                            "description": "La scheda del pannello di allarme consente di Attivare e Disattivare le tue integrazioni del pannello di controllo di allarme.",
-                            "name": "Pannello di allarme"
+                            "description": "La scheda del Pannello di Allarme consente di attivare e disattivare le tue integrazioni del pannello di controllo allarme.",
+                            "name": "Pannello di Allarme"
                         },
                         "button": {
                             "default_action_help": "L'azione predefinita dipende dalle capacità dell'entità, verrà attivata o disattivata o verranno mostrate più informazioni.",
@@ -2859,7 +2887,7 @@
                             "toggle": "Attiva/disattiva entità."
                         },
                         "entity-filter": {
-                            "description": "La scheda Filtro Entità consente di definire un elenco di entità che si desidera monitorare solo in un determinato stato.",
+                            "description": "La scheda Filtro Entità consente di definire un elenco di entità che si desidera monitorare quando sono solamente in un determinato stato.",
                             "name": "Filtro Entità"
                         },
                         "entity": {
@@ -2867,10 +2895,10 @@
                             "name": "Entità"
                         },
                         "gauge": {
-                            "description": "La scheda Indicatore è una scheda di base che consente di visualizzare visivamente i dati del sensore.",
+                            "description": "La scheda Indicatore è una scheda di base che consente di visualizzare i dati di un sensore.",
                             "name": "Indicatore",
                             "severity": {
-                                "define": "Definire la gravità?",
+                                "define": "Definire l'intensità?",
                                 "green": "Verde",
                                 "red": "Rosso",
                                 "yellow": "Giallo"
@@ -2882,15 +2910,15 @@
                             "camera_image": "Entità Fotocamera",
                             "camera_view": "Vista fotocamera",
                             "double_tap_action": "Azione doppio tocco",
-                            "entities": "Entità",
-                            "entity": "Entità",
-                            "hold_action": "Azione di attesa",
+                            "entities": "Molte Entità",
+                            "entity": "Singola Entità",
+                            "hold_action": "Azione tocco prolungato",
                             "hours_to_show": "Ore da mostrare",
                             "icon": "Icona",
                             "icon_height": "Altezza icona",
                             "image": "Percorso immagine",
                             "manual": "Manuale",
-                            "manual_description": "Devi aggiungere una scheda personalizzata o semplicemente si vuole scrivere manualmente il file in yaml?",
+                            "manual_description": "Devi aggiungere una scheda personalizzata o vuoi semplicemente scrivere manualmente il file in yaml?",
                             "maximum": "Massimo",
                             "minimum": "Minimo",
                             "name": "Nome",
@@ -2903,7 +2931,7 @@
                             "show_state": "Mostrare lo stato?",
                             "state": "Stato",
                             "state_color": "Colorare le icone in base allo stato?",
-                            "tap_action": "Tocca Azione",
+                            "tap_action": "Azione tocco",
                             "theme": "Tema",
                             "title": "Titolo",
                             "unit": "Unità",
@@ -2920,27 +2948,27 @@
                         },
                         "history-graph": {
                             "description": "La scheda Grafico Storico consente di visualizzare un grafico per ciascuna delle entità elencate.",
-                            "name": "Grafico cronologico"
+                            "name": "Grafico Storico"
                         },
                         "horizontal-stack": {
                             "description": "La scheda Pila Orizzontale consente di raggruppare insieme più schede, in modo che siano sempre l'una accanto all'altra nello spazio di una colonna.",
                             "name": "Pila orizzontale"
                         },
                         "humidifier": {
-                            "description": "La scheda Umidificatore fornisce il controllo della tua entità umidificatore, consentendo di modificare l'umidità e la modalità dell'entità.",
+                            "description": "La scheda Umidificatore fornisce il controllo della tua entità umidificatore. Ti consente di modificare l'umidità e la modalità di funzionamento dell'entità.",
                             "name": "Umidificatore"
                         },
                         "iframe": {
-                            "description": "La scheda Pagina Web consente di incorporare la pagina Web preferita direttamente in Home Assistant.",
-                            "name": "Pagina web"
+                            "description": "La scheda Pagina Web consente di incorporare la tua pagina web preferita direttamente in Home Assistant.",
+                            "name": "Pagina Web"
                         },
                         "light": {
                             "description": "La scheda Luce consente di modificare la luminosità della luce.",
                             "name": "Luce"
                         },
                         "logbook": {
-                            "description": "La scheda del Diario di bordo mostra un elenco di eventi per le entità.",
-                            "name": "Diario di bordo"
+                            "description": "La scheda Registro mostra un elenco di eventi per le entità.",
+                            "name": "Registro"
                         },
                         "map": {
                             "dark_mode": "Modalità scura?",
@@ -2953,7 +2981,7 @@
                         },
                         "markdown": {
                             "content": "Contenuto",
-                            "description": "La scheda Ribassi viene utilizzata per presentare i ribassi.",
+                            "description": "La scheda Markdown viene utilizzata per eseguire il rendering di testo scritto in linguaggio Markdown per una gradevole formattazione della visualizzazione.",
                             "name": "Markdown"
                         },
                         "media-control": {
@@ -2970,7 +2998,7 @@
                         },
                         "picture-glance": {
                             "description": "La scheda Occhiata Immagine mostra un'immagine e gli stati dell'entità corrispondenti come una icona. Le entità sul lato destro consentono azioni di commutazione, altre mostrano più informazioni di dialogo.",
-                            "name": "Vista immagine",
+                            "name": "Sguardo d'Immagine",
                             "state_entity": "Stato Entità"
                         },
                         "picture": {
@@ -2979,7 +3007,7 @@
                         },
                         "plant-status": {
                             "description": "La scheda dello Stato della Pianta è per tutti gli adorabili botanici là fuori.",
-                            "name": "Stato pianta"
+                            "name": "Stato della Pianta"
                         },
                         "sensor": {
                             "description": "La scheda Sensore offre una rapida panoramica dello stato dei sensori con un grafico opzionale per visualizzare il cambiamento nel tempo.",
@@ -2989,7 +3017,7 @@
                             "show_more_detail": "Mostra ulteriori dettagli"
                         },
                         "shopping-list": {
-                            "description": "La scheda della Lista della Spesa consente di aggiungere, modificare, selezionare e cancellare gli articoli dalla lista della spesa.",
+                            "description": "La scheda Lista della Spesa consente di aggiungere, modificare, selezionare e cancellare gli articoli dalla tua lista della spesa.",
                             "integration_not_loaded": "Questa carta richiede l'integrazione \"shopping_list\" per essere configurata.",
                             "name": "Lista della spesa"
                         },
@@ -3038,7 +3066,7 @@
                         "options": "Altre opzioni",
                         "pick_card": "Quale scheda vorresti aggiungere?",
                         "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?",
-                        "search_cards": "Schede di ricerca",
+                        "search_cards": "Cerca schede",
                         "show_code_editor": "Mostra Editor di Codice",
                         "show_visual_editor": "Mostra Editor Visivo",
                         "toggle_editor": "Attiva / disattiva l'editor",

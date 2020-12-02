@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "擁有者",
         "system-admin": "管理員",
         "system-read-only": "唯讀使用者",
         "system-users": "使用者"
@@ -1399,11 +1400,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "請輸入 Blueprint 之 URL。",
+                        "file_name": "區域 Blueprint 檔案名稱",
                         "header": "新增 Blueprint",
                         "import_btn": "匯入 Blueprint",
-                        "import_header": "匯入 {name} ({domain})",
+                        "import_header": "匯入 \"{name}\" (類型：{domain})",
                         "import_introduction": "可以自 Github 及社群論壇匯入其他使用者的 Blueprint。於下方輸入 Blueprint 之URL。",
                         "importing": "正在匯入 Blueprint...",
+                        "raw_blueprint": "Blueprint 內容",
                         "save_btn": "儲存 Blueprint",
                         "saving": "正在儲存 Blueprint...",
                         "unsupported_blueprint": "不支援此 Blueprint",
@@ -1412,15 +1415,19 @@
                     "caption": "Blueprint",
                     "description": "管理 Blueprint",
                     "overview": {
-                        "add_blueprint": "新增 Blueprint",
+                        "add_blueprint": "匯入 Blueprint",
                         "confirm_delete_header": "刪除此 Blueprint？",
-                        "confirm_delete_text": "確定要刪除此 Blueprint",
+                        "confirm_delete_text": "確定要刪除此 Blueprint？",
+                        "delete_blueprint": "刪除 Blueprint",
                         "header": "Blueprint 編輯器",
                         "headers": {
+                            "domain": "實體類群",
+                            "file_name": "檔案名稱",
                             "name": "名稱"
                         },
                         "introduction": "Blueprint 編輯器可允許新增與編輯 Blueprint。",
-                        "learn_more": "詳細了解 Blueprint"
+                        "learn_more": "詳細了解 Blueprint",
+                        "use_blueprint": "新增自動化"
                     }
                 },
                 "cloud": {
@@ -1737,6 +1744,7 @@
                         },
                         "header": "實體",
                         "headers": {
+                            "area": "分區",
                             "entity_id": "實體 ID",
                             "integration": "整合",
                             "name": "名稱",
@@ -2393,7 +2401,7 @@
                         "delete_user": "刪除使用者",
                         "group": "群組",
                         "id": "ID",
-                        "name": "名稱",
+                        "name": "顯示名稱",
                         "new_password": "新密碼",
                         "owner": "擁有者",
                         "password_changed": "密碼變更成功",
@@ -2401,19 +2409,24 @@
                         "system_generated_users_not_editable": "無法更新系統產生的使用者",
                         "system_generated_users_not_removable": "無法移除系統產生的使用者",
                         "unnamed_user": "未命名的使用者",
-                        "update_user": "更新"
+                        "update_user": "更新",
+                        "username": "使用者名稱"
                     },
                     "picker": {
                         "add_user": "新增使用者",
                         "headers": {
                             "group": "群組",
-                            "name": "名稱",
-                            "system": "系統"
+                            "is_active": "啟用",
+                            "is_owner": "擁有者",
+                            "name": "顯示名稱",
+                            "system": "系統產生",
+                            "username": "使用者名稱"
                         }
                     },
                     "users_privileges_note": "使用者群組功能仍在開發中。將無法透過 UI 進行使用者管理，仍在檢視所有管理  API Endpoint 以確保能夠正確符合管理員存取需求。"
                 },
                 "zha": {
+                    "add_device": "新增設備",
                     "add_device_page": {
                         "discovered_text": "在探索到裝置後將顯示於此處。",
                         "discovery_text": "所發現的設備將會顯示於此。跟隨設備的指示並將其設定為配對模式。",
@@ -2459,6 +2472,16 @@
                         "value": "數值"
                     },
                     "description": "Zigbee 家庭自動化網路管理",
+                    "device_pairing_card": {
+                        "CONFIGURED": "設定完成",
+                        "CONFIGURED_status_text": "初始化中",
+                        "INITIALIZED": "初始化完成",
+                        "INITIALIZED_status_text": "設備已準備就緒",
+                        "INTERVIEW_COMPLETE": "探訪完成",
+                        "INTERVIEW_COMPLETE_status_text": "設定中",
+                        "PAIRED": "找到設備",
+                        "PAIRED_status_text": "開始探訪"
+                    },
                     "devices": {
                         "header": "Zigbee 家庭自動化 - 設備"
                     },
@@ -2474,6 +2497,7 @@
                         "unbind_button_label": "解除綁定群組"
                     },
                     "groups": {
+                        "add_group": "新增群組",
                         "add_members": "新增成員",
                         "adding_members": "新增成員",
                         "caption": "群組",
@@ -2516,7 +2540,11 @@
                         "hint_wakeup": "在您進行互動時某些裝置（例如小米感應器）有喚醒按鈕、可藉由每隔約 5 秒按一下、以保持該裝置處於喚醒狀態。",
                         "introduction": "執行 ZHA 命命將影響單一設備。選擇設備以檢視該設備可使用之命令。"
                     },
-                    "title": "Zigbee 家庭自動化"
+                    "title": "Zigbee 家庭自動化",
+                    "visualization": {
+                        "caption": "形象化",
+                        "header": "網路形象化"
+                    }
                 },
                 "zone": {
                     "add_zone": "新增區域",

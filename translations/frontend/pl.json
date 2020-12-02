@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Właściciel",
         "system-admin": "Administratorzy",
         "system-read-only": "Użytkownicy (tylko odczyt)",
         "system-users": "Użytkownicy"
@@ -1399,11 +1400,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Wprowadź adres URL schematu.",
+                        "file_name": "Nazwa lokalnego pliku schematu",
                         "header": "Dodaj nowy schemat",
                         "import_btn": "Importuj schemat",
-                        "import_header": "Importuj {name} ({domain})",
+                        "import_header": "Importuj \"{name}\" (typ: {domain})",
                         "import_introduction": "Możesz importować schematy innych użytkowników z Githuba i forów społecznościowych. Wprowadź poniżej adres URL schematu.",
                         "importing": "Importowanie schematu...",
+                        "raw_blueprint": "Zawartość schematu",
                         "save_btn": "Zapisz schemat",
                         "saving": "Zapisywanie schematu...",
                         "unsupported_blueprint": "Ten schemat nie jest obsługiwany",
@@ -1412,15 +1415,19 @@
                     "caption": "Schematy",
                     "description": "Zarządzaj schematami",
                     "overview": {
-                        "add_blueprint": "Dodaj schemat",
+                        "add_blueprint": "Importuj schemat",
                         "confirm_delete_header": "Usunąć ten schemat?",
                         "confirm_delete_text": "Czy na pewno chcesz usunąć ten schemat?",
+                        "delete_blueprint": "Usuń schemat",
                         "header": "Edytor schematów",
                         "headers": {
+                            "domain": "Domena",
+                            "file_name": "Nazwa pliku",
                             "name": "Nazwa"
                         },
                         "introduction": "Edytor schematów pozwala tworzyć i edytować schematy",
-                        "learn_more": "Dowiedz się więcej o schematach"
+                        "learn_more": "Dowiedz się więcej o schematach",
+                        "use_blueprint": "Utwórz automatyzację"
                     }
                 },
                 "cloud": {
@@ -1737,6 +1744,7 @@
                         },
                         "header": "Rejestr encji",
                         "headers": {
+                            "area": "Obszar",
                             "entity_id": "Identyfikator encji",
                             "integration": "Integracja",
                             "name": "Nazwa",
@@ -2393,7 +2401,7 @@
                         "delete_user": "Usuń użytkownika",
                         "group": "Grupa",
                         "id": "Identyfikator",
-                        "name": "Nazwa",
+                        "name": "Wyświetlana nazwa",
                         "new_password": "Nowe hasło",
                         "owner": "Właściciel",
                         "password_changed": "Hasło zostało zmienione pomyślnie",
@@ -2401,19 +2409,24 @@
                         "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
                         "system_generated_users_not_removable": "Nie można usunąć użytkowników wygenerowanych przez system.",
                         "unnamed_user": "Nienazwany użytkownik",
-                        "update_user": "Aktualizuj"
+                        "update_user": "Aktualizuj",
+                        "username": "Nazwa użytkownika"
                     },
                     "picker": {
                         "add_user": "Dodaj użytkownika",
                         "headers": {
                             "group": "Grupa",
-                            "name": "Nazwa",
-                            "system": "System"
+                            "is_active": "Aktywny",
+                            "is_owner": "Właściciel",
+                            "name": "Wyświetlana nazwa",
+                            "system": "Wygenerowany przez system",
+                            "username": "Nazwa użytkownika"
                         }
                     },
                     "users_privileges_note": "Prace nad grupami użytkowników trwają. Użytkownik nie może administrować instancją za pomocą interfejsu użytkownika. Nadal kontrolujemy wszystkie punkty końcowe interfejsu API zarządzania, aby upewnić się, że poprawnie ograniczają dostęp tylko dla administratorów."
                 },
                 "zha": {
+                    "add_device": "Dodaj urządzenie",
                     "add_device_page": {
                         "discovered_text": "Urządzenia pojawią się tutaj, jak tylko zostaną wykryte.",
                         "discovery_text": "Wykryte urządzenia pojawią się tutaj. Postępuj zgodnie z instrukcjami dla urządzeń, by wprowadzić je w tryb parowania.",
@@ -2459,6 +2472,16 @@
                         "value": "Wartość"
                     },
                     "description": "Zarządzanie siecią Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfigurowanie zakończona",
+                        "CONFIGURED_status_text": "Inicjalizacja",
+                        "INITIALIZED": "Inicjalizacja zakończona",
+                        "INITIALIZED_status_text": "Urządzenie jest gotowe do użycia",
+                        "INTERVIEW_COMPLETE": "Odpytywanie zakończone",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurowanie",
+                        "PAIRED": "Znaleziono urządzenie",
+                        "PAIRED_status_text": "Rozpoczęcie odpytywania"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - urządzenie"
                     },
@@ -2474,6 +2497,7 @@
                         "unbind_button_label": "Usuń powiązanie grupy"
                     },
                     "groups": {
+                        "add_group": "Dodaj grupę",
                         "add_members": "Dodaj członków",
                         "adding_members": "Dodawanie członków",
                         "caption": "Grupy",
@@ -2516,7 +2540,11 @@
                         "hint_wakeup": "Niektóre urządzenia, takie jak czujniki Xiaomi, mają przycisk wybudzania, który można naciskać w odstępach co około 5 sekund, dzięki czemu urządzenia pozostają w stanie czuwania podczas interakcji z nimi.",
                         "introduction": "Uruchom polecenia ZHA, które wpływają na pojedyncze urządzenie. Wybierz urządzenie, aby wyświetlić listę dostępnych poleceń."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Wizualizacja",
+                        "header": "Wizualizacja sieci"
+                    }
                 },
                 "zone": {
                     "add_zone": "Dodaj strefę",

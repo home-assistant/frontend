@@ -10,6 +10,7 @@ export interface EntityRegistryEntry {
   platform: string;
   config_entry_id?: string;
   device_id?: string;
+  area_id?: string;
   disabled_by: string | null;
 }
 
@@ -29,6 +30,7 @@ export interface UpdateEntityRegistryEntryResult {
 export interface EntityRegistryEntryUpdateParams {
   name?: string | null;
   icon?: string | null;
+  area_id?: string | null;
   disabled_by?: string | null;
   new_entity_id?: string;
 }

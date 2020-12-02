@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import { mdiPlus, mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -152,14 +152,14 @@ class HaSceneDashboard extends LitElement {
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
         </mwc-icon-button>
         <a href="/config/scene/edit/new" slot="fab">
-          <mwc-fab
+          <ha-fab
             .label=${this.hass.localize(
               "ui.panel.config.scene.picker.add_scene"
             )}
             extended
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </mwc-fab>
+          </ha-fab>
         </a>
       </hass-tabs-subpage-data-table>
     `;

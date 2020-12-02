@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import {
   mdiCheck,
   mdiContentDuplicate,
@@ -206,6 +206,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                         ? html`<blueprint-automation-editor
                             .hass=${this.hass}
                             .narrow=${this.narrow}
+                            .isWide=${this.isWide}
                             .stateObj=${stateObj}
                             .config=${this._config}
                             @value-changed=${this._valueChanged}
@@ -213,6 +214,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                         : html`<manual-automation-editor
                             .hass=${this.hass}
                             .narrow=${this.narrow}
+                            .isWide=${this.isWide}
                             .stateObj=${stateObj}
                             .config=${this._config}
                             @value-changed=${this._valueChanged}
@@ -271,7 +273,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               </div>
             `
           : ""}
-        <mwc-fab
+        <ha-fab
           slot="fab"
           class=${classMap({ dirty: this._dirty })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
@@ -279,7 +281,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           @click=${this._saveAutomation}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -524,21 +526,18 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         .content {
           padding-bottom: 20px;
         }
-        span[slot="introduction"] a {
-          color: var(--primary-color);
-        }
         p {
           margin-bottom: 0;
         }
         ha-entity-toggle {
           margin-right: 8px;
         }
-        mwc-fab {
+        ha-fab {
           position: relative;
           bottom: calc(-80px - env(safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
-        mwc-fab.dirty {
+        ha-fab.dirty {
           bottom: 0;
         }
         .selected_menu_item {
