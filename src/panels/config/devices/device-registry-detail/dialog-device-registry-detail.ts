@@ -23,8 +23,7 @@ import type { HaSwitch } from "../../../../components/ha-switch";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { computeDeviceName } from "../../../../data/device_registry";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyle } from "../../../../resources/styles";
-import { haStyleDialog } from "../../../../resources/styles";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
