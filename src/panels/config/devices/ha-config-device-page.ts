@@ -46,6 +46,7 @@ import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
 import { brandsUrl } from "../../../util/brands-url";
+import { haStyle } from "../../../resources/styles";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -250,16 +251,18 @@ export class HaConfigDevicePage extends LitElement {
                 device.disabled_by
                   ? html`
                       <div>
-                        <p>
+                        <p class="warning">
                           ${this.hass.localize(
                             "ui.panel.config.devices.enabled_cause",
                             "cause",
-                            device.disabled_by
+                            this.hass.localize(
+                              `ui.panel.config.devices.disabled_by.${device.disabled_by}`
+                            )
                           )}
                         </p>
                       </div>
                       <div class="card-actions" slot="actions">
-                        <mwc-button @click=${this._enableDevice}>
+                        <mwc-button unelevated @click=${this._enableDevice}>
                           ${this.hass.localize("ui.common.enable")}
                         </mwc-button>
                       </div>
@@ -275,6 +278,7 @@ export class HaConfigDevicePage extends LitElement {
                     <ha-device-entities-card
                       .hass=${this.hass}
                       .entities=${entities}
+                      .showDisabled=${device.disabled_by !== null}
                     >
                     </ha-device-entities-card>
                   `
@@ -675,128 +679,131 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .container {
-        display: flex;
-        flex-wrap: wrap;
-        margin: auto;
-        max-width: 1000px;
-        margin-top: 32px;
-        margin-bottom: 32px;
-      }
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .container {
+          display: flex;
+          flex-wrap: wrap;
+          margin: auto;
+          max-width: 1000px;
+          margin-top: 32px;
+          margin-bottom: 32px;
+        }
 
-      .card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+        .card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
 
-      .card-header ha-icon-button {
-        margin-right: -8px;
-        color: var(--primary-color);
-        height: auto;
-      }
+        .card-header ha-icon-button {
+          margin-right: -8px;
+          color: var(--primary-color);
+          height: auto;
+        }
 
-      .device-info {
-        padding: 16px;
-      }
+        .device-info {
+          padding: 16px;
+        }
 
-      .show-more {
-      }
+        .show-more {
+        }
 
-      h1 {
-        margin: 0;
-        font-family: var(--paper-font-headline_-_font-family);
-        -webkit-font-smoothing: var(
-          --paper-font-headline_-_-webkit-font-smoothing
-        );
-        font-size: var(--paper-font-headline_-_font-size);
-        font-weight: var(--paper-font-headline_-_font-weight);
-        letter-spacing: var(--paper-font-headline_-_letter-spacing);
-        line-height: var(--paper-font-headline_-_line-height);
-        opacity: var(--dark-primary-opacity);
-      }
+        h1 {
+          margin: 0;
+          font-family: var(--paper-font-headline_-_font-family);
+          -webkit-font-smoothing: var(
+            --paper-font-headline_-_-webkit-font-smoothing
+          );
+          font-size: var(--paper-font-headline_-_font-size);
+          font-weight: var(--paper-font-headline_-_font-weight);
+          letter-spacing: var(--paper-font-headline_-_letter-spacing);
+          line-height: var(--paper-font-headline_-_line-height);
+          opacity: var(--dark-primary-opacity);
+        }
 
-      .header {
-        display: flex;
-        justify-content: space-between;
-      }
+        .header {
+          display: flex;
+          justify-content: space-between;
+        }
 
-      .column,
-      .fullwidth {
-        padding: 8px;
-        box-sizing: border-box;
-      }
-      .column {
-        width: 33%;
-        flex-grow: 1;
-      }
-      .fullwidth {
-        width: 100%;
-        flex-grow: 1;
-      }
+        .column,
+        .fullwidth {
+          padding: 8px;
+          box-sizing: border-box;
+        }
+        .column {
+          width: 33%;
+          flex-grow: 1;
+        }
+        .fullwidth {
+          width: 100%;
+          flex-grow: 1;
+        }
 
-      .header-right {
-        align-self: center;
-      }
+        .header-right {
+          align-self: center;
+        }
 
-      .header-right img {
-        height: 30px;
-      }
+        .header-right img {
+          height: 30px;
+        }
 
-      .header-right {
-        display: flex;
-      }
+        .header-right {
+          display: flex;
+        }
 
-      .header-right:first-child {
-        width: 100%;
-        justify-content: flex-end;
-      }
+        .header-right:first-child {
+          width: 100%;
+          justify-content: flex-end;
+        }
 
-      .header-right > *:not(:first-child) {
-        margin-left: 16px;
-      }
+        .header-right > *:not(:first-child) {
+          margin-left: 16px;
+        }
 
-      .battery {
-        align-self: center;
-        align-items: center;
-        display: flex;
-      }
+        .battery {
+          align-self: center;
+          align-items: center;
+          display: flex;
+        }
 
-      .column > *:not(:first-child) {
-        margin-top: 16px;
-      }
+        .column > *:not(:first-child) {
+          margin-top: 16px;
+        }
 
-      :host([narrow]) .column {
-        width: 100%;
-      }
+        :host([narrow]) .column {
+          width: 100%;
+        }
 
-      :host([narrow]) .container {
-        margin-top: 0;
-      }
+        :host([narrow]) .container {
+          margin-top: 0;
+        }
 
-      paper-item {
-        cursor: pointer;
-        font-size: var(--paper-font-body1_-_font-size);
-      }
+        paper-item {
+          cursor: pointer;
+          font-size: var(--paper-font-body1_-_font-size);
+        }
 
-      paper-item.no-link {
-        cursor: default;
-      }
+        paper-item.no-link {
+          cursor: default;
+        }
 
-      a {
-        text-decoration: none;
-        color: var(--primary-color);
-      }
+        a {
+          text-decoration: none;
+          color: var(--primary-color);
+        }
 
-      ha-card {
-        padding-bottom: 8px;
-      }
+        ha-card {
+          padding-bottom: 8px;
+        }
 
-      ha-card a {
-        color: var(--primary-text-color);
-      }
-    `;
+        ha-card a {
+          color: var(--primary-text-color);
+        }
+      `,
+    ];
   }
 }
