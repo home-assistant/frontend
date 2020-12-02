@@ -101,6 +101,18 @@ export class HaEntityPicker extends LitElement {
 
   @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
 
+  public open() {
+    this.updateComplete.then(() => {
+      (this.shadowRoot?.querySelector("vaadin-combo-box-light") as any)?.open();
+    });
+  }
+
+  public focus() {
+    this.updateComplete.then(() => {
+      this.shadowRoot?.querySelector("paper-input")?.focus();
+    });
+  }
+
   private _initedStates = false;
 
   private _states: HassEntity[] = [];
