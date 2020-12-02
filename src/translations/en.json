@@ -2897,7 +2897,10 @@
           "new_password": "New Password",
           "confirm_new_password": "Confirm New Password",
           "error_required": "Required",
-          "submit": "Submit"
+          "submit": "Submit",
+          "error_new_mismatch": "Entered new password values do not match",
+          "error_new_is_old": "New password must be different than current password",
+          "success": "Password changed successfully"
         },
         "mfa": {
           "header": "Multi-factor Authentication Modules",
