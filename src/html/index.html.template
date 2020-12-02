@@ -42,7 +42,7 @@
       #ha-init-skeleton::before {
         display: block;
         content: "";
-        height: 112px;
+        height: 56px;
         background-color: #THEMEC;
       }
       html {

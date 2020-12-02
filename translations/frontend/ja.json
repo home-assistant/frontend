@@ -1135,6 +1135,7 @@
                         "blueprint": {
                             "blueprint_to_use": "使用する設計図",
                             "header": "設計図",
+                            "inputs": "入力",
                             "manage_blueprints": "設計図の管理",
                             "no_blueprints": "設計図はありません",
                             "no_inputs": "この設計図には入力がありません。"

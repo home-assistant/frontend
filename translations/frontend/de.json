@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Besitzer",
         "system-admin": "Administratoren",
         "system-read-only": "Nur-Lesen Benutzer",
         "system-users": "Benutzer"
@@ -932,7 +933,7 @@
                         "telegram": "Telegram-Benachrichtigungsdienst neu laden",
                         "template": "Templates neu laden",
                         "trend": "Trend Entitäten neu laden",
-                        "universal": "Universelle Medien Player Entitäten neu laden ",
+                        "universal": "Universelle Medien Player Entitäten neu laden",
                         "zone": "Zonen neu laden"
                     },
                     "server_control": {
@@ -1239,7 +1240,7 @@
                         "edit_ui": "Mit der Benutzeroberfläche bearbeiten",
                         "edit_yaml": "Als YAML bearbeiten",
                         "enable_disable": "Automatisierung aktivieren / deaktivieren",
-                        "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
+                        "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen.",
                         "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no}).",
                         "max": {
@@ -1398,7 +1399,7 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Bitte gebe die URL des Blueprints ein.",
+                        "error_no_url": "Bitte gebe die URL des Bauplans ein.",
                         "header": "Neuen Bauplan hinzufügen",
                         "import_btn": "Bauplan importieren",
                         "import_header": "{name}({domain}) importieren",
@@ -1407,7 +1408,7 @@
                         "save_btn": "Bauplan speichern",
                         "saving": "Bauplan wir gespeichert...",
                         "unsupported_blueprint": "Dieser Bauplan wird nicht unterstützt",
-                        "url": "URL des Blueprints"
+                        "url": "URL des Bauplans"
                     },
                     "caption": "Baupläne",
                     "description": "Baupläne verwalten",
@@ -1417,10 +1418,13 @@
                         "confirm_delete_text": "Bist du sicher, dass du diesen Bauplan löschen möchtest?",
                         "header": "Bauplan-Editor",
                         "headers": {
+                            "domain": "Domain",
+                            "file_name": "Dateiname",
                             "name": "Name"
                         },
                         "introduction": "Mit dem Bauplan-Editor kannst du Baupläne erstellen und bearbeiten.",
-                        "learn_more": "Erfahre mehr über Baupläne"
+                        "learn_more": "Erfahre mehr über Baupläne",
+                        "use_blueprint": "Automatisierung erstellen"
                     }
                 },
                 "cloud": {
@@ -1737,6 +1741,7 @@
                         },
                         "header": "Entitäten",
                         "headers": {
+                            "area": "Bereich",
                             "entity_id": "Entitäts-ID",
                             "integration": "Integration",
                             "name": "Name",
@@ -2401,19 +2406,24 @@
                         "system_generated_users_not_editable": "Systemgenerierte Benutzer können nicht aktualisiert werden.",
                         "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
                         "unnamed_user": "Unbenannter Benutzer",
-                        "update_user": "Aktualisieren"
+                        "update_user": "Aktualisieren",
+                        "username": "Benutzername"
                     },
                     "picker": {
                         "add_user": "Benutzer hinzufügen",
                         "headers": {
                             "group": "Gruppe",
+                            "is_active": "Aktiv",
+                            "is_owner": "Besitzer",
                             "name": "Name",
-                            "system": "System"
+                            "system": "System",
+                            "username": "Benutzername"
                         }
                     },
                     "users_privileges_note": "Benutzergruppen sind derzeit noch in Entwicklung. Der Benutzer wird nicht in der Lage sein, Änderungen an der Instanz über das UI vorzunehmen. Derzeit überprüfen wir noch alle API Endpunkte um sicherzustellen dass diese nur von Administratoren genutzt werden können."
                 },
                 "zha": {
+                    "add_device": "Gerät hinzufügen",
                     "add_device_page": {
                         "discovered_text": "Geräte werden hier angezeigt sobald sie erkannt worden sind.",
                         "discovery_text": "Erkannte Geräte werden hier angezeigt. Befolgen Sie die Anweisungen für Ihr Gerät und versetzen Sie das Gerät in den Pairing-Modus.",
@@ -2459,6 +2469,14 @@
                         "value": "Wert"
                     },
                     "description": "Zigbee Home Automation Netzwerkmanagement",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfiguration abgeschlossen",
+                        "CONFIGURED_status_text": "Initialisieren",
+                        "INITIALIZED": "Initialisierung abgeschlossen",
+                        "INITIALIZED_status_text": "Das Gerät ist einsatzbereit",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurieren",
+                        "PAIRED": "Gerät gefunden"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Gerät"
                     },
@@ -2474,6 +2492,7 @@
                         "unbind_button_label": "Gruppe auflösen"
                     },
                     "groups": {
+                        "add_group": "Gruppe hinzufügen",
                         "add_members": "Mitglieder hinzufügen",
                         "adding_members": "Füge Mitglieder hinzu",
                         "caption": "Gruppen",
@@ -2516,7 +2535,11 @@
                         "hint_wakeup": "Einige Geräte, z. B. Xiaomi-Sensoren, verfügen über eine Wecktaste, die in Intervallen von ~5 Sekunden gedrückt werden kann, um die Geräte wach zu halten, während mit ihnen interagiert wird.",
                         "introduction": "ZHA-Befehle ausführen, die sich auf ein einzelnes Gerät auswirken. Wählen Sie ein Gerät aus, um eine Liste der verfügbaren Befehle anzuzeigen."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualisierung",
+                        "header": "Netzwerkvisualisierung"
+                    }
                 },
                 "zone": {
                     "add_zone": "Zone hinzufügen",
@@ -3401,7 +3424,7 @@
                 },
                 "enable_shortcuts": {
                     "description": "Aktiviere oder deaktiviere Tastaturkürzel, um verschiedene Aktionen in der Benutzeroberfläche auszuführen.",
-                    "header": "Tastatürkürzel"
+                    "header": "Tastaturkürzel"
                 },
                 "force_narrow": {
                     "description": "Dies blendet die Seitenleiste standardmäßig aus, ähnlich der Nutzung auf Mobilgeräten.",

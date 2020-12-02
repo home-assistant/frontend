@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Propietario",
         "system-admin": "Administradores",
         "system-read-only": "Usuarios de solo lectura",
         "system-users": "Usuarios"
@@ -1147,7 +1148,7 @@
                         },
                         "alias": "Nombre",
                         "blueprint": {
-                            "blueprint_to_use": "Plano a utilizar",
+                            "blueprint_to_use": "Plano a usar",
                             "header": "Plano",
                             "inputs": "Entradas",
                             "manage_blueprints": "Administrar planos",
@@ -1239,7 +1240,7 @@
                         "edit_ui": "Editar con la interfaz de usuario",
                         "edit_yaml": "Editar como YAML",
                         "enable_disable": "Activar/Desactivar automatización",
-                        "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
+                        "introduction": "Usa automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
                         "max": {
@@ -1399,11 +1400,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Por favor, introduce la URL del plano.",
+                        "file_name": "Nombre de archivo del plano local",
                         "header": "Añadir nuevo plano",
                         "import_btn": "Importar plano",
-                        "import_header": "Importar {name} ({domain})",
+                        "import_header": "Importar {name} (tipo: {domain})",
                         "import_introduction": "Puedes importar planos de otros usuarios desde Github y los foros de la comunidad. Introduce la URL del plano a continuación.",
                         "importing": "Importando plano...",
+                        "raw_blueprint": "Contenido del plano",
                         "save_btn": "Guardar plano",
                         "saving": "Guardando plano...",
                         "unsupported_blueprint": "Este plano no es compatible",
@@ -1412,15 +1415,19 @@
                     "caption": "Planos",
                     "description": "Administrar planos",
                     "overview": {
-                        "add_blueprint": "Añadir plano",
+                        "add_blueprint": "Importar plano",
                         "confirm_delete_header": "¿Eliminar este plano?",
                         "confirm_delete_text": "¿Estás seguro de que quieres borrar este plano?",
+                        "delete_blueprint": "Eliminar plano",
                         "header": "Editor de planos",
                         "headers": {
+                            "domain": "Dominio",
+                            "file_name": "Nombre de archivo",
                             "name": "Nombre"
                         },
                         "introduction": "El editor de planos te permite crear y editar planos.",
-                        "learn_more": "Más información sobre planos"
+                        "learn_more": "Más información sobre planos",
+                        "use_blueprint": "Crear automatización"
                     }
                 },
                 "cloud": {
@@ -1737,6 +1744,7 @@
                         },
                         "header": "Entidades",
                         "headers": {
+                            "area": "Área",
                             "entity_id": "ID de entidad",
                             "integration": "Integración",
                             "name": "Nombre",
@@ -2209,7 +2217,7 @@
                             "without_device": "Entidades sin dispositivo"
                         },
                         "icon": "Icono",
-                        "introduction": "Usa escenas para dar vida a tu hogar.",
+                        "introduction": "Usa escenas para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las escenas de scenes.yaml son editables.",
                         "load_error_unknown": "Error al cargar la escena ({err_no}).",
                         "name": "Nombre",
@@ -2393,7 +2401,7 @@
                         "delete_user": "Eliminar usuario",
                         "group": "Grupo",
                         "id": "ID",
-                        "name": "Nombre",
+                        "name": "Nombre para mostrar",
                         "new_password": "Nueva contraseña",
                         "owner": "Propietario",
                         "password_changed": "La contraseña se ha cambiado correctamente",
@@ -2401,19 +2409,24 @@
                         "system_generated_users_not_editable": "No se pueden actualizar los usuarios generados por el sistema.",
                         "system_generated_users_not_removable": "No se pueden eliminar los usuarios generados por el sistema.",
                         "unnamed_user": "Usuario sin nombre",
-                        "update_user": "Actualizar"
+                        "update_user": "Actualizar",
+                        "username": "Nombre de usuario"
                     },
                     "picker": {
                         "add_user": "Añadir usuario",
                         "headers": {
                             "group": "Grupo",
-                            "name": "Nombre",
-                            "system": "Sistema"
+                            "is_active": "Activo",
+                            "is_owner": "Propietario",
+                            "name": "Nombre para mostrar",
+                            "system": "Generado por el sistema",
+                            "username": "Nombre de usuario"
                         }
                     },
                     "users_privileges_note": "El grupo de usuarios es un trabajo en progreso. El usuario no podrá administrar la instancia a través de la IU. Todavía estamos auditando todos los endpoints de la API de administración para garantizar que se limita correctamente el acceso sólo a los administradores."
                 },
                 "zha": {
+                    "add_device": "Añadir dispositivo",
                     "add_device_page": {
                         "discovered_text": "Los dispositivos aparecerán aquí una vez descubiertos.",
                         "discovery_text": "Los dispositivos detectados aparecerán aquí. Ponlos en modo emparejamiento siguiendo sus instrucciones.",
@@ -2459,6 +2472,16 @@
                         "value": "Valor"
                     },
                     "description": "Administración de red de Domótica Zigbee",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configuración completada",
+                        "CONFIGURED_status_text": "Inicializando",
+                        "INITIALIZED": "Inicialización completada",
+                        "INITIALIZED_status_text": "El dispositivo está listo para ser usado",
+                        "INTERVIEW_COMPLETE": "Entrevista completada",
+                        "INTERVIEW_COMPLETE_status_text": "Configurando",
+                        "PAIRED": "Dispositivo encontrado",
+                        "PAIRED_status_text": "Iniciando entrevista"
+                    },
                     "devices": {
                         "header": "Domótica Zigbee - Dispositivo"
                     },
@@ -2474,6 +2497,7 @@
                         "unbind_button_label": "Desvincular grupo"
                     },
                     "groups": {
+                        "add_group": "Añadir grupo",
                         "add_members": "Añadir miembros",
                         "adding_members": "Agregar miembros",
                         "caption": "Grupos",
@@ -2516,7 +2540,11 @@
                         "hint_wakeup": "Algunos dispositivos, como los sensores Xiaomi, tienen un botón de activación que puedes presionar a intervalos de ~ 5 segundos para mantener los dispositivos despiertos mientras interactúas con ellos.",
                         "introduction": "Ejecuta comandos ZHA que afecten a un único dispositivo. Elije un dispositivo para ver una lista de comandos disponibles."
                     },
-                    "title": "Domótica Zigbee"
+                    "title": "Domótica Zigbee",
+                    "visualization": {
+                        "caption": "Visualización",
+                        "header": "Visualización de la red"
+                    }
                 },
                 "zone": {
                     "add_zone": "Añadir zona",

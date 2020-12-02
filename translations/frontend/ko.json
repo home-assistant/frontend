@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "소유자",
         "system-admin": "관리자",
         "system-read-only": "읽기 전용 사용자",
         "system-users": "사용자"
@@ -332,13 +333,13 @@
         "zwave": {
             "default": {
                 "dead": "응답없음",
-                "initializing": "초기화중",
+                "initializing": "초기화 중",
                 "ready": "준비",
                 "sleeping": "절전모드"
             },
             "query_stage": {
                 "dead": "응답없음 ({query_stage})",
-                "initializing": "초기화중 ({query_stage})"
+                "initializing": "초기화 중 ({query_stage})"
             }
         }
     },
@@ -747,6 +748,7 @@
                 "edit": "구성요소 편집",
                 "history": "기록 내용",
                 "last_changed": "최근 변경 됨",
+                "last_updated": "최근 업데이트 됨",
                 "person": {
                     "create_zone": "현재 위치로 지역 만들기"
                 },
@@ -807,6 +809,7 @@
                     "navigation": {
                         "areas": "영역",
                         "automation": "자동화",
+                        "blueprint": "블루프린트",
                         "core": "일반",
                         "customize": "사용자화",
                         "devices": "기기",
@@ -972,6 +975,13 @@
                 "automation": {
                     "caption": "자동화",
                     "description": "자동화를 관리합니다",
+                    "dialog_new": {
+                        "start_empty": "빈 자동화로 시작하기",
+                        "thingtalk": {
+                            "create": "만들기",
+                            "input_label": "이 자동화로 무엇을 하시겠습니까?"
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "동작 추가",
@@ -1052,6 +1062,14 @@
                             "unsupported_action": "UI 미지원 동작: {action}"
                         },
                         "alias": "이름",
+                        "blueprint": {
+                            "blueprint_to_use": "사용할 블루프린트",
+                            "header": "블루프린트",
+                            "inputs": "입력",
+                            "manage_blueprints": "블루프린트 관리",
+                            "no_blueprints": "블루프린트가 존재하지 않습니다",
+                            "no_inputs": "이 블루프린트에는 입력이 없습니다."
+                        },
                         "conditions": {
                             "add": "조건 추가",
                             "delete": "삭제",
@@ -1266,6 +1284,39 @@
                         "only_editable": "automations.yaml 에 정의 된 자동화 만 편집 할 수 있습니다.",
                         "pick_automation": "편집할 자동화 선택",
                         "show_info_automation": "자동화에 대한 정보 표시"
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "블루프린트의 URL 을 입력해주세요.",
+                        "file_name": "로컬 블루프린트 파일 이름",
+                        "header": "새로운 블루프린트 추가",
+                        "import_btn": "블루프린트 가져오기",
+                        "import_header": "\"{name}\" (유형: {domain}) 가져오기",
+                        "import_introduction": "Github 및 커뮤니티 포럼에서 다른 사용자의 블루프린트를 가져올 수 있습니다. 블루프린트의 URL 을 하단의 입력란에 입력해주세요.",
+                        "importing": "블루프린트를 가져오는 중 ...",
+                        "raw_blueprint": "블루프린트 내용",
+                        "save_btn": "블루프린트 저장하기",
+                        "saving": "블루프린트 저장 중 ...",
+                        "unsupported_blueprint": "이 블루프린트는 지원되지 않습니다.",
+                        "url": "블루프린트의 URL"
+                    },
+                    "caption": "블루프린트",
+                    "description": "블루프린트를 관리합니다",
+                    "overview": {
+                        "add_blueprint": "블루프린트 가져오기",
+                        "confirm_delete_header": "이 블루프린트를 삭제하시겠습니까?",
+                        "confirm_delete_text": "이 블루프린트를 삭제하시겠습니까?",
+                        "delete_blueprint": "블루프린트 삭제",
+                        "header": "블루프린트 편집기",
+                        "headers": {
+                            "domain": "도메인",
+                            "file_name": "파일 이름",
+                            "name": "이름"
+                        },
+                        "introduction": "블루프린트 편집기를 사용하면 블루프린트를 만들고 편집할 수 있습니다.",
+                        "learn_more": "블루프린트에 대해 더 알아보기",
+                        "use_blueprint": "자동화 만들기"
                     }
                 },
                 "cloud": {
@@ -1572,6 +1623,7 @@
                         },
                         "header": "구성요소",
                         "headers": {
+                            "area": "영역",
                             "entity_id": "구성요소 ID",
                             "integration": "통합 구성요소",
                             "name": "이름",
@@ -2174,18 +2226,23 @@
                         "system_generated_users_not_editable": "시스템 자동 생성 사용자는 업데이트할 수 없습니다.",
                         "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거할 수 없습니다.",
                         "unnamed_user": "이름이 없는 사용자",
-                        "update_user": "업데이트"
+                        "update_user": "업데이트",
+                        "username": "사용자 이름"
                     },
                     "picker": {
                         "headers": {
                             "group": "그룹",
+                            "is_active": "활성화",
+                            "is_owner": "소유자",
                             "name": "이름",
-                            "system": "시스템"
+                            "system": "시스템",
+                            "username": "사용자 이름"
                         }
                     },
                     "users_privileges_note": "사용자 그룹 기능은 현재 작업 중이며, 사용자는 UI 를 통해 인스턴스를 관리할 수 없습니다. 모든 사용자 관리 API 엔드포인트가 관리자에 대한 액세스를 올바르게 제한하는지를 확인하는 중입니다."
                 },
                 "zha": {
+                    "add_device": "기기 추가",
                     "add_device_page": {
                         "discovered_text": "기기가 발견되면 여기에 표시됩니다.",
                         "discovery_text": "발견된 기기가 여기에 표시됩니다. 기기의 설명서를 참고하여 기기를 페어링 모드로 설정해주세요.",
@@ -2231,6 +2288,16 @@
                         "value": "값"
                     },
                     "description": "Zigbee Home Automation 네트워크를 관리합니다",
+                    "device_pairing_card": {
+                        "CONFIGURED": "구성이 완료되었습니다",
+                        "CONFIGURED_status_text": "초기화 중",
+                        "INITIALIZED": "초기화가 완료되었습니다",
+                        "INITIALIZED_status_text": "기기를 사용할 준비가 되었습니다",
+                        "INTERVIEW_COMPLETE": "인터뷰가 완료되었습니다",
+                        "INTERVIEW_COMPLETE_status_text": "구성 중",
+                        "PAIRED": "기기가 발견되었습니다",
+                        "PAIRED_status_text": "인터뷰 시작 중"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - 기기"
                     },
@@ -2246,6 +2313,7 @@
                         "unbind_button_label": "그룹 바인딩 해제"
                     },
                     "groups": {
+                        "add_group": "그룹 추가",
                         "add_members": "구성 기기 추가",
                         "adding_members": "구성 기기 추가",
                         "caption": "그룹",
@@ -2288,7 +2356,11 @@
                         "hint_wakeup": "Xiaomi 센서와 같은 일부 기기는 상호 작용하는 동안 기기의 절전 모드 해제가 가능한 약 5초 동안 누를 수 있는 절전 해제 버튼이 있습니다.",
                         "introduction": "단일 기기에 영향을 주는 ZHA 명령을 실행합니다. 사용 가능한 명령 목록을 보려면 기기를 선택해주세요."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "시각화",
+                        "header": "네트워크 시각화"
+                    }
                 },
                 "zone": {
                     "add_zone": "지역 추가",
@@ -2457,6 +2529,8 @@
                         "filter_attributes": "속성 필터",
                         "filter_entities": "구성요소 필터",
                         "filter_states": "상태 필터",
+                        "last_changed": "최근 변경 됨",
+                        "last_updated": "최근 업데이트 됨",
                         "more_info": "정보 더보기",
                         "no_entities": "구성요소가 없습니다",
                         "set_state": "상태 설정",
@@ -2706,7 +2780,8 @@
                         },
                         "picture-glance": {
                             "description": "그림 한눈에 보기 카드는 이미지와 해당 구성요소의 상태가 아이콘으로 표시됩니다. 오른쪽의 구성요소는 토글 작업을 허용하고 다른 구성요소는 추가 정보 대화상자를 표시합니다.",
-                            "name": "그림 한눈에 보기"
+                            "name": "그림 한눈에 보기",
+                            "state_entity": "상태 구성요소"
                         },
                         "picture": {
                             "description": "그림 카드를 사용하면 인터페이스의 다양한 경로를 탐색하거나 서비스를 호출하는 데 사용할 이미지를 설정할 수 있습니다.",

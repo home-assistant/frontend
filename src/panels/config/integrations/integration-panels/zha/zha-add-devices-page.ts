@@ -14,13 +14,17 @@ import {
 } from "lit-element";
 import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
-import { ZHADevice } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
-import "./zha-device-card";
+import "./zha-device-pairing-status-card";
 import { zhaTabs } from "./zha-config-dashboard";
 import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
+import {
+  DEVICE_MESSAGE_TYPES,
+  LOG_OUTPUT,
+  ZHADevice,
+} from "../../../../../data/zha";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
@@ -34,7 +38,10 @@ class ZHAAddDevicesPage extends LitElement {
 
   @internalProperty() private _error?: string;
 
-  @internalProperty() private _discoveredDevices: ZHADevice[] = [];
+  @internalProperty() private _discoveredDevices: Record<
+    string,
+    ZHADevice
+  > = {};
 
   @internalProperty() private _formattedEvents = "";
 
@@ -64,7 +71,7 @@ class ZHAAddDevicesPage extends LitElement {
     super.disconnectedCallback();
     this._unsubscribe();
     this._error = undefined;
-    this._discoveredDevices = [];
+    this._discoveredDevices = {};
     this._formattedEvents = "";
   }
 
@@ -115,7 +122,7 @@ class ZHAAddDevicesPage extends LitElement {
         </div>
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
         <div class="content">
-          ${this._discoveredDevices.length < 1
+          ${Object.keys(this._discoveredDevices).length < 1
             ? html`
                 <div class="discovery-text">
                   <h4>
@@ -133,15 +140,15 @@ class ZHAAddDevicesPage extends LitElement {
                 </div>
               `
             : html`
-                ${this._discoveredDevices.map(
+                ${Object.values(this._discoveredDevices).map(
                   (device) => html`
-                    <zha-device-card
+                    <zha-device-pairing-status-card
                       class="card"
                       .hass=${this.hass}
                       .device=${device}
                       .narrow=${this.narrow}
                       .showHelp=${this._showHelp}
-                    ></zha-device-card>
+                    ></zha-device-pairing-status-card>
                   `
                 )}
               `}
@@ -164,7 +171,7 @@ class ZHAAddDevicesPage extends LitElement {
   }
 
   private _handleMessage(message: any): void {
-    if (message.type === "log_output") {
+    if (message.type === LOG_OUTPUT) {
       this._formattedEvents += message.log_entry.message + "\n";
       if (this.shadowRoot) {
         const paperTextArea = this.shadowRoot.querySelector("paper-textarea");
@@ -175,8 +182,8 @@ class ZHAAddDevicesPage extends LitElement {
         }
       }
     }
-    if (message.type && message.type === "device_fully_initialized") {
-      this._discoveredDevices.push(message.device_info);
+    if (message.type && DEVICE_MESSAGE_TYPES.includes(message.type)) {
+      this._discoveredDevices[message.device_info.ieee] = message.device_info;
     }
   }
 

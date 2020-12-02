@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Omanik",
         "system-admin": "Administraatorid",
         "system-read-only": "Ainult lugemisõigusega kasutajad",
         "system-users": "Kasutajad"
@@ -967,7 +968,7 @@
                 "manuf": "{manufacturer} järgi",
                 "no_area": "Ala puudub",
                 "power_source": "Toiteallikas",
-                "quirk": "Erim",
+                "quirk": "Pistikäpp",
                 "services": {
                     "reconfigure": "Taasseadista (tervenda) ZHA seade. Kasuta seda, kui seadmega on probleeme. Kui seade on akutoitega, siis veendu, et see oleks ärkvel ja oleks valmis käske vastu võtma.",
                     "remove": "Eemalda seade Zigbee võrgust.",
@@ -1399,11 +1400,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Sisesta kavandi URL.",
+                        "file_name": "Kohaliku kavandifaili nimi",
                         "header": "Uue kavandi lisamine",
                         "import_btn": "Impordi kavand",
-                        "import_header": "Impordi {name} ( {domain} )",
+                        "import_header": "Impordi {name} ( type:{domain} )",
                         "import_introduction": "Teiste kasutajate kavandeid saad importida Githubist ja kogukonna foorumitest. Sisesta alloleva kavandi URL.",
                         "importing": "Kavandi importimine ...",
+                        "raw_blueprint": "Kavandi sisu",
                         "save_btn": "Salvesta kavand",
                         "saving": "Kavandi salvestamine ...",
                         "unsupported_blueprint": "Seda kavandit ei toetata",
@@ -1412,15 +1415,19 @@
                     "caption": "",
                     "description": "Kavandite haldamine",
                     "overview": {
-                        "add_blueprint": "Lisa kavand",
+                        "add_blueprint": "Laadi kavand",
                         "confirm_delete_header": "Kas kustutada see kavand?",
                         "confirm_delete_text": "Kas soovid kindlasti selle kavandi kustutada?",
+                        "delete_blueprint": "Kustuta kavand",
                         "header": "Kavandi redaktor",
                         "headers": {
+                            "domain": "Domeen",
+                            "file_name": "Faili nimi",
                             "name": "Nimi"
                         },
                         "introduction": "Kavandite redaktor võimaldab luua ja muuta kavandeid.",
-                        "learn_more": "Lisateave kavandite kohta"
+                        "learn_more": "Lisateave kavandite kohta",
+                        "use_blueprint": "Loo automatiseering"
                     }
                 },
                 "cloud": {
@@ -1737,6 +1744,7 @@
                         },
                         "header": "Olemid",
                         "headers": {
+                            "area": "Ala",
                             "entity_id": "Olemi ID",
                             "integration": "Sidumine",
                             "name": "Nimi",
@@ -2393,7 +2401,7 @@
                         "delete_user": "Kustuta kasutaja",
                         "group": "Grupp",
                         "id": "ID",
-                        "name": "Nimi",
+                        "name": "Kuvatav nimi",
                         "new_password": "Uus salasõna",
                         "owner": "Omanik",
                         "password_changed": "Salasõna muutmine õnnestus",
@@ -2401,19 +2409,24 @@
                         "system_generated_users_not_editable": "Süsteemi loodud kasutajaid ei saa värskendada.",
                         "system_generated_users_not_removable": "Süsteemi loodud kasutajaid ei saa eemaldada.",
                         "unnamed_user": "Nimetu kasutaja",
-                        "update_user": "Uuenda"
+                        "update_user": "Uuenda",
+                        "username": "Kasutajanimi"
                     },
                     "picker": {
                         "add_user": "Lisa kasutaja",
                         "headers": {
                             "group": "Grupp",
-                            "name": "Nimi",
-                            "system": "Süsteem"
+                            "is_active": "Aktiivne",
+                            "is_owner": "Omanik",
+                            "name": "Kuvatav nimi",
+                            "system": "Süsteemi poolt loodud",
+                            "username": "Kasutajanimi"
                         }
                     },
                     "users_privileges_note": "Kasutajarühma funktsioon on pooleli. Kasutajal ei ole võimalik kasutajaliidese kaudu Home Assistanti hallata. Auditeerime endiselt kõiki haldus-API lõpp-punkte tagamaks, et need lubaks  juurdepääsu ainult administraatoritele."
                 },
                 "zha": {
+                    "add_device": "Lisa seade",
                     "add_device_page": {
                         "discovered_text": "Seadmed ilmuvad siia  kui avastatakse.",
                         "discovery_text": "Leitud seadmed kuvatakse siin. Järgige seadme(te) juhiseid ja pange seade või seadmed sidumisrežiimile.",
@@ -2459,6 +2472,16 @@
                         "value": "Väärtus"
                     },
                     "description": "Zigbee Home Automation võrgu haldamine",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Seadistamine on lõpetatud",
+                        "CONFIGURED_status_text": "Lähtestan",
+                        "INITIALIZED": "Lähtestamine on lõpetatud",
+                        "INITIALIZED_status_text": "Seade on kasutamiseks valmis",
+                        "INTERVIEW_COMPLETE": "Küsitlemine on  lõpetatud",
+                        "INTERVIEW_COMPLETE_status_text": "Seadistan",
+                        "PAIRED": "Seade on leitud",
+                        "PAIRED_status_text": "Alustan küsitlemist"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Seade"
                     },
@@ -2474,6 +2497,7 @@
                         "unbind_button_label": "Sidesta grupp lahti"
                     },
                     "groups": {
+                        "add_group": "Lisa grupp",
                         "add_members": "Lisa liikmeid",
                         "adding_members": "Liikmete lisamine",
                         "caption": "Grupid",
@@ -2516,7 +2540,11 @@
                         "hint_wakeup": "Mõnel seadmel (näiteks Xiaomi anduritel) on äratusnupp mida saate vajutada ~ 5-sekundiliste intervallidega ja mis hoiab seadmeid ärkvel kui te nendega suhtlete.",
                         "introduction": "Käivitage ZHA käsud, mis mõjutavad ühte seadet. Saadaolevate käskude loendi kuvamiseks valige seade."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualiseerimine",
+                        "header": "Võrgu visualiseerimine"
+                    }
                 },
                 "zone": {
                     "add_zone": "Lisa tsoon",

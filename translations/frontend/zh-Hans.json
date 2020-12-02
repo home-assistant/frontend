@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "所有者",
         "system-admin": "管理员",
         "system-read-only": "只读用户",
         "system-users": "用户"
@@ -1399,11 +1400,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "请输入 Blueprint 的网址。",
+                        "file_name": "本地 Blueprint 文件名",
                         "header": "添加新的 Blueprint",
                         "import_btn": "导入 Blueprint",
-                        "import_header": "导入 {name} ({domain})",
+                        "import_header": "导入 \"{name}\" (类型为 {domain})",
                         "import_introduction": "您可以从 Github 和社区论坛导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
                         "importing": "正在导入 Blueprint...",
+                        "raw_blueprint": "Blueprint 内容",
                         "save_btn": "保存 Blueprint",
                         "saving": "正在保存 Blueprint...",
                         "unsupported_blueprint": "此 Blueprint 不受支持",
@@ -1415,12 +1418,16 @@
                         "add_blueprint": "添加 Blueprint",
                         "confirm_delete_header": "删除此 Blueprint？",
                         "confirm_delete_text": "您确定要删除此 Blueprint 吗？",
+                        "delete_blueprint": "删除 Blueprint",
                         "header": "Blueprint 编辑器",
                         "headers": {
+                            "domain": "域",
+                            "file_name": "文件名",
                             "name": "名称"
                         },
                         "introduction": "Blueprint 编辑器方便您创建和编辑 Blueprint。",
-                        "learn_more": "详细了解 Blueprint"
+                        "learn_more": "详细了解 Blueprint",
+                        "use_blueprint": "创建自动化"
                     }
                 },
                 "cloud": {
@@ -1737,6 +1744,7 @@
                         },
                         "header": "实体",
                         "headers": {
+                            "area": "区域",
                             "entity_id": "实体 ID",
                             "integration": "集成",
                             "name": "名称",
@@ -2393,7 +2401,7 @@
                         "delete_user": "删除用户",
                         "group": "群组",
                         "id": "ID",
-                        "name": "名称",
+                        "name": "显示名称",
                         "new_password": "新密码",
                         "owner": "所有者",
                         "password_changed": "密码修改成功",
@@ -2401,19 +2409,24 @@
                         "system_generated_users_not_editable": "无法更新系统生成的用户。",
                         "system_generated_users_not_removable": "无法删除系统生成的用户。",
                         "unnamed_user": "未命名的用户",
-                        "update_user": "更新"
+                        "update_user": "更新",
+                        "username": "用户名"
                     },
                     "picker": {
                         "add_user": "添加用户",
                         "headers": {
                             "group": "群组",
-                            "name": "名称",
-                            "system": "系统"
+                            "is_active": "已激活",
+                            "is_owner": "所有者",
+                            "name": "显示名称",
+                            "system": "系统生成",
+                            "username": "用户名"
                         }
                     },
                     "users_privileges_note": "用户组功能正在开发中。该功能使普通用户无法通过 UI 进行管理操作。我们正在审计所有管理 API，确保其仅限管理员访问。"
                 },
                 "zha": {
+                    "add_device": "添加设备",
                     "add_device_page": {
                         "discovered_text": "发现的设备会立即显示在这里。",
                         "discovery_text": "发现的设备将显示在这里。请按照设备的说明进行操作，将设备置于配对模式。",
@@ -2459,6 +2472,16 @@
                         "value": "值"
                     },
                     "description": "Zigbee 智能家居(ZHA) 网络管理",
+                    "device_pairing_card": {
+                        "CONFIGURED": "配置完成",
+                        "CONFIGURED_status_text": "正在初始化",
+                        "INITIALIZED": "初始化完成",
+                        "INITIALIZED_status_text": "设备可以使用了",
+                        "INTERVIEW_COMPLETE": "协商完成",
+                        "INTERVIEW_COMPLETE_status_text": "正在配置",
+                        "PAIRED": "发现设备",
+                        "PAIRED_status_text": "开始协商"
+                    },
                     "devices": {
                         "header": "Zigbee 家庭自动化 - 设备"
                     },
@@ -2474,6 +2497,7 @@
                         "unbind_button_label": "取消绑定群组"
                     },
                     "groups": {
+                        "add_group": "添加群组",
                         "add_members": "添加成员",
                         "adding_members": "添加成员中",
                         "caption": "群组",
@@ -2516,7 +2540,11 @@
                         "hint_wakeup": "小米传感器等某些设备具有唤醒按钮，您可以每隔约 5 秒按一下此按钮，以便在与设备交互时保持设备唤醒。",
                         "introduction": "运行影响单个设备的 ZHA 命令。请选择设备以查看可用命令列表。"
                     },
-                    "title": "Zigbee 家庭自动化"
+                    "title": "Zigbee 家庭自动化",
+                    "visualization": {
+                        "caption": "可视化",
+                        "header": "网络可视化"
+                    }
                 },
                 "zone": {
                     "add_zone": "添加地点",

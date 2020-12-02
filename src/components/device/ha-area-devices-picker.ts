@@ -139,7 +139,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
 
   private _filteredDevices: DeviceRegistryEntry[] = [];
 
-  private _getDevices = memoizeOne(
+  private _getAreasWithDevices = memoizeOne(
     (
       devices: DeviceRegistryEntry[],
       areas: AreaRegistryEntry[],
@@ -277,7 +277,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
     if (!this._devices || !this._areas || !this._entities) {
       return html``;
     }
-    const areas = this._getDevices(
+    const areas = this._getAreasWithDevices(
       this._devices,
       this._areas,
       this._entities,

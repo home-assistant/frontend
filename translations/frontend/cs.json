@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Vlastník",
         "system-admin": "Správci",
         "system-read-only": "Uživatelé jen pro čtení",
         "system-users": "Uživatelé"
@@ -587,7 +588,7 @@
                 "by_service": "službou",
                 "entries_not_found": "Nenalezeny žádné záznamy.",
                 "messages": {
-                    "became_unavailable": "stalo se nedostupným",
+                    "became_unavailable": "bylo nedostupné",
                     "changed_to_state": "změněno na {state}",
                     "cleared_device_class": "zrušeno (nebylo zjištěno {device_class})",
                     "detected_device_class": "zjištěno {device_class}",
@@ -1068,7 +1069,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Akce",
-                            "introduction": "Akce jsou to, co Home Assistant provede při spuštění automatizace. \n\n [Více informací o akcích.] (Https://home-assistant.io/docs/automation/action/)",
+                            "introduction": "Akce jsou to, co Home Assistant provede při spuštění automatizace.",
                             "learn_more": "Další informace o akcích",
                             "name": "Akce",
                             "type_select": "Typ akce",
@@ -1150,7 +1151,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Podmínky",
-                            "introduction": "Podmínky jsou volitelnou součástí automatizačního pravidla a mohou být použity k zabránění spuštění akce. Podmínky vypadají velmi podobně jako spouštěče, ale jsou velmi odlišné. Spouštěč se podívá na události, ke kterým dochází v systému, zatímco podmínka se zabývá pouze tím, jak systém vypadá právě teď. Pro spouštěč se může jevit že je spínač zapnutý. Stav může vidět pouze tehdy, je-li přepínač aktuálně zapnutý nebo vypnutý. \n\n [Další informace o podmínkách.] (Https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "Podmínky jsou volitelné a pokud nejsou všechny splněny, zabrání dalšímu provádění automatizace.",
                             "learn_more": "Další informace o podmínkách",
                             "name": "Podmínka",
                             "type_select": "Typ podmínky",
@@ -1229,7 +1230,7 @@
                         "edit_ui": "Upravit pomocí uživatelského rozhraní",
                         "edit_yaml": "Upravit jako YAML",
                         "enable_disable": "Povolit / zakázat automatizaci",
-                        "introduction": "Použijte automatizace k oživení svého domova",
+                        "introduction": "Pomocí automatizací oživte svůj domov.",
                         "load_error_not_editable": "Lze upravovat pouze automatizace v automations.yaml.",
                         "load_error_unknown": "Chyba při načítání automatizace ({err_no}).",
                         "max": {
@@ -1254,7 +1255,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Spouštěče",
-                            "introduction": "Spouštěče spouštějí zpracování automatizačního pravidla. Pro stejné pravidlo je možné zadat více spouštěčů. Po spuštění spouštěče ověří Home Assistant případné podmínky a zavolá akci. \n\n [Další informace o spouštěčích.] (Https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Spouštěče spouštějí automatizaci. Pro jednu automatizaci je možné zadat více spouštěčů. Po spuštění ověří Home Assistant případné podmínky a zavolá akci.",
                             "learn_more": "Další informace o spouštěčích",
                             "name": "Spouštěč",
                             "type_select": "Typ spouštěče",
@@ -1391,7 +1392,7 @@
                         "error_no_url": "Zadejte adresu URL šablonky konfigurace",
                         "header": "Přidat novou šablonku konfigurace",
                         "import_btn": "Importovat šablonku konfigurace",
-                        "import_header": "Importovat {name} ({domain})",
+                        "import_header": "Importovat \"{name}\" (typ: {domain})",
                         "import_introduction": "Z Githubu a komunitních fór můžete importovat šablonky konfigurace sdílené ostatními uživateli. Zadejte adresu URL šablonky konfigurace.",
                         "importing": "Importuje se šablonka konfigurace",
                         "save_btn": "Uložit šablonku konfigurace",
@@ -1399,13 +1400,14 @@
                         "url": "URL šablonky konfigurace"
                     },
                     "overview": {
-                        "add_blueprint": "Přidat šablonku konfigurace",
                         "confirm_delete_header": "Odstranit tuto šablonku konfigurace?",
-                        "confirm_delete_text": "Opravdu chcete smazat tuto šablonku konfigurace?",
                         "headers": {
+                            "domain": "Doména",
+                            "file_name": "Název souboru",
                             "name": "Jméno"
                         },
-                        "learn_more": "Další informace o šablonkách konfigurace"
+                        "learn_more": "Další informace o šablonkách konfigurace",
+                        "use_blueprint": "Vytvořit automatizaci"
                     }
                 },
                 "cloud": {
@@ -1722,6 +1724,7 @@
                         },
                         "header": "Entity",
                         "headers": {
+                            "area": "Oblast",
                             "entity_id": "ID entity",
                             "integration": "Integrace",
                             "name": "Název",
@@ -2378,7 +2381,7 @@
                         "delete_user": "Odstranit uživatele",
                         "group": "Skupina",
                         "id": "ID",
-                        "name": "Jméno",
+                        "name": "Zobrazované jméno",
                         "new_password": "Nové heslo",
                         "owner": "Vlastník",
                         "password_changed": "Heslo bylo změněno",
@@ -2386,19 +2389,24 @@
                         "system_generated_users_not_editable": "Nelze aktualizovat uživatele generované systémem.",
                         "system_generated_users_not_removable": "Nelze odebrat uživatele generované systémem.",
                         "unnamed_user": "Nepojmenovaný uživatel",
-                        "update_user": "Aktualizovat"
+                        "update_user": "Aktualizovat",
+                        "username": "Uživatelské jméno"
                     },
                     "picker": {
                         "add_user": "Přidat uživatele",
                         "headers": {
                             "group": "Skupina",
-                            "name": "Název",
-                            "system": "Systémový"
+                            "is_active": "Aktivní",
+                            "is_owner": "Vlastník",
+                            "name": "Zobrazované jméno",
+                            "system": "Vygenerovaný systémem",
+                            "username": "Uživatelské jméno"
                         }
                     },
                     "users_privileges_note": "Skupiny uživatelů jsou v přípravě. Uživatel je nebude moci spravovat prostřednictvím uživatelského rozhraní. Stále kontrolujeme API pro správu, abychom zajistili, že správně omezuje přístup pouze pro administrátory."
                 },
                 "zha": {
+                    "add_device": "Přidat zařízení",
                     "add_device_page": {
                         "discovered_text": "Jakmile se objeví nalezne, zobrazí se zde.",
                         "discovery_text": "Zde se objeví nalezená zařízení. Postupujte dle pokynů pro vaše zařízení a uveďte je do režimu párování.",
@@ -2444,6 +2452,16 @@
                         "value": "Hodnota"
                     },
                     "description": "Správa Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Nastavení dokončeno",
+                        "CONFIGURED_status_text": "Inicializuji",
+                        "INITIALIZED": "Inicializace dokončena",
+                        "INITIALIZED_status_text": "Zařízení je připraveno k použití",
+                        "INTERVIEW_COMPLETE": "Dotazování dokončeno",
+                        "INTERVIEW_COMPLETE_status_text": "Nastavuji",
+                        "PAIRED": "Zařízení nalezeno",
+                        "PAIRED_status_text": "Začínám dotazování"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Zařízení"
                     },
@@ -2459,6 +2477,7 @@
                         "unbind_button_label": "Odpojit skupinu"
                     },
                     "groups": {
+                        "add_group": "Přidat do skupiny",
                         "add_members": "Přidání členů",
                         "adding_members": "Přidání členů",
                         "caption": "Skupiny",
@@ -2501,7 +2520,11 @@
                         "hint_wakeup": "Některá zařízení, jako jsou senzory Xiaomi, mají tlačítko probuzení, které můžete stisknout v intervalu ~ 5 sekund, které udržuje zařízení probuzené, když s nimi komunikujete.",
                         "introduction": "Spouštějte ZHA příkazy, které ovlivňují specifické zařízení. Vyberte zařízení pro zobrazení seznamu dostupných příkazů."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Vizualizace",
+                        "header": "Vizualizace sítě"
+                    }
                 },
                 "zone": {
                     "add_zone": "Přidat zónu",

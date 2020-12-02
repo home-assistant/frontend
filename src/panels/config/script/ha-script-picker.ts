@@ -16,7 +16,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import { triggerScript } from "../../../data/script";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -147,7 +147,7 @@ class HaScriptPicker extends LitElement {
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
         </mwc-icon-button>
         <a href="/config/script/edit/new" slot="fab">
-          <mwc-fab
+          <ha-fab
             ?is-wide=${this.isWide}
             ?narrow=${this.narrow}
             .label=${this.hass.localize(
@@ -157,7 +157,7 @@ class HaScriptPicker extends LitElement {
             ?rtl=${computeRTL(this.hass)}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </mwc-fab>
+          </ha-fab>
         </a>
       </hass-tabs-subpage-data-table>
     `;

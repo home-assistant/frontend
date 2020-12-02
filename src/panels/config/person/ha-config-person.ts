@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -146,14 +146,14 @@ class HaConfigPerson extends LitElement {
               `
             : ""}
         </ha-config-section>
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${hass.localize("ui.panel.config.person.add_person")}
           extended
           @click=${this._createPerson}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }

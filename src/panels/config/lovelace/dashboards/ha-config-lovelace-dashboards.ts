@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../../components/ha-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
@@ -223,7 +223,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         hasFab
         clickable
       >
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
@@ -232,7 +232,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           @click=${this._addDashboard}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }
