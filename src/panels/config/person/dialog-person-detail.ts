@@ -68,6 +68,8 @@ class DialogPersonDetail extends LitElement {
 
   @internalProperty() private _submitting = false;
 
+  @internalProperty() private _personExists = false;
+
   private _deviceTrackersAvailable = memoizeOne((hass) => {
     return Object.keys(hass.states).some(
       (entityId) =>
@@ -79,6 +81,7 @@ class DialogPersonDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     if (this._params.entry) {
+      this._personExists = true;
       this._name = this._params.entry.name || "";
       this._userId = this._params.entry.user_id || undefined;
       this._deviceTrackers = this._params.entry.device_trackers || [];
@@ -88,6 +91,7 @@ class DialogPersonDetail extends LitElement {
         : undefined;
       this._isAdmin = this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
     } else {
+      this._personExists = false;
       this._name = "";
       this._userId = undefined;
       this._user = undefined;
@@ -398,6 +402,7 @@ class DialogPersonDetail extends LitElement {
         await this._params!.updateEntry(values);
       } else {
         await this._params!.createEntry(values);
+        this._personExists = true;
       }
       this._params = undefined;
     } catch (err) {
@@ -422,6 +427,14 @@ class DialogPersonDetail extends LitElement {
   }
 
   private _close(): void {
+    // If we do not have a person ID yet (= person creation dialog was just cancelled), but
+    // we already created a user ID for it, delete it now to not have it "free floating".
+    if (!this._personExists && this._userId) {
+      deleteUser(this.hass, this._userId);
+      this._params?.refreshUsers();
+      this._userId = undefined;
+    }
+
     this._params = undefined;
   }
 
