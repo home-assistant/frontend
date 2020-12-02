@@ -37,7 +37,7 @@ class HaChangePasswordCard extends LitElement {
     return html`
       <div>
         <ha-card
-          header=${this.hass.localize(
+          .header=${this.hass.localize(
             "ui.panel.profile.change_password.header"
           )}
         >
