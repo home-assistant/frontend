@@ -141,9 +141,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         areaLookup[area.area_id] = area;
       }
 
-      let inputDevices = [...devices];
-
-      inputDevices = inputDevices.filter(
+      let inputDevices = devices.filter(
         (device) => device.id === this.value || !device.disabled_by
       );
 
