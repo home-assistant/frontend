@@ -7,14 +7,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import {
-  HassioHassOSInfo,
-  HassioHostInfo,
-} from "../../../src/data/hassio/host";
-import {
-  HassioInfo,
-  HassioSupervisorInfo,
-} from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -29,17 +22,11 @@ import "./hassio-system-metrics";
 class HassioSystem extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
-
-  @property() public supervisorInfo!: HassioSupervisorInfo;
-
-  @property({ attribute: false }) public hassioInfo!: HassioInfo;
-
-  @property() public hostInfo!: HassioHostInfo;
-
-  @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
   protected render(): TemplateResult | void {
     return html`
@@ -56,18 +43,15 @@ class HassioSystem extends LitElement {
           <div class="card-group">
             <hassio-supervisor-info
               .hass=${this.hass}
-              .hostInfo=${this.hostInfo}
-              .supervisorInfo=${this.supervisorInfo}
+              .supervisor=${this.supervisor}
             ></hassio-supervisor-info>
             <hassio-host-info
               .hass=${this.hass}
-              .hassioInfo=${this.hassioInfo}
-              .hostInfo=${this.hostInfo}
-              .hassOsInfo=${this.hassOsInfo}
+              .supervisor=${this.supervisor}
             ></hassio-host-info>
             <hassio-system-metrics
               .hass=${this.hass}
-              .hostInfo=${this.hostInfo}
+              .supervisor=${this.supervisor}
             ></hassio-system-metrics>
           </div>
           <hassio-supervisor-log .hass=${this.hass}></hassio-supervisor-log>

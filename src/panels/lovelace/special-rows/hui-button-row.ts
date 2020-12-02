@@ -26,11 +26,11 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: ButtonRowConfig): void {
     if (!config) {
-      throw new Error("Error in card configuration.");
+      throw new Error("Invalid configuration");
     }
 
     if (!config.name) {
-      throw new Error("Error in card configuration. No name specified.");
+      throw new Error("No name specified");
     }
 
     this._config = {

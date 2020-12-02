@@ -24,8 +24,8 @@ class EntityFilterBadge extends UpdatingElement implements LovelaceBadge {
   private _oldEntities?: EntityFilterEntityConfig[];
 
   public setConfig(config: EntityFilterBadgeConfig): void {
-    if (!config.entities || !Array.isArray(config.entities)) {
-      throw new Error("entities must be specified.");
+    if (!config.entities.length || !Array.isArray(config.entities)) {
+      throw new Error("Entities must be specified");
     }
 
     if (
@@ -37,7 +37,7 @@ class EntityFilterBadge extends UpdatingElement implements LovelaceBadge {
           Array.isArray(entity.state_filter)
       )
     ) {
-      throw new Error("Incorrect filter config.");
+      throw new Error("Incorrect filter config");
     }
 
     while (this.lastChild) {

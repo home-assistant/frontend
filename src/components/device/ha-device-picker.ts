@@ -42,6 +42,10 @@ interface Device {
   id: string;
 }
 
+export type HaDevicePickerDeviceFilterFunc = (
+  device: DeviceRegistryEntry
+) => boolean;
+
 const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
   if (!root.firstElementChild) {
     root.innerHTML = `
@@ -102,8 +106,22 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+
   @property({ type: Boolean })
   private _opened?: boolean;
+
+  public open() {
+    this.updateComplete.then(() => {
+      (this.shadowRoot?.querySelector("vaadin-combo-box-light") as any)?.open();
+    });
+  }
+
+  public focus() {
+    this.updateComplete.then(() => {
+      this.shadowRoot?.querySelector("paper-input")?.focus();
+    });
+  }
 
   private _getDevices = memoizeOne(
     (
@@ -112,21 +130,25 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       entities: EntityRegistryEntry[],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
-      includeDeviceClasses: this["includeDeviceClasses"]
+      includeDeviceClasses: this["includeDeviceClasses"],
+      deviceFilter: this["deviceFilter"]
     ): Device[] => {
       if (!devices.length) {
         return [];
       }
 
       const deviceEntityLookup: DeviceEntityLookup = {};
-      for (const entity of entities) {
-        if (!entity.device_id) {
-          continue;
+
+      if (includeDomains || excludeDomains || includeDeviceClasses) {
+        for (const entity of entities) {
+          if (!entity.device_id) {
+            continue;
+          }
+          if (!(entity.device_id in deviceEntityLookup)) {
+            deviceEntityLookup[entity.device_id] = [];
+          }
+          deviceEntityLookup[entity.device_id].push(entity);
         }
-        if (!(entity.device_id in deviceEntityLookup)) {
-          deviceEntityLookup[entity.device_id] = [];
-        }
-        deviceEntityLookup[entity.device_id].push(entity);
       }
 
       const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
@@ -134,7 +156,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         areaLookup[area.area_id] = area;
       }
 
-      let inputDevices = [...devices];
+      let inputDevices = devices.filter(
+        (device) => device.id === this.value || !device.disabled_by
+      );
 
       if (includeDomains) {
         inputDevices = inputDevices.filter((device) => {
@@ -178,6 +202,14 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
             );
           });
         });
+      }
+
+      if (deviceFilter) {
+        inputDevices = inputDevices.filter(
+          (device) =>
+            // We always want to include the device of the current value
+            device.id === this.value || deviceFilter!(device)
+        );
       }
 
       const outputDevices = inputDevices.map((device) => {
@@ -224,7 +256,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       this.entities,
       this.includeDomains,
       this.excludeDomains,
-      this.includeDeviceClasses
+      this.includeDeviceClasses,
+      this.deviceFilter
     );
     return html`
       <vaadin-combo-box-light

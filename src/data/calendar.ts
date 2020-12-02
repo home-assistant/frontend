@@ -1,7 +1,13 @@
-import type { HomeAssistant, Calendar, CalendarEvent } from "../types";
+import type { HomeAssistant, CalendarEvent } from "../types";
 import { computeDomain } from "../common/entity/compute_domain";
 import { HA_COLOR_PALETTE } from "../common/const";
 import { computeStateName } from "../common/entity/compute_state_name";
+
+export interface Calendar {
+  entity_id: string;
+  name?: string;
+  backgroundColor?: string;
+}
 
 export const fetchCalendarEvents = async (
   hass: HomeAssistant,

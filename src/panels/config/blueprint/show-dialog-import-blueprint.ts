@@ -1,9 +1,7 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 
 export const loadImportBlueprintDialog = () =>
-  import(
-    /* webpackChunkName: "add-blueprint-dialog" */ "./dialog-import-blueprint"
-  );
+  import("./dialog-import-blueprint");
 
 export const showAddBlueprintDialog = (
   element: HTMLElement,

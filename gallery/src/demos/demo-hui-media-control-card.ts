@@ -160,13 +160,7 @@ const CONFIGS = [
 
 class DemoHuiMediControlCard extends PolymerElement {
   static get template() {
-    return html`
-      <demo-cards
-        id="demos"
-        hass="[[hass]]"
-        configs="[[_configs]]"
-      ></demo-cards>
-    `;
+    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
 
   static get properties() {
@@ -175,7 +169,6 @@ class DemoHuiMediControlCard extends PolymerElement {
         type: Object,
         value: CONFIGS,
       },
-      hass: Object,
     };
   }
 

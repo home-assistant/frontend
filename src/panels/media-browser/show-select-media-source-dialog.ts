@@ -12,10 +12,7 @@ export const showSelectMediaPlayerDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "hui-dialog-select-media-player",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "hui-dialog-select-media-player" */ "./hui-dialog-select-media-player"
-      ),
+    dialogImport: () => import("./hui-dialog-select-media-player"),
     dialogParams: selectMediaPlayereDialogParams,
   });
 };

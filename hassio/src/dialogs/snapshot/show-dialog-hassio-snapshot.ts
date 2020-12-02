@@ -12,10 +12,7 @@ export const showHassioSnapshotDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-hassio-snapshot",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "dialog-hassio-snapshot" */ "./dialog-hassio-snapshot"
-      ),
+    dialogImport: () => import("./dialog-hassio-snapshot"),
     dialogParams,
   });
 };

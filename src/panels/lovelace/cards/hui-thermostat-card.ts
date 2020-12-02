@@ -19,6 +19,7 @@ import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -49,9 +50,7 @@ const modeIcons: { [mode in HvacMode]: string } = {
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-thermostat-card-editor" */ "../editor/config-elements/hui-thermostat-card-editor"
-    );
+    await import("../editor/config-elements/hui-thermostat-card-editor");
     return document.createElement("hui-thermostat-card-editor");
   }
 
@@ -87,7 +86,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: ThermostatCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "climate") {
-      throw new Error("Specify an entity from within the climate domain.");
+      throw new Error("Specify an entity from within the climate domain");
     }
 
     this._config = config;
@@ -143,7 +142,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               text-anchor="middle"
               style="font-size: 13px;"
             >
-              ${stateObj.attributes.current_temperature}
+              ${formatNumber(
+                stateObj.attributes.current_temperature,
+                this.hass!.language
+              )}
               <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                 ${this.hass.config.unit_system.temperature}
               </tspan>
@@ -164,19 +166,34 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
                   ? svg`
-                      ${this._setTemp[0].toFixed()} -
-                      ${this._setTemp[1].toFixed()}
+                      ${formatNumber(this._setTemp[0], this.hass!.language, {
+                        maximumFractionDigits: 0,
+                      })} -
+                      ${formatNumber(this._setTemp[1], this.hass!.language, {
+                        maximumFractionDigits: 0,
+                      })}
                       `
                   : svg`
-                      ${this._setTemp[0].toFixed(1)} -
-                      ${this._setTemp[1].toFixed(1)}
+                      ${formatNumber(this._setTemp[0], this.hass!.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      })} -
+                      ${formatNumber(this._setTemp[1], this.hass!.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      })}
                       `
                 : this._stepSize === 1
                 ? svg`
-                      ${this._setTemp.toFixed()}
+                      ${formatNumber(this._setTemp, this.hass!.language, {
+                        maximumFractionDigits: 0,
+                      })}
                       `
                 : svg`
-                      ${this._setTemp.toFixed(1)}
+                      ${formatNumber(this._setTemp, this.hass!.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      })}
                       `
             }
           </text>

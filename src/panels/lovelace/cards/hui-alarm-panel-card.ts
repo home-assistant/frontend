@@ -42,9 +42,7 @@ const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 @customElement("hui-alarm-panel-card")
 class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
-    await import(
-      /* webpackChunkName: "hui-alarm-panel-card-editor" */ "../editor/config-elements/hui-alarm-panel-card-editor"
-    );
+    await import("../editor/config-elements/hui-alarm-panel-card-editor");
     return document.createElement("hui-alarm-panel-card-editor");
   }
 
@@ -94,7 +92,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       !config.entity ||
       config.entity.split(".")[0] !== "alarm_control_panel"
     ) {
-      throw new Error("Invalid card configuration");
+      throw new Error("Invalid configuration");
     }
 
     const defaults = {
@@ -287,7 +285,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         color: var(--alarm-state-color);
         position: absolute;
         right: 12px;
-        top: 12px;
+        top: 8px;
         cursor: pointer;
       }
 
@@ -353,8 +351,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
 
       .actions {
-        margin: 0 8px;
-        padding-top: 20px;
+        margin: 0;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;

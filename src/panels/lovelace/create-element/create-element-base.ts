@@ -197,7 +197,7 @@ export const tryCreateLovelaceElement = <
     // If domain types is given, we can derive a type from "entity"
     (!domainTypes || !("entity" in config))
   ) {
-    throw new Error("No card type configured.");
+    throw new Error("No card type configured");
   }
 
   const customTag = config.type ? _getCustomTag(config.type) : undefined;
@@ -219,7 +219,7 @@ export const tryCreateLovelaceElement = <
   }
 
   if (type === undefined) {
-    throw new Error("No type specified.");
+    throw new Error("No type specified");
   }
 
   const tag = `hui-${type}-${tagSuffix}`;

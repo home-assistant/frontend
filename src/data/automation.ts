@@ -6,7 +6,7 @@ import { navigate } from "../common/navigate";
 import { Context, HomeAssistant } from "../types";
 import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
-import { Action } from "./script";
+import { Action, MODES } from "./script";
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -26,7 +26,7 @@ export interface ManualAutomationConfig {
   trigger: Trigger[];
   condition?: Condition[];
   action: Action[];
-  mode?: "single" | "restart" | "queued" | "parallel";
+  mode?: typeof MODES[number];
   max?: number;
 }
 

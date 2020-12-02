@@ -83,7 +83,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       <div id="columns"></div>
       ${this.lovelace?.editMode
         ? html`
-            <mwc-fab
+            <ha-fab
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}
@@ -94,7 +94,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
               })}
             >
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </mwc-fab>
+            </ha-fab>
           `
         : ""}
     `;
@@ -114,9 +114,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
-      import(
-        /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
-      );
+      import("./default-view-editable");
     }
 
     if (changedProperties.has("hass")) {
@@ -298,7 +296,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         margin: 4px 4px 8px;
       }
 
-      mwc-fab {
+      ha-fab {
         position: sticky;
         float: right;
         right: calc(16px + env(safe-area-inset-right));
@@ -306,7 +304,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         z-index: 1;
       }
 
-      mwc-fab.rtl {
+      ha-fab.rtl {
         float: left;
         right: auto;
         left: calc(16px + env(safe-area-inset-left));

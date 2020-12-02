@@ -1,6 +1,6 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
-import { mdiPlus, mdiHelpCircle, mdiDelete } from "@mdi/js";
+import { mdiPlus, mdiHelpCircle, mdiDelete, mdiRobot } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -34,6 +34,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 
 interface BlueprintMetaDataPath extends BlueprintMetaData {
   path: string;
+  error: boolean;
 }
 
 const createNewFunctions = {
@@ -61,60 +62,97 @@ class HaBlueprintOverview extends LitElement {
   @property() public blueprints!: Blueprints;
 
   private _processedBlueprints = memoizeOne((blueprints: Blueprints) => {
-    const result = Object.entries(blueprints).map(([path, blueprint]) => ({
-      ...blueprint.metadata,
-      path,
-    }));
+    const result = Object.entries(blueprints).map(([path, blueprint]) => {
+      if ("error" in blueprint) {
+        return {
+          name: blueprint.error,
+          error: true,
+          path,
+        };
+      }
+      return {
+        ...blueprint.metadata,
+        error: false,
+        path,
+      };
+    });
     return result;
   });
 
   private _columns = memoizeOne(
-    (_language): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
-        name: {
-          title: this.hass.localize(
-            "ui.panel.config.blueprint.overview.headers.name"
-          ),
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-          grows: true,
-        },
-      };
-      columns.domain = {
-        title: "Domain",
+    (narrow, _language): DataTableColumnContainer => ({
+      name: {
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.headers.name"
+        ),
         sortable: true,
         filterable: true,
         direction: "asc",
-        width: "20%",
-      };
-      columns.path = {
-        title: "Path",
+        grows: true,
+        template: narrow
+          ? (name, entity: any) =>
+              html`
+                ${name}<br />
+                <div class="secondary">
+                  ${entity.path}
+                </div>
+              `
+          : undefined,
+      },
+      path: {
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.headers.file_name"
+        ),
         sortable: true,
         filterable: true,
+        hidden: narrow,
         direction: "asc",
-        width: "20%",
-      };
-      columns.create = {
+        width: "25%",
+      },
+      create: {
+        title: "",
+        type: narrow ? "icon-button" : undefined,
+        width: narrow ? undefined : "180px",
+        template: (_, blueprint: any) =>
+          blueprint.error
+            ? ""
+            : narrow
+            ? html`<mwc-icon-button
+                .blueprint=${blueprint}
+                .label=${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.use_blueprint"
+                )}
+                title=${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.use_blueprint"
+                )}
+                @click=${(ev) => this._createNew(ev)}
+                ><ha-svg-icon .path=${mdiRobot}></ha-svg-icon
+              ></mwc-icon-button>`
+            : html`<mwc-button
+                .blueprint=${blueprint}
+                @click=${(ev) => this._createNew(ev)}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.use_blueprint"
+                )}
+              </mwc-button>`,
+      },
+      delete: {
         title: "",
         type: "icon-button",
-        template: (_, blueprint) => html`<mwc-icon-button
-          .blueprint=${blueprint}
-          @click=${(ev) => this._createNew(ev)}
-          ><ha-svg-icon .path=${mdiPlus}></ha-svg-icon
-        ></mwc-icon-button>`,
-      };
-      columns.delete = {
-        title: "",
-        type: "icon-button",
-        template: (_, blueprint) => html`<mwc-icon-button
-          .blueprint=${blueprint}
-          @click=${(ev) => this._delete(ev)}
-          ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-        ></mwc-icon-button>`,
-      };
-      return columns;
-    }
+        template: (_, blueprint: any) =>
+          blueprint.error
+            ? ""
+            : html` <mwc-icon-button
+                .blueprint=${blueprint}
+                .label=${this.hass.localize(
+                  "ui.panel.config.blueprint.overview.delete_blueprint"
+                )}
+                @click=${(ev) => this._delete(ev)}
+                ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
+              ></mwc-icon-button>`,
+      },
+    })
   );
 
   protected render(): TemplateResult {
@@ -125,7 +163,7 @@ class HaBlueprintOverview extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
-        .columns=${this._columns(this.hass.language)}
+        .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._processedBlueprints(this.blueprints)}
         id="entity_id"
         .noDataText=${this.hass.localize(
@@ -136,15 +174,16 @@ class HaBlueprintOverview extends LitElement {
         <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
         </mwc-icon-button>
-        <mwc-fab
+        <ha-fab
           slot="fab"
-          title=${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
+          extended
           @click=${this._addBlueprint}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }

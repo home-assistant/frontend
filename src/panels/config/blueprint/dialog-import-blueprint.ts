@@ -4,7 +4,6 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "../../../components/ha-circular-progress";
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -23,6 +22,7 @@ import {
   importBlueprint,
   saveBlueprint,
 } from "../../../data/blueprint";
+import "../../../components/ha-expansion-panel";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -66,18 +66,43 @@ class DialogImportBlueprint extends LitElement {
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._result
             ? html`${this.hass.localize(
-                  "ui.panel.config.blueprint.add.import",
+                  "ui.panel.config.blueprint.add.import_header",
                   "name",
-                  "domain",
                   html`<b>${this._result.blueprint.metadata.name}</b>`,
+                  "domain",
                   this._result.blueprint.metadata.domain
                 )}
-                <paper-input
-                  id="input"
-                  .value=${this._result.suggested_filename}
-                  label="Filename"
-                ></paper-input>
-                <pre>${this._result.raw_data}</pre>`
+                <br />
+                ${this._result.blueprint.metadata.description}
+                ${this._result.validation_errors
+                  ? html`
+                      <p class="error">
+                        ${this.hass.localize(
+                          "ui.panel.config.blueprint.add.unsupported_blueprint"
+                        )}
+                      </p>
+                      <ul class="error">
+                        ${this._result.validation_errors.map(
+                          (error) => html`<li>${error}</li>`
+                        )}
+                      </ul>
+                    `
+                  : html`
+                      <paper-input
+                        id="input"
+                        .value=${this._result.suggested_filename}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.blueprint.add.file_name"
+                        )}
+                      ></paper-input>
+                    `}
+                <ha-expansion-panel
+                  .header=${this.hass.localize(
+                    "ui.panel.config.blueprint.add.raw_blueprint"
+                  )}
+                >
+                  <pre>${this._result.raw_data}</pre>
+                </ha-expansion-panel>`
             : html`${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_introduction"
                 )}<paper-input
@@ -115,7 +140,7 @@ class DialogImportBlueprint extends LitElement {
               <mwc-button
                 slot="primaryAction"
                 @click=${this._save}
-                .disabled=${this._saving}
+                .disabled=${this._saving || this._result.validation_errors}
               >
                 ${this._saving
                   ? html`<ha-circular-progress
@@ -163,7 +188,7 @@ class DialogImportBlueprint extends LitElement {
         this._result!.blueprint.metadata.domain,
         filename,
         this._result!.raw_data,
-        this._result!.url
+        this._result!.blueprint.metadata.source_url
       );
       this._params.importedCallback();
       this.closeDialog();
@@ -174,8 +199,8 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
-    return [haStyleDialog, css``];
+  static get styles(): CSSResult {
+    return haStyleDialog;
   }
 }
 

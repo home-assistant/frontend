@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
@@ -255,14 +255,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               </div>
             `
           : ""}
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${hass.localize("ui.panel.config.zone.add_zone")}
           extended
           @click=${this._createZone}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }

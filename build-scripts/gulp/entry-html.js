@@ -19,6 +19,7 @@ const renderTemplate = (pth, data = {}, pathFunc = templatePath) => {
   return compiled({
     ...data,
     useRollup: env.useRollup(),
+    useWDS: env.useWDS(),
     renderTemplate,
   });
 };
@@ -90,10 +91,23 @@ gulp.task("gen-pages-prod", (done) => {
 });
 
 gulp.task("gen-index-app-dev", (done) => {
+  let latestAppJS, latestCoreJS, latestCustomPanelJS;
+
+  if (env.useWDS()) {
+    latestAppJS = "http://localhost:8000/src/entrypoints/app.ts";
+    latestCoreJS = "http://localhost:8000/src/entrypoints/core.ts";
+    latestCustomPanelJS =
+      "http://localhost:8000/src/entrypoints/custom-panel.ts";
+  } else {
+    latestAppJS = "/frontend_latest/app.js";
+    latestCoreJS = "/frontend_latest/core.js";
+    latestCustomPanelJS = "/frontend_latest/custom-panel.js";
+  }
+
   const content = renderTemplate("index", {
-    latestAppJS: "/frontend_latest/app.js",
-    latestCoreJS: "/frontend_latest/core.js",
-    latestCustomPanelJS: "/frontend_latest/custom-panel.js",
+    latestAppJS,
+    latestCoreJS,
+    latestCustomPanelJS,
 
     es5AppJS: "/frontend_es5/app.js",
     es5CoreJS: "/frontend_es5/core.js",

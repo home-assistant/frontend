@@ -41,7 +41,7 @@ class HaCoverTiltControls extends LitElement {
 
     return html` <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStop,
+          invisible: !this._entityObj.supportsOpenTilt,
         })}
         label=${this.hass.localize(
           "ui.dialogs.more_info_control.open_tilt_cover"
@@ -61,10 +61,10 @@ class HaCoverTiltControls extends LitElement {
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStop,
+          invisible: !this._entityObj.supportsCloseTilt,
         })}
         label=${this.hass.localize(
-          "ui.dialogs.more_info_control.open_tilt_cover"
+          "ui.dialogs.more_info_control.close_tilt_cover"
         )}
         icon="hass:arrow-bottom-left"
         @click=${this._onCloseTiltTap}

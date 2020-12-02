@@ -24,36 +24,27 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
     routes: {
       dashboard: {
         tag: "zha-config-dashboard",
-        load: () =>
-          import(
-            /* webpackChunkName: "zha-config-dashboard" */ "./zha-config-dashboard"
-          ),
+        load: () => import("./zha-config-dashboard"),
       },
       add: {
         tag: "zha-add-devices-page",
-        load: () =>
-          import(
-            /* webpackChunkName: "zha-add-devices-page" */ "./zha-add-devices-page"
-          ),
+        load: () => import("./zha-add-devices-page"),
       },
       groups: {
         tag: "zha-groups-dashboard",
-        load: () =>
-          import(
-            /* webpackChunkName: "zha-groups-dashboard" */ "./zha-groups-dashboard"
-          ),
+        load: () => import("./zha-groups-dashboard"),
       },
       group: {
         tag: "zha-group-page",
-        load: () =>
-          import(/* webpackChunkName: "zha-group-page" */ "./zha-group-page"),
+        load: () => import("./zha-group-page"),
       },
       "group-add": {
         tag: "zha-add-group-page",
-        load: () =>
-          import(
-            /* webpackChunkName: "zha-add-group-page" */ "./zha-add-group-page"
-          ),
+        load: () => import("./zha-add-group-page"),
+      },
+      visualization: {
+        tag: "zha-network-visualization-page",
+        load: () => import("./zha-network-visualization-page"),
       },
     },
   };

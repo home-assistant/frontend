@@ -1660,7 +1660,9 @@
                                 "os_name": "Nombre del sistema operativo",
                                 "os_version": "Versión del sistema operativo",
                                 "python_version": "Versión de Python",
-                                "version": "Versión"
+                                "timezone": "Zona horaria",
+                                "version": "Versión",
+                                "virtualenv": "Ambiente virtual"
                             },
                             "lovelace": {
                                 "mode": "Modo",
@@ -2060,6 +2062,7 @@
                     },
                     "picker": {
                         "add_script": "Agregar script",
+                        "duplicate": "Duplicado",
                         "duplicate_script": "Duplicar script",
                         "edit_script": "Editar script",
                         "header": "Editor de scripts",
@@ -2620,6 +2623,7 @@
                             "secondary_info_values": {
                                 "brightness": "Brillo",
                                 "last-changed": "Última modificación",
+                                "last-updated": "Última actualización",
                                 "none": "Sin información secundaria",
                                 "position": "Posición"
                             },

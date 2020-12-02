@@ -216,7 +216,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
                 <ul>
                   ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
                 </ul>
-                You can still edit your config in yaml.
+                You can still edit your config in YAML.
               </div>
             `
           : ""}

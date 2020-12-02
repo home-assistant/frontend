@@ -58,6 +58,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
     getConfigEntries(this.hass).then((configEntries) => {
       this._entries = configEntries;
     });
+    this.hass.loadBackendTranslation("title");
   }
 
   protected updated(changedProps: PropertyValues) {

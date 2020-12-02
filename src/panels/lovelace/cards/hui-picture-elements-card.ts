@@ -62,14 +62,14 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: PictureElementsCardConfig): void {
     if (!config) {
-      throw new Error("Invalid Configuration");
+      throw new Error("Invalid configuration");
     } else if (
       !(config.image || config.camera_image || config.state_image) ||
       (config.state_image && !config.entity)
     ) {
-      throw new Error("Invalid Configuration: image required");
+      throw new Error("Image required");
     } else if (!Array.isArray(config.elements)) {
-      throw new Error("Invalid Configuration: elements required");
+      throw new Error("Elements required");
     }
 
     this._config = config;

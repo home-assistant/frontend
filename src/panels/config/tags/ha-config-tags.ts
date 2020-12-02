@@ -1,4 +1,4 @@
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import {
   mdiCog,
@@ -207,14 +207,14 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
         </mwc-icon-button>
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.tags.add_tag")}
           extended
           @click=${this._addTag}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }

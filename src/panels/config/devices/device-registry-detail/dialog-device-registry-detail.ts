@@ -3,8 +3,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "../../components/ha-dialog";
-import "../../components/ha-area-picker";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-area-picker";
 
 import {
   CSSResult,
@@ -18,11 +18,12 @@ import {
 } from "lit-element";
 
 import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
-import { HomeAssistant } from "../../types";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { computeDeviceName } from "../../data/device_registry";
-import { fireEvent } from "../../common/dom/fire_event";
-import { haStyleDialog } from "../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import type { HaSwitch } from "../../../../components/ha-switch";
+import { PolymerChangedEvent } from "../../../../polymer-types";
+import { computeDeviceName } from "../../../../data/device_registry";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
@@ -36,6 +37,8 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   @internalProperty() private _areaId?: string;
 
+  @internalProperty() private _disabledBy!: string | null;
+
   @internalProperty() private _submitting?: boolean;
 
   public async showDialog(
@@ -45,6 +48,7 @@ class DialogDeviceRegistryDetail extends LitElement {
     this._error = undefined;
     this._nameByUser = this._params.device.name_by_user || "";
     this._areaId = this._params.device.area_id;
+    this._disabledBy = this._params.device.disabled_by;
     await this.updateComplete;
   }
 
@@ -80,6 +84,32 @@ class DialogDeviceRegistryDetail extends LitElement {
               .value=${this._areaId}
               @value-changed=${this._areaPicked}
             ></ha-area-picker>
+            <div class="row">
+              <ha-switch
+                .checked=${!this._disabledBy}
+                @change=${this._disabledByChanged}
+              >
+              </ha-switch>
+              <div>
+                <div>
+                  ${this.hass.localize("ui.panel.config.devices.enabled_label")}
+                </div>
+                <div class="secondary">
+                  ${this._disabledBy && this._disabledBy !== "user"
+                    ? this.hass.localize(
+                        "ui.panel.config.devices.enabled_cause",
+                        "cause",
+                        this.hass.localize(
+                          `config_entry.disabled_by.${this._disabledBy}`
+                        )
+                      )
+                    : ""}
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.enabled_description"
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <mwc-button
@@ -109,12 +139,17 @@ class DialogDeviceRegistryDetail extends LitElement {
     this._areaId = event.detail.value;
   }
 
+  private _disabledByChanged(ev: Event): void {
+    this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
+  }
+
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
     try {
       await this._params!.updateEntry({
         name_by_user: this._nameByUser.trim() || null,
         area_id: this._areaId || null,
+        disabled_by: this._disabledBy || null,
       });
       this._params = undefined;
     } catch (err) {
@@ -128,6 +163,7 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       haStyleDialog,
       css`
         .form {
@@ -138,6 +174,15 @@ class DialogDeviceRegistryDetail extends LitElement {
         }
         .error {
           color: var(--error-color);
+        }
+        ha-switch {
+          margin-right: 16px;
+        }
+        .row {
+          margin-top: 8px;
+          color: var(--primary-text-color);
+          display: flex;
+          align-items: center;
         }
       `,
     ];

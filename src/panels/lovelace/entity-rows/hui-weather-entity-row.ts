@@ -20,8 +20,9 @@ import {
   getWeatherUnit,
   getWeatherStateIcon,
   weatherSVGStyles,
+  WeatherEntity,
 } from "../../../data/weather";
-import type { HomeAssistant, WeatherEntity } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -44,7 +45,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config?.entity) {
-      throw new Error("Invalid Configuration: 'entity' required");
+      throw new Error("Entity must be specified");
     }
 
     this._config = config;

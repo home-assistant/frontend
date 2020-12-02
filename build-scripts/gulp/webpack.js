@@ -47,7 +47,7 @@ const runDevServer = ({
     );
   });
 
-const handler = (done) => (err, stats) => {
+const doneHandler = (done) => (err, stats) => {
   if (err) {
     log.error(err.stack || err);
     if (err.details) {
@@ -67,11 +67,20 @@ const handler = (done) => (err, stats) => {
   }
 };
 
+const prodBuild = (conf) =>
+  new Promise((resolve) => {
+    webpack(
+      conf,
+      // Resolve promise when done. Because we pass a callback, webpack closes itself
+      doneHandler(resolve)
+    );
+  });
+
 gulp.task("webpack-watch-app", () => {
-  // we are not calling done, so this command will run forever
+  // This command will run forever because we don't close compiler
   webpack(createAppConfig({ isProdBuild: false, latestBuild: true })).watch(
     { ignored: /build-translations/ },
-    handler()
+    doneHandler()
   );
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
@@ -79,15 +88,12 @@ gulp.task("webpack-watch-app", () => {
   );
 });
 
-gulp.task(
-  "webpack-prod-app",
-  () =>
-    new Promise((resolve) =>
-      webpack(
-        bothBuilds(createAppConfig, { isProdBuild: true }),
-        handler(resolve)
-      )
-    )
+gulp.task("webpack-prod-app", () =>
+  prodBuild(
+    bothBuilds(createAppConfig, {
+      isProdBuild: true,
+    })
+  )
 );
 
 gulp.task("webpack-dev-server-demo", () => {
@@ -98,17 +104,12 @@ gulp.task("webpack-dev-server-demo", () => {
   });
 });
 
-gulp.task(
-  "webpack-prod-demo",
-  () =>
-    new Promise((resolve) =>
-      webpack(
-        bothBuilds(createDemoConfig, {
-          isProdBuild: true,
-        }),
-        handler(resolve)
-      )
-    )
+gulp.task("webpack-prod-demo", () =>
+  prodBuild(
+    bothBuilds(createDemoConfig, {
+      isProdBuild: true,
+    })
+  )
 );
 
 gulp.task("webpack-dev-server-cast", () => {
@@ -121,41 +122,30 @@ gulp.task("webpack-dev-server-cast", () => {
   });
 });
 
-gulp.task(
-  "webpack-prod-cast",
-  () =>
-    new Promise((resolve) =>
-      webpack(
-        bothBuilds(createCastConfig, {
-          isProdBuild: true,
-        }),
-
-        handler(resolve)
-      )
-    )
+gulp.task("webpack-prod-cast", () =>
+  prodBuild(
+    bothBuilds(createCastConfig, {
+      isProdBuild: true,
+    })
+  )
 );
 
 gulp.task("webpack-watch-hassio", () => {
-  // we are not calling done, so this command will run forever
+  // This command will run forever because we don't close compiler
   webpack(
     createHassioConfig({
       isProdBuild: false,
       latestBuild: true,
     })
-  ).watch({}, handler());
+  ).watch({}, doneHandler());
 });
 
-gulp.task(
-  "webpack-prod-hassio",
-  () =>
-    new Promise((resolve) =>
-      webpack(
-        bothBuilds(createHassioConfig, {
-          isProdBuild: true,
-        }),
-        handler(resolve)
-      )
-    )
+gulp.task("webpack-prod-hassio", () =>
+  prodBuild(
+    bothBuilds(createHassioConfig, {
+      isProdBuild: true,
+    })
+  )
 );
 
 gulp.task("webpack-dev-server-gallery", () => {
@@ -167,17 +157,11 @@ gulp.task("webpack-dev-server-gallery", () => {
   });
 });
 
-gulp.task(
-  "webpack-prod-gallery",
-  () =>
-    new Promise((resolve) =>
-      webpack(
-        createGalleryConfig({
-          isProdBuild: true,
-          latestBuild: true,
-        }),
-
-        handler(resolve)
-      )
-    )
+gulp.task("webpack-prod-gallery", () =>
+  prodBuild(
+    createGalleryConfig({
+      isProdBuild: true,
+      latestBuild: true,
+    })
+  )
 );

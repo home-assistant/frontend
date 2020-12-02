@@ -40,7 +40,7 @@ export class HaDeviceCondition extends LitElement {
 
   private _extraFieldsData = memoizeOne(
     (condition: DeviceCondition, capabilities: DeviceCapabilities) => {
-      const extraFieldsData: { [key: string]: any } = {};
+      const extraFieldsData: Record<string, any> = {};
       capabilities.extra_fields.forEach((item) => {
         if (condition[item.name] !== undefined) {
           extraFieldsData![item.name] = condition[item.name];

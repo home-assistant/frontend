@@ -26,12 +26,14 @@ import { haStyle } from "../../../resources/styles";
 import { HassEntity } from "home-assistant-js-websocket";
 import { navigate } from "../../../common/navigate";
 import {
-  Blueprint,
+  BlueprintOrError,
   Blueprints,
   fetchBlueprints,
 } from "../../../data/blueprint";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-selector/ha-selector";
+import "../../../components/ha-settings-row";
 
 @customElement("blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends LitElement {
@@ -39,7 +41,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   @property() public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property() public config!: BlueprintAutomationConfig;
 
@@ -52,7 +54,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     this._getBlueprints();
   }
 
-  private get _blueprint(): Blueprint | undefined {
+  private get _blueprint(): BlueprintOrError | undefined {
     if (!this._blueprints) {
       return undefined;
     }
@@ -61,7 +63,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   protected render() {
     const blueprint = this._blueprint;
-    return html`<ha-config-section .isWide=${this.isWide}>
+    return html`<ha-config-section vertical .isWide=${this.isWide}>
         ${!this.narrow
           ? html` <span slot="header">${this.config.alias}</span> `
           : ""}
@@ -117,64 +119,86 @@ export class HaBlueprintAutomationEditor extends LitElement {
         </ha-card>
       </ha-config-section>
 
-      <ha-config-section .isWide=${this.isWide}>
+      <ha-config-section vertical .isWide=${this.isWide}>
         <span slot="header"
           >${this.hass.localize(
             "ui.panel.config.automation.editor.blueprint.header"
           )}</span
         >
         <ha-card>
-          <div class="card-content">
-            <div class="blueprint-picker-container">
-              ${this._blueprints
-                ? Object.keys(this._blueprints).length
-                  ? html`
-                      <ha-blueprint-picker
-                        .hass=${this.hass}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.blueprint.blueprint_to_use"
-                        )}
-                        .blueprints=${this._blueprints}
-                        .value=${this.config.use_blueprint.path}
-                        @value-changed=${this._blueprintChanged}
-                      ></ha-blueprint-picker>
-                    `
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.blueprint.no_blueprints"
-                    )
-                : html`<ha-circular-progress active></ha-circular-progress>`}
-              <mwc-button @click=${this._navigateBlueprints}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.blueprint.manage_blueprints"
-                )}
-              </mwc-button>
-            </div>
-            ${this.config.use_blueprint.path
-              ? blueprint?.metadata?.input &&
-                Object.keys(blueprint.metadata.input).length
-                ? html`<h3>
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.blueprint.inputs"
+          <div class="blueprint-picker-container">
+            ${this._blueprints
+              ? Object.keys(this._blueprints).length
+                ? html`
+                    <ha-blueprint-picker
+                      .hass=${this.hass}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.blueprint.blueprint_to_use"
                       )}
-                    </h3>
-                    ${Object.entries(blueprint.metadata.input).map(
-                      ([key, value]) =>
-                        html`<div>
-                          ${value?.description}
-                          <paper-input
-                            .key=${key}
-                            .label=${value?.name || key}
-                            .value=${this.config.use_blueprint.input &&
-                            this.config.use_blueprint.input[key]}
-                            @value-changed=${this._inputChanged}
-                          ></paper-input>
-                        </div>`
-                    )}`
+                      .blueprints=${this._blueprints}
+                      .value=${this.config.use_blueprint.path}
+                      @value-changed=${this._blueprintChanged}
+                    ></ha-blueprint-picker>
+                  `
                 : this.hass.localize(
-                    "ui.panel.config.automation.editor.blueprint.no_inputs"
+                    "ui.panel.config.automation.editor.blueprint.no_blueprints"
                   )
-              : ""}
+              : html`<ha-circular-progress active></ha-circular-progress>`}
+            <mwc-button @click=${this._navigateBlueprints}>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.blueprint.manage_blueprints"
+              )}
+            </mwc-button>
           </div>
+
+          ${this.config.use_blueprint.path
+            ? blueprint && "error" in blueprint
+              ? html`<p class="warning padding">
+                  There is an error in this Blueprint: ${blueprint.error}
+                </p>`
+              : html`${blueprint?.metadata.description
+                  ? html`<p>${blueprint.metadata.description}</p>`
+                  : ""}
+                ${blueprint?.metadata?.input &&
+                Object.keys(blueprint.metadata.input).length
+                  ? html`<h3>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.blueprint.inputs"
+                        )}
+                      </h3>
+                      ${Object.entries(blueprint.metadata.input).map(
+                        ([key, value]) =>
+                          html`<ha-settings-row .narrow=${this.narrow}>
+                            <span slot="heading">${value?.name || key}</span>
+                            <span slot="description"
+                              >${value?.description}</span
+                            >
+                            ${value?.selector
+                              ? html`<ha-selector
+                                  .hass=${this.hass}
+                                  .selector=${value.selector}
+                                  .key=${key}
+                                  .value=${(this.config.use_blueprint.input &&
+                                    this.config.use_blueprint.input[key]) ||
+                                  value?.default}
+                                  @value-changed=${this._inputChanged}
+                                ></ha-selector>`
+                              : html`<paper-input
+                                  .key=${key}
+                                  required
+                                  .value=${this.config.use_blueprint.input &&
+                                  this.config.use_blueprint.input[key]}
+                                  @value-changed=${this._inputChanged}
+                                  no-label-float
+                                ></paper-input>`}
+                          </ha-settings-row>`
+                      )}`
+                  : html`<p class="padding">
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.blueprint.no_inputs"
+                      )}
+                    </p>`}`
+            : ""}
         </ha-card>
       </ha-config-section>`;
   }
@@ -206,7 +230,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     ev.stopPropagation();
     const target = ev.target as any;
     const key = target.key;
-    const value = target.value;
+    const value = ev.detail.value;
     if (
       (this.config.use_blueprint.input &&
         this.config.use_blueprint.input[key] === value) ||
@@ -252,24 +276,17 @@ export class HaBlueprintAutomationEditor extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
-          overflow: hidden;
-        }
-        .errors {
-          padding: 20px;
-          font-weight: bold;
-          color: var(--error-color);
-        }
-        .content {
-          padding-bottom: 20px;
+        .padding {
+          padding: 16px;
         }
         .blueprint-picker-container {
+          padding: 16px;
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
         h3 {
-          margin-top: 16px;
+          margin: 16px;
         }
         span[slot="introduction"] a {
           color: var(--primary-color);
@@ -280,19 +297,15 @@ export class HaBlueprintAutomationEditor extends LitElement {
         ha-entity-toggle {
           margin-right: 8px;
         }
-        mwc-fab {
-          position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
-          transition: bottom 0.3s;
+        ha-settings-row {
+          --paper-time-input-justify-content: flex-end;
+          border-top: 1px solid var(--divider-color);
         }
-        mwc-fab.dirty {
-          bottom: 0;
+        :host(:not([narrow])) ha-settings-row paper-input {
+          width: 60%;
         }
-        .selected_menu_item {
-          color: var(--primary-color);
-        }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
+        :host(:not([narrow])) ha-settings-row ha-selector {
+          width: 60%;
         }
       `,
     ];

@@ -1487,7 +1487,8 @@
                     "action-editor": {
                         "actions": {
                             "url": "URL"
-                        }
+                        },
+                        "url_path": "URL Yolu"
                     },
                     "card": {
                         "button": {
