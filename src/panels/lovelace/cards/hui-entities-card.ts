@@ -109,7 +109,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: EntitiesCardConfig): void {
-    if (!config || !config.entities.length) {
+    if (!config.entities || !Array.isArray(config.entities)) {
       throw new Error("Entities must be specified");
     }
 
