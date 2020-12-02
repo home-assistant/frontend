@@ -246,6 +246,26 @@ export class HaConfigDevicePage extends LitElement {
                 .devices=${this.devices}
                 .device=${device}
               >
+              ${
+                device.disabled_by
+                  ? html`
+                      <div>
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.enabled_cause",
+                            "cause",
+                            device.disabled_by
+                          )}
+                        </p>
+                      </div>
+                      <div class="card-actions" slot="actions">
+                        <mwc-button @click=${this._enableDevice}>
+                          ${this.hass.localize("ui.common.enable")}
+                        </mwc-button>
+                      </div>
+                    `
+                  : html``
+              }
               ${this._renderIntegrationInfo(device, integrations)}
               </ha-device-info-card>
 
@@ -272,9 +292,14 @@ export class HaConfigDevicePage extends LitElement {
                         )}
                         <ha-icon-button
                           @click=${this._showAutomationDialog}
-                          title=${this.hass.localize(
-                            "ui.panel.config.devices.automation.create"
-                          )}
+                          .disabled=${device.disabled_by}
+                          title=${device.disabled_by
+                            ? this.hass.localize(
+                                "ui.panel.config.devices.automation.create_disabled"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.devices.automation.create"
+                              )}
                           icon="hass:plus-circle"
                         ></ha-icon-button>
                       </h1>
@@ -342,9 +367,16 @@ export class HaConfigDevicePage extends LitElement {
 
                                   <ha-icon-button
                                     @click=${this._createScene}
-                                    title=${this.hass.localize(
-                                      "ui.panel.config.devices.scene.create"
-                                    )}
+                                    .disabled=${device.disabled_by}
+                                    title=${
+                                      device.disabled_by
+                                        ? this.hass.localize(
+                                            "ui.panel.config.devices.scene.create_disabled"
+                                          )
+                                        : this.hass.localize(
+                                            "ui.panel.config.devices.scene.create"
+                                          )
+                                    }
                                     icon="hass:plus-circle"
                                   ></ha-icon-button>
                         </h1>
@@ -415,9 +447,14 @@ export class HaConfigDevicePage extends LitElement {
                           )}
                           <ha-icon-button
                             @click=${this._showScriptDialog}
-                            title=${this.hass.localize(
-                              "ui.panel.config.devices.script.create"
-                            )}
+                            .disabled=${device.disabled_by}
+                            title=${device.disabled_by
+                              ? this.hass.localize(
+                                  "ui.panel.config.devices.script.create_disabled"
+                                )
+                              : this.hass.localize(
+                                  "ui.panel.config.devices.script.create"
+                                )}
                             icon="hass:plus-circle"
                           ></ha-icon-button>
                         </h1>
@@ -629,6 +666,12 @@ export class HaConfigDevicePage extends LitElement {
         });
         await Promise.all(updateProms);
       },
+    });
+  }
+
+  private async _enableDevice(): Promise<void> {
+    await updateDeviceRegistryEntry(this.hass, this.deviceId, {
+      disabled_by: null,
     });
   }
 
