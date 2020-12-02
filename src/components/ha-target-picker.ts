@@ -581,6 +581,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .mdc-chip:hover {
         z-index: 5;
       }
+      paper-tooltip {
+        min-width: 200px;
+      }
     `;
   }
 }

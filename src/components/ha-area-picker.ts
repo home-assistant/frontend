@@ -173,10 +173,10 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           }
           deviceEntityLookup[entity.device_id].push(entity);
         }
-        inputDevices = [...devices];
+        inputDevices = devices;
         inputEntities = entities.filter((entity) => entity.area_id);
       } else if (deviceFilter) {
-        inputDevices = [...devices];
+        inputDevices = devices;
       } else if (entityFilter) {
         inputEntities = entities.filter((entity) => entity.area_id);
       }
