@@ -257,6 +257,8 @@ export class HaConfigDevicePage extends LitElement {
                             device.disabled_by
                           )}
                         </p>
+                      </div>
+                      <div class="card-actions" slot="actions">
                         <mwc-button @click=${this._enableDevice}>
                           ${this.hass.localize("ui.common.enable")}
                         </mwc-button>
