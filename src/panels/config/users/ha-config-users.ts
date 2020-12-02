@@ -58,54 +58,55 @@ export class HaConfigUsers extends LitElement {
                   "ui.panel.config.users.editor.unnamed_user"
                 )}`,
         },
-      };
-
-      columns.username = {
-        title: this.hass.localize(
-          "ui.panel.config.users.picker.headers.username"
-        ),
-        sortable: true,
-        filterable: true,
-        width: "20%",
-        direction: "asc",
-        hidden: narrow,
-        template: (username) => html`
-          ${username ||
-          this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
-        `,
-      };
-      columns.group_ids = {
-        title: this.hass.localize("ui.panel.config.users.picker.headers.group"),
-        sortable: true,
-        filterable: true,
-        width: "20%",
-        direction: "asc",
-        hidden: narrow,
-        template: (groupIds) => html`
-          ${this.hass.localize(`groups.${groupIds[0]}`)}
-        `,
-      };
-      columns.is_active = {
-        title: this.hass.localize(
-          "ui.panel.config.users.picker.headers.is_active"
-        ),
-        type: "icon",
-        sortable: true,
-        filterable: true,
-        width: "80px",
-        template: (is_active) =>
-          is_active ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
-      };
-      columns.system_generated = {
-        title: this.hass.localize(
-          "ui.panel.config.users.picker.headers.system"
-        ),
-        type: "icon",
-        sortable: true,
-        filterable: true,
-        width: "160px",
-        template: (generated) =>
-          generated ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
+        username: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.username"
+          ),
+          sortable: true,
+          filterable: true,
+          width: "20%",
+          direction: "asc",
+          hidden: narrow,
+          template: (username) => html`
+            ${username ||
+            this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
+          `,
+        },
+        group_ids: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.group"
+          ),
+          sortable: true,
+          filterable: true,
+          width: "20%",
+          direction: "asc",
+          hidden: narrow,
+          template: (groupIds) => html`
+            ${this.hass.localize(`groups.${groupIds[0]}`)}
+          `,
+        },
+        is_active: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.is_active"
+          ),
+          type: "icon",
+          sortable: true,
+          filterable: true,
+          width: "80px",
+          template: (is_active) =>
+            is_active ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
+        },
+        system_generated: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.system"
+          ),
+          type: "icon",
+          sortable: true,
+          filterable: true,
+          width: "160px",
+          template: (generated) =>
+            generated ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
+        },
       };
 
       return columns;
