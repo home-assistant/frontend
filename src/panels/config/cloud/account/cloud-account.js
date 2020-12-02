@@ -122,7 +122,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  [[localize('ui.panel.config.cloud.account.integrations_link_all_features')]] </a
+                  [[localize('ui.panel.config.cloud.account.integrations_link_all_features')]]</a
                 >.
               </p>
             </div>

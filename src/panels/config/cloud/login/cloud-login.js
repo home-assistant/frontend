@@ -91,9 +91,8 @@ class CloudLogin extends LocalizeMixin(
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Nabu&nbsp;Casa,&nbsp;Inc
-                </a>
-                [[localize('ui.panel.config.cloud.login.introduction2a')]]
+                  Nabu&nbsp;Casa,&nbsp;Inc</a
+                >[[localize('ui.panel.config.cloud.login.introduction2a')]]
               </p>
               <p>
                 [[localize('ui.panel.config.cloud.login.introduction3')]]
@@ -147,13 +146,13 @@ class CloudLogin extends LocalizeMixin(
                   progress="[[_requestInProgress]]"
                   >[[localize('ui.panel.config.cloud.login.sign_in')]]</ha-progress-button
                 >
-                <button
+                <mwc-button
                   class="link"
                   hidden="[[_requestInProgress]]"
                   on-click="_handleForgotPassword"
                 >
                   [[localize('ui.panel.config.cloud.login.forgot_password')]]
-                </button>
+                </mwc-button>
               </div>
             </ha-card>
 
