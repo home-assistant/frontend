@@ -31,7 +31,7 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   @property() public entities!: EntityRegistryStateEntry[];
 
-  @internalProperty() private _showDisabled = false;
+  @property() public showDisabled = false;
 
   private _entityRows: Array<LovelaceRow | HuiErrorCard> = [];
 
@@ -68,7 +68,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                 })}
               </div>
               ${disabledEntities.length
-                ? !this._showDisabled
+                ? !this.showDisabled
                   ? html`
                       <button
                         class="show-more"
@@ -119,7 +119,7 @@ export class HaDeviceEntitiesCard extends LitElement {
   }
 
   private _toggleShowDisabled() {
-    this._showDisabled = !this._showDisabled;
+    this.showDisabled = !this.showDisabled;
   }
 
   private _renderEntity(entry: EntityRegistryStateEntry): TemplateResult {
