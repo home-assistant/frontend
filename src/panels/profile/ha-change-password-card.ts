@@ -37,9 +37,9 @@ class HaChangePasswordCard extends LitElement {
     return html`
       <div>
         <ha-card
-          header="${this.hass.localize(
+          header=${this.hass.localize(
             "ui.panel.profile.change_password.header"
-          )}"
+          )}
         >
           <div class="card-content">
             ${this._errorMsg
@@ -51,9 +51,9 @@ class HaChangePasswordCard extends LitElement {
 
             <paper-input
               id="currentPassword"
-              label="${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.profile.change_password.current_password"
-              )}"
+              )}
               type="password"
               .value=${this._currentPassword}
               @value-changed=${this._currentPasswordChanged}
@@ -62,9 +62,9 @@ class HaChangePasswordCard extends LitElement {
 
             ${this._currentPassword
               ? html` <paper-input
-                    label="${this.hass.localize(
+                    .label=${this.hass.localize(
                       "ui.panel.profile.change_password.new_password"
-                    )}"
+                    )}
                     name="password"
                     type="password"
                     .value=${this._password}
@@ -73,9 +73,9 @@ class HaChangePasswordCard extends LitElement {
                     auto-validate
                   ></paper-input>
                   <paper-input
-                    label="${this.hass.localize(
+                    .label=${this.hass.localize(
                       "ui.panel.profile.change_password.confirm_new_password"
-                    )}"
+                    )}
                     name="passwordConfirm"
                     type="password"
                     .value=${this._passwordConfirm}
@@ -128,8 +128,9 @@ class HaChangePasswordCard extends LitElement {
 
   private async _changePassword() {
     this._statusMsg = undefined;
-    if (!this._currentPassword || !this._password || !this._passwordConfirm)
+    if (!this._currentPassword || !this._password || !this._passwordConfirm) {
       return;
+    }
 
     if (this._password !== this._passwordConfirm) {
       this._errorMsg = this.hass.localize(
@@ -154,18 +155,19 @@ class HaChangePasswordCard extends LitElement {
         current_password: this._currentPassword,
         new_password: this._password,
       });
-
-      this._statusMsg = this.hass.localize(
-        "ui.panel.profile.change_password.success"
-      );
-      this._currentPassword = undefined;
-      this._password = undefined;
-      this._passwordConfirm = undefined;
     } catch (err) {
       this._errorMsg = err.message;
+      return;
+    } finally {
+      this._loading = false;
     }
 
-    this._loading = false;
+    this._statusMsg = this.hass.localize(
+      "ui.panel.profile.change_password.success"
+    );
+    this._currentPassword = undefined;
+    this._password = undefined;
+    this._passwordConfirm = undefined;
   }
 
   static get styles(): CSSResult[] {
