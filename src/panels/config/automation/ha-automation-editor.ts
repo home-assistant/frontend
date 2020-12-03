@@ -396,7 +396,25 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _copyYaml() {
     if (this._editor?.yaml) {
-      navigator.clipboard.writeText(this._editor.yaml);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(this._editor.yaml);
+      } else {
+        const dummyElement = document.createElement("span");
+        dummyElement.style.whiteSpace = "pre";
+        dummyElement.textContent = this._editor.yaml;
+        document.body.appendChild(dummyElement);
+
+        const selection = window.getSelection()!;
+        const range = document.createRange();
+
+        range.selectNodeContents(dummyElement);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        document.execCommand("copy");
+        selection.removeAllRanges();
+        document.body.removeChild(dummyElement);
+      }
     }
   }
 
