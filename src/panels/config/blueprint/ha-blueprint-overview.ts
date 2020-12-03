@@ -112,7 +112,6 @@ class HaBlueprintOverview extends LitElement {
       create: {
         title: "",
         type: narrow ? "icon-button" : undefined,
-        width: narrow ? undefined : "180px",
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
@@ -126,8 +125,9 @@ class HaBlueprintOverview extends LitElement {
                   "ui.panel.config.blueprint.overview.use_blueprint"
                 )}
                 @click=${(ev) => this._createNew(ev)}
-                ><ha-svg-icon .path=${mdiRobot}></ha-svg-icon
-              ></mwc-icon-button>`
+              >
+                <ha-svg-icon .path=${mdiRobot}></ha-svg-icon>
+              </mwc-icon-button>`
             : html`<mwc-button
                 .blueprint=${blueprint}
                 @click=${(ev) => this._createNew(ev)}

@@ -18,11 +18,6 @@ export class HaSettingsRow extends LitElement {
 
   protected render(): SVGTemplateResult {
     return html`
-      <style>
-        paper-item-body {
-          padding-right: 16px;
-        }
-      </style>
       <paper-item-body
         ?two-line=${!this.threeLine}
         ?three-line=${this.threeLine}
@@ -43,6 +38,14 @@ export class HaSettingsRow extends LitElement {
         align-self: auto;
         align-items: center;
       }
+      paper-item-body {
+        padding: 8px 16px 8px 0;
+      }
+      paper-item-body[two-line] {
+        min-height: calc(
+          var(--paper-item-body-two-line-min-height, 72px) - 16px
+        );
+      }
       :host([narrow]) {
         align-items: normal;
         flex-direction: column;
@@ -51,6 +54,9 @@ export class HaSettingsRow extends LitElement {
       }
       ::slotted(ha-switch) {
         padding: 16px 0;
+      }
+      div[secondary] {
+        white-space: normal;
       }
     `;
   }
