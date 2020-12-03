@@ -258,10 +258,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
     });
   }
 
-  private _navigateBlueprints() {
-    navigate(this, "/config/blueprint");
-  }
-
   static get styles(): CSSResult[] {
     return [
       haStyle,
