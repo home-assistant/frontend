@@ -24,7 +24,6 @@ import "./action/ha-automation-action";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyle } from "../../../resources/styles";
 import { HassEntity } from "home-assistant-js-websocket";
-import { navigate } from "../../../common/navigate";
 import {
   BlueprintOrError,
   Blueprints,
@@ -144,11 +143,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
                     "ui.panel.config.automation.editor.blueprint.no_blueprints"
                   )
               : html`<ha-circular-progress active></ha-circular-progress>`}
-            <mwc-button @click=${this._navigateBlueprints}>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.blueprint.manage_blueprints"
-              )}
-            </mwc-button>
           </div>
 
           ${this.config.use_blueprint.path
@@ -263,10 +257,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
     });
   }
 
-  private _navigateBlueprints() {
-    navigate(this, "/config/blueprint");
-  }
-
   static get styles(): CSSResult[] {
     return [
       haStyle,
@@ -276,9 +266,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
         }
         .blueprint-picker-container {
           padding: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
         }
         h3 {
           margin: 16px;

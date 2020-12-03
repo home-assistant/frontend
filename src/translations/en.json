@@ -1160,7 +1160,6 @@
               "header": "Blueprint",
               "blueprint_to_use": "Blueprint to use",
               "no_blueprints": "You don't have any blueprints",
-              "manage_blueprints": "Manage Blueprints",
               "no_inputs": "This blueprint doesn't have any inputs."
             },
             "modes": {
