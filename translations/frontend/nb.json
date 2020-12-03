@@ -299,7 +299,7 @@
             "on": "På"
         },
         "timer": {
-            "active": "aktiv",
+            "active": "Aktiv",
             "idle": "Inaktiv",
             "paused": "pauset"
         },
@@ -3435,7 +3435,7 @@
                     "description": "Dette vil skjule sidepanelet som standard, tilsvarende opplevelsen på en mobil.",
                     "header": "Skjul alltid sidepanelet"
                 },
-                "is_owner": "Du er en eier.",
+                "is_owner": "Du er en eier",
                 "language": {
                     "dropdown_label": "Språk",
                     "header": "Språk",

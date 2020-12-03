@@ -2474,6 +2474,7 @@
                         "CONFIGURED_status_text": "Initialisieren",
                         "INITIALIZED": "Initialisierung abgeschlossen",
                         "INITIALIZED_status_text": "Das Gerät ist einsatzbereit",
+                        "INTERVIEW_COMPLETE": "Interview abgeschlossen",
                         "INTERVIEW_COMPLETE_status_text": "Konfigurieren",
                         "PAIRED": "Gerät gefunden"
                     },
