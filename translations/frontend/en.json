@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Config Entry",
+            "device": "Device",
             "integration": "Integration",
             "user": "User"
         }
@@ -710,6 +711,16 @@
             "service-picker": {
                 "service": "Service"
             },
+            "target-picker": {
+                "add_area_id": "Pick area",
+                "add_device_id": "Pick device",
+                "add_entity_id": "Pick entity",
+                "expand_area_id": "Expand this area in the seperate devices and entities that it contains. After expanding it will not update the devices and entities when the area changes.",
+                "expand_device_id": "Expand this device in seperate entities. After expanding it will not update the entities when the device changes.",
+                "remove_area_id": "Remove area",
+                "remove_device_id": "Remove device",
+                "remove_entity_id": "Remove entity"
+            },
             "user-picker": {
                 "add_user": "Add user",
                 "no_user": "No user",
@@ -733,6 +744,7 @@
                 "editor": {
                     "confirm_delete": "Are you sure you want to delete this entry?",
                     "delete": "Delete",
+                    "device_disabled": "The device of this entity is disabled.",
                     "enabled_cause": "Disabled by {cause}.",
                     "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
                     "enabled_description": "Disabled entities will not be added to Home Assistant.",
@@ -743,6 +755,7 @@
                     "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
                     "name": "Name",
                     "note": "Note: This might not work yet with all integrations.",
+                    "open_device_settings": "Open device settings",
                     "unavailable": "This entity is not currently available.",
                     "update": "Update"
                 },
@@ -1030,7 +1043,7 @@
                         "confirmation_text": "All devices in this area will become unassigned.",
                         "confirmation_title": "Are you sure you want to delete this area?"
                     },
-                    "description": "Manage areas in your home",
+                    "description": "Group devices into areas",
                     "editor": {
                         "area_id": "Area ID",
                         "create": "Create",
@@ -1052,7 +1065,7 @@
                 },
                 "automation": {
                     "caption": "Automations",
-                    "description": "Manage automations",
+                    "description": "Create custom behavior rules for your home",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Use a blueprint"
@@ -1510,7 +1523,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Control away from home, integrate with Alexa and Google Assistant.",
+                    "description_features": "Control home when away and integrate with Alexa and Google Assistant",
                     "description_login": "Logged in as {email}",
                     "description_not_login": "Not logged in",
                     "dialog_certificate": {
@@ -1605,7 +1618,7 @@
                 },
                 "core": {
                     "caption": "General",
-                    "description": "Change your general Home Assistant configuration",
+                    "description": "Unit system, location, time zone & other general parameters",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1667,6 +1680,7 @@
                             "unknown_condition": "Unknown condition"
                         },
                         "create": "Create automation with device",
+                        "create_disable": "Can't create automation with disabled device",
                         "no_automations": "No automations",
                         "no_device_automations": "There are no automations available for this device.",
                         "triggers": {
@@ -1692,9 +1706,18 @@
                         "no_devices": "No devices"
                     },
                     "delete": "Delete",
-                    "description": "Manage connected devices",
+                    "description": "Manage configured devices",
                     "device_info": "Device info",
                     "device_not_found": "Device not found.",
+                    "disabled": "Disabled",
+                    "disabled_by": {
+                        "config_entry": "Config Entry",
+                        "integration": "Integration",
+                        "user": "User"
+                    },
+                    "enabled_cause": "The device is disabled by {cause}.",
+                    "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
+                    "enabled_label": "Enable device",
                     "entities": {
                         "add_entities_lovelace": "Add to Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
@@ -1704,14 +1727,25 @@
                     },
                     "name": "Name",
                     "no_devices": "No devices",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter",
+                            "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+                            "show_all": "Show all",
+                            "show_disabled": "Show disabled devices"
+                        },
+                        "search": "Search devices"
+                    },
                     "scene": {
                         "create": "Create scene with device",
+                        "create_disable": "Can't create scene with disabled device",
                         "no_scenes": "No scenes",
                         "scenes": "Scenes"
                     },
                     "scenes": "Scenes",
                     "script": {
                         "create": "Create script with device",
+                        "create_disable": "Can't create script with disabled device",
                         "no_scripts": "No scripts",
                         "scripts": "Scripts"
                     },
@@ -1777,7 +1811,7 @@
                 "header": "Configure Home Assistant",
                 "helpers": {
                     "caption": "Helpers",
-                    "description": "Manage elements that help build automations",
+                    "description": "Elements that help build automations",
                     "dialog": {
                         "add_helper": "Add helper",
                         "add_platform": "Add {platform}",
@@ -1809,7 +1843,7 @@
                     "copy_github": "For GitHub",
                     "copy_raw": "Raw Text",
                     "custom_uis": "Custom UIs:",
-                    "description": "View info about your Home Assistant installation",
+                    "description": "Version, system health and links to documentation",
                     "developed_by": "Developed by a bunch of awesome people.",
                     "documentation": "Documentation",
                     "frontend": "frontend-ui",
@@ -1915,7 +1949,7 @@
                     },
                     "configure": "Configure",
                     "configured": "Configured",
-                    "description": "Manage integrations",
+                    "description": "Manage integrations with services, devices, ...",
                     "details": "Integration details",
                     "discovered": "Discovered",
                     "home_assistant_website": "Home Assistant website",
@@ -2000,7 +2034,7 @@
                             "open": "Open"
                         }
                     },
-                    "description": "Manage your Lovelace Dashboards",
+                    "description": "Create customized sets of cards to control your home",
                     "resources": {
                         "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
                         "caption": "Resources",
@@ -2199,7 +2233,7 @@
                 "scene": {
                     "activated": "Activated scene {name}.",
                     "caption": "Scenes",
-                    "description": "Manage scenes",
+                    "description": "Capture device states and easily recall them later",
                     "editor": {
                         "default_name": "New Scene",
                         "devices": {
@@ -2243,7 +2277,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Manage scripts",
+                    "description": "Execute a sequence of actions",
                     "editor": {
                         "alias": "Name",
                         "default_name": "New Script",
@@ -2354,7 +2388,7 @@
                     "confirm_remove": "Are you sure you want to remove tag {tag}?",
                     "confirm_remove_title": "Remove tag?",
                     "create_automation": "Create automation with tag",
-                    "description": "Manage tags",
+                    "description": "Trigger automations when a NFC tag, QR code, etc. is scanned",
                     "detail": {
                         "companion_apps": "companion apps",
                         "create": "Create",
@@ -2393,6 +2427,7 @@
                     "editor": {
                         "activate_user": "Activate user",
                         "active": "Active",
+                        "active_tooltip": "Controls if user can login",
                         "admin": "Administrator",
                         "caption": "View user",
                         "change_password": "Change password",
@@ -3411,10 +3446,13 @@
                 "change_password": {
                     "confirm_new_password": "Confirm New Password",
                     "current_password": "Current Password",
+                    "error_new_is_old": "New password must be different than current password",
+                    "error_new_mismatch": "Entered new password values do not match",
                     "error_required": "Required",
                     "header": "Change Password",
                     "new_password": "New Password",
-                    "submit": "Submit"
+                    "submit": "Submit",
+                    "success": "Password changed successfully"
                 },
                 "current_user": "You are currently logged in as {fullName}.",
                 "customize_sidebar": {

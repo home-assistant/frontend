@@ -52,6 +52,7 @@ class HaBluePrintPicker extends LitElement {
         .label=${this.label ||
         this.hass.localize("ui.components.blueprint-picker.label")}
         .disabled=${this.disabled}
+        horizontal-align="left"
       >
         <paper-listbox
           slot="dropdown-content"
@@ -109,6 +110,9 @@ class HaBluePrintPicker extends LitElement {
       }
       paper-listbox {
         min-width: 200px;
+      }
+      paper-item {
+        cursor: pointer;
       }
     `;
   }
