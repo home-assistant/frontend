@@ -25,13 +25,15 @@ import {
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
-import { StackCardConfig } from "../../cards/types";
+import { GridCardConfig, StackCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { GUIModeChangedEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
   type: string(),
@@ -77,6 +79,35 @@ export class HuiStackCardEditor extends LitElement
 
     return html`
       <div class="card-config">
+        ${this._config.type === "grid"
+          ? html`
+              <div class="side-by-side">
+                <paper-input
+                  .label="${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.grid.columns"
+                  )} (${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.config.optional"
+                  )})"
+                  type="number"
+                  .value=${(this._config as GridCardConfig).columns}
+                  .configValue=${"columns"}
+                  @value-changed=${this._handleColumnsChanged}
+                ></paper-input>
+                <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.grid.square"
+                  )}
+                  .dir=${computeRTLDirection(this.hass)}
+                >
+                  <ha-switch
+                    .checked=${(this._config as GridCardConfig).square}
+                    .configValue=${"square"}
+                    @change=${this._handleSquareChanged}
+                  ></ha-switch>
+                </ha-formfield>
+              </div>
+            `
+          : ""}
         <div class="toolbar">
           <paper-tabs
             .selected=${selected}
@@ -238,6 +269,30 @@ export class HuiStackCardEditor extends LitElement
     this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
+  private _handleColumnsChanged(ev): void {
+    if (!this._config) {
+      return;
+    }
+
+    this._config = {
+      ...this._config,
+      columns: Number(ev.target.value),
+    };
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _handleSquareChanged(ev): void {
+    if (!this._config) {
+      return;
+    }
+
+    this._config = {
+      ...this._config,
+      square: ev.target.checked,
+    };
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
   private _toggleMode(): void {
     this._cardEditorEl?.toggleMode();
   }
@@ -249,43 +304,46 @@ export class HuiStackCardEditor extends LitElement
     }
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .toolbar {
-        display: flex;
-        --paper-tabs-selection-bar-color: var(--primary-color);
-        --paper-tab-ink: var(--primary-color);
-      }
-      paper-tabs {
-        display: flex;
-        font-size: 14px;
-        flex-grow: 1;
-      }
-      #add-card {
-        max-width: 32px;
-        padding: 0;
-      }
-
-      #card-options {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-      }
-
-      #editor {
-        border: 1px solid var(--divider-color);
-        padding: 12px;
-      }
-      @media (max-width: 450px) {
-        #editor {
-          margin: 0 -12px;
+  static get styles(): CSSResult[] {
+    return [
+      configElementStyle,
+      css`
+        .toolbar {
+          display: flex;
+          --paper-tabs-selection-bar-color: var(--primary-color);
+          --paper-tab-ink: var(--primary-color);
         }
-      }
+        paper-tabs {
+          display: flex;
+          font-size: 14px;
+          flex-grow: 1;
+        }
+        #add-card {
+          max-width: 32px;
+          padding: 0;
+        }
 
-      .gui-mode-button {
-        margin-right: auto;
-      }
-    `;
+        #card-options {
+          display: flex;
+          justify-content: flex-end;
+          width: 100%;
+        }
+
+        #editor {
+          border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        @media (max-width: 450px) {
+          #editor {
+            margin: 0 -12px;
+          }
+        }
+
+        .gui-mode-button {
+          margin-right: auto;
+        }
+      `,
+    ];
   }
 }
 
