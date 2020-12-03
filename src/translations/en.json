@@ -1470,18 +1470,18 @@
             "delete_blueprint": "Delete blueprint"
           },
           "add": {
-            "header": "Add new blueprint",
-            "import_header": "Import \"{name}\" (type: {domain})",
+            "header": "Import a blueprint",
+            "import_header": "Blueprint \"{name}\"",
             "import_introduction": "You can import blueprints of other users from Github and the community forums. Enter the URL of the blueprint below.",
             "url": "URL of the blueprint",
             "raw_blueprint": "Blueprint content",
-            "importing": "Importing blueprint...",
-            "import_btn": "Import blueprint",
-            "saving": "Saving blueprint...",
-            "save_btn": "Save blueprint",
+            "importing": "Loading blueprint...",
+            "import_btn": "Preview blueprint",
+            "saving": "Importing blueprint...",
+            "save_btn": "Import blueprint",
             "error_no_url": "Please enter the URL of the blueprint.",
             "unsupported_blueprint": "This blueprint is not supported",
-            "file_name": "Local blueprint file name"
+            "file_name": "Blueprint Path"
           }
         },
         "script": {
