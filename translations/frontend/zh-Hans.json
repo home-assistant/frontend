@@ -1756,7 +1756,7 @@
                             "button": "删除所选实体",
                             "confirm_partly_text": "在所选的 {selected} 个实体中有 {removable} 个可被删除。实体可被删除的条件是集成不再提供它们。有时，即使集成已删除，也必须先重新启动 Home Assistant 才能删除它们的实体。您确定要删除实体吗？",
                             "confirm_partly_title": "所选实体中只有 {number} 个可被删除。",
-                            "confirm_text": "如果它们包含这些实体，则应将它们从 Lovelace 配置和自动化中删除。",
+                            "confirm_text": "如果 Lovelace 配置和自动化中包含这些实体，请将它们一并删除。",
                             "confirm_title": "您要删除这 {number} 个实体吗？"
                         },
                         "search": "搜索实体",

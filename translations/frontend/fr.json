@@ -1680,7 +1680,7 @@
                     "caption": "Appareils",
                     "confirm_delete": "Voulez-vous vraiment supprimer cet appareil ?",
                     "confirm_rename_entity_ids": "Voulez-vous aussi renommer les ID de vos entités?",
-                    "confirm_rename_entity_ids_warning": "Cela ne changera aucune configuration (comme les automatismes, les scripts, les scènes, Lovelace) qui utilisent actuellement ces entités, vous devrez les mettre à jour vous-même.",
+                    "confirm_rename_entity_ids_warning": "Cela ne changera aucune configuration (comme les automatisations, les scripts, les scènes, Lovelace) qui utilisent actuellement ces entités, vous devrez les mettre à jour vous-même.",
                     "data_table": {
                         "area": "Zone",
                         "battery": "Batterie",
@@ -1744,6 +1744,7 @@
                         },
                         "header": "Entités",
                         "headers": {
+                            "area": "Pièce",
                             "entity_id": "ID de l'entité",
                             "integration": "Intégration",
                             "name": "Nom",
@@ -2471,6 +2472,16 @@
                         "value": "Valeur"
                     },
                     "description": "Gestion de réseau domotique Zigbee",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configuration terminée",
+                        "CONFIGURED_status_text": "Initialisation",
+                        "INITIALIZED": "Initialisation terminée",
+                        "INITIALIZED_status_text": "L'appareil est prêt à être utilisé",
+                        "INTERVIEW_COMPLETE": "Processus d'interrogation terminé",
+                        "INTERVIEW_COMPLETE_status_text": "Configurer",
+                        "PAIRED": "Appareil trouvé",
+                        "PAIRED_status_text": "Démarrage du processus d'interrogation"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Appareil"
                     },
@@ -3358,7 +3369,7 @@
                     "button_detect": "Détecter",
                     "finish": "Suivant",
                     "intro": "Bonjour {name}, bienvenue dans Home Assistant. Comment voudriez-vous nommer votre maison?",
-                    "intro_location": "Nous aimerions savoir où vous habitez. Ces informations vous aideront à afficher des informations et à configurer des automatismes basés sur le soleil. Ces données ne sont jamais partagées en dehors de votre réseau.",
+                    "intro_location": "Nous aimerions savoir où vous habitez. Ces informations vous aideront à afficher des informations et à configurer des automatisations basés sur le soleil. Ces données ne sont jamais partagées en dehors de votre réseau.",
                     "intro_location_detect": "Nous pouvons vous aider à renseigner ces informations en adressant une demande unique à un service externe.",
                     "location_name": "Nom de votre installation Home Assistant",
                     "location_name_default": "Maison"

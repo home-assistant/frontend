@@ -59,6 +59,9 @@ export class HuiThemeSelectEditor extends LitElement {
       paper-dropdown-menu {
         width: 100%;
       }
+      paper-item {
+        cursor: pointer;
+      }
     `;
   }
 
