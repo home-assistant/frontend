@@ -20,6 +20,8 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
+  @property() public enableMillisec?: boolean = false;
+
   @query("paper-time-input", true) private _input?: HTMLElement;
 
   public focus() {
@@ -36,19 +38,23 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
         .autoValidate=${this.schema.required}
         error-message="Required"
         enable-second
+        .enableMillisecond=${this.enableMillisec}
         format="24"
         .hour=${this._parseDuration(this._hours)}
         .min=${this._parseDuration(this._minutes)}
         .sec=${this._parseDuration(this._seconds)}
+        .millisec=${this._parseDurationMillisec(this._milliseconds)}
         @hour-changed=${this._hourChanged}
         @min-changed=${this._minChanged}
         @sec-changed=${this._secChanged}
+        @millisec-changed=${this._millisecChanged}
         float-input-labels
         no-hours-limit
         always-float-input-labels
         hour-label="hh"
         min-label="mm"
         sec-label="ss"
+        millisec-label="ms"
       ></paper-time-input>
     `;
   }
@@ -65,8 +71,18 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
     return this.data && this.data.seconds ? Number(this.data.seconds) : 0;
   }
 
+  private get _milliseconds() {
+    return this.data && this.data.milliseconds
+      ? Number(this.data.milliseconds)
+      : 0;
+  }
+
   private _parseDuration(value) {
     return value.toString().padStart(2, "0");
+  }
+
+  private _parseDurationMillisec(value) {
+    return value.toString().padStart(3, "0");
   }
 
   private _hourChanged(ev) {
@@ -79,6 +95,10 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
 
   private _secChanged(ev) {
     this._durationChanged(ev, "seconds");
+  }
+
+  private _millisecChanged(ev) {
+    this._durationChanged(ev, "milliseconds");
   }
 
   private _durationChanged(ev, unit) {
@@ -106,6 +126,7 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
         hours,
         minutes,
         seconds: this._seconds,
+        milliseconds: this._milliseconds,
         ...{ [unit]: value },
       },
     });

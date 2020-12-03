@@ -97,6 +97,7 @@ export interface HaFormTimeData {
   hours?: number;
   minutes?: number;
   seconds?: number;
+  milliseconds?: number;
 }
 
 export interface HaFormElement extends LitElement {

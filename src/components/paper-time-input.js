@@ -103,6 +103,10 @@ export class PaperTimeInput extends PolymerElement {
         [hidden] {
           display: none !important;
         }
+
+        #millisec {
+          width: 38px;
+        }
       </style>
 
       <label hidden$="[[hideLabel]]">[[label]]</label>
@@ -167,6 +171,28 @@ export class PaperTimeInput extends PolymerElement {
           always-float-label$="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
           hidden$="[[!enableSecond]]"
+        >
+          <span hidden$="[[!enableMillisecond]]" suffix slot="suffix">:</span>
+        </paper-input>
+
+        <!-- Millisec Input -->
+        <paper-input
+          id="millisec"
+          type="number"
+          value="{{millisec}}"
+          label="[[millisecLabel]]"
+          on-change="_formatMillisec"
+          on-focus="_onFocus"
+          required
+          auto-validate="[[autoValidate]]"
+          prevent-invalid-input
+          maxlength="3"
+          max="999"
+          min="0"
+          no-label-float$="[[!floatInputLabels]]"
+          always-float-label$="[[alwaysFloatInputLabels]]"
+          disabled="[[disabled]]"
+          hidden$="[[!enableMillisecond]]"
         >
         </paper-input>
 
@@ -264,6 +290,13 @@ export class PaperTimeInput extends PolymerElement {
         notify: true,
       },
       /**
+       * milli second
+       */
+      millisec: {
+        type: String,
+        notify: true,
+      },
+      /**
        * Suffix for the hour input
        */
       hourLabel: {
@@ -285,9 +318,23 @@ export class PaperTimeInput extends PolymerElement {
         value: "",
       },
       /**
+       * Suffix for the milli sec input
+       */
+      millisecLabel: {
+        type: String,
+        value: "",
+      },
+      /**
        * show the sec field
        */
       enableSecond: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * show the milli sec field
+       */
+      enableMillisecond: {
         type: Boolean,
         value: false,
       },
@@ -313,7 +360,7 @@ export class PaperTimeInput extends PolymerElement {
         type: String,
         notify: true,
         readOnly: true,
-        computed: "_computeTime(min, hour, sec, amPm)",
+        computed: "_computeTime(min, hour, sec, millisec, amPm)",
       },
     };
   }
@@ -332,6 +379,10 @@ export class PaperTimeInput extends PolymerElement {
     if (this.enableSecond && !this.$.sec.validate()) {
       valid = false;
     }
+    // Validate milli second field
+    if (this.enableMillisecond && !this.$.millisec.validate()) {
+      valid = false;
+    }
     // Validate AM PM if 12 hour time
     if (this.format === 12 && !this.$.dropdown.validate()) {
       valid = false;
@@ -342,16 +393,26 @@ export class PaperTimeInput extends PolymerElement {
   /**
    * Create time string
    */
-  _computeTime(min, hour, sec, amPm) {
+  _computeTime(min, hour, sec, millisec, amPm) {
     let str;
-    if (hour || min || (sec && this.enableSecond)) {
+    if (
+      hour ||
+      min ||
+      (sec && this.enableSecond) ||
+      (millisec && this.enableMillisecond)
+    ) {
       hour = hour || "00";
       min = min || "00";
       sec = sec || "00";
+      millisec = millisec || "000";
       str = hour + ":" + min;
       // add sec field
       if (this.enableSecond && sec) {
         str = str + ":" + sec;
+      }
+      // add milli sec field
+      if (this.enableMillisecond && millisec) {
+        str = str + ":" + millisec;
       }
       // No ampm on 24 hr time
       if (this.format === 12) {
@@ -364,6 +425,15 @@ export class PaperTimeInput extends PolymerElement {
 
   _onFocus(ev) {
     ev.target.inputElement.inputElement.select();
+  }
+
+  /**
+   * Format milli sec
+   */
+  _formatMillisec() {
+    if (this.millisec.toString().length === 1) {
+      this.millisec = this.millisec.toString().padStart(3, "0");
+    }
   }
 
   /**
