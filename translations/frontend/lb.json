@@ -2936,6 +2936,7 @@
                             "name": "Luucht"
                         },
                         "logbook": {
+                            "description": "Logbuch weist eng Lëscht vun Evenementer vun Entitéiten un.",
                             "name": "Logbuch"
                         },
                         "map": {
@@ -3015,6 +3016,9 @@
                         "clear": "Läschen",
                         "edit": "Änneren",
                         "none": "Keen"
+                    },
+                    "edit_badges": {
+                        "panel_mode": "Dës Badge gi net ugewise well dës Usiicht am \"Panel Modus\" ass."
                     },
                     "edit_card": {
                         "add": "Kaart dobäisetzen",
@@ -3122,7 +3126,8 @@
                     "sub-element-editor": {
                         "types": {
                             "footer": "Fousszeilen Editeur",
-                            "header": "Entête Editeur"
+                            "header": "Entête Editeur",
+                            "row": "Editeur vun der Réih vun Entitéiten"
                         }
                     },
                     "suggest_card": {
