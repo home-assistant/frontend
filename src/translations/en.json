@@ -800,7 +800,7 @@
         },
         "areas": {
           "caption": "Areas",
-          "description": "Group devices into areas",
+          "description": "Group devices and entities into areas",
           "data_table": {
             "area": "Area",
             "devices": "Devices"
@@ -2023,7 +2023,7 @@
         },
         "users": {
           "caption": "Users",
-          "description": "Manage users",
+          "description": "Manage the Home Assistant user accounts",
           "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
           "picker": {
             "headers": {
