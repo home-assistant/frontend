@@ -24,7 +24,6 @@ import "./action/ha-automation-action";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyle } from "../../../resources/styles";
 import { HassEntity } from "home-assistant-js-websocket";
-import { navigate } from "../../../common/navigate";
 import {
   BlueprintOrError,
   Blueprints,
