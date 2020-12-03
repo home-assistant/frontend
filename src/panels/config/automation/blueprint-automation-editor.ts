@@ -157,42 +157,37 @@ export class HaBlueprintAutomationEditor extends LitElement {
                   There is an error in this Blueprint: ${blueprint.error}
                 </p>`
               : html`${blueprint?.metadata.description
-                  ? html`<p>${blueprint.metadata.description}</p>`
+                  ? html`<p class="card-content">
+                      ${blueprint.metadata.description}
+                    </p>`
                   : ""}
                 ${blueprint?.metadata?.input &&
                 Object.keys(blueprint.metadata.input).length
-                  ? html`<h3>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.blueprint.inputs"
-                        )}
-                      </h3>
-                      ${Object.entries(blueprint.metadata.input).map(
-                        ([key, value]) =>
-                          html`<ha-settings-row .narrow=${this.narrow}>
-                            <span slot="heading">${value?.name || key}</span>
-                            <span slot="description"
-                              >${value?.description}</span
-                            >
-                            ${value?.selector
-                              ? html`<ha-selector
-                                  .hass=${this.hass}
-                                  .selector=${value.selector}
-                                  .key=${key}
-                                  .value=${(this.config.use_blueprint.input &&
-                                    this.config.use_blueprint.input[key]) ||
-                                  value?.default}
-                                  @value-changed=${this._inputChanged}
-                                ></ha-selector>`
-                              : html`<paper-input
-                                  .key=${key}
-                                  required
-                                  .value=${this.config.use_blueprint.input &&
-                                  this.config.use_blueprint.input[key]}
-                                  @value-changed=${this._inputChanged}
-                                  no-label-float
-                                ></paper-input>`}
-                          </ha-settings-row>`
-                      )}`
+                  ? Object.entries(blueprint.metadata.input).map(
+                      ([key, value]) =>
+                        html`<ha-settings-row .narrow=${this.narrow}>
+                          <span slot="heading">${value?.name || key}</span>
+                          <span slot="description">${value?.description}</span>
+                          ${value?.selector
+                            ? html`<ha-selector
+                                .hass=${this.hass}
+                                .selector=${value.selector}
+                                .key=${key}
+                                .value=${(this.config.use_blueprint.input &&
+                                  this.config.use_blueprint.input[key]) ||
+                                value?.default}
+                                @value-changed=${this._inputChanged}
+                              ></ha-selector>`
+                            : html`<paper-input
+                                .key=${key}
+                                required
+                                .value=${this.config.use_blueprint.input &&
+                                this.config.use_blueprint.input[key]}
+                                @value-changed=${this._inputChanged}
+                                no-label-float
+                              ></paper-input>`}
+                        </ha-settings-row>`
+                    )
                   : html`<p class="padding">
                       ${this.hass.localize(
                         "ui.panel.config.automation.editor.blueprint.no_inputs"
