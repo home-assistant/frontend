@@ -144,11 +144,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
                     "ui.panel.config.automation.editor.blueprint.no_blueprints"
                   )
               : html`<ha-circular-progress active></ha-circular-progress>`}
-            <mwc-button @click=${this._navigateBlueprints}>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.blueprint.manage_blueprints"
-              )}
-            </mwc-button>
           </div>
 
           ${this.config.use_blueprint.path
@@ -281,9 +276,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
         }
         .blueprint-picker-container {
           padding: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
         }
         h3 {
           margin: 16px;
