@@ -226,18 +226,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // before this.hass is even created. In this case our base state comes
       // from this._pendingHass instead. Otherwise the first set of strings is
       // overwritten when we call _updateHass the second time!
-      const baseHass = this.hass ?? this._pendingHass;
       const resources = {
         [language]: {
-          ...baseHass?.resources?.[language],
+          ...(this.hass ?? this._pendingHass)?.resources?.[language],
           ...data,
         },
       };
       const changes: Partial<HomeAssistant> = { resources };
-      if (this.hass && language === this.hass.language) {
-        changes.localize = await computeLocalize(this, language, resources);
+      changes.localize = await computeLocalize(this, language, resources);
+
+      if (language === (this.hass ?? this._pendingHass).language) {
+        this._updateHass(changes);
       }
-      this._updateHass(changes);
     }
 
     private _refetchCachedHassTranslations(
