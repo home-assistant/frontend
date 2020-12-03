@@ -36,7 +36,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
-    private __loadedFragmetTranslations: string[] = [];
+    private __loadedFragmetTranslations: Set<string> = new Set();
 
     private __loadedTranslations: {
       // track what things have been loaded
@@ -103,7 +103,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
-      this.__loadedFragmetTranslations = [];
+      this.__loadedFragmetTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -201,17 +201,26 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!panelUrl) {
         return;
       }
-      const panelComponent =
-        this.hass?.panels?.[panelUrl]?.component_name || panelUrl;
+      const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
 
-      const fragment = translationMetadata.fragments.includes(panelComponent)
-        ? panelComponent
-        : "lovelace";
+      // If it's the first call we don't have panel info yet to check the component.
+      // If the url is not known it might be a custom lovelace dashboard, so we load lovelace translations
+      const fragment = translationMetadata.fragments.includes(
+        panelComponent || panelUrl
+      )
+        ? panelComponent || panelUrl
+        : !panelComponent
+        ? "lovelace"
+        : undefined;
 
-      if (this.__loadedFragmetTranslations.includes(fragment)) {
+      if (!fragment) {
         return;
       }
-      this.__loadedFragmetTranslations.push(fragment);
+
+      if (this.__loadedFragmetTranslations.has(fragment)) {
+        return;
+      }
+      this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
       this._updateResources(result.language, result.data);
     }
