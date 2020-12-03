@@ -1,6 +1,6 @@
 import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
-import { mdiPlus, mdiHelpCircle, mdiDelete, mdiRobot } from "@mdi/js";
+import { mdiHelpCircle, mdiDelete, mdiRobot, mdiDownload } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -182,7 +182,7 @@ class HaBlueprintOverview extends LitElement {
           extended
           @click=${this._addBlueprint}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
