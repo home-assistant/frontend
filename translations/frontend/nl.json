@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Configuratie-item",
+            "device": "Apparaat",
             "integration": "Integratie",
             "user": "Gebruiker"
         }
@@ -710,6 +711,16 @@
             "service-picker": {
                 "service": "Service"
             },
+            "target-picker": {
+                "add_area_id": "Kies gebied",
+                "add_device_id": "Kies apparaat",
+                "add_entity_id": "Kies entiteit",
+                "expand_area_id": "Breid dit gebied uit in de afzonderlijke apparaten en entiteiten die het bevat. Na het uitbreiden zal het de apparaten en entiteiten niet bijwerken wanneer het gebied verandert.",
+                "expand_device_id": "Breid dit apparaat uit in afzonderlijke entiteiten. Na het uitbreiden worden de entiteiten niet bijgewerkt wanneer het apparaat verandert.",
+                "remove_area_id": "Verwijder gebied",
+                "remove_device_id": "Verwijder apparaat",
+                "remove_entity_id": "Verwijder entiteit"
+            },
             "user-picker": {
                 "add_user": "Gebruiker toevoegen",
                 "no_user": "Geen gebruiker",
@@ -733,6 +744,7 @@
                 "editor": {
                     "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
                     "delete": "Verwijderen",
+                    "device_disabled": "Het apparaat van deze entiteit is uitgeschakeld.",
                     "enabled_cause": "Uitgeschakeld vanwege {cause}",
                     "enabled_delay_confirm": "De ingeschakelde entiteiten worden over {delay} seconden aan Home Assistant toegevoegd",
                     "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
@@ -743,6 +755,7 @@
                     "icon_error": "Pictogrammen moeten de notatie 'prefix:pictogramnaam' hebben, bijvoorbeeld 'mdi:home'",
                     "name": "Naam",
                     "note": "Opmerking: dit werkt mogelijk nog niet met alle integraties.",
+                    "open_device_settings": "Open de apparaatinstellingen",
                     "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
                     "update": "Bijwerken"
                 },
@@ -1029,7 +1042,7 @@
                         "confirmation_text": "Alle apparaten in dit gebied zullen niet meer toegewezen zijn.",
                         "confirmation_title": "Weet je zeker dat je dit gebied wilt verwijderen?"
                     },
-                    "description": "Overzicht van alle gebieden in je huis.",
+                    "description": "Groepeer apparaten in gebieden",
                     "editor": {
                         "area_id": "Gebieds-ID",
                         "create": "Aanmaken",
@@ -1051,7 +1064,7 @@
                 },
                 "automation": {
                     "caption": "Automatiseringen",
-                    "description": "Het maken en bewerken van automatiseringen",
+                    "description": "Maak aangepaste gedragsregels voor uw huis",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Gebruik een blauwdruk"
@@ -1505,7 +1518,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistent Cloud",
-                    "description_features": "Bestuur weg van huis, verbind met Alexa en Google Assistant.",
+                    "description_features": "Bedien uw huis wanneer u weg bent en integreer met Alexa en Google Assistant",
                     "description_login": "Ingelogd als {email}",
                     "description_not_login": "Niet ingelogd",
                     "dialog_certificate": {
@@ -1600,7 +1613,7 @@
                 },
                 "core": {
                     "caption": "Algemeen",
-                    "description": "Wijzig je algemene Home Assistant-configuratie",
+                    "description": "Eenheidssysteem, locatie, tijdzone en andere algemene parameters",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1662,6 +1675,7 @@
                             "unknown_condition": "Onbekende toestand"
                         },
                         "create": "Maak een automatisering aan met het apparaat",
+                        "create_disable": "Kan geen automatisering maken met een uitgeschakeld apparaat",
                         "no_automations": "Geen automatiseringen",
                         "no_device_automations": "Er zijn geen automatiseringen beschikbaar voor dit apparaat.",
                         "triggers": {
@@ -1687,9 +1701,18 @@
                         "no_devices": "Geen apparaten"
                     },
                     "delete": "Verwijderen",
-                    "description": "Beheer verbonden apparaten",
+                    "description": "Beheer geconfigureerde apparaten",
                     "device_info": "Apparaat info",
                     "device_not_found": "Apparaat niet gevonden.",
+                    "disabled": "Uitgeschakeld",
+                    "disabled_by": {
+                        "config_entry": "Configuratie-invoer",
+                        "integration": "Integratie",
+                        "user": "Gebruiker"
+                    },
+                    "enabled_cause": "Het apparaat is uitgeschakeld door {cause}.",
+                    "enabled_description": "Uitgeschakelde apparaten worden niet weergegeven en entiteiten die bij het apparaat horen, worden uitgeschakeld en niet toegevoegd aan Home Assistant.",
+                    "enabled_label": "Schakel apparaat in",
                     "entities": {
                         "add_entities_lovelace": "Voeg toe aan de Lovelace gebruikersinterface",
                         "disabled_entities": "+{count} {count, plural,\n  one {uitgeschakelde entiteit}\n  other {uitgeschakelde entiteiten}\n}",
@@ -1699,14 +1722,25 @@
                     },
                     "name": "Naam",
                     "no_devices": "Geen apparaten",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter",
+                            "hidden_devices": "{number} verborgen {number, plural,\n  one {apparaat}\n  other {apparaten}\n}",
+                            "show_all": "Alles weergeven",
+                            "show_disabled": "Toon uitgeschakelde apparaten"
+                        },
+                        "search": "Zoek apparaten"
+                    },
                     "scene": {
                         "create": "Maak een scène aan met het apparaat",
+                        "create_disable": "Kan geen scène maken met een uitgeschakeld apparaat",
                         "no_scenes": "Geen scènes",
                         "scenes": "Scènes"
                     },
                     "scenes": "Scènes",
                     "script": {
                         "create": "Maak een script aan met het apparaat",
+                        "create_disable": "Kan geen script maken met een uitgeschakeld apparaat",
                         "no_scripts": "Geen scripts",
                         "scripts": "Scripts"
                     },
@@ -1804,7 +1838,7 @@
                     "copy_github": "Voor GitHub",
                     "copy_raw": "Ruwe tekst",
                     "custom_uis": "Aangepaste UI's:",
-                    "description": "Informatie over je Home Assistant installatie",
+                    "description": "Versie, systeemstatus en links naar documentatie",
                     "developed_by": "Ontwikkeld door een stel geweldige mensen.",
                     "documentation": "Documentatie",
                     "frontend": "Frontend",
@@ -1910,7 +1944,7 @@
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
-                    "description": "Beheer en installeer integraties",
+                    "description": "Beheer integraties met services, apparaten, ...",
                     "details": "Integratiedetails",
                     "discovered": "Ontdekt",
                     "home_assistant_website": "Home Assistant-website",
@@ -1995,7 +2029,7 @@
                             "open": "Open"
                         }
                     },
-                    "description": "Configureer je Lovelace-dashboards",
+                    "description": "Maak aangepaste cards om uw huis te besturen",
                     "resources": {
                         "cant_edit_yaml": "Je gebruikt Lovelace in YAML-modus, daarom kun je je bronnen niet beheren via de gebruikersinterface. Beheer ze in configuration.yaml.",
                         "caption": "Bronnen",
@@ -2194,7 +2228,7 @@
                 "scene": {
                     "activated": "Scène {name} geactiveerd.",
                     "caption": "Scènes",
-                    "description": "Maak en bewerk scènes",
+                    "description": "Leg apparaatstatussen vast en roep ze later gemakkelijk op",
                     "editor": {
                         "default_name": "Nieuwe scène",
                         "devices": {
@@ -2238,7 +2272,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Maak en bewerk scripts",
+                    "description": "Voer een reeks acties uit",
                     "editor": {
                         "alias": "Naam",
                         "default_name": "Nieuw script",
@@ -2349,7 +2383,7 @@
                     "confirm_remove": "Weet je zeker dat je tag {tag} wilt verwijderen?",
                     "confirm_remove_title": "Tag verwijderen?",
                     "create_automation": "Creëer automatisering met tag",
-                    "description": "Beheer tags",
+                    "description": "Activeer automatiseringen wanneer een NFC-tag, QR-code, enz. wordt gescand",
                     "detail": {
                         "companion_apps": "bijbehorende apps",
                         "create": "Creëer",
@@ -2388,6 +2422,7 @@
                     "editor": {
                         "activate_user": "Activeer gebruiker",
                         "active": "Actief",
+                        "active_tooltip": "Bepaal of de gebruiker kan inloggen",
                         "admin": "Beheerder",
                         "caption": "Bekijk gebruiker",
                         "change_password": "Wachtwoord wijzigen",
@@ -2533,7 +2568,11 @@
                         "hint_wakeup": "Sommige apparaten, zoals Xiaomi-sensoren hebben een wekknop die je met tussenpozen van 5 seconden kunt indrukken om het apparaat wakker te houden terwijl je ermee communiceert",
                         "introduction": "Voer ZHA-commando's uit die van invloed zijn op een enkel apparaat. Kies een apparaat om een lijst met beschikbare commando's te zien."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualisatie",
+                        "header": "Netwerkvisualisatie"
+                    }
                 },
                 "zone": {
                     "add_zone": "Zone toevoegen",
@@ -3400,10 +3439,12 @@
                 "change_password": {
                     "confirm_new_password": "Bevestig nieuw wachtwoord",
                     "current_password": "Huidige wachtwoord",
+                    "error_new_is_old": "Het nieuwe wachtwoord moet anders zijn dan het huidige wachtwoord",
                     "error_required": "Verplicht",
                     "header": "Wachtwoord wijzigen",
                     "new_password": "Nieuw wachtwoord",
-                    "submit": "Verzenden"
+                    "submit": "Verzenden",
+                    "success": "Wachtwoord is succesvol veranderd"
                 },
                 "current_user": "Je bent momenteel ingelogd als {fullName}.",
                 "customize_sidebar": {

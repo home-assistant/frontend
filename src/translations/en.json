@@ -328,6 +328,7 @@
         "entity-picker": {
           "entity": "Entity",
           "clear": "Clear",
+          "no_match": "No matching entities found",
           "show_entities": "Show entities"
         },
         "entity-attribute-picker": {
@@ -359,6 +360,8 @@
         "clear": "Clear",
         "toggle": "Toggle",
         "show_devices": "Show devices",
+        "no_devices": "You don't have any devices",
+        "no_match": "No matching devices found",
         "device": "Device",
         "no_area": "No area"
       },
@@ -367,6 +370,8 @@
         "show_areas": "Show areas",
         "area": "Area",
         "add_new": "Add new area…",
+        "no_areas": "You don't have any areas",
+        "no_match": "No matching areas found",
         "add_dialog": {
           "title": "Add new area",
           "text": "Enter the name of the new area.",
@@ -1456,8 +1461,8 @@
           "description": "Manage blueprints",
           "overview": {
             "header": "Blueprint Editor",
-            "introduction": "The blueprint editor allows you to create and edit blueprints.",
-            "learn_more": "Learn more about blueprints",
+            "introduction": "The blueprint configuration allows you to import and manage your blueprints.",
+            "learn_more": "Learn more about using blueprints",
             "headers": {
               "name": "Name",
               "domain": "Domain",
@@ -1470,18 +1475,18 @@
             "delete_blueprint": "Delete blueprint"
           },
           "add": {
-            "header": "Add new blueprint",
-            "import_header": "Import \"{name}\" (type: {domain})",
+            "header": "Import a blueprint",
+            "import_header": "Blueprint \"{name}\"",
             "import_introduction": "You can import blueprints of other users from Github and the community forums. Enter the URL of the blueprint below.",
             "url": "URL of the blueprint",
             "raw_blueprint": "Blueprint content",
-            "importing": "Importing blueprint...",
-            "import_btn": "Import blueprint",
-            "saving": "Saving blueprint...",
-            "save_btn": "Save blueprint",
+            "importing": "Loading blueprint...",
+            "import_btn": "Preview blueprint",
+            "saving": "Importing blueprint...",
+            "save_btn": "Import blueprint",
             "error_no_url": "Please enter the URL of the blueprint.",
             "unsupported_blueprint": "This blueprint is not supported",
-            "file_name": "Local blueprint file name"
+            "file_name": "Blueprint Path"
           }
         },
         "script": {

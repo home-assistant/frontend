@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Seade kanne",
+            "device": "Seade",
             "integration": "Sidumine",
             "user": "Kasutaja"
         }
@@ -710,6 +711,16 @@
             "service-picker": {
                 "service": "Teenus"
             },
+            "target-picker": {
+                "add_area_id": "Vali ala",
+                "add_device_id": "Vali seade",
+                "add_entity_id": "Vali olem",
+                "expand_area_id": "Laienda seda ala eraldi seadmetesse jaolemitesse mis sellesse kuuluvad. Pärast laiendamist ei värskendata seadmeid ja olemeid, kui ala muutub.",
+                "expand_device_id": "Laienda seda seadet eraldi olemitesse. Pärast laiendamist ei värskendata olemeid, kui seade muutub.",
+                "remove_area_id": "Eemalda ala",
+                "remove_device_id": "Eemalda seade",
+                "remove_entity_id": "Eemalda olem"
+            },
             "user-picker": {
                 "add_user": "Lisa kasutaja",
                 "no_user": "Kasutaja puudub",
@@ -733,6 +744,7 @@
                 "editor": {
                     "confirm_delete": "Oled kindel, et soovid selle kirje kustutada?",
                     "delete": "Kustuta",
+                    "device_disabled": "Selle olemi seade on keelatud.",
                     "enabled_cause": "Keelatud, sest {cause}.",
                     "enabled_delay_confirm": "Lubatud üksused lisatakse Home Assistanti {delay} sekundi pärast",
                     "enabled_description": "Keelatud olemeid ei lisata Home Assistant'i.",
@@ -743,6 +755,7 @@
                     "icon_error": "Ikoonid peaksid olema vormingus 'prefix: iconname', nt 'mdi: home'",
                     "name": "Nime muutmine",
                     "note": "Märkus: see ei pruugi veel töötada kõigi sidumistega.",
+                    "open_device_settings": "Seadme sätete avamine",
                     "unavailable": "See olem pole praegu saadaval.",
                     "update": "Uuenda"
                 },
@@ -1030,7 +1043,7 @@
                         "confirmation_text": "Kõik sellele ala seadmed jäävad peremehetuks.",
                         "confirmation_title": "Oled kindel, et soovid selle ala kustutada?"
                     },
-                    "description": "Ülevaade kõikidest oma kodu aladest.",
+                    "description": "Seadmete rühmitamine aladesse",
                     "editor": {
                         "area_id": "Piirkonna ID",
                         "create": "LOO",
@@ -1052,7 +1065,7 @@
                 },
                 "automation": {
                     "caption": "Automatiseeringud",
-                    "description": "Loo ja redigeeri automatiseeringuid",
+                    "description": "Loo oma kodu jaoks kohandatud käitumisreeglid",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Kasuta kavandit"
@@ -1456,7 +1469,7 @@
                             "enable_state_reporting": "Lubada olekuteavitused",
                             "enter_pin_error": "PIN-koodi ei saa salvestada:",
                             "enter_pin_hint": "Turvaseadmete kasutamiseks sisesta PIN",
-                            "enter_pin_info": "Turvaseadmetega suhtlemiseks sisestage PIN-kood. Turvaseadmed on uksed, garaažiuksed ja lukud. Google Assistanti kaudu selliste seadmetega suheldes palutakse Teil see PIN-kood öelda / sisestada.",
+                            "enter_pin_info": "Turvaseadmetega suhtlemiseks sisesta PIN-kood. Turvaseadmed on uksed, garaažiuksed ja lukud. Google Assistanti kaudu selliste seadmetega suheldes palutakse Teil see PIN-kood öelda / sisestada.",
                             "info": "Google Assistanti integreerimisel läbi Home Assistant Cloudi  saate juhtida kõiki oma Home Assistanti seadmeid mis tahes Google Assistanti toega seadme kaudu.",
                             "info_state_reporting": "Kui lubate olekute avaldamise, saadab Home Assistant Google'ile kõik avaldatud olemite olekumuutused. See võimaldab Teil alati näha Google'i rakenduses uusimaid olekuid.",
                             "manage_entities": "Halda olemeid",
@@ -1478,7 +1491,7 @@
                             "info": "Home Assistant Cloud pakub turvalist kaugühendust teie Home Assistantiga kodust eemal olles.",
                             "instance_is_available": "Teie Home Assistant on saadaval aadressil",
                             "instance_will_be_available": "Teie Home Assistanti on aadressiks saab",
-                            "link_learn_how_it_works": "Loe, kuidas see töötab",
+                            "link_learn_how_it_works": "Loe kuidas see töötab",
                             "title": "Kaugjuhtimine"
                         },
                         "sign_out": "Logi välja",
@@ -1535,7 +1548,7 @@
                         "check_your_email": "Parooli lähtestamise kohta saate juhiseid oma e-posti aadressilt.",
                         "email": "E-post",
                         "email_error_msg": "Vigane meiliaadress",
-                        "instructions": "Sisestage oma e-posti aadress ja me saadame teile lingi parooli lähtestamiseks.",
+                        "instructions": "Sisesta oma e-posti aadress ja me saadame teile lingi parooli lähtestamiseks.",
                         "send_reset_email": "Saatke lähtestamismeil",
                         "subtitle": "Unustasid oma salasõna",
                         "title": "Unustasid salasõna"
@@ -1605,7 +1618,7 @@
                 },
                 "core": {
                     "caption": "Üldine",
-                    "description": "Home Assistant'i üldiste seadete muutmine",
+                    "description": "Ühikud, asukoht, ajavöönd ja muud üldised parameetrid",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1667,6 +1680,7 @@
                             "unknown_condition": "Tundmatu tingimus"
                         },
                         "create": "Loo seadmega automatiseering",
+                        "create_disable": "Keelatud seadmega ei saa automaatiseeringuid luua",
                         "no_automations": "Automatiseeringuid pole",
                         "no_device_automations": "Selle seadme jaoks pole automatiseerimisi saadaval.",
                         "triggers": {
@@ -1692,9 +1706,18 @@
                         "no_devices": "Seadmeid pole"
                     },
                     "delete": "Kustuta",
-                    "description": "Halda ühendatud seadmeid",
+                    "description": "Halda häälestatud seadmeid",
                     "device_info": "Seadme info",
                     "device_not_found": "Seadet ei leitud.",
+                    "disabled": "Keelatud",
+                    "disabled_by": {
+                        "config_entry": "Seade kanne",
+                        "integration": "Sidumine",
+                        "user": "Kasutaja"
+                    },
+                    "enabled_cause": "{cause} on seadme keelanud.",
+                    "enabled_description": "Keelatud seadmeid ei kuvata ja seadmele kuuluvad olemid keelatakse ning neid ei lisata Home Assistantile.",
+                    "enabled_label": "Luba seade",
                     "entities": {
                         "add_entities_lovelace": "Lisa Lovelace'i",
                         "disabled_entities": "{count} {count, plural,\n  one {keelatud olem}\n  other {keelatud olemit}\n}",
@@ -1704,14 +1727,25 @@
                     },
                     "name": "Nimi",
                     "no_devices": "Seadmeid pole",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtreeri",
+                            "hidden_devices": "{number} peidetud {number, plural,\n  one {olem}\n  other {olemit}\n}",
+                            "show_all": "Kuva kõik",
+                            "show_disabled": "Kuva keelatud seadmed"
+                        },
+                        "search": "Otsi seadmeid"
+                    },
                     "scene": {
                         "create": "Loo seadmega stseen",
+                        "create_disable": "Keelatud seadmega ei saa stseene luua",
                         "no_scenes": "Stseene pole",
                         "scenes": "Stseenid"
                     },
                     "scenes": "Stseenid",
                     "script": {
                         "create": "Loo seadmega skript",
+                        "create_disable": "Keelatud seadmega ei saa skripte luua",
                         "no_scripts": "Skripte pole",
                         "scripts": "Skriptid"
                     },
@@ -1777,7 +1811,7 @@
                 "header": "Home Assistant'i seadistamine",
                 "helpers": {
                     "caption": "Abimehed",
-                    "description": "Hallake elemente  mis aitavad automatiseeringuid luua",
+                    "description": "Elemendid  mis aitavad automatiseeringuid luua",
                     "dialog": {
                         "add_helper": "Lisage abistaja",
                         "add_platform": "Lisa {platform}",
@@ -1809,7 +1843,7 @@
                     "copy_github": "GitHubi jaoks",
                     "copy_raw": "Ainult tekst",
                     "custom_uis": "Kohandatud kasutajaliidesed:",
-                    "description": "Kuva Home Assistant'i info",
+                    "description": "Versioon, süsteemi olek ja lingid dokumentatsioonile",
                     "developed_by": "Tehtud paljude lahedate inimeste poolt.",
                     "documentation": "Dokumentatsioon",
                     "frontend": "frontend-ui",
@@ -1827,9 +1861,9 @@
                         "checks": {
                             "cloud": {
                                 "alexa_enabled": "Alexa on lubatud",
-                                "can_reach_cert_server": "Ühendu serdiserveriga",
-                                "can_reach_cloud": "Ühendu Home Assistant Cloudiga",
-                                "can_reach_cloud_auth": "Ühendu tuvastusserveriga",
+                                "can_reach_cert_server": "Ühendus serdiserveriga",
+                                "can_reach_cloud": "Ühendus Home Assistant Cloudiga",
+                                "can_reach_cloud_auth": "Ühendus tuvastusserveriga",
                                 "google_enabled": "Google on lubatud",
                                 "logged_in": "Sisse logitud",
                                 "relayer_connected": "Edastaja on ühendatud",
@@ -1915,7 +1949,7 @@
                     },
                     "configure": "Seadista",
                     "configured": "Seadistatud",
-                    "description": "Halda ja seadista sidumisi",
+                    "description": "Halda teenuste, seadmete jne. sidumisi",
                     "details": "Sidumise üksikasjad",
                     "discovered": "Leitud",
                     "home_assistant_website": "Home Assistant veebisait",
@@ -2000,7 +2034,7 @@
                             "open": "Ava"
                         }
                     },
-                    "description": "Hallake oma Lovelace juhtpaneele",
+                    "description": "Loo oma kodu juhtimiseks kohandatud juhtpaneele",
                     "resources": {
                         "cant_edit_yaml": "Kasutate Lovelace YAML režiimis. Seega ei saa Te hallata oma ressursse kasutajaliidese kaudu. Halda neid kirjes configuration.yaml.",
                         "caption": "Ressursid",
@@ -2199,7 +2233,7 @@
                 "scene": {
                     "activated": "Stseen {name} on käivitatud.",
                     "caption": "Stseenid",
-                    "description": "Loo ja muuda stseene",
+                    "description": "Seadme olekute hõivamine ja nende hilisem taaskasutamine",
                     "editor": {
                         "default_name": "Uus stseen",
                         "devices": {
@@ -2243,7 +2277,7 @@
                 },
                 "script": {
                     "caption": "Skriptid",
-                    "description": "Loo ja muuda skripte",
+                    "description": "Vallanda toimingute jada",
                     "editor": {
                         "alias": "Nimi",
                         "default_name": "Uus skript",
@@ -2293,7 +2327,7 @@
                 },
                 "server_control": {
                     "caption": "Serveri juhtimine",
-                    "description": "Taaskäivita ja peata Home Assistant server",
+                    "description": "Taaskäivita ja peata Home Assistant serverit",
                     "section": {
                         "reloading": {
                             "automation": "Taaslae automatiseeringud",
@@ -2331,7 +2365,7 @@
                             "zone": "Taaslae tsoonid"
                         },
                         "server_management": {
-                            "confirm_restart": "Oled kindel, et soovid taaskäivitada Home Assistant'i?",
+                            "confirm_restart": "Oled kindel, et soovid Home Assistant'i taaskäivitada?",
                             "confirm_stop": "Oled kindel, et soovid seisata Home Assistant'i?",
                             "heading": "Serveri haldamine",
                             "introduction": "Kontrolli oma Home Assistant serverit... Home Assistant'ist.",
@@ -2354,7 +2388,7 @@
                     "confirm_remove": "Kas soovid kindlasti eemaldada märgise {tag}?",
                     "confirm_remove_title": "Kas kustutan märgise?",
                     "create_automation": "Lisa automatiseering TAG abil",
-                    "description": "Halda TAGe",
+                    "description": "Käivita automaatiseering NFC-sildi, QR-koodi jne. skännimisel",
                     "detail": {
                         "companion_apps": "mobiilirakendused",
                         "create": "Loo",
@@ -2393,6 +2427,7 @@
                     "editor": {
                         "activate_user": "Aktiveeri kasutaja",
                         "active": "Aktiivne",
+                        "active_tooltip": "Määrab kas kasutaja saab sisse logida",
                         "admin": "Administraator",
                         "caption": "Vaata kasutajat",
                         "change_password": "Muuda salasõna",
@@ -2503,7 +2538,7 @@
                         "caption": "Grupid",
                         "create": "Loo grupp",
                         "create_group": "Zigbee Home Automation - Loo grupp",
-                        "create_group_details": "Sisestage uue zigbee grupi loomiseks vajalikud üksikasjad.",
+                        "create_group_details": "Sisesta uue Zigbee grupi loomiseks vajalikud üksikasjad.",
                         "creating_group": "Loon gruppi",
                         "description": "Loo ja muuda Zigbee gruppe",
                         "group_details": "Siin on kõik valitud Zigbee rühma üksikasjad.",
@@ -2832,7 +2867,7 @@
                         },
                         "calendar": {
                             "calendar_entities": "Kalendri olemid",
-                            "description": "Kalendri kaardil kuvatakse kalender mis sisaldab päeva, nädala ja loendivaateid",
+                            "description": "Kalendri kaardil kuvatakse kalender mis sisaldab päeva-, nädala- ja loendivaateid",
                             "inital_view": "Vaikevaade",
                             "name": "Kalender",
                             "views": {
@@ -2857,7 +2892,7 @@
                             "required": "Nõutav"
                         },
                         "entities": {
-                            "description": "Olemite kaart  on kõige levinum kaarditüüp. See rühmitabolemid loenditeks.",
+                            "description": "Olemite kaart  on kõige levinum kaarditüüp. See rühmitab olemid loenditeks.",
                             "edit_special_row": "Selle rea üksikasjade vaatamiseks klõpsa nuppu Muuda",
                             "entity_row_editor": "Olemirea redaktor",
                             "entity_row": {
@@ -2887,7 +2922,7 @@
                             "toggle": "Vaheta olemeid."
                         },
                         "entity-filter": {
-                            "description": "Olemifiltri kaart võimaldab teil määratleda nende olemite loendit  mida soovite jälgida ainult teatud olekus.",
+                            "description": "Olemifiltri kaart võimaldab teil määratleda nende olemite loendit  mida soovid jälgida ainult teatud olekus.",
                             "name": "Olemi filter"
                         },
                         "entity": {
@@ -3411,10 +3446,13 @@
                 "change_password": {
                     "confirm_new_password": "Kinnita uut salasõna",
                     "current_password": "Praegune salasõna",
+                    "error_new_is_old": "Uus salasõna peab praegusest erinema",
+                    "error_new_mismatch": "Sisestatud uus salasõna ei ühti",
                     "error_required": "Nõutav",
                     "header": "Muuda salasõna",
                     "new_password": "Uus salasõna",
-                    "submit": "Esita"
+                    "submit": "Esita",
+                    "success": "Salasõna muutmine õnnestus"
                 },
                 "current_user": "Oled praegu sisse logitud kui {fullName}.",
                 "customize_sidebar": {

@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "設定實體",
+            "device": "裝置",
             "integration": "整合",
             "user": "使用者"
         }
@@ -710,6 +711,16 @@
             "service-picker": {
                 "service": "服務"
             },
+            "target-picker": {
+                "add_area_id": "選擇區域",
+                "add_device_id": "選擇裝置",
+                "add_entity_id": "選擇實體",
+                "expand_area_id": "在它包含的單獨的裝置和實體中擴展此區域。擴展後，區域更改時將不會更新裝置和實體。",
+                "expand_device_id": "在它包含的單獨的裝置和實體中擴展此區域。擴展後，區域更改時將不會更新裝置和實體。",
+                "remove_area_id": "移除區域",
+                "remove_device_id": "移除裝置",
+                "remove_entity_id": "移除實體"
+            },
             "user-picker": {
                 "add_user": "新增使用者",
                 "no_user": "沒有使用者",
@@ -733,6 +744,7 @@
                 "editor": {
                     "confirm_delete": "確定要刪除此實體？",
                     "delete": "刪除",
+                    "device_disabled": "該實體目前不可用。",
                     "enabled_cause": "由 {cause} 關閉。",
                     "enabled_delay_confirm": "啟用的實體將會於 {delay} 秒後新增至 Home Assistant",
                     "enabled_description": "關閉的實體將不會新增至 Home Assistant。",
@@ -743,6 +755,7 @@
                     "icon_error": "圖示必須按照格式「prefix:iconname」設定，例如「mdi:home」",
                     "name": "名稱",
                     "note": "注意：可能無法適用所有整合。",
+                    "open_device_settings": "打開裝置設置",
                     "unavailable": "該實體目前不可用。",
                     "update": "更新"
                 },
@@ -829,7 +842,7 @@
                 "restored": {
                     "confirm_remove_text": "確定要移除此實體？",
                     "confirm_remove_title": "移除實體？",
-                    "not_provided": "此實體目前不可用，屬於獨立可移除、變更或失常的整合或設備。",
+                    "not_provided": "此實體目前不可用，屬於獨立可移除、變更或失常的整合或裝置。",
                     "remove_action": "移除實體",
                     "remove_intro": "假如實體不再使用，可以藉由移除進行清除。"
                 },
@@ -961,7 +974,7 @@
                     "zigbee_information": "Zigbee 裝置簽章"
                 },
                 "confirmations": {
-                    "remove": "確定要移除此設備？"
+                    "remove": "確定要移除此裝置？"
                 },
                 "device_signature": "Zigbee 裝置簽章",
                 "last_seen": "上次出現",
@@ -970,9 +983,9 @@
                 "power_source": "電力來源",
                 "quirk": "Quirk",
                 "services": {
-                    "reconfigure": "重新設定 ZHA Zibgee 設備（健康設備）。假如遇到設備問題，請使用此選項。假如有問題的設備為使用電池的設備，請先確定設備已喚醒並處於接受命令狀態。",
+                    "reconfigure": "重新設定 ZHA Zibgee 裝置（健康裝置）。假如遇到裝置問題，請使用此選項。假如有問題的裝置為使用電池的裝置，請先確定裝置已喚醒並處於接受命令狀態。",
                     "remove": "從 Zigbee 網路移除裝置。",
-                    "updateDeviceName": "於實體 ID 中自訂此設備名稱。",
+                    "updateDeviceName": "於實體 ID 中自訂此裝置名稱。",
                     "zigbee_information": "檢視裝置的 Zigbee 資訊。"
                 },
                 "unknown": "未知",
@@ -1027,10 +1040,10 @@
                         "devices": "裝置"
                     },
                     "delete": {
-                        "confirmation_text": "所有該分區所屬設備都將變成未指派狀態。",
+                        "confirmation_text": "所有該分區所屬裝置都將變成未指派狀態。",
                         "confirmation_title": "確定要刪除此分區？"
                     },
-                    "description": "管理家中所有分區",
+                    "description": "群組分區裝置",
                     "editor": {
                         "area_id": "分區 ID",
                         "create": "建立",
@@ -1045,14 +1058,14 @@
                         "create_area": "新增分區",
                         "header": "分區",
                         "integrations_page": "整合頁面",
-                        "introduction": "分區主要用以管理設備所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
-                        "introduction2": "欲於分區中放置設備，請使用下方連結至整合頁面，並點選設定整合以設定設備面板。",
+                        "introduction": "分區主要用以管理裝置所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
+                        "introduction2": "欲於分區中放置裝置，請使用下方連結至整合頁面，並點選設定整合以設定裝置面板。",
                         "no_areas": "看起來你還沒有建立分區！"
                     }
                 },
                 "automation": {
                     "caption": "自動化",
-                    "description": "管理自動化",
+                    "description": "為家庭新增自訂自動化",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "使用 Blueprint"
@@ -1438,8 +1451,8 @@
                             "enable": "開啟",
                             "enable_ha_skill": "開啟 Home Assistant skill for Alexa",
                             "enable_state_reporting": "開啟狀態回報",
-                            "info": "藉由 Home Assistant Cloud 雲服務  Alexa 整合，將能透過 Alexa 支援設備以控制所有 Home Assistant 設備。",
-                            "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Amazon。以確保於 Alexa app 中設備永遠保持最新狀態、並藉以創建例行自動化。",
+                            "info": "藉由 Home Assistant Cloud 雲服務  Alexa 整合，將能透過 Alexa 支援裝置以控制所有 Home Assistant 裝置。",
+                            "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Amazon。以確保於 Alexa app 中裝置永遠保持最新狀態、並藉以創建例行自動化。",
                             "manage_entities": "管理實體",
                             "state_reporting_error": "無法 {enable_disable} 回報狀態。",
                             "sync_entities": "同步實體",
@@ -1455,10 +1468,10 @@
                             "enable_ha_skill": "啟用 Home Assistant skill for Google Assistant",
                             "enable_state_reporting": "開啟狀態回報",
                             "enter_pin_error": "無法儲存 Pin：",
-                            "enter_pin_hint": "請輸入安全碼以使用加密設備",
-                            "enter_pin_info": "請輸入加密設備 Pin 碼、加密設備為如門、車庫與門鎖。當透過 Google Assistant 與此類設備進行互動時，將需要語音說出/輸入密碼。",
-                            "info": "藉由 Home Assistant Cloud 雲服務  Google Assistant 整合，將能透過 Google Assistant 支援設備以控制所有 Home Assistant 設備。",
-                            "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Google。以確保於 Google app 中設備永遠保持最新狀態、並藉以創建例行自動化。",
+                            "enter_pin_hint": "請輸入安全碼以使用加密裝置",
+                            "enter_pin_info": "請輸入加密裝置 Pin 碼、加密裝置為如門、車庫與門鎖。當透過 Google Assistant 與此類裝置進行互動時，將需要語音說出/輸入密碼。",
+                            "info": "藉由 Home Assistant Cloud 雲服務  Google Assistant 整合，將能透過 Google Assistant 支援裝置以控制所有 Home Assistant 裝置。",
+                            "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Google。以確保於 Google app 中裝置永遠保持最新狀態、並藉以創建例行自動化。",
                             "manage_entities": "管理實體",
                             "security_devices": "安全裝置",
                             "sync_entities": "與 Google 同步實體",
@@ -1476,8 +1489,8 @@
                             "access_is_being_prepared": "遠端登入準備中，會於就緒時通知您。",
                             "certificate_info": "認證資訊",
                             "info": "Home Assistant Cloud 雲服務提供您離家時、遠端加密連線控制。",
-                            "instance_is_available": "您的設備可透過下方連結使用",
-                            "instance_will_be_available": "您的設備將可透過下方連結使用",
+                            "instance_is_available": "您的裝置可透過下方連結使用",
+                            "instance_will_be_available": "您的裝置將可透過下方連結使用",
                             "link_learn_how_it_works": "了解如何運作",
                             "title": "遠端控制"
                         },
@@ -1510,7 +1523,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "整合 Alexa 及 Google 助理，遠端控制智慧型家居",
+                    "description_features": "遠端控制家庭與 Alexa 及 Google 助理整合",
                     "description_login": "登入帳號：{email}",
                     "description_not_login": "未登入",
                     "dialog_certificate": {
@@ -1605,7 +1618,7 @@
                 },
                 "core": {
                     "caption": "一般設定",
-                    "description": "變更 Home Assistant 一般設定",
+                    "description": "單位系統、座標、時區與其他一般設定",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1666,9 +1679,10 @@
                             "no_conditions": "無觸發條件",
                             "unknown_condition": "未知觸發條件"
                         },
-                        "create": "以設備新增自動化",
+                        "create": "以裝置新增自動化",
+                        "create_disable": "以裝置新增自動化",
                         "no_automations": "沒有自動化",
-                        "no_device_automations": "該設備沒有任何自動化可使用。",
+                        "no_device_automations": "該裝置沒有任何自動化可使用。",
                         "triggers": {
                             "caption": "執行動作、當...",
                             "no_triggers": "無觸發",
@@ -1692,9 +1706,18 @@
                         "no_devices": "沒有任何裝置"
                     },
                     "delete": "刪除",
-                    "description": "管理已連線的裝置",
+                    "description": "管理已設定裝置",
                     "device_info": "裝置資訊",
                     "device_not_found": "找不到裝置。",
+                    "disabled": "已關閉",
+                    "disabled_by": {
+                        "config_entry": "設定實體",
+                        "integration": "整合類型",
+                        "user": "使用者"
+                    },
+                    "enabled_cause": "由 {cause} 關閉。",
+                    "enabled_description": "關閉的實體將不會新增至 Home Assistant。",
+                    "enabled_label": "開啟裝置事件",
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
                         "disabled_entities": "{count} {count, plural,\n  one {個已關閉實體}\n  other {個已關閉實體}\n}",
@@ -1704,14 +1727,25 @@
                     },
                     "name": "名稱",
                     "no_devices": "沒有任何裝置",
+                    "picker": {
+                        "filter": {
+                            "filter": "過濾器",
+                            "hidden_devices": "{number} 隱藏 {number, plural,\n  one {個裝置}\n  other {個裝置}\n}",
+                            "show_all": "顯示全部",
+                            "show_disabled": "顯示關閉實體"
+                        },
+                        "search": "尋找裝置"
+                    },
                     "scene": {
-                        "create": "以設備新增場景",
+                        "create": "以裝置新增場景",
+                        "create_disable": "以裝置新增場景",
                         "no_scenes": "沒有場景",
                         "scenes": "場景"
                     },
                     "scenes": "場景",
                     "script": {
-                        "create": "以設備新增腳本",
+                        "create": "以裝置新增腳本",
+                        "create_disable": "以裝置新增腳本",
                         "no_scripts": "沒有腳本",
                         "scripts": "腳本"
                     },
@@ -1777,7 +1811,7 @@
                 "header": "設定 Home Assistant",
                 "helpers": {
                     "caption": "助手",
-                    "description": "管理可協助建立自動化的元素",
+                    "description": "協助建立自動化的元素",
                     "dialog": {
                         "add_helper": "新增助手",
                         "add_platform": "新增 {platform}",
@@ -1809,7 +1843,7 @@
                     "copy_github": "GitHub",
                     "copy_raw": "原始文字",
                     "custom_uis": "自定介面：",
-                    "description": "檢視 Home Assistant 安裝資訊",
+                    "description": "版本、系統健康度與文件連結",
                     "developed_by": "由一群充滿熱情的人們所開發。",
                     "documentation": "相關文件",
                     "frontend": "frontend-ui",
@@ -1875,7 +1909,7 @@
                         "delete": "刪除",
                         "delete_button": "刪除 {integration}",
                         "delete_confirm": "確定要刪除此整合？",
-                        "device_unavailable": "設備不可用",
+                        "device_unavailable": "裝置不可用",
                         "devices": "{count} {count, plural,\n  one {個裝置}\n  other {個裝置}\n}",
                         "documentation": "相關文件",
                         "entities": "{count} {count, plural,\n  one {個實體}\n  other {個實體}\n}",
@@ -1915,7 +1949,7 @@
                     },
                     "configure": "設定",
                     "configured": "已設定整合",
-                    "description": "管理整合",
+                    "description": "管理服務、裝置整合等",
                     "details": "整合詳細資訊",
                     "discovered": "已掃描",
                     "home_assistant_website": "Home Assistant 網站",
@@ -1977,9 +2011,9 @@
                             "edit_dashboard": "編輯主面板",
                             "icon": "圖示",
                             "new_dashboard": "新增主面板",
-                            "remove_default": "移除此設備預設值",
+                            "remove_default": "移除此裝置預設值",
                             "require_admin": "僅限管理員",
-                            "set_default": "設定為此設備預設值",
+                            "set_default": "設定為此裝置預設值",
                             "show_sidebar": "於側邊列顯示",
                             "title": "標題",
                             "title_required": "必須輸入標題",
@@ -2000,7 +2034,7 @@
                             "open": "開啟"
                         }
                     },
-                    "description": "管理 Lovelace 主面板",
+                    "description": "創建自訂面板設定以控制家庭",
                     "resources": {
                         "cant_edit_yaml": "正使用 YAML 模式、因此無法藉由 UI 變更 Lovelace 設定。請於「configuration.yaml」進行管理。",
                         "caption": "資源",
@@ -2177,7 +2211,7 @@
                         "confirm_delete_user": "確定要刪除帳號{name}使用者？依舊可以追蹤使用者，但人員將無法進行登入。",
                         "create": "新增",
                         "delete": "刪除",
-                        "device_tracker_intro": "選擇此人員所擁有的設備。",
+                        "device_tracker_intro": "選擇此人員所擁有的裝置。",
                         "device_tracker_pick": "選擇要追蹤的裝置",
                         "device_tracker_picked": "追蹤裝置",
                         "link_integrations_page": "整合頁面",
@@ -2186,7 +2220,7 @@
                         "name": "名稱",
                         "name_error_msg": "必須輸入名稱",
                         "new_person": "新人員",
-                        "no_device_tracker_available_intro": "當有設備顯示有人員在場時、可以將該設備指定為某個人員所有。可以先藉由整合頁面、新增人員偵測整合以加入第一個設備。",
+                        "no_device_tracker_available_intro": "當有裝置顯示有人員在場時、可以將該裝置指定為某個人員所有。可以先藉由整合頁面、新增人員偵測整合以加入第一個裝置。",
                         "update": "更新"
                     },
                     "introduction": "此處可定義 Home Assistant 中的每一位成員。",
@@ -2199,22 +2233,22 @@
                 "scene": {
                     "activated": "已啟用場景 {name}。",
                     "caption": "場景",
-                    "description": "管理場景",
+                    "description": "獲取裝置狀態及稍候進行調用",
                     "editor": {
                         "default_name": "新場景",
                         "devices": {
                             "add": "新增裝置",
                             "delete": "移除裝置",
                             "header": "裝置",
-                            "introduction": "新增所要包含於場景中的設備，設定所有設備成此場景中所希望的狀態。"
+                            "introduction": "新增所要包含於場景中的裝置，設定所有裝置成此場景中所希望的狀態。"
                         },
                         "entities": {
                             "add": "新增實體",
                             "delete": "刪除實體",
-                            "device_entities": "假如新增一項屬於設備的實體，設備也將被新增。",
+                            "device_entities": "假如新增一項屬於裝置的實體，裝置也將被新增。",
                             "header": "實體",
-                            "introduction": "不屬於設備的實體可以於此設置。",
-                            "without_device": "無設備實體"
+                            "introduction": "不屬於裝置的實體可以於此設置。",
+                            "without_device": "無裝置實體"
                         },
                         "icon": "圖示",
                         "introduction": "使用場景來讓你的智慧型家居更有魅力吧。",
@@ -2243,7 +2277,7 @@
                 },
                 "script": {
                     "caption": "腳本",
-                    "description": "管理腳本",
+                    "description": "執行連續動作腳本",
                     "editor": {
                         "alias": "名稱",
                         "default_name": "新腳本",
@@ -2354,7 +2388,7 @@
                     "confirm_remove": "是否要移除標籤 {tag}？",
                     "confirm_remove_title": "移除標籤？",
                     "create_automation": "以標籤新增自動化",
-                    "description": "管理標籤",
+                    "description": "當 NFC 標籤或 QR Code 掃描時、觸發自動化",
                     "detail": {
                         "companion_apps": "行動程式 App",
                         "create": "新增",
@@ -2393,6 +2427,7 @@
                     "editor": {
                         "activate_user": "啟用使用者",
                         "active": "啟用",
+                        "active_tooltip": "控制用戶是否可以登錄",
                         "admin": "管理員",
                         "caption": "檢視使用者",
                         "change_password": "更改密碼",
@@ -2426,19 +2461,19 @@
                     "users_privileges_note": "使用者群組功能仍在開發中。將無法透過 UI 進行使用者管理，仍在檢視所有管理  API Endpoint 以確保能夠正確符合管理員存取需求。"
                 },
                 "zha": {
-                    "add_device": "新增設備",
+                    "add_device": "新增裝置",
                     "add_device_page": {
                         "discovered_text": "在探索到裝置後將顯示於此處。",
-                        "discovery_text": "所發現的設備將會顯示於此。跟隨設備的指示並將其設定為配對模式。",
-                        "header": "Zigbee 家庭自動化 - 新增設備",
-                        "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保持喚醒狀態。",
-                        "pairing_mode": "請確定設備處於配對模式中，參閱設備的手冊以了解如何進行操作。",
+                        "discovery_text": "所發現的裝置將會顯示於此。跟隨裝置的指示並將其設定為配對模式。",
+                        "header": "Zigbee 家庭自動化 - 新增裝置",
+                        "no_devices_found": "找不到裝置，請確定裝置處於配對模式、並於探索時保持喚醒狀態。",
+                        "pairing_mode": "請確定裝置處於配對模式中，參閱裝置的手冊以了解如何進行操作。",
                         "search_again": "再次搜尋",
-                        "spinner": "正在搜尋 ZHA Zigbee 設備..."
+                        "spinner": "正在搜尋 ZHA Zigbee 裝置..."
                     },
                     "add": {
                         "caption": "新增裝置",
-                        "description": "新增設備至 Zigbee 網路"
+                        "description": "新增裝置至 Zigbee 網路"
                     },
                     "button": "設定",
                     "caption": "ZHA",
@@ -2476,24 +2511,24 @@
                         "CONFIGURED": "設定完成",
                         "CONFIGURED_status_text": "初始化中",
                         "INITIALIZED": "初始化完成",
-                        "INITIALIZED_status_text": "設備已準備就緒",
+                        "INITIALIZED_status_text": "裝置已準備就緒",
                         "INTERVIEW_COMPLETE": "探訪完成",
                         "INTERVIEW_COMPLETE_status_text": "設定中",
-                        "PAIRED": "找到設備",
+                        "PAIRED": "找到裝置",
                         "PAIRED_status_text": "開始探訪"
                     },
                     "devices": {
-                        "header": "Zigbee 家庭自動化 - 設備"
+                        "header": "Zigbee 家庭自動化 - 裝置"
                     },
                     "group_binding": {
-                        "bind_button_help": "綁定所選擇之群組至所選擇之設備叢集。",
+                        "bind_button_help": "綁定所選擇之群組至所選擇之裝置叢集。",
                         "bind_button_label": "綁定群組",
                         "cluster_selection_help": "選擇叢集以綁定至所選群組。",
                         "group_picker_help": "選擇群組進行綁定命令。",
                         "group_picker_label": "可綁定群組",
                         "header": "群組綁定",
                         "introduction": "綁定與解除綁定群組。",
-                        "unbind_button_help": "由所選擇之設備叢集中取消綁定所選擇之群組。",
+                        "unbind_button_help": "由所選擇之裝置叢集中取消綁定所選擇之群組。",
                         "unbind_button_label": "解除綁定群組"
                     },
                     "groups": {
@@ -2535,10 +2570,10 @@
                     },
                     "node_management": {
                         "header": "裝置管理",
-                        "help_node_dropdown": "選擇設備以檢視該設備選項。",
-                        "hint_battery_devices": "請注意：對設備執行命令時，需喚醒處於睡眠狀態的設備（使用電池供電），通常可以藉由觸發以喚醒設備。",
+                        "help_node_dropdown": "選擇裝置以檢視該裝置選項。",
+                        "hint_battery_devices": "請注意：對裝置執行命令時，需喚醒處於睡眠狀態的裝置（使用電池供電），通常可以藉由觸發以喚醒裝置。",
                         "hint_wakeup": "在您進行互動時某些裝置（例如小米感應器）有喚醒按鈕、可藉由每隔約 5 秒按一下、以保持該裝置處於喚醒狀態。",
-                        "introduction": "執行 ZHA 命命將影響單一設備。選擇設備以檢視該設備可使用之命令。"
+                        "introduction": "執行 ZHA 命命將影響單一裝置。選擇裝置以檢視該裝置可使用之命令。"
                     },
                     "title": "Zigbee 家庭自動化",
                     "visualization": {
@@ -2563,7 +2598,7 @@
                         "name": "名稱",
                         "new_zone": "新區域",
                         "passive": "被動",
-                        "passive_note": "被動區域將會於前端中隱藏、不會作為設備位置追蹤。使用於僅作為自動化之用相當方便。",
+                        "passive_note": "被動區域將會於前端中隱藏、不會作為裝置位置追蹤。使用於僅作為自動化之用相當方便。",
                         "radius": "半徑",
                         "required_error_msg": "必填欄位",
                         "update": "更新"
@@ -2708,7 +2743,7 @@
                         "attributes": "屬性",
                         "current_entities": "目前實體",
                         "description1": "設定 Home Assistant 裝置代表。",
-                        "description2": "將不會與實際設備進行通訊。",
+                        "description2": "將不會與實際裝置進行通訊。",
                         "entity": "實體",
                         "filter_attributes": "屬性過濾器",
                         "filter_entities": "實體過濾器",
@@ -2771,7 +2806,7 @@
                     "confirm_delete": "確定要刪除此面板？",
                     "empty_state": {
                         "go_to_integrations_page": "轉至整合頁面。",
-                        "no_devices": "此頁面允許進行控制所擁有的設備。看起來您尚未設定任何設備，從設定中的整合頁面開始吧。",
+                        "no_devices": "此頁面允許進行控制所擁有的裝置。看起來您尚未設定任何裝置，從設定中的整合頁面開始吧。",
                         "title": "歡迎回家"
                     },
                     "entities": {
@@ -3125,7 +3160,7 @@
                         "header": "移動至哪個面板"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與設備產生 Lovelace UI 視圖。",
+                        "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與裝置產生 Lovelace UI 視圖。",
                         "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？",
                         "confirm_unsaved_changes": "變更尚未儲存，確定要退出？",
                         "confirm_unsaved_comments": "設定包含命令、將不會被儲存。是否要繼續？",
@@ -3246,7 +3281,7 @@
                                     "data": {
                                         "code": "雙重驗證碼"
                                     },
-                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
+                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
                                 }
                             }
                         },
@@ -3269,7 +3304,7 @@
                                     "data": {
                                         "code": "雙重驗證碼"
                                     },
-                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
+                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
                                 }
                             }
                         },
@@ -3293,7 +3328,7 @@
                                     "data": {
                                         "code": "雙重驗證碼"
                                     },
-                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
+                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
                                 }
                             }
                         },
@@ -3376,7 +3411,7 @@
                 },
                 "integration": {
                     "finish": "完成",
-                    "intro": "將會於 Home Assistant 整合中呈現的設備與服務。可以現在進行設定，或者稍後於設定選單中進行。",
+                    "intro": "將會於 Home Assistant 整合中呈現的裝置與服務。可以現在進行設定，或者稍後於設定選單中進行。",
                     "more_integrations": "更多"
                 },
                 "intro": "準備喚醒您的智慧型家庭、取得隱私自主權，並加入由全球愛好者共同維護的社群了嗎？",
@@ -3411,10 +3446,13 @@
                 "change_password": {
                     "confirm_new_password": "確認密碼",
                     "current_password": "目前密碼",
+                    "error_new_is_old": "新密碼必須與當前密碼不同",
+                    "error_new_mismatch": "輸入的新密碼值不匹配",
                     "error_required": "必填",
                     "header": "變更密碼",
                     "new_password": "新密碼",
-                    "submit": "傳送"
+                    "submit": "傳送",
+                    "success": "密碼變更成功"
                 },
                 "current_user": "目前登入身份：{fullName}。",
                 "customize_sidebar": {
@@ -3477,7 +3515,7 @@
                 "push_notifications": {
                     "add_device_prompt": {
                         "input_label": "裝置名稱",
-                        "title": "要幫這個裝置取什麼名子呢？"
+                        "title": "要幫這個裝置取什麼名字呢？"
                     },
                     "description": "推送通知到這個裝置。",
                     "error_load_platform": "設定 notify.html5。",
