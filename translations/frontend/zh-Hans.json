@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "配置条目",
+            "device": "设备",
             "integration": "集成",
             "user": "用户"
         }
@@ -710,6 +711,16 @@
             "service-picker": {
                 "service": "服务"
             },
+            "target-picker": {
+                "add_area_id": "选择区域",
+                "add_device_id": "选择设备",
+                "add_entity_id": "选择实体",
+                "expand_area_id": "在它包含的单独设备和实体中展开此区域。展开后，当区域发生更改时，它不会更新设备和实体。",
+                "expand_device_id": "在单独的实体中展开此设备。展开后，设备发生变化时不会更新实体。",
+                "remove_area_id": "删除区域",
+                "remove_device_id": "删除设备",
+                "remove_entity_id": "删除实体"
+            },
             "user-picker": {
                 "add_user": "添加用户",
                 "no_user": "没有用户",
@@ -733,6 +744,7 @@
                 "editor": {
                     "confirm_delete": "您确定要删除此条目吗？",
                     "delete": "删除",
+                    "device_disabled": "该实体的设备已禁用。",
                     "enabled_cause": "由于 {cause} 而被禁用",
                     "enabled_delay_confirm": "已启用的实体将在 {delay} 秒后添加到 Home Assistant",
                     "enabled_description": "已禁用的实体不再添加到 Home Assistant。",
@@ -743,6 +755,7 @@
                     "icon_error": "图标的格式应为 prefix:iconname，例如：mdi:home",
                     "name": "名称",
                     "note": "注意：这可能不适用于所有集成。",
+                    "open_device_settings": "打开设备设置",
                     "unavailable": "该实体暂不可用。",
                     "update": "更新"
                 },
@@ -781,7 +794,7 @@
                     "min": "最小值",
                     "mode": "显示模式",
                     "slider": "滑杆",
-                    "step": "滑杆步长",
+                    "step": "步长",
                     "unit_of_measurement": "单位"
                 },
                 "input_select": {
@@ -1052,7 +1065,7 @@
                 },
                 "automation": {
                     "caption": "自动化",
-                    "description": "管理自动化",
+                    "description": "为智能家居制订自动化规则",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "使用 Blueprint"
@@ -1510,7 +1523,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "整合 Alexa 及 Google 助理，远程控制智能家居。",
+                    "description_features": "远程控制智能家居，还可接入 Alexa 和 Google Assistant",
                     "description_login": "登录为 {email}",
                     "description_not_login": "未登录",
                     "dialog_certificate": {
@@ -1605,7 +1618,7 @@
                 },
                 "core": {
                     "caption": "通用",
-                    "description": "更改 Home Assistant 的通用配置",
+                    "description": "单位制、位置、时区及其他通用参数",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1667,6 +1680,7 @@
                             "unknown_condition": "未知环境条件"
                         },
                         "create": "通过设备创建自动化",
+                        "create_disable": "不能通过禁用的设备创建自动化",
                         "no_automations": "没有自动化",
                         "no_device_automations": "该设备没有可用的自动化。",
                         "triggers": {
@@ -1695,6 +1709,15 @@
                     "description": "管理已连接的设备",
                     "device_info": "设备信息",
                     "device_not_found": "未找到设备。",
+                    "disabled": "已禁用",
+                    "disabled_by": {
+                        "config_entry": "配置条目",
+                        "integration": "集成",
+                        "user": "用户"
+                    },
+                    "enabled_cause": "设备已通过{cause}禁用。",
+                    "enabled_description": "禁用的设备将不会显示，并且属于该设备的实体也将被禁用并且不会添加到 Home Assistant。",
+                    "enabled_label": "启用设备",
                     "entities": {
                         "add_entities_lovelace": "添加到 Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {个已禁用实体}\n  other {个已禁用实体}\n}",
@@ -1704,14 +1727,25 @@
                     },
                     "name": "名称",
                     "no_devices": "没有设备",
+                    "picker": {
+                        "filter": {
+                            "filter": "筛选",
+                            "hidden_devices": "{number} 个隐藏设备",
+                            "show_all": "显示全部",
+                            "show_disabled": "显示已禁用的设备"
+                        },
+                        "search": "搜索设备"
+                    },
                     "scene": {
                         "create": "通过设备创建场景",
+                        "create_disable": "不能通过禁用的设备创建场景",
                         "no_scenes": "没有场景",
                         "scenes": "场景"
                     },
                     "scenes": "场景",
                     "script": {
                         "create": "通过设备创建脚本",
+                        "create_disable": "不能通过禁用的设备创建脚本",
                         "no_scripts": "没有脚本",
                         "scripts": "脚本"
                     },
@@ -1777,7 +1811,7 @@
                 "header": "配置 Home Assistant",
                 "helpers": {
                     "caption": "辅助元素",
-                    "description": "管理辅助构建自动化的元素",
+                    "description": "辅助构建自动化的元素",
                     "dialog": {
                         "add_helper": "添加辅助元素",
                         "add_platform": "添加 {platform}",
@@ -1809,7 +1843,7 @@
                     "copy_github": "用于 GitHub",
                     "copy_raw": "原始文本",
                     "custom_uis": "自定义用户界面：",
-                    "description": "查看关于此 Home Assistant 安装的信息",
+                    "description": "Home Assistant 的版本号、系统状态和各类文档的链接",
                     "developed_by": "由一帮很 Awesome~~~ 的人开发。",
                     "documentation": "文档",
                     "frontend": "前端用户界面",
@@ -2000,7 +2034,7 @@
                             "open": "打开"
                         }
                     },
-                    "description": "管理 Lovelace 仪表盘",
+                    "description": "自定义卡片布局，让控制设备更方便",
                     "resources": {
                         "cant_edit_yaml": "您正在 YAML 模式下使用 Lovelace，因此无法通过 UI 管理资源。请在 configuration.yaml 中管理它们。",
                         "caption": "资源",
@@ -2199,19 +2233,19 @@
                 "scene": {
                     "activated": "已激活场景 {name}。",
                     "caption": "场景",
-                    "description": "管理场景",
+                    "description": "定格一组设备的状态，日后即可一键恢复",
                     "editor": {
                         "default_name": "新场景",
                         "devices": {
                             "add": "添加设备",
                             "delete": "删除设备",
                             "header": "设备",
-                            "introduction": "添加要包含在场景中的设备。将所有设备设置为该场景所需的状态。"
+                            "introduction": "在此添加要包含在场景中的设备，然后将它们设置成该场景所需的状态。"
                         },
                         "entities": {
                             "add": "添加实体",
                             "delete": "删除实体",
-                            "device_entities": "如果添加属于设备的实体，则将添加该设备。",
+                            "device_entities": "如果添加的实体属于某设备，仍会添加为设备。",
                             "header": "实体",
                             "introduction": "可在此处设置不属于设备的实体。",
                             "without_device": "无设备关联的实体"
@@ -2243,7 +2277,7 @@
                 },
                 "script": {
                     "caption": "脚本",
-                    "description": "管理脚本",
+                    "description": "执行一系列动作",
                     "editor": {
                         "alias": "名称",
                         "default_name": "新建脚本",
@@ -2354,7 +2388,7 @@
                     "confirm_remove": "您确定要删除标签 {tag} 吗？",
                     "confirm_remove_title": "删除标签？",
                     "create_automation": "通过标签创建自动化",
-                    "description": "管理标签",
+                    "description": "NFC 标签和二维码也可以触发自动化",
                     "detail": {
                         "companion_apps": "配套应用程序",
                         "create": "创建",
@@ -2393,6 +2427,7 @@
                     "editor": {
                         "activate_user": "激活用户",
                         "active": "激活",
+                        "active_tooltip": "控制用户能否登录",
                         "admin": "管理员",
                         "caption": "用户信息",
                         "change_password": "更改密码",
@@ -3411,10 +3446,13 @@
                 "change_password": {
                     "confirm_new_password": "确认新密码",
                     "current_password": "当前密码",
+                    "error_new_is_old": "新密码不能与当前密码相同",
+                    "error_new_mismatch": "输入的新密码不一致",
                     "error_required": "必填",
                     "header": "更改密码",
                     "new_password": "新密码",
-                    "submit": "提交"
+                    "submit": "提交",
+                    "success": "密码修改成功"
                 },
                 "current_user": "您目前以 {fullName} 的身份登录。",
                 "customize_sidebar": {

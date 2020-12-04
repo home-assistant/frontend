@@ -63,7 +63,8 @@ export class HaDeviceSelector extends LitElement {
     }
     if (this.selector.device.integration) {
       if (
-        !this._configEntries?.some((entry) =>
+        this._configEntries &&
+        !this._configEntries.some((entry) =>
           device.config_entries.includes(entry.entry_id)
         )
       ) {

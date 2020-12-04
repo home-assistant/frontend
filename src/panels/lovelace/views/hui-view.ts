@@ -20,10 +20,22 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
 import { createViewElement } from "../create-element/create-view-element";
+import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { confDeleteCard } from "../editor/delete-card";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 const DEFAULT_VIEW_LAYOUT = "masonry";
 const PANEL_VIEW_LAYOUT = "panel";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "ll-create-card": undefined;
+    "ll-edit-card": { path: [number] | [number, number] };
+    "ll-delete-card": { path: [number] | [number, number] };
+  }
+}
 
 @customElement("hui-view")
 export class HUIView extends UpdatingElement {
@@ -106,6 +118,23 @@ export class HUIView extends UpdatingElement {
 
     if (configChanged && !this._layoutElement) {
       this._layoutElement = createViewElement(viewConfig!);
+      this._layoutElement.addEventListener("ll-create-card", () => {
+        showCreateCardDialog(this, {
+          lovelaceConfig: this.lovelace!.config,
+          saveConfig: this.lovelace!.saveConfig,
+          path: [this.index!],
+        });
+      });
+      this._layoutElement.addEventListener("ll-edit-card", (ev) => {
+        showEditCardDialog(this, {
+          lovelaceConfig: this.lovelace!.config,
+          saveConfig: this.lovelace!.saveConfig,
+          path: ev.detail.path,
+        });
+      });
+      this._layoutElement.addEventListener("ll-delete-card", (ev) => {
+        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+      });
     }
 
     if (configChanged) {

@@ -36,6 +36,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
+    private __loadedFragmetTranslations: Set<string> = new Set();
+
     private __loadedTranslations: {
       // track what things have been loaded
       [category: string]: LoadedTranslationCategory;
@@ -101,6 +103,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
+      this.__loadedFragmetTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -195,10 +198,31 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       language: string,
       panelUrl: string
     ) {
-      if (translationMetadata.fragments.includes(panelUrl)) {
-        const result = await getTranslation(panelUrl, language);
-        this._updateResources(result.language, result.data);
+      if (!panelUrl) {
+        return;
       }
+      const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
+
+      // If it's the first call we don't have panel info yet to check the component.
+      // If the url is not known it might be a custom lovelace dashboard, so we load lovelace translations
+      const fragment = translationMetadata.fragments.includes(
+        panelComponent || panelUrl
+      )
+        ? panelComponent || panelUrl
+        : !panelComponent
+        ? "lovelace"
+        : undefined;
+
+      if (!fragment) {
+        return;
+      }
+
+      if (this.__loadedFragmetTranslations.has(fragment)) {
+        return;
+      }
+      this.__loadedFragmetTranslations.add(fragment);
+      const result = await getTranslation(fragment, language);
+      this._updateResources(result.language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -226,6 +250,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // before this.hass is even created. In this case our base state comes
       // from this._pendingHass instead. Otherwise the first set of strings is
       // overwritten when we call _updateHass the second time!
+
+      // Allow hass to be updated
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       if (language !== (this.hass ?? this._pendingHass).language) {
         // the language was changed, abort

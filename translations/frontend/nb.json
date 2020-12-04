@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfigurer oppføring",
+            "device": "Enhet",
             "integration": "Integrasjon",
             "user": "Bruker"
         }
@@ -710,6 +711,16 @@
             "service-picker": {
                 "service": "Tjeneste"
             },
+            "target-picker": {
+                "add_area_id": "Velg område",
+                "add_device_id": "Velg enhet",
+                "add_entity_id": "Velg entitet",
+                "expand_area_id": "Utvid dette området med de separate enhetene og entitetene det inneholder. Etter utvidelse vil den ikke oppdatere enhetene og entitetene når området endres.",
+                "expand_device_id": "Utvid denne enheten i separate entiteter. Etter utvidelse vil den ikke oppdatere entitetene når enheten endres.",
+                "remove_area_id": "Fjern område",
+                "remove_device_id": "Fjern enhet",
+                "remove_entity_id": "Fjern entitet"
+            },
             "user-picker": {
                 "add_user": "Legg til bruker",
                 "no_user": "Ingen bruker",
@@ -733,6 +744,7 @@
                 "editor": {
                     "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
                     "delete": "Slett",
+                    "device_disabled": "Enheten til denne enhtiteen er deaktivert",
                     "enabled_cause": "Deaktivert av {cause}.",
                     "enabled_delay_confirm": "De aktiverte enhetene blir lagt til i Home Assistant om {delay} sekunder",
                     "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
@@ -743,6 +755,7 @@
                     "icon_error": "Ikoner bør være i formatet 'prefiks:ikonnavn', f.eks 'mdi:home'",
                     "name": "Navn",
                     "note": "Merk: Dette fungerer kanskje ikke ennå med alle integrasjoner.",
+                    "open_device_settings": "Åpne enhetsinnstillinger",
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                     "update": "Oppdater"
                 },
@@ -1667,6 +1680,7 @@
                             "unknown_condition": "Ukjent tilstand"
                         },
                         "create": "Lag automasjon med enheten",
+                        "create_disable": "Kan ikke opprette automasjon med deaktivert enhet",
                         "no_automations": "Ingen automasjoner",
                         "no_device_automations": "Det er ingen automasjoner tilgjengelig for denne enheten.",
                         "triggers": {
@@ -1695,6 +1709,15 @@
                     "description": "Administrer tilkoblede enheter",
                     "device_info": "Enhetsinformasjon",
                     "device_not_found": "Enhet ikke funnet",
+                    "disabled": "Deaktivert",
+                    "disabled_by": {
+                        "config_entry": "Konfigurer oppføring",
+                        "integration": "Integrasjon",
+                        "user": "Bruker"
+                    },
+                    "enabled_cause": "Enheten er deaktivert av {cause}",
+                    "enabled_description": "Deaktiverte enheter vises ikke, og entiteter som tilhører enheten deaktiveres og ikke legges til i Home Assistant",
+                    "enabled_label": "Aktivér enhet",
                     "entities": {
                         "add_entities_lovelace": "Legg til i Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {deaktivert entitet}\n  other {deaktiverte entiteter}\n}",
@@ -1704,14 +1727,25 @@
                     },
                     "name": "Navn",
                     "no_devices": "Ingen enheter",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter",
+                            "hidden_devices": "{number} {number, plural,\n  one {skjult enhet}\n  other {skjulte enheter}\n}",
+                            "show_all": "Vis alle",
+                            "show_disabled": "Vis deaktiverte enheter"
+                        },
+                        "search": "Søk etter enheter"
+                    },
                     "scene": {
                         "create": "Lag scene med enheten",
+                        "create_disable": "Kan ikke opprette scene med deaktivert enhet",
                         "no_scenes": "Ingen scener",
                         "scenes": "Scener"
                     },
                     "scenes": "Scener",
                     "script": {
                         "create": "Lag skript med enheten",
+                        "create_disable": "Kan ikke opprette skript med deaktivert enhet",
                         "no_scripts": "Ingen skript",
                         "scripts": "Skript"
                     },
@@ -2393,6 +2427,7 @@
                     "editor": {
                         "activate_user": "Aktiver bruker",
                         "active": "Aktiv",
+                        "active_tooltip": "Kontrollerer om brukeren kan logge inn",
                         "admin": "",
                         "caption": "Vis bruker",
                         "change_password": "Endre passord",
@@ -2989,20 +3024,20 @@
                             "name": "Mediekontroll"
                         },
                         "picture-elements": {
-                            "description": "Picture Elements-kortet er en av de mest allsidige korttyper. Kortene lar deg plassere ikoner eller tekst og til og med tjenester! På et bilde basert på koordinater.",
+                            "description": "Bildeelementer-kortet er et av de mest allsidige korttypene. Kortene lar deg plassere ikoner eller tekst og til og med tjenester! På et bilde basert på koordinater.",
                             "name": "Bildeelementer"
                         },
                         "picture-entity": {
                             "description": "Bilde entitet kortet viser en entitet i form av et bilde. I stedet for bilder fra URL, kan det også vise bilde av kameraentiteter.",
-                            "name": "Bildeoppføring"
+                            "name": "Bilde entitet"
                         },
                         "picture-glance": {
-                            "description": "Picture Glance-kortet viser et bilde og tilhørende entitetstilstander som et ikon. Entitetene på høyre side tillater veksling av handlinger, andre viser dialogboksen mer informasjon.",
+                            "description": "Bilde blikk-kortet viser et bilde og tilhørende entitetstilstander som et ikon. Entitetene på høyre side tillater veksling av handlinger, andre viser dialogboksen mer informasjon.",
                             "name": "Bilde blikk",
                             "state_entity": "Statusentitet"
                         },
                         "picture": {
-                            "description": "Bildekortet lar deg stille inn et bilde som skal brukes til navigasjon til forskjellige baner i grensesnittet ditt eller for å tilkalle en tjeneste.",
+                            "description": "Bildekortet lar deg sette inn et bilde som skal brukes til navigasjon til forskjellige baner i grensesnittet ditt eller for å tilkalle en tjeneste.",
                             "name": "Bilde"
                         },
                         "plant-status": {
@@ -3411,10 +3446,13 @@
                 "change_password": {
                     "confirm_new_password": "Bekreft nytt passord",
                     "current_password": "Nåværende passord",
+                    "error_new_is_old": "Nytt passord må være annerledes enn gjeldende passord",
+                    "error_new_mismatch": "Oppgitte nye passordverdier stemmer ikke overens",
                     "error_required": "Nødvendig",
                     "header": "Endre passord",
                     "new_password": "Nytt passord",
-                    "submit": "Send inn"
+                    "submit": "Send inn",
+                    "success": "Passordet ble endret"
                 },
                 "current_user": "Du er logget inn som {fullName}.",
                 "customize_sidebar": {
