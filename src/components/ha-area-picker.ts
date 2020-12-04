@@ -171,7 +171,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         return [
           {
             area_id: "",
-            name: "You don't have any areas",
+            name: this.hass.localize("ui.components.area-picker.no_areas"),
           },
         ];
       }
@@ -291,7 +291,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         outputAreas = [
           {
             area_id: "",
-            name: "No matching areas found",
+            name: this.hass.localize("ui.components.area-picker.no_match"),
           },
         ];
       }

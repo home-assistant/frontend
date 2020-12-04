@@ -174,7 +174,9 @@ export class HaEntityPicker extends LitElement {
             last_updated: "",
             context: { id: "", user_id: null },
             attributes: {
-              friendly_name: "No matching entities found",
+              friendly_name: this.hass!.localize(
+                "ui.components.entity.entity-picker.no_match"
+              ),
               icon: "mdi:magnify",
             },
           },

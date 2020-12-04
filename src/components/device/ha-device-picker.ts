@@ -134,7 +134,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
           {
             id: "",
             area: "",
-            name: "You don't have any devices",
+            name: this.hass.localize("ui.components.device-picker.no_devices"),
           },
         ];
       }
@@ -228,7 +228,13 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         };
       });
       if (!outputDevices.length) {
-        return [{ id: "", area: "", name: "No matching devices found" }];
+        return [
+          {
+            id: "",
+            area: "",
+            name: this.hass.localize("ui.components.device-picker.no_match"),
+          },
+        ];
       }
       if (outputDevices.length === 1) {
         return outputDevices;
