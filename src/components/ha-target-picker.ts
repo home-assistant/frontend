@@ -435,10 +435,19 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     type: string,
     id: string
   ): this["value"] {
-    return {
-      ...value,
-      [type]: ensureArray(value![type])!.filter((val) => val !== id),
-    };
+    const newVal = ensureArray(value![type])!.filter((val) => val !== id);
+    if (newVal.length) {
+      return {
+        ...value,
+        [type]: newVal,
+      };
+    }
+    const val = { ...value }!;
+    delete val[type];
+    if (Object.keys(val).length) {
+      return val;
+    }
+    return undefined;
   }
 
   private _deviceMeetsFilter(device: DeviceRegistryEntry): boolean {

@@ -18,9 +18,6 @@ import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "../../../components/entity/ha-entity-toggle";
 import "@material/mwc-button/mwc-button";
-import "./trigger/ha-automation-trigger";
-import "./condition/ha-automation-condition";
-import "./action/ha-automation-action";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyle } from "../../../resources/styles";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -151,7 +148,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                   There is an error in this Blueprint: ${blueprint.error}
                 </p>`
               : html`${blueprint?.metadata.description
-                  ? html`<p class="card-content">
+                  ? html`<p class="card-content pre-line">
                       ${blueprint.metadata.description}
                     </p>`
                   : ""}
@@ -227,12 +224,18 @@ export class HaBlueprintAutomationEditor extends LitElement {
     ) {
       return;
     }
+    const input = { ...this.config.use_blueprint.input, [key]: value };
+
+    if (value === "" || value === undefined) {
+      delete input[key];
+    }
+
     fireEvent(this, "value-changed", {
       value: {
         ...this.config!,
         use_blueprint: {
           ...this.config.use_blueprint,
-          input: { ...this.config.use_blueprint.input, [key]: value },
+          input,
         },
       },
     });
@@ -263,6 +266,9 @@ export class HaBlueprintAutomationEditor extends LitElement {
       css`
         .padding {
           padding: 16px;
+        }
+        .pre-line {
+          white-space: pre-line;
         }
         .blueprint-picker-container {
           padding: 16px;
