@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Položka nastavení",
+            "device": "Zařízení",
             "integration": "Integrace",
             "user": "Uživatel"
         }
@@ -709,6 +710,14 @@
             "service-picker": {
                 "service": "Služba"
             },
+            "target-picker": {
+                "add_area_id": "Vyberte oblast",
+                "add_device_id": "Vyberte zařízení",
+                "add_entity_id": "Vyberte entitu",
+                "remove_area_id": "Odebrat oblast",
+                "remove_device_id": "Odebrat zařízení",
+                "remove_entity_id": "Odebrat entitu"
+            },
             "user-picker": {
                 "add_user": "Přidat uživatele",
                 "no_user": "Žádný uživatel",
@@ -732,6 +741,7 @@
                 "editor": {
                     "confirm_delete": "Opravdu chcete tuto položku smazat?",
                     "delete": "Odstranit",
+                    "device_disabled": "Zařízení této entity je zakázáno.",
                     "enabled_cause": "Zakázáno {cause}.",
                     "enabled_delay_confirm": "Povolené entity budou přidány do Home Assistant za {delay} sekund",
                     "enabled_description": "Zakázané entity nebudou přidány do Home Assistant.",
@@ -742,6 +752,7 @@
                     "icon_error": "Ikony by měly být ve formátu 'prefix:nazevikony', např. 'mdi:home'",
                     "name": "Jméno",
                     "note": "Poznámka: U všech integrací to ještě nemusí fungovat.",
+                    "open_device_settings": "Otevřít nastavení zařízení",
                     "unavailable": "Tato entita není momentálně k dispozici.",
                     "update": "Aktualizovat"
                 },
@@ -1028,7 +1039,7 @@
                         "confirmation_text": "Všechna zařízení v této oblasti budou nastavena jako nepřiřazena.",
                         "confirmation_title": "Opravdu chcete tuto oblast smazat?"
                     },
-                    "description": "Správa oblastí ve vaší domácnosti",
+                    "description": "Seskupte zařízení do oblastí",
                     "editor": {
                         "area_id": "ID oblasti",
                         "create": "VYTVOŘIT",
@@ -1050,7 +1061,7 @@
                 },
                 "automation": {
                     "caption": "Automatizace",
-                    "description": "Správa automatizací",
+                    "description": "Vytvořte si pro svůj domov vlastní pravidla chování",
                     "dialog_new": {
                         "header": "Vytvoření automatizace",
                         "how": "Jak chcete vytvořit svou novou automatizaci?",
@@ -1585,7 +1596,7 @@
                 },
                 "core": {
                     "caption": "Obecné",
-                    "description": "Změny obecného nastavení Home Assistant",
+                    "description": "Jednotkový systém, umístění, časové pásmo a další obecné parametry",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1647,6 +1658,7 @@
                             "unknown_condition": "Neznámá podmínka"
                         },
                         "create": "Vytvořit automatizaci se zařízením",
+                        "create_disable": "Nelze vytvořit automatizaci se zakázaným zařízením",
                         "no_automations": "Žádné automatizace",
                         "no_device_automations": "Pro toto zařízení nejsou k dispozici žádné automatizace.",
                         "triggers": {
@@ -1672,9 +1684,18 @@
                         "no_devices": "Žádná zařízení"
                     },
                     "delete": "Odstranit",
-                    "description": "Správa připojených zařízení",
+                    "description": "Spravujte připojená zařízení",
                     "device_info": "Informace o zařízení",
                     "device_not_found": "Zařízení nebylo nalezeno.",
+                    "disabled": "Zakázáno",
+                    "disabled_by": {
+                        "config_entry": "Položka nastavení",
+                        "integration": "Integrace",
+                        "user": "Uživatel"
+                    },
+                    "enabled_cause": "Zařízení je zakázáno přes {cause}.",
+                    "enabled_description": "Zakázaná zařízení se nebudou zobrazovat a entity patřící k těmto zařízením budou zakázány a nebudou přidány do Home Assistant.",
+                    "enabled_label": "Povolit zařízení",
                     "entities": {
                         "add_entities_lovelace": "Přidat do Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {zakázaná entita}\n  other {zakázaných entit}\n}",
@@ -1684,14 +1705,25 @@
                     },
                     "name": "Jméno",
                     "no_devices": "Žádná zařízení",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtrovat",
+                            "hidden_devices": "{number} {number, plural,\n  one {skryté zařízení}\n  few {skrytá zařízení}\n  other {skrytých zařízení}\n}",
+                            "show_all": "Zobrazit vše",
+                            "show_disabled": "Zobrazit zakázaná zařízení"
+                        },
+                        "search": "Hledat zařízení"
+                    },
                     "scene": {
                         "create": "Vytvořit scénu se zařízením",
+                        "create_disable": "Nelze vytvořit scénu se zakázaným zařízením",
                         "no_scenes": "Žádné scény",
                         "scenes": "Scény"
                     },
                     "scenes": "Scény",
                     "script": {
                         "create": "Vytvořit skript se zařízením",
+                        "create_disable": "Nelze vytvořit skript se zakázaným zařízením",
                         "no_scripts": "Žádné skripty",
                         "scripts": "Skripty"
                     },
@@ -1757,7 +1789,7 @@
                 "header": "Nastavení Home Assistant",
                 "helpers": {
                     "caption": "Pomocníci",
-                    "description": "Správa prvků, které mohou pomoci při vytváření automatizací",
+                    "description": "Prvky, které pomáhají vytvářet automatizace",
                     "dialog": {
                         "add_helper": "Přidat pomocníka",
                         "add_platform": "Přidat {platform}",
@@ -1789,7 +1821,7 @@
                     "copy_github": "Pro GitHub",
                     "copy_raw": "Nezpracovaný text",
                     "custom_uis": "Vlastní uživatelská rozhraní:",
-                    "description": "Informace o instalaci Home Assistant",
+                    "description": "Verze, stav systému a odkazy na dokumentaci",
                     "developed_by": "Vyvinuto partou úžasných lidí.",
                     "documentation": "Dokumentace",
                     "frontend": "frontend-ui",
@@ -1895,7 +1927,7 @@
                     },
                     "configure": "Nastavit",
                     "configured": "Nastaveno",
-                    "description": "Správa integrací",
+                    "description": "Spravujte integrace a jejich služby, zařízení, ...",
                     "details": "Podrobnosti o integraci",
                     "discovered": "Objeveno",
                     "home_assistant_website": "stránky Home Assistant",
@@ -1980,7 +2012,7 @@
                             "open": "Otevřít"
                         }
                     },
-                    "description": "Správa Lovelace Dashboardů",
+                    "description": "Vytvořte vlastní sady karet pro ovládání svého domova",
                     "resources": {
                         "cant_edit_yaml": "Používáte Lovelace v režimu YAML, proto nemůžete spravovat své zdroje prostřednictvím uživatelského rozhraní. Spravujte je v souboru configuration.yaml.",
                         "caption": "Zdroje",
@@ -2179,7 +2211,7 @@
                 "scene": {
                     "activated": "Aktivovaná scéna {name}.",
                     "caption": "Scény",
-                    "description": "Správa scén",
+                    "description": "Zachyťte stavy zařízení a snadno je později vyvolejte",
                     "editor": {
                         "default_name": "Nová scéna",
                         "devices": {
@@ -2223,7 +2255,7 @@
                 },
                 "script": {
                     "caption": "Skripty",
-                    "description": "Správa skriptů",
+                    "description": "Provádějte posloupnosti akcí",
                     "editor": {
                         "alias": "Název",
                         "default_name": "Nový skript",
@@ -2334,7 +2366,7 @@
                     "confirm_remove": "Opravdu chcete odebrat štítek {tag}?",
                     "confirm_remove_title": "Odebrat štítek?",
                     "create_automation": "Vytvořit automatizaci se štítkem",
-                    "description": "Správa štítků",
+                    "description": "Spusťte automatizaci skenováním NFC tagu, QR kódu atd.",
                     "detail": {
                         "companion_apps": "doprovodné aplikace",
                         "create": "Vytvořit",
@@ -2373,6 +2405,7 @@
                     "editor": {
                         "activate_user": "Aktivovat uživatele",
                         "active": "Aktivní",
+                        "active_tooltip": "Určuje, zda se uživatel může přihlásit",
                         "admin": "Administrátor",
                         "caption": "Zobrazit uživatele",
                         "change_password": "Změnit heslo",
@@ -3391,10 +3424,13 @@
                 "change_password": {
                     "confirm_new_password": "Potvrďte nové heslo",
                     "current_password": "Současné heslo",
+                    "error_new_is_old": "Nové heslo se musí lišit od aktuálního hesla",
+                    "error_new_mismatch": "Zadaná nová hesla se neshodují",
                     "error_required": "Povinný",
                     "header": "Změnit heslo",
                     "new_password": "Nové heslo",
-                    "submit": "Odeslat"
+                    "submit": "Odeslat",
+                    "success": "Heslo bylo úspěšně změněno"
                 },
                 "current_user": "Nyní jste přihlášeni jako {fullName}.",
                 "customize_sidebar": {
