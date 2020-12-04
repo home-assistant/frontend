@@ -666,6 +666,16 @@
             "service-picker": {
                 "service": "Servicio"
             },
+            "target-picker": {
+                "add_area_id": "Seleccionar área",
+                "add_device_id": "Seleccionar dispositivo",
+                "add_entity_id": "Seleccionar entidad",
+                "expand_area_id": "Expanda esta área en los dispositivos y entidades independientes que contiene. Después de expandirlo no actualizará los dispositivos y entidades cuando cambie el área.",
+                "expand_device_id": "Expanda este dispositivo en entidades independientes. Después de expandirlo no actualizará las entidades cuando cambie el dispositivo.",
+                "remove_area_id": "Eliminar área",
+                "remove_device_id": "Eliminar dispositivo",
+                "remove_entity_id": "Eliminar entidad"
+            },
             "user-picker": {
                 "add_user": "Agregar usuario",
                 "no_user": "Sin usuario",
@@ -689,6 +699,7 @@
                 "editor": {
                     "confirm_delete": "¿Está seguro de que desea eliminar esta entrada?",
                     "delete": "Eliminar",
+                    "device_disabled": "El dispositivo de esta entidad está deshabilitado.",
                     "enabled_cause": "Deshabilitado por {cause}.",
                     "enabled_delay_confirm": "Las entidades habilitadas se agregarán a Home Assistant en {delay} segundos",
                     "enabled_description": "Las entidades deshabilitadas no serán agregadas a Home Assistant.",
@@ -699,6 +710,7 @@
                     "icon_error": "Los iconos deben estar en el formato 'prefijo:nombre del icono', por ejemplo, 'mdi: home'",
                     "name": "Sustituir nombre",
                     "note": "Nota: esto podría no funcionar todavía con todas las integraciones.",
+                    "open_device_settings": "Abrir la configuración del dispositivo",
                     "unavailable": "Esta entidad no está disponible actualmente.",
                     "update": "Actualizar"
                 },
@@ -1489,6 +1501,7 @@
                             "unknown_condition": "Condición desconocida"
                         },
                         "create": "Crear automatización con dispositivo",
+                        "create_disable": "No se puede crear automatización con un dispositivo deshabilitado",
                         "no_automations": "Sin automatizaciones",
                         "no_device_automations": "No hay automatizaciones disponibles para este dispositivo.",
                         "triggers": {
@@ -1515,6 +1528,14 @@
                     "description": "Administrar dispositivos conectados",
                     "device_info": "Información del dispositivo",
                     "device_not_found": "Dispositivo no encontrado.",
+                    "disabled": "Deshabilitado",
+                    "disabled_by": {
+                        "config_entry": "Entrada de configuración",
+                        "integration": "Integración",
+                        "user": "Usuario"
+                    },
+                    "enabled_description": "Los dispositivos deshabilitados no se mostrarán y las entidades que pertenecen al dispositivo se deshabilitarán y no se agregarán a Home Assistant.",
+                    "enabled_label": "Habilitar dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Agregar a Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {entidad deshabilitada}\n  other {entidades deshabilitadas}\n}",
@@ -1524,14 +1545,24 @@
                     },
                     "name": "Nombre",
                     "no_devices": "Sin dispositivos",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtrar",
+                            "show_all": "Mostrar todo",
+                            "show_disabled": "Mostrar los dispositivos deshabilitadas"
+                        },
+                        "search": "Mostrar dispositivos"
+                    },
                     "scene": {
                         "create": "Crear escena con dispositivo",
+                        "create_disable": "No se puede crear una escena con un dispositivo deshabilitado",
                         "no_scenes": "Sin escenas",
                         "scenes": "Escenas"
                     },
                     "scenes": "Escenas",
                     "script": {
                         "create": "Crear script con dispositivo",
+                        "create_disable": "No se puede crear un script con un dispositivo deshabilitado",
                         "no_scripts": "Sin scripts",
                         "scripts": "Scripts"
                     },
@@ -2168,6 +2199,7 @@
                     "editor": {
                         "activate_user": "Activar usuario",
                         "active": "Activo",
+                        "active_tooltip": "Controla si el usuario puede iniciar sesión",
                         "admin": "Administrador",
                         "caption": "Ver usuario",
                         "change_password": "Cambiar contraseña",
@@ -3136,10 +3168,13 @@
                 "change_password": {
                     "confirm_new_password": "Confirmar nueva contraseña",
                     "current_password": "Contraseña actual",
+                    "error_new_is_old": "La nueva contraseña debe ser diferente a la contraseña actual",
+                    "error_new_mismatch": "Las contraseñas no coinciden",
                     "error_required": "Necesario",
                     "header": "Cambiar contraseña",
                     "new_password": "Nueva contraseña",
-                    "submit": "Enviar"
+                    "submit": "Enviar",
+                    "success": "La contraseña se cambió con éxito"
                 },
                 "current_user": "Actualmente estás conectado como {fullName} .",
                 "customize_sidebar": {
