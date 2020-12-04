@@ -1,4 +1,5 @@
-import "./ha-icon-button";
+import "./ha-svg-icon";
+import "@material/mwc-icon-button/mwc-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -14,6 +15,8 @@ import {
   property,
   internalProperty,
   TemplateResult,
+  PropertyValues,
+  query,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import {
@@ -40,6 +43,7 @@ import {
 } from "../data/entity_registry";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 
 const rowRenderer = (
   root: HTMLElement,
@@ -121,6 +125,10 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _opened?: boolean;
 
+  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+
+  private _init = false;
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeAreaRegistry(this.hass.connection!, (areas) => {
@@ -159,6 +167,15 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       entityFilter: this["entityFilter"],
       noAdd: this["noAdd"]
     ): AreaRegistryEntry[] => {
+      if (!areas.length) {
+        return [
+          {
+            area_id: "",
+            name: this.hass.localize("ui.components.area-picker.no_areas"),
+          },
+        ];
+      }
+
       const deviceEntityLookup: DeviceEntityLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryEntry[] | undefined;
@@ -243,7 +260,9 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       }
 
       if (entityFilter) {
-        entities = entities.filter((entity) => entityFilter!(entity));
+        inputEntities = inputEntities!.filter((entity) =>
+          entityFilter!(entity)
+        );
       }
 
       let outputAreas = areas;
@@ -268,6 +287,15 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         outputAreas = areas.filter((area) => areaIds!.includes(area.area_id));
       }
 
+      if (!outputAreas.length) {
+        outputAreas = [
+          {
+            area_id: "",
+            name: this.hass.localize("ui.components.area-picker.no_match"),
+          },
+        ];
+      }
+
       return noAdd
         ? outputAreas
         : [
@@ -280,27 +308,35 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     }
   );
 
+  protected updated(changedProps: PropertyValues) {
+    if (
+      (!this._init && this._devices && this._areas && this._entities) ||
+      (changedProps.has("_opened") && this._opened)
+    ) {
+      this._init = true;
+      (this._comboBox as any).items = this._getAreas(
+        this._areas!,
+        this._devices!,
+        this._entities!,
+        this.includeDomains,
+        this.excludeDomains,
+        this.includeDeviceClasses,
+        this.deviceFilter,
+        this.entityFilter,
+        this.noAdd
+      );
+    }
+  }
+
   protected render(): TemplateResult {
     if (!this._devices || !this._areas || !this._entities) {
       return html``;
     }
-    const areas = this._getAreas(
-      this._areas,
-      this._devices,
-      this._entities,
-      this.includeDomains,
-      this.excludeDomains,
-      this.includeDeviceClasses,
-      this.deviceFilter,
-      this.entityFilter,
-      this.noAdd
-    );
     return html`
       <vaadin-combo-box-light
         item-value-path="area_id"
         item-id-path="area_id"
         item-label-path="name"
-        .items=${areas}
         .value=${this._value}
         .renderer=${rowRenderer}
         @opened-changed=${this._openedChanged}
@@ -321,34 +357,28 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         >
           ${this.value
             ? html`
-                <ha-icon-button
-                  aria-label=${this.hass.localize(
+                <mwc-icon-button
+                  .label=${this.hass.localize(
                     "ui.components.area-picker.clear"
                   )}
                   slot="suffix"
                   class="clear-button"
-                  icon="hass:close"
                   @click=${this._clearValue}
-                  no-ripple
                 >
-                  ${this.hass.localize("ui.components.area-picker.clear")}
-                </ha-icon-button>
+                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+                </mwc-icon-button>
               `
             : ""}
-          ${areas.length > 0
-            ? html`
-                <ha-icon-button
-                  aria-label=${this.hass.localize(
-                    "ui.components.area-picker.show_areas"
-                  )}
-                  slot="suffix"
-                  class="toggle-button"
-                  .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
-                >
-                  ${this.hass.localize("ui.components.area-picker.toggle")}
-                </ha-icon-button>
-              `
-            : ""}
+
+          <mwc-icon-button
+            .label=${this.hass.localize("ui.components.area-picker.toggle")}
+            slot="suffix"
+            class="toggle-button"
+          >
+            <ha-svg-icon
+              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
+            ></ha-svg-icon>
+          </mwc-icon-button>
         </paper-input>
       </vaadin-combo-box-light>
     `;
@@ -424,7 +454,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResult {
     return css`
-      paper-input > ha-icon-button {
+      paper-input > mwc-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);

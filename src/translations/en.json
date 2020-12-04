@@ -328,6 +328,7 @@
         "entity-picker": {
           "entity": "Entity",
           "clear": "Clear",
+          "no_match": "No matching entities found",
           "show_entities": "Show entities"
         },
         "entity-attribute-picker": {
@@ -359,6 +360,8 @@
         "clear": "Clear",
         "toggle": "Toggle",
         "show_devices": "Show devices",
+        "no_devices": "You don't have any devices",
+        "no_match": "No matching devices found",
         "device": "Device",
         "no_area": "No area"
       },
@@ -367,6 +370,8 @@
         "show_areas": "Show areas",
         "area": "Area",
         "add_new": "Add new area…",
+        "no_areas": "You don't have any areas",
+        "no_match": "No matching areas found",
         "add_dialog": {
           "title": "Add new area",
           "text": "Enter the name of the new area.",
@@ -1456,8 +1461,8 @@
           "description": "Manage blueprints",
           "overview": {
             "header": "Blueprint Editor",
-            "introduction": "The blueprint editor allows you to create and edit blueprints.",
-            "learn_more": "Learn more about blueprints",
+            "introduction": "The blueprint configuration allows you to import and manage your blueprints.",
+            "learn_more": "Learn more about using blueprints",
             "headers": {
               "name": "Name",
               "domain": "Domain",
