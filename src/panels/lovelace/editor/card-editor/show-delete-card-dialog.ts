@@ -6,7 +6,7 @@ export interface DeleteCardDialogParams {
   cardConfig?: LovelaceCardConfig;
 }
 
-const importDeleteCardDialog = () => import("./hui-dialog-delete-card");
+export const importDeleteCardDialog = () => import("./hui-dialog-delete-card");
 
 export const showDeleteCardDialog = (
   element: HTMLElement,
