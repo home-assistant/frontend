@@ -1461,8 +1461,8 @@
           "description": "Manage blueprints",
           "overview": {
             "header": "Blueprint Editor",
-            "introduction": "The blueprint editor allows you to create and edit blueprints.",
-            "learn_more": "Learn more about blueprints",
+            "introduction": "The blueprint configuration allows you to import and manage your blueprints.",
+            "learn_more": "Learn more about using blueprints",
             "headers": {
               "name": "Name",
               "domain": "Domain",

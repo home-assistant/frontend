@@ -195,7 +195,10 @@ class HaBlueprintOverview extends LitElement {
         ${this.hass.localize("ui.panel.config.blueprint.overview.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/blueprint/editor/")}"
+            href="${documentationUrl(
+              this.hass,
+              "/docs/automation/using_blueprints/"
+            )}"
             target="_blank"
             rel="noreferrer"
           >

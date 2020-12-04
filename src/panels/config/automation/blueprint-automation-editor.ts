@@ -151,7 +151,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                   There is an error in this Blueprint: ${blueprint.error}
                 </p>`
               : html`${blueprint?.metadata.description
-                  ? html`<p class="card-content">
+                  ? html`<p class="card-content pre-line">
                       ${blueprint.metadata.description}
                     </p>`
                   : ""}
@@ -269,6 +269,9 @@ export class HaBlueprintAutomationEditor extends LitElement {
       css`
         .padding {
           padding: 16px;
+        }
+        .pre-line {
+          white-space: pre-line;
         }
         .blueprint-picker-container {
           padding: 16px;

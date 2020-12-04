@@ -12,6 +12,7 @@ import {
   internalProperty,
   query,
   TemplateResult,
+  css,
 } from "lit-element";
 import "../../../components/ha-dialog";
 import { haStyleDialog } from "../../../resources/styles";
@@ -73,7 +74,9 @@ class DialogImportBlueprint extends LitElement {
                   this._result.blueprint.metadata.domain
                 )}
                 <br />
-                ${this._result.blueprint.metadata.description}
+                <p class="pre-line">
+                  ${this._result.blueprint.metadata.description}
+                </p>
                 ${this._result.validation_errors
                   ? html`
                       <p class="error">
@@ -199,8 +202,15 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
-    return haStyleDialog;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        .pre-line {
+          white-space: pre-line;
+        }
+      `,
+    ];
   }
 }
 
