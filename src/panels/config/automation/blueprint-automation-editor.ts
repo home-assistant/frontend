@@ -227,12 +227,18 @@ export class HaBlueprintAutomationEditor extends LitElement {
     ) {
       return;
     }
+    const input = { ...this.config.use_blueprint.input, [key]: value };
+
+    if (value === "" || value === undefined) {
+      delete input[key];
+    }
+
     fireEvent(this, "value-changed", {
       value: {
         ...this.config!,
         use_blueprint: {
           ...this.config.use_blueprint,
-          input: { ...this.config.use_blueprint.input, [key]: value },
+          input,
         },
       },
     });

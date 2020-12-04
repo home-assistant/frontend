@@ -77,7 +77,8 @@ export class HaAreaSelector extends LitElement {
     }
     if (this.selector.area.device?.integration) {
       if (
-        !this._configEntries?.some((entry) =>
+        this._configEntries &&
+        !this._configEntries.some((entry) =>
           device.config_entries.includes(entry.entry_id)
         )
       ) {

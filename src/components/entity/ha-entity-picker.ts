@@ -165,6 +165,22 @@ export class HaEntityPicker extends LitElement {
         );
       }
 
+      if (!states.length) {
+        return [
+          {
+            entity_id: "",
+            state: "",
+            last_changed: "",
+            last_updated: "",
+            context: { id: "", user_id: null },
+            attributes: {
+              friendly_name: "No matching entities found",
+              icon: "mdi:magnify",
+            },
+          },
+        ];
+      }
+
       return states;
     }
   );
@@ -215,7 +231,6 @@ export class HaEntityPicker extends LitElement {
           .label=${this.label === undefined
             ? this.hass.localize("ui.components.entity.entity-picker.entity")
             : this.label}
-          .value=${this._value}
           .disabled=${this.disabled}
           class="input"
           autocapitalize="none"
