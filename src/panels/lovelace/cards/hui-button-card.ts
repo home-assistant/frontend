@@ -84,9 +84,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: ButtonCardConfig): void {
-    if (!config.entity) {
-      throw new Error("Entity must be specified");
-    }
     if (config.entity && !isValidEntityId(config.entity)) {
       throw new Error("Invalid entity");
     }
