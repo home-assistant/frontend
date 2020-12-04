@@ -12,6 +12,8 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -110,6 +112,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean })
   private _opened?: boolean;
+
+  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
 
   public open() {
     this.updateComplete.then(() => {
@@ -246,25 +250,29 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     ];
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_opened") && this._opened) {
+      (this._comboBox as any).items = this._getDevices(
+        this.devices!,
+        this.areas!,
+        this.entities!,
+        this.includeDomains,
+        this.excludeDomains,
+        this.includeDeviceClasses,
+        this.deviceFilter
+      );
+    }
+  }
+
   protected render(): TemplateResult {
     if (!this.devices || !this.areas || !this.entities) {
       return html``;
     }
-    const devices = this._getDevices(
-      this.devices,
-      this.areas,
-      this.entities,
-      this.includeDomains,
-      this.excludeDomains,
-      this.includeDeviceClasses,
-      this.deviceFilter
-    );
     return html`
       <vaadin-combo-box-light
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
-        .items=${devices}
         .value=${this._value}
         .renderer=${rowRenderer}
         @opened-changed=${this._openedChanged}
@@ -296,20 +304,16 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
                 </ha-icon-button>
               `
             : ""}
-          ${devices.length > 0
-            ? html`
-                <ha-icon-button
-                  aria-label=${this.hass.localize(
-                    "ui.components.device-picker.show_devices"
-                  )}
-                  slot="suffix"
-                  class="toggle-button"
-                  .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
-                >
-                  Toggle
-                </ha-icon-button>
-              `
-            : ""}
+          <ha-icon-button
+            aria-label=${this.hass.localize(
+              "ui.components.device-picker.show_devices"
+            )}
+            slot="suffix"
+            class="toggle-button"
+            .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
+          >
+            Toggle
+          </ha-icon-button>
         </paper-input>
       </vaadin-combo-box-light>
     `;
