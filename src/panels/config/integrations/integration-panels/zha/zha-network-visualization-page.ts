@@ -17,8 +17,10 @@ import type { HomeAssistant } from "../../../../../types";
 import { Network, Edge, Node, EdgeOptions } from "vis-network";
 import "../../../../../common/search/search-input";
 import "../../../../../components/ha-button-menu";
+import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-svg-icon";
 import { formatAsPaddedHex } from "./functions";
+import { PolymerChangedEvent } from "../../../../../polymer-types";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -33,10 +35,19 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _devices: Map<string, ZHADevice> = new Map();
 
   @internalProperty()
+  private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
+
+  @internalProperty()
   private _nodes: Node[] = [];
 
   @internalProperty()
   private _network?: Network;
+
+  @internalProperty()
+  private _filter?: string;
+
+  @internalProperty()
+  private _zoomedDeviceId?: string;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -103,9 +114,21 @@ export class ZHANetworkVisualizationPage extends LitElement {
             no-label-float
             no-underline
             @value-changed=${this._handleSearchChange}
-            .label=${this.hass.localize("ui.components.data-table.search")}
+            .filter=${this._filter}
+            .label=${this.hass.localize(
+              "ui.panel.config.zha.visualization.highlight_label"
+            )}
           >
           </search-input>
+          <ha-device-picker
+            .hass=${this.hass}
+            .value=${this._zoomedDeviceId}
+            .label=${this.hass.localize(
+              "ui.panel.config.zha.visualization.zoom_label"
+            )}
+            .includeDomains="zha"
+            @value-changed=${this._zoomToDevice}
+          ></ha-device-picker>
         </div>
         <div id="visualization"></div>
       </hass-subpage>
@@ -116,6 +139,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const devices = await fetchDevices(this.hass!);
     this._devices = new Map(
       devices.map((device: ZHADevice) => [device.ieee, device])
+    );
+    this._devicesByDeviceId = new Map(
+      devices.map((device: ZHADevice) => [device.device_reg_id, device])
     );
     this._updateDevices(devices);
   }
@@ -211,26 +237,50 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent) {
-    const filter: string = ev.detail.value;
-    if (filter && filter !== "" && this._network) {
-      const filterParts: string[] = filter.split(":");
-      if (filterParts.length === 2) {
-        const filteredNodeIds: (string | number)[] = this._nodes
-          .filter(
-            (node: Node) =>
-              node.label &&
-              node.label.toLowerCase().includes(filterParts[1].toLowerCase())
-          )
-          .map((node: Node) => node.id);
+    this._filter = ev.detail.value;
+    if (!this._network) {
+      return;
+    }
+    if (this._filter && this._filter !== "") {
+      const filteredNodeIds: (string | number)[] = this._nodes
+        .filter(
+          (node: Node) =>
+            node.label &&
+            node.label.toLowerCase().includes(this._filter!.toLowerCase())
+        )
+        .map((node: Node) => node.id!);
+      this._zoomedDeviceId = "";
+      this._zoomOut();
+      this._network.selectNodes(filteredNodeIds, true);
+    } else {
+      this._network.selectNodes([], false);
+    }
+  }
 
-        if (filterParts[0] === "filter") {
-          this._network.selectNodes(filteredNodeIds, true);
-        }
-        if (filterParts[0] === "zoom") {
-          this._network.fit({ nodes: filteredNodeIds });
-        }
+  private _zoomToDevice(event: PolymerChangedEvent<string>) {
+    event.stopPropagation();
+    this._zoomedDeviceId = event.detail.value;
+    if (!this._network) {
+      return;
+    }
+    this._filter = "";
+    if (!this._zoomedDeviceId || this._zoomedDeviceId === "") {
+      this._zoomOut();
+    } else {
+      const device: ZHADevice | undefined = this._devicesByDeviceId.get(
+        this._zoomedDeviceId
+      );
+      if (device) {
+        this._network.fit({ nodes: [device.ieee] });
       }
     }
+  }
+
+  private _zoomOut() {
+    const allNodeIds: (string | number)[] = this._nodes.map(
+      (node: Node) => node.id!
+    );
+    this._network!.fit({ nodes: allNodeIds });
   }
 
   static get styles(): CSSResult[] {
@@ -263,40 +313,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
         search-input {
           position: relative;
           top: 2px;
-          flex-grow: 1;
+          flex: 1;
         }
         search-input.header {
           left: -8px;
         }
-        .active-filters {
-          color: var(--primary-text-color);
-          position: relative;
-          display: flex;
-          align-items: center;
-          padding: 2px 2px 2px 8px;
-          margin-left: 4px;
-          font-size: 14px;
-        }
-        .active-filters ha-icon {
-          color: var(--primary-color);
-        }
-        .active-filters mwc-button {
-          margin-left: 8px;
-        }
-        .active-filters::before {
-          background-color: var(--primary-color);
-          opacity: 0.12;
-          border-radius: 4px;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          content: "";
-        }
-        .search-toolbar .active-filters {
-          top: -8px;
-          right: -16px;
+        ha-device-picker {
+          flex: 1;
         }
       `,
     ];
