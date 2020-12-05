@@ -710,6 +710,9 @@
             "service-picker": {
                 "service": "Dienst"
             },
+            "target-picker": {
+                "remove_area_id": "Bereich entfernen"
+            },
             "user-picker": {
                 "add_user": "Benutzer hinzufügen",
                 "no_user": "Kein Benutzer",
@@ -1692,6 +1695,11 @@
                     "description": "Verbundene Geräte verwalten",
                     "device_info": "Geräteinformationen",
                     "device_not_found": "Gerät nicht gefunden.",
+                    "disabled": "Deaktiviert",
+                    "disabled_by": {
+                        "user": "Benutzer"
+                    },
+                    "enabled_label": "Gerät aktivieren",
                     "entities": {
                         "add_entities_lovelace": "Zu Lovelace hinzufügen",
                         "disabled_entities": "+{count} {count, plural,\n  one {deaktivierte Entität}\n  other {deaktivierte Entitäten}\n}",
@@ -1701,6 +1709,13 @@
                     },
                     "name": "Name",
                     "no_devices": "Keine Geräte",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter",
+                            "show_all": "Alle anzeigen"
+                        },
+                        "search": "Geräte suchen"
+                    },
                     "scene": {
                         "create": "Szene mit Gerät erstellen",
                         "no_scenes": "Keine Szenen",
@@ -3407,10 +3422,12 @@
                 "change_password": {
                     "confirm_new_password": "Neues Passwort Bestätigen",
                     "current_password": "Aktuelles Passwort",
+                    "error_new_is_old": "Das neue Kennwort muss sich von dem aktuellen Kennwort unterscheiden.",
                     "error_required": "Erforderlich",
                     "header": "Passwort ändern",
                     "new_password": "Neues Passwort",
-                    "submit": "Absenden"
+                    "submit": "Absenden",
+                    "success": "Das Passwort wurde erfolgreich geändert"
                 },
                 "current_user": "Du bist derzeit als {fullName} angemeldet.",
                 "customize_sidebar": {

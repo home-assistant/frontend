@@ -593,7 +593,7 @@
                     "became_unavailable": "is niet meer beschikbaar",
                     "changed_to_state": "gewijzigd in {state}",
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
-                    "detected_device_class": "gedetecteerd {device_class}",
+                    "detected_device_class": "{device_class} gedetecteerd",
                     "rose": "opkomst",
                     "set": "ondergang",
                     "turned_off": "is uitgeschakeld",
