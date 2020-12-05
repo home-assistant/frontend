@@ -271,7 +271,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
         this._zoomedDeviceId
       );
       if (device) {
-        this._network.fit({ nodes: [device.ieee] });
+        this._network.fit({
+          nodes: [device.ieee],
+          animation: { duration: 500, easingFunction: "easeInQuad" },
+        });
       }
     }
   }
@@ -280,7 +283,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const allNodeIds: (string | number)[] = this._nodes.map(
       (node: Node) => node.id!
     );
-    this._network!.fit({ nodes: allNodeIds });
+    this._network!.fit({
+      nodes: allNodeIds,
+      animation: { duration: 500, easingFunction: "easeOutQuad" },
+    });
   }
 
   static get styles(): CSSResult[] {
