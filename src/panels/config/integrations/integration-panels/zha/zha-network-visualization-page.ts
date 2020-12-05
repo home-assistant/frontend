@@ -15,6 +15,10 @@ import { fetchDevices, ZHADevice } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import { Network, Edge, Node, EdgeOptions } from "vis-network";
+import "../../../../../common/search/search-input";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-svg-icon";
+import { formatAsPaddedHex } from "./functions";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -27,6 +31,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @internalProperty()
   private _devices: Map<string, ZHADevice> = new Map();
+
+  @internalProperty()
+  private _nodes: Node[] = [];
 
   @internalProperty()
   private _network?: Network;
@@ -91,6 +98,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
           "ui.panel.config.zha.visualization.header"
         )}
       >
+        <div class="table-header">
+          <search-input
+            no-label-float
+            no-underline
+            @value-changed=${this._handleSearchChange}
+            .label=${this.hass.localize("ui.components.data-table.search")}
+          >
+          </search-input>
+        </div>
         <div id="visualization"></div>
       </hass-subpage>
     `;
@@ -105,11 +121,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _updateDevices(devices: ZHADevice[]) {
-    const nodes: Node[] = [];
+    this._nodes = [];
     const edges: Edge[] = [];
 
     devices.forEach((device) => {
-      nodes.push({
+      this._nodes.push({
         id: device.ieee,
         label: this._buildLabel(device),
         shape: this._getShape(device),
@@ -137,7 +153,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     });
 
-    this._network?.setData({ nodes: nodes, edges: edges });
+    this._network?.setData({ nodes: this._nodes, edges: edges });
   }
 
   private _getLQI(lqi: number): EdgeOptions["color"] {
@@ -181,7 +197,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     label += `<b>IEEE: </b>${device.ieee}`;
     label += `\n<b>Device Type: </b>${device.device_type.replace("_", " ")}`;
     if (device.nwk != null) {
-      label += `\n<b>NWK: </b>${device.nwk}`;
+      label += `\n<b>NWK: </b>${formatAsPaddedHex(device.nwk)}`;
     }
     if (device.manufacturer != null && device.model != null) {
       label += `\n<b>Device: </b>${device.manufacturer} ${device.model}`;
@@ -192,6 +208,29 @@ export class ZHANetworkVisualizationPage extends LitElement {
       label += "\n<b>Device is <i>Offline</i></b>";
     }
     return label;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    const filter: string = ev.detail.value;
+    if (filter && filter !== "" && this._network) {
+      const filterParts: string[] = filter.split(":");
+      if (filterParts.length === 2) {
+        const filteredNodeIds: (string | number)[] = this._nodes
+          .filter(
+            (node: Node) =>
+              node.label &&
+              node.label.toLowerCase().includes(filterParts[1].toLowerCase())
+          )
+          .map((node: Node) => node.id);
+
+        if (filterParts[0] === "filter") {
+          this._network.selectNodes(filteredNodeIds, true);
+        }
+        if (filterParts[0] === "zoom") {
+          this._network.fit({ nodes: filteredNodeIds });
+        }
+      }
+    }
   }
 
   static get styles(): CSSResult[] {
@@ -207,6 +246,57 @@ export class ZHANetworkVisualizationPage extends LitElement {
           letter-spacing: var(--paper-font-display1_-_letter-spacing);
           line-height: var(--paper-font-display1_-_line-height);
           opacity: var(--dark-primary-opacity);
+        }
+        .table-header {
+          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+          padding: 0 16px;
+          display: flex;
+          align-items: center;
+          height: var(--header-height);
+        }
+        .search-toolbar {
+          display: flex;
+          align-items: center;
+          color: var(--secondary-text-color);
+          padding: 0 16px;
+        }
+        search-input {
+          position: relative;
+          top: 2px;
+          flex-grow: 1;
+        }
+        search-input.header {
+          left: -8px;
+        }
+        .active-filters {
+          color: var(--primary-text-color);
+          position: relative;
+          display: flex;
+          align-items: center;
+          padding: 2px 2px 2px 8px;
+          margin-left: 4px;
+          font-size: 14px;
+        }
+        .active-filters ha-icon {
+          color: var(--primary-color);
+        }
+        .active-filters mwc-button {
+          margin-left: 8px;
+        }
+        .active-filters::before {
+          background-color: var(--primary-color);
+          opacity: 0.12;
+          border-radius: 4px;
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          content: "";
+        }
+        .search-toolbar .active-filters {
+          top: -8px;
+          right: -16px;
         }
       `,
     ];
