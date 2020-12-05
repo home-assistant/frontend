@@ -9,11 +9,19 @@ import {
   PropertyValues,
   query,
 } from "lit-element";
-import { Edge, EdgeOptions, Network, Node } from "vis-network";
+
+import "@material/mwc-button";
 import { navigate } from "../../../../../common/navigate";
+import {
+  fetchDevices,
+  refreshTopology,
+  ZHADevice,
+} from "../../../../../data/zha";
+import "../../../../../layouts/hass-subpage";
+import type { HomeAssistant } from "../../../../../types";
+import { Network, Edge, Node, EdgeOptions } from "vis-network";
 import "../../../../../common/search/search-input";
 import "../../../../../components/ha-button-menu";
-import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-svg-icon";
@@ -130,11 +138,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
             .includeDomains="['zha']"
             @value-changed=${this._zoomToDevice}
           ></ha-device-picker>
-          <ha-call-api-button .hass=${this.hass} path="zha/topology/update">
-            ${this.hass!.localize(
+          <mwc-button @click=${this._refreshTopology}
+            >${this.hass!.localize(
               "ui.panel.config.zha.visualization.refresh_topology"
-            )}
-          </ha-call-api-button>
+            )}</mwc-button
+          >
         </div>
         <div id="visualization"></div>
       </hass-subpage>
@@ -292,6 +300,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
     });
   }
 
+  private async _refreshTopology(): Promise<void> {
+    await refreshTopology(this.hass);
+  }
+
   static get styles(): CSSResult[] {
     return [
       css`
@@ -351,12 +363,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
           margin: 5px;
         }
 
-        ha-call-api-button {
+        mwc-button {
           font-weight: 500;
           color: var(--primary-color);
         }
 
-        :host(:not([narrow])) ha-call-api-button {
+        :host(:not([narrow])) mwc-button {
           margin: 5px;
         }
       `,
