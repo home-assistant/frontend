@@ -1043,7 +1043,7 @@
                         "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
                         "confirmation_title": "¿Estás seguro de que deseas eliminar esta área?"
                     },
-                    "description": "Agrupa dispositivos en áreas",
+                    "description": "Agrupa dispositivos y entidades en áreas",
                     "editor": {
                         "area_id": "ID de área",
                         "create": "Crear",
@@ -1413,15 +1413,15 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Por favor, introduce la URL del plano.",
-                        "file_name": "Nombre de archivo del plano local",
-                        "header": "Añadir nuevo plano",
-                        "import_btn": "Importar plano",
-                        "import_header": "Importar {name} (tipo: {domain})",
+                        "file_name": "Ruta del plano",
+                        "header": "Importar un plano",
+                        "import_btn": "Vista previa del plano",
+                        "import_header": "Plano \"{name}\"",
                         "import_introduction": "Puedes importar planos de otros usuarios desde Github y los foros de la comunidad. Introduce la URL del plano a continuación.",
-                        "importing": "Importando plano...",
+                        "importing": "Cargando plano...",
                         "raw_blueprint": "Contenido del plano",
-                        "save_btn": "Guardar plano",
-                        "saving": "Guardando plano...",
+                        "save_btn": "Importar plano",
+                        "saving": "Importando plano...",
                         "unsupported_blueprint": "Este plano no es compatible",
                         "url": "URL del plano"
                     },
@@ -2423,7 +2423,7 @@
                         "username": "Nombre de usuario"
                     },
                     "caption": "Usuarios",
-                    "description": "Administra usuarios",
+                    "description": "Administra las cuentas de usuario de Home Assistant",
                     "editor": {
                         "activate_user": "Activar usuario",
                         "active": "Activo",

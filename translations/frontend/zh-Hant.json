@@ -1043,7 +1043,7 @@
                         "confirmation_text": "所有該分區所屬裝置都將變成未指派狀態。",
                         "confirmation_title": "確定要刪除此分區？"
                     },
-                    "description": "群組分區裝置",
+                    "description": "群組分區裝置與實體",
                     "editor": {
                         "area_id": "分區 ID",
                         "create": "建立",
@@ -1413,15 +1413,15 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "請輸入 Blueprint 之 URL。",
-                        "file_name": "區域 Blueprint 檔案名稱",
-                        "header": "新增 Blueprint",
-                        "import_btn": "匯入 Blueprint",
-                        "import_header": "匯入 \"{name}\" (類型：{domain})",
+                        "file_name": "Blueprint 路徑",
+                        "header": "匯入 Blueprint",
+                        "import_btn": "預覽 Blueprint",
+                        "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "可以自 Github 及社群論壇匯入其他使用者的 Blueprint。於下方輸入 Blueprint 之URL。",
-                        "importing": "正在匯入 Blueprint...",
+                        "importing": "正在載入 Blueprint...",
                         "raw_blueprint": "Blueprint 內容",
-                        "save_btn": "儲存 Blueprint",
-                        "saving": "正在儲存 Blueprint...",
+                        "save_btn": "匯入 Blueprint",
+                        "saving": "正在匯入 Blueprint...",
                         "unsupported_blueprint": "不支援此 Blueprint",
                         "url": "Blueprint 之 URL"
                     },
@@ -2423,7 +2423,7 @@
                         "username": "使用者名稱"
                     },
                     "caption": "使用者",
-                    "description": "使用者管理",
+                    "description": "管理 Home Assistant 使用者帳號",
                     "editor": {
                         "activate_user": "啟用使用者",
                         "active": "啟用",

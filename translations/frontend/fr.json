@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Paramètre de configuration",
+            "device": "Appareil",
             "integration": "Intégration",
             "user": "Utilisateur"
         }
@@ -593,8 +594,8 @@
                     "changed_to_state": "changé en {state}.",
                     "cleared_device_class": "effacé (no {device_class} detected)",
                     "detected_device_class": "détecté {device_class}",
-                    "rose": "aube",
-                    "set": "Coucher",
+                    "rose": "s'est levé",
+                    "set": "s'est couché",
                     "turned_off": "éteint",
                     "turned_on": "activé",
                     "was_at_home": "Présent",
@@ -710,6 +711,16 @@
             "service-picker": {
                 "service": "Service"
             },
+            "target-picker": {
+                "add_area_id": "Choisissez la zone",
+                "add_device_id": "Choisissez un appareil",
+                "add_entity_id": "Choisissez une entité",
+                "expand_area_id": "Développe cette zone dans les périphériques et entités séparés qu'elle contient. Une fois développé, il ne mettra pas à jour les appareils et les entités lorsque la zone change.",
+                "expand_device_id": "Développe cet appareil dans des entités séparées. Une fois développé, il ne mettra pas à jour les entités lorsque l'appareil change.",
+                "remove_area_id": "Supprimer la zone",
+                "remove_device_id": "Supprimer l'appareil",
+                "remove_entity_id": "Supprimer l'entité"
+            },
             "user-picker": {
                 "add_user": "Ajouter un utilisateur",
                 "no_user": "Aucun utilisateur",
@@ -733,6 +744,7 @@
                 "editor": {
                     "confirm_delete": "Voulez-vous vraiment supprimer cette entrée ?",
                     "delete": "Supprimer",
+                    "device_disabled": "L'appareil de cette entité est désactivé.",
                     "enabled_cause": "Désactivé par {cause} .",
                     "enabled_delay_confirm": "Les entités activées seront ajoutées à Home Assistant dans {delay} secondes",
                     "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
@@ -743,6 +755,7 @@
                     "icon_error": "Les icônes doivent être au format «préfixe: iconname», par exemple «mdi: home»",
                     "name": "Nom",
                     "note": "Remarque: cela peut ne pas encore fonctionner avec toutes les intégrations.",
+                    "open_device_settings": "Ouvrir les paramètres de l'appareil",
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
                     "update": "Mise à jour"
                 },
@@ -1667,6 +1680,7 @@
                             "unknown_condition": "Condition inconnue"
                         },
                         "create": "Créer une automatisation avec l'appareil",
+                        "create_disable": "Impossible de créer une automatisation avec un appareil désactivé",
                         "no_automations": "Aucune automatisation",
                         "no_device_automations": "Aucune automatisation n'est disponible pour cet appareil.",
                         "triggers": {
@@ -1695,6 +1709,14 @@
                     "description": "Gérer les appareils connectés",
                     "device_info": "Informations sur l’appareil",
                     "device_not_found": "Appareil non trouvé.",
+                    "disabled": "Désactivé",
+                    "disabled_by": {
+                        "integration": "Intégration",
+                        "user": "Utilisateur"
+                    },
+                    "enabled_cause": "L'appareil est désactivé par {cause}.",
+                    "enabled_description": "Les appareils désactivés ne seront pas affichés et les entités appartenant à l'appareil seront désactivées et ne seront pas ajoutées à Home Assistant.",
+                    "enabled_label": "Activer l'appareil",
                     "entities": {
                         "add_entities_lovelace": "Ajouter à Lovelace",
                         "disabled_entities": "+{count} {count, plural,\none {entité désactivée}\nother {entité désactivée}\n}",
@@ -1704,14 +1726,24 @@
                     },
                     "name": "Nom",
                     "no_devices": "Aucun appareil",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtre",
+                            "show_all": "Tout afficher",
+                            "show_disabled": "Afficher les appareils désactivés"
+                        },
+                        "search": "Rechercher des appareils"
+                    },
                     "scene": {
                         "create": "Créer une scène avec l'appareil",
+                        "create_disable": "Impossible de créer une scène avec un appareil désactivé",
                         "no_scenes": "Pas de scènes",
                         "scenes": "Scènes"
                     },
                     "scenes": "Scènes",
                     "script": {
                         "create": "Créer un script avec l'appareil",
+                        "create_disable": "Impossible de créer un script avec un appareil désactivé",
                         "no_scripts": "Pas de scripts",
                         "scripts": "Scripts"
                     },
@@ -2393,6 +2425,7 @@
                     "editor": {
                         "activate_user": "Activer l'utilisateur",
                         "active": "Actif",
+                        "active_tooltip": "Contrôle si l'utilisateur peut se connecter",
                         "admin": "Administrateur",
                         "caption": "Voir l'utilisateur",
                         "change_password": "Changer le mot de passe",
@@ -3411,10 +3444,13 @@
                 "change_password": {
                     "confirm_new_password": "Confirmer le nouveau mot de passe",
                     "current_password": "Mot de passe actuel",
+                    "error_new_is_old": "Le nouveau mot de passe doit être différent du mot de passe actuel",
+                    "error_new_mismatch": "Les mots de passe saisis ne correspondent pas",
                     "error_required": "Requis",
                     "header": "Changer le mot de passe",
                     "new_password": "nouveau mot de passe",
-                    "submit": "Envoyer"
+                    "submit": "Envoyer",
+                    "success": "Le mot de passe a été changé avec succès"
                 },
                 "current_user": "Vous êtes actuellement connecté en tant que {fullName}.",
                 "customize_sidebar": {

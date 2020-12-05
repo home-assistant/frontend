@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Wpis konfiguracji",
+            "device": "Urządzenie",
             "integration": "Integracja",
             "user": "Użytkownik"
         }
@@ -710,6 +711,14 @@
             "service-picker": {
                 "service": "Usługa"
             },
+            "target-picker": {
+                "add_area_id": "Wybierz obszar",
+                "add_device_id": "Wybierz urządzenie",
+                "add_entity_id": "Wybierz encję",
+                "remove_area_id": "Usuń obszar",
+                "remove_device_id": "Usuń urządzenie",
+                "remove_entity_id": "Usuń encję"
+            },
             "user-picker": {
                 "add_user": "Dodaj użytkownika",
                 "no_user": "Brak użytkownika",
@@ -733,6 +742,7 @@
                 "editor": {
                     "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
                     "delete": "Usuń",
+                    "device_disabled": "Urządzenie tej encji jest wyłączone",
                     "enabled_cause": "Wyłączone przez {cause}.",
                     "enabled_delay_confirm": "Włączone encje zostaną dodane do Home Assistanta po {delay} sekundach",
                     "enabled_description": "Wyłączone encje nie będą dostępne w Home Assistant.",
@@ -743,6 +753,7 @@
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nazwa",
                     "note": "Uwaga: to może jeszcze nie działać ze wszystkimi integracjami.",
+                    "open_device_settings": "Otwórz ustawienia urządzenia",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "Aktualizuj"
                 },
@@ -1030,7 +1041,7 @@
                         "confirmation_text": "Wszystkie urządzenia z tego obszaru pozostaną bez przypisanego obszaru.",
                         "confirmation_title": "Czy na pewno chcesz usunąć ten obszar?"
                     },
-                    "description": "Zarządzaj obszarami w twoim domu",
+                    "description": "Grupuj urządzenia i encje w obszary",
                     "editor": {
                         "area_id": "Identyfikator obszaru",
                         "create": "Utwórz",
@@ -1052,7 +1063,7 @@
                 },
                 "automation": {
                     "caption": "Automatyzacje",
-                    "description": "Zarządzaj automatyzacjami",
+                    "description": "Twórz niestandardowe zasady zachowania w swoim domu",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Użyj schematu"
@@ -1400,15 +1411,15 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Wprowadź adres URL schematu.",
-                        "file_name": "Nazwa lokalnego pliku schematu",
-                        "header": "Dodaj nowy schemat",
-                        "import_btn": "Importuj schemat",
-                        "import_header": "Importuj \"{name}\" (typ: {domain})",
+                        "file_name": "Ścieżka do schematu",
+                        "header": "Importuj schemat",
+                        "import_btn": "Podgląd schematu",
+                        "import_header": "Schemat: \"{name}\"",
                         "import_introduction": "Możesz importować schematy innych użytkowników z Githuba i forów społecznościowych. Wprowadź poniżej adres URL schematu.",
-                        "importing": "Importowanie schematu...",
+                        "importing": "Wczytywanie schematu...",
                         "raw_blueprint": "Zawartość schematu",
-                        "save_btn": "Zapisz schemat",
-                        "saving": "Zapisywanie schematu...",
+                        "save_btn": "Importuj schemat",
+                        "saving": "Importowanie schematu...",
                         "unsupported_blueprint": "Ten schemat nie jest obsługiwany",
                         "url": "URL schematu"
                     },
@@ -1510,7 +1521,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Chmura Home Assistant",
-                    "description_features": "Sterowanie spoza domu, integracja z Alexą i Asystentem Google.",
+                    "description_features": "Sterowanie spoza domu i integracja z Alexą i Asystentem Google.",
                     "description_login": "Zalogowany jako {email}",
                     "description_not_login": "Nie zalogowany",
                     "dialog_certificate": {
@@ -1605,7 +1616,7 @@
                 },
                 "core": {
                     "caption": "Ogólne",
-                    "description": "Zmień podstawowe opcje Home Assistanta",
+                    "description": "System metryczny, lokalizacja, strefa czasowa oraz inne parametry ogólne",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1667,6 +1678,7 @@
                             "unknown_condition": "Nieznany warunek"
                         },
                         "create": "Utwórz automatyzację z urządzeniem",
+                        "create_disable": "Nie można utworzyć automatyzacji z wyłączonym urządzeniem",
                         "no_automations": "Brak automatyzacji",
                         "no_device_automations": "Brak dostępnych automatyzacji dla tego urządzenia.",
                         "triggers": {
@@ -1692,9 +1704,18 @@
                         "no_devices": "Brak urządzeń"
                     },
                     "delete": "Usuń",
-                    "description": "Zarządzaj podłączonymi urządzeniami",
+                    "description": "Zarządzaj skonfigurowanymi urządzeniami",
                     "device_info": "Informacje o urządzeniu",
                     "device_not_found": "Urządzenie nie zostało znalezione.",
+                    "disabled": "Wyłączone",
+                    "disabled_by": {
+                        "config_entry": "Wpis konfiguracji",
+                        "integration": "Integracja",
+                        "user": "Użytkownik"
+                    },
+                    "enabled_cause": "Urządzenie jest wyłączone przez {cause}",
+                    "enabled_description": "Wyłączone urządzenia nie będą wyświetlane, a encje do niego należące zostaną wyłączone i nie zostaną dodane do Home Assistanta.",
+                    "enabled_label": "Włącz urządzenie",
                     "entities": {
                         "add_entities_lovelace": "Dodaj do interfejsu użytkownika Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {wyłączona encja}\n  few {wyłączone encje}\n  many {wyłączonych encji}\n  other {wyłączonych encji}\n}",
@@ -1704,14 +1725,25 @@
                     },
                     "name": "Nazwa",
                     "no_devices": "Brak urządzeń",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtr",
+                            "hidden_devices": "{number} {number, plural,\n  one {urządzenie ukryte}\n  few {urządzenia ukryte}\n  many {urządzeń ukrytych}\n  other {urządzeń ukrytych}\n}",
+                            "show_all": "Pokaż wszystkie",
+                            "show_disabled": "Pokaż wyłączone urządzenia"
+                        },
+                        "search": "Wyszukiwanie urządzeń"
+                    },
                     "scene": {
                         "create": "Utwórz scenę z urządzeniem",
+                        "create_disable": "Nie można utworzyć sceny z wyłączonym urządzeniem",
                         "no_scenes": "Brak scen",
                         "scenes": "Sceny"
                     },
                     "scenes": "Sceny",
                     "script": {
                         "create": "Utwórz skrypt z urządzeniem",
+                        "create_disable": "Nie można utworzyć skryptu z wyłączonym urządzeniem",
                         "no_scripts": "Brak skryptów",
                         "scripts": "Skrypty"
                     },
@@ -1777,7 +1809,7 @@
                 "header": "Konfiguruj Home Assistanta",
                 "helpers": {
                     "caption": "Pomocnicy",
-                    "description": "Zarządzaj elementami, które pomagają w tworzeniu automatyzacji",
+                    "description": "Elementy, które pomagają w tworzeniu automatyzacji",
                     "dialog": {
                         "add_helper": "Dodaj pomocnika",
                         "add_platform": "Dodaj {platform}",
@@ -1809,7 +1841,7 @@
                     "copy_github": "Dla GitHuba",
                     "copy_raw": "Tekst",
                     "custom_uis": "Niestandardowe interfejsy użytkownika:",
-                    "description": "Informacje o instalacji Home Assistanta",
+                    "description": "Wersja, kondycja systemu i linki do dokumentacji",
                     "developed_by": "Opracowany przez grono wspaniałych ludzi.",
                     "documentation": "Dokumentacja",
                     "frontend": "frontend-ui",
@@ -1915,7 +1947,7 @@
                     },
                     "configure": "Konfiguruj",
                     "configured": "Skonfigurowane",
-                    "description": "Zarządzaj integracjami",
+                    "description": "Zarządzaj integracjami z usługami, urządzeniami, ...",
                     "details": "Szczegóły integracji",
                     "discovered": "Wykryte",
                     "home_assistant_website": "Home Assistant",
@@ -2000,7 +2032,7 @@
                             "open": "Otwórz"
                         }
                     },
-                    "description": "Zarządzaj dashboardami interfejsu użytkownika Lovelace",
+                    "description": "Twórz niestandardowe zestawy kart do sterowania domem",
                     "resources": {
                         "cant_edit_yaml": "Korzystasz z interfejsu użytkownika Lovelace w trybie YAML, dlatego nie możesz zarządzać zasobami za pomocą interfejsu użytkownika. Zarządzaj nimi w pliku configuration.yaml.",
                         "caption": "Zasoby",
@@ -2199,7 +2231,7 @@
                 "scene": {
                     "activated": "Aktywowana scena {name}.",
                     "caption": "Sceny",
-                    "description": "Zarządzaj scenami",
+                    "description": "Przechwytuj stany urządzeń i łatwo przywołuj je później",
                     "editor": {
                         "default_name": "Nowa scena",
                         "devices": {
@@ -2243,7 +2275,7 @@
                 },
                 "script": {
                     "caption": "Skrypty",
-                    "description": "Zarządzaj skryptami",
+                    "description": "Wykonywanie sekwencji akcji",
                     "editor": {
                         "alias": "Nazwa",
                         "default_name": "Nowy skrypt",
@@ -2354,7 +2386,7 @@
                     "confirm_remove": "Czy na pewno chcesz usunąć tag {tag}?",
                     "confirm_remove_title": "Usunąć tag?",
                     "create_automation": "Utwórz automatyzację z tagiem",
-                    "description": "Zarządzaj tagami",
+                    "description": "Uruchamiaj automatyzacje po zeskanowaniu tagu NFC, kodu QR, itp",
                     "detail": {
                         "companion_apps": "aplikacji towarzyszącej",
                         "create": "Utwórz",
@@ -2389,10 +2421,11 @@
                         "username": "Nazwa użytkownika"
                     },
                     "caption": "Użytkownicy",
-                    "description": "Zarządzaj użytkownikami",
+                    "description": "Zarządzaj kontami użytkowników Home Assistanta",
                     "editor": {
                         "activate_user": "Aktywuj użytkownika",
                         "active": "Aktywny",
+                        "active_tooltip": "Określa, czy użytkownik może się zalogować",
                         "admin": "Administrator",
                         "caption": "Wyświetl użytkownika",
                         "change_password": "Zmień hasło",
@@ -3411,10 +3444,13 @@
                 "change_password": {
                     "confirm_new_password": "Potwierdź nowe hasło",
                     "current_password": "Bieżące hasło",
+                    "error_new_is_old": "Nowe hasło musi być inne niż obecne hasło",
+                    "error_new_mismatch": "Wprowadzone nowe hasła nie są zgodne",
                     "error_required": "Wymagane",
                     "header": "Zmień hasło",
                     "new_password": "Nowe hasło",
-                    "submit": "Zatwierdź"
+                    "submit": "Zatwierdź",
+                    "success": "Hasło zostało pomyślnie zmienione"
                 },
                 "current_user": "Jesteś obecnie zalogowany jako {fullName}.",
                 "customize_sidebar": {

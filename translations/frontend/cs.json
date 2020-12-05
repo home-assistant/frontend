@@ -551,7 +551,8 @@
             },
             "blueprint-picker": {
                 "add_user": "Přidat uživatele",
-                "remove_user": "Odebrat uživatele"
+                "remove_user": "Odebrat uživatele",
+                "select_blueprint": "Vyberte šablonu"
             },
             "data-table": {
                 "no-data": "Žádná data",
@@ -893,6 +894,7 @@
                     "navigation": {
                         "areas": "Oblasti",
                         "automation": "Automatizace",
+                        "blueprint": "Šablony",
                         "core": "Obecné",
                         "customize": "Přizpůsobení",
                         "devices": "Zařízení",
@@ -901,7 +903,7 @@
                         "info": "Informace",
                         "integrations": "Integrace",
                         "logs": "Logy",
-                        "lovelace": "Lovelace Dashboardy",
+                        "lovelace": "Ovládací panely Lovelace",
                         "navigate_to": "Přejít na {panel}",
                         "navigate_to_config": "Přejít na nastavení {panel}",
                         "person": "Osoby",
@@ -964,7 +966,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Přidejte zařízení prostřednictvím tohoto zařízení",
-                    "clusters": "Clustery",
+                    "clusters": "Správa clusterů",
                     "reconfigure": "Přenastavit zařízení",
                     "remove": "Odebrat zařízení",
                     "zigbee_information": "Podpis zařízení Zigbee"
@@ -1039,7 +1041,7 @@
                         "confirmation_text": "Všechna zařízení v této oblasti budou nastavena jako nepřiřazena.",
                         "confirmation_title": "Opravdu chcete tuto oblast smazat?"
                     },
-                    "description": "Seskupte zařízení do oblastí",
+                    "description": "Seskupte zařízení a entity do oblastí",
                     "editor": {
                         "area_id": "ID oblasti",
                         "create": "VYTVOŘIT",
@@ -1063,6 +1065,9 @@
                     "caption": "Automatizace",
                     "description": "Vytvořte si pro svůj domov vlastní pravidla chování",
                     "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Použít šablonu"
+                        },
                         "header": "Vytvoření automatizace",
                         "how": "Jak chcete vytvořit svou novou automatizaci?",
                         "start_empty": "Začněte s prázdnou automatizací",
@@ -1154,7 +1159,12 @@
                         },
                         "alias": "Název",
                         "blueprint": {
-                            "inputs": "Vstupy"
+                            "blueprint_to_use": "Šablona k použití",
+                            "header": "Šablona",
+                            "inputs": "Vstupy",
+                            "manage_blueprints": "Správa šablon",
+                            "no_blueprints": "Nemáme žádné šablony",
+                            "no_inputs": "Šablona nemá žádné vstupy."
                         },
                         "conditions": {
                             "add": "Přidat podmínku",
@@ -1400,24 +1410,34 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Zadejte adresu URL šablonky konfigurace",
-                        "header": "Přidat novou šablonku konfigurace",
-                        "import_btn": "Importovat šablonku konfigurace",
-                        "import_header": "Importovat \"{name}\" (typ: {domain})",
-                        "import_introduction": "Z Githubu a komunitních fór můžete importovat šablonky konfigurace sdílené ostatními uživateli. Zadejte adresu URL šablonky konfigurace.",
-                        "importing": "Importuje se šablonka konfigurace",
-                        "save_btn": "Uložit šablonku konfigurace",
-                        "saving": "Ukládání konfigurační šablonky",
-                        "url": "URL šablonky konfigurace"
+                        "error_no_url": "Zadejte adresu URL adresu šablony",
+                        "file_name": "Cesta k šabloně",
+                        "header": "Import šablony",
+                        "import_btn": "Náhled šablony",
+                        "import_header": "Šablona \"{name}\"",
+                        "import_introduction": "Můžete importovat šablony od ostatních uživatelů z GitHubu a komunitních fór. Níže zadejte URL adresu šablony.",
+                        "importing": "Načítám šablonu...",
+                        "raw_blueprint": "Obsah šablony",
+                        "save_btn": "Importovat šablonu",
+                        "saving": "Importuji šablonu...",
+                        "unsupported_blueprint": "Tato šablona není podporována.",
+                        "url": "URL adresa šablony"
                     },
+                    "caption": "Šablony",
+                    "description": "Správa šablon",
                     "overview": {
-                        "confirm_delete_header": "Odstranit tuto šablonku konfigurace?",
+                        "add_blueprint": "Import šablony",
+                        "confirm_delete_header": "Odstranit tuto šablonu?",
+                        "confirm_delete_text": "Opravdu chcete smazat tuto šablonu?",
+                        "delete_blueprint": "Smazat šablonu",
+                        "header": "Editor šablon",
                         "headers": {
                             "domain": "Doména",
                             "file_name": "Název souboru",
                             "name": "Jméno"
                         },
-                        "learn_more": "Další informace o šablonkách konfigurace",
+                        "introduction": "Editor šablon umožňuje vytvářet a upravovat šablony.",
+                        "learn_more": "Další informace o šablonách",
                         "use_blueprint": "Vytvořit automatizaci"
                     }
                 },
@@ -1431,7 +1451,7 @@
                             "enable_state_reporting": "Povolit hlášení stavu",
                             "info": "Díky integraci Alexa pro Home Assistant Cloud budete moci ovládat všechna zařízení v Home Assistant pomocí jakéhokoli zařízení podporujícího Alexa.",
                             "info_state_reporting": "Pokud povolíte hlášení stavu, Home Assistant bude posílat veškeré změny stavů všech exponovaných entit do Amazonu. Toto vám umožní sledovat aktuální stavy entity v aplikaci Alexa a použít tyto stavy k vytvoření rutin.",
-                            "manage_entities": "Spravovat entity",
+                            "manage_entities": "Správa entit",
                             "state_reporting_error": "Nelze {enable_disable} hlášení stavu.",
                             "sync_entities": "Synchronizovat entity",
                             "sync_entities_error": "Chyba při synchronizaci entit:",
@@ -1460,7 +1480,7 @@
                         "integrations_introduction": "Integrace pro Home Assistant Cloud vám umožní připojit se ke cloudovým službám, aniž byste museli veřejně zpřístupnit vaší instanci Home Assistant na internetu.",
                         "integrations_introduction2": "Na webových stránkách najdete ",
                         "integrations_link_all_features": " všechny dostupné funkce",
-                        "manage_account": "Spravovat účet",
+                        "manage_account": "Správa účtu",
                         "nabu_casa_account": "Účet Nabu Casa",
                         "not_connected": "Není připojeno",
                         "remote": {
@@ -1501,7 +1521,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Ovládejte vzdáleně, integrace s Alexou a Google Assistant.",
+                    "description_features": "Ovládejte, i když nejste doma, a propojte s Alexou a Google Assistantem",
                     "description_login": "Přihlášen jako {email}",
                     "description_not_login": "Nepřihlášen",
                     "dialog_certificate": {
@@ -1672,7 +1692,7 @@
                     "caption": "Zařízení",
                     "confirm_delete": "Opravdu chcete toto zařízení odstranit?",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit?",
-                    "confirm_rename_entity_ids_warning": "Žádná nastavení (např. automatizace, skripty, scény, dashboardy), která tyto entity aktuálně používá, nebudou změněna! Vše budete muset aktualizovat sami, aby se používaly nová ID entit!",
+                    "confirm_rename_entity_ids_warning": "Žádná nastavení (např. automatizace, skripty, scény, ovládací panely), která tyto entity aktuálně používá, nebudou změněna! Vše budete muset aktualizovat sami, aby se používaly nová ID entit!",
                     "data_table": {
                         "area": "Oblast",
                         "battery": "Baterie",
@@ -1684,7 +1704,7 @@
                         "no_devices": "Žádná zařízení"
                     },
                     "delete": "Odstranit",
-                    "description": "Spravujte připojená zařízení",
+                    "description": "Správa připojených zařízení",
                     "device_info": "Informace o zařízení",
                     "device_not_found": "Zařízení nebylo nalezeno.",
                     "disabled": "Zakázáno",
@@ -1863,7 +1883,7 @@
                                 "virtualenv": "Virtuální prostředí"
                             },
                             "lovelace": {
-                                "dashboards": "Dashboardy",
+                                "dashboards": "Ovládací panely",
                                 "mode": "Režim",
                                 "resources": "Zdroje"
                             }
@@ -1927,7 +1947,7 @@
                     },
                     "configure": "Nastavit",
                     "configured": "Nastaveno",
-                    "description": "Spravujte integrace a jejich služby, zařízení, ...",
+                    "description": "Správa integrací a jejich služeb, zařízení, ...",
                     "details": "Podrobnosti o integraci",
                     "discovered": "Objeveno",
                     "home_assistant_website": "stránky Home Assistant",
@@ -1971,24 +1991,24 @@
                     "title": "Logy"
                 },
                 "lovelace": {
-                    "caption": "Lovelace Dashboardy",
+                    "caption": "Ovládací panely Lovelace",
                     "dashboards": {
-                        "cant_edit_default": "Standardní Lovelace dashboard nelze upravovat z uživatelského rozhraní. Můžete jej skrýt nastavením jiného dashboardu jako výchozího.",
-                        "cant_edit_yaml": "Dashboardy definované v YAML nelze upravovat z uživatelského rozhraní. Změňte je v configuration.yaml.",
-                        "caption": "Dashboardy",
+                        "cant_edit_default": "Standardní ovládací panel Lovelace nelze upravovat z uživatelského rozhraní. Můžete jej skrýt nastavením jiného ovládacího panelu jako výchozího.",
+                        "cant_edit_yaml": "Ovládací panely definované v YAML nelze upravovat z uživatelského rozhraní. Změňte je v configuration.yaml.",
+                        "caption": "Ovládací panely",
                         "conf_mode": {
                             "storage": "Řízeno uživatelským rozhraním",
                             "yaml": "Soubor YAML"
                         },
-                        "confirm_delete": "Opravdu chcete odstranit tento dashboard?",
-                        "default_dashboard": "Toto je výchozí dashboard",
+                        "confirm_delete": "Opravdu chcete odstranit tento ovládací panel?",
+                        "default_dashboard": "Toto je výchozí ovládací panel",
                         "detail": {
                             "create": "Vytvořit",
                             "delete": "Smazat",
                             "dismiss": "Zavřít",
-                            "edit_dashboard": "Upravit dashboard",
+                            "edit_dashboard": "Upravit ovládací panel",
                             "icon": "Ikona",
-                            "new_dashboard": "Přidat nový dashboard",
+                            "new_dashboard": "Přidat nový ovládací panel",
                             "remove_default": "Odebrat jako výchozí na tomto zařízení",
                             "require_admin": "Pouze správce",
                             "set_default": "Nastavit jako výchozí na tomto zařízení",
@@ -2000,7 +2020,7 @@
                             "url_error_msg": "Adresa URL by měla obsahovat - a nesmí obsahovat mezery ani speciální znaky, s výjimkou _ a -"
                         },
                         "picker": {
-                            "add_dashboard": "Přidat dashboard",
+                            "add_dashboard": "Přidat ovládací panel",
                             "headers": {
                                 "conf_mode": "Metoda nastavení",
                                 "default": "Výchozí",
@@ -2053,7 +2073,7 @@
                     "description_publish": "Publikovat paket",
                     "listening_to": "Naslouchám",
                     "message_received": "Zpráva {id} přijata na {topic} v {time} :",
-                    "payload": "Obsah",
+                    "payload": "Obsah (povolena šablona)",
                     "publish": "Publikovat",
                     "start_listening": "Začít naslouchat",
                     "stop_listening": "Přestat naslouchat",
@@ -2082,7 +2102,7 @@
                         "network": "Síť",
                         "node": {
                             "config": "Nastavení",
-                            "dashboard": "Dashboard"
+                            "dashboard": "Ovládací panel"
                         },
                         "nodes": "Uzly",
                         "select_instance": "Vyberte instanci"
@@ -2115,7 +2135,7 @@
                     "node_config": {
                         "header": "Nastavení uzlu",
                         "help_source": "Popisy parametrů nastavení a text nápovědy poskytuje projekt OpenZWave.",
-                        "introduction": "Spravujte různé parametry nastavení uzlu Z-Wave.",
+                        "introduction": "Správa různých parametrů nastavení uzlu Z-Wave.",
                         "wakeup_help": "Uzly napájené z baterie musí být vzhůru, aby mohly změnit své nastavení. Pokud uzel není vzhůru, OpenZWave se pokusí aktualizovat nastavení uzlu při příštím probuzení, což může být o několik hodin (nebo dní) později. Zařízení probudíte takto:"
                     },
                     "node_metadata": {
@@ -2401,7 +2421,7 @@
                         "username": "Uživatelské jméno"
                     },
                     "caption": "Uživatelé",
-                    "description": "Správa uživatelů",
+                    "description": "Správa uživatelských účtů pro Home Assistant",
                     "editor": {
                         "activate_user": "Aktivovat uživatele",
                         "active": "Aktivní",
@@ -2598,7 +2618,7 @@
                         "value": "Hodnota",
                         "wakeup_interval": "Interval probuzení"
                     },
-                    "description": "Spravujte svou síť Z-Wave",
+                    "description": "Správa síťě Z-Wave",
                     "learn_more": "Další informace o Z-Wave",
                     "network_management": {
                         "header": "Správa sítě Z-Wave",
@@ -2737,11 +2757,11 @@
                     },
                     "templates": {
                         "all_listeners": "Tato šablona naslouchá všem změnám stavu.",
-                        "description": "Šablony jsou vykreslovány pomocí Jinja2 šablonového enginu s některými specifickými rozšířeními pro Home Assistant.",
+                        "description": "Šablony jsou vykreslovány pomocí šablonovacího systému Jinja2 s některými specifickými rozšířeními pro Home Assistant.",
                         "domain": "Doména",
                         "editor": "Editor šablon",
                         "entity": "Entita",
-                        "jinja_documentation": "Dokumentace šablony Jinja2",
+                        "jinja_documentation": "Dokumentace šablon Jinja2",
                         "listeners": "Tato šablona naslouchá následujícím změnám stavu:",
                         "no_listeners": "Tato šablona nenaslouchá žádným událostem a nebude automaticky aktualizována.",
                         "reset": "Obnovit ukázkovou šablonu",
@@ -2749,7 +2769,7 @@
                         "template_extensions": "Rozšíření šablony Home Assistant",
                         "time": "Tato šablona se aktualizuje na začátku každé minuty.",
                         "title": "Šablony",
-                        "unknown_error_template": "Šablona vykreslování neznámých chyb"
+                        "unknown_error_template": "Neznámá chyba při vykreslení šablony"
                     }
                 }
             },
@@ -2814,7 +2834,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Nastavení Lovelace pro tento dashboard bylo aktualizováno. Chcete obnovit stránku?",
+                    "message": "Nastavení Lovelace pro tento ovládací panel bylo aktualizováno. Chcete obnovit stránku?",
                     "refresh": "Obnovit"
                 },
                 "editor": {
@@ -3155,17 +3175,17 @@
                     "save_config": {
                         "cancel": "Zahodit změnu",
                         "close": "Zavřít",
-                        "empty_config": "Začít s prázdným dashboardem",
+                        "empty_config": "Začít s prázdným ovládacím panel",
                         "header": "Převzít kontrolu nad vaší Lovelace UI",
-                        "para": "Tento dashboard momentálně spravuje Home Assistant. Je automaticky aktualizován při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás. Vždy si můžete vytvořit nový dashboard na hraní.",
+                        "para": "Tento ovládací panel momentálně spravuje Home Assistant. Je automaticky aktualizován při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás. Vždy si můžete vytvořit nový ovládací panel na hraní.",
                         "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rozhraním ?",
                         "save": "Převzít kontrolu",
-                        "yaml_config": "Abyste mohli snadněji začít, zde je aktuální nastavení tohoto dashboardu:",
-                        "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve svém nastavení pro tento dashboard, nebo výchozí \"ui-lovelace.yaml\".",
+                        "yaml_config": "Abyste mohli snadněji začít, zde je aktuální nastavení tohoto ovládacího panelu:",
+                        "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve svém nastavení pro tento ovládací panel, nebo výchozí \"ui-lovelace.yaml\".",
                         "yaml_mode": "Používáte režim YAML, což znamená, že nemůžete změnit nastavení Lovelace z uživatelského rozhraní. Pokud chcete měnit Lovelace z uživatelského rozhraní, odstraňte \"mode: yaml\" z vašeho nastavení Lovelace v \"configuration.yaml\"."
                     },
                     "select_view": {
-                        "dashboard_label": "Dashboard",
+                        "dashboard_label": "Ovládací panel",
                         "header": "Vyberte pohled"
                     },
                     "sub-element-editor": {
@@ -3190,7 +3210,7 @@
                 },
                 "menu": {
                     "close": "Zavřít",
-                    "configure_ui": "Upravit Dashboard",
+                    "configure_ui": "Upravit ovládací panel",
                     "exit_edit_mode": "Ukončit režim úprav uživatelského rozhraní",
                     "help": "Nápověda",
                     "refresh": "Obnovit",
@@ -3439,9 +3459,9 @@
                     "header": "Změna pořadí a skrytí položek postranního panelu"
                 },
                 "dashboard": {
-                    "description": "Vyberte výchozí dashboard pro toto zařízení.",
-                    "dropdown_label": "Dashboard",
-                    "header": "Dashboard"
+                    "description": "Vyberte výchozí ovládací panel pro toto zařízení.",
+                    "dropdown_label": "Ovládací panel",
+                    "header": "Ovládací panel"
                 },
                 "enable_shortcuts": {
                     "description": "Povolte nebo zakažte klávesové zkratky pro provádění různých akcí v uživatelském rozhraní.",
