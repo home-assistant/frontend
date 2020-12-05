@@ -2363,7 +2363,8 @@
             "header": "Network Visualization",
             "caption": "Visualization",
             "highlight_label": "Highlight Devices",
-            "zoom_label": "Zoom To Device"
+            "zoom_label": "Zoom To Device",
+            "refresh_topology": "Refresh Topology"
           },
           "group_binding": {
             "header": "Group Binding",

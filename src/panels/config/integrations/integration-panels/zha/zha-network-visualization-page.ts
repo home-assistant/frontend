@@ -12,6 +12,8 @@ import {
 import { Edge, EdgeOptions, Network, Node } from "vis-network";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../common/search/search-input";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-svg-icon";
@@ -25,7 +27,7 @@ import { formatAsPaddedHex } from "./functions";
 export class ZHANetworkVisualizationPage extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @query("#visualization", true)
   private _visualization?: HTMLElement;
@@ -128,6 +130,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
             .includeDomains="['zha']"
             @value-changed=${this._zoomToDevice}
           ></ha-device-picker>
+          <ha-call-api-button .hass=${this.hass} path="zha/topology/update">
+            ${this.hass!.localize(
+              "ui.panel.config.zha.visualization.refresh_topology"
+            )}
+          </ha-call-api-button>
         </div>
         <div id="visualization"></div>
       </hass-subpage>
@@ -299,29 +306,58 @@ export class ZHANetworkVisualizationPage extends LitElement {
           line-height: var(--paper-font-display1_-_line-height);
           opacity: var(--dark-primary-opacity);
         }
+
         .table-header {
           border-bottom: 1px solid --divider-color;
           padding: 0 16px;
           display: flex;
           align-items: center;
+          flex-direction: row;
           height: var(--header-height);
         }
+
+        :host([narrow]) .table-header {
+          flex-direction: column;
+          align-items: stretch;
+          height: var(--header-height) * 3;
+        }
+
         .search-toolbar {
           display: flex;
           align-items: center;
           color: var(--secondary-text-color);
           padding: 0 16px;
         }
+
         search-input {
           position: relative;
           top: 2px;
           flex: 1;
         }
+
+        :host(:not([narrow])) search-input {
+          margin: 5px;
+        }
+
         search-input.header {
           left: -8px;
         }
+
         ha-device-picker {
           flex: 1;
+        }
+
+        :host(:not([narrow])) ha-device-picker {
+          margin: 5px;
+        }
+
+        ha-call-api-button {
+          font-weight: 500;
+          color: var(--primary-color);
+        }
+
+        :host(:not([narrow])) ha-call-api-button {
+          margin: 5px;
         }
       `,
     ];
