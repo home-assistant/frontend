@@ -547,6 +547,8 @@
                 "add_new": "Přidat novou oblast ...",
                 "area": "Oblast",
                 "clear": "Vymazat",
+                "no_areas": "Nemáte žádné oblasti",
+                "no_match": "Nebyly nalezeny žádné odpovídající oblasti",
                 "show_areas": "Zobrazit oblasti"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Zrušit",
                 "device": "Zařízení",
                 "no_area": "Žádná oblast",
+                "no_devices": "Nemáte žádná zařízení",
+                "no_match": "Nebyla nalezena žádná odpovídající zařízení",
                 "show_devices": "Zobrazit zařízení",
                 "toggle": "Přepnout"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Zrušit",
                     "entity": "Entita",
+                    "no_match": "Nebyly nalezeny žádné odpovídající entity",
                     "show_entities": "Zobrazit entity"
                 }
             },
@@ -1436,8 +1441,8 @@
                             "file_name": "Název souboru",
                             "name": "Jméno"
                         },
-                        "introduction": "Editor šablon umožňuje vytvářet a upravovat šablony.",
-                        "learn_more": "Další informace o šablonách",
+                        "introduction": "Nastavení šablon vám umožňuje importovat a spravovat vaše šablony.",
+                        "learn_more": "Další informace o používání šablon",
                         "use_blueprint": "Vytvořit automatizaci"
                     }
                 },

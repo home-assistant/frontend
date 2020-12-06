@@ -547,6 +547,8 @@
                 "add_new": "Aggiungi nuova area…",
                 "area": "Area",
                 "clear": "Cancella",
+                "no_areas": "Non hai aree",
+                "no_match": "Non sono state trovate aree corrispondenti",
                 "show_areas": "Mostra le aree"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Cancella",
                 "device": "Dispositivo",
                 "no_area": "Nessuna area",
+                "no_devices": "Non hai alcun dispositivo",
+                "no_match": "Non sono stati trovati dispositivi corrispondenti",
                 "show_devices": "Mostra dispositivi",
                 "toggle": "Azionare"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Cancella",
                     "entity": "Entità",
+                    "no_match": "Non sono state trovate entità corrispondenti",
                     "show_entities": "Mostra entità"
                 }
             },
@@ -1438,8 +1443,8 @@
                             "file_name": "Nome file",
                             "name": "Nome"
                         },
-                        "introduction": "L'editor del progetto consente di creare e modificare i progetti.",
-                        "learn_more": "Per saperne di più sui progetti",
+                        "introduction": "La configurazione del progetto ti consente di importare e gestire i tuoi progetti.",
+                        "learn_more": "Ulteriori informazioni sull'utilizzo dei progetti",
                         "use_blueprint": "Crea automazione"
                     }
                 },

@@ -547,6 +547,8 @@
                 "add_new": "新增分區...",
                 "area": "分區",
                 "clear": "未觸發",
+                "no_areas": "目前沒有任何分區",
+                "no_match": "找不到相符分區",
                 "show_areas": "顯示分區"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "清除",
                 "device": "裝置",
                 "no_area": "無分區",
+                "no_devices": "目前沒有任何裝置",
+                "no_match": "找不到相符裝置",
                 "show_devices": "顯示裝置",
                 "toggle": "觸發"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "清除",
                     "entity": "實體",
+                    "no_match": "找不到相符實體",
                     "show_entities": "顯示實體"
                 }
             },
@@ -1438,8 +1443,8 @@
                             "file_name": "檔案名稱",
                             "name": "名稱"
                         },
-                        "introduction": "Blueprint 編輯器可允許新增與編輯 Blueprint。",
-                        "learn_more": "詳細了解 Blueprint",
+                        "introduction": "Blueprint 編輯器可允許匯入與管理 Blueprint。",
+                        "learn_more": "詳細了解如何使用 Blueprint",
                         "use_blueprint": "新增自動化"
                     }
                 },

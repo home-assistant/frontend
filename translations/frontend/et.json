@@ -547,6 +547,8 @@
                 "add_new": "Lisa uus ala...",
                 "area": "Ala",
                 "clear": "Puhasta",
+                "no_areas": "Alad puuduvad",
+                "no_match": "Sobivaid alasid ei leitud",
                 "show_areas": "Näita alasid"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Puhasta",
                 "device": "Seade",
                 "no_area": "Ala puudub",
+                "no_devices": "Seadmed puuduvad",
+                "no_match": "Sobivaid seadmeid ei leitud",
                 "show_devices": "Näita seadmeid",
                 "toggle": "Lülita"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Puhasta",
                     "entity": "Olem",
+                    "no_match": "Sobivaid olemeid ei leitud",
                     "show_entities": "Näita olemeid"
                 }
             },
@@ -1438,8 +1443,8 @@
                             "file_name": "Faili nimi",
                             "name": "Nimi"
                         },
-                        "introduction": "Kavandite redaktor võimaldab luua ja muuta kavandeid.",
-                        "learn_more": "Lisateave kavandite kohta",
+                        "introduction": "Kavandite seadistus võimaldab importida ja hallata oma kavandeid.",
+                        "learn_more": "Lisateave kavandite kasutamise kohta",
                         "use_blueprint": "Loo automatiseering"
                     }
                 },
