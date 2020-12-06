@@ -35,6 +35,7 @@ import "../../../components/ha-icon-input";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import {
   Action,
   deleteScript,
@@ -548,21 +549,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(this._editor.yaml);
       } else {
-        const dummyElement = document.createElement("span");
-        dummyElement.style.whiteSpace = "pre";
-        dummyElement.textContent = this._editor.yaml;
-        document.body.appendChild(dummyElement);
-
-        const selection = window.getSelection()!;
-        const range = document.createRange();
-
-        range.selectNodeContents(dummyElement);
-        selection.removeAllRanges();
-        selection.addRange(range);
-
-        document.execCommand("copy");
-        selection.removeAllRanges();
-        document.body.removeChild(dummyElement);
+        copyToClipboard(this._editor.yaml);
       }
     }
   }
