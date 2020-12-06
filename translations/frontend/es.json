@@ -547,6 +547,8 @@
                 "add_new": "Añade una nueva área ...",
                 "area": "Área",
                 "clear": "Limpiar",
+                "no_areas": "No tienes áreas",
+                "no_match": "No se han encontrado áreas coincidentes",
                 "show_areas": "Mostrar áreas"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Limpiar",
                 "device": "Dispositivo",
                 "no_area": "Ningún área",
+                "no_devices": "No tienes ningún dispositivo",
+                "no_match": "No se han encontrado dispositivos coincidentes",
                 "show_devices": "Mostrar dispositivos",
                 "toggle": "Interruptor"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Limpiar",
                     "entity": "Entidad",
+                    "no_match": "No se han encontrado entidades coincidentes",
                     "show_entities": "Mostrar entidades"
                 }
             },
@@ -1438,8 +1443,8 @@
                             "file_name": "Nombre de archivo",
                             "name": "Nombre"
                         },
-                        "introduction": "El editor de planos te permite crear y editar planos.",
-                        "learn_more": "Más información sobre planos",
+                        "introduction": "La configuración de planos te permite importar y administrar tus planos.",
+                        "learn_more": "Obtén más información sobre el uso de planos",
                         "use_blueprint": "Crear automatización"
                     }
                 },

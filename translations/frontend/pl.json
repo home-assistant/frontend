@@ -547,6 +547,8 @@
                 "add_new": "Dodaj nowy obszar...",
                 "area": "Obszar",
                 "clear": "Wyczyść",
+                "no_areas": "Nie masz żadnych obszarów",
+                "no_match": "Nie znaleziono pasujących obszarów",
                 "show_areas": "Pokaż obszary"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Wyczyść",
                 "device": "Urządzenie",
                 "no_area": "Brak obszaru",
+                "no_devices": "Nie masz żadnych urządzeń",
+                "no_match": "Nie znaleziono pasujących urządzeń",
                 "show_devices": "Pokaż urządzenia",
                 "toggle": "Przełącz"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Wyczyść",
                     "entity": "Encja",
+                    "no_match": "Nie znaleziono pasujących encji",
                     "show_entities": "Pokaż encje"
                 }
             },
@@ -1436,8 +1441,8 @@
                             "file_name": "Nazwa pliku",
                             "name": "Nazwa"
                         },
-                        "introduction": "Edytor schematów pozwala tworzyć i edytować schematy",
-                        "learn_more": "Dowiedz się więcej o schematach",
+                        "introduction": "Konfiguracja schematów umożliwia ich importowanie i zarządzanie nimi.",
+                        "learn_more": "Dowiedz się więcej o używaniu schematów",
                         "use_blueprint": "Utwórz automatyzację"
                     }
                 },

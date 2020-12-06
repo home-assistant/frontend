@@ -547,6 +547,8 @@
                 "add_new": "Ajouter une pièce...",
                 "area": "Pièce",
                 "clear": "Effacer",
+                "no_areas": "Vous n'avez pas de pièce",
+                "no_match": "Aucune pièce correspondante trouvée",
                 "show_areas": "Afficher les pièces"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Effacer",
                 "device": "Appareil",
                 "no_area": "Pas de zone",
+                "no_devices": "Vous n'avez aucun appareil",
+                "no_match": "Aucun appareil correspondant trouvé",
                 "show_devices": "Afficher les appareils",
                 "toggle": "Permuter"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Effacer",
                     "entity": "Entité",
+                    "no_match": "Aucune entité correspondante trouvée",
                     "show_entities": "Afficher les entités"
                 }
             },

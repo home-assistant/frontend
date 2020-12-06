@@ -547,6 +547,8 @@
                 "add_new": "添加新区域…",
                 "area": "区域",
                 "clear": "清除",
+                "no_areas": "您还没有创建区域",
+                "no_match": "未找到相关区域",
                 "show_areas": "显示区域"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "清除",
                 "device": "设备",
                 "no_area": "没有区域",
+                "no_devices": "您还没有设备",
+                "no_match": "未找到相关设备",
                 "show_devices": "显示设备",
                 "toggle": "切换"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "清除",
                     "entity": "实体",
+                    "no_match": "未找到相关实体",
                     "show_entities": "显示实体"
                 }
             },
@@ -1413,10 +1418,10 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "请输入 Blueprint 的网址。",
-                        "file_name": "本地 Blueprint 文件名",
+                        "file_name": "Blueprint 路径",
                         "header": "添加新的 Blueprint",
                         "import_btn": "导入 Blueprint",
-                        "import_header": "导入 \"{name}\" (类型为 {domain})",
+                        "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "您可以从 Github 和社区论坛导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
                         "importing": "正在导入 Blueprint...",
                         "raw_blueprint": "Blueprint 内容",
@@ -1438,8 +1443,8 @@
                             "file_name": "文件名",
                             "name": "名称"
                         },
-                        "introduction": "Blueprint 编辑器方便您创建和编辑 Blueprint。",
-                        "learn_more": "详细了解 Blueprint",
+                        "introduction": "Blueprint 编辑器方便您导入和管理 Blueprint。",
+                        "learn_more": "详细了解如何使用 Blueprint",
                         "use_blueprint": "创建自动化"
                     }
                 },

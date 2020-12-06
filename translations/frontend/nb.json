@@ -547,6 +547,8 @@
                 "add_new": "Legg til nytt område ...",
                 "area": "Område",
                 "clear": "Tøm",
+                "no_areas": "Du har ingen områder",
+                "no_match": "Fant ingen samsvarende områder",
                 "show_areas": "Vis områder"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Tøm",
                 "device": "Enhet",
                 "no_area": "Ingen område",
+                "no_devices": "Du har ingen enheter",
+                "no_match": "Fant ingen samsvarende enheter",
                 "show_devices": "Vis enheter",
                 "toggle": "Veksle"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Tøm",
                     "entity": "Entitet",
+                    "no_match": "Fant ingen samsvarende entiteter",
                     "show_entities": "Vis entiteter"
                 }
             },

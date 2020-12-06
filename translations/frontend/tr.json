@@ -545,6 +545,8 @@
                 "add_new": "Yeni alan ekle…",
                 "area": "Alan",
                 "clear": "Temizle",
+                "no_areas": "Hiç alanınız yok",
+                "no_match": "Eşleşen alan bulunamadı",
                 "show_areas": "Alanları göster"
             },
             "blueprint-picker": {
@@ -565,6 +567,8 @@
                 "clear": "Temiz",
                 "device": "Cihaz",
                 "no_area": "Alan Yok",
+                "no_devices": "Hiç cihazınız yok",
+                "no_match": "Eşleşen cihaz bulunamadı",
                 "show_devices": "Cihazları göster",
                 "toggle": "Geçiş"
             },
@@ -576,6 +580,7 @@
                 "entity-picker": {
                     "clear": "Temizle",
                     "entity": "Varlık",
+                    "no_match": "Eşleşen varlık bulunamadı",
                     "show_entities": "Varlıkları göster"
                 }
             },
@@ -1660,6 +1665,7 @@
                             "unknown_condition": "Bilinmeyen durum"
                         },
                         "create": "Cihazla otomasyon oluşturun",
+                        "create_disable": "Devre dışı bırakılan cihazla otomasyon oluşturulamaz",
                         "no_automations": "Otomasyon yok",
                         "no_device_automations": "Bu cihaz için kullanılabilir otomasyon yok.",
                         "triggers": {
@@ -1688,6 +1694,7 @@
                     "description": "Bağlı cihazları yönet",
                     "device_info": "Cihaz bilgisi",
                     "device_not_found": "Cihaz bulunamadı.",
+                    "disabled": "Devre dışı",
                     "entities": {
                         "add_entities_lovelace": "Tüm cihaz varlıklarını Lovelace kullanıcı arayüzüne ekle",
                         "disabled_entities": "+{count} {count, plural,\n  one {engelli varlık}\n  other {engelli varlıklar}\n}",
@@ -1697,14 +1704,24 @@
                     },
                     "name": "Ad",
                     "no_devices": "Cihaz yok",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtre",
+                            "show_all": "Tümünü göster",
+                            "show_disabled": "Devre dışı bırakılan aygıtları göster"
+                        },
+                        "search": "Cihazları ara"
+                    },
                     "scene": {
                         "create": "Aygıtla sahne oluşturma",
+                        "create_disable": "Devre dışı bırakılmış aygıtla sahne oluşturulamaz",
                         "no_scenes": "Sahne yok",
                         "scenes": "Sahneler"
                     },
                     "scenes": "Sahneler",
                     "script": {
                         "create": "Aygıtla sahne oluşturma",
+                        "create_disable": "Devre dışı bırakılmış cihazla komut dosyası oluşturulamaz",
                         "no_scripts": "Komut dosyası yok",
                         "scripts": "Komut dosyaları"
                     },
@@ -2385,6 +2402,7 @@
                     "editor": {
                         "activate_user": "Kullanıcıyı etkinleştir",
                         "active": "Aktif",
+                        "active_tooltip": "Kullanıcının oturum açıp açamayacağını kontrol eder",
                         "admin": "Yönetici",
                         "caption": "Kullanıcıyı görüntüle",
                         "change_password": "Parolayı değiştir",
@@ -3383,10 +3401,13 @@
                 "change_password": {
                     "confirm_new_password": "Yeni Parolayı Onaylayın",
                     "current_password": "Güncel Parola",
+                    "error_new_is_old": "Yeni parola geçerli paroladan farklı olmalıdır",
+                    "error_new_mismatch": "Girilen yeni parola değerleri eşleşmiyor",
                     "error_required": "Gerekli",
                     "header": "Parolayı Değiştir",
                     "new_password": "Yeni Parola",
-                    "submit": "Gönder"
+                    "submit": "Gönder",
+                    "success": "Parola başarıyla değiştirildi"
                 },
                 "current_user": "{fullName} olarak giriş yaptınız.",
                 "customize_sidebar": {
