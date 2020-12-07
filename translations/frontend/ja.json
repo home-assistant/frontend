@@ -2,11 +2,13 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "構成エントリ",
+            "device": "デバイス",
             "integration": "インテグレーション",
             "user": "ユーザー"
         }
     },
     "groups": {
+        "owner": "オーナー",
         "system-admin": "管理者",
         "system-read-only": "読み取り専用ユーザー",
         "system-users": "ユーザー"
@@ -531,6 +533,8 @@
                 "add_new": "新しいエリアを追加…",
                 "area": "エリア",
                 "clear": "消去",
+                "no_areas": "エリアがありません",
+                "no_match": "一致するエリアが見つかりません",
                 "show_areas": "エリアを表示"
             },
             "blueprint-picker": {
@@ -551,6 +555,8 @@
                 "clear": "削除",
                 "device": "デバイス",
                 "no_area": "エリアなし",
+                "no_devices": "デバイスがありません",
+                "no_match": "一致するデバイスが見つかりません",
                 "show_devices": "デバイスを表示",
                 "toggle": "切り替え"
             },
@@ -562,6 +568,7 @@
                 "entity-picker": {
                     "clear": "消去",
                     "entity": "エンティティ",
+                    "no_match": "一致するエンティティが見つかりません",
                     "show_entities": "エンティティを表示"
                 }
             },
@@ -695,6 +702,16 @@
             "service-picker": {
                 "service": "サービス"
             },
+            "target-picker": {
+                "add_area_id": "エリアを選択",
+                "add_device_id": "デバイスを選択",
+                "add_entity_id": "エンティティを選択",
+                "expand_area_id": "含まれている個別のデバイスとエンティティでこの領域を展開します。拡張後、領域が変更されてもデバイスとエンティティは更新されません。",
+                "expand_device_id": "このデバイスを別々のエンティティで展開します。展開した後は、デバイスが変更されたときにエンティティが更新されません。",
+                "remove_area_id": "エリアを削除する",
+                "remove_device_id": "デバイスを削除",
+                "remove_entity_id": "エンティティの削除"
+            },
             "user-picker": {
                 "add_user": "ユーザーを追加",
                 "no_user": "ユーザーなし",
@@ -718,6 +735,7 @@
                 "editor": {
                     "confirm_delete": "このエントリを削除してもよろしいですか？",
                     "delete": "削除",
+                    "device_disabled": "このエンティティのデバイスは無効になっています。",
                     "enabled_cause": "{cause} によって無効にされました。",
                     "enabled_delay_confirm": "有効なエンティティは {delay} 秒でホーム アシスタントに追加されます",
                     "enabled_description": "無効化されたエンティティは Home Assistant に追加されません。",
@@ -728,6 +746,7 @@
                     "icon_error": "アイコンは「prefix：iconname」の形式にする必要があります（例：「mdi：home」）。",
                     "name": "名前の上書き",
                     "note": "注: これは、まだすべてのインテグレーションで動作しない場合があります。",
+                    "open_device_settings": "デバイス設定を開く",
                     "unavailable": "このエンティティは現在利用できません。",
                     "update": "更新"
                 },
@@ -992,7 +1011,7 @@
             "dismiss": "閉じる",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
             "started": "ホームアシスタントが開始されました！",
-            "starting": "Home Assistantが起動中です。終了するまですべてが利用できるわけではありません。",
+            "starting": "Home Assistantが起動中です。全て利用可能なるまでもうしばらくお待ち下さい。",
             "triggered": "トリガーしました {name}"
         },
         "panel": {
@@ -1352,7 +1371,7 @@
                         "delete_automation": "オートメーションを削除",
                         "delete_confirm": "このオートメーションを削除してもよろしいですか？",
                         "duplicate": "複製",
-                        "duplicate_automation": "重複したオートメーション",
+                        "duplicate_automation": "オートメーションを複製",
                         "edit_automation": "オートメーションを編集",
                         "header": "オートメーションエディター",
                         "headers": {
@@ -1385,11 +1404,13 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "設計図のURLを入力してください。",
+                        "file_name": "設計図のパス",
                         "header": "新しい設計図を追加する",
                         "import_btn": "設計図をインポートする",
                         "import_header": "インポート{name} （ {domain} ）",
                         "import_introduction": "Github やコミュニティフォーラムから他のユーザーの設計図をインポートできます。以下に、設計図の URL を入力します。",
                         "importing": "設計図をインポートしています...",
+                        "raw_blueprint": "設計図コンテンツ",
                         "save_btn": "設計図の保存",
                         "saving": "設計図を保存しています...",
                         "unsupported_blueprint": "この設計図はサポートされていません",
@@ -1401,12 +1422,16 @@
                         "add_blueprint": "設計図を追加する",
                         "confirm_delete_header": "この設計図を削除しますか?",
                         "confirm_delete_text": "この設計図を削除してもよ思いますか?",
+                        "delete_blueprint": "設計図を削除",
                         "header": "設計図エディタ",
                         "headers": {
+                            "domain": "ドメイン",
+                            "file_name": "ファイル名",
                             "name": "名前"
                         },
                         "introduction": "設計図エディターを使用すると、設計図を作成および編集できます。",
-                        "learn_more": "設計図の詳細"
+                        "learn_more": "設計図の詳細",
+                        "use_blueprint": "オートメーションを作成"
                     }
                 },
                 "cloud": {
@@ -1646,6 +1671,7 @@
                             "unknown_condition": "状態不明"
                         },
                         "create": "デバイスからオートメーションを作成",
+                        "create_disable": "無効なデバイスで自動化を作成できません",
                         "no_automations": "オートメーションなし",
                         "no_device_automations": "このデバイスで利用可能なオートメーションはありません。",
                         "triggers": {
@@ -1674,6 +1700,15 @@
                     "description": "接続されたデバイスの管理",
                     "device_info": "デバイス情報",
                     "device_not_found": "デバイスが見つかりません。",
+                    "disabled": "無効",
+                    "disabled_by": {
+                        "config_entry": "構成エントリ",
+                        "integration": "インテグレーション",
+                        "user": "ユーザー"
+                    },
+                    "enabled_cause": "デバイスは{cause}によって無効にされています。",
+                    "enabled_description": "無効なデバイスは表示されず、デバイスに属するエンティティは無効になり、ホーム アシスタントに追加されません。",
+                    "enabled_label": "デバイスを有効にする",
                     "entities": {
                         "add_entities_lovelace": "Lovelaceに追加",
                         "disabled_entities": "{count} {count, plural,\n  one {無効なエンティティ}\n  other {無効なエンティティ}\n}",
@@ -1683,14 +1718,25 @@
                     },
                     "name": "名前",
                     "no_devices": "デバイスなし",
+                    "picker": {
+                        "filter": {
+                            "filter": "フィルター",
+                            "hidden_devices": "{number} 非表示 {number, plural,\n  one {デバイス}\n  other {デバイス}\n}",
+                            "show_all": "すべてを表示",
+                            "show_disabled": "無効なデバイスを表示する"
+                        },
+                        "search": "デバイスを探す"
+                    },
                     "scene": {
                         "create": "デバイスからシーンを作成",
+                        "create_disable": "デバイスが無効になっているのでシーンを作成できません",
                         "no_scenes": "シーンなし",
                         "scenes": "シーン"
                     },
                     "scenes": "シーン",
                     "script": {
                         "create": "デバイスからスクリプトを作成",
+                        "create_disable": "デバイスが無効になっているのでスクリプトを作成できません",
                         "no_scripts": "スクリプトなし",
                         "scripts": "スクリプト"
                     },
@@ -1723,6 +1769,7 @@
                         },
                         "header": "エンティティ",
                         "headers": {
+                            "area": "エリア",
                             "entity_id": "エンティティ ID",
                             "integration": "インテグレーション",
                             "name": "名前",
@@ -1784,6 +1831,8 @@
                 "info": {
                     "built_using": "を使用して構築",
                     "caption": "情報",
+                    "copy_github": "GitHubの場合",
+                    "copy_raw": "本来のテキスト",
                     "custom_uis": "カスタムの UIs:",
                     "description": "ホーム アシスタントのインストールに関する情報を表示する",
                     "developed_by": "素晴らしい人々の集まりによって開発されました。",
@@ -2369,6 +2418,7 @@
                     "editor": {
                         "activate_user": "ユーザーを有効化",
                         "active": "アクティブ",
+                        "active_tooltip": "ユーザーがログインできるかどうかを制御します",
                         "admin": "管理者",
                         "caption": "ユーザーを表示",
                         "change_password": "パスワードの変更",
@@ -2385,19 +2435,24 @@
                         "system_generated_users_not_editable": "システムが生成されたユーザーを変更できません。",
                         "system_generated_users_not_removable": "システムで生成されたユーザーを削除できません。",
                         "unnamed_user": "名前のないユーザー",
-                        "update_user": "更新"
+                        "update_user": "更新",
+                        "username": "ユーザー名"
                     },
                     "picker": {
                         "add_user": "ユーザーを追加する",
                         "headers": {
                             "group": "グループ",
+                            "is_active": "アクティブ",
+                            "is_owner": "オーナー",
                             "name": "名前",
-                            "system": "システム"
+                            "system": "システム",
+                            "username": "ユーザー名"
                         }
                     },
                     "users_privileges_note": "ユーザーグループは作業中です。ユーザーは、UIを介してインスタンスを管理できなくなります。すべての管理APIエンドポイントを引き続き監査して、管理者へのアクセスを正しく制限していることを確認しています。"
                 },
                 "zha": {
+                    "add_device": "デバイスの追加",
                     "add_device_page": {
                         "discovered_text": "検出されると、デバイスがここに表示されます。",
                         "discovery_text": "検出されたデバイスがここに表示されます。デバイスの指示に従い、ペアリングモードにします。",
@@ -2443,6 +2498,16 @@
                         "value": "バリュー"
                     },
                     "description": "Zigbee Home Automationネットワーク管理",
+                    "device_pairing_card": {
+                        "CONFIGURED": "構成の完了",
+                        "CONFIGURED_status_text": "初期化中",
+                        "INITIALIZED": "初期化が完了しました",
+                        "INITIALIZED_status_text": "デバイスを使用する準備ができました",
+                        "INTERVIEW_COMPLETE": "インタビュー完了",
+                        "INTERVIEW_COMPLETE_status_text": "構成",
+                        "PAIRED": "デバイスが見つかりました",
+                        "PAIRED_status_text": "インタビュー開始"
+                    },
                     "devices": {
                         "header": "Zigbeeホームオートメーション-デバイス"
                     },
@@ -2458,6 +2523,7 @@
                         "unbind_button_label": "グループのバインド解除"
                     },
                     "groups": {
+                        "add_group": "グループの追加",
                         "add_members": "メンバーの追加",
                         "adding_members": "メンバーの追加",
                         "caption": "グループ",
@@ -2500,7 +2566,11 @@
                         "hint_wakeup": "Xiaomiセンサーなどの一部のデバイスには、約5秒間隔で押すことができるウェイクアップボタンがあり、デバイスを操作している間、デバイスをウェイクアップしたままにできます。",
                         "introduction": "単一のデバイスに影響する ZHA コマンドを実行します。デバイスを選択して、使用可能なコマンドの一覧を表示します。"
                     },
-                    "title": "Zigbeeホームオートメーション"
+                    "title": "Zigbeeホームオートメーション",
+                    "visualization": {
+                        "caption": "可視化",
+                        "header": "ネットワークの視覚化"
+                    }
                 },
                 "zone": {
                     "add_zone": "ゾーンを追加",
@@ -3167,7 +3237,7 @@
                     "entity_non_numeric": "エンティティが数値ではありません： {entity}",
                     "entity_not_found": "エンティティが使用できません： {entity}",
                     "entity_unavailable": "{entity}は現在利用できません",
-                    "starting": "ホームアシスタントが起動していますが、まだすべてが利用可能なわけではありません"
+                    "starting": "Home Assistantが起動中です。全て利用可能なるまでもうしばらくお待ち下さい。"
                 }
             },
             "mailbox": {
@@ -3367,10 +3437,13 @@
                 "change_password": {
                     "confirm_new_password": "新しいパスワードの確認",
                     "current_password": "現在のパスワード",
+                    "error_new_is_old": "新しいパスワードは現在のパスワードと異なる必要があります",
+                    "error_new_mismatch": "入力された新しいパスワードが一致しません",
                     "error_required": "必須",
                     "header": "パスワードの変更",
                     "new_password": "新しいパスワード",
-                    "submit": "送信"
+                    "submit": "送信",
+                    "success": "パスワードが正常に変更されました"
                 },
                 "current_user": "現在、 {fullName}としてログインしています。",
                 "customize_sidebar": {

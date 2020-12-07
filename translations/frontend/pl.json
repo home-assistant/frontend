@@ -1733,7 +1733,7 @@
                     "picker": {
                         "filter": {
                             "filter": "Filtr",
-                            "hidden_devices": "{number} {number, plural,\n  one {urządzenie ukryte}\n  few {urządzenia ukryte}\n  many {urządzeń ukrytych}\n  other {urządzeń ukrytych}\n}",
+                            "hidden_devices": "{liczba} {number, plural,\n  jedno {urządzenie ukryte}\n  kilka {urządzenia ukryte}\n  wiele {urządzeń ukrytych}\n  inne {urządzenia ukryte}\n}",
                             "show_all": "Pokaż wszystkie",
                             "show_disabled": "Pokaż wyłączone urządzenia"
                         },

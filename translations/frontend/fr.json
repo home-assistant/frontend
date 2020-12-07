@@ -1283,7 +1283,7 @@
                             "delete_confirm": "Voulez-vous effacer ?",
                             "duplicate": "Dupliquer",
                             "header": "Déclencheurs",
-                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.",
                             "learn_more": "En savoir plus sur les déclencheurs",
                             "name": "Déclencheur",
                             "type_select": "Type de déclencheur",
@@ -1418,14 +1418,14 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Veuillez entrer l'URL du plan",
-                        "file_name": "Nom du fichier de plan local",
-                        "header": "Ajouter un nouveau plan",
+                        "file_name": "Chemin du fichier de plan local",
+                        "header": "Importer un plan",
                         "import_btn": "Importer un plan",
                         "import_header": "Importer \" {name} \" (type: {domain} )",
                         "import_introduction": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'URL du plan ci-dessous.",
-                        "importing": "Importation du plan ...",
+                        "importing": "Chargement du plan ...",
                         "raw_blueprint": "Contenu du plan",
-                        "save_btn": "Sauver le plan",
+                        "save_btn": "Importer un plan",
                         "saving": "Enregistrement du plan ...",
                         "unsupported_blueprint": "Ce plan n'est pas pris en charge",
                         "url": "URL du plan"

@@ -1093,7 +1093,7 @@
                             "duplicate": "Duplicar",
                             "header": "Acciones",
                             "introduction": "Las acciones son lo que hará Home Assistant cuando se desencadene la automatización.",
-                            "learn_more": "Saber más sobre las acciones.",
+                            "learn_more": "Aprende más sobre las acciones.",
                             "name": "Acción",
                             "type_select": "Tipo de acción",
                             "type": {
@@ -1180,7 +1180,7 @@
                             "duplicate": "Duplicar",
                             "header": "Condiciones",
                             "introduction": "Las condiciones son opcionales e impedirán cualquier\nejecución posterior a menos que se cumplan todas las condiciones.",
-                            "learn_more": "Saber más sobre las condiciones",
+                            "learn_more": "Aprende más sobre las condiciones",
                             "name": "Condición",
                             "type_select": "Tipo de condición",
                             "type": {
@@ -1284,7 +1284,7 @@
                             "duplicate": "Duplicar",
                             "header": "Desencadenantes",
                             "introduction": "Los desencadenantes son los que inician el funcionamiento de una regla de automatización. Es posible especificar varios desencadenantes para la misma regla. Una vez que se inicia un desencadenante, Home Assistant comprobará las condiciones, si las hubiere, y ejecutará la acción.",
-                            "learn_more": "Saber más sobre los desencadenantes",
+                            "learn_more": "Aprende más sobre los desencadenantes",
                             "name": "Desencadenante",
                             "type_select": "Tipo de desencadenante",
                             "type": {
@@ -1392,7 +1392,7 @@
                             "name": "Nombre"
                         },
                         "introduction": "El editor de automatización te permite crear y editar automatizaciones. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado correctamente Home Assistant.",
-                        "learn_more": "Saber más sobre las automatizaciones",
+                        "learn_more": "Aprende más sobre las automatizaciones",
                         "no_automations": "No pudimos encontrar ninguna automatización editable",
                         "only_editable": "Solo las automatizaciones definidas en automations.yaml son editables.",
                         "pick_automation": "Elije la automatización para editar",
@@ -1444,7 +1444,7 @@
                             "name": "Nombre"
                         },
                         "introduction": "La configuración de planos te permite importar y administrar tus planos.",
-                        "learn_more": "Obtén más información sobre el uso de planos",
+                        "learn_more": "Aprende más sobre el uso de planos",
                         "use_blueprint": "Crear automatización"
                     }
                 },
@@ -1504,7 +1504,7 @@
                         "webhooks": {
                             "disable_hook_error_msg": "No se pudo deshabilitar el webhook:",
                             "info": "Cualquier cosa que esté configurada para ser activada por un webhook puede recibir una URL de acceso público para permitirte enviar datos a Home Assistant desde cualquier lugar, sin exponer tu instancia a Internet.",
-                            "link_learn_more": "Saber más sobre la creación de automatizaciones basadas en webhook.",
+                            "link_learn_more": "Aprende más sobre la creación de automatizaciones basadas en webhook.",
                             "loading": "Cargando ...",
                             "manage": "Administrar",
                             "no_hooks_yet": "Parece que aún no tienes webhooks. Comienza configurando un",
@@ -1584,7 +1584,7 @@
                         "introduction2": "Este servicio está a cargo de nuestro socio.",
                         "introduction2a": ", una compañía fundada por los fundadores de Home Assistant y Hass.io.",
                         "introduction3": "Home Assistant Cloud es un servicio de suscripción con una prueba gratuita de un mes. No se necesita información de pago.",
-                        "learn_more_link": "Saber más sobre Home Assistant Cloud",
+                        "learn_more_link": "Aprende más sobre Home Assistant Cloud",
                         "password": "Contraseña",
                         "password_error_msg": "Las contraseñas tienen al menos 8 caracteres.",
                         "sign_in": "Inicia sesión",
@@ -2229,7 +2229,7 @@
                         "update": "Actualizar"
                     },
                     "introduction": "Aquí puedes definir a cada persona de interés en Home Assistant.",
-                    "learn_more": "Saber más sobre las personas",
+                    "learn_more": "Aprende más sobre las personas",
                     "no_persons_created_yet": "Parece que aún no has creado ninguna persona.",
                     "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la IU.",
                     "person_not_found": "No pudimos encontrar a la persona que intentabas editar.",
@@ -2273,7 +2273,7 @@
                             "name": "Nombre"
                         },
                         "introduction": "El editor de escenas te permite crear y editar escenas. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
-                        "learn_more": "Saber más sobre las escenas",
+                        "learn_more": "Aprende más sobre las escenas",
                         "no_scenes": "No pudimos encontrar ninguna escena editable",
                         "only_editable": "Solo las escenas definidas en scenes.yaml son editables.",
                         "pick_scene": "Elige una escena para editar",
@@ -2294,7 +2294,7 @@
                         "id_already_exists": "Este ID ya existe",
                         "id_already_exists_save_error": "No puedes guardar este script porque el ID no es único, elije otro ID o déjalo en blanco para generar uno automáticamente.",
                         "introduction": "Utiliza scripts para ejecutar una secuencia de acciones.",
-                        "link_available_actions": "Saber más sobre las acciones disponibles.",
+                        "link_available_actions": "Aprende más sobre las acciones disponibles.",
                         "load_error_not_editable": "Solo los scripts dentro de scripts.yaml son editables.",
                         "max": {
                             "parallel": "Número máximo de ejecuciones paralelas",
@@ -2323,7 +2323,7 @@
                             "name": "Nombre"
                         },
                         "introduction": "El editor de scripts te permite crear y editar scripts. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
-                        "learn_more": "Saber más sobre los scripts",
+                        "learn_more": "Aprende más sobre los scripts",
                         "no_scripts": "No hemos encontrado ningún script editable",
                         "run_script": "Ejecutar script",
                         "show_info": "Mostrar información sobre el script",
@@ -2412,7 +2412,7 @@
                         "last_scanned": "Última vez escaneada",
                         "name": "Nombre"
                     },
-                    "learn_more": "Más información sobre las etiquetas",
+                    "learn_more": "Aprende más sobre las etiquetas",
                     "never_scanned": "Nunca escaneado",
                     "no_tags": "Sin etiquetas",
                     "write": "Escribir"
@@ -2626,7 +2626,7 @@
                         "wakeup_interval": "Intervalo de activación"
                     },
                     "description": "Administra tu red Z-Wave",
-                    "learn_more": "Saber más sobre Z-Wave",
+                    "learn_more": "Aprende más sobre Z-Wave",
                     "network_management": {
                         "header": "Administración de red Z-Wave",
                         "introduction": "Ejecutar comandos que afectan a la red Z-Wave. No recibirás comentarios sobre si la mayoría de los comandos tuvieron éxito, pero puedes consultar el Registro OZW para intentar averiguarlo."
@@ -3365,7 +3365,7 @@
                     "demo": {
                         "demo_by": "por {name}",
                         "introduction": "¡Bienvenido a casa! Has llegado a la demostración de Home Assistant donde mostramos las mejores interfaces de usuario creadas por nuestra comunidad.",
-                        "learn_more": "Saber más sobre Home Assistant",
+                        "learn_more": "Aprende más sobre Home Assistant",
                         "next_demo": "Siguiente demostración"
                     }
                 },
@@ -3445,7 +3445,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Desbloquea las funciones avanzadas.",
-                    "link_promo": "Saber más",
+                    "link_promo": "Aprende más",
                     "title": "Modo avanzado"
                 },
                 "change_password": {
@@ -3526,7 +3526,7 @@
                     "error_load_platform": "Configurar notify.html5.",
                     "error_use_https": "Requiere SSL activado para frontend.",
                     "header": "Notificaciones push",
-                    "link_promo": "Saber más",
+                    "link_promo": "Aprende más",
                     "push_notifications": "Notificaciones push"
                 },
                 "refresh_tokens": {
