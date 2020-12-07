@@ -397,11 +397,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _copyYaml() {
     if (this._editor?.yaml) {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(this._editor.yaml);
-      } else {
-        copyToClipboard(this._editor.yaml);
-      }
+      copyToClipboard(this._editor.yaml);
     }
   }
 
