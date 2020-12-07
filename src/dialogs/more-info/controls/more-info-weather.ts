@@ -82,6 +82,11 @@ class MoreInfoWeather extends LitElement {
       return html``;
     }
 
+    const formatParams: FormatNumberParams = {
+      language: this.hass!.language,
+      format: this.hass!.userData?.numberFormat,
+    };
+
     return html`
       <div class="flex">
         <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
@@ -89,10 +94,7 @@ class MoreInfoWeather extends LitElement {
           ${this.hass.localize("ui.card.weather.attributes.temperature")}
         </div>
         <div>
-          ${formatNumber(
-            this.stateObj.attributes.temperature,
-            this.hass!.language
-          )}
+          ${formatNumber(this.stateObj.attributes.temperature, formatParams)}
           ${getWeatherUnit(this.hass, "temperature")}
         </div>
       </div>
@@ -104,10 +106,7 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.air_pressure")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.pressure,
-                  this.hass!.language
-                )}
+                ${formatNumber(this.stateObj.attributes.pressure, formatParams)}
                 ${getWeatherUnit(this.hass, "air_pressure")}
               </div>
             </div>
@@ -121,10 +120,7 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.humidity")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.humidity,
-                  this.hass!.language
-                )}
+                ${formatNumber(this.stateObj.attributes.humidity, formatParams)}
                 %
               </div>
             </div>
@@ -157,7 +153,7 @@ class MoreInfoWeather extends LitElement {
               <div>
                 ${formatNumber(
                   this.stateObj.attributes.visibility,
-                  this.hass!.language
+                  formatParams
                 )}
                 ${getWeatherUnit(this.hass, "length")}
               </div>
@@ -198,13 +194,13 @@ class MoreInfoWeather extends LitElement {
                           )}
                         </div>
                         <div class="templow">
-                          ${formatNumber(item.templow, this.hass!.language)}
+                          ${formatNumber(item.templow, formatParams)}
                           ${getWeatherUnit(this.hass, "temperature")}
                         </div>
                       `
                     : ""}
                   <div class="temp">
-                    ${formatNumber(item.temperature, this.hass!.language)}
+                    ${formatNumber(item.temperature, formatParams)}
                     ${getWeatherUnit(this.hass, "temperature")}
                   </div>
                 </div>

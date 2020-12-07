@@ -8,7 +8,10 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { formatNumber } from "../common/string/format_number";
+import {
+  formatNumber,
+  FormatNumberParams,
+} from "../common/string/format_number";
 import { CLIMATE_PRESET_NONE } from "../data/climate";
 import type { HomeAssistant } from "../types";
 
@@ -51,17 +54,17 @@ class HaClimateState extends LitElement {
     }
 
     if (this.stateObj.attributes.current_temperature != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.current_temperature,
-        this.hass!.language
-      )} ${this.hass.config.unit_system.temperature}`;
+      return `${formatNumber(this.stateObj.attributes.current_temperature, {
+        language: this.hass!.language,
+        format: this.hass!.userData?.numberFormat,
+      })} ${this.hass.config.unit_system.temperature}`;
     }
 
     if (this.stateObj.attributes.current_humidity != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.current_humidity,
-        this.hass!.language
-      )} %`;
+      return `${formatNumber(this.stateObj.attributes.current_humidity, {
+        language: this.hass!.language,
+        format: this.hass!.userData?.numberFormat,
+      })} %`;
     }
 
     return undefined;
@@ -72,23 +75,28 @@ class HaClimateState extends LitElement {
       return "";
     }
 
+    const formatParams: FormatNumberParams = {
+      language: this.hass!.language,
+      format: this.hass!.userData?.numberFormat,
+    };
+
     if (
       this.stateObj.attributes.target_temp_low != null &&
       this.stateObj.attributes.target_temp_high != null
     ) {
       return `${formatNumber(
         this.stateObj.attributes.target_temp_low,
-        this.hass!.language
+        formatParams
       )}-${formatNumber(
         this.stateObj.attributes.target_temp_high,
-        this.hass!.language
+        formatParams
       )} ${this.hass.config.unit_system.temperature}`;
     }
 
     if (this.stateObj.attributes.temperature != null) {
       return `${formatNumber(
         this.stateObj.attributes.temperature,
-        this.hass!.language
+        formatParams
       )} ${this.hass.config.unit_system.temperature}`;
     }
     if (
@@ -97,17 +105,17 @@ class HaClimateState extends LitElement {
     ) {
       return `${formatNumber(
         this.stateObj.attributes.target_humidity_low,
-        this.hass!.language
+        formatParams
       )}-${formatNumber(
         this.stateObj.attributes.target_humidity_high,
-        this.hass!.language
-      )} %`;
+        formatParams
+      )}%`;
     }
 
     if (this.stateObj.attributes.humidity != null) {
       return `${formatNumber(
         this.stateObj.attributes.humidity,
-        this.hass!.language
+        formatParams
       )} %`;
     }
 

@@ -1,14 +1,43 @@
+import { NumberFormat } from "../../data/frontend";
+
+export interface FormatNumberParams {
+  /**
+   * The user-selected language, usually from hass.language
+   */
+  language?: string;
+  /**
+   * The user-selected number format, usually from hass.userData.numberFormat
+   */
+  format?: NumberFormat;
+  /**
+   * Intl.NumberFormatOptions to use when formatting the number
+   */
+  options?: Intl.NumberFormatOptions;
+}
+
 /**
  * Formats a number based on the specified language with thousands separator(s) and decimal character for better legibility.
  *
  * @param num The number to format
- * @param language The language to use when formatting the number
+ * @param params Specify the user-selected language, user-selected number format, and Intl.NumberFormatOptions to use
  */
 export const formatNumber = (
   num: string | number,
-  language: string,
-  options?: Intl.NumberFormatOptions
+  params: FormatNumberParams
 ): string => {
+  let format: string | undefined;
+
+  switch (params.format) {
+    case NumberFormat.comma_decimal:
+      format = "en-US"; // Use United States formatting 1,234,567.89
+      break;
+    case NumberFormat.decimal_comma:
+      format = "de-DE"; // Use Germany formatting 1.234.567,89
+      break;
+    default:
+      format = params.language;
+  }
+
   // Polyfill for Number.isNaN, which is more reliable than the global isNaN()
   Number.isNaN =
     Number.isNaN ||
@@ -16,10 +45,14 @@ export const formatNumber = (
       return typeof input === "number" && isNaN(input);
     };
 
-  if (!Number.isNaN(Number(num)) && Intl) {
+  if (
+    !Number.isNaN(Number(num)) &&
+    Intl &&
+    params.format !== NumberFormat.none
+  ) {
     return new Intl.NumberFormat(
-      language,
-      getDefaultFormatOptions(num, options)
+      format,
+      getDefaultFormatOptions(num, params.options)
     ).format(Number(num));
   }
   return num.toString();

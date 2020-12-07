@@ -314,7 +314,13 @@ export const getLogbookMessage = (
     `${LOGBOOK_LOCALIZE_PATH}.changed_to_state`,
     "state",
     stateObj
-      ? computeStateDisplay(hass.localize, stateObj, hass.language, state)
+      ? computeStateDisplay(
+          hass.localize,
+          stateObj,
+          hass.language,
+          hass.userData,
+          state
+        )
       : state
   );
 };

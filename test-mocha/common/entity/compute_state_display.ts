@@ -1,6 +1,11 @@
 import { assert } from "chai";
 import { computeStateDisplay } from "../../../src/common/entity/compute_state_display";
 import { UNKNOWN } from "../../../src/data/entity";
+import { CoreFrontendUserData, NumberFormat } from "../../../src/data/frontend";
+
+const userData: CoreFrontendUserData = {
+  numberFormat: NumberFormat.comma_decimal,
+};
 
 describe("computeStateDisplay", () => {
   // Mock Localize function for testing
@@ -14,7 +19,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, "en", userData),
       "component.binary_sensor.state._.off"
     );
   });
@@ -28,7 +33,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, "en", userData),
       "component.binary_sensor.state.moisture.off"
     );
   });
@@ -48,7 +53,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, "en", userData),
       "component.binary_sensor.state.invalid_device_class.off"
     );
   });
@@ -61,7 +66,10 @@ describe("computeStateDisplay", () => {
         unit_of_measurement: "m",
       },
     };
-    assert.strictEqual(computeStateDisplay(localize, stateObj, "en"), "123 m");
+    assert.strictEqual(
+      computeStateDisplay(localize, stateObj, "en", userData),
+      "123 m"
+    );
   });
 
   it("Localizes and formats numeric sensor value with units", () => {
@@ -73,7 +81,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, "en", userData),
       "1,234.5 m"
     );
   });
@@ -93,7 +101,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, "en", userData),
       "state.default.unknown"
     );
   });
@@ -113,7 +121,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, "en", userData),
       "state.default.unavailable"
     );
   });
@@ -131,7 +139,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, "en", userData),
       "component.sensor.state._.custom_state"
     );
   });
@@ -152,7 +160,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, "en", userData),
       "November 18, 2017, 11:12 AM"
     );
   });
@@ -173,7 +181,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, "en", userData),
       "November 18, 2017"
     );
   });
@@ -194,7 +202,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, "en", userData),
       "11:12 AM"
     );
   });
@@ -212,7 +220,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, "en", userData),
       "state.default.unavailable"
     );
   });
@@ -228,7 +236,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, "en", userData),
       "My Custom State"
     );
   });

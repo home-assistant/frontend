@@ -31,6 +31,8 @@ export class Gauge extends LitElement {
 
   @property({ type: String }) public language = "";
 
+  @property({ type: String }) public numberFormat;
+
   @property() public label = "";
 
   @internalProperty() private _angle = 0;
@@ -90,7 +92,10 @@ export class Gauge extends LitElement {
       </svg>
       <svg class="text">
         <text class="value-text">
-          ${formatNumber(this.value, this.language)} ${this.label}
+          ${formatNumber(this.value, {
+            language: this.language,
+            format: this.numberFormat,
+          })} ${this.label}
         </text>
       </svg>`;
   }

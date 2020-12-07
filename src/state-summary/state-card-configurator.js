@@ -61,7 +61,8 @@ class StateCardConfigurator extends LocalizeMixin(PolymerElement) {
     return computeStateDisplay(
       this.hass.localize,
       stateObj,
-      this.hass.language
+      this.hass.language,
+      this.hass.userData
     );
   }
 }

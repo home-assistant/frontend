@@ -133,10 +133,10 @@ export const getWind = (
   speed: string,
   bearing: string
 ): string => {
-  const speedText = `${formatNumber(speed, hass!.language)} ${getWeatherUnit(
-    hass!,
-    "wind_speed"
-  )}`;
+  const speedText = `${formatNumber(speed, {
+    language: hass!.language,
+    format: hass!.userData?.numberFormat,
+  })} ${getWeatherUnit(hass!, "wind_speed")}`;
   if (bearing !== null) {
     const cardinalDirection = getWindBearing(bearing);
     return `${speedText} (${
@@ -206,7 +206,11 @@ export const getSecondaryWeatherAttribute = (
           <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
         `
       : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
-    ${formatNumber(value, hass!.language, { maximumFractionDigits: 1 })}
+    ${formatNumber(value, {
+      language: hass!.language,
+      format: hass!.userData?.numberFormat,
+      options: { maximumFractionDigits: 1 },
+    })}
     ${getWeatherUnit(hass!, attribute)}
   `;
 };

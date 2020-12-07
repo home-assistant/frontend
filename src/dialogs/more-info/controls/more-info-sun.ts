@@ -61,10 +61,10 @@ class MoreInfoSun extends LitElement {
           ${this.hass.localize("ui.dialogs.more_info_control.sun.elevation")}
         </div>
         <div class="value">
-          ${formatNumber(
-            this.stateObj.attributes.elevation,
-            this.hass!.language
-          )}
+          ${formatNumber(this.stateObj.attributes.elevation, {
+            language: this.hass!.language,
+            format: this.hass!.userData?.numberFormat,
+          })}
         </div>
       </div>
     `;
