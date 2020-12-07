@@ -417,6 +417,8 @@
                         "integrations": "Integracijos",
                         "logs": "Įvykių žurnalai",
                         "lovelace": "Lovelace ataskaitų sritis",
+                        "navigate_to": "Pereiti į {panel}",
+                        "navigate_to_config": "Pereiti į {panel} konfigūraciją",
                         "person": "Žmonės",
                         "scene": "Scenos",
                         "script": "Skriptai",
@@ -743,7 +745,24 @@
                 },
                 "info": {
                     "copy_github": "GitHub'ui",
-                    "copy_raw": "Neapdorotas tekstas"
+                    "copy_raw": "Neapdorotas tekstas",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa įgalinta",
+                                "google_enabled": "Google įgalinta",
+                                "logged_in": "Prisijungė",
+                                "remote_connected": "Nuotolinis prijungtas",
+                                "remote_enabled": "Nuotolinis įgalintas",
+                                "subscription_expiration": "Prenumeratos galiojimo laikas"
+                            },
+                            "lovelace": {
+                                "dashboards": "Ataskaitų sritys",
+                                "mode": "Režimas",
+                                "resources": "Ištekliai"
+                            }
+                        }
+                    }
                 },
                 "integrations": {
                     "config_entry": {
@@ -801,6 +820,8 @@
                         "save_script": "Įrašyti scenarijų"
                     },
                     "picker": {
+                        "duplicate": "Dubliuoti",
+                        "duplicate_script": "Dubliuoti skriptą",
                         "run_script": "Vykdyti scenarijų"
                     }
                 },
@@ -950,11 +971,18 @@
                             "state_entity": "Būsenos objektas"
                         }
                     },
+                    "common": {
+                        "add": "Pridėti",
+                        "clear": "Išvalyti",
+                        "edit": "Redaguoti",
+                        "none": "Nė vienas"
+                    },
                     "edit_badges": {
                         "panel_mode": "Šie ženkleliai nebus rodomi, nes šis rodinys yra „Skydelio režime“."
                     },
                     "edit_card": {
                         "add": "Pridėti kortelę",
+                        "clear": "Išvalyti",
                         "delete": "Ištrinti",
                         "edit": "Redaguoti",
                         "move": "Perkelti",
@@ -974,6 +1002,22 @@
                         "move_right": "Perkelti rodinį į dešinę"
                     },
                     "header": "Redaguoti UI",
+                    "header-footer": {
+                        "choose_header_footer": "Pasirinkite {type}",
+                        "footer": "Poraštė",
+                        "header": "Antraštė",
+                        "types": {
+                            "buttons": {
+                                "name": "Mygtukai"
+                            },
+                            "graph": {
+                                "name": "Diagrama"
+                            },
+                            "picture": {
+                                "name": "Paveikslėlis"
+                            }
+                        }
+                    },
                     "menu": {
                         "raw_editor": "Konfigūracijos redaktorius"
                     },
@@ -996,6 +1040,13 @@
                         "header": "Valdykite savo „Lovelace“ vartotojo sąsają",
                         "para_sure": "Ar tikrai norite kontroliuoti savo vartotojo sąsają?",
                         "save": "Kontroliuoti"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Poraštės rengyklė",
+                            "header": "Antraštės rengyklė",
+                            "row": "Objekto eilučių rengyklė"
+                        }
                     }
                 },
                 "menu": {

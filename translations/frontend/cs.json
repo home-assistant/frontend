@@ -720,6 +720,8 @@
                 "add_area_id": "Vyberte oblast",
                 "add_device_id": "Vyberte zařízení",
                 "add_entity_id": "Vyberte entitu",
+                "expand_area_id": "Rozdělit tuto oblast na jednotlivá zařízení a entity, které obsahuje. Po rozdělení nebudou zařízení a entity aktualizovány pokud dojde ke změnám oblasti.",
+                "expand_device_id": "Rozdělit toto zařízení na jednotlivé entity. Po rozdělení nebudou entity aktualizovány pokud dojde ke změnám zařízení.",
                 "remove_area_id": "Odebrat oblast",
                 "remove_device_id": "Odebrat zařízení",
                 "remove_entity_id": "Odebrat entitu"
