@@ -5,7 +5,6 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -28,37 +27,14 @@ class NumberFormatRow extends LitElement {
 
   @property() public coreUserData: CoreFrontendUserData | null | undefined;
 
-  @internalProperty() private _formats: {
-    value: string;
-    text: string;
-  }[] = [
-    {
-      value: NumberFormat.auto,
-      text: "Auto (use language)",
-    },
-    {
-      value: NumberFormat.comma_decimal,
-      text: "1,234,567.89",
-    },
-    {
-      value: NumberFormat.decimal_comma,
-      text: "1.234.567,89",
-    },
-    {
-      value: NumberFormat.none,
-      text: "None",
-    },
-  ];
-
   protected render(): TemplateResult {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
-          Number Format
+          ${this.hass.localize("ui.panel.profile.number_format.header")}
         </span>
         <span slot="description">
-          Choose how numbers are formatted. "Auto" uses the language setting to
-          determine the formatting.
+          ${this.hass.localize("ui.panel.profile.number_format.description")}
         </span>
         <ha-paper-dropdown-menu
           label="Number Format"
@@ -71,12 +47,26 @@ class NumberFormatRow extends LitElement {
             @iron-select=${this._handleFormatSelection}
             attr-for-selected="format"
           >
-            ${this._formats.map(
-              (format) =>
-                html`<paper-item .format=${format.value}
-                  >${format.text}</paper-item
-                >`
-            )}
+            <paper-item .format=${NumberFormat.auto}
+              >${this.hass.localize(
+                "ui.panel.profile.number_format.formats.auto"
+              )}</paper-item
+            >
+            <paper-item .format=${NumberFormat.comma_decimal}
+              >${this.hass.localize(
+                "ui.panel.profile.number_format.formats.comma_decimal"
+              )}</paper-item
+            >
+            <paper-item .format=${NumberFormat.decimal_comma}
+              >${this.hass.localize(
+                "ui.panel.profile.number_format.formats.decimal_comma"
+              )}</paper-item
+            >
+            <paper-item .format=${NumberFormat.none}
+              >${this.hass.localize(
+                "ui.panel.profile.number_format.formats.none"
+              )}</paper-item
+            >
           </paper-listbox>
         </ha-paper-dropdown-menu>
       </ha-settings-row>
