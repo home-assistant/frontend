@@ -18,6 +18,7 @@ import {
 } from "../../data/frontend";
 import { HomeAssistant } from "../../types";
 import "../../components/ha-settings-row";
+import { formatNumber } from "../../common/string/format_number";
 
 @customElement("ha-pick-number-format-row")
 class NumberFormatRow extends LitElement {
@@ -35,6 +36,10 @@ class NumberFormatRow extends LitElement {
         </span>
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.number_format.description")}
+          ${formatNumber(1234567.89, {
+            language: this.hass.language,
+            format: this.coreUserData?.numberFormat,
+          })}
         </span>
         <ha-paper-dropdown-menu
           label="Number Format"
