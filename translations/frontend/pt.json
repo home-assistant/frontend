@@ -1425,7 +1425,6 @@
                         "import_introduction": "Você pode importar projetos de outros utilizadores pelo Github e pelo fórum da comunidade. introduza o URL do projeto abaixo",
                         "importing": "A importar projeto...",
                         "raw_blueprint": "Conteúdo do projeto",
-                        "save_btn": "Projeto guardado",
                         "saving": "A guardar projecto...",
                         "unsupported_blueprint": "Projeto não suportado",
                         "url": "URL do projeto"

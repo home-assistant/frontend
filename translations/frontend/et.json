@@ -1430,7 +1430,7 @@
                         "unsupported_blueprint": "Seda kavandit ei toetata",
                         "url": "Kavandi URL"
                     },
-                    "caption": "",
+                    "caption": "Kavandid",
                     "description": "Kavandite haldamine",
                     "overview": {
                         "add_blueprint": "Laadi kavand",
