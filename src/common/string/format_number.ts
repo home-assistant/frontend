@@ -56,10 +56,19 @@ export const formatNumber = (
     Intl &&
     params.format !== NumberFormat.none
   ) {
-    return new Intl.NumberFormat(
-      format,
-      getDefaultFormatOptions(num, params.options)
-    ).format(Number(num));
+    try {
+      return new Intl.NumberFormat(
+        format,
+        getDefaultFormatOptions(num, params.options)
+      ).format(Number(num));
+    } catch (error) {
+      // Don't fail when using "TEST" language
+      console.error(error);
+      return new Intl.NumberFormat(
+        undefined,
+        getDefaultFormatOptions(num, params.options)
+      ).format(Number(num));
+    }
   }
   return num.toString();
 };
