@@ -25,14 +25,20 @@ export const formatNumber = (
   num: string | number,
   params: FormatNumberParams
 ): string => {
-  let format: string | undefined;
+  let format: string | string[] | undefined;
 
   switch (params.format) {
     case NumberFormat.comma_decimal:
-      format = "en-US"; // Use United States formatting 1,234,567.89
+      format = ["en-US", "en"]; // Use United States with fallback to English formatting 1,234,567.89
       break;
     case NumberFormat.decimal_comma:
-      format = "de-DE"; // Use Germany formatting 1.234.567,89
+      format = ["de", "es", "it"]; // Use German with fallback to Spanish then Italian formatting 1.234.567,89
+      break;
+    case NumberFormat.space_comma:
+      format = ["fr", "sv", "cs"]; // Use French with fallback to Swedish and Czech formatting 1 234 567,89
+      break;
+    case NumberFormat.system:
+      format = undefined;
       break;
     default:
       format = params.language;
