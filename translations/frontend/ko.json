@@ -844,7 +844,7 @@
                         "input_select": "선택입력 다시 읽어오기",
                         "input_text": "문자입력 다시 읽어오기",
                         "min_max": "최소/최대 구성요소 다시 읽어오기",
-                        "mqtt": "MQTT 구성요소 다시 읽어오기",
+                        "mqtt": "직접 구성한 MQTT 구성요소 다시 읽어오기",
                         "person": "구성원 다시 읽어오기",
                         "ping": "ping 이진 센서 구성요소 다시 읽어오기",
                         "reload": "{domain} 다시 읽어오기",
@@ -1185,7 +1185,7 @@
                                     "trigger": "트리거"
                                 },
                                 "event": {
-                                    "context_user_pick": "사용자 추가",
+                                    "context_user_pick": "사용자 선택",
                                     "context_user_picked": "사용자 발행 이벤트",
                                     "context_users": "트리거된 이벤트로 제한",
                                     "event_data": "이벤트 데이터",
@@ -1289,15 +1289,15 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "블루프린트의 URL 을 입력해주세요.",
-                        "file_name": "로컬 블루프린트 파일 이름",
-                        "header": "새로운 블루프린트 추가",
-                        "import_btn": "블루프린트 가져오기",
-                        "import_header": "\"{name}\" (유형: {domain}) 가져오기",
+                        "file_name": "블루프린트 경로",
+                        "header": "블루프린트 가져오기",
+                        "import_btn": "블루프린트 미리보기",
+                        "import_header": "\"{name}\" 블루프린트",
                         "import_introduction": "Github 및 커뮤니티 포럼에서 다른 사용자의 블루프린트를 가져올 수 있습니다. 블루프린트의 URL 을 하단의 입력란에 입력해주세요.",
-                        "importing": "블루프린트를 가져오는 중 ...",
+                        "importing": "블루프린트를 읽는 중 ...",
                         "raw_blueprint": "블루프린트 내용",
-                        "save_btn": "블루프린트 저장하기",
-                        "saving": "블루프린트 저장 중 ...",
+                        "save_btn": "블루프린트 가져오기",
+                        "saving": "블루프린트 가져오는 중 ...",
                         "unsupported_blueprint": "이 블루프린트는 지원되지 않습니다.",
                         "url": "블루프린트의 URL"
                     },
@@ -1314,8 +1314,8 @@
                             "file_name": "파일 이름",
                             "name": "이름"
                         },
-                        "introduction": "블루프린트 편집기를 사용하면 블루프린트를 만들고 편집할 수 있습니다.",
-                        "learn_more": "블루프린트에 대해 더 알아보기",
+                        "introduction": "블루프린트 구성을 사용하면 블루프린트를 가져오고 관리할 수 있습니다.",
+                        "learn_more": "블루프린트 사용에 대해 더 알아보기",
                         "use_blueprint": "자동화 만들기"
                     }
                 },
@@ -1561,7 +1561,7 @@
                     "caption": "기기",
                     "confirm_delete": "이 기기를 삭제하시겠습니까?",
                     "confirm_rename_entity_ids": "구성요소의 ID 이름 또한 바꾸시겠습니까?",
-                    "confirm_rename_entity_ids_warning": "현재 이러한 구성요소를 사용하고 있는 구성 (자동화, 스크립트, 씬, Lovelace 등)은 변경되지 않으므로 직접 업데이트해야 합니다.",
+                    "confirm_rename_entity_ids_warning": "현재 이러한 구성요소를 사용하고 있는 구성 (자동화, 스크립트, 씬, 대시보드 등)은 변경되지 않습니다. 새로운 구성요소 ID 를 사용하려면 직접 업데이트해야 합니다.",
                     "data_table": {
                         "area": "영역",
                         "battery": "배터리",
@@ -1634,7 +1634,7 @@
                         "remove_selected": {
                             "button": "선택된 구성요소 제거",
                             "confirm_partly_text": "선택한 {selected} 개의 구성요소 중 {removable} 개의 구성요소를 제거할 수 있습니다. 통합 구성요소가 더 이상 구성요소를 제공하지 않는 경우에만 구성요소를 제거할 수 있으며, 제거된 통합 구성요소의 구성요소를 제거하기 전에 Home Assistant 를 다시 시작해야 할 수 있습니다. 제거 가능한 구성요소를 제거하시겠습니까?",
-                            "confirm_partly_title": "선택된 {number} 개의 구성요소만 제거할 수 있습니다.",
+                            "confirm_partly_title": "선택된 {number} {number, plural,\n  one { 개의 구성요소만}\n  other { 개의 구성요소만}\n} 제거할 수 있습니다.",
                             "confirm_text": "이러한 구성요소가 포함된 경우 Lovelace 구성 및 자동화에서 제거해야 합니다.",
                             "confirm_title": "{number} 개의 구성요소를 제거하시겠습니까?"
                         },
@@ -1684,7 +1684,7 @@
                     "built_using": "다음을 사용하여 제작",
                     "caption": "정보",
                     "custom_uis": "사용자 UI :",
-                    "description": "설치된 Home Assistant 에 대한 정보입니다",
+                    "description": "버전, 시스템 상태 및 문서에 대한 링크입니다",
                     "developed_by": "Home Assistant 는 수많은 멋진 사람들에 의해 개발되었습니다.",
                     "documentation": "관련문서",
                     "frontend": "프런트엔드-UI",
@@ -2024,7 +2024,7 @@
                 "scene": {
                     "activated": "{name} 씬이 활성화 됨.",
                     "caption": "씬",
-                    "description": "씬을 관리합니다",
+                    "description": "기기의 상태를 캡처하고 나중에 쉽게 호출할 수 있습니다",
                     "editor": {
                         "default_name": "새로운 씬",
                         "devices": {
@@ -2136,7 +2136,7 @@
                             "input_text": "문자입력 다시 읽어오기",
                             "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 다시 읽어오기를 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
                             "min_max": "최소/최대 구성요소 다시 읽어오기",
-                            "mqtt": "MQTT 구성요소 다시 읽어오기",
+                            "mqtt": "직접 구성한 MQTT 구성요소 다시 읽어오기",
                             "person": "구성원 다시 읽어오기",
                             "ping": "ping 이진 센서 구성요소 다시 읽어오기",
                             "reload": "{domain} 다시 읽어오기",
@@ -2174,7 +2174,7 @@
                     "automation_title": "{name} 태그가 검색되었습니다",
                     "caption": "태그",
                     "create_automation": "태그로 자동화 구성하기",
-                    "description": "태그를 관리합니다",
+                    "description": "NFC 태그, QR 코드 등이 스캔될 때 자동화를 트리거합니다",
                     "detail": {
                         "create": "만들기",
                         "create_and_write": "만들고 쓰기",
@@ -2218,7 +2218,7 @@
                         "delete_user": "사용자 삭제",
                         "group": "그룹",
                         "id": "ID",
-                        "name": "이름",
+                        "name": "표시 이름",
                         "new_password": "새로운 비밀번호",
                         "owner": "소유자",
                         "password_changed": "비밀번호가 변경되었습니다.",
@@ -2234,8 +2234,8 @@
                             "group": "그룹",
                             "is_active": "활성화",
                             "is_owner": "소유자",
-                            "name": "이름",
-                            "system": "시스템",
+                            "name": "표시 이름",
+                            "system": "시스템 자동 생성",
                             "username": "사용자 이름"
                         }
                     },
@@ -2546,7 +2546,7 @@
                         "entity": "구성요소",
                         "jinja_documentation": "Jinja2 템플릿 문서 보기",
                         "listeners": "이 템플릿은 다음의 상태 변경 이벤트를 수신합니다.",
-                        "no_listeners": "이 템플릿은 상태 변경 이벤트를 수신하지 않으며 자동으로 업데이트되지 않습니다.",
+                        "no_listeners": "이 템플릿은 이벤트를 수신하지 않으며 자동으로 업데이트되지 않습니다.",
                         "reset": "데모 템플릿으로 재설정",
                         "result_type": "결과 유형",
                         "template_extensions": "Home Assistant 템플릿 확장기능 문서 보기",
@@ -2621,6 +2621,12 @@
                     "refresh": "새로고침"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "url": "URL"
+                        },
+                        "url_path": "URL 경로"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "사용 가능한 상태요소",
@@ -2652,7 +2658,7 @@
                         },
                         "entities": {
                             "description": "구성요소 카드는 가장 일반적인 유형의 카드입니다. 항목을 목록으로 그룹화합니다.",
-                            "edit_special_row": "코드 편집기를 사용하여 행 편집",
+                            "edit_special_row": "편집 버튼을 클릭하여 이 행의 세부 정보 보기",
                             "entity_row": {
                                 "attribute": "속성",
                                 "button": "버튼",

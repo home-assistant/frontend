@@ -1048,7 +1048,7 @@
                         "confirmation_text": "Tous les appareils de cette pièce ne seront plus attribués.",
                         "confirmation_title": "Êtes-vous sûr de vouloir supprimer cette pièce ?"
                     },
-                    "description": "Vue d'ensemble de toutes les pièces de votre maison.",
+                    "description": "Regrouper les appareils et les entités en zones",
                     "editor": {
                         "area_id": "ID de la zone",
                         "create": "Créer",
@@ -1420,13 +1420,13 @@
                         "error_no_url": "Veuillez entrer l'URL du plan",
                         "file_name": "Chemin du fichier de plan local",
                         "header": "Importer un plan",
-                        "import_btn": "Importer un plan",
+                        "import_btn": "Aperçu du plan",
                         "import_header": "Importer \" {name} \" (type: {domain} )",
                         "import_introduction": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'URL du plan ci-dessous.",
                         "importing": "Chargement du plan ...",
                         "raw_blueprint": "Contenu du plan",
                         "save_btn": "Importer un plan",
-                        "saving": "Enregistrement du plan ...",
+                        "saving": "Importation du plan ...",
                         "unsupported_blueprint": "Ce plan n'est pas pris en charge",
                         "url": "URL du plan"
                     },
@@ -1528,7 +1528,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Cloud Home Assistant",
-                    "description_features": "Contrôle hors de la maison, intégration avec Alexa et Google Assistant.",
+                    "description_features": "Contrôlez votre domicile lorsque vous êtes absent et intégrez avec Alexa et Google Assistant",
                     "description_login": "Connecté en tant que {email}",
                     "description_not_login": "Non connecté",
                     "dialog_certificate": {
@@ -1711,11 +1711,12 @@
                         "no_devices": "Aucun appareil"
                     },
                     "delete": "Supprimer",
-                    "description": "Gérer les appareils connectés",
+                    "description": "Gérer les appareils configurés",
                     "device_info": "Informations sur l’appareil",
                     "device_not_found": "Appareil non trouvé.",
                     "disabled": "Désactivé",
                     "disabled_by": {
+                        "config_entry": "Paramètre de configuration",
                         "integration": "Intégration",
                         "user": "Utilisateur"
                     },
@@ -1814,7 +1815,7 @@
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
-                    "description": "Gérer les éléments qui peuvent aider à créer des automatisations",
+                    "description": "Éléments pouvant aider à construire des automatisations.",
                     "dialog": {
                         "add_helper": "Ajouter une entrée",
                         "add_platform": "Ajouter {platform}",
@@ -1846,7 +1847,7 @@
                     "copy_github": "Pour Github",
                     "copy_raw": "Texte brut",
                     "custom_uis": "Interfaces utilisateur personnalisées :",
-                    "description": "Informations sur votre installation Home Assistant",
+                    "description": "Version, état du système et liens vers la documentation",
                     "developed_by": "Développé par un groupe de personnes formidables.",
                     "documentation": "Documentation",
                     "frontend": "interface utilisateur",
@@ -2037,7 +2038,7 @@
                             "open": "Ouvrir"
                         }
                     },
-                    "description": "Configurez vos tableaux de bord Lovelace",
+                    "description": "Créez des jeux de cartes personnalisés pour contrôler votre maison",
                     "resources": {
                         "cant_edit_yaml": "Vous utilisez Lovelace en mode YAML, vous ne pouvez donc pas gérer vos ressources via l'interface utilisateur. Gérez-les dans configuration.yaml.",
                         "caption": "Ressources",
@@ -2236,7 +2237,7 @@
                 "scene": {
                     "activated": "Scène activée {name}.",
                     "caption": "Scènes",
-                    "description": "Créer et modifier des scènes",
+                    "description": "Capturez les états de l'appareil et rappelez-les facilement plus tard",
                     "editor": {
                         "default_name": "Nouvelle scène",
                         "devices": {
@@ -2391,7 +2392,7 @@
                     "confirm_remove": "Voulez-vous vraiment supprimer la balise {tag} ?",
                     "confirm_remove_title": "Supprimer la balise ?",
                     "create_automation": "Créer une automatisation avec une balise",
-                    "description": "Gérer les balises",
+                    "description": "Déclenchez les automatisations lorsqu’une balise NFC, un code QR, etc. est scanné",
                     "detail": {
                         "companion_apps": "applications associées",
                         "create": "Créer",
@@ -2426,7 +2427,7 @@
                         "username": "Nom d'utilisateur"
                     },
                     "caption": "Utilisateurs",
-                    "description": "Gérer les utilisateurs",
+                    "description": "Gérer les comptes utilisateur de Home Assistant",
                     "editor": {
                         "activate_user": "Activer l'utilisateur",
                         "active": "Actif",

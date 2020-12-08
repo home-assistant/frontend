@@ -1443,8 +1443,8 @@
                             "file_name": "Filnavn",
                             "name": "Navn"
                         },
-                        "introduction": "Med blueprint editor kan du opprette og redigere blueprints",
-                        "learn_more": "Lær mer om blueprint",
+                        "introduction": "Med blueprint-konfigurasjonen kan du importere og administrere dine blueprints.",
+                        "learn_more": "Finn ut mer om hvordan du bruker blueprints",
                         "use_blueprint": "Opprett automasjon"
                     }
                 },
