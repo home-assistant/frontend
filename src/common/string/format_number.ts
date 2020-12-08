@@ -63,6 +63,7 @@ export const formatNumber = (
       ).format(Number(num));
     } catch (error) {
       // Don't fail when using "TEST" language
+      // eslint-disable-next-line no-console
       console.error(error);
       return new Intl.NumberFormat(
         undefined,
