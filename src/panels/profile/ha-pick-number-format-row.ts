@@ -52,6 +52,11 @@ class NumberFormatRow extends LitElement {
                 "ui.panel.profile.number_format.formats.auto"
               )}</paper-item
             >
+            <paper-item .format=${NumberFormat.system}
+              >${this.hass.localize(
+                "ui.panel.profile.number_format.formats.system"
+              )}</paper-item
+            >
             <paper-item .format=${NumberFormat.comma_decimal}
               >${this.hass.localize(
                 "ui.panel.profile.number_format.formats.comma_decimal"
@@ -60,6 +65,11 @@ class NumberFormatRow extends LitElement {
             <paper-item .format=${NumberFormat.decimal_comma}
               >${this.hass.localize(
                 "ui.panel.profile.number_format.formats.decimal_comma"
+              )}</paper-item
+            >
+            <paper-item .format=${NumberFormat.space_comma}
+              >${this.hass.localize(
+                "ui.panel.profile.number_format.formats.space_comma"
               )}</paper-item
             >
             <paper-item .format=${NumberFormat.none}
