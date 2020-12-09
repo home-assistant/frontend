@@ -13,7 +13,6 @@ import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/entity/ha-state-icon";
 import type { ALDBRecord } from "../../../../../data/insteon";
 import type { HomeAssistant } from "../../../../../types";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
@@ -41,11 +40,10 @@ export class InsteonALDBDataTable extends LitElement {
 
     return outputRecords.map((record) => {
       return {
-        ...record
+        ...record,
       };
     });
   });
-
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer =>
@@ -173,7 +171,7 @@ export class InsteonALDBDataTable extends LitElement {
 
   private _noDataText(loading): string {
     if (loading) {
-      return ""
+      return "";
     }
     return this.hass!.localize("ui.panel.config.insteon.device.aldb.no_data");
   }
@@ -185,8 +183,8 @@ export class InsteonALDBDataTable extends LitElement {
   protected render(): TemplateResult {
     if (this.showWait) {
       return html`
-      <ha-circular-progress active alt="Loading"></ha-circular-progress>
-      `
+        <ha-circular-progress active alt="Loading"></ha-circular-progress>
+      `;
     }
     return html`
       <ha-data-table
@@ -200,16 +198,15 @@ export class InsteonALDBDataTable extends LitElement {
         <ha-circular-progress active alt="Loading"></ha-circular-progress>
       </ha-data-table>
       <div>
-          ${
-            this.isLoading
-            ? html`
-              <div align='center'>
-                ${this.hass!.localize("ui.panel.config.insteon.device.aldb.loading")}
-              </div>`
-            : ""
-          }
-        </div>
-    `
+        ${this.isLoading
+          ? html` <div align="center">
+              ${this.hass!.localize(
+                "ui.panel.config.insteon.device.aldb.loading"
+              )}
+            </div>`
+          : ""}
+      </div>
+    `;
   }
 }
 

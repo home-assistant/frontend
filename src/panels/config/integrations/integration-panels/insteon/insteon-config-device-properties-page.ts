@@ -24,7 +24,6 @@ import {
   resetProperties,
 } from "../../../../../data/insteon";
 import "../../../../../layouts/hass-tabs-subpage";
-import { haStyle } from "../../../../../resources/styles";
 import { RowClickedEvent } from "../../../../../components/data-table/ha-data-table";
 import { HomeAssistant, Route } from "../../../../../types";
 import { insteonDeviceTabs } from "./insteon-config-device-router";
@@ -59,7 +58,7 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
     if (this.deviceId) {
       fetchInsteonDevice(this.hass, this.deviceId).then((device) => {
         this._device = device;
-        this._getProperties()
+        this._getProperties();
       });
     }
   }
@@ -179,14 +178,17 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
   private async _write() {
     this._showWait = true;
     await writeProperties(this.hass, this._device!.address);
-    this._getProperties()
+    this._getProperties();
     this._showWait = false;
   }
 
   private async _getProperties() {
-    fetchInsteonProperties(this.hass, this._device!.address).then((propertiesInfo) => {
-      this._properties = propertiesInfo.properties;
-    });
+    fetchInsteonProperties(this.hass, this._device!.address).then(
+      (propertiesInfo) => {
+        this._properties = propertiesInfo.properties;
+        this._schema = propertiesInfo.schema;
+      }
+    );
   }
 
   private async _onResetPropertiesClick() {

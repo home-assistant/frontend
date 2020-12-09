@@ -10,10 +10,7 @@ import {
 import memoizeOne from "memoize-one";
 import "../../../../../components/ha-circular-progress";
 import "../../../../../components/data-table/ha-data-table";
-import type {
-  HaDataTable,
-} from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/entity/ha-state-icon";
+import type { HaDataTable } from "../../../../../components/data-table/ha-data-table";
 import type { Property } from "../../../../../data/insteon";
 import type { HomeAssistant } from "../../../../../types";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
@@ -66,8 +63,8 @@ export class InsteonPropertiesDataTable extends LitElement {
     value: {
       title: "Value",
       sortable: true,
-      width: "33%"
-    }
+      width: "33%",
+    },
   };
 
   public clearSelection() {
@@ -77,8 +74,12 @@ export class InsteonPropertiesDataTable extends LitElement {
   protected render(): TemplateResult {
     if (this.showWait) {
       return html`
-        <ha-circular-progress class="fullwidth" active alt="Loading"></ha-circular-progress>
-      `
+        <ha-circular-progress
+          class="fullwidth"
+          active
+          alt="Loading"
+        ></ha-circular-progress>
+      `;
     }
     return html`
       <ha-data-table
@@ -101,8 +102,8 @@ export class InsteonPropertiesDataTable extends LitElement {
         width: 100%;
         flex-grow: 1;
       }
-      `
-    }
+    `;
+  }
 }
 
 declare global {

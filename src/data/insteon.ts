@@ -67,24 +67,6 @@ export const fetchInsteonProperties = (
     device_address: id,
   });
 
-export const fetchInsteonProperties = (
-  hass: HomeAssistant,
-  id: string
-): Promise<PropertiesInfo> =>
-  hass.callWS({
-    type: "insteon/properties/get",
-    device_id: id,
-  });
-
-export const fetchInsteonProperties = (
-  hass: HomeAssistant,
-  id: string
-): Promise<PropertiesInfo> =>
-  hass.callWS({
-    type: "insteon/properties/get",
-    device_id: id,
-  });
-
 export const changeALDBRecord = (
   hass: HomeAssistant,
   id: string,
@@ -183,7 +165,7 @@ export const aldbRecordLoaded = (
     device_address: id,
   });
 
-  export const NEW_ALDB_SCHEMA: HaFormSchema[] = [
+export const NEW_ALDB_SCHEMA: HaFormSchema[] = [
   {
     name: "mode",
     options: ["Controller", "Responder"],
