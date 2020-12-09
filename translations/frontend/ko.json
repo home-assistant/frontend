@@ -683,9 +683,9 @@
                     "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
                     "enabled_label": "구성요소 활성화",
                     "entity_id": "구성요소 ID",
-                    "icon": "아이콘 재정의",
+                    "icon": "아이콘",
                     "icon_error": "아이콘은 접두사:아이콘이름 형식이어야 합니다. 예: mdi:home",
-                    "name": "이름 재정의",
+                    "name": "이름",
                     "note": "참고: 모든 통합 구성요소에서 아직 작동하지 않을 수 있습니다.",
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"

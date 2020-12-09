@@ -1733,7 +1733,7 @@
                     "picker": {
                         "filter": {
                             "filter": "Filtr",
-                            "hidden_devices": "{number} {number, plural,\n  one {urządzenie ukryte}\n  few {urządzenia ukryte}\n  many {urządzeń ukrytych}\n  other {urządzeń ukrytych}\n}",
+                            "hidden_devices": "{number} {number, plural,\n  one {ukryte urządzenie}\n  few {ukryte urządzenia}\n  many {ukrytych urządzeń}\n  other {ukrytych urządzeń}\n}",
                             "show_all": "Pokaż wszystkie",
                             "show_disabled": "Pokaż wyłączone urządzenia"
                         },
@@ -1912,7 +1912,7 @@
                         "delete": "Usuń",
                         "delete_button": "Usuń {integration}",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
-                        "device_unavailable": "urządzenie niedostępne",
+                        "device_unavailable": "Urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
                         "documentation": "Dokumentacja",
                         "entities": "{count} {count, plural,\n  one {encja}\n  few {encje}\n  many {encji}\n  other {encji}\n}",

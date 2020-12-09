@@ -1418,14 +1418,14 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Por favor introduza o URL do projeto",
-                        "file_name": "Nome do ficheiro do projeto local",
+                        "file_name": "Caminho do projeto",
                         "header": "Importar a receita",
                         "import_btn": "Importar projeto",
                         "import_header": "Receita \"{name}\"",
                         "import_introduction": "Você pode importar projetos de outros utilizadores pelo Github e pelo fórum da comunidade. introduza o URL do projeto abaixo",
                         "importing": "A importar projeto...",
                         "raw_blueprint": "Conteúdo do projeto",
-                        "saving": "A guardar projecto...",
+                        "saving": "A importar projeto...",
                         "unsupported_blueprint": "Projeto não suportado",
                         "url": "URL do projeto"
                     },
