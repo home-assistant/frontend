@@ -444,6 +444,9 @@
                 "cancel_multiple": "Отмяна на {номер}",
                 "execute": "Изпълни"
             },
+            "service": {
+                "run": "Изпълни"
+            },
             "timer": {
                 "actions": {
                     "cancel": "прекратяване",
@@ -495,11 +498,18 @@
                     "wnw": "ЗСЗ",
                     "wsw": "ЗЮЗ"
                 },
-                "forecast": "Прогноза"
+                "day": "Ден",
+                "forecast": "Прогноза",
+                "high": "Високо",
+                "low": "Ниско",
+                "night": "Нощ"
             }
         },
         "common": {
+            "and": "и",
+            "back": "Назад",
             "cancel": "Отмени",
+            "close": "Затвори",
             "continue": "Продължи",
             "copied": "Копиран",
             "delete": "Изтриване",
@@ -588,6 +598,7 @@
                     "cleared_device_class": "изчистено (не е открит {device_class} )",
                     "detected_device_class": "открит {device_class}",
                     "rose": "роза",
+                    "set": "задай",
                     "turned_off": "изключен",
                     "turned_on": "включен",
                     "was_at_home": "беше у дома",
@@ -609,14 +620,51 @@
             "media-browser": {
                 "audio_not_supported": "Браузърът не поддържа този аудио елемент.",
                 "choose_player": "Изберете плейър",
+                "choose-source": "Избор на източник",
+                "class": {
+                    "album": "Албум",
+                    "app": "Приложение",
+                    "artist": "Изпълнител",
+                    "channel": "Канал",
+                    "composer": "Композитор",
+                    "contributing_artist": "Допринасящ изпълнител",
+                    "directory": "Библиотека",
+                    "episode": "Епизод",
+                    "game": "Игра",
+                    "genre": "Жанр",
+                    "image": "Изображение",
+                    "movie": "Филм",
+                    "music": "Музика",
+                    "playlist": "Плейлист",
+                    "podcast": "Подкаст",
+                    "season": "Сезон"
+                },
+                "content-type": {
+                    "library": "Библиотека",
+                    "playlist": "Плейлист",
+                    "server": "Сървър"
+                },
+                "documentation": "документация",
+                "learn_adding_local_media": "Научете повече за добавянето на мултимедия в {documentation} .",
+                "local_media_files": "Поставете вашите видео, аудио и графични файлове в медийната директория, за да можете да ги разглеждате и възпроизвеждате в браузъра или на поддържаните медийни плейъри.",
                 "media_browsing_error": "Грешка в медийния браузър",
                 "media_not_supported": "Плейърът на медийния браузър не поддържа този тип медия",
                 "media_player": "Медиен плейър",
+                "media-player-browser": "Браузър на медийния плейър",
+                "no_items": "Няма елементи",
+                "play": "Възпроизвеждане",
+                "play-media": "Възпроизвеждане на медия",
                 "video_not_supported": "Браузърът не поддържа този видео елемент.",
                 "web-browser": "Уеб браузър"
             },
+            "picture-upload": {
+                "label": "Картина"
+            },
             "related-items": {
-                "device": "Устройство"
+                "area": "Област",
+                "device": "Устройство",
+                "group": "Част от следните групи",
+                "integration": "Интеграция"
             },
             "relative_time": {
                 "duration": {
@@ -627,9 +675,20 @@
                     "week": "{count}{count, plural,\n  one {седмица}\n  other {седмици}\n}"
                 },
                 "future": "След {time}",
+                "future_duration": {
+                    "day": "След {count} {count, plural,\n  one {ден}\n  other {дни}\n}",
+                    "hour": "След {count} {count, plural,\n  one {час}\n  other {часа}\n}",
+                    "minute": "След {count} {count, plural,\n  one {минута}\n  other {минути}\n}",
+                    "second": "След {count} {count, plural,\n  one {секунда}\n  other {секунди}\n}",
+                    "week": "След {count} {count, plural,\n  one {седмица}\n  other {седмици}\n}"
+                },
                 "never": "Никога",
                 "past": "Преди {time}",
                 "past_duration": {
+                    "day": "преди {count} {count, plural,\n  one {ден}\n  other {дни}\n}",
+                    "hour": "преди {count} {count, plural,\n  one {час}\n  other {часа}\n}",
+                    "minute": "преди {count} {count, plural,\n  one {минута}\n  other {минути}\n}",
+                    "second": "преди {count} {count, plural,\n  one {секунда}\n  other {секунди}\n}",
                     "week": " преди {count} {count, plural,\n  one {седмица}\n  other {седмици}\n}"
                 }
             },
@@ -691,12 +750,25 @@
             },
             "generic": {
                 "cancel": "Отмени",
+                "close": "затвори",
                 "default_confirmation_title": "Сигурни ли сте?",
                 "ok": "ДА"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Начална стойност",
+                    "maximum": "Максимална стойност",
+                    "minimum": "Минимална стойност",
+                    "restore": "Възстановете последната известна стойност, когато стартира Home Assistant",
+                    "step": "Размер на стъпката"
+                },
                 "generic": {
+                    "icon": "Икона",
                     "name": "Име"
+                },
+                "input_datetime": {
+                    "date": "Дата",
+                    "datetime": "Дата и час"
                 },
                 "input_number": {
                     "max": "Максимална стойност",
@@ -778,14 +850,31 @@
                 "commands": {
                     "navigation": {
                         "devices": "Устройства",
+                        "entities": "Обекти",
+                        "helpers": "Помощници",
                         "info": "Информация",
-                        "scene": "Сцени"
+                        "integrations": "Интеграции",
+                        "logs": "Журнали",
+                        "lovelace": "Табла на Lovelace",
+                        "navigate_to": "Отворете {panel}",
+                        "navigate_to_config": "Отворете настройки на {panel}",
+                        "person": "Хора",
+                        "scene": "Сцени",
+                        "script": "Скриптове",
+                        "server_control": "Управление на сървъра",
+                        "users": "Потребители",
+                        "zone": "Зони"
                     },
                     "reload": {
                         "automation": "Презареждане на автоматизациите",
+                        "command_line": "Презаредете обекти на командния ред",
+                        "core": "Презаредете местоположение и персонализации",
+                        "group": "Презаредете групи, групови обекти и услуги за уведомяване",
+                        "history_stats": "Презаредете обекти с исторически данни",
                         "homekit": "Презареди HomeKit",
-                        "reload": "Презареди {domain}",
-                        "scene": "Презареждане на сцени"
+                        "person": "Презареждане на хората",
+                        "reload": "Презареждане на {domain}",
+                        "scene": "Презареждане на сцените"
                     },
                     "server_control": {
                         "perform_action": "{action} Сървъра",
@@ -841,9 +930,14 @@
         },
         "notification_toast": {
             "connection_lost": "Връзката е прекъсната. Повторно свързване...",
-            "service_call_failed": "Неуспешно повикване на услуга {service}."
+            "service_call_failed": "Неуспешно повикване на услуга {service}.",
+            "started": "Home Assistant стартира успешно!"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Моите календари",
+                "today": "Днес"
+            },
             "config": {
                 "areas": {
                     "caption": "Области",
@@ -859,6 +953,8 @@
                         "create": "Създаване",
                         "default_name": "Нова област",
                         "delete": "Изтриване",
+                        "name": "Име",
+                        "name_required": "Името е задължително",
                         "update": "Актуализация"
                     },
                     "picker": {
@@ -1171,10 +1267,20 @@
                         }
                     }
                 },
+                "blueprint": {
+                    "overview": {
+                        "headers": {
+                            "name": "Име"
+                        }
+                    }
+                },
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Документация за конфигурацията"
+                            "config_documentation": "Документация за конфигурацията",
+                            "disable": "деактивирайте",
+                            "enable": "активиране",
+                            "enable_ha_skill": "Активирайте умението Home Assistant за Alexa"
                         },
                         "google": {
                             "config_documentation": "Документация за конфигурацията",
@@ -1182,10 +1288,17 @@
                             "enter_pin_hint": "Въведете ПИН за използване на устройства за защита",
                             "security_devices": "Устройства за защита"
                         },
+                        "manage_account": "Управление на акаунта",
+                        "remote": {
+                            "title": "Дистанционен контрол"
+                        },
+                        "sign_out": "Отписване",
                         "webhooks": {
                             "disable_hook_error_msg": "Неуспешно деактивиране на webhook:",
+                            "loading": "Зареждане ...",
                             "manage": "Управление",
-                            "no_hooks_yet_link_integration": "webhook-базирана интеграция"
+                            "no_hooks_yet_link_integration": "webhook-базирана интеграция",
+                            "no_hooks_yet2": " или създавайки "
                         }
                     },
                     "alexa": {
@@ -1223,7 +1336,9 @@
                         "learn_more_link": "Научете повече за Home Assistant Cloud"
                     },
                     "register": {
-                        "feature_webhook_apps": "Лесна интеграция с базирани на webhook приложения като OwnTracks"
+                        "create_account": "Създаване на акаунт",
+                        "feature_webhook_apps": "Лесна интеграция с базирани на webhook приложения като OwnTracks",
+                        "title": "Регистриране на акаунт"
                     }
                 },
                 "core": {
@@ -1289,6 +1404,7 @@
                     },
                     "entities": {
                         "add_entities_lovelace": "Добавете към Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {деактивиран обект}\n  other {деактивирани обекти}\n}",
                         "entities": "Обекти"
                     },
                     "name": "Име",
@@ -1306,6 +1422,7 @@
                     },
                     "scenes": "Сцени",
                     "unknown_error": "Неизвестна грешка",
+                    "unnamed_device": "Устройство без име",
                     "update": "Актуализация"
                 },
                 "entities": {
@@ -1313,6 +1430,9 @@
                     "description": "Управление на известните обекти",
                     "picker": {
                         "header": "Обекти",
+                        "headers": {
+                            "name": "Име"
+                        },
                         "introduction": "Home Assistant поддържа регистър на всички обекти, които някога е виждал, които могат да бъдат идентифицирани уникално. Всеки от тези обекти ще има  идентификатор на обект, който ще бъде резервиран само за този обект.",
                         "introduction2": "Използвайте регистъра на обектите, за да промените името, идентификатора на обекта или да премахнете записа от Home Assistant. Моля имайте на предвид, че премахването на записа от регистъра на обектите няма да премахне обекта. За да направите това, следвайте препратката по-долу и я премахнете от страницата за интеграции.",
                         "search": "Търсене на обекти",
@@ -1326,10 +1446,23 @@
                     "filtering_by": "Филтриране по"
                 },
                 "header": "Конфигуриране на Home Assistant",
+                "helpers": {
+                    "picker": {
+                        "headers": {
+                            "name": "Име"
+                        }
+                    },
+                    "types": {
+                        "counter": "Брояч"
+                    }
+                },
                 "info": {
                     "caption": "Информация",
                     "system_health": {
                         "checks": {
+                            "homeassistant": {
+                                "os_name": "Име на операционната система"
+                            },
                             "lovelace": {
                                 "dashboards": "Табла"
                             }
@@ -1345,6 +1478,8 @@
                         "delete": "Изтриване",
                         "delete_confirm": "Сигурни ли сте, че искате да изтриете интеграцията?",
                         "device_unavailable": "Устройството е недостъпно",
+                        "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройтва}\n}",
+                        "entities": "{count} {count, plural,\n  one {обект}\n  other {обекти}\n}",
                         "entity_unavailable": "Обектът е недостъпен",
                         "firmware": "Фърмуер: {version}",
                         "hub": "Свързан чрез",
@@ -1356,7 +1491,8 @@
                         "rename": "Преименуване",
                         "restart_confirm": "Рестартирайте Home Assistant за да завършите премахването на интеграцията",
                         "services": "{count} {count, plural,\n  one {услуга}\n  other {услуги}\n}",
-                        "system_options": "Системни настройки"
+                        "system_options": "Системни настройки",
+                        "unnamed_entry": "Запис без име"
                     },
                     "config_flow": {
                         "external_step": {
@@ -1376,10 +1512,12 @@
                     "none_found_detail": "Коригирайте критериите си за търсене.",
                     "reconfigure": "Реконфигурация",
                     "rename_dialog": "Редактирайте името на този запис в конфигурацията",
+                    "rename_input_label": "Име на записа",
                     "search": "Търсене на интеграции"
                 },
                 "introduction": "Тук е възможно да конфигурирате Вашите компоненти и Home Assistant. Не всичко е възможно да се конфигурира от Интерфейса, но работим по върпоса.",
                 "logs": {
+                    "multiple_messages": "съобщението е възникнало за първи път в {time} и се показва {counter} пъти",
                     "title": "Журнали"
                 },
                 "lovelace": {
@@ -1399,6 +1537,7 @@
                             "add_dashboard": "Добавяне на табло",
                             "headers": {
                                 "default": "По подразбиране",
+                                "filename": "Име на файл",
                                 "require_admin": "Само администратори"
                             },
                             "open": "Отворен"
@@ -1416,6 +1555,9 @@
                         "node": {
                             "dashboard": "Табло"
                         }
+                    },
+                    "node_query_stages": {
+                        "associations": "Обновяване на свързаните групи и членства"
                     },
                     "node": {
                         "button": "Детайли за възела",
@@ -1451,7 +1593,8 @@
                         "device_tracker_intro": "Изберете устройствата, които принадлежат на това лице.",
                         "device_tracker_pick": "Изберете устройство за проследяване",
                         "device_tracker_picked": "Устройство за проследяване",
-                        "name": "Име"
+                        "name": "Име",
+                        "name_error_msg": "Името е задължително"
                     }
                 },
                 "scene": {
@@ -1492,7 +1635,10 @@
                     "caption": "Скриптове",
                     "description": "Създаване и редактиране на скриптове",
                     "editor": {
-                        "delete_script": "Изтриване на скрипт"
+                        "alias": "Име",
+                        "default_name": "Нов скрипт",
+                        "delete_script": "Изтриване на скрипт",
+                        "header": "Скрипт: {name}"
                     },
                     "picker": {
                         "duplicate": "Дублиране",
@@ -1513,14 +1659,14 @@
                             "core": "Презареждане на местоположението и персонализациите",
                             "group": "Презареждане на групите,груповите обекти и услугите за уведомяване",
                             "heading": "Презареждане на YAML конфигурацията",
-                            "introduction": "Някои части от Home Assistant могат да се презаредят без да е необходимо рестартиране. Натискането на Презареди ще отхвърли настоящата конфигурация и ще зареди новата конфигурация.",
-                            "mqtt": "Презареди ръчно конфигурираните mqtt обекти",
-                            "reload": "Презареди {domain}",
-                            "rpi_gpio": "Презареди GPIO обектите на Raspberry Pi ",
-                            "scene": "Презареди сцените",
+                            "introduction": "Някои части от Home Assistant могат да се презаредят без да е необходимо рестартиране. Натискането на Презареждане ще отхвърли настоящата конфигурация и ще зареди новата конфигурация.",
+                            "mqtt": "Презареждане на ръчно конфигурираните mqtt обекти",
+                            "reload": "Презареждане на {domain}",
+                            "rpi_gpio": "Презареждане на GPIO обектите на Raspberry Pi",
+                            "scene": "Презареждане на сцените",
                             "script": "Презареждане на скриптовете",
-                            "smtp": "Презареди smtp услугите за уведомяване",
-                            "telegram": "Презареди telegram услугите за уведомяване",
+                            "smtp": "Презарежанде на smtp услугите за уведомяване",
+                            "telegram": "Презареждане на telegram услугите за уведомяване",
                             "zone": "Презаредете зони"
                         },
                         "server_management": {
@@ -1538,6 +1684,14 @@
                             "invalid": "Невалидна конфигурация",
                             "valid": "Валидна конфигурация!"
                         }
+                    }
+                },
+                "tags": {
+                    "detail": {
+                        "name": "Име"
+                    },
+                    "headers": {
+                        "name": "Име"
                     }
                 },
                 "users": {
@@ -1604,6 +1758,9 @@
                 "zone": {
                     "caption": "Зони",
                     "description": "Управлявайте зоните, в които искате да проследявате хората",
+                    "detail": {
+                        "name": "Име"
+                    },
                     "edit_home_zone": "Радиусът на зоната \"Дом\" все още не може да бъде редактиран. Плъзнете маркера на картата, за да преместите въпросната зона.",
                     "no_zones_created_yet": "Изглежда, че все още не сте създали никакви зони."
                 },
@@ -1716,8 +1873,22 @@
                 },
                 "editor": {
                     "card": {
+                        "alarm-panel": {
+                            "name": "Алармен панел"
+                        },
+                        "button": {
+                            "name": "Бутон"
+                        },
+                        "calendar": {
+                            "name": "Календар"
+                        },
+                        "conditional": {
+                            "name": "Условна"
+                        },
                         "entities": {
+                            "description": "Картата Обекти е най-често срещаният тип карта. Тя групира елементите заедно в списъци.",
                             "entity_row_editor": "Редактор на обекти",
+                            "name": "Обекти",
                             "secondary_info_values": {
                                 "brightness": "Яркост",
                                 "entity-id": "Идентификация на обект",
@@ -1728,19 +1899,37 @@
                             },
                             "toggle": "Превключване на обекти."
                         },
+                        "entity-filter": {
+                            "name": "Филтър на обектите"
+                        },
+                        "entity": {
+                            "name": "Обект"
+                        },
                         "generic": {
+                            "name": "Име",
                             "search": "Търсене",
+                            "show_name": "Показване на името?",
                             "state_color": "Да се оцветят ли иконите спрямо състоянието?",
                             "theme": "Тема"
                         },
                         "iframe": {
                             "name": "Уеб страница"
                         },
+                        "light": {
+                            "name": "Осветление"
+                        },
                         "logbook": {
                             "name": "Дневник"
                         },
                         "map": {
-                            "dark_mode": "Тъмен режим?"
+                            "dark_mode": "Тъмен режим?",
+                            "name": "Карта"
+                        },
+                        "picture": {
+                            "name": "Картина"
+                        },
+                        "sensor": {
+                            "name": "Сензор"
                         },
                         "vertical-stack": {
                             "name": "Вертикална колона"

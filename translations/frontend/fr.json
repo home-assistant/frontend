@@ -3092,7 +3092,7 @@
                         "panel_mode": "Ces badges ne seront pas affichés car cette vue est en \"Mode Panneau\"."
                     },
                     "edit_card": {
-                        "add": "Ajouter une action",
+                        "add": "Ajouter une carte",
                         "clear": "Effacer",
                         "confirm_cancel": "Êtes-vous sûr de vouloir annuler ?",
                         "delete": "Supprimer la carte",
