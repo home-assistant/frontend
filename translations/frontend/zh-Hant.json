@@ -2238,7 +2238,7 @@
                 "scene": {
                     "activated": "已啟用場景 {name}。",
                     "caption": "場景",
-                    "description": "獲取裝置狀態及稍候進行調用",
+                    "description": "獲取裝置狀態以於稍候進行調用",
                     "editor": {
                         "default_name": "新場景",
                         "devices": {

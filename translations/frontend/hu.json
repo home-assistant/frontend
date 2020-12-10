@@ -547,6 +547,8 @@
                 "add_new": "Új terület hozzáadása...",
                 "area": "Terület",
                 "clear": "Törlés",
+                "no_areas": "Nincsenek területei.",
+                "no_match": "Nem található egyező terület",
                 "show_areas": "Területek megjelenítése"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Törlés",
                 "device": "Eszköz",
                 "no_area": "Nincs terület",
+                "no_devices": "Nincsenek eszközei",
+                "no_match": "Nem található egyező eszköz",
                 "show_devices": "Eszközök megjelenítése",
                 "toggle": "Váltás"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Törlés",
                     "entity": "Entitás",
+                    "no_match": "Nem található egyező entitás",
                     "show_entities": "Entitások megjelenítése"
                 }
             },
@@ -1680,6 +1685,7 @@
                             "unknown_condition": "Ismeretlen feltétel"
                         },
                         "create": "Automatizálás létrehozása eszközzel",
+                        "create_disable": "Nem lehet automatizálást létrehozni a letiltott eszközzel",
                         "no_automations": "Nincsenek automatizálások",
                         "no_device_automations": "Ehhez az eszközhöz nem állnak rendelkezésre automatizálások.",
                         "triggers": {
@@ -1715,6 +1721,7 @@
                         "user": "Felhasználó"
                     },
                     "enabled_cause": "Az eszköz le van tiltva. ({cause})",
+                    "enabled_description": "A letiltott eszközök nem jelennek meg, az eszközhöz tartozó entitások pedig le lesznek tiltva, és nem lesznek hozzáadva a Home Assistant programhoz.",
                     "enabled_label": "Eszköz engedélyezése",
                     "entities": {
                         "add_entities_lovelace": "Hozzáadás a Lovelace-hez",
@@ -1736,12 +1743,14 @@
                     },
                     "scene": {
                         "create": "Jelenet létrehozása eszközzel",
+                        "create_disable": "Nem lehet létrehozni a jelenetet letiltott eszközzel",
                         "no_scenes": "Nincsenek jelenetek",
                         "scenes": "Jelenetek"
                     },
                     "scenes": "Jelenetek",
                     "script": {
                         "create": "Szkript létrehozása eszközzel",
+                        "create_disable": "Nem lehet szkriptet létrehozni letiltott eszközzel",
                         "no_scripts": "Nincsenek szkriptek",
                         "scripts": "Szkriptek"
                     },
@@ -2504,7 +2513,14 @@
                     },
                     "description": "Zigbee Home Automation hálózat menedzsment",
                     "device_pairing_card": {
-                        "PAIRED": "Eszköz megtalálva"
+                        "CONFIGURED": "A konfigurálás befejeződött",
+                        "CONFIGURED_status_text": "Inicializálás",
+                        "INITIALIZED": "Az inicializálás befejeződött",
+                        "INITIALIZED_status_text": "A készülék használatra kész",
+                        "INTERVIEW_COMPLETE": "Interjú kész",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurálás",
+                        "PAIRED": "Eszköz megtalálva",
+                        "PAIRED_status_text": "Interjú indítása"
                     },
                     "devices": {
                         "header": "Zigbee Home Automation - Eszköz"
