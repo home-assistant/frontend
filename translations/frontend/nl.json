@@ -547,6 +547,8 @@
                 "add_new": "Gebied toevoegen...",
                 "area": "Gebied",
                 "clear": "Wis",
+                "no_areas": "Je hebt geen gebieden",
+                "no_match": "Geen overeenkomende gebieden gevonden",
                 "show_areas": "Toon gebieden"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Wis",
                 "device": "Apparaat",
                 "no_area": "Geen gebied",
+                "no_devices": "Je hebt geen apparaten",
+                "no_match": "Geen overeenkomende apparaten gevonden",
                 "show_devices": "Apparaten weergeven",
                 "toggle": "Omschakelen"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Wis",
                     "entity": "Entiteit",
+                    "no_match": "Geen overeenkomende entiteiten gevonden",
                     "show_entities": "Entiteiten weergeven"
                 }
             },
@@ -593,7 +598,7 @@
                     "became_unavailable": "is niet meer beschikbaar",
                     "changed_to_state": "gewijzigd in {state}",
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
-                    "detected_device_class": "gedetecteerd {device_class}",
+                    "detected_device_class": "{device_class} gedetecteerd",
                     "rose": "opkomst",
                     "set": "ondergang",
                     "turned_off": "is uitgeschakeld",
@@ -1019,7 +1024,7 @@
             "dismiss": "Afwijzen",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
-            "starting": "Home Assistant is aan het opstarten. Gedurende het opstarten zal niet alles beschikbaar zijn.",
+            "starting": "Home Assistant is aan het opstarten. Gedurende het opstarten is niet alles beschikbaar.",
             "triggered": "Geactiveerd {name}"
         },
         "panel": {
@@ -1163,8 +1168,8 @@
                             "blueprint_to_use": "Blauwdruk om te gebruiken",
                             "header": "Blauwdruk",
                             "inputs": "Inputs",
-                            "manage_blueprints": "Beheer blauwdrukken",
-                            "no_blueprints": "Je hebt geen blauwdrukken",
+                            "manage_blueprints": "Beheer Blueprints",
+                            "no_blueprints": "Je hebt geen Blueprints",
                             "no_inputs": "Deze blauwdruk heeft geen inputs."
                         },
                         "conditions": {
@@ -1412,29 +1417,33 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Voer de URL van de blauwdruk in.",
+                        "file_name": "Blueprint pad",
                         "header": "Voeg een nieuwe blauwdruk toe",
                         "import_btn": "Blauwdruk importeren",
                         "import_header": "Importeer \"{name}\" (type: {domain})",
-                        "import_introduction": "U kunt blauwdrukken van andere gebruikers importeren vanuit Github en de communityforums. Voer de URL van de blauwdruk hieronder in.",
+                        "import_introduction": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de communityforums. Voer de URL van de Blueprint hieronder in.",
                         "importing": "Blauwdruk importeren ...",
+                        "raw_blueprint": "Blueprint inhoud",
                         "save_btn": "Bewaar blauwdruk",
                         "saving": "Blauwdruk opslaan ...",
+                        "unsupported_blueprint": "Deze Blueprint wordt niet ondersteund",
                         "url": "URL van de blauwdruk"
                     },
-                    "caption": "Blauwdrukken",
-                    "description": "Beheer blauwdrukken",
+                    "caption": "Blueprints",
+                    "description": "Beheer Blueprints",
                     "overview": {
                         "add_blueprint": "Blauwdruk importeren",
                         "confirm_delete_header": "Deze blauwdruk verwijderen?",
                         "confirm_delete_text": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
+                        "delete_blueprint": "Verwijder Blueprint",
                         "header": "Blauwdrukeditor",
                         "headers": {
                             "domain": "Domein",
                             "file_name": "Bestandsnaam",
                             "name": "Naam"
                         },
-                        "introduction": "Met de blauwdrukeditor kunt je blauwdrukken maken en bewerken.",
-                        "learn_more": "Meer informatie over blauwdrukken",
+                        "introduction": "Met de blueprinteditor kunt je blueprints maken en bewerken.",
+                        "learn_more": "Meer informatie over Blueprints",
                         "use_blueprint": "Automatisering maken"
                     }
                 },
@@ -2418,7 +2427,7 @@
                         "username": "Gebruikersnaam"
                     },
                     "caption": "Gebruikers",
-                    "description": "Gebruikers beheren",
+                    "description": "Gebruikers van Home Assistant beheren",
                     "editor": {
                         "activate_user": "Activeer gebruiker",
                         "active": "Actief",
@@ -2507,8 +2516,10 @@
                         "CONFIGURED_status_text": "Initialiseren",
                         "INITIALIZED": "Initialisatie voltooid",
                         "INITIALIZED_status_text": "Het apparaat is klaar voor gebruik",
+                        "INTERVIEW_COMPLETE": "Interview compleet",
                         "INTERVIEW_COMPLETE_status_text": "Configureren",
-                        "PAIRED": "Apparaat gevonden"
+                        "PAIRED": "Apparaat gevonden",
+                        "PAIRED_status_text": "Start interview"
                     },
                     "devices": {
                         "header": "Zigbee Home Automation - Apparaat"
@@ -3440,6 +3451,7 @@
                     "confirm_new_password": "Bevestig nieuw wachtwoord",
                     "current_password": "Huidige wachtwoord",
                     "error_new_is_old": "Het nieuwe wachtwoord moet anders zijn dan het huidige wachtwoord",
+                    "error_new_mismatch": "Ingevoerde wachtwoordwaarden komen niet overeen",
                     "error_required": "Verplicht",
                     "header": "Wachtwoord wijzigen",
                     "new_password": "Nieuw wachtwoord",

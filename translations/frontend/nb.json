@@ -547,6 +547,8 @@
                 "add_new": "Legg til nytt område ...",
                 "area": "Område",
                 "clear": "Tøm",
+                "no_areas": "Du har ingen områder",
+                "no_match": "Fant ingen samsvarende områder",
                 "show_areas": "Vis områder"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Tøm",
                 "device": "Enhet",
                 "no_area": "Ingen område",
+                "no_devices": "Du har ingen enheter",
+                "no_match": "Fant ingen samsvarende enheter",
                 "show_devices": "Vis enheter",
                 "toggle": "Veksle"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Tøm",
                     "entity": "Entitet",
+                    "no_match": "Fant ingen samsvarende entiteter",
                     "show_entities": "Vis entiteter"
                 }
             },
@@ -1043,7 +1048,7 @@
                         "confirmation_text": "Alle enheter som tilhører dette området vil ikke bli tildelt.",
                         "confirmation_title": "Er du sikker på at du vil slette dette området?"
                     },
-                    "description": "Administrere områder i hjemmet ditt",
+                    "description": "Gruppere enheter og enheter i områder",
                     "editor": {
                         "area_id": "Område ID",
                         "create": "Opprett",
@@ -1065,7 +1070,7 @@
                 },
                 "automation": {
                     "caption": "Automasjoner",
-                    "description": "Administrer automasjoner",
+                    "description": "Lag egendefinerte atferdsregler for hjemmet ditt",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Bruke en blueprint"
@@ -1413,15 +1418,15 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Vennligst skriv inn URL-en til blueprint",
-                        "file_name": "Lokalt blueprint filnavn",
-                        "header": "Legg til ny blueprint",
-                        "import_btn": "Importer blueprint",
-                        "import_header": "Importer {name} (type: {domain})",
+                        "file_name": "Blueprint Bane",
+                        "header": "Importer en blueprint",
+                        "import_btn": "Forhåndsvisning av blueprint",
+                        "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "Du kan importere blueprints av andre brukere fra Github og fellesskapsforumet. Skriv inn URL-en til blueprint nedenfor.",
-                        "importing": "Importerer blueprint...",
+                        "importing": "Laster blueprint...",
                         "raw_blueprint": "Blueprint innhold",
-                        "save_btn": "Lagre blueprint",
-                        "saving": "Lagrer blueprint...",
+                        "save_btn": "Importer blueprint",
+                        "saving": "Importerer blueprint...",
                         "unsupported_blueprint": "Denne blueprinten støttes ikke",
                         "url": "URL til blueprint"
                     },
@@ -1438,8 +1443,8 @@
                             "file_name": "Filnavn",
                             "name": "Navn"
                         },
-                        "introduction": "Med blueprint editor kan du opprette og redigere blueprints",
-                        "learn_more": "Lær mer om blueprint",
+                        "introduction": "Med blueprint-konfigurasjonen kan du importere og administrere dine blueprints.",
+                        "learn_more": "Finn ut mer om hvordan du bruker blueprints",
                         "use_blueprint": "Opprett automasjon"
                     }
                 },
@@ -1523,7 +1528,7 @@
                         "title": ""
                     },
                     "caption": "",
-                    "description_features": "Kontroller borte fra hjemmet, integrer med Alexa og Google Assistant.",
+                    "description_features": "Kontroller hjemmet når du er borte og integrer med Alexa og Google Assistant",
                     "description_login": "Logget inn som {email}",
                     "description_not_login": "Ikke pålogget",
                     "dialog_certificate": {
@@ -1618,7 +1623,7 @@
                 },
                 "core": {
                     "caption": "Generelt",
-                    "description": "Endre den generelle konfigurasjonen for Home Assistant",
+                    "description": "Enhetssystem, plassering, tidssone og andre generelle parametere",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1706,7 +1711,7 @@
                         "no_devices": "Ingen enheter"
                     },
                     "delete": "Slett",
-                    "description": "Administrer tilkoblede enheter",
+                    "description": "Administrer konfigurerte enheter",
                     "device_info": "Enhetsinformasjon",
                     "device_not_found": "Enhet ikke funnet",
                     "disabled": "Deaktivert",
@@ -1811,7 +1816,7 @@
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjelpere",
-                    "description": "Administrere elementer som bidrar til å bygge automasjoner",
+                    "description": "Elementer som hjelper med å bygge automatiseringer",
                     "dialog": {
                         "add_helper": "Legg hjelper",
                         "add_platform": "Legg til {platform}",
@@ -1843,7 +1848,7 @@
                     "copy_github": "",
                     "copy_raw": "Rå tekst",
                     "custom_uis": "Tilpassede brukergrensesnitt:",
-                    "description": "Vise informasjon om installasjonen av Home Assistant",
+                    "description": "Versjon, systemhelse og lenker til dokumentasjon",
                     "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
                     "documentation": "Dokumentasjon",
                     "frontend": "frontend",
@@ -1949,7 +1954,7 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigurert",
-                    "description": "Administrer integrasjoner",
+                    "description": "Administrer integrasjoner med tjenester, enheter, ...",
                     "details": "Integrasjonsdetaljer",
                     "discovered": "Oppdaget",
                     "home_assistant_website": "Nettsted for Home Assistant",
@@ -2034,7 +2039,7 @@
                             "open": "Åpne"
                         }
                     },
-                    "description": "Administrer Lovelace Dashboards",
+                    "description": "Opprett tilpassede sett med kort for å kontrollere hjemmet ditt",
                     "resources": {
                         "cant_edit_yaml": "Du bruker Lovelace i YAML-modus, derfor kan du ikke administrere ressursene dine via brukergrensesnittet. Behandle dem i configuration.yaml.",
                         "caption": "Ressurser",
@@ -2233,7 +2238,7 @@
                 "scene": {
                     "activated": "Aktivert scene {name}.",
                     "caption": "Scener",
-                    "description": "Administrer scener",
+                    "description": "Ta opp enhetstilstander og få dem til å huske dem på en enkel måte senere",
                     "editor": {
                         "default_name": "Ny scene",
                         "devices": {
@@ -2277,7 +2282,7 @@
                 },
                 "script": {
                     "caption": "Skript",
-                    "description": "Administrer skript",
+                    "description": "Utføre en sekvens med handlinger",
                     "editor": {
                         "alias": "Navn",
                         "default_name": "Nytt skript",
@@ -2388,7 +2393,7 @@
                     "confirm_remove": "Er du sikker på at du vil fjerne taggen {tag} ?",
                     "confirm_remove_title": "Fjerne tag?",
                     "create_automation": "Opprett automasjon med tag",
-                    "description": "Administrer tagger",
+                    "description": "Utløs automatisasjoner når en NFC-tag, QR-kode osv. Skannes",
                     "detail": {
                         "companion_apps": "kompanjong apper",
                         "create": "Opprett",
@@ -2423,7 +2428,7 @@
                         "username": "Brukernavn"
                     },
                     "caption": "Brukere",
-                    "description": "Administrer brukere",
+                    "description": "Administrer Home Assistant-brukerkontoer",
                     "editor": {
                         "activate_user": "Aktiver bruker",
                         "active": "Aktiv",

@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Editar configuração",
+            "device": "Dispositivo",
             "integration": "Integração",
             "user": "Utilizador"
         }
@@ -546,6 +547,8 @@
                 "add_new": "Adicionar nova área…",
                 "area": "Área",
                 "clear": "Limpar",
+                "no_areas": "Você não tem nenhuma área",
+                "no_match": "Nenhuma área correspondente encontrada",
                 "show_areas": "Mostrar áreas"
             },
             "blueprint-picker": {
@@ -566,6 +569,8 @@
                 "clear": "Apagar",
                 "device": "Dispositivo",
                 "no_area": "Sem área",
+                "no_devices": "Você não tem nenhum dispositivo",
+                "no_match": "Nenhum dispositivo correspondente encontrado",
                 "show_devices": "Mostrar dispositivos",
                 "toggle": "Alternar"
             },
@@ -577,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Limpar",
                     "entity": "Entidade",
+                    "no_match": "Nenhuma entidade correspondente encontrada",
                     "show_entities": "Mostrar entidades"
                 }
             },
@@ -688,13 +694,13 @@
                     "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
-                "future": "Há {time}",
+                "future": "Em {time}",
                 "future_duration": {
-                    "day": "In {count} {count, plural,\n  one {dia}\n  other {dias}\n}",
-                    "hour": "In {count} {count, plural,\n  one {hora}\n  other {horas}\n}",
-                    "minute": "In {count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "day": "Dentro de {count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+                    "hour": "Dentro de {count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+                    "minute": "Dentro de {count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
                     "second": "In {count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
-                    "week": "In {count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
+                    "week": "Dentro de {count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
                 "just_now": "Agora mesmo",
                 "never": "Nunca",
@@ -709,6 +715,16 @@
             },
             "service-picker": {
                 "service": "Serviço"
+            },
+            "target-picker": {
+                "add_area_id": "Escolha a área",
+                "add_device_id": "Escolha o dispositivo",
+                "add_entity_id": "Escolher entidade",
+                "expand_area_id": "Expandir esta área nos dispositivos e entidades separadas que ela contém. Após a expansão não atualizará os dispositivos e entidades quando a área mudar.",
+                "expand_device_id": "Expandir este dispositivo em entidades separadas. Após a expansão não atualizará as entidades quando o dispositivo mudar.",
+                "remove_area_id": "Remover área",
+                "remove_device_id": "Remover dispositivo",
+                "remove_entity_id": "Remover entidade"
             },
             "user-picker": {
                 "add_user": "Adicionar Utilizador",
@@ -733,7 +749,9 @@
                 "editor": {
                     "confirm_delete": "Tem certeza de que deseja apagar esta entrada?",
                     "delete": "Apagar",
+                    "device_disabled": "O dispositivo desta entidade está desativado.",
                     "enabled_cause": "Desativado por {cause}.",
+                    "enabled_delay_confirm": "As entidades ativadas serão adicionadas ao Home Assistant em {delay} segundos",
                     "enabled_description": "Entidades desativadas não serão adicionadas ao Home Assistant.",
                     "enabled_label": "Ativar entidade",
                     "enabled_restart_confirm": "Reinicie o Home Assistant para ativar as entidades",
@@ -742,6 +760,7 @@
                     "icon_error": "Os ícones devem estar no formato 'prefixo:nome do ícone', por exemplo 'mdi:home'.",
                     "name": "Nome",
                     "note": "Nota: isto pode ainda não funcionar com todas as integrações.",
+                    "open_device_settings": "Abrir configurações do dispositivo",
                     "unavailable": "Esta entidade não está atualmente disponível.",
                     "update": "Atualizar"
                 },
@@ -761,6 +780,7 @@
                     "initial": "Valor inicial",
                     "maximum": "Valor máximo",
                     "minimum": "Valor mínimo",
+                    "restore": "Restaurar o último valor conhecido quando o Home Assistant inicia",
                     "step": "Tamanho do passo"
                 },
                 "generic": {
@@ -809,8 +829,11 @@
             "more_info_control": {
                 "controls": "Controlos",
                 "cover": {
-                    "close_cover": "Fechar a capa",
-                    "open_cover": "Abrir capa"
+                    "close_cover": "Fechar estore/persiana",
+                    "close_tile_cover": "Fechar inclinação do estore",
+                    "open_cover": "Abrir estore/persiana",
+                    "open_tilt_cover": "Abrir inclinação do estore",
+                    "stop_cover": "Impedir que estore/persiana se mova"
                 },
                 "details": "Detalhes",
                 "dismiss": "Descartar diálogo",
@@ -1277,6 +1300,7 @@
                                 "event": {
                                     "context_user_pick": "Selecionar o utilizador",
                                     "context_user_picked": "Evento do utilizador",
+                                    "context_users": "Limite a eventos desencadeados por",
                                     "event_data": "Dados do evento",
                                     "event_type": "Tipo de evento",
                                     "label": "Evento"
@@ -1377,12 +1401,16 @@
                     "thingtalk": {
                         "create": "Criar automação",
                         "link_devices": {
-                            "header": "Ótimo! Agora precisamos conectar alguns dispositivos"
+                            "ambiguous_entities": "Um ou mais dispositivos têm mais do que uma entidade correspondente, por favor escolha aquela que pretende utilizar.",
+                            "header": "Ótimo! Agora precisamos conectar alguns dispositivos",
+                            "unknown_placeholder": "placeholder desconhecido"
                         },
                         "task_selection": {
                             "error_empty": "Entre um comando ou salte este passo.",
+                            "error_unsupported": "Não conseguimos  (ainda?) criar uma automação para isso.",
                             "for_example": "Por exemplo:",
                             "header": "Criar uma nova automação",
+                            "introduction": "Digite abaixo o que esta automação deve fazer, e nós tentaremos convertê-la em uma automação Home Assistant.",
                             "language_note": "Nota: Por enquanto, apenas o inglês é suportado."
                         }
                     }
@@ -1390,15 +1418,14 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Por favor introduza o URL do projeto",
-                        "file_name": "Nome do ficheiro do projeto local",
-                        "header": "Adicionar novo projeto",
+                        "file_name": "Caminho do projeto",
+                        "header": "Importar a receita",
                         "import_btn": "Importar projeto",
-                        "import_header": "Importar \"{name}\" (tipo: {domain})",
+                        "import_header": "Receita \"{name}\"",
                         "import_introduction": "Você pode importar projetos de outros utilizadores pelo Github e pelo fórum da comunidade. introduza o URL do projeto abaixo",
                         "importing": "A importar projeto...",
                         "raw_blueprint": "Conteúdo do projeto",
-                        "save_btn": "Projeto guardado",
-                        "saving": "A guardar projecto...",
+                        "saving": "A importar projeto...",
                         "unsupported_blueprint": "Projeto não suportado",
                         "url": "URL do projeto"
                     },
@@ -1657,10 +1684,13 @@
                             "unknown_condition": "Condição desconhecida"
                         },
                         "create": "Criar automação com dispositivo",
+                        "create_disable": "Não é possível criar a automação com um dispositivo desativado",
                         "no_automations": "Sem automações",
                         "no_device_automations": "Não há automações disponíveis para este dispositivo.",
                         "triggers": {
-                            "caption": "Fazer alguma coisa quando..."
+                            "caption": "Fazer alguma coisa quando...",
+                            "no_triggers": "Sem acionadores",
+                            "unknown_trigger": "Acionador desconhecido"
                         },
                         "unknown_automation": "Automação desconhecida"
                     },
@@ -1680,9 +1710,18 @@
                         "no_devices": "Sem dispositivos"
                     },
                     "delete": "Apagar",
-                    "description": "Gerir dispositivos ligados",
+                    "description": "Gerir dispositivos configurados",
                     "device_info": "Informação do dispositivo",
                     "device_not_found": "Dispositivo não encontrado.",
+                    "disabled": "Desativado",
+                    "disabled_by": {
+                        "config_entry": "",
+                        "integration": "Integração",
+                        "user": "Utilizador"
+                    },
+                    "enabled_cause": "O dispositivo foi desativado por {cause} .",
+                    "enabled_description": "Os dispositivos desativados não serão mostrados e as entidades pertencentes ao dispositivo serão desactivadas e não serão adicionadas ao Home Assistant.",
+                    "enabled_label": "Ativar dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {entidade inactiva}\n  other {entidades inactivas}\n}",
@@ -1692,14 +1731,25 @@
                     },
                     "name": "Nome",
                     "no_devices": "Sem dispositivos",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtro",
+                            "hidden_devices": "{number} dispositivo/s {number, plural,\n  one {escondido}\n  other {escondidos}\n}",
+                            "show_all": "Mostrar tudo",
+                            "show_disabled": "Mostrar entidades desativadas"
+                        },
+                        "search": "Pesquisar dispositivos"
+                    },
                     "scene": {
                         "create": "Criar cena com o dispositivo",
+                        "create_disable": "Não é possível criar cenarios com o dispositivo desativado",
                         "no_scenes": "Sem cenários",
                         "scenes": "Cenas"
                     },
                     "scenes": "Cenas",
                     "script": {
                         "create": "Criar script com o dispositivo",
+                        "create_disable": "Não é possível criar o script com um dispositivo desativado",
                         "no_scripts": "Sem scripts",
                         "scripts": "Scripts"
                     },
@@ -1715,12 +1765,12 @@
                         "disable_selected": {
                             "button": "Desativar seleção",
                             "confirm_text": "Entidades desativadas não serão adicionadas ao Home Assistant.",
-                            "confirm_title": "Deseja desativar {number} entidades?"
+                            "confirm_title": "Quer desativar {number} {number, plural,\n  one {entity}\n  other {entities}\n}?"
                         },
                         "enable_selected": {
                             "button": "Ativar seleção ",
                             "confirm_text": "Assim ficarão disponíveis no Home Assistant caso actualmente estejam desactivados.",
-                            "confirm_title": "Deseja ativar {number} entidades?"
+                            "confirm_title": "Deseja ativar {number} {number, plural,\n  one {entidade}\n  other {entidades}\n}?"
                         },
                         "filter": {
                             "filter": "Filtro",
@@ -1820,6 +1870,7 @@
                                 "can_reach_cloud_auth": "Ligar ao servidor de autenticação",
                                 "google_enabled": "Google ativo",
                                 "logged_in": "Ligado em",
+                                "relayer_connected": "Intermediário Ligado",
                                 "remote_connected": "Ligado remotamente",
                                 "remote_enabled": "Remoto ativo",
                                 "subscription_expiration": "Validade da Subscrição"
@@ -1902,9 +1953,9 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
-                    "description": "Gerir integrações",
+                    "description": "Gerir integrações com serviços, dispositivos, ...",
                     "details": "Detalhes da integração",
-                    "discovered": "Detetados",
+                    "discovered": "Descoberto",
                     "home_assistant_website": "Site do Home Assistant ",
                     "ignore": {
                         "confirm_delete_ignore": "Isto fará com que a integração volte a aparecer nas suas integrações descobertas, quando for descoberta. Isto pode requerer um reinício ou demorar algum tempo.",
@@ -2044,6 +2095,7 @@
                         "network": "Rede",
                         "node_id": "ID de nó",
                         "ozw_instance": "Instância OpenZWave",
+                        "query_stage": "Fase de consulta",
                         "wakeup_instructions": "Instruções ao acordar",
                         "zwave": "Z-Wave"
                     },
@@ -2054,6 +2106,10 @@
                     },
                     "navigation": {
                         "network": "Rede",
+                        "node": {
+                            "config": "Configuração",
+                            "dashboard": "Painel de instrumentos"
+                        },
                         "nodes": "Nós",
                         "select_instance": "Selecione a instância"
                     },
@@ -2081,6 +2137,15 @@
                         "header": "Gestão de Rede",
                         "introduction": "Gerir funções de rede.",
                         "node_count": "{count} nós"
+                    },
+                    "node_config": {
+                        "header": "Configuração do Nó",
+                        "help_source": "As descrições dos parâmetros de configuração e o texto de ajuda são fornecidos pelo projeto OpenZWave.",
+                        "introduction": "Administrar os diferentes parâmetros de configuração para um nó Z-Wave.",
+                        "wakeup_help": "Os nós alimentados por bateria devem estar acordados para mudar a sua configuração. Se o nó não estiver acordado, o OpenZWave irá tentar atualizar a configuração do nó da próxima vez que ele acordar, o que pode acontecer horas (ou dias) depois. Siga estes passos para acordar o seu dispositivo:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Manual do produto"
                     },
                     "node_query_stages": {
                         "associations": "Refrescando grupos de associação e membros",
@@ -2172,7 +2237,7 @@
                 "scene": {
                     "activated": "Ativar cena {name}.",
                     "caption": "Cenários",
-                    "description": "Gerir cenários",
+                    "description": "Capture os estados dos dispositivos e facilmente recupere os mesmos mais tarde",
                     "editor": {
                         "default_name": "Nova Cena",
                         "devices": {
@@ -2327,7 +2392,7 @@
                     "confirm_remove": "Tens a certeza que queres remover a etiqueta {tag}?",
                     "confirm_remove_title": "Remover a etiqueta?",
                     "create_automation": "Criar automação com etiqueta",
-                    "description": "Gerir etiquetas",
+                    "description": "Acionar automatizações quando uma tag NFC, código QR, etc. é lido.",
                     "detail": {
                         "companion_apps": "Aplicações de dispositivos móveis",
                         "create": "Criar",
@@ -2346,6 +2411,7 @@
                         "last_scanned": "Última ocorrência",
                         "name": "Nome"
                     },
+                    "learn_more": "Saiba mais sobre tags",
                     "never_scanned": "Nunca lido",
                     "no_tags": "Sem etiquetas",
                     "write": "Escrever"
@@ -2365,6 +2431,7 @@
                     "editor": {
                         "activate_user": "Ativar utilizador",
                         "active": "Ativo",
+                        "active_tooltip": "Controla se o utilizador pode fazer login",
                         "admin": "Administrador",
                         "caption": "Ver utilizador",
                         "change_password": "Alterar palavra-passe",
@@ -2915,6 +2982,7 @@
                             "name": "Relance"
                         },
                         "grid": {
+                            "description": "O cartão em Grelha permite mostrar vários cartões numa grelha.",
                             "name": "Grelha"
                         },
                         "history-graph": {
@@ -3382,10 +3450,13 @@
                 "change_password": {
                     "confirm_new_password": "Confirmar a nova palavra-passe",
                     "current_password": "Palavra-passe atual",
+                    "error_new_is_old": "A nova palavra-passe deve ser diferente da palavra-passe atual",
+                    "error_new_mismatch": "Os novos valores da palavra-passe introduzidos não coincidem",
                     "error_required": "Obrigatório",
                     "header": "Alterar palavra-passe",
                     "new_password": "Nova palavra-passe",
-                    "submit": "Enviar"
+                    "submit": "Enviar",
+                    "success": "Palavra-passe alterada com sucesso"
                 },
                 "current_user": "Esta atualmente ligado como {fullName}",
                 "customize_sidebar": {
@@ -3399,6 +3470,7 @@
                     "header": "Painel de instrumentos"
                 },
                 "enable_shortcuts": {
+                    "description": "Ativar ou desativar atalhos de teclado para executar várias ações na IU.",
                     "header": "Atalhos de Teclado"
                 },
                 "force_narrow": {

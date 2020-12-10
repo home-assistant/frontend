@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfiguratioun's Entrée",
+            "device": "Apparat",
             "integration": "Integratioun",
             "user": "Benotzer"
         }
@@ -696,6 +697,14 @@
             "service-picker": {
                 "service": "Service"
             },
+            "target-picker": {
+                "add_area_id": "Beräich auswielen",
+                "add_device_id": "Apparat auswielen",
+                "add_entity_id": "Entitéit auswielen",
+                "remove_area_id": "Beräich läschen",
+                "remove_device_id": "Apparat läschen",
+                "remove_entity_id": "Entitéit läschen"
+            },
             "user-picker": {
                 "add_user": "Benotzer erstellen",
                 "no_user": "Kee Benotzer",
@@ -719,6 +728,7 @@
                 "editor": {
                     "confirm_delete": "Sécher fir dës Entrée ze läsche?",
                     "delete": "Läschen",
+                    "device_disabled": "Den Apparat vun dëser Entitéit ass déaktivéiert.",
                     "enabled_cause": "Desaktivéiert duerch {cause}.",
                     "enabled_description": "Deaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
                     "enabled_label": "Entitéit aktivéieren",
@@ -728,6 +738,7 @@
                     "icon_error": "Ikonen sollten am format 'prefix:numm' sinn, Beispill: 'mdi:home'",
                     "name": "Numm",
                     "note": "Note: dëst funktionéiert villäicht nach net mat all Integratioun.",
+                    "open_device_settings": "Apparat Astellungen opmachen",
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                     "update": "Aktualiséieren"
                 },
@@ -1642,6 +1653,7 @@
                             "unknown_condition": "Onbekannte Konditioun"
                         },
                         "create": "Automatisme mat Apparat erstellen",
+                        "create_disable": "Ka keen Automatisme mat déaktivéiertem Apparat erstellen",
                         "no_automations": "Keng Automatismen",
                         "no_device_automations": "Et gi keng Automatisme fir dësen Apparat.",
                         "triggers": {
@@ -1670,6 +1682,13 @@
                     "description": "Verwalt verbonnen Apparater",
                     "device_info": "Informatioune vum Apparat",
                     "device_not_found": "Apparat net fonnt.",
+                    "disabled": "Deaktivéiert",
+                    "disabled_by": {
+                        "integration": "Integratioun",
+                        "user": "Benotzer"
+                    },
+                    "enabled_cause": "Dësen Apparat ass duerch {cause} déaktivéiert.",
+                    "enabled_label": "Apparat aktivéieren",
                     "entities": {
                         "add_entities_lovelace": "Zu Lovelace bäisetzen",
                         "disabled_entities": "+{count} {count, plural,\n  one {Déaktivéiert Entitéit}\n  other {Déaktivéiert Entitéiten}\n}",
@@ -1679,14 +1698,24 @@
                     },
                     "name": "Numm",
                     "no_devices": "Keng Apparater",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter",
+                            "show_all": "All uweisen",
+                            "show_disabled": "Déaktivéiert Apparater uweisen"
+                        },
+                        "search": "Apparater sichen"
+                    },
                     "scene": {
                         "create": "Zeen mat Apparat erstellen",
+                        "create_disable": "Ka keng Zeen mat déaktivéiertem Apparat erstellen",
                         "no_scenes": "Keng Zeenen",
                         "scenes": "Zeenen"
                     },
                     "scenes": "Zeenen",
                     "script": {
                         "create": "Skript mat Apparat erstellen",
+                        "create_disable": "Ka kee Skript mat déaktivéiertem Apparat erstellen",
                         "no_scripts": "Keng Skripten",
                         "scripts": "Skripten"
                     },
@@ -2362,6 +2391,7 @@
                     "editor": {
                         "activate_user": "Benotzer aktivéieren",
                         "active": "Aktiv",
+                        "active_tooltip": "Kontrolléiert ob de Benotzer sech verbanne kann",
                         "admin": "Administrator",
                         "caption": "Benotzer kucken",
                         "change_password": "Passwuert änneren",
@@ -3379,10 +3409,13 @@
                 "change_password": {
                     "confirm_new_password": "Neit Passwuert confirméieren",
                     "current_password": "Aktuellt Passwuert",
+                    "error_new_is_old": "Neit Passwuert muss anescht sinn wéi dat aktuellt Passwuert",
+                    "error_new_mismatch": "Verschidde Wäerter fir neit Passwuert ausgefëllt",
                     "error_required": "Obligatoresch",
                     "header": "Passwuert änneren",
                     "new_password": "Neit Passwuert",
-                    "submit": "Ofschécken"
+                    "submit": "Ofschécken",
+                    "success": "Passwuert erfollegräich geännert"
                 },
                 "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
                 "customize_sidebar": {

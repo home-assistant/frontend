@@ -547,6 +547,8 @@
                 "add_new": "Lisa uus ala...",
                 "area": "Ala",
                 "clear": "Puhasta",
+                "no_areas": "Alad puuduvad",
+                "no_match": "Sobivaid alasid ei leitud",
                 "show_areas": "Näita alasid"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "Puhasta",
                 "device": "Seade",
                 "no_area": "Ala puudub",
+                "no_devices": "Seadmed puuduvad",
+                "no_match": "Sobivaid seadmeid ei leitud",
                 "show_devices": "Näita seadmeid",
                 "toggle": "Lülita"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Puhasta",
                     "entity": "Olem",
+                    "no_match": "Sobivaid olemeid ei leitud",
                     "show_entities": "Näita olemeid"
                 }
             },
@@ -586,7 +591,7 @@
                 "no_history_found": "Oleku ajalugu ei leitud"
             },
             "logbook": {
-                "by": "allikas:",
+                "by": ", allikas:",
                 "by_service": "teenuse poolt",
                 "entries_not_found": "Logiraamatu kandeid ei leitud.",
                 "messages": {
@@ -1043,7 +1048,7 @@
                         "confirmation_text": "Kõik sellele ala seadmed jäävad peremehetuks.",
                         "confirmation_title": "Oled kindel, et soovid selle ala kustutada?"
                     },
-                    "description": "Seadmete rühmitamine aladesse",
+                    "description": "Seadmete ja olemite rühmitamine aladesse",
                     "editor": {
                         "area_id": "Piirkonna ID",
                         "create": "LOO",
@@ -1413,19 +1418,19 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Sisesta kavandi URL.",
-                        "file_name": "Kohaliku kavandifaili nimi",
-                        "header": "Uue kavandi lisamine",
-                        "import_btn": "Impordi kavand",
-                        "import_header": "Impordi {name} ( type:{domain} )",
-                        "import_introduction": "Teiste kasutajate kavandeid saad importida Githubist ja kogukonna foorumitest. Sisesta alloleva kavandi URL.",
-                        "importing": "Kavandi importimine ...",
+                        "file_name": "Kohaliku kavandifaili asukoht",
+                        "header": "Impordi kavand",
+                        "import_btn": "Kavandi eelvaade",
+                        "import_header": "Kavand \"{name}\"",
+                        "import_introduction": "Teiste kasutajate kavandeid saad importida Githubist ja kogukonna foorumitest. Sisesta allpool kavandi URL.",
+                        "importing": "Kavandi laadimine...",
                         "raw_blueprint": "Kavandi sisu",
-                        "save_btn": "Salvesta kavand",
-                        "saving": "Kavandi salvestamine ...",
+                        "save_btn": "Impordi kavand",
+                        "saving": "Kavandiimportimine...",
                         "unsupported_blueprint": "Seda kavandit ei toetata",
                         "url": "Kavandi URL"
                     },
-                    "caption": "",
+                    "caption": "Kavandid",
                     "description": "Kavandite haldamine",
                     "overview": {
                         "add_blueprint": "Laadi kavand",
@@ -1438,8 +1443,8 @@
                             "file_name": "Faili nimi",
                             "name": "Nimi"
                         },
-                        "introduction": "Kavandite redaktor võimaldab luua ja muuta kavandeid.",
-                        "learn_more": "Lisateave kavandite kohta",
+                        "introduction": "Kavandite seadistus võimaldab importida ja hallata oma kavandeid.",
+                        "learn_more": "Lisateave kavandite kasutamise kohta",
                         "use_blueprint": "Loo automatiseering"
                     }
                 },
@@ -2423,7 +2428,7 @@
                         "username": "Kasutajanimi"
                     },
                     "caption": "Kasutajad",
-                    "description": "Halda kasutajaid",
+                    "description": "Halda kasutakontosid",
                     "editor": {
                         "activate_user": "Aktiveeri kasutaja",
                         "active": "Aktiivne",

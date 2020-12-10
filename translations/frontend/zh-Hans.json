@@ -281,7 +281,7 @@
             "on": "开"
         },
         "scene": {
-            "scening": "场景启用中"
+            "scening": "当前场景"
         },
         "script": {
             "off": "关闭",
@@ -547,6 +547,8 @@
                 "add_new": "添加新区域…",
                 "area": "区域",
                 "clear": "清除",
+                "no_areas": "您还没有创建区域",
+                "no_match": "未找到相关区域",
                 "show_areas": "显示区域"
             },
             "blueprint-picker": {
@@ -567,6 +569,8 @@
                 "clear": "清除",
                 "device": "设备",
                 "no_area": "没有区域",
+                "no_devices": "您还没有设备",
+                "no_match": "未找到相关设备",
                 "show_devices": "显示设备",
                 "toggle": "切换"
             },
@@ -578,6 +582,7 @@
                 "entity-picker": {
                     "clear": "清除",
                     "entity": "实体",
+                    "no_match": "未找到相关实体",
                     "show_entities": "显示实体"
                 }
             },
@@ -1253,7 +1258,7 @@
                         "edit_ui": "以图形界面编辑",
                         "edit_yaml": "以 YAML 编辑",
                         "enable_disable": "启用/禁用自动化",
-                        "introduction": "使用自动化让你的家聪明起来",
+                        "introduction": "家居智能化，始于自动化。",
                         "load_error_not_editable": "只能编辑 automations.yaml 中的自动化。",
                         "load_error_unknown": "加载自动化错误 ({err_no})。",
                         "max": {
@@ -1413,10 +1418,10 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "请输入 Blueprint 的网址。",
-                        "file_name": "本地 Blueprint 文件名",
+                        "file_name": "Blueprint 路径",
                         "header": "添加新的 Blueprint",
                         "import_btn": "导入 Blueprint",
-                        "import_header": "导入 \"{name}\" (类型为 {domain})",
+                        "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "您可以从 Github 和社区论坛导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
                         "importing": "正在导入 Blueprint...",
                         "raw_blueprint": "Blueprint 内容",
@@ -1438,8 +1443,8 @@
                             "file_name": "文件名",
                             "name": "名称"
                         },
-                        "introduction": "Blueprint 编辑器方便您创建和编辑 Blueprint。",
-                        "learn_more": "详细了解 Blueprint",
+                        "introduction": "Blueprint 编辑器方便您导入和管理 Blueprint。",
+                        "learn_more": "详细了解如何使用 Blueprint",
                         "use_blueprint": "创建自动化"
                     }
                 },
@@ -2235,7 +2240,7 @@
                     "caption": "场景",
                     "description": "定格一组设备的状态，日后即可一键恢复",
                     "editor": {
-                        "default_name": "新场景",
+                        "default_name": "新建场景",
                         "devices": {
                             "add": "添加设备",
                             "delete": "删除设备",
@@ -2251,7 +2256,7 @@
                             "without_device": "无设备关联的实体"
                         },
                         "icon": "图标",
-                        "introduction": "使用场景使您的家充满生机。",
+                        "introduction": "场景激活，家居更鲜活。",
                         "load_error_not_editable": "只能编辑 scenes.yaml 中的场景。",
                         "load_error_unknown": "加载场景错误 ({err_no})。",
                         "name": "名称",
@@ -2288,7 +2293,7 @@
                         "id": "实体 ID",
                         "id_already_exists": "此 ID 已存在",
                         "id_already_exists_save_error": "无法保存此脚本，因为 ID 不唯一。请选择其他 ID 或将其留空，以自动生成一个 ID。",
-                        "introduction": "使用脚本执行一系列操作。",
+                        "introduction": "操作有条不紊，一切交给脚本。",
                         "link_available_actions": "详细了解可用操作。",
                         "load_error_not_editable": "只能编辑 scripts.yaml 中的脚本。",
                         "max": {

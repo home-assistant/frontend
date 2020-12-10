@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Voce di configurazione",
+            "device": "Dispositivo",
             "integration": "Integrazione",
             "user": "Utente"
         }
@@ -546,6 +547,8 @@
                 "add_new": "Aggiungi nuova area…",
                 "area": "Area",
                 "clear": "Cancella",
+                "no_areas": "Non hai aree",
+                "no_match": "Non sono state trovate aree corrispondenti",
                 "show_areas": "Mostra le aree"
             },
             "blueprint-picker": {
@@ -566,6 +569,8 @@
                 "clear": "Cancella",
                 "device": "Dispositivo",
                 "no_area": "Nessuna area",
+                "no_devices": "Non hai alcun dispositivo",
+                "no_match": "Non sono stati trovati dispositivi corrispondenti",
                 "show_devices": "Mostra dispositivi",
                 "toggle": "Azionare"
             },
@@ -577,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Cancella",
                     "entity": "Entità",
+                    "no_match": "Non sono state trovate entità corrispondenti",
                     "show_entities": "Mostra entità"
                 }
             },
@@ -710,6 +716,16 @@
             "service-picker": {
                 "service": "Servizio"
             },
+            "target-picker": {
+                "add_area_id": "Scegli area",
+                "add_device_id": "Scegli dispositivo",
+                "add_entity_id": "Scegli entità",
+                "expand_area_id": "Espandi quest'area nei dispositivi e nelle entità separate che contiene. Dopo l'espansione non aggiornerà i dispositivi e le entità quando l'area cambia.",
+                "expand_device_id": "Espandi questo dispositivo in entità separate. Dopo l'espansione non aggiornerà le entità quando il dispositivo cambia.",
+                "remove_area_id": "Rimuovi area",
+                "remove_device_id": "Rimuovi dispositivo",
+                "remove_entity_id": "Rimuovi entità"
+            },
             "user-picker": {
                 "add_user": "Aggiungi utente",
                 "no_user": "Nessun utente",
@@ -733,6 +749,7 @@
                 "editor": {
                     "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
                     "delete": "Elimina",
+                    "device_disabled": "Il dispositivo di questa entità è disabilitato.",
                     "enabled_cause": "Disabilitato da {cause}.",
                     "enabled_delay_confirm": "Le entità abilitate saranno aggiunte a Home Assistant in {delay} secondi",
                     "enabled_description": "Le entità disabilitate non saranno aggiunte a Home Assistant",
@@ -743,6 +760,7 @@
                     "icon_error": "Le icone dovrebbero essere nel formato 'prefisso:nome_icona', ad esempio 'mdi:home'.",
                     "name": "Nome",
                     "note": "Nota: questo potrebbe non funzionare ancora con tutte le integrazioni.",
+                    "open_device_settings": "Apri le impostazioni del dispositivo",
                     "unavailable": "Questa entità non è attualmente disponibile.",
                     "update": "Aggiorna"
                 },
@@ -1030,7 +1048,7 @@
                         "confirmation_text": "Tutti i dispositivi in quest'area non saranno assegnati.",
                         "confirmation_title": "Sei sicuro di voler cancellare quest'area?"
                     },
-                    "description": "Gestisci le aree della tua casa",
+                    "description": "Raggruppa dispositivi ed entità in aree",
                     "editor": {
                         "area_id": "Area ID",
                         "create": "Crea",
@@ -1052,7 +1070,7 @@
                 },
                 "automation": {
                     "caption": "Automazioni",
-                    "description": "Gestisci le Automazioni",
+                    "description": "Crea regole di comportamento personalizzate per la tua casa",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Usa un progetto"
@@ -1400,15 +1418,15 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Inserisci l'URL del progetto.",
-                        "file_name": "Nome del file di progetto locale",
-                        "header": "Aggiungi un nuovo progetto",
-                        "import_btn": "Importa progetto",
-                        "import_header": "Importa \"{name}\" (tipo: {domain})",
+                        "file_name": "Percorso del progetto",
+                        "header": "Importa un progetto",
+                        "import_btn": "Anteprima del progetto",
+                        "import_header": "Progetto \"{name}\"",
                         "import_introduction": "Puoi importare progetti di altri utenti da Github e dai forum della comunità. Immettere l'URL del progetto di seguito.",
-                        "importing": "Importazione del progetto in corso ...",
+                        "importing": "Caricamento progetto ...",
                         "raw_blueprint": "Contenuto del progetto",
-                        "save_btn": "Salva progetto",
-                        "saving": "Salvataggio del progetto in corso ...",
+                        "save_btn": "Importa progetto",
+                        "saving": "Importazione del progetto ...",
                         "unsupported_blueprint": "Questo progetto non è supportato",
                         "url": "URL del progetto"
                     },
@@ -1425,8 +1443,8 @@
                             "file_name": "Nome file",
                             "name": "Nome"
                         },
-                        "introduction": "L'editor del progetto consente di creare e modificare i progetti.",
-                        "learn_more": "Per saperne di più sui progetti",
+                        "introduction": "La configurazione del progetto ti consente di importare e gestire i tuoi progetti.",
+                        "learn_more": "Ulteriori informazioni sull'utilizzo dei progetti",
                         "use_blueprint": "Crea automazione"
                     }
                 },
@@ -1510,7 +1528,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Controllo fuori casa, integrazione con Alexa e Google Assistant.",
+                    "description_features": "Controlla la casa quando sei via e integra con Alexa e Google Assistant",
                     "description_login": "Connesso come {email}",
                     "description_not_login": "Accesso non effettuato",
                     "dialog_certificate": {
@@ -1605,7 +1623,7 @@
                 },
                 "core": {
                     "caption": "Generale",
-                    "description": "Modifica la configurazione generale di Home Assistant",
+                    "description": "Sistema di unità, posizione, fuso orario e altri parametri generali",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1667,6 +1685,7 @@
                             "unknown_condition": "Condizione sconosciuta"
                         },
                         "create": "Crea l'automazione con il dispositivo",
+                        "create_disable": "Non è possibile creare automazione con un dispositivo disabilitato",
                         "no_automations": "Nessuna automazione",
                         "no_device_automations": "Non ci sono Automazioni disponibili per questo dispositivo.",
                         "triggers": {
@@ -1692,9 +1711,18 @@
                         "no_devices": "Nessun dispositivo"
                     },
                     "delete": "Elimina",
-                    "description": "Gestisci i dispositivi collegati",
+                    "description": "Gestisci i dispositivi configurati",
                     "device_info": "Informazioni sul dispositivo",
                     "device_not_found": "Dispositivo non trovato.",
+                    "disabled": "Disabilitato",
+                    "disabled_by": {
+                        "config_entry": "Voce di configurazione",
+                        "integration": "Integrazione",
+                        "user": "Utente"
+                    },
+                    "enabled_cause": "Il dispositivo è stato disabilitato da {cause}.",
+                    "enabled_description": "I dispositivi disabilitati non verranno mostrati e le entità appartenenti al dispositivo verranno disabilitate e non aggiunte a Home Assistant.",
+                    "enabled_label": "Abilita dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Aggiungi a Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {entità disabilitata}\n  other {entità disabilitate}\n}",
@@ -1704,14 +1732,25 @@
                     },
                     "name": "Nome",
                     "no_devices": "Nessun dispositivo",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtro",
+                            "hidden_devices": "nascosto/i {number} {number, plural,\n  one {dispositivo}\n  other {dispositivi}\n}",
+                            "show_all": "Mostra tutto",
+                            "show_disabled": "Mostra dispositivi disabilitati"
+                        },
+                        "search": "Cerca dispositivi"
+                    },
                     "scene": {
                         "create": "Crea una Scena con il dispositivo",
+                        "create_disable": "Non è possibile creare scene con un dispositivo disabilitato",
                         "no_scenes": "Nessuna Scena",
                         "scenes": "Scene"
                     },
                     "scenes": "Scene",
                     "script": {
                         "create": "Crea uno script con il dispositivo",
+                        "create_disable": "Non è possibile creare script con un dispositivo disabilitato",
                         "no_scripts": "Nessuno script",
                         "scripts": "Script"
                     },
@@ -1777,7 +1816,7 @@
                 "header": "Configura Home Assistant",
                 "helpers": {
                     "caption": "Aiutanti",
-                    "description": "Gestisci elementi che possono aiutare a costruire le automazioni.",
+                    "description": "Elementi che aiutano a costruire le automazioni",
                     "dialog": {
                         "add_helper": "Aggiungi aiutante",
                         "add_platform": "Aggiungi {platform}",
@@ -1809,7 +1848,7 @@
                     "copy_github": "Per GitHub",
                     "copy_raw": "Testo non elaborato",
                     "custom_uis": "Interfacce Utente personalizzate:",
-                    "description": "Visualizza le informazioni sull'installazione di Home Assistant",
+                    "description": "Versione, integrità del sistema e collegamenti alla documentazione",
                     "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
                     "documentation": "Documentazione",
                     "frontend": "frontend-ui",
@@ -1915,7 +1954,7 @@
                     },
                     "configure": "Configura",
                     "configured": "Configurato",
-                    "description": "Gestisci le integrazioni",
+                    "description": "Gestisci le integrazioni con servizi, dispositivi, ...",
                     "details": "Dettagli dell'integrazione",
                     "discovered": "Rilevato",
                     "home_assistant_website": "Sito Web di Home Assistant",
@@ -2000,7 +2039,7 @@
                             "open": "Aprire"
                         }
                     },
-                    "description": "Gestisci le tue plance di Lovelace",
+                    "description": "Crea insiemi di schede personalizzate per controllare la tua casa",
                     "resources": {
                         "cant_edit_yaml": "Si utilizza Lovelace in modalità YAML, pertanto non è possibile gestire le risorse tramite l'Interfaccia Utente. Gestirli in configuration.yaml.",
                         "caption": "Risorse",
@@ -2199,7 +2238,7 @@
                 "scene": {
                     "activated": "Scena attivata {name}.",
                     "caption": "Scene",
-                    "description": "Gestisci le scene",
+                    "description": "Cattura gli stati del dispositivo e richiamarli facilmente in seguito",
                     "editor": {
                         "default_name": "Nuova scena",
                         "devices": {
@@ -2243,7 +2282,7 @@
                 },
                 "script": {
                     "caption": "Script",
-                    "description": "Gestisci gli script",
+                    "description": "Esegui una sequenza di azioni",
                     "editor": {
                         "alias": "Nome",
                         "default_name": "Nuovo script",
@@ -2354,7 +2393,7 @@
                     "confirm_remove": "Sei sicuro di voler rimuovere l'etichetta {tag}?",
                     "confirm_remove_title": "Rimuovere l'etichetta?",
                     "create_automation": "Creare un'automazione con l'etichetta",
-                    "description": "Gestisci le etichette",
+                    "description": "Attiva le automazioni quando viene scansionato un tag NFC, un codice QR, ecc",
                     "detail": {
                         "companion_apps": "app complementari",
                         "create": "Crea",
@@ -2389,10 +2428,11 @@
                         "username": "Nome utente"
                     },
                     "caption": "Utenti",
-                    "description": "Gestisci gli utenti",
+                    "description": "Gestisci gli account utente di Home Assistant",
                     "editor": {
                         "activate_user": "Attiva utente",
                         "active": "Attivo",
+                        "active_tooltip": "Controlla se l'utente può effettuare il login",
                         "admin": "Amministratore",
                         "caption": "Visualizza utente",
                         "change_password": "Cambia password",
@@ -3411,10 +3451,13 @@
                 "change_password": {
                     "confirm_new_password": "Conferma la nuova password",
                     "current_password": "Password corrente",
+                    "error_new_is_old": "La nuova password deve essere diversa dalla password corrente",
+                    "error_new_mismatch": "I valori della nuova password immessi non corrispondono",
                     "error_required": "Richiesto",
                     "header": "Cambia password",
                     "new_password": "Nuova password",
-                    "submit": "Invia"
+                    "submit": "Invia",
+                    "success": "Password modificata correttamente"
                 },
                 "current_user": "Sei attualmente connesso come {fullName}.",
                 "customize_sidebar": {
