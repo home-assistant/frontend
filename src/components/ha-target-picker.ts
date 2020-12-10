@@ -30,6 +30,7 @@ import {
   subscribeAreaRegistry,
 } from "../data/area_registry";
 import {
+  computeDeviceName,
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../data/device_registry";
@@ -135,7 +136,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           return this._renderChip(
             "device_id",
             device_id,
-            device?.name || device_id,
+            device ? computeDeviceName(device, this.hass) : device_id,
             undefined,
             mdiDevices
           );
