@@ -35,6 +35,7 @@ import "../../../components/ha-icon-input";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import {
   Action,
   deleteScript,
@@ -545,7 +546,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _copyYaml() {
     if (this._editor?.yaml) {
-      navigator.clipboard.writeText(this._editor.yaml);
+      copyToClipboard(this._editor.yaml);
     }
   }
 
