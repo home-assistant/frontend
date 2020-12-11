@@ -1070,7 +1070,7 @@
                 },
                 "automation": {
                     "caption": "Automatisations",
-                    "description": "Créer et modifier des automatisations",
+                    "description": "Créez des règles de comportement personnalisées pour votre maison",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Utiliser un plan"
@@ -1623,7 +1623,7 @@
                 },
                 "core": {
                     "caption": "Général",
-                    "description": "Changer la configuration générale de votre Home Assistant.",
+                    "description": "Unités de mesure, emplacement, fuseau horaire et autres paramètres généraux",
                     "section": {
                         "core": {
                             "core_config": {
@@ -2281,7 +2281,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Créer et modifier des scripts.",
+                    "description": "Exécuter une séquence d'actions",
                     "editor": {
                         "alias": "Nom",
                         "default_name": "Nouveau script",
