@@ -107,7 +107,16 @@ class DialogImportBlueprint extends LitElement {
                   <pre>${this._result.raw_data}</pre>
                 </ha-expansion-panel>`
             : html`${this.hass.localize(
-                  "ui.panel.config.blueprint.add.import_introduction"
+                  "ui.panel.config.blueprint.add.import_introduction_link",
+                  "community_link",
+                  html`<a
+                    href="https://community.home-assistant.io/c/blueprints/53"
+                    target="_blank"
+                    rel="noreferrer"
+                    >${this.hass.localize(
+                      "ui.panel.config.blueprint.add.community_forums"
+                    )}</a
+                  >`
                 )}<paper-input
                   id="input"
                   .label=${this.hass.localize(
