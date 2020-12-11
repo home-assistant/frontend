@@ -1673,7 +1673,7 @@
                             "confirm_restart": "Сигурни ли сте, че искате да рестартирате Home Assistant?",
                             "confirm_stop": "Сигурни ли сте, че искате да спрете Home Assistant?",
                             "heading": "Управление на сървъра",
-                            "introduction": "Управляване на Home Assistant сървъра... от Home Assistant.",
+                            "introduction": "Контрол на Home Assistant сървъра... от Home Assistant.",
                             "restart": "Рестартирай",
                             "stop": "Спри"
                         },
