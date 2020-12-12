@@ -44,7 +44,7 @@ class MoreInfoSun extends LitElement {
               >
               <ha-relative-time
                 .hass=${this.hass}
-                .datetimeObj=${item === "ris" ? risingDate : settingDate}
+                .datetime=${item === "ris" ? risingDate : settingDate}
               ></ha-relative-time>
             </div>
             <div class="value">
