@@ -176,9 +176,9 @@ class HaBlueprintOverview extends LitElement {
           role="cell"
         >
           <a
-            href="https://community.home-assistant.io/c/blueprints/53"
+            href="https://www.home-assistant.io/get-blueprints"
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer noopener"
           >
             <mwc-button
               >${this.hass.localize(

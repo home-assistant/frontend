@@ -110,9 +110,9 @@ class DialogImportBlueprint extends LitElement {
                   "ui.panel.config.blueprint.add.import_introduction_link",
                   "community_link",
                   html`<a
-                    href="https://community.home-assistant.io/c/blueprints/53"
+                    href="https://www.home-assistant.io/get-blueprints"
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noreferrer noopener"
                     >${this.hass.localize(
                       "ui.panel.config.blueprint.add.community_forums"
                     )}</a
