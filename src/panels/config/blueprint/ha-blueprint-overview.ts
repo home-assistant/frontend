@@ -170,6 +170,23 @@ class HaBlueprintOverview extends LitElement {
           "ui.panel.config.blueprint.overview.no_blueprints"
         )}
         hasFab
+        .appendRow=${html` <div
+          class="mdc-data-table__cell"
+          style="width: 100%; text-align: center;"
+          role="cell"
+        >
+          <a
+            href="https://www.home-assistant.io/get-blueprints"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.blueprint.overview.discover_more"
+              )}</mwc-button
+            >
+          </a>
+        </div>`}
       >
         <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>

@@ -3184,7 +3184,7 @@
                         "close": "Tanca",
                         "empty_config": "Comença amb un panell buit",
                         "header": "Pren el control de la interfície d'usuari Lovelace",
-                        "para": "Aquest panell Lovelace s'està gestionant per Home Assistant. S'actualitza automàticament quan hi ha noves entitats o nous components de Lovelace disponibles. Si prens el control, aquest panell no s'actualitzarà automàticament. Sempre pots crear un nou panell a configuració i fer-hi proves.",
+                        "para": "Aquest panell Lovelace està gestionat per Home Assistant. S'actualitza automàticament quan hi ha noves entitats o nous components de Lovelace disponibles. Si prens el control, aquest panell no s'actualitzarà automàticament. Sempre pots crear un nou panell a configuració i fer-hi proves.",
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
                         "save": "Prendre el control",
                         "yaml_config": "Per ajudar a familiaritzar-te, aquí tens la configuració actual del teu panell Lovelace:",

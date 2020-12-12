@@ -901,6 +901,7 @@
                     "navigation": {
                         "areas": "Gebieden",
                         "automation": "Automatiseringen",
+                        "blueprint": "Blueprints",
                         "core": "Algemeen",
                         "customize": "Aanpassingen",
                         "devices": "Apparaten",
@@ -1047,7 +1048,7 @@
                         "confirmation_text": "Alle apparaten in dit gebied zullen niet meer toegewezen zijn.",
                         "confirmation_title": "Weet je zeker dat je dit gebied wilt verwijderen?"
                     },
-                    "description": "Groepeer apparaten in gebieden",
+                    "description": "Groepeer apparaten en entiteiten in gebieden",
                     "editor": {
                         "area_id": "Gebieds-ID",
                         "create": "Aanmaken",
@@ -1072,7 +1073,7 @@
                     "description": "Maak aangepaste gedragsregels voor uw huis",
                     "dialog_new": {
                         "blueprint": {
-                            "use_blueprint": "Gebruik een blauwdruk"
+                            "use_blueprint": "Gebruik een Blueprint"
                         },
                         "header": "Een nieuwe automatisering maken",
                         "how": "Hoe wil je je nieuwe automatisering maken?",
@@ -1165,12 +1166,12 @@
                         },
                         "alias": "Naam",
                         "blueprint": {
-                            "blueprint_to_use": "Blauwdruk om te gebruiken",
-                            "header": "Blauwdruk",
+                            "blueprint_to_use": "Blueprint om te gebruiken",
+                            "header": "Blueprint",
                             "inputs": "Inputs",
                             "manage_blueprints": "Beheer Blueprints",
                             "no_blueprints": "Je hebt geen Blueprints",
-                            "no_inputs": "Deze blauwdruk heeft geen inputs."
+                            "no_inputs": "Deze Blueprint heeft geen inputs."
                         },
                         "conditions": {
                             "add": "Voorwaarde toevoegen",
@@ -1416,33 +1417,33 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Voer de URL van de blauwdruk in.",
+                        "error_no_url": "Voer de URL van de Blueprint in.",
                         "file_name": "Blueprint pad",
-                        "header": "Voeg een nieuwe blauwdruk toe",
-                        "import_btn": "Blauwdruk importeren",
-                        "import_header": "Importeer \"{name}\" (type: {domain})",
+                        "header": "Voeg een nieuwe Blueprint toe",
+                        "import_btn": "Bekijk een Blueprint",
+                        "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de communityforums. Voer de URL van de Blueprint hieronder in.",
-                        "importing": "Blauwdruk importeren ...",
+                        "importing": "Blueprint importeren ...",
                         "raw_blueprint": "Blueprint inhoud",
-                        "save_btn": "Bewaar blauwdruk",
-                        "saving": "Blauwdruk opslaan ...",
+                        "save_btn": "Blueprint importeren",
+                        "saving": "Blueprint importeren ...",
                         "unsupported_blueprint": "Deze Blueprint wordt niet ondersteund",
-                        "url": "URL van de blauwdruk"
+                        "url": "URL van de Blueprint"
                     },
                     "caption": "Blueprints",
                     "description": "Beheer Blueprints",
                     "overview": {
-                        "add_blueprint": "Blauwdruk importeren",
-                        "confirm_delete_header": "Deze blauwdruk verwijderen?",
+                        "add_blueprint": "Blueprint importeren",
+                        "confirm_delete_header": "Deze Blueprint verwijderen?",
                         "confirm_delete_text": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
                         "delete_blueprint": "Verwijder Blueprint",
-                        "header": "Blauwdrukeditor",
+                        "header": "Blueprinteditor",
                         "headers": {
                             "domain": "Domein",
                             "file_name": "Bestandsnaam",
                             "name": "Naam"
                         },
-                        "introduction": "Met de blueprinteditor kunt je blueprints maken en bewerken.",
+                        "introduction": "Met de Blueprinteditor kunt je Blueprints maken en bewerken.",
                         "learn_more": "Meer informatie over Blueprints",
                         "use_blueprint": "Automatisering maken"
                     }

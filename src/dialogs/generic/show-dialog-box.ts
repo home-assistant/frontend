@@ -1,31 +1,31 @@
 import { TemplateResult } from "lit-html";
 import { fireEvent } from "../../common/dom/fire_event";
 
-interface BaseDialogParams {
+interface BaseDialogBoxParams {
   confirmText?: string;
   text?: string | TemplateResult;
   title?: string;
   warning?: boolean;
 }
 
-export interface AlertDialogParams extends BaseDialogParams {
+export interface AlertDialogParams extends BaseDialogBoxParams {
   confirm?: () => void;
 }
 
-export interface ConfirmationDialogParams extends BaseDialogParams {
+export interface ConfirmationDialogParams extends BaseDialogBoxParams {
   dismissText?: string;
   confirm?: () => void;
   cancel?: () => void;
 }
 
-export interface PromptDialogParams extends BaseDialogParams {
+export interface PromptDialogParams extends BaseDialogBoxParams {
   inputLabel?: string;
   inputType?: string;
   defaultValue?: string;
   confirm?: (out?: string) => void;
 }
 
-export interface DialogParams
+export interface DialogBoxParams
   extends ConfirmationDialogParams,
     PromptDialogParams {
   confirm?: (out?: string) => void;
@@ -37,10 +37,10 @@ export const loadGenericDialog = () => import("./dialog-box");
 
 const showDialogHelper = (
   element: HTMLElement,
-  dialogParams: DialogParams,
+  dialogParams: DialogBoxParams,
   extra?: {
-    confirmation?: DialogParams["confirmation"];
-    prompt?: DialogParams["prompt"];
+    confirmation?: DialogBoxParams["confirmation"];
+    prompt?: DialogBoxParams["prompt"];
   }
 ) =>
   new Promise((resolve) => {
