@@ -61,6 +61,12 @@ export class HaTabsSubpageDataTable extends LitElement {
   @property({ type: Boolean }) public hasFab = false;
 
   /**
+   * Add an extra rows at the bottom of the datatabel
+   * @type {TemplateResult}
+   */
+  @property({ attribute: false }) public appendRow?;
+
+  /**
    * Field with a unique id per entry in data.
    * @type {String}
    */
@@ -171,6 +177,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           .noDataText=${this.noDataText}
           .dir=${computeRTLDirection(this.hass)}
           .clickable=${this.clickable}
+          .appendRow=${this.appendRow}
         >
           ${!this.narrow
             ? html`
