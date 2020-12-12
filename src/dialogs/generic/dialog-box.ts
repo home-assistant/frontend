@@ -17,17 +17,17 @@ import "../../components/ha-switch";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import { DialogParams } from "./show-dialog-box";
+import { DialogBoxParams } from "./show-dialog-box";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: DialogParams;
+  @internalProperty() private _params?: DialogBoxParams;
 
   @internalProperty() private _value?: string;
 
-  public async showDialog(params: DialogParams): Promise<void> {
+  public async showDialog(params: DialogBoxParams): Promise<void> {
     this._params = params;
     if (params.prompt) {
       this._value = params.defaultValue;
@@ -55,8 +55,8 @@ class DialogBox extends LitElement {
     return html`
       <ha-dialog
         open
-        ?scrimClickAction=${this._params.prompt}
-        ?escapeKeyAction=${this._params.prompt}
+        ?scrimClickAction=${confirmPrompt}
+        ?escapeKeyAction=${confirmPrompt}
         @closed=${this._dialogClosed}
         defaultAction="ignore"
         .heading=${this._params.title
@@ -140,10 +140,10 @@ class DialogBox extends LitElement {
   }
 
   private _dialogClosed(ev) {
-    if (ev.detail.action === "ignore") {
+    if (this._params?.prompt && ev.detail.action === "ignore") {
       return;
     }
-    this.closeDialog();
+    this._dismiss();
   }
 
   private _close(): void {
