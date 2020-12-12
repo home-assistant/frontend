@@ -86,6 +86,11 @@ export class HaDeviceActionsZha extends LitElement {
             </mwc-button>
           `
         : ""}
+      <mwc-button @click=${this._onViewInVisualizationClick}>
+        ${this.hass!.localize(
+          "ui.dialogs.zha_device_info.buttons.view_in_visualization"
+        )}
+      </mwc-button>
     `;
   }
 
@@ -102,6 +107,13 @@ export class HaDeviceActionsZha extends LitElement {
 
   private _onAddDevicesClick() {
     navigate(this, "/config/zha/add/" + this._zhaDevice!.ieee);
+  }
+
+  private _onViewInVisualizationClick() {
+    navigate(
+      this,
+      "/config/zha/visualization/" + this._zhaDevice!.device_reg_id
+    );
   }
 
   private async _handleZigbeeInfoClicked() {

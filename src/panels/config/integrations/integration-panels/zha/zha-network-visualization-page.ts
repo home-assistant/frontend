@@ -37,6 +37,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property()
+  public zoomedDeviceId?: string;
+
   @query("#visualization", true)
   private _visualization?: HTMLElement;
 
@@ -54,9 +57,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @internalProperty()
   private _filter?: string;
-
-  @internalProperty()
-  private _zoomedDeviceId?: string;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -108,6 +108,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
         }
       }
     });
+
+    this._network.on("stabilized", () => {
+      if (this.zoomedDeviceId) {
+        this._zoomToDevice();
+      }
+    });
   }
 
   protected render() {
@@ -131,12 +137,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
           </search-input>
           <ha-device-picker
             .hass=${this.hass}
-            .value=${this._zoomedDeviceId}
+            .value=${this.zoomedDeviceId}
             .label=${this.hass.localize(
               "ui.panel.config.zha.visualization.zoom_label"
             )}
             .includeDomains="['zha']"
-            @value-changed=${this._zoomToDevice}
+            @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
           <mwc-button @click=${this._refreshTopology}
             >${this.hass!.localize(
@@ -263,7 +269,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           filteredNodeIds.push(node.id!);
         }
       });
-      this._zoomedDeviceId = "";
+      this.zoomedDeviceId = "";
       this._zoomOut();
       this._network.selectNodes(filteredNodeIds, true);
     } else {
@@ -271,21 +277,25 @@ export class ZHANetworkVisualizationPage extends LitElement {
     }
   }
 
-  private _zoomToDevice(event: PolymerChangedEvent<string>) {
+  private _onZoomToDevice(event: PolymerChangedEvent<string>) {
     event.stopPropagation();
-    this._zoomedDeviceId = event.detail.value;
+    this.zoomedDeviceId = event.detail.value;
     if (!this._network) {
       return;
     }
+    this._zoomToDevice();
+  }
+
+  private _zoomToDevice() {
     this._filter = "";
-    if (!this._zoomedDeviceId) {
+    if (!this.zoomedDeviceId) {
       this._zoomOut();
     } else {
       const device: ZHADevice | undefined = this._devicesByDeviceId.get(
-        this._zoomedDeviceId
+        this.zoomedDeviceId
       );
       if (device) {
-        this._network.fit({
+        this._network!.fit({
           nodes: [device.ieee],
           animation: { duration: 500, easingFunction: "easeInQuad" },
         });
