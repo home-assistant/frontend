@@ -26,6 +26,7 @@ const cardConfigStruct = object({
   title: optional(string()),
   hours_to_show: optional(number()),
   theme: optional(string()),
+  layout: optional(object()),
 });
 
 @customElement("hui-logbook-card-editor")

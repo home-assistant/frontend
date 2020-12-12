@@ -24,6 +24,7 @@ const cardConfigStruct = object({
   entity: string(),
   name: optional(string()),
   theme: optional(string()),
+  layout: optional(object()),
 });
 
 const includeDomains = ["plant"];

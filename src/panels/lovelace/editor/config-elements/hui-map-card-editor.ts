@@ -46,6 +46,7 @@ const cardConfigStruct = object({
   entities: array(entitiesConfigStruct),
   hours_to_show: optional(number()),
   geo_location_sources: optional(array()),
+  layout: optional(object()),
 });
 
 @customElement("hui-map-card-editor")

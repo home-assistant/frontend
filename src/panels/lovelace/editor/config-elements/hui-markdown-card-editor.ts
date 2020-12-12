@@ -23,6 +23,7 @@ const cardConfigStruct = object({
   title: optional(string()),
   content: string(),
   theme: optional(string()),
+  layout: optional(object()),
 });
 
 @customElement("hui-markdown-card-editor")

@@ -28,6 +28,7 @@ const cardConfigStruct = object({
   name: optional(string()),
   states: optional(array()),
   theme: optional(string()),
+  layout: optional(object()),
 });
 
 const includeDomains = ["alarm_control_panel"];

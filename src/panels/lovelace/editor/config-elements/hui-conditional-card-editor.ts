@@ -36,6 +36,7 @@ const cardConfigStruct = object({
   type: string(),
   card: any(),
   conditions: optional(array(conditionStruct)),
+  layout: optional(object()),
 });
 
 @customElement("hui-conditional-card-editor")

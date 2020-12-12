@@ -25,6 +25,7 @@ const cardConfigStruct = object({
   tap_action: optional(actionConfigStruct),
   hold_action: optional(actionConfigStruct),
   theme: optional(string()),
+  layout: optional(object()),
 });
 
 @customElement("hui-picture-card-editor")

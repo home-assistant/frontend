@@ -30,6 +30,7 @@ const cardConfigStruct = object({
   icon: optional(string()),
   hold_action: optional(actionConfigStruct),
   double_tap_action: optional(actionConfigStruct),
+  layout: optional(object()),
 });
 
 const includeDomains = ["light"];

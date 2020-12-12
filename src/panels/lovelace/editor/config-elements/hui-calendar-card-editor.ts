@@ -32,6 +32,7 @@ const cardConfigStruct = object({
   initial_view: optional(string()),
   theme: optional(string()),
   entities: array(string()),
+  layout: optional(object()),
 });
 
 const views = ["dayGridMonth", "dayGridDay", "listWeek"];

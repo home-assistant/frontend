@@ -16,11 +16,11 @@ import {
   any,
   array,
   assert,
+  boolean,
+  number,
   object,
   optional,
   string,
-  boolean,
-  number,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
@@ -39,6 +39,7 @@ const cardConfigStruct = object({
   title: optional(string()),
   square: optional(boolean()),
   columns: optional(number()),
+  layout: optional(object()),
 });
 
 @customElement("hui-stack-card-editor")

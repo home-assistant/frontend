@@ -42,6 +42,7 @@ const cardConfigStruct = object({
   hold_action: optional(actionConfigStruct),
   entities: array(entitiesConfigStruct),
   theme: optional(string()),
+  layout: optional(object()),
 });
 
 const includeDomains = ["camera"];

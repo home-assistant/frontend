@@ -37,6 +37,7 @@ const cardConfigStruct = object({
   hold_action: optional(actionConfigStruct),
   theme: optional(string()),
   show_state: optional(boolean()),
+  layout: optional(object()),
 });
 
 const actions = [

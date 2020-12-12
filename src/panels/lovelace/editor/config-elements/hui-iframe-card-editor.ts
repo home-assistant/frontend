@@ -21,6 +21,7 @@ const cardConfigStruct = object({
   title: optional(string()),
   url: optional(string()),
   aspect_ratio: optional(string()),
+  layout: optional(object()),
 });
 
 @customElement("hui-iframe-card-editor")

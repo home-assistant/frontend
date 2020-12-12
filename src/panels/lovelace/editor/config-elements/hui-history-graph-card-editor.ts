@@ -42,6 +42,7 @@ const cardConfigStruct = object({
   title: optional(string()),
   hours_to_show: optional(number()),
   refresh_interval: optional(number()),
+  layout: optional(object()),
 });
 
 @customElement("hui-history-graph-card-editor")

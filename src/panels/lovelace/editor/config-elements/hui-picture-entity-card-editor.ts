@@ -39,6 +39,7 @@ const cardConfigStruct = object({
   show_name: optional(boolean()),
   show_state: optional(boolean()),
   theme: optional(string()),
+  layout: optional(object()),
 });
 
 const includeDomains = ["camera"];

@@ -31,6 +31,7 @@ const cardConfigStruct = object({
   max: optional(number()),
   severity: optional(object()),
   theme: optional(string()),
+  layout: optional(object()),
 });
 
 const includeDomains = ["sensor"];

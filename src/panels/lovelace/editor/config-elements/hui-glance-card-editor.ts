@@ -50,6 +50,7 @@ const cardConfigStruct = object({
   show_icon: optional(boolean()),
   state_color: optional(boolean()),
   entities: array(entitiesConfigStruct),
+  layout: optional(object()),
 });
 
 @customElement("hui-glance-card-editor")
