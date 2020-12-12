@@ -98,6 +98,12 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public hasFab = false;
 
+  /**
+   * Add an extra rows at the bottom of the datatabel
+   * @type {TemplateResult}
+   */
+  @property({ attribute: false }) public appendRow?;
+
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
 
@@ -125,6 +131,8 @@ export class HaDataTable extends LitElement {
   @internalProperty() private _headerHeight = 0;
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
+
+  private _items: DataTableRowData[] = [];
 
   private _checkableRowsCount?: number;
 
@@ -318,10 +326,13 @@ export class HaDataTable extends LitElement {
                   @scroll=${this._saveScrollPos}
                 >
                   ${scroll({
-                    items: !this.hasFab
-                      ? this._filteredData
-                      : [...this._filteredData, ...[{ empty: true }]],
+                    items: this._items,
                     renderItem: (row: DataTableRowData, index) => {
+                      if (row.append) {
+                        return html`
+                          <div class="mdc-data-table__row">${row.content}</div>
+                        `;
+                      }
                       if (row.empty) {
                         return html` <div class="mdc-data-table__row"></div> `;
                       }
@@ -446,6 +457,20 @@ export class HaDataTable extends LitElement {
     }
     if (this.curRequest !== curRequest) {
       return;
+    }
+
+    if (this.appendRow || this.hasFab) {
+      this._items = [...data];
+
+      if (this.appendRow) {
+        this._items.push({ append: true, content: this.appendRow });
+      }
+
+      if (this.hasFab) {
+        this._items.push({ empty: true });
+      }
+    } else {
+      this._items = data;
     }
     this._filteredData = data;
   }
