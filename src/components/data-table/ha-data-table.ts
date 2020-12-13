@@ -99,7 +99,7 @@ export class HaDataTable extends LitElement {
   @property({ type: Boolean }) public hasFab = false;
 
   /**
-   * Add an extra rows at the bottom of the datatabel
+   * Add an extra row at the bottom of the data table
    * @type {TemplateResult}
    */
   @property({ attribute: false }) public appendRow?;
