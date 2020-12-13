@@ -538,13 +538,13 @@ class HaChartBase extends mixinBehaviors(
     // Known colors for static data,
     // should add for very common state string manually.
     // Palette modified from http://google.github.io/palette.js/ mpn65, Apache 2.0
-    // Some material changes made from https://github.com/Kibibit/kb-better-graph-colors, MIT
+    // Some changes based upon bulma.io/documentation/overview/colors/, and Kibibit/kb-better-graph-colors (MIT)
     const palette = [
-      "ff3860",
-      "48c774",
-      "209cee",
-      "9b59b6",
-      "4dd0e1",
+      "ff224a",
+      "58b545",
+      "2c8dd3",
+      "8047b8",
+      "20c9dd",
       "ff7f00",
       "af8d00",
       "7f80cd",
