@@ -105,26 +105,6 @@ class MoreInfoLight extends LitElement {
                     ></ha-labeled-slider>
                   `
                 : ""}
-              ${supportsFeature(this.stateObj, SUPPORT_COLOR)
-                ? html`
-                    <div class="segmentationContainer">
-                      <ha-color-picker
-                        class="color"
-                        @colorselected=${this._colorPicked}
-                        .desiredHsColor=${this._colorPickerColor}
-                        throttle="500"
-                        .hueSegments=${this._hueSegments}
-                        .saturationSegments=${this._saturationSegments}
-                      >
-                      </ha-color-picker>
-                      <ha-icon-button
-                        icon="hass:palette"
-                        @click=${this._segmentClick}
-                        class="segmentationButton"
-                      ></ha-icon-button>
-                    </div>
-                  `
-                : ""}
               ${supportsFeature(this.stateObj, SUPPORT_EFFECT) &&
               this.stateObj!.attributes.effect_list?.length
                 ? html`
@@ -145,6 +125,26 @@ class MoreInfoLight extends LitElement {
                         )}
                       </paper-listbox>
                     </ha-paper-dropdown-menu>
+                  `
+                : ""}
+              ${supportsFeature(this.stateObj, SUPPORT_COLOR)
+                ? html`
+                    <div class="segmentationContainer">
+                      <ha-color-picker
+                        class="color"
+                        @colorselected=${this._colorPicked}
+                        .desiredHsColor=${this._colorPickerColor}
+                        throttle="500"
+                        .hueSegments=${this._hueSegments}
+                        .saturationSegments=${this._saturationSegments}
+                      >
+                      </ha-color-picker>
+                      <ha-icon-button
+                        icon="hass:palette"
+                        @click=${this._segmentClick}
+                        class="segmentationButton"
+                      ></ha-icon-button>
+                    </div>
                   `
                 : ""}
             `
