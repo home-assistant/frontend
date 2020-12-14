@@ -529,10 +529,6 @@ export class QuickBar extends LitElement {
         mwc-list-item {
           width: 100%;
         }
-
-        mwc-list-item.command-item {
-          text-transform: none;
-        }
       `,
     ];
   }
