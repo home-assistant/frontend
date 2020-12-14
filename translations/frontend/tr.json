@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "topluluk forumları",
                         "error_no_url": "Lütfen taslağın URL'sini girin.",
                         "file_name": "Taslak Yolu",
                         "header": "Taslağı içeri aktar",
                         "import_btn": "Taslağı içe aktar",
                         "import_header": "Taslak \"{name}\"",
                         "import_introduction": "Diğer kullanıcıların taslaklarını Github'dan ve topluluk forumlarından içe aktarabilirsiniz. Taslağın URL'sini aşağıya girin.",
+                        "import_introduction_link": "Diğer kullanıcıların taslaklarını Github ve {community_link} den içe aktarabilirsiniz. Planın URL'sini aşağıya girin.",
                         "importing": "Taslak içe aktarılıyor...",
                         "raw_blueprint": "Taslak içeriği",
                         "save_btn": "Taslağı kaydet",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Bu taslak silinsin mi?",
                         "confirm_delete_text": "Bu taslağı silmek istediğinizden emin misiniz?",
                         "delete_blueprint": "Taslağı sil",
+                        "discover_more": "Daha Fazla Taslak Keşfedin",
                         "header": "Taslak Düzenleyici",
                         "headers": {
                             "domain": "Alan adı",
@@ -2381,7 +2384,7 @@
                             "check_config": "Yapılandırmayı kontrol et",
                             "heading": "Yapılandırma doğrulaması",
                             "introduction": "Yapılandırmanızda yakın bir zamanda değişiklikler yaptıysanız ve tümünün geçerli olduğundan emin olmak istiyorsanız yapılandırmanızı doğrulayın",
-                            "invalid": "Yapılandırma geçerli!",
+                            "invalid": "Yapılandırma geçersiz",
                             "valid": "Yapılandırma geçerli!"
                         }
                     }

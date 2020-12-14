@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "社區討論區",
                         "error_no_url": "請輸入 Blueprint 之 URL。",
                         "file_name": "Blueprint 路徑",
                         "header": "匯入 Blueprint",
                         "import_btn": "預覽 Blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "可以自 Github 及社群論壇匯入其他使用者的 Blueprint。於下方輸入 Blueprint 之URL。",
+                        "import_introduction_link": "可以自 Github 及{community_link}匯入其他使用者的 Blueprint。於下方輸入 Blueprint 之URL。",
                         "importing": "正在載入 Blueprint...",
                         "raw_blueprint": "Blueprint 內容",
                         "save_btn": "匯入 Blueprint",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "刪除此 Blueprint？",
                         "confirm_delete_text": "確定要刪除此 Blueprint？",
                         "delete_blueprint": "刪除 Blueprint",
+                        "discover_more": "搜尋更多 Blueprint",
                         "header": "Blueprint 編輯器",
                         "headers": {
                             "domain": "實體類群",
