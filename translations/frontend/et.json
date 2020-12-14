@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "kogukonna foorumid",
                         "error_no_url": "Sisesta kavandi URL.",
                         "file_name": "Kohaliku kavandifaili asukoht",
                         "header": "Impordi kavand",
                         "import_btn": "Kavandi eelvaade",
                         "import_header": "Kavand \"{name}\"",
                         "import_introduction": "Teiste kasutajate kavandeid saad importida Githubist ja kogukonna foorumitest. Sisesta allpool kavandi URL.",
+                        "import_introduction_link": "Teiste kasutajate kavandeid saad importida Githubist ja lehelt {community_link}. Sisesta allpool kavandi URL.",
                         "importing": "Kavandi laadimine...",
                         "raw_blueprint": "Kavandi sisu",
                         "save_btn": "Impordi kavand",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Kas kustutada see kavand?",
                         "confirm_delete_text": "Kas soovid kindlasti selle kavandi kustutada?",
                         "delete_blueprint": "Kustuta kavand",
+                        "discover_more": "Avasta rohkem kavandeid",
                         "header": "Kavandi redaktor",
                         "headers": {
                             "domain": "Domeen",

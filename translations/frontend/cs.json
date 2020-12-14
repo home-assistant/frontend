@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "komunitních fór",
                         "error_no_url": "Zadejte adresu URL adresu šablony",
                         "file_name": "Cesta k šabloně",
                         "header": "Import šablony",
                         "import_btn": "Náhled šablony",
                         "import_header": "Šablona \"{name}\"",
                         "import_introduction": "Můžete importovat šablony od ostatních uživatelů z GitHubu a komunitních fór. Níže zadejte URL adresu šablony.",
+                        "import_introduction_link": "Můžete importovat šablony od ostatních uživatelů z GitHubu a {community_link}. Níže zadejte URL adresu šablony.",
                         "importing": "Načítám šablonu...",
                         "raw_blueprint": "Obsah šablony",
                         "save_btn": "Importovat šablonu",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Odstranit tuto šablonu?",
                         "confirm_delete_text": "Opravdu chcete smazat tuto šablonu?",
                         "delete_blueprint": "Smazat šablonu",
+                        "discover_more": "Objevte další šablony",
                         "header": "Editor šablon",
                         "headers": {
                             "domain": "Doména",

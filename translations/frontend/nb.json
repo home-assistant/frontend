@@ -554,7 +554,7 @@
             "blueprint-picker": {
                 "add_user": "Legg til bruker",
                 "remove_user": "Fjern bruker",
-                "select_blueprint": "Velg et Blueprint"
+                "select_blueprint": "Velg en Blueprint"
             },
             "data-table": {
                 "no-data": "Ingen data",
@@ -901,7 +901,7 @@
                     "navigation": {
                         "areas": "Områder",
                         "automation": "Automasjoner",
-                        "blueprint": "Blueprints",
+                        "blueprint": "Blueprinter",
                         "core": "Generelt",
                         "customize": "Tilpasninger",
                         "devices": "Enheter",
@@ -1169,9 +1169,9 @@
                             "blueprint_to_use": "Blueprint å bruke",
                             "header": "Blueprint",
                             "inputs": "Innganger",
-                            "manage_blueprints": "Administrer Blueprints",
-                            "no_blueprints": "Du har ingen blueprints",
-                            "no_inputs": "Denne blueprint har ingen innganger."
+                            "manage_blueprints": "Administrer Blueprinter",
+                            "no_blueprints": "Du har ingen Blueprinter",
+                            "no_inputs": "Denne Blueprinten har ingen innganger"
                         },
                         "conditions": {
                             "add": "Legg til betingelse",
@@ -1417,34 +1417,37 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Vennligst skriv inn URL-en til blueprint",
-                        "file_name": "Blueprint Bane",
-                        "header": "Importer en blueprint",
-                        "import_btn": "Forhåndsvisning av blueprint",
+                        "community_forums": "fellesskapsforum",
+                        "error_no_url": "Vennligst skriv inn URL-en til Blueprinten",
+                        "file_name": "Blueprint bane",
+                        "header": "Importer en Blueprint",
+                        "import_btn": "Forhåndsvisning av Blueprint",
                         "import_header": "Blueprint \"{name}\"",
-                        "import_introduction": "Du kan importere blueprints av andre brukere fra Github og fellesskapsforumet. Skriv inn URL-en til blueprint nedenfor.",
-                        "importing": "Laster blueprint...",
+                        "import_introduction": "Du kan importere Blueprinter av andre brukere fra GitHub og fellesskapsforumet. Skriv inn URL-en til blueprinten nedenfor.",
+                        "import_introduction_link": "Du kan importere Blueprinter av andre brukere fra GitHub og {community_link}. Skriv inn URL-en til blueprinten nedenfor.",
+                        "importing": "Laster Blueprint...",
                         "raw_blueprint": "Blueprint innhold",
-                        "save_btn": "Importer blueprint",
-                        "saving": "Importerer blueprint...",
-                        "unsupported_blueprint": "Denne blueprinten støttes ikke",
-                        "url": "URL til blueprint"
+                        "save_btn": "Importer Blueprint",
+                        "saving": "Importerer Blueprint...",
+                        "unsupported_blueprint": "Denne Blueprinten støttes ikke",
+                        "url": "URL til Blueprinten"
                     },
-                    "caption": "Blueprints",
-                    "description": "Administrer blueprints",
+                    "caption": "Blueprinter",
+                    "description": "Administrer Blueprinter",
                     "overview": {
-                        "add_blueprint": "Importer blueprint",
-                        "confirm_delete_header": "Slette denne blueprint'en?",
-                        "confirm_delete_text": "Er du sikker på at du vil slette denne blueprint",
-                        "delete_blueprint": "Slett blueprint",
-                        "header": "Blueprint Editor",
+                        "add_blueprint": "Importer Blueprint",
+                        "confirm_delete_header": "Slette denne Blueprinten?",
+                        "confirm_delete_text": "Er du sikker på at du vil slette denne Blueprinten",
+                        "delete_blueprint": "Slett Blueprint",
+                        "discover_more": "Oppdag flere Blueprinter",
+                        "header": "Blueprint-redigering",
                         "headers": {
                             "domain": "Domene",
                             "file_name": "Filnavn",
                             "name": "Navn"
                         },
-                        "introduction": "Med blueprint-konfigurasjonen kan du importere og administrere dine blueprints.",
-                        "learn_more": "Finn ut mer om hvordan du bruker blueprints",
+                        "introduction": "Med Blueprint-konfigurasjonen kan du importere og behandle dine Blueprinter",
+                        "learn_more": "Finn ut mer om hvordan du bruker Blueprinter",
                         "use_blueprint": "Opprett automasjon"
                     }
                 },
