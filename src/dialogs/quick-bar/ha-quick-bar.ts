@@ -531,7 +531,7 @@ export class QuickBar extends LitElement {
         }
 
         mwc-list-item.command-item {
-          text-transform: capitalize;
+          text-transform: none;
         }
       `,
     ];
