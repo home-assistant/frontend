@@ -537,8 +537,7 @@ class HaChartBase extends mixinBehaviors(
   static getColorGenerator(staticColors, startIndex) {
     // Known colors for static data,
     // should add for very common state string manually.
-    // Palette modified from http://google.github.io/palette.js/ mpn65, Apache 2.0
-    // Some changes based upon bulma.io/documentation/overview/colors/, and Kibibit/kb-better-graph-colors (MIT)
+    // Palette modified from https://www.materialui.co/colors
     const palette = [
       "FF5722",
       "4CAF50",
