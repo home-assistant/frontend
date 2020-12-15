@@ -1417,7 +1417,7 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "форумов сообщества",
+                        "community_forums": "форума сообщества",
                         "error_no_url": "Введите URL-адрес проекта.",
                         "file_name": "Путь к проекту",
                         "header": "Импортировать проект",

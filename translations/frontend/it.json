@@ -1266,7 +1266,7 @@
                             "queued": "Lunghezza della coda"
                         },
                         "modes": {
-                            "description": "La modalità controlla cosa succede quando l'automazione viene attivata mentre le azioni sono ancora in esecuzione da una attivazione precedente. Controllare {documentation_link} per maggiori informazioni.",
+                            "description": "La Modalità controlla cosa succede quando l'automazione viene attivata mentre le azioni sono ancora in esecuzione da una attivazione precedente. Controllare la {documentation_link} per maggiori informazioni.",
                             "documentation": "documentazione di automazione",
                             "label": "Modalità",
                             "parallel": "Parallelo",
@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "forum della comunità",
                         "error_no_url": "Inserisci l'URL del progetto.",
                         "file_name": "Percorso del progetto",
                         "header": "Importa un progetto",
                         "import_btn": "Anteprima del progetto",
                         "import_header": "Progetto \"{name}\"",
                         "import_introduction": "Puoi importare progetti di altri utenti da Github e dai forum della comunità. Immettere l'URL del progetto di seguito.",
+                        "import_introduction_link": "Puoi importare progetti di altri utenti da Github e {community_link} . Immettere l'URL del progetto di seguito.",
                         "importing": "Caricamento progetto ...",
                         "raw_blueprint": "Contenuto del progetto",
                         "save_btn": "Importa progetto",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Eliminare questo progetto?",
                         "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
                         "delete_blueprint": "Elimina progetto",
+                        "discover_more": "Scopri altri progetti",
                         "header": "Editor del progetto",
                         "headers": {
                             "domain": "Dominio",
@@ -1865,10 +1868,10 @@
                     "system_health": {
                         "checks": {
                             "cloud": {
-                                "alexa_enabled": "Alexa abilitato",
-                                "can_reach_cert_server": "Raggiungi il server dei certificati",
-                                "can_reach_cloud": "Raggiungi Home Assistant Cloud",
-                                "can_reach_cloud_auth": "Raggiungi il server di autenticazione",
+                                "alexa_enabled": "Alexa abilitata",
+                                "can_reach_cert_server": "Server dei Certificati raggiungibile",
+                                "can_reach_cloud": "Home Assistant Cloud raggiungibile",
+                                "can_reach_cloud_auth": "Server di Autenticazione raggiungibile",
                                 "google_enabled": "Google abilitato",
                                 "logged_in": "Accesso effettuato",
                                 "relayer_connected": "Relayer connesso",
@@ -2293,7 +2296,7 @@
                         "id": "ID Entità",
                         "id_already_exists": "Questo ID esiste già",
                         "id_already_exists_save_error": "Non è possibile salvare questo script perché l'ID non è univoco, scegliere un altro ID o lasciarlo vuoto per generarne automaticamente uno.",
-                        "introduction": "Utilizzare gli script per eseguire una sequenza di azioni.",
+                        "introduction": "Utilizza gli Script per eseguire una sequenza di azioni.",
                         "link_available_actions": "Ulteriori informazioni sulle azioni disponibili.",
                         "load_error_not_editable": "Solo gli script all'interno di scripts.yaml sono modificabili.",
                         "max": {
@@ -2301,8 +2304,8 @@
                             "queued": "Lunghezza della coda"
                         },
                         "modes": {
-                            "description": "La modalità controlla cosa succede quando lo script viene invocato mentre è ancora in esecuzione da una o più invocazioni precedenti. Controllare il {documentation_link} per maggiori informazioni.",
-                            "documentation": "documentazione dello script",
+                            "description": "La Modalità controlla cosa succede quando lo script viene invocato mentre è ancora in esecuzione una o più invocazioni precedenti. Controllare la {documentation_link} per maggiori informazioni.",
+                            "documentation": "documentazione degli script",
                             "label": "Modalità",
                             "parallel": "Parallelo",
                             "queued": "In coda",
@@ -2311,7 +2314,7 @@
                         },
                         "save_script": "Salva script",
                         "sequence": "Sequenza",
-                        "sequence_sentence": "Sequenza di azioni di questo script."
+                        "sequence_sentence": "Sequenza delle azioni di questo Script."
                     },
                     "picker": {
                         "add_script": "Aggiungi script",
