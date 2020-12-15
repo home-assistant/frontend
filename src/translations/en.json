@@ -1148,7 +1148,7 @@
           },
           "editor": {
             "enable_disable": "Enable/Disable automation",
-            "introduction": "Use automations to bring your home to live.",
+            "introduction": "Use automations to bring your home to life.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
             "load_error_unknown": "Error loading automation ({err_no}).",
