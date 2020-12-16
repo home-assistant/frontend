@@ -2346,7 +2346,7 @@
                             "generic": "Nově načíst entity integrace Generic IP camera",
                             "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
                             "group": "Nově načíst skupiny, skupiny entit a notifikační služby",
-                            "heading": "Nastavení z YAML se načítá",
+                            "heading": "Nové načtení YAML konfigurace",
                             "history_stats": "Nově načíst entity integrace History stats",
                             "homekit": "Nově načíst entity integrace HomeKit",
                             "input_boolean": "Nově načíst pomocníky - přepínače",

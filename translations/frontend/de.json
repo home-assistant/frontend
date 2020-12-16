@@ -2865,7 +2865,7 @@
                     "card": {
                         "alarm-panel": {
                             "available_states": "Verfügbare Zustände",
-                            "description": "Mit der Alarmzentralen-Karte kannst du die Integrationen Ihrer Alarmzentrale aktivieren und deaktivieren.",
+                            "description": "Mit der Alarmzentralen-Karte kannst du integrierte Alarmzentralen scharfschalten oder deaktivieren.",
                             "name": "Alarmpanel"
                         },
                         "button": {
@@ -3130,7 +3130,7 @@
                         "header_name": "{name} Konfiguration anzeigen",
                         "move_left": "Ansicht nach links verschieben",
                         "move_right": "Ansicht nach rechts verschieben",
-                        "tab_badges": "Abzeichen",
+                        "tab_badges": "Plaketten",
                         "tab_settings": "Einstellungen",
                         "tab_visibility": "Sichtbarkeit",
                         "visibility": {
