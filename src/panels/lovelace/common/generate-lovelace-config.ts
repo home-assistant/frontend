@@ -14,6 +14,7 @@ import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { compare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { subscribeOne } from "../../../common/util/subscribe-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -382,6 +383,7 @@ export const generateDefaultViewConfig = (
 };
 
 export const generateLovelaceConfigFromData = async (
+  hass: HomeAssistant,
   config: HassConfig,
   areaEntries: AreaRegistryEntry[],
   deviceEntries: DeviceRegistryEntry[],
@@ -440,7 +442,7 @@ export const generateLovelaceConfigFromData = async (
     );
 
     // Add map of geo locations to default view if loaded
-    if (config.components.includes("geo_location")) {
+    if (isComponentLoaded(hass, "geo_location")) {
       if (views[0] && views[0].cards) {
         views[0].cards.push({
           type: "map",
@@ -510,6 +512,7 @@ export const generateLovelaceConfigFromHass = async (
   ]);
 
   return generateLovelaceConfigFromData(
+    hass,
     hass.config,
     areaEntries,
     deviceEntries,
