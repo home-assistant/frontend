@@ -384,16 +384,15 @@ export const generateDefaultViewConfig = (
 
 export const generateLovelaceConfigFromData = async (
   hass: HomeAssistant,
-  config: HassConfig,
   areaEntries: AreaRegistryEntry[],
   deviceEntries: DeviceRegistryEntry[],
   entityEntries: EntityRegistryEntry[],
   entities: HassEntities,
   localize: LocalizeFunc
 ): Promise<LovelaceConfig> => {
-  if (config.safe_mode) {
+  if (hass.config.safe_mode) {
     return {
-      title: config.location_name,
+      title: hass.config.location_name,
       views: [
         {
           cards: [{ type: "safe-mode" }],
@@ -423,7 +422,7 @@ export const generateLovelaceConfigFromData = async (
     );
   });
 
-  let title = config.location_name;
+  let title = hass.config.location_name;
 
   // User can override default view. If they didn't, we will add one
   // that contains all entities.
@@ -513,7 +512,6 @@ export const generateLovelaceConfigFromHass = async (
 
   return generateLovelaceConfigFromData(
     hass,
-    hass.config,
     areaEntries,
     deviceEntries,
     entityEntries,
