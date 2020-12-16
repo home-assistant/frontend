@@ -1,5 +1,4 @@
 import {
-  HassConfig,
   HassEntities,
   HassEntity,
   STATE_NOT_RUNNING,
