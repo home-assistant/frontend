@@ -101,7 +101,7 @@ class HaPanelHistory extends LitElement {
                   .hass=${this.hass}
                   .historyData=${this._stateHistory}
                   .endTime=${this._endDate}
-                  no-single
+                  noSingle
                 >
                 </state-history-charts>
               `}
