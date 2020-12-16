@@ -1062,7 +1062,7 @@
               "input_select": "Reload input selects",
               "template": "Reload template entities",
               "universal": "Reload universal media player entities",
-              "rest": "Reload rest entities and notify services",
+              "rest": "Reload rest entities, and rest notify services",
               "command_line": "Reload command line entities",
               "filter": "Reload filter entities",
               "statistics": "Reload statistics entities",
