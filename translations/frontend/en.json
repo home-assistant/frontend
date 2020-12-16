@@ -1258,7 +1258,7 @@
                         "edit_ui": "Edit with UI",
                         "edit_yaml": "Edit as YAML",
                         "enable_disable": "Enable/Disable automation",
-                        "introduction": "Use automations to bring your home to live.",
+                        "introduction": "Use automations to bring your home to life.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
                         "load_error_unknown": "Error loading automation ({err_no}).",
                         "max": {
