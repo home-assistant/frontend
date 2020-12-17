@@ -1562,7 +1562,7 @@
             }
           },
           "editor": {
-            "introduction": "Use scenes to bring your home to live.",
+            "introduction": "Use scenes to bring your home to life.",
             "default_name": "New Scene",
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
