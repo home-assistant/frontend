@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "Forums communautaires",
                         "error_no_url": "Veuillez entrer l'URL du plan",
                         "file_name": "Chemin du fichier de plan local",
                         "header": "Importer un plan",
                         "import_btn": "Aperçu du plan",
                         "import_header": "Importer \" {name} \" (type: {domain} )",
                         "import_introduction": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'URL du plan ci-dessous.",
+                        "import_introduction_link": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'URL du plan ci-dessous.",
                         "importing": "Chargement du plan ...",
                         "raw_blueprint": "Contenu du plan",
                         "save_btn": "Importer un plan",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Supprimer ce plan ?",
                         "confirm_delete_text": "Êtes-vous sûr de vouloir supprimer ce plan ?",
                         "delete_blueprint": "Supprimer le plan",
+                        "discover_more": "Découvrez plus de plans",
                         "header": "Éditeur de plans",
                         "headers": {
                             "domain": "Domaine",
@@ -1735,6 +1738,7 @@
                     "picker": {
                         "filter": {
                             "filter": "Filtre",
+                            "hidden_devices": "{number} caché {number, plural,\n  one {entité}\n  other {entités}\n}",
                             "show_all": "Tout afficher",
                             "show_disabled": "Afficher les appareils désactivés"
                         },

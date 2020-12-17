@@ -1077,7 +1077,7 @@
                         },
                         "header": "Vytvoření automatizace",
                         "how": "Jak chcete vytvořit svou novou automatizaci?",
-                        "start_empty": "Začněte s prázdnou automatizací",
+                        "start_empty": "Začít s prázdnou automatizací",
                         "thingtalk": {
                             "create": "Vytvořit",
                             "header": "Popište automatizaci, kterou chcete vytvořit",
@@ -1837,7 +1837,7 @@
                     },
                     "types": {
                         "counter": "Počítadlo",
-                        "input_boolean": "Přepnout",
+                        "input_boolean": "Přepínač",
                         "input_datetime": "Datum a/nebo čas",
                         "input_number": "Číslo",
                         "input_select": "Výběr",
