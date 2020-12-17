@@ -1258,7 +1258,7 @@
                         "edit_ui": "Redigeeri kasutajaliidese abil",
                         "edit_yaml": "Redigeeri YAML-ina",
                         "enable_disable": "Luba/Keela automatiseering",
-                        "introduction": "Kasuta oma kodule elu sisse puhumiseks automatiseeringuid.",
+                        "introduction": "Kasuta automatiseeringuid oma kodule elu sisse puhumiseks.",
                         "load_error_not_editable": "Ainult automations.yaml failis asuvad automatiseeringud on muudetavad.",
                         "load_error_unknown": "Viga automatiseeringu laadimisel ({err_no}).",
                         "max": {

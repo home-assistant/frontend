@@ -529,7 +529,7 @@
             "rename": "Rinomina",
             "save": "Salva",
             "skip": "Salta",
-            "stay": "Rimanere",
+            "stay": "Rimani",
             "successfully_deleted": "Cancellato con successo",
             "successfully_saved": "Salvataggio riuscito",
             "undo": "Annulla",
@@ -1258,7 +1258,7 @@
                         "edit_ui": "Modifica con l'Interfaccia Utente",
                         "edit_yaml": "Modifica come YAML",
                         "enable_disable": "Abilitare/Disabilitare l'automazione",
-                        "introduction": "Usa le automazioni per far vivere la tua casa.",
+                        "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
                         "max": {
