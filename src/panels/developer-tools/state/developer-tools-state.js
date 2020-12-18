@@ -275,7 +275,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
       _showAttributes: {
         type: Boolean,
-        value: JSON.parse(localStorage.getItem("showAttributesDevTools") || true),
+        value: JSON.parse(localStorage.getItem("devToolsShowAttributes") || true),
       },
 
       _entities: {
