@@ -515,12 +515,15 @@
                 "clear": "Hreinsa",
                 "device": "Tæki",
                 "no_area": "Ekkert svæði",
+                "no_devices": "Þú ert ekki með nein tæki",
+                "no_match": "Engin samsvarandi tæki fundust",
                 "show_devices": "Sýna tæki"
             },
             "entity": {
                 "entity-picker": {
                     "clear": "Hreinsa",
-                    "entity": "Eining"
+                    "entity": "Eining",
+                    "no_match": "Engar samsvarandi einingar fundust"
                 }
             },
             "history_charts": {
@@ -561,6 +564,12 @@
             },
             "service-picker": {
                 "service": "Þjónusta"
+            },
+            "target-picker": {
+                "add_area_id": "Veldu svæði",
+                "add_device_id": "Velja tæki",
+                "remove_device_id": "Fjarlægja tæki",
+                "remove_entity_id": "Fjarlægja einingu"
             }
         },
         "dialogs": {
@@ -1188,6 +1197,13 @@
                     "description": "Stjórna tengdum tækjum",
                     "device_info": "Upplýsingar um tæki",
                     "device_not_found": "Tæki fannst ekki.",
+                    "disabled": "Afvirkjað",
+                    "disabled_by": {
+                        "integration": "Samþætting",
+                        "user": "Notandi"
+                    },
+                    "enabled_cause": "Afvirkjað vegna {cause}.",
+                    "enabled_label": "Virkja einingu",
                     "entities": {
                         "add_entities_lovelace": "Bæta við í Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {óvirk eining}\n  other {óvirkar einingar}\n}",
@@ -1195,6 +1211,15 @@
                     },
                     "name": "Nafn",
                     "no_devices": "Engin tæki",
+                    "picker": {
+                        "filter": {
+                            "filter": "Sía",
+                            "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+                            "show_all": "Sýna allt",
+                            "show_disabled": "Sýna óvirk tæki"
+                        },
+                        "search": "Leit að tækjum"
+                    },
                     "scene": {
                         "no_scenes": "Engar senur",
                         "scenes": "Senur"
@@ -2184,10 +2209,12 @@
                 "change_password": {
                     "confirm_new_password": "Staðfesta nýtt lykilorð",
                     "current_password": "Núverandi lykilorð",
+                    "error_new_is_old": "Nýja lykilorðið verður að vera annað en núverandi lykilorð",
                     "error_required": "Skilyrt",
                     "header": "Breyta lykilorði",
                     "new_password": "Nýtt lykilorð",
-                    "submit": "Senda"
+                    "submit": "Senda",
+                    "success": "Lykilorðið breytt"
                 },
                 "current_user": "Þú ert skráð(ur) inn sem {fullName}.",
                 "customize_sidebar": {
