@@ -22,7 +22,7 @@ class StateHistoryCharts extends LitElement {
 
   @property() public names = false;
 
-  @property() public endTime;
+  @property() public endTime?: Date;
 
   @property() public upToNow = false;
 
@@ -79,7 +79,7 @@ class StateHistoryCharts extends LitElement {
     `;
   }
 
-  private _isHistoryEmpty() {
+  private _isHistoryEmpty(): boolean {
     const historyDataEmpty =
       !this.historyData ||
       !this.historyData.timeline ||
@@ -89,10 +89,10 @@ class StateHistoryCharts extends LitElement {
     return !this.isLoadingData && historyDataEmpty;
   }
 
-  _computeEndTime() {
+  private _computeEndTime(): Date {
     // We don't really care about the value of historyData, but if it change we want to update
     // endTime.
-    return this.upToNow ? new Date() : this.endTime;
+    return this.upToNow ? new Date() : this.endTime || new Date();
   }
 
   static get styles(): CSSResult {
