@@ -124,13 +124,17 @@ export const getLogbookMessage = (
   switch (domain) {
     case "device_tracker":
     case "person":
-      return state === "not_home"
-        ? hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`)
-        : hass.localize(
-            `${LOGBOOK_LOCALIZE_PATH}.was_at_state`,
-            "state",
-            state
-          );
+      if (state === "not_home") {
+        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
+      }
+      if (state === "home") {
+        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
+      }
+      return hass.localize(
+        `${LOGBOOK_LOCALIZE_PATH}.was_at_state`,
+        "state",
+        state
+      );
 
     case "sun":
       return state === "above_horizon"
