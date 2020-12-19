@@ -314,11 +314,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: var(--ha-pic-card-background-color, rgba(0, 0, 0, 0.3));
         padding: 4px 8px;
         font-size: 16px;
         line-height: 40px;
-        color: white;
+        color: var(--ha-pic-card-text-color, white);
         display: flex;
         justify-content: space-between;
         flex-direction: row;
@@ -332,11 +332,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       ha-icon-button {
         --mdc-icon-button-size: 40px;
         --disabled-text-color: currentColor;
-        color: #a9a9a9;
+        color: var(--ha-pic-icon-button-color, #a9a9a9);
       }
 
       ha-icon-button.state-on {
-        color: white;
+        color: var(--ha-pic-icon-button-on-color, white);
       }
       .state {
         display: block;
