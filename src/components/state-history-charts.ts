@@ -71,7 +71,7 @@ class StateHistoryCharts extends LitElement {
             .isSingleDevice=${!this.noSingle &&
             line.data &&
             line.data.length === 1}
-            .end-time=${this._computeEndTime()}
+            .endTime=${this._computeEndTime()}
             .names=${this.names}
           ></state-history-chart-line>
         `
