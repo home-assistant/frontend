@@ -3447,7 +3447,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistent verbirgt standardmäßig erweiterte Funktionen und Optionen. Mache diese Funktionen zugänglich, indem diese Option aktiviert wird. Dies ist eine benutzerspezifische Einstellung, die sich nicht auf andere Benutzer auswirkt, die Home Assistant verwenden.",
+                    "description": "Home Assistant verbirgt standardmäßig erweiterte Funktionen und Optionen. Mache diese Funktionen zugänglich, indem diese Option aktiviert wird. Dies ist eine benutzerspezifische Einstellung, die sich nicht auf andere Benutzer auswirkt, die Home Assistant verwenden.",
                     "link_promo": "Mehr erfahren",
                     "title": "Erweiterter Modus"
                 },
@@ -3500,7 +3500,7 @@
                     "description": "Erstelle langlebige Zugriffstoken, damit deine Skripte mit deiner Home Assistant-Instanz interagieren können. Jedes Token ist ab der Erstellung für 10 Jahre gültig. Die folgenden langlebigen Zugriffstoken sind derzeit aktiv.",
                     "empty_state": "Sie haben noch keine langlebigen Zugangs-Token.",
                     "header": "Langlebige Zugangs-Token",
-                    "last_used": "Zuletzt verwendet am {date} in {location}",
+                    "last_used": "Zuletzt verwendet {date} von {location}",
                     "learn_auth_requests": "Erfahre, wie du authentifizierte Anfragen stellen kannst.",
                     "name": "Name",
                     "not_used": "Wurde noch nie benutzt",
@@ -3539,7 +3539,7 @@
                     "delete_failed": "Fehler beim Löschen das Aktualisierungs-Token.",
                     "description": "Jedes Aktualisierungs-Token stellt eine Anmeldesitzung dar. Aktualisierungs-Token werden automatisch entfernt, wenn Sie Abmelden klicken. Die folgenden Aktualisierungs-Token sind derzeit für Ihr Konto aktiv.",
                     "header": "Aktualisierungs-Tokens",
-                    "last_used": "Zuletzt verwendet am {date} in {location}",
+                    "last_used": "Zuletzt verwendet {date} von {location}",
                     "not_used": "Wurde noch nie benutzt",
                     "token_title": "Aktualisierungs-Token für {clientId}"
                 },
