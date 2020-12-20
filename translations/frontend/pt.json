@@ -2292,7 +2292,7 @@
                         "id": "ID da entidade",
                         "id_already_exists": "Este ID já existe",
                         "id_already_exists_save_error": "Nāo pode gravar este script porque este ID não é único, escolha outro ID ou deixe em branco para ser gerado automaticamente.",
-                        "introduction": "Use scripts para executar uma seqüência de ações.",
+                        "introduction": "Use scripts para executar uma sequência de ações.",
                         "link_available_actions": "Saiba mais sobre ações disponíveis.",
                         "load_error_not_editable": "Apenas os scripts em scripts.yaml são editáveis.",
                         "max": {
@@ -2309,8 +2309,8 @@
                             "single": "Predefinição"
                         },
                         "save_script": "Salvar script",
-                        "sequence": "Seqüência",
-                        "sequence_sentence": "A seqüência de ações para este script."
+                        "sequence": "Sequência",
+                        "sequence_sentence": "A sequência de ações para este script."
                     },
                     "picker": {
                         "add_script": "Adicionar script",

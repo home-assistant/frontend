@@ -20,6 +20,7 @@
         "logbook": "Log de eventos",
         "mailbox": "Caixa de correio",
         "map": "Mapa",
+        "media_browser": "Navegador Multimídia",
         "profile": "Perfil",
         "shopping_list": "Lista de compras",
         "states": "Visão geral"
@@ -360,7 +361,7 @@
             },
             "automation": {
                 "last_triggered": "Último disparo",
-                "trigger": "Gatilho"
+                "trigger": "Executar"
             },
             "camera": {
                 "not_available": "Imagem indisponível"
@@ -589,6 +590,11 @@
                 "by_service": "por serviço",
                 "entries_not_found": "Não foram encontradas entradas no registro",
                 "messages": {
+                    "became_unavailable": "ficou indisponível",
+                    "changed_to_state": "alterado para {state}",
+                    "cleared_device_class": "liberado ({device_class} não detectado(a))",
+                    "detected_device_class": "{device_class} detectado",
+                    "set": "Pôr do sol",
                     "turned_off": "desligou",
                     "turned_on": "ligou",
                     "was_at_home": "estava em casa",
@@ -596,6 +602,8 @@
                     "was_connected": "foi conectado",
                     "was_disconnected": "foi desconectado",
                     "was_locked": "foi trancada",
+                    "was_low": "estava baixo",
+                    "was_normal": "estava normal",
                     "was_opened": "foi aberto",
                     "was_plugged_in": "foi conectado",
                     "was_safe": "estava seguro",
@@ -1152,7 +1160,7 @@
                             "documentation": "documentação da automação",
                             "label": "Modo",
                             "parallel": "Paralelo",
-                            "queued": "Enfileirado",
+                            "queued": "Fila",
                             "restart": "Reiniciar",
                             "single": "Único (padrão)"
                         },
@@ -2055,7 +2063,7 @@
                             "documentation": "documentação do script",
                             "label": "Modo",
                             "parallel": "Paralelo",
-                            "queued": "Enfileirado",
+                            "queued": "Fila",
                             "restart": "Reiniciar",
                             "single": "Único (padrão)"
                         },
@@ -2110,7 +2118,7 @@
                             "smtp": "Recarregar serviços de notificação de SMTP",
                             "statistics": "Recarregar estatísticas de entidades",
                             "template": "Recarregar entidades de modelo",
-                            "universal": "Recarregar entidades universais de media players",
+                            "universal": "Recarregar entidades de reprodutor de mídia universal",
                             "zone": "Recarregar zonas"
                         },
                         "server_management": {
