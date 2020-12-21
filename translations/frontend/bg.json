@@ -1552,7 +1552,7 @@
                         "delete": "Изтриване",
                         "delete_confirm": "Сигурни ли сте, че искате да изтриете интеграцията?",
                         "device_unavailable": "Устройството е недостъпно",
-                        "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройтва}\n}",
+                        "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройства}\n}",
                         "entities": "{count} {count, plural,\n  one {обект}\n  other {обекти}\n}",
                         "entity_unavailable": "Обектът е недостъпен",
                         "firmware": "Фърмуер: {version}",
