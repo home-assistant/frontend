@@ -520,7 +520,8 @@
                 "show_areas": "Zobraziť oblasti"
             },
             "data-table": {
-                "no-data": "Žiadne údaje"
+                "no-data": "Žiadne údaje",
+                "search": "Hľadať"
             },
             "date-range-picker": {
                 "end_date": "Dátum konca",
@@ -530,6 +531,7 @@
             "device-picker": {
                 "clear": "Vyčistiť",
                 "device": "Zariadenie",
+                "no_area": "Žiadna oblasť",
                 "no_devices": "Nemáte žiadne zariadenia",
                 "no_match": "Nenašli sa žiadne zodpovedajúce zariadenia",
                 "show_devices": "Zobraziť zariadenia",
@@ -649,10 +651,21 @@
                     "week": "Za {count} {count, plural,\n  one {týždeň}\n  other {týždňov}\n}"
                 },
                 "never": "Nikdy",
-                "past": "Pred {time}"
+                "past": "Pred {time}",
+                "past_duration": {
+                    "day": "Pred {count} {count, plural,\none {dňom}\nother {dňami}\n}",
+                    "hour": "Pred {count} {count, plural,\n  one {hodinou}\n  other {hodinami}\n}",
+                    "minute": "Pred {count} {count, plural,\none {minútou}\nother {minútami}\n}",
+                    "second": "Pred {count} {count, plural,\none {sekundou}\nother {sekundami}\n}",
+                    "week": "Pred {count} {count, plural,\none {týždňom}\nother {týždňami}\n}"
+                }
             },
             "service-picker": {
                 "service": "Služba"
+            },
+            "target-picker": {
+                "add_area_id": "Vybrať oblasť",
+                "remove_area_id": "Odstrániť oblasť"
             }
         },
         "dialogs": {
@@ -793,9 +806,20 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "areas": "Oblasti",
+                        "logs": "Logy"
+                    },
                     "reload": {
+                        "automation": "Znovu načítať automatizácie",
+                        "command_line": "Znovu načítať Command line entity",
+                        "input_boolean": "Znovu načítať pomocníkov - prepínače",
                         "mqtt": "Znovu načítať mqtt entity",
-                        "rpi_gpio": "Znovu načítať Raspberry Pi GPIO entity"
+                        "person": "Znovu načítať osoby",
+                        "rpi_gpio": "Znovu načítať Raspberry Pi GPIO entity",
+                        "scene": "Znovu načítať scény",
+                        "script": "Znovu načítať skripty",
+                        "zone": "Znovu načítať zóny"
                     }
                 },
                 "filter_placeholder": "Filter entít"
@@ -878,11 +902,13 @@
                     },
                     "description": "Spravujte všetky oblasti vo vašej domácnosti.",
                     "editor": {
+                        "area_id": "ID oblasti",
                         "create": "VYTVORIŤ",
                         "default_name": "Nová oblasť",
                         "delete": "VYMAZAŤ",
                         "name": "Názov",
                         "name_required": "Názov je povinný",
+                        "unknown_error": "Neznáma chyba",
                         "update": "AKTUALIZOVAŤ"
                     },
                     "picker": {
@@ -1401,6 +1427,7 @@
                         "device": "Zariadenie",
                         "integration": "Integrácia",
                         "manufacturer": "Výrobca",
+                        "no_area": "Žiadna oblasť",
                         "no_devices": "Žiadne zariadenia"
                     },
                     "delete": "Odstrániť",
@@ -1453,12 +1480,14 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "show_all": "Zobraziť všetko",
                             "show_disabled": "Zobraziť zakázané entity",
                             "show_readonly": "Zobraziť entity len na čítanie",
                             "show_unavailable": "Zobraziť nedostupné entity"
                         },
                         "header": "Register entít",
                         "headers": {
+                            "area": "Oblasť",
                             "entity_id": "ID entity",
                             "integration": "Integrácia",
                             "name": "Názov",
@@ -1605,6 +1634,7 @@
                 "introduction": "Tu je možné konfigurovať vaše komponenty a Home Assistant. Aktuálne sa z používateľského rozhrania nedá konfigurovať všetko, ale pracujeme na tom.",
                 "logs": {
                     "clear": "Vyčistiť",
+                    "description": "Prezrite si logy v Home Assistant",
                     "details": "Podrobnosti denníka ( {level} )",
                     "load_full_log": "Načítať celý denník denníka asistenta",
                     "loading_log": "Načítava sa denník chýb...",
@@ -1787,6 +1817,7 @@
                         "update": "Aktualizovať"
                     },
                     "introduction": "Tu môžete definovať každú osobu, ktorá vás zaujíma v Home Assistant.",
+                    "learn_more": "Získajte viac informácií o osobách",
                     "no_persons_created_yet": "Zdá sa, že ste ešte nevytvorili žiadne osoby.",
                     "note_about_persons_configured_in_yaml": "Poznámka: osoby nakonfigurované prostredníctvom configuration.yaml nie je možné upravovať pomocou používateľského rozhrania.",
                     "person_not_found": "Nemohli sme nájsť osobu, ktorú ste sa snažili upraviť.",
@@ -1932,7 +1963,12 @@
                         "companion_apps": "sprievodné aplikácie",
                         "create": "Vytvoriť",
                         "delete": "Odstrániť",
+                        "name": "Názov",
                         "update": "Aktualizovať"
+                    },
+                    "headers": {
+                        "last_scanned": "Naposledy naskenované",
+                        "name": "Názov"
                     },
                     "never_scanned": "Nikdy neskenované",
                     "no_tags": "Žiadne značky",
@@ -1970,13 +2006,16 @@
                         "system_generated_users_not_editable": "Nie je možné aktualizovať používateľov generovaných systémom.",
                         "system_generated_users_not_removable": "Nie je možné odstrániť používateľov generovaných systémom.",
                         "unnamed_user": "Nepomenovaný používateľ",
-                        "update_user": "Aktualizovať"
+                        "update_user": "Aktualizovať",
+                        "username": "Užívateľské meno"
                     },
                     "picker": {
                         "headers": {
                             "group": "Skupina",
+                            "is_active": "Aktívny",
                             "name": "Názov",
-                            "system": "Systém"
+                            "system": "Systém",
+                            "username": "Užívateľské meno"
                         }
                     }
                 },
@@ -2617,6 +2656,7 @@
                     "entity": "Entita",
                     "entity_id": "Entity ID",
                     "last_changed": "Posledná zmena",
+                    "search": "Vyhľadať entity",
                     "select_to_add": "Vyberte entity, ktoré chcete pridať na kartu, a potom kliknite na tlačidlo Pridať kartu.",
                     "title": "Nepoužité entity"
                 },
