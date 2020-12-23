@@ -1313,8 +1313,11 @@
                     },
                     "overview": {
                         "headers": {
+                            "domain": "Домейн",
+                            "file_name": "Име на файл",
                             "name": "Име"
-                        }
+                        },
+                        "use_blueprint": "Създайте автоматизация"
                     }
                 },
                 "cloud": {
@@ -1429,6 +1432,7 @@
                             "no_conditions": "Няма условия",
                             "unknown_condition": "Неизвестно условие"
                         },
+                        "create_disable": "Не може да се създаде автоматизация с деактивирано устройство",
                         "no_automations": "Няма автоматизации",
                         "unknown_automation": "Неизвестна автоматизация"
                     },
@@ -1448,9 +1452,12 @@
                     "description": "Управление на конфигурираните устройства",
                     "disabled": "Деактивирано",
                     "disabled_by": {
+                        "config_entry": "Конфигурационен запис",
                         "integration": "Интеграция",
                         "user": "Потребител"
                     },
+                    "enabled_cause": "Устройството е деактивирано от {cause} .",
+                    "enabled_label": "Активиране на устройството",
                     "entities": {
                         "add_entities_lovelace": "Добавете към Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {деактивиран обект}\n  other {деактивирани обекти}\n}",
@@ -1474,6 +1481,7 @@
                     },
                     "scenes": "Сцени",
                     "script": {
+                        "create_disable": "Не може да се създаде скрипт с деактивирано устройство",
                         "no_scripts": "Няма скриптове",
                         "scripts": "Скриптове"
                     },
@@ -1825,13 +1833,17 @@
                         "owner": "Собственик",
                         "password_changed": "Паролата беше променена успешно",
                         "system_generated": "Генерирано от системата",
-                        "system_generated_users_not_editable": "Неуспешно обновяване на системно генерираните потребители"
+                        "system_generated_users_not_editable": "Неуспешно обновяване на системно генерираните потребители",
+                        "username": "Потребителско име"
                     },
                     "picker": {
                         "add_user": "Добавяне на потребител",
                         "headers": {
                             "group": "Група",
-                            "name": "Показвано име"
+                            "is_active": "Активен",
+                            "is_owner": "Собственик",
+                            "name": "Показвано име",
+                            "username": "Потребителско име"
                         }
                     }
                 },
@@ -1854,10 +1866,22 @@
                     },
                     "description": "Управление на Zigbee мрежата за домашна автоматизация",
                     "device_pairing_card": {
+                        "CONFIGURED": "Конфигурирането завърши",
+                        "CONFIGURED_status_text": "Инициализация",
+                        "INITIALIZED": "Инициализацията завърши",
+                        "INITIALIZED_status_text": "Устройството е готово за употреба",
+                        "INTERVIEW_COMPLETE_status_text": "Конфигуриране",
                         "PAIRED": "Намерено устройство"
+                    },
+                    "groups": {
+                        "add_group": "Добавяне на група"
                     },
                     "node_management": {
                         "hint_wakeup": "Някои устройства като сензорите Xiaomi имат бутон за събуждане, който можете да натискате на интервали от ~ 5 секунди, които поддържат устройствата будни, докато взаимодействате с тях."
+                    },
+                    "visualization": {
+                        "caption": "Визуализация",
+                        "header": "Визуализация на мрежата"
                     }
                 },
                 "zone": {

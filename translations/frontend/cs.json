@@ -1110,8 +1110,8 @@
                                     "label": "Stav"
                                 },
                                 "delay": {
-                                    "delay": "Zpoždění",
-                                    "label": "Zpoždění"
+                                    "delay": "Pozdržení",
+                                    "label": "Pozdržení"
                                 },
                                 "device_id": {
                                     "action": "Akce",
