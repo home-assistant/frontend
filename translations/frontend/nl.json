@@ -1258,7 +1258,7 @@
                         "edit_ui": "Bewerken met UI",
                         "edit_yaml": "Bewerken als YAML",
                         "enable_disable": "Schakel automatisering in/uit",
-                        "introduction": "Gebruik automatiseringen om je huis tot leven te brengen.",
+                        "introduction": "Gebruik automatiseringen om uw huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij laden van automatisering ({err_no}).",
                         "max": {
@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "communityforums",
                         "error_no_url": "Voer de URL van de Blueprint in.",
                         "file_name": "Blueprint pad",
                         "header": "Voeg een nieuwe Blueprint toe",
                         "import_btn": "Bekijk een Blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de communityforums. Voer de URL van de Blueprint hieronder in.",
+                        "import_introduction_link": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de {community_link} . Voer de URL van de Blueprint hieronder in.",
                         "importing": "Blueprint importeren ...",
                         "raw_blueprint": "Blueprint inhoud",
                         "save_btn": "Blueprint importeren",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Deze Blueprint verwijderen?",
                         "confirm_delete_text": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
                         "delete_blueprint": "Verwijder Blueprint",
+                        "discover_more": "Ontdek meer Blueprints",
                         "header": "Blueprinteditor",
                         "headers": {
                             "domain": "Domein",
