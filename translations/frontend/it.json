@@ -418,8 +418,8 @@
             },
             "lock": {
                 "code": "Codice",
-                "lock": "Blocco",
-                "unlock": "Sbloccato"
+                "lock": "Blocca",
+                "unlock": "Sblocca"
             },
             "media_player": {
                 "browse_media": "Sfoglia i file multimediali",
