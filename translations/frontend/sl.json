@@ -2,11 +2,13 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Vnos konfiguracije",
+            "device": "Naprave",
             "integration": "Integracija",
             "user": "Uporabnik"
         }
     },
     "groups": {
+        "owner": "Lastnik",
         "system-admin": "Skrbniki",
         "system-read-only": "Uporabniki \"samo za branje\"",
         "system-users": "Uporabniki"
@@ -19,7 +21,7 @@
         "logbook": "Dnevnik",
         "mailbox": "Nabiralnik",
         "map": "Zemljevid",
-        "media_browser": "Medijski brskalnik",
+        "media_browser": "Brskalnik po medijskih vsebinah",
         "profile": "Profil",
         "shopping_list": "Nakupovalni seznam",
         "states": "Pregled"
@@ -514,7 +516,7 @@
             "disable": "Onemogoči",
             "enable": "Omogoči",
             "error_required": "Zahtevano",
-            "leave": "Odidi",
+            "leave": "Zapusti",
             "loading": "Nalaganje",
             "menu": "Meni",
             "next": "Naslednji",
@@ -523,7 +525,7 @@
             "overflow_menu": "Prelivni meni",
             "previous": "Prejšnji",
             "refresh": "Osveži",
-            "remove": "Odstraniti",
+            "remove": "Odstrani",
             "rename": "Preimenuj",
             "save": "Shrani",
             "skip": "Preskoči",
@@ -537,15 +539,17 @@
             "area-picker": {
                 "add_dialog": {
                     "add": "Dodaj",
-                    "failed_create_area": "Ni bilo mogoče ustvariti območja.",
+                    "failed_create_area": "Območja ni bilo mogoče ustvariti.",
                     "name": "Ime",
                     "text": "Vnesite ime novega območja.",
                     "title": "Dodajte novo območje"
                 },
-                "add_new": "Dodaj novo območje …",
+                "add_new": "Dodajanje novega območja…",
                 "area": "Območje",
                 "clear": "Počisti",
-                "show_areas": "Pokaži cone"
+                "no_areas": "Nimate območji",
+                "no_match": "Ni ustreznih območji",
+                "show_areas": "Prikaži območja"
             },
             "blueprint-picker": {
                 "add_user": "Dodaj uporabnika",
@@ -565,6 +569,8 @@
                 "clear": "Počisti",
                 "device": "Naprava",
                 "no_area": "Brez območja",
+                "no_devices": "Nimate naprav",
+                "no_match": "Ni ustreznih naprav",
                 "show_devices": "Pokažite naprave",
                 "toggle": "Preklopite"
             },
@@ -576,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Počisti",
                     "entity": "Entiteta",
+                    "no_match": "Ni ustreznih entitet",
                     "show_entities": "Pokaži entitete"
                 }
             },
@@ -590,27 +597,27 @@
                 "messages": {
                     "became_unavailable": "postal nedosegljiv",
                     "changed_to_state": "je spremenil stanje v {state}",
-                    "cleared_device_class": "počiščeno (no {device_class} detected)",
-                    "detected_device_class": "zaznan {device_class}",
-                    "rose": "zrasel",
-                    "set": "nastavljen",
-                    "turned_off": "ugasnjen",
-                    "turned_on": "vključen",
-                    "was_at_home": "je bil/a doma",
-                    "was_at_state": "je bil {state}",
-                    "was_away": "je bil odsoten",
-                    "was_closed": "je bil zaprt",
+                    "cleared_device_class": "počiščeno ( {device_class} ni najdeno)",
+                    "detected_device_class": "najdeno {device_class}",
+                    "rose": "naraslo",
+                    "set": "nastavljeno",
+                    "turned_off": "izklopljen",
+                    "turned_on": "vklopljeno",
+                    "was_at_home": "je bil/-a doma",
+                    "was_at_state": "je bilo {state}",
+                    "was_away": "je bilo odsotno",
+                    "was_closed": "je bil zaprto",
                     "was_connected": "je bil povezan",
-                    "was_disconnected": "je bil odklopljen",
-                    "was_locked": "je bil zaklenjen",
-                    "was_low": "je bila nizek",
-                    "was_normal": "je bil normalen",
+                    "was_disconnected": "je bil odklopljeno",
+                    "was_locked": "je bil zaklenjeno",
+                    "was_low": "je bilo nizko",
+                    "was_normal": "je bil normalno",
                     "was_opened": "je bil odprt",
-                    "was_plugged_in": "je bil priključen",
-                    "was_safe": "je bil varen/a",
-                    "was_unlocked": "je bil odklenjen",
-                    "was_unplugged": "je bil izključen",
-                    "was_unsafe": "je bil ogrožen/a"
+                    "was_plugged_in": "je bil priključeno",
+                    "was_safe": "je bilo varno",
+                    "was_unlocked": "je bil odklenjeno",
+                    "was_unplugged": "je bilo izključeno",
+                    "was_unsafe": "ni bilo varno"
                 }
             },
             "media-browser": {
@@ -620,42 +627,42 @@
                 "class": {
                     "album": "Album",
                     "app": "Aplikacija",
-                    "artist": "Ustvarjalec",
+                    "artist": "Umetnik",
                     "channel": "Kanal",
                     "composer": "Skladatelj",
-                    "contributing_artist": "Ustvarjalec, ki prispeva",
+                    "contributing_artist": "Sodelujoči umetnik",
                     "directory": "Knjižnica",
                     "episode": "Epizoda",
                     "game": "Igra",
-                    "genre": "Žanr",
+                    "genre": "Zvrst",
                     "image": "Slika",
                     "movie": "Film",
                     "music": "Glasba",
                     "playlist": "Seznam predvajanja",
                     "podcast": "Poddaja",
                     "season": "Sezona",
-                    "track": "Skladba",
+                    "track": "Vsebina",
                     "tv_show": "Televizijska oddaja",
                     "url": "URL",
                     "video": "Video"
                 },
                 "content-type": {
                     "album": "Album",
-                    "artist": "Ustvarjalec",
+                    "artist": "Umetnik",
                     "library": "Knjižnica",
                     "playlist": "Seznam predvajanja",
                     "server": "Strežnik"
                 },
                 "documentation": "dokumentacija",
-                "learn_adding_local_media": "Več o dodajanju medijev preberite v {documentation}.",
-                "local_media_files": "V imenik predstavnosti postavite video, zvočne in slikovne datoteke, da lahko brskate in jih predvajate v brskalniku ali podprtih predvajalnikih.",
-                "media_browsing_error": "Napaka pri brskanju po medijih",
-                "media_not_supported": "Predvajalnik ne podpira te vrste",
+                "learn_adding_local_media": "Več o dodajanju medijskih vsebin  preberite v {documentation}.",
+                "local_media_files": "V mapo medijskih vsebin dodajte video, zvočne in slikovne datoteke, ki jih lahko pregledujete ali predvajate v brskalniku oz podprtih predvajalnikih.",
+                "media_browsing_error": "Napaka pri brskanju po vsebinah",
+                "media_not_supported": "Predvajalnik ne podpira te vrste vsebin",
                 "media_player": "Medijski predvajalnik",
                 "media-player-browser": "Brskalnik za medijski predvajalnik",
-                "no_items": "Ni elementov",
-                "no_local_media_found": "Ni bilo najdenega lokalnega medija",
-                "no_media_folder": "Videti je, da še niste ustvarili medijskega imenika.",
+                "no_items": "Ni predmetov",
+                "no_local_media_found": "Ni bilo najdenega lokalnih medijskih vsebin",
+                "no_media_folder": "Videti je, da še niste ustvarili mape medijskih vsebin",
                 "pick": "Izberi",
                 "pick-media": "Izberi vsebino",
                 "play": "Predvajaj",
@@ -695,7 +702,7 @@
                     "second": "V {count} {count, plural,\n  one {sekundi}\n  other {sekundah}\n}",
                     "week": "V {count} {count, plural,\n  one {tednu}\n  other {tednih}\n}"
                 },
-                "just_now": "Pravkar",
+                "just_now": "Ravnokar",
                 "never": "Nikoli",
                 "past": "Pred {time}",
                 "past_duration": {
@@ -708,6 +715,16 @@
             },
             "service-picker": {
                 "service": "Storitev"
+            },
+            "target-picker": {
+                "add_area_id": "Izberite območje",
+                "add_device_id": "Izberite napravo",
+                "add_entity_id": "Izberite entiteto",
+                "expand_area_id": "Razširite to območje v ločene naprave in entitete, ki jih vsebuje. Po razšritivi naprave in entitete ne bodo posodobljene ob spremembi območja.",
+                "expand_device_id": "Razširite to napravo  v ločene  entitete. Po razšritivi entitete ne bodo posodobljene ob spremembi naprave.",
+                "remove_area_id": "Odstranite območje",
+                "remove_device_id": "Odstranite napravo",
+                "remove_entity_id": "Odstranite entiteto"
             },
             "user-picker": {
                 "add_user": "Dodaj uporabnika",
@@ -732,6 +749,7 @@
                 "editor": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati ta vnos?",
                     "delete": "Izbriši",
+                    "device_disabled": "Naprava za to entiteto je onemogočena",
                     "enabled_cause": "Onemogočeno zaradi {cause}.",
                     "enabled_delay_confirm": "Omogočene entitete bodo v Home Assistant dodane v {delay} sekundah",
                     "enabled_description": "Onemogočene entitete ne bodo dodane v Home Assistant.",
@@ -742,6 +760,7 @@
                     "icon_error": "Ikone morajo biti v obliki 'prefix:iconname', npr. 'mid:home'",
                     "name": "Ime",
                     "note": "Opomba: to morda še ne deluje z vsemi integracijami.",
+                    "open_device_settings": "Odpri nastavitve naprave",
                     "unavailable": "Ta entiteta trenutno ni na voljo.",
                     "update": "Posodobi"
                 },
@@ -808,7 +827,7 @@
                 "crop": "Izreži"
             },
             "more_info_control": {
-                "controls": "Kontrolniki",
+                "controls": "Nadzor",
                 "cover": {
                     "close_cover": "Zapri pokrov",
                     "close_tile_cover": "Zapri nagib pokrova",
@@ -880,8 +899,9 @@
             "quick-bar": {
                 "commands": {
                     "navigation": {
-                        "areas": "Področja",
+                        "areas": "Območja",
                         "automation": "Avtomatizacije",
+                        "blueprint": "Načrti",
                         "core": "Splošno",
                         "customize": "Prilagoditve",
                         "devices": "Naprave",
@@ -905,30 +925,30 @@
                         "automation": "Znova naloži avtomatizacije",
                         "command_line": "Znova naloži entitete ukazne vrstice",
                         "core": "Znova naloži lokacijo in prilagoditve",
-                        "filesize": "Znova naloži entitete velikosti datoteke",
-                        "filter": "Znova naloži entitete entitete filtra",
-                        "generic": "Znova naloži entitete generičnih IP kamer",
-                        "generic_thermostat": "Znova naloži entitete generičnih termostatov",
-                        "group": "Znova naloži skupine, skupine entitete in storitve obveščanja",
+                        "filesize": "Znova naloži entitete za velikost datotek",
+                        "filter": "Znova naloži entitete za  filter",
+                        "generic": "Znova naloži entitete za generične IP kamere",
+                        "generic_thermostat": "Znova naloži entitete za generične termostate",
+                        "group": "Znova naloži skupine, skupinske entitete in storitve obveščanja",
                         "history_stats": "Znova naloži entitete statistike zgodovine",
                         "homekit": "Znova naloži HomeKit",
-                        "input_boolean": "Znova naloži vhode boolean",
-                        "input_datetime": "Znova naloži datumske vhode",
-                        "input_number": "Znova naloži števične vhode",
-                        "input_select": "Znova naloži izbirne vhode",
-                        "input_text": "Znova naloži tekstovne vhode",
-                        "min_max": "Znova naloži entitete min/max",
-                        "mqtt": "Znova naloži ročno nastavljene entitete MQTT",
+                        "input_boolean": "Znova naloži vhodne logične vrednosti",
+                        "input_datetime": "Znova naloži vhodne datume",
+                        "input_number": "Znova naloži vhodne številke",
+                        "input_select": "Znova naloži izbor vhodov",
+                        "input_text": "Znova naloži vhodna besedila",
+                        "min_max": "Znova naloži entitete min/maks.",
+                        "mqtt": "Znova naloži ročno nastavljene MQTT entitete",
                         "person": "Znova naloži osebe",
-                        "ping": "Znova naloži entitete binarnega senzorja PING",
+                        "ping": "Znova naloži entitete za pinganje binarnega senzorja.",
                         "reload": "Znova naloži {domain}",
-                        "rest": "Znova naloži entitete REST in storitve obveščanja",
+                        "rest": "Znova naloži entitete za REST in storitve obveščanja",
                         "rpi_gpio": "Znova naloži Raspberry Pi GPIO entitete",
                         "scene": "Znova naloži scene",
                         "script": "Znova naloži skripte",
-                        "smtp": "Znova naloži smtp strežnike za obvestila.",
+                        "smtp": "Znova naloži storitve za SMTP obvestila",
                         "statistics": "Znova naloži statistične entitete",
-                        "telegram": "Znova naloži telegram strežnike za obvestila.",
+                        "telegram": "Znova naloži storitve za telegram obestila",
                         "template": "Znova naloži entitete predlog",
                         "trend": "Znova naloži entitete trendov",
                         "universal": "Znova naloži entitete univerzalnega predvajalnika",
@@ -1025,10 +1045,10 @@
                         "devices": "Naprave"
                     },
                     "delete": {
-                        "confirmation_text": "Vse naprave na tem območju ne bodo dodeljene.",
+                        "confirmation_text": "Vse naprave na tem območju bodo postale nedodeljene.",
                         "confirmation_title": "Ali ste prepričani, da želite izbrisati to območje?"
                     },
-                    "description": "Upravljanje območij v vašem domu",
+                    "description": "Združevanje naprav in entitet v območja",
                     "editor": {
                         "area_id": "ID območja",
                         "create": "Ustvari",
@@ -1044,8 +1064,8 @@
                         "header": "Območja",
                         "integrations_page": "Stran za integracije",
                         "introduction": "Področja se uporabljajo za organizacijo področja naprav. Te informacije bodo uporabljene v celotnem Home Assistant-u in vam bodo pomagale pri organizaciji vašega vmesnika, dovoljenj in integracij z drugimi sistemi.",
-                        "introduction2": "Če želite namestiti napravo na območje, uporabite spodnjo povezavo, da se pomaknete na stran za integracije, nato pa kliknite konfigurirano integracijo, da pridete do kartic naprave.",
-                        "no_areas": "Izgleda, da še nimate območij!"
+                        "introduction2": "Če želite napravo postaviti na neko območje, uporabite spodnjo povezavo, da odprete stran za integracije, nato pa kliknite na nastavljeno integracijo, da pridete do kartic naprave.",
+                        "no_areas": "Videti je, da še nimate območij!"
                     }
                 },
                 "automation": {
@@ -1132,8 +1152,8 @@
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Nadaljuj ob časovni omejitvi",
-                                    "label": "Počakaj na sprožilec",
-                                    "timeout": "Časovna omejitev (neobvezno)"
+                                    "label": "Čakaj na sprožilec",
+                                    "timeout": "Časovna omejitev (izbirno)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Nadaljuj ob časovni omejitvi",
@@ -1150,8 +1170,8 @@
                             "header": "Načrt",
                             "inputs": "Vhodi",
                             "manage_blueprints": "Upravljanje načrtov",
-                            "no_blueprints": "Nimate nobenih načrtov",
-                            "no_inputs": "Ta načrt nima nobenih vnosov."
+                            "no_blueprints": "Nimate načrtov",
+                            "no_inputs": "Ta načrt nima vhodov."
                         },
                         "conditions": {
                             "add": "Dodaj pogoj",
@@ -1209,7 +1229,7 @@
                                     "after": "Po",
                                     "before": "Pred",
                                     "label": "Čas",
-                                    "type_input": "Vrednost pomagalnika za datum/čas",
+                                    "type_input": "Vrednost pomočnika za datum/čas",
                                     "type_value": "Fiksni čas",
                                     "weekdays": {
                                         "fri": "petek",
@@ -1279,7 +1299,7 @@
                                 },
                                 "event": {
                                     "context_user_pick": "Izberite uporabnika",
-                                    "context_user_picked": "Dogodek uporabnikove sprožitve",
+                                    "context_user_picked": "Uporabnikov dogodek sprožilca",
                                     "context_users": "Omeji na dogodke, ki jih sproži",
                                     "event_data": "Podatki o dogodku",
                                     "event_type": "Vrsta dogodka",
@@ -1311,7 +1331,7 @@
                                     "value_template": "Vrednostna predloga (neobvezno)"
                                 },
                                 "state": {
-                                    "attribute": "Atribut (neobvezno)",
+                                    "attribute": "Atribut (izbirno)",
                                     "for": "Za",
                                     "from": "Od",
                                     "label": "Stanje",
@@ -1381,7 +1401,7 @@
                     "thingtalk": {
                         "create": "Ustvari avtomatizacijo",
                         "link_devices": {
-                            "ambiguous_entities": "Ena ali več naprav ima več entitet, ki se ujemajo, izberite napravo, ki jo želite uporabiti.",
+                            "ambiguous_entities": "Ena ali več naprav ima več entitet, ki se ujemajo, izberite tisto, ki jo želite uporabiti.",
                             "header": "Krasno! Zdaj moramo povezati nekaj naprav",
                             "unknown_placeholder": "Neznano rezervirano mesto"
                         },
@@ -1390,34 +1410,45 @@
                             "error_unsupported": "Za to (še?) nismo mogli ustvariti avtomatizacije.",
                             "for_example": "Na primer:",
                             "header": "Ustvari novo avtomatizacijo",
-                            "introduction": "Spodaj vnesite, kaj naj naredi ta avtomatizacija, mi pa jo bomo poskušali pretvoriti v avtomatizacijo Home Assistant.",
+                            "introduction": "Spodaj vnesite, kaj naj naredi ta avtomatizacija, mi pa jo bomo poskušali pretvoriti v Home Assistant avtomatizacijo.",
                             "language_note": "Opomba: Za zdaj je podprta le angleščina."
                         }
                     }
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Prosimo, vnesite urnik od načrta.",
-                        "header": "Dodajte nov načrt",
-                        "import_btn": "Uvozi načrt",
-                        "import_header": "Uvozi {name} ({domain})",
-                        "import_introduction": "Načrte lahko uvozite od uporabnikov iz Github-a in iz forumov. Spodaj vnesite URL načrta.",
-                        "importing": "Uvažanje načrta ...",
-                        "save_btn": "Shrani načrt",
-                        "saving": "Shranjevanje načrta ...",
+                        "community_forums": "forumi skupnosti",
+                        "error_no_url": "Vnesite URL naslov načrta.",
+                        "file_name": "Pot do načrta",
+                        "header": "Uvozite načrt",
+                        "import_btn": "Predogled načrta",
+                        "import_header": "Načrt \"{name}\"",
+                        "import_introduction": "Načrte lahko uvozite od drugih uporabnikov Github-a ali iz foruma sklupnosti. Spodaj vnesite URL načrta.",
+                        "import_introduction_link": "Načrte je mogoče uvoziti od drugih Github uporabnikov ali  {community_link}. Spodaj vnesite URL naslov načrta.",
+                        "importing": "Nalaganje načrta ...",
+                        "raw_blueprint": "Vsebina načrta",
+                        "save_btn": "Uvozi načrt",
+                        "saving": "Uvažanje načrta ...",
+                        "unsupported_blueprint": "Ta načrt ni podprt",
                         "url": "URL načrta"
                     },
                     "caption": "Načrti",
                     "description": "Upravljanje načrtov",
                     "overview": {
+                        "add_blueprint": "Uvozi načrt",
                         "confirm_delete_header": "Želite izbrisati ta načrt?",
                         "confirm_delete_text": "Ali ste prepričani, da želite izbrisati ta načrt",
+                        "delete_blueprint": "Izbriši načrt",
+                        "discover_more": "Odkrijte več načrtov",
                         "header": "Urejevalnik načrtov",
                         "headers": {
+                            "domain": "Domena",
+                            "file_name": "Ime datoteke",
                             "name": "Ime"
                         },
-                        "introduction": "Urejevalnik načrtov vam omogoča ustvarjanje in urejanje načrtov.",
-                        "learn_more": "Preberite več o načrtih"
+                        "introduction": "Konfiguracija načrta omogoča uvažanje in urejanje načrtov.",
+                        "learn_more": "Preberite več o načrtih",
+                        "use_blueprint": "Ustvari avtomatizacijo"
                     }
                 },
                 "cloud": {
@@ -1647,7 +1678,7 @@
                     "automation": {
                         "actions": {
                             "caption": "Ko se nekaj sproži ...",
-                            "no_actions": "Brez dejanj",
+                            "no_actions": "Ni dejanj",
                             "unknown_action": "Neznano dejanje"
                         },
                         "automations": "Avtomatizacije",
@@ -1657,11 +1688,12 @@
                             "unknown_condition": "Neznan pogoj"
                         },
                         "create": "Ustvarjanje avtomatizacije z napravo",
+                        "create_disable": "Z onemogočeno napravo ni mogoče ustvariti avtomatizacije",
                         "no_automations": "Ni avtomatizacij",
                         "no_device_automations": "Za to napravo ni na voljo nobenih avtomatizacij.",
                         "triggers": {
                             "caption": "Naredi nekaj, ko ...",
-                            "no_triggers": "Brez sprožilcev",
+                            "no_triggers": "Ni sprožilcev",
                             "unknown_trigger": "Neznan sprožilec"
                         },
                         "unknown_automation": "Neznana avtomatizacija"
@@ -1685,6 +1717,15 @@
                     "description": "Upravljanje povezanih naprav",
                     "device_info": "Informacije o napravi",
                     "device_not_found": "Naprave ni bilo mogoče najti",
+                    "disabled": "Onemogočeno",
+                    "disabled_by": {
+                        "config_entry": "Vnos v konfiguracijo",
+                        "integration": "Integracija",
+                        "user": "Uporabnik"
+                    },
+                    "enabled_cause": "Naprava je onmogočena zaradi {cause}",
+                    "enabled_description": "Onemogočene naprave ne bodo prikazane, entitete, ki pripadajo napravi, pa bodo onemogočene in ne bodo dodane v Home Assistant.",
+                    "enabled_label": "Omogoči napravo",
                     "entities": {
                         "add_entities_lovelace": "Dodaj v Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {Onemogočena entiteta}\n  other {onemogočene entitete}\n}",
@@ -1694,14 +1735,25 @@
                     },
                     "name": "Ime",
                     "no_devices": "Brez naprav",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter",
+                            "hidden_devices": "{number} {number, plural,\n  one {skrita naprava}\n  two {skriti napravi}\n  few {skrite naprave}\n  many {skritih naprav}\n}",
+                            "show_all": "Prikaži vse",
+                            "show_disabled": "Prikaži onemogočene naprave"
+                        },
+                        "search": "Iskanje naprav"
+                    },
                     "scene": {
                         "create": "Ustvarjanje scen z napravo",
+                        "create_disable": "Z onemogočeno napravo ni mogoče ustvariti scene",
                         "no_scenes": "Ni scen",
                         "scenes": "Scene"
                     },
                     "scenes": "Scene",
                     "script": {
                         "create": "Ustvarjanje skript z napravo",
+                        "create_disable": "Z onemogočeno napravo ni mogoče ustvariti skripta",
                         "no_scripts": "Brez skriptov",
                         "scripts": "Skripte"
                     },
@@ -1726,7 +1778,7 @@
                         },
                         "filter": {
                             "filter": "Filter",
-                            "hidden_entities": "{number} {number, plural,\n  one {skrita entiteta}\n  two {skriti entiteti}\n  other {skrite entitete}\n}",
+                            "hidden_entities": "{number} {number, plural,\n  one {skrita entiteta}\n  two {skriti entiteti}\n  few {skrite entitete}\n  many {skritih entitet}\n}",
                             "show_all": "Pokaži vse",
                             "show_disabled": "Pokaži onemogočene entitete",
                             "show_readonly": "Prikaži entitete \"samo za branje\"",
@@ -1734,6 +1786,7 @@
                         },
                         "header": "Entitete",
                         "headers": {
+                            "area": "Območje",
                             "entity_id": "ID entitete",
                             "integration": "Integracija",
                             "name": "Ime",
@@ -1857,7 +1910,7 @@
                 },
                 "integrations": {
                     "add_integration": "Dodaj integracijo",
-                    "attention": "Potrebna pozornost",
+                    "attention": "Zahtevana je pozornost",
                     "caption": "Integracije",
                     "config_entry": {
                         "area": "V {area}",
@@ -1928,7 +1981,7 @@
                     "none_found_detail": "Prilagodite iskalne kriterije.",
                     "note_about_integrations": "Vseh integracij še ni mogoče konfigurirati prek uporabniškega vmesnika.",
                     "note_about_website_reference": "Več jih je na voljo prek",
-                    "reconfigure": "Znova nastavi",
+                    "reconfigure": "Prekonfiguracija",
                     "rename_dialog": "Uredite ime tega vnosa konfiguracije",
                     "rename_input_label": "Ime vnosa",
                     "search": "Iskanje integracij"
@@ -2092,11 +2145,11 @@
                     "node_config": {
                         "header": "Konfiguracija vozlišča",
                         "help_source": "Opisi konfiguracijskih parametrov in besedilo pomoči zagotavlja projekt OpenZWave.",
-                        "introduction": "Upravljajte različne konfiguracijske parametre za vozlišče Z-Wave.",
+                        "introduction": "Upravljanje različnih nastavitev za konfiguracijo vozlišča Z-Wave.",
                         "wakeup_help": "Vozlišča, ki jih napajajo baterije morajo biti budna, da lahko spreminjate njihovo konfiguracijo. Če vozlišče ni budno, bo OpenZWave poskusil posodobiti konfiguracijo vozlišča naslednjič, ko se zbudi, kar pa bi lahko bilo več ur (ali dni) kasneje. Sledite tem korakom, da zbudite napravo:"
                     },
                     "node_metadata": {
-                        "product_manual": "Priročnik za izdelek"
+                        "product_manual": "Priročnik izdelka"
                     },
                     "node_query_stages": {
                         "associations": "Osveževanje pridružitvenih skupin in članstev",
@@ -2161,7 +2214,7 @@
                     "create_person": "Ustvari osebo",
                     "description": "Upravljanje oseb, ki jim sledi Home Assistant.",
                     "detail": {
-                        "admin": "Administrator",
+                        "admin": "Skrbnik",
                         "allow_login": "Dovoli osebi, da se prijavi",
                         "confirm_delete_user": "Ali ste prepričani, da želite izbrisati uporabniški račun za {name}? Uporabnika lahko še vedno spremljate, vendar se oseba ne bo več mogla prijaviti.",
                         "create": "Ustvarite",
@@ -2259,7 +2312,7 @@
                             "restart": "Ponovni zagon",
                             "single": "Enojno (privzeta nastavitev)"
                         },
-                        "save_script": "Shrani skripto",
+                        "save_script": "Shrani skript",
                         "sequence": "Zaporedje",
                         "sequence_sentence": "Zaporedje dejanj te skripte."
                     },
@@ -2275,7 +2328,7 @@
                         "introduction": "Urejevalnik skript vam omogoča njihovo ustvarjanje in urejanje. Upoštevajte spodnjo povezavo in si preberite navodila, da se prepričate, da ste pravilno konfigurirali Home Assistant-a.",
                         "learn_more": "Preberite več o skriptah",
                         "no_scripts": "Nismo našli nobene skripte za urejanje",
-                        "run_script": "Zaženi skripto",
+                        "run_script": "Zaženi skript",
                         "show_info": "Pokaži informacije o skripti",
                         "trigger_script": "Sproži skripto"
                     }
@@ -2363,7 +2416,7 @@
                         "name": "Ime"
                     },
                     "learn_more": "Preberite več o značkah",
-                    "never_scanned": "Nikoli prebrano",
+                    "never_scanned": "Nikoli pregledano",
                     "no_tags": "Brez značk",
                     "write": "Zapiši"
                 },
@@ -2382,6 +2435,7 @@
                     "editor": {
                         "activate_user": "Aktiviraj uporabnika",
                         "active": "aktiven",
+                        "active_tooltip": "Nadozruje, ali se lahko uporabnik prijavi",
                         "admin": "Skrbnik",
                         "caption": "Prikaži uporabnika",
                         "change_password": "Spremeni geslo",
@@ -2398,19 +2452,24 @@
                         "system_generated_users_not_editable": "Sistemskih uporabnikov ni mogoče posodobiti.",
                         "system_generated_users_not_removable": "Sistemskih uporabnikov ni mogoče odstraniti.",
                         "unnamed_user": "Neimenovani uporabnik",
-                        "update_user": "Posodobi"
+                        "update_user": "Posodobi",
+                        "username": "Uporabniško ime"
                     },
                     "picker": {
                         "add_user": "Dodaj uporabnika",
                         "headers": {
                             "group": "Skupina",
+                            "is_active": "Dejavno",
+                            "is_owner": "Lastnik",
                             "name": "Ime",
-                            "system": "Sistem"
+                            "system": "Sistem",
+                            "username": "Uporabniško ime"
                         }
                     },
                     "users_privileges_note": "Zmožnosti skupin uporabnikov so delo v teku. Uporabnik ne bo mogel upravljati primerka prek uporabniškega vmesnika. Še vedno poteka revidiranje vseh končnih točk API-ja za upravljanje, da zagotovimo pravilno omejevanje dostopa do administratorjev."
                 },
                 "zha": {
+                    "add_device": "Dodaj napravo",
                     "add_device_page": {
                         "discovered_text": "Naprave se bodo prikazale tukaj, ko jih odkrijemo.",
                         "discovery_text": "Tukaj bodo prikazane odkrite naprave. Sledite navodilom za napravo in jo postavite v način seznanjanja.",
@@ -2456,6 +2515,16 @@
                         "value": "Vrednost"
                     },
                     "description": "Upravljanje omrežja za avtomatizacijo doma Zigbee",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfiguriranje je končano",
+                        "CONFIGURED_status_text": "Inicializacija",
+                        "INITIALIZED": "Inicializacija končana",
+                        "INITIALIZED_status_text": "Naprava je pripravljena za uporabo",
+                        "INTERVIEW_COMPLETE": "Intervju je končan",
+                        "INTERVIEW_COMPLETE_status_text": "Konfiguriranje",
+                        "PAIRED": "Najdena naprava",
+                        "PAIRED_status_text": "Intervju se začenja"
+                    },
                     "devices": {
                         "header": "ZigBee Home Automation-naprava"
                     },
@@ -2471,6 +2540,7 @@
                         "unbind_button_label": "Razdruži skupino"
                     },
                     "groups": {
+                        "add_group": "Dodaj skupino",
                         "add_members": "Dodajte člane",
                         "adding_members": "Dodajanje članov",
                         "caption": "Skupine",
@@ -2513,7 +2583,11 @@
                         "hint_wakeup": "Nekatere naprave, kot so Xiaomi senzorji, imajo gumb za prebujanje, ki ga lahko pritisnete v ~ 5-sekundnih intervalih, da bodo budne med interakcijo z njimi.",
                         "introduction": "Zaženite ukaze ZHA, ki vplivajo na posamezno napravo. Izberite napravo in si oglejte seznam ukazov, ki so na voljo."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Vizualizacija",
+                        "header": "Prikaz omrežja"
+                    }
                 },
                 "zone": {
                     "add_zone": "Dodaj območje",
@@ -2692,16 +2766,16 @@
                         "title": "Stanja"
                     },
                     "templates": {
-                        "all_listeners": "Ta predloga posluša vse dogodke spremembe stanja.",
+                        "all_listeners": "Ta predloga motri vse dogodke, ki so posledica spremembe stanja.",
                         "description": "Predloge so upodobljene s pomočjo mehanizma za predloge Jinja2 z nekaterimi posebnimi razširitvami Home Assistant.",
                         "domain": "Domena",
                         "editor": "Urejevalnik predlog",
                         "entity": "Entiteta",
                         "jinja_documentation": "Dokumentacija predloge Jinja2",
-                        "listeners": "Ta predloga posluša naslednje dogodke spremembe stanja:",
-                        "no_listeners": "Ta predloga ne posluša nobenih dogodkov in se ne bo samodejno posodabljala.",
+                        "listeners": "Ta predloga motri naslednje dogodke, ki so posledica spremembe stanja:",
+                        "no_listeners": "Ta predloga ne motri nobenih dogodkov in se ne bo samodejno posodabljala.",
                         "reset": "Ponastavi na demo predlogo",
-                        "result_type": "Tip rezultata",
+                        "result_type": "Vrsta rezultata",
                         "template_extensions": "Home Assistant razširitvene predloge",
                         "time": "Ta predloga se posodobi na začetku vsake minute.",
                         "title": "Predloge",
@@ -2776,12 +2850,12 @@
                 "editor": {
                     "action-editor": {
                         "actions": {
-                            "call-service": "Kliči Storitev",
+                            "call-service": "Klicna storitev",
                             "default_action": "Privzeto dejanje",
                             "more-info": "Več informacij",
-                            "navigate": "Krmari",
+                            "navigate": "Navigacija",
                             "none": "Brez akcije",
-                            "toggle": "Preklopi",
+                            "toggle": "Preklop",
                             "url": "URL"
                         },
                         "editor_service_data": "Podatke o storitvah lahko vnesete samo v urejevalniku kode",
@@ -2795,14 +2869,14 @@
                             "name": "Alarmna plošča"
                         },
                         "button": {
-                            "default_action_help": "Privzeto dejanje je odvisno od zmožnosti entitete, bodisi se preklopi ali pa se prikaže več informacij.",
+                            "default_action_help": "Privzeto dejanje je odvisno od zmožnosti entitete. Ali se bo preklopila, ali pa bo prikazanih več podatkov.",
                             "description": "Gumbna kartica vam omogoča, da dodate gumbe za opravljanje nalog.",
                             "name": "Gumb"
                         },
                         "calendar": {
                             "calendar_entities": "Entitete koledarja",
                             "description": "Kartica Koledar prikazuje koledar, ki vključuje poglede dneva, tedna in seznama",
-                            "inital_view": "Začetni pogled",
+                            "inital_view": "Začetni prikaz",
                             "name": "Koledar",
                             "views": {
                                 "dayGridDay": "Dan",
@@ -2847,7 +2921,7 @@
                                 "last-changed": "Zadnja sprememba",
                                 "last-triggered": "Zadnjič sproženo",
                                 "last-updated": "Zadnja posodobitev",
-                                "none": "Brez sekundarnih informacij",
+                                "none": "Ni sekundarnih informacij",
                                 "position": "Položaj",
                                 "tilt-position": "Položaj nagiba"
                             },
@@ -2967,7 +3041,8 @@
                         },
                         "picture-glance": {
                             "description": "Kartica Picture Glance prikazuje sliko in ustrezna stanja entitete kot ikono. Subjekti na desni strani omogočajo preklopna dejanja, drugi pa prikazujejo pogovorno okno z več informacijami.",
-                            "name": "Pogled slike"
+                            "name": "Pogled slike",
+                            "state_entity": "Entiteta stanja"
                         },
                         "picture": {
                             "description": "Picture card omogoča nastavitev slike za navigacijo do različnih poti v vašem vmesniku ali za klicanje storitve.",
@@ -3029,7 +3104,7 @@
                         "edit": "Uredi",
                         "header": "Nastavitve kartice",
                         "move": "Premakni v pogled",
-                        "move_after": "Premakni kartico po",
+                        "move_after": "Premakni kartico za",
                         "move_before": "Premakni kartico pred",
                         "options": "Več možnosti",
                         "pick_card": "Katero kartico želite dodati?",
@@ -3093,7 +3168,7 @@
                         "header": "Izberite pogled, na katerega želite premakniti kartico"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Samodejno bomo ustvarili vaše poglede uporabniškega vmesnika Lovelace z vašimi območji in napravami, če odstranite konfiguracijo uporabniškega vmesnika Lovelace.",
+                        "confirm_remove_config_text": "Če odstranite konfiguracijo uporabniškega vmesnika Lovelace, bodo prikazi za uporabniški vmesnik Lovelace z vašimi območji in napravami samodejno ustvarjeni.",
                         "confirm_remove_config_title": "Ali ste prepričani, da želite odstraniti konfiguracijo uporabniškega vmesnika Lovelace?",
                         "confirm_unsaved_changes": "Imate neshranjene spremembe, ali ste prepričani, da želite zapreti?",
                         "confirm_unsaved_comments": "Vaša konfiguracija vsebuje komentarje, ki ne bodo shranjeni. Ali želite nadaljevati?",
@@ -3379,15 +3454,18 @@
                 "change_password": {
                     "confirm_new_password": "Potrdite novo geslo",
                     "current_password": "Trenutno geslo",
+                    "error_new_is_old": "Novo geslo se mora razlikovati od trenutnega gesla",
+                    "error_new_mismatch": "Gesli se ne ujemata",
                     "error_required": "Zahtevano",
                     "header": "Spremeni geslo",
                     "new_password": "Novo geslo",
-                    "submit": "Pošlji"
+                    "submit": "Pošlji",
+                    "success": "Sprememba gesla je bila uspešna"
                 },
                 "current_user": "Trenutno ste prijavljeni kot {fullName}.",
                 "customize_sidebar": {
                     "button": "Uredi",
-                    "description": "Če želite aktivirati način urejanja, lahko pritisnete in pridržite glavo stranske vrstice.",
+                    "description": "Urejanje je možno aktivirati z dolgim klikom glavo stranske vrstice.",
                     "header": "Spremeni vrstni red in skrij predmete v stranski vrstici"
                 },
                 "dashboard": {

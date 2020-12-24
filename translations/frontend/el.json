@@ -600,7 +600,7 @@
                     "cleared_device_class": "παραγράφηκε (δεν εντοπίστηκε {device_class} )",
                     "detected_device_class": "εντόπισε {device_class}",
                     "rose": "ανέτειλε",
-                    "set": "ορίστηκε",
+                    "set": "έδυσε",
                     "turned_off": "απενεργοποιήθηκε",
                     "turned_on": "ενεργοποιήθηκε",
                     "was_at_home": "ήταν στο σπίτι",
