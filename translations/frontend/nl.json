@@ -1819,7 +1819,7 @@
                 "header": "Configureer Home Assistant",
                 "helpers": {
                     "caption": "Helpers",
-                    "description": "Elementen die kunnen helpen bij het maken van automatiseringen.",
+                    "description": "Elementen die kunnen helpen bij het maken van automatiseringen",
                     "dialog": {
                         "add_helper": "Helper toevoegen",
                         "add_platform": "{platform} toevoegen",
@@ -2212,7 +2212,7 @@
                     "confirm_delete": "Weet je zeker dat je deze persoon wilt verwijderen?",
                     "confirm_delete2": "Alle apparaten die behoren tot deze persoon zullen worden ontkoppeld.",
                     "create_person": "Persoon aanmaken",
-                    "description": "Beheer de personen die Home Assistant volgt.",
+                    "description": "Beheer de personen die Home Assistant volgt",
                     "detail": {
                         "admin": "Administrator",
                         "allow_login": "Persoon toestaan om in te loggen",
@@ -2595,7 +2595,7 @@
                     "configured_in_yaml": "Zones die via configuration.yaml zijn geconfigureerd kunnen niet worden bewerkt in de gebruikers",
                     "confirm_delete": "Weet je zeker dat je deze zone wilt verwijderen?",
                     "create_zone": "Creëer Zone",
-                    "description": "Beheer de zones waarin je personen wilt volgen.",
+                    "description": "Beheer de zones waarin je personen wilt volgen",
                     "detail": {
                         "create": "Aanmaken",
                         "delete": "Verwijder",
