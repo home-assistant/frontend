@@ -1782,7 +1782,8 @@
                             "show_all": "Show all",
                             "show_disabled": "Show disabled entities",
                             "show_readonly": "Show read-only entities",
-                            "show_unavailable": "Show unavailable entities"
+                            "show_unavailable": "Show unavailable entities",
+							"show_with_area": "Show etities with area configured"
                         },
                         "header": "Entities",
                         "headers": {

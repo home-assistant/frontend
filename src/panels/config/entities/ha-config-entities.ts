@@ -111,6 +111,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _showReadOnly = true;
 
+  @internalProperty() private _showAreaConfigured = true;
+
   @internalProperty() private _filter = "";
 
   @internalProperty() private _numHiddenEntities = 0;
@@ -287,6 +289,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showDisabled: boolean,
       showUnavailable: boolean,
       showReadOnly: boolean,
+      showAreaConfigured: boolean,
       entries?: ConfigEntry[]
     ) => {
       const result: EntityRow[] = [];
@@ -360,6 +363,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         const area = areaId ? areaLookup[areaId] : undefined;
 
         if (!showUnavailable && unavailable) {
+          continue;
+        }
+
+        if (!showAreaConfigured && areaId) {
           continue;
         }
 
@@ -453,6 +460,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this._showDisabled,
       this._showUnavailable,
       this._showReadOnly,
+      this._showAreaConfigured,
       this._entries
     );
 
@@ -649,6 +657,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 "ui.panel.config.entities.picker.filter.show_readonly"
               )}
             </mwc-list-item>
+            <mwc-list-item
+              @request-selected="${this._showAreaConfiguredChanged}"
+              graphic="control"
+              .selected=${this._showAreaConfigured}
+            >
+              <ha-checkbox
+                slot="graphic"
+                .checked=${this._showAreaConfigured}
+              ></ha-checkbox>
+              ${this.hass!.localize(
+                "ui.panel.config.entities.picker.filter.show_with_area"
+              )}
+            </mwc-list-item>
           </ha-button-menu>
         `;
 
@@ -756,6 +777,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       return;
     }
     this._showReadOnly = ev.detail.selected;
+  }
+
+  private _showAreaConfiguredChanged(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._showAreaConfigured = ev.detail.selected;
   }
 
   private _handleSearchChange(ev: CustomEvent) {
