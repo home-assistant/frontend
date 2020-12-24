@@ -535,7 +535,7 @@ class HaSidebar extends LitElement {
       ></ha-user-badge>
 
       <span class="item-text">
-        ${this.hass.user ? this.hass.user.name : ""}
+        ${this.hass.user?.name}
       </span>
     </ha-clickable-list-item> `;
   }
