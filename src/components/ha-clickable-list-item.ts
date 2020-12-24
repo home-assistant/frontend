@@ -31,11 +31,6 @@ export class HaClickableListItem extends ListItemBase {
           padding-right: 0px;
         }
 
-        :host([rtl]) {
-          padding-left: var(--mdc-list-side-padding, 0px);
-          padding-right: var(--mdc-list-side-padding, 0px);
-        }
-
         :host([rtl]) span {
           margin-left: var(--mdc-list-item-graphic-margin, 20px) !important;
           margin-right: 0px !important;

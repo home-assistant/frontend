@@ -1,6 +1,7 @@
 import { css } from "lit-element";
 
 export const sortableStyles = css`
+  #sortable ha-clickable-list-item:nth-of-type(2n),
   #sortable a:nth-of-type(2n) paper-icon-item {
     animation-name: keyframes1;
     animation-iteration-count: infinite;
@@ -9,6 +10,7 @@ export const sortableStyles = css`
     animation-duration: 0.25s;
   }
 
+  #sortable ha-clickable-list-item:nth-of-type(2n-1),
   #sortable a:nth-of-type(2n-1) paper-icon-item {
     animation-name: keyframes2;
     animation-iteration-count: infinite;
@@ -34,14 +36,11 @@ export const sortableStyles = css`
 
   .sortable-fallback {
     display: none;
+    opacity: 0;
   }
 
   .sortable-ghost {
     opacity: 0.4;
-  }
-
-  .sortable-fallback {
-    opacity: 0;
   }
 
   @keyframes keyframes1 {
@@ -73,13 +72,8 @@ export const sortableStyles = css`
     display: none;
     position: absolute;
     top: 0;
-    right: 4px;
+    right: 0;
     --mdc-icon-button-size: 40px;
-  }
-
-  :host([rtl]) .show-panel {
-    right: initial;
-    left: 4px;
   }
 
   .hide-panel {
@@ -100,6 +94,8 @@ export const sortableStyles = css`
     display: inline-flex;
   }
 
+  ha-clickable-list-item.hidden-panel,
+  ha-clickable-list-item.hidden-panel span,
   paper-icon-item.hidden-panel,
   paper-icon-item.hidden-panel span,
   paper-icon-item.hidden-panel ha-icon[slot="item-icon"] {
