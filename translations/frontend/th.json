@@ -495,6 +495,10 @@
             }
         },
         "dialogs": {
+            "config_entry_system_options": {
+                "enable_new_entities_label": "เปิดใช้งานเอนทิตีที่เพิ่มใหม่",
+                "title": "ตัวเลือกระบบสําหรับ {การรวม}"
+            },
             "more_info_control": {
                 "details": "รายละเอียด",
                 "script": {
@@ -509,14 +513,27 @@
                     "title": "คำแนะนำในการอัพเดท"
                 }
             },
+            "options_flow": {
+                "form": {
+                    "header": "ตัวเลือก"
+                },
+                "success": {
+                    "description": "ตัวเลือกถูกบันทึกเรียบร้อยแล้ว"
+                }
+            },
             "zha_device_info": {
                 "manuf": "โดย {manufacturer}",
                 "no_area": "ไม่มีห้อง",
                 "power_source": "แหล่งพลังงาน",
                 "services": {
-                    "reconfigure": "กำหนดค่าอุปกรณ์ ZHA อีกครั้ง (เพื่อรักษาอุปกรณ์) ใช้สิ่งนี้หากคุณมีปัญหากับอุปกรณ์ หากอุปกรณ์ดังกล่าวเป็นอุปกรณ์ที่ใช้พลังงานจากแบตเตอรี่โปรดตรวจสอบให้แน่ใจว่าอุปกรณ์นั้นเปิดอยู่และยอมรับคำสั่งเมื่อคุณใช้บริการ"
+                    "reconfigure": "กำหนดค่าอุปกรณ์ ZHA อีกครั้ง (เพื่อรักษาอุปกรณ์) ใช้สิ่งนี้หากคุณมีปัญหากับอุปกรณ์ หากอุปกรณ์ดังกล่าวเป็นอุปกรณ์ที่ใช้พลังงานจากแบตเตอรี่โปรดตรวจสอบให้แน่ใจว่าอุปกรณ์นั้นเปิดอยู่และยอมรับคำสั่งเมื่อคุณใช้บริการ",
+                    "remove": "ลบอุปกรณ์ออกจากเครือข่าย Zigbee"
                 },
-                "unknown": "ไม่ทราบสถานะ"
+                "unknown": "ไม่ทราบสถานะ",
+                "zha_device_card": {
+                    "area_picker_label": "พื้นที่",
+                    "update_name_button": "อัปเดตชื่อ"
+                }
             }
         },
         "duration": {
@@ -547,14 +564,17 @@
                     "description": "ภาพรวมของห้องทั้งหมดในบ้านของคุณ",
                     "editor": {
                         "create": "สร้าง",
+                        "default_name": "พื้นที่ใหม่",
                         "delete": "ลบ",
                         "update": "แก้ไข"
                     },
                     "picker": {
+                        "create_area": "สร้างห้องใหม่",
                         "header": "ค่าของห้อง",
                         "integrations_page": "หน้าการทำงานร่วมกัน",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
-                        "introduction2": "สำหรับการวางอุปกรณ์นี้ลงในห้องนี้ ใช้ลิงค์ด้านล่างเพื่อไปยังหน้า 'การทำงานร่วมกัน' และคลิ๊กทีุ่่ม 'ตั้งค่าให้ทำงานร่วมกัน' เพื่อที่จะให้แสดงการ์ดสำหรับอุปกรณ์นั้น"
+                        "introduction2": "สำหรับการวางอุปกรณ์นี้ลงในห้องนี้ ใช้ลิงค์ด้านล่างเพื่อไปยังหน้า 'การทำงานร่วมกัน' และคลิ๊กทีุ่่ม 'ตั้งค่าให้ทำงานร่วมกัน' เพื่อที่จะให้แสดงการ์ดสำหรับอุปกรณ์นั้น",
+                        "no_areas": "ดูเหมือนว่าคุณยังไม่มีห้องเลย!"
                     }
                 },
                 "automation": {
@@ -662,7 +682,8 @@
                         },
                         "default_name": "ระบบอัตโนมัติใหม่",
                         "description": {
-                            "label": "รายละเอียด"
+                            "label": "รายละเอียด",
+                            "placeholder": "คำอธิบายเพิ่มเติม"
                         },
                         "introduction": "ใช้ระบบอัตโนมัติเพื่อทำให้บ้านของคุณมีชีวิตชีวา",
                         "load_error_not_editable": "ระบบอัตโนมัติที่อยู่ในไฟล์ Automations.yaml เท่านั้นที่สามารถแก้ไขได้",
@@ -769,21 +790,54 @@
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "connected": "เชื่อมต่อแล้ว",
+                        "google": {
+                            "title": "Google Assistant"
+                        },
+                        "nabu_casa_account": "บัญชี Nabu Casa",
+                        "sign_out": "ลงชื่อออก"
+                    },
                     "caption": "Home Assistant Cloud",
                     "description_features": "ควบคุมการทำงานจากนอกบ้าน ร่วมกับ Alexa และ Google Assistant",
                     "description_login": "ลงชื่อเข้าใช้เป็น {email}",
                     "description_not_login": "ยังไม่ได้เข้าสู่ระบบ",
                     "forgot_password": {
+                        "check_your_email": "ตรวจสอบอีเมลของคุณเพื่อดูคําแนะนําเกี่ยวกับวิธีการรีเซ็ตรหัสผ่านของคุณ",
                         "email": "อีเมล์",
                         "email_error_msg": "อีเมลไม่ถูกต้อง",
+                        "instructions": "ป้อนที่อยู่อีเมลของคุณและเราจะส่งลิงก์เพื่อรีเซ็ตรหัสผ่านของคุณ",
+                        "send_reset_email": "ส่งอีเมลรีเซ็ต",
                         "subtitle": "ลืมรหัสผ่าน",
                         "title": "ลืมรหัสผ่าน"
                     },
                     "login": {
+                        "alert_email_confirm_necessary": "คุณต้องยืนยันอีเมลของคุณก่อนเข้าสู่ระบบ",
+                        "alert_password_change_required": "คุณต้องเปลี่ยนรหัสผ่านของคุณก่อนเข้าสู่ระบบ",
+                        "email": "อีเมล์",
                         "email_error_msg": "อีเมลไม่ถูกต้อง",
                         "forgot_password": "ลืมรหัสผ่าน?",
                         "password": "รหัสผ่าน",
-                        "password_error_msg": "รหัสผ่านมีอย่างน้อย 8 ตัวอักษร"
+                        "password_error_msg": "รหัสผ่านมีอย่างน้อย 8 ตัวอักษร",
+                        "start_trial": "เริ่มทดลองใช้ฟรี 1 เดือน",
+                        "trial_info": "ไม่จำเป็นต้องมีข้อมูลการชำระเงิน"
+                    },
+                    "register": {
+                        "create_account": "สร้างบัญชี",
+                        "email_address": "อีเมล์",
+                        "email_error_msg": "อีเมลไม่ถูกต้อง",
+                        "feature_amazon_alexa": "การผสานรวมกับ Amazon Alexa",
+                        "feature_google_home": "การผสานรวมกับ Google Assistant",
+                        "feature_remote_control": "การควบคุม Home Assistant จากนอกบ้าน",
+                        "feature_webhook_apps": "ง่ายต่อการบูรณาการ webhook กับ OwnTracks",
+                        "headline": "เริ่มทดลองใช้ฟรี",
+                        "link_privacy_policy": "นโยบายความเป็นส่วนตัว",
+                        "link_terms_conditions": "ข้อกำหนดและเงื่อนไข",
+                        "password": "รหัสผ่าน",
+                        "password_error_msg": "รหัสผ่านมีความยาวอย่างน้อย 8 อักขระ",
+                        "resend_confirm_email": "ส่งอีเมลยืนยันอีกครั้ง",
+                        "start_trial": "เริ่มทดลองใช้",
+                        "title": "ลงทะเบียนบัญชี"
                     }
                 },
                 "core": {
@@ -874,6 +928,14 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "common": {
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "zwave_info": "ข้อมูล Z-Wave"
+                    }
+                },
                 "person": {
                     "caption": "บุคคล",
                     "description": "จัดการบุคคลที่ระบบจะทำการติดตาม",
@@ -901,6 +963,7 @@
                 },
                 "server_control": {
                     "caption": "การควบคุมเซิร์ฟเวอร์",
+                    "description": "รีสตาร์ทและหยุดเซิร์ฟเวอร์ Home Assistant",
                     "section": {
                         "reloading": {
                             "core": "โหลดส่วนกลางใหม่",
@@ -953,6 +1016,7 @@
                     "caption": "Z-Wave",
                     "common": {
                         "index": "ดัชนี",
+                        "instance": "อิน สแตนซ์",
                         "unknown": "ไม่ทราบ",
                         "value": "ค่า",
                         "wakeup_interval": "ช่วงเวลาการปลุก"
@@ -963,6 +1027,8 @@
                     },
                     "network_status": {
                         "network_started": "เริ่มเครือข่าย Z-Wave",
+                        "network_starting": "กําลังเริ่มเครือข่าย Z-Wave...",
+                        "network_starting_note": "อาจใช้เวลาสักครู่ขึ้นอยู่กับขนาดของเครือข่ายของคุณ",
                         "network_stopped": "หยุดเครือข่าย Z-Wave"
                     },
                     "node_config": {
@@ -971,6 +1037,13 @@
                         "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า",
                         "set_wakeup": "ตั้งค่าช่วงเวลาการปลุก",
                         "true": "จริง"
+                    },
+                    "services": {
+                        "add_node": "เพิ่มโหนด",
+                        "cancel_command": "ยกเลิกคำสั่ง",
+                        "remove_node": "เอาโหนดออก",
+                        "start_network": "กําลังเริ่มเครือข่าย Z-Wave...",
+                        "stop_network": "หยุดการใช้งานเครือข่าย Z-Wave..."
                     }
                 }
             },
@@ -1030,7 +1103,8 @@
                 "editor": {
                     "card": {
                         "config": {
-                            "optional": "ตัวเลือก"
+                            "optional": "ตัวเลือก",
+                            "required": "ต้องระบุ"
                         },
                         "gauge": {
                             "severity": {
@@ -1061,6 +1135,9 @@
                         "pick_card": "เลือกการ์ดที่คุณอยากจะเพิ่ม",
                         "toggle_editor": "เปิด/ปิดเครื่องมือแก้ไข"
                     },
+                    "edit_lovelace": {
+                        "header": "ชื่อของ Lovelace UI ของคุณ"
+                    },
                     "edit_view": {
                         "add": "เพิ่มมุมมอง",
                         "delete": "ลบมุมมอง",
@@ -1089,6 +1166,9 @@
                         "para": "โดยเริ่มต้น Home Assistant จะควบคุมส่วนต่อประสานผู้ใช้งานเอง เมื่อมี Entity หรือส่วนควบคุมใหม่ๆ จะถูกแสดงขึ้นให้เอง แต่ถ้าคุณอยากจะควบคุมเอง เราจะไม่มีการอัพเดทตามข้างต้นให้กับคุณ",
                         "para_sure": "คุณแน่ใจหรือไม่ว่าต้องการควบคุมส่วนต่อประสานผู้ใช้งาน?",
                         "save": "ใช้การควบคุม"
+                    },
+                    "select_view": {
+                        "dashboard_label": "แดชบอร์ด"
                     }
                 },
                 "menu": {
@@ -1355,6 +1435,9 @@
                     "error_no_theme": "ไม่มีธีม",
                     "header": "ชุดตกแต่ง",
                     "link_promo": "เรียนรู้เกี่ยวกับธีม"
+                },
+                "vibrate": {
+                    "header": "สั่น"
                 }
             },
             "shopping-list": {

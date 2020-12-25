@@ -418,8 +418,8 @@
             },
             "lock": {
                 "code": "Codice",
-                "lock": "Blocco",
-                "unlock": "Sbloccato"
+                "lock": "Blocca",
+                "unlock": "Sblocca"
             },
             "media_player": {
                 "browse_media": "Sfoglia i file multimediali",
@@ -609,13 +609,13 @@
                     "was_closed": "era chiuso",
                     "was_connected": "era connesso",
                     "was_disconnected": "era disconnesso",
-                    "was_locked": "era bloccato",
+                    "was_locked": "è stato bloccato",
                     "was_low": "era basso",
                     "was_normal": "era normale",
                     "was_opened": "era aperto",
                     "was_plugged_in": "è stato collegato",
                     "was_safe": "era sicuro",
-                    "was_unlocked": "era sbloccato",
+                    "was_unlocked": "è stato sbloccato",
                     "was_unplugged": "è stato scollegato",
                     "was_unsafe": "non era sicuro"
                 }
