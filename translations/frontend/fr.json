@@ -2855,7 +2855,7 @@
                             "more-info": "Plus d’infos",
                             "navigate": "Naviguer",
                             "none": "Pas d'action",
-                            "toggle": "Interrupteur",
+                            "toggle": "Permuter",
                             "url": "URL"
                         },
                         "editor_service_data": "Les informations sur les services ne peuvent être saisies que dans l'éditeur de code",
