@@ -89,6 +89,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity from within the climate domain");
     }
 
+    if (config.sensor && config.sensor.split(".")[0] !== "sensor") {
+      throw new Error(
+        "Specify a temperature entity from within the sensor domain"
+      );
+    }
+
     this._config = config;
   }
 
@@ -97,6 +103,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       return html``;
     }
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
+    const tempObj = this._config.sensor
+      ? this.hass.states[this._config.sensor]
+      : null;
 
     if (!stateObj) {
       return html`
@@ -116,6 +125,22 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         ? stateObj.attributes.temperature
         : stateObj.attributes.min_temp;
 
+    const temperature =
+      tempObj && Number.isFinite(Number(tempObj.state))
+        ? tempObj.state
+        : stateObj.attributes.current_temperature !== null
+        ? stateObj.attributes.current_temperature
+        : !Array.isArray(this._setTemp)
+        ? targetTemp
+        : null;
+
+    const temp_unit =
+      tempObj &&
+      Number.isFinite(Number(tempObj.state)) &&
+      tempObj.attributes.unit_of_measurement !== null
+        ? tempObj.attributes.unit_of_measurement
+        : this.hass.config.unit_system.temperature;
+
     const slider =
       stateObj.state === UNAVAILABLE
         ? html` <round-slider disabled="true"></round-slider> `
@@ -132,8 +157,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ></round-slider>
           `;
 
-    const currentTemperature = !isNaN(stateObj.attributes.current_temperature)
-      ? svg`
+    const currentTemperature =
+      temperature !== null
+        ? svg`
           <svg viewBox="0 0 40 20">
             <text
               x="50%"
@@ -142,17 +168,16 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               text-anchor="middle"
               style="font-size: 13px;"
             >
-              ${formatNumber(
-                stateObj.attributes.current_temperature,
-                this.hass!.language
-              )}
+              ${formatNumber(temperature, this.hass!.language, {
+                maximumFractionDigits: 1,
+              })}
               <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-                ${this.hass.config.unit_system.temperature}
+                ${temp_unit}
               </tspan>
             </text>
           </svg>
         `
-      : "";
+        : svg`<svg viewBox="0 0 40 20"></svg>`;
 
     const setValues = svg`
       <svg id="set-values">
@@ -161,7 +186,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ${
               stateObj.state === UNAVAILABLE
                 ? this.hass.localize("state.default.unavailable")
-                : this._setTemp === undefined || this._setTemp === null
+                : this._setTemp === undefined ||
+                  this._setTemp === null ||
+                  temperature === targetTemp
                 ? ""
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1

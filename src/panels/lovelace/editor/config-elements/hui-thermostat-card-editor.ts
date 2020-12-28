@@ -22,10 +22,12 @@ const cardConfigStruct = object({
   type: string(),
   entity: string(),
   name: optional(string()),
+  sensor: optional(string()),
   theme: optional(string()),
 });
 
 const includeDomains = ["climate"];
+const sensorDomains = ["sensor"];
 
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor extends LitElement
@@ -45,6 +47,10 @@ export class HuiThermostatCardEditor extends LitElement
 
   get _name(): string {
     return this._config!.name || "";
+  }
+
+  get _sensor(): string {
+    return this._config!.sensor || "";
   }
 
   get _theme(): string {
@@ -81,6 +87,19 @@ export class HuiThermostatCardEditor extends LitElement
           .configValue="${"name"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
+        <ha-entity-picker
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.entity"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass=${this.hass}
+          .value="${this._sensor}"
+          .configValue=${"sensor"}
+          .includeDomains=${sensorDomains}
+          @change="${this._valueChanged}"
+          allow-custom-entity
+        ></ha-entity-picker>
         <hui-theme-select-editor
           .hass=${this.hass}
           .value="${this._theme}"
