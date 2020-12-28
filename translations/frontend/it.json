@@ -1439,7 +1439,7 @@
                         "confirm_delete_header": "Eliminare questo progetto?",
                         "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
                         "delete_blueprint": "Elimina progetto",
-                        "discover_more": "Scopri altri progetti",
+                        "discover_more": "Scopri altri Progetti",
                         "header": "Editor del progetto",
                         "headers": {
                             "domain": "Dominio",
@@ -1740,9 +1740,9 @@
                             "filter": "Filtro",
                             "hidden_devices": "nascosto/i {number} {number, plural,\n  one {dispositivo}\n  other {dispositivi}\n}",
                             "show_all": "Mostra tutto",
-                            "show_disabled": "Mostra dispositivi disabilitati"
+                            "show_disabled": "Mostra i dispositivi disabilitati"
                         },
-                        "search": "Cerca dispositivi"
+                        "search": "Cerca i dispositivi"
                     },
                     "scene": {
                         "create": "Crea una Scena con il dispositivo",
@@ -2595,7 +2595,7 @@
                     "configured_in_yaml": "Le zone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente.",
                     "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
                     "create_zone": "Crea zona",
-                    "description": "Gestire le zone in cui si desidera tenere traccia delle persone",
+                    "description": "Gestisci le zone in cui si desidera tenere traccia delle persone",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",
