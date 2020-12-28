@@ -116,6 +116,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         ? stateObj.attributes.temperature
         : stateObj.attributes.min_temp;
 
+    const temperature =
+      stateObj.attributes.current_temperature !== null
+        ? stateObj.attributes.current_temperature
+        : Array.isArray(this._setTemp)
+        ? (this._setTemp[0] + this._setTemp[1]) / 2
+        : targetTemp;
+
     const slider =
       stateObj.state === UNAVAILABLE
         ? html` <round-slider disabled="true"></round-slider> `
@@ -132,8 +139,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ></round-slider>
           `;
 
-    const currentTemperature = !isNaN(stateObj.attributes.current_temperature)
-      ? svg`
+    const currentTemperature = svg`
           <svg viewBox="0 0 40 20">
             <text
               x="50%"
@@ -142,17 +148,15 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               text-anchor="middle"
               style="font-size: 13px;"
             >
-              ${formatNumber(
-                stateObj.attributes.current_temperature,
-                this.hass!.language
-              )}
+              ${formatNumber(temperature, this.hass!.language, {
+                maximumFractionDigits: 1,
+              })}
               <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                 ${this.hass.config.unit_system.temperature}
               </tspan>
             </text>
           </svg>
-        `
-      : "";
+        `;
 
     const setValues = svg`
       <svg id="set-values">
@@ -161,7 +165,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ${
               stateObj.state === UNAVAILABLE
                 ? this.hass.localize("state.default.unavailable")
-                : this._setTemp === undefined || this._setTemp === null
+                : this._setTemp === undefined ||
+                  this._setTemp === null ||
+                  temperature === targetTemp
                 ? ""
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
