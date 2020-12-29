@@ -501,7 +501,8 @@
             },
             "blueprint-picker": {
                 "add_user": "Bæta við notanda",
-                "remove_user": "Fjarlægja notanda"
+                "remove_user": "Fjarlægja notanda",
+                "select_blueprint": "Velja uppdrátt"
             },
             "data-table": {
                 "search": "Leita"
@@ -777,6 +778,9 @@
                     "caption": "Sjálfvirkni",
                     "description": "Stofna og breyta sjálfvirkni",
                     "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Nota uppdrátt"
+                        },
                         "how": "Hvernig viltu búa til nýju sjálfvirknina?",
                         "thingtalk": {
                             "create": "Stofna",
@@ -831,6 +835,9 @@
                             "unsupported_action": "Óstudd aðgerð: {action}"
                         },
                         "alias": "Nafn",
+                        "blueprint": {
+                            "header": "Uppdráttur"
+                        },
                         "conditions": {
                             "add": "Bæta við skilyrði",
                             "delete": "Eyða",
@@ -1036,11 +1043,25 @@
                     }
                 },
                 "blueprint": {
+                    "add": {
+                        "file_name": "Slóð uppdráttar",
+                        "header": "Flytja inn uppdrátt",
+                        "import_btn": "Forskoða uppdrátt",
+                        "importing": "Hleð inn uppdrátt...",
+                        "raw_blueprint": "Innihald uppdráttar",
+                        "save_btn": "Flytja inn uppdrátt",
+                        "saving": "Flyt inn uppdrátt..."
+                    },
+                    "caption": "Uppdrættir",
                     "overview": {
+                        "add_blueprint": "Flytja inn uppdrátt",
+                        "delete_blueprint": "Eyða uppdrátt",
+                        "discover_more": "Uppgötva fleiri uppdrætti",
                         "headers": {
                             "file_name": "Skráarnafn",
                             "name": "Nafn"
-                        }
+                        },
+                        "learn_more": "Læra meira um hvernig nota á uppdrætti"
                     }
                 },
                 "cloud": {
