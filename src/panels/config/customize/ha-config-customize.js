@@ -92,7 +92,7 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
   }
 
   _computeTabs() {
-    return configSections.general;
+    return configSections.advanced;
   }
 
   computeEntities(hass) {
