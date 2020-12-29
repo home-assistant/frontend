@@ -1415,12 +1415,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "fora społeczności",
                         "error_no_url": "Wprowadź adres URL schematu.",
                         "file_name": "Ścieżka do schematu",
                         "header": "Importuj schemat",
                         "import_btn": "Podgląd schematu",
                         "import_header": "Schemat: \"{name}\"",
                         "import_introduction": "Możesz importować schematy innych użytkowników z Githuba i forów społecznościowych. Wprowadź poniżej adres URL schematu.",
+                        "import_introduction_link": "Możesz importować schematy innych użytkowników z Githuba i {community_link}. Wpisz poniżej adres URL schematu.",
                         "importing": "Wczytywanie schematu...",
                         "raw_blueprint": "Zawartość schematu",
                         "save_btn": "Importuj schemat",
@@ -1435,6 +1437,7 @@
                         "confirm_delete_header": "Usunąć ten schemat?",
                         "confirm_delete_text": "Czy na pewno chcesz usunąć ten schemat?",
                         "delete_blueprint": "Usuń schemat",
+                        "discover_more": "Odkryj więcej schematów",
                         "header": "Edytor schematów",
                         "headers": {
                             "domain": "Domena",

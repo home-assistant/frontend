@@ -973,7 +973,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "通过此设备添加设备",
-                    "clusters": "管理集群",
+                    "clusters": "管理簇",
                     "reconfigure": "重新配置设备",
                     "remove": "删除设备",
                     "zigbee_information": "Zigbee 设备签名"
@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "社区论坛",
                         "error_no_url": "请输入 Blueprint 的网址。",
                         "file_name": "Blueprint 路径",
-                        "header": "添加新的 Blueprint",
-                        "import_btn": "导入 Blueprint",
+                        "header": "导入 Blueprint",
+                        "import_btn": "预览 Blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "您可以从 Github 和社区论坛导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
+                        "import_introduction_link": "您可以从 Github 和{community_link}导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
                         "importing": "正在导入 Blueprint...",
                         "raw_blueprint": "Blueprint 内容",
                         "save_btn": "保存 Blueprint",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "删除此 Blueprint？",
                         "confirm_delete_text": "您确定要删除此 Blueprint 吗？",
                         "delete_blueprint": "删除 Blueprint",
+                        "discover_more": "探索更多 Blueprint",
                         "header": "Blueprint 编辑器",
                         "headers": {
                             "domain": "域",
@@ -2483,30 +2486,30 @@
                     "button": "配置",
                     "caption": "ZHA",
                     "cluster_attributes": {
-                        "attributes_of_cluster": "所选集群的属性",
-                        "get_zigbee_attribute": "获取Zigbee属性",
-                        "header": "集群属性",
-                        "help_attribute_dropdown": "选择一个属性以查看或设置其值。",
+                        "attributes_of_cluster": "所选簇的属性",
+                        "get_zigbee_attribute": "获取 Zigbee 属性",
+                        "header": "簇的属性",
+                        "help_attribute_dropdown": "选择属性以查看或设置其值。",
                         "help_get_zigbee_attribute": "获取所选属性的值。",
-                        "help_set_zigbee_attribute": "在指定实体上为指定集群设置属性值。",
-                        "introduction": "查看和编辑集群属性。",
-                        "set_zigbee_attribute": "设置Zigbee属性"
+                        "help_set_zigbee_attribute": "在指定实体上为指定簇设置属性值。",
+                        "introduction": "查看和编辑簇属性。",
+                        "set_zigbee_attribute": "设置 Zigbee 属性"
                     },
                     "cluster_commands": {
-                        "commands_of_cluster": "所选集群的命令",
-                        "header": "集群命令",
+                        "commands_of_cluster": "所选簇的命令",
+                        "header": "簇的命令",
                         "help_command_dropdown": "选择要与之交互的命令。",
-                        "introduction": "查看并发出集群命令。",
-                        "issue_zigbee_command": "发出Zigbee命令"
+                        "introduction": "查看并发出簇命令。",
+                        "issue_zigbee_command": "发出 Zigbee 命令"
                     },
                     "clusters": {
-                        "header": "集群",
-                        "help_cluster_dropdown": "选择一个集群以查看属性和命令。",
-                        "introduction": "集群是 Zigbee 功能的构建基础，它们将功能分成逻辑单元。 有客户端和服务器类型，由属性和命令组成。"
+                        "header": "簇",
+                        "help_cluster_dropdown": "选择簇以查看其属性和命令。",
+                        "introduction": "“簇”是 Zigbee 功能的构建基础，它们将功能分成逻辑单元。 有客户端和服务器类型，由属性和命令组成。"
                     },
                     "common": {
                         "add_devices": "添加设备",
-                        "clusters": "集群",
+                        "clusters": "簇",
                         "devices": "设备",
                         "manufacturer_code_override": "制造商代码覆盖",
                         "value": "值"
@@ -2526,14 +2529,14 @@
                         "header": "Zigbee 家庭自动化 - 设备"
                     },
                     "group_binding": {
-                        "bind_button_help": "将选定的群组绑定到所选的设备集群。",
+                        "bind_button_help": "将所选群组绑定到所选设备的簇。",
                         "bind_button_label": "绑定群组",
-                        "cluster_selection_help": "选择要绑定到所选组的集群。",
+                        "cluster_selection_help": "选择要绑定到所选群组的簇。",
                         "group_picker_help": "选择一个群组来进行绑定。",
                         "group_picker_label": "可绑定的群组",
                         "header": "群组绑定",
                         "introduction": "绑定和取消绑定群组。",
-                        "unbind_button_help": "从选定的设备集群中取消绑定选定的群组。",
+                        "unbind_button_help": "将所选群组与所选设备的簇取消绑定。",
                         "unbind_button_label": "取消绑定群组"
                     },
                     "groups": {

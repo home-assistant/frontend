@@ -1403,12 +1403,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "コミュニティフォーラム",
                         "error_no_url": "設計図のURLを入力してください。",
                         "file_name": "設計図のパス",
                         "header": "新しい設計図を追加する",
                         "import_btn": "設計図をインポートする",
                         "import_header": "インポート{name} （ {domain} ）",
                         "import_introduction": "Github やコミュニティフォーラムから他のユーザーの設計図をインポートできます。以下に、設計図の URL を入力します。",
+                        "import_introduction_link": "他のユーザーの設計図をGithubと{community_link}からインポートできます。以下に設計図のURLを入力します。",
                         "importing": "設計図をインポートしています...",
                         "raw_blueprint": "設計図コンテンツ",
                         "save_btn": "設計図の保存",
@@ -1423,6 +1425,7 @@
                         "confirm_delete_header": "この設計図を削除しますか?",
                         "confirm_delete_text": "この設計図を削除してもよ思いますか?",
                         "delete_blueprint": "設計図を削除",
+                        "discover_more": "より多くの設計図を見る",
                         "header": "設計図エディタ",
                         "headers": {
                             "domain": "ドメイン",
@@ -3343,7 +3346,7 @@
                     "working": "お待ちください"
                 },
                 "initializing": "初期化中",
-                "logging_in_with": "** {authProviderName} **でログインしています。",
+                "logging_in_with": "**{authProviderName}**でログインします。",
                 "pick_auth_provider": "またはログイン"
             },
             "page-demo": {

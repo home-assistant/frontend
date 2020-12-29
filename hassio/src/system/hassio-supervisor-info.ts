@@ -178,7 +178,7 @@ class HassioSupervisorInfo extends LitElement {
               </div>`}
           ${!this.supervisor.supervisor.healthy
             ? html`<div class="error">
-                Your installtion is running in an unhealthy state.
+                Your installation is running in an unhealthy state.
                 <button
                   class="link"
                   title="Learn more about why your system is marked as unhealthy"

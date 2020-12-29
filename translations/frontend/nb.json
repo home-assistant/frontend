@@ -516,7 +516,7 @@
             "disable": "Deaktiver",
             "enable": "Aktivér",
             "error_required": "Nødvendig",
-            "leave": "Forlater",
+            "leave": "Forlate",
             "loading": "Laster",
             "menu": "Meny",
             "next": "Neste",
@@ -554,7 +554,7 @@
             "blueprint-picker": {
                 "add_user": "Legg til bruker",
                 "remove_user": "Fjern bruker",
-                "select_blueprint": "Velg et Blueprint"
+                "select_blueprint": "Velg en Blueprint"
             },
             "data-table": {
                 "no-data": "Ingen data",
@@ -901,7 +901,7 @@
                     "navigation": {
                         "areas": "Områder",
                         "automation": "Automasjoner",
-                        "blueprint": "Blueprints",
+                        "blueprint": "Blueprinter",
                         "core": "Generelt",
                         "customize": "Tilpasninger",
                         "devices": "Enheter",
@@ -1169,9 +1169,9 @@
                             "blueprint_to_use": "Blueprint å bruke",
                             "header": "Blueprint",
                             "inputs": "Innganger",
-                            "manage_blueprints": "Administrer Blueprints",
-                            "no_blueprints": "Du har ingen blueprints",
-                            "no_inputs": "Denne blueprint har ingen innganger."
+                            "manage_blueprints": "Administrer Blueprinter",
+                            "no_blueprints": "Du har ingen Blueprinter",
+                            "no_inputs": "Denne Blueprinten har ingen innganger"
                         },
                         "conditions": {
                             "add": "Legg til betingelse",
@@ -1249,7 +1249,7 @@
                             },
                             "unsupported_condition": "Ingen brukergrensesnitt for bruk: {condition}"
                         },
-                        "copy_to_clipboard": "Kopiere til utklippstavle",
+                        "copy_to_clipboard": "Kopier til utklippstavle",
                         "default_name": "Ny automasjon",
                         "description": {
                             "label": "Beskrivelse",
@@ -1309,7 +1309,7 @@
                                     "enter": "Ankommer",
                                     "event": "Hendelse:",
                                     "label": "Geolokasjon",
-                                    "leave": "Forlater",
+                                    "leave": "Forlate",
                                     "source": "Kilde",
                                     "zone": "Sone"
                                 },
@@ -1372,7 +1372,7 @@
                                     "entity": "Entitet med posisjon",
                                     "event": "Hendelse:",
                                     "label": "Sone",
-                                    "leave": "Forlater",
+                                    "leave": "Forlate",
                                     "zone": "Sone"
                                 }
                             },
@@ -1417,34 +1417,37 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Vennligst skriv inn URL-en til blueprint",
-                        "file_name": "Blueprint Bane",
-                        "header": "Importer en blueprint",
-                        "import_btn": "Forhåndsvisning av blueprint",
+                        "community_forums": "fellesskapsforum",
+                        "error_no_url": "Vennligst skriv inn URL-en til Blueprinten",
+                        "file_name": "Blueprint bane",
+                        "header": "Importer en Blueprint",
+                        "import_btn": "Forhåndsvisning av Blueprint",
                         "import_header": "Blueprint \"{name}\"",
-                        "import_introduction": "Du kan importere blueprints av andre brukere fra Github og fellesskapsforumet. Skriv inn URL-en til blueprint nedenfor.",
-                        "importing": "Laster blueprint...",
+                        "import_introduction": "Du kan importere Blueprinter av andre brukere fra GitHub og fellesskapsforumet. Skriv inn URL-en til blueprinten nedenfor.",
+                        "import_introduction_link": "Du kan importere Blueprinter av andre brukere fra GitHub og {community_link}. Skriv inn URL-en til blueprinten nedenfor.",
+                        "importing": "Laster Blueprint...",
                         "raw_blueprint": "Blueprint innhold",
-                        "save_btn": "Importer blueprint",
-                        "saving": "Importerer blueprint...",
-                        "unsupported_blueprint": "Denne blueprinten støttes ikke",
-                        "url": "URL til blueprint"
+                        "save_btn": "Importer Blueprint",
+                        "saving": "Importerer Blueprint...",
+                        "unsupported_blueprint": "Denne Blueprinten støttes ikke",
+                        "url": "URL til Blueprinten"
                     },
-                    "caption": "Blueprints",
-                    "description": "Administrer blueprints",
+                    "caption": "Blueprinter",
+                    "description": "Administrer Blueprinter",
                     "overview": {
-                        "add_blueprint": "Importer blueprint",
-                        "confirm_delete_header": "Slette denne blueprint'en?",
-                        "confirm_delete_text": "Er du sikker på at du vil slette denne blueprint",
-                        "delete_blueprint": "Slett blueprint",
-                        "header": "Blueprint Editor",
+                        "add_blueprint": "Importer Blueprint",
+                        "confirm_delete_header": "Slette denne Blueprinten?",
+                        "confirm_delete_text": "Er du sikker på at du vil slette denne Blueprinten",
+                        "delete_blueprint": "Slett Blueprint",
+                        "discover_more": "Oppdag flere Blueprinter",
+                        "header": "Blueprint-redigering",
                         "headers": {
                             "domain": "Domene",
                             "file_name": "Filnavn",
                             "name": "Navn"
                         },
-                        "introduction": "Med blueprint-konfigurasjonen kan du importere og administrere dine blueprints.",
-                        "learn_more": "Finn ut mer om hvordan du bruker blueprints",
+                        "introduction": "Med Blueprint-konfigurasjonen kan du importere og behandle dine Blueprinter",
+                        "learn_more": "Finn ut mer om hvordan du bruker Blueprinter",
                         "use_blueprint": "Opprett automasjon"
                     }
                 },
@@ -2126,7 +2129,7 @@
                             "offline": "OZWDaemon frakoblet",
                             "ready": "Klar til å koble til",
                             "started": "Koblet til MQTT",
-                            "starting": "Koble til MQTT",
+                            "starting": "Kobler til MQTT",
                             "stopped": "OpenZWave stoppet"
                         },
                         "offline": "Frakoblet",
@@ -2149,23 +2152,23 @@
                         "product_manual": "Produkthåndbok"
                     },
                     "node_query_stages": {
-                        "associations": "Oppdatere tilknytningsgrupper og medlemskap",
-                        "cacheload": "Laste inn informasjon fra Cachefilen for OpenZWave. Batterinoder vil bli på dette stadiet til noden våkner.",
+                        "associations": "Oppdaterer tilknytningsgrupper og medlemskap",
+                        "cacheload": "Laster inn informasjon fra Cachefilen for OpenZWave. Batterinoder vil bli på dette stadiet til noden våkner.",
                         "complete": "Intervjuprosessen er fullført",
-                        "configuration": "Innhenting av konfigurasjonsverdier fra noden",
-                        "dynamic": "Få ofte endrede verdier fra noden",
-                        "instances": "Innhenting av detaljer om hvilke forekomster eller kanaler en enhet støtter",
-                        "manufacturerspecific1": "Hente produsent- og produkt-ID-koder fra noden",
-                        "manufacturerspecific2": "Hente flere produsent- og produkt-ID-koder fra noden",
-                        "neighbors": "Få en liste over nodens naboer",
-                        "nodeinfo": "Innhenting av støttede kommandoklasser fra noden",
-                        "nodeplusinfo": "Innhenting av Z-Wave + informasjon fra noden",
-                        "probe": "Kontrollere om noden er våken/levende",
-                        "protocolinfo": "Få grunnleggende Z-Wave-funksjoner i denne noden fra kontrolleren",
+                        "configuration": "Henter konfigurasjonsverdier fra noden",
+                        "dynamic": "Henter ofte endrede verdier fra noden",
+                        "instances": "Henter detaljer om hvilke forekomster eller kanaler en enhet støtter",
+                        "manufacturerspecific1": "Henter produsent- og produkt-ID-koder fra noden",
+                        "manufacturerspecific2": "Henter flere produsent- og produkt-ID-koder fra noden",
+                        "neighbors": "Henter liste over nodens naboer",
+                        "nodeinfo": "Henter støttede kommandoklasser fra noden",
+                        "nodeplusinfo": "Henter Z-Wave + informasjon fra noden",
+                        "probe": "Kontrollerer om noden er våken/levende",
+                        "protocolinfo": "Henter grunnleggende Z-Wave-funksjoner i denne noden fra kontrolleren",
                         "session": "Henter verdier fra noden som sjeldent oppdateres",
-                        "static": "Innhenting av statiske verdier fra enheten",
-                        "versions": "Hente informasjon om fastvare- og kommandoklasseversjoner",
-                        "wakeup": "Sette opp støtte for vekkingskøer og meldinger"
+                        "static": "Henter statiske verdier fra enheten",
+                        "versions": "Henter informasjon om fastvare- og kommandoklasseversjoner",
+                        "wakeup": "Setter opp støtte for vekkingskøer og meldinger"
                     },
                     "node": {
                         "button": "Node detaljer",
@@ -2176,14 +2179,14 @@
                         "id": "ID",
                         "manufacturer": "Produsent",
                         "model": "Modell",
-                        "query_stage": "Spørringsstadiet",
+                        "query_stage": "Spørringsstadie",
                         "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
                         "battery_note": "Hvis noden er batteridrevet, må du passe på å vekke den før du fortsetter",
                         "button": "Oppdater node",
-                        "complete": "Node oppdatering fullført",
-                        "description": "Dette vil fortelle OpenZWave å re-intervjue en node og oppdatere nodens kommandoklasser, evner og verdier.",
+                        "complete": "Oppdatering av node fullført",
+                        "description": "Dette vil fortelle OpenZWave å re-intervjue en node og oppdatere nodens kommandoklasser, kapabiliteter og verdier.",
                         "node_status": "Node-status",
                         "refreshing_description": "Oppdaterer nodeinformasjon...",
                         "start_refresh_button": "Start oppdatering",
@@ -2380,7 +2383,7 @@
                         "validation": {
                             "check_config": "Sjekk konfigurasjonen",
                             "heading": "Validering av konfigurasjon",
-                            "introduction": "Valider konfigurasjonen hvis du nylig har gjort endringer i konfigurasjonen og vil forsikre deg om at det hele er gyldig",
+                            "introduction": "Valider konfigurasjonen hvis du nylig har gjort endringer i konfigurasjonen og vil forsikre deg om at den er gyldig",
                             "invalid": "Ugyldig konfigurasjon",
                             "valid": "Gyldig konfigurasjon"
                         }
@@ -2508,7 +2511,7 @@
                         "add_devices": "Legg til enheter",
                         "clusters": "Klynger",
                         "devices": "Enheter",
-                        "manufacturer_code_override": "Overstyring av produsent kode",
+                        "manufacturer_code_override": "Overstyring av produsentkode",
                         "value": "Verdi"
                     },
                     "description": "ZigBee Hjemmeautomasjon nettverksadministrasjon",
@@ -2672,10 +2675,10 @@
                     },
                     "ozw_log": {
                         "header": "OZW-logg",
-                        "introduction": "Vis loggen. 0 er minimum (laster hele loggen) og 1000 er maksimum. Load vil vise en statisk logg og halen vil automatisk oppdatere med det siste spesifiserte antall linjer av loggen.",
+                        "introduction": "Vis loggen. 0 er minimum (laster hele loggen) og 1000 er maksimum. Hent vil vise en statisk logg og Følg vil automatisk oppdatere med det siste spesifiserte antall linjer av loggen.",
                         "last_log_lines": "Antall siste logglinjer",
-                        "load": "Laste",
-                        "tail": "Tail"
+                        "load": "Hent",
+                        "tail": "Følg"
                     },
                     "services": {
                         "add_node": "Legg til node",
@@ -2984,7 +2987,7 @@
                         },
                         "grid": {
                             "description": "Med Rutenett-kortet kan du vise flere kort i et rutenett",
-                            "name": "Rutenettet"
+                            "name": "Rutenett"
                         },
                         "history-graph": {
                             "description": "Med Historikkgraf-kortet kan du vise en graf for hver av enhetene som er oppført.",

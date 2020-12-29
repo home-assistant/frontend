@@ -418,8 +418,8 @@
             },
             "lock": {
                 "code": "Codice",
-                "lock": "Blocco",
-                "unlock": "Sbloccato"
+                "lock": "Blocca",
+                "unlock": "Sblocca"
             },
             "media_player": {
                 "browse_media": "Sfoglia i file multimediali",
@@ -529,7 +529,7 @@
             "rename": "Rinomina",
             "save": "Salva",
             "skip": "Salta",
-            "stay": "Rimanere",
+            "stay": "Rimani",
             "successfully_deleted": "Cancellato con successo",
             "successfully_saved": "Salvataggio riuscito",
             "undo": "Annulla",
@@ -609,13 +609,13 @@
                     "was_closed": "era chiuso",
                     "was_connected": "era connesso",
                     "was_disconnected": "era disconnesso",
-                    "was_locked": "era bloccato",
+                    "was_locked": "è stato bloccato",
                     "was_low": "era basso",
                     "was_normal": "era normale",
                     "was_opened": "era aperto",
                     "was_plugged_in": "è stato collegato",
                     "was_safe": "era sicuro",
-                    "was_unlocked": "era sbloccato",
+                    "was_unlocked": "è stato sbloccato",
                     "was_unplugged": "è stato scollegato",
                     "was_unsafe": "non era sicuro"
                 }
@@ -1258,7 +1258,7 @@
                         "edit_ui": "Modifica con l'Interfaccia Utente",
                         "edit_yaml": "Modifica come YAML",
                         "enable_disable": "Abilitare/Disabilitare l'automazione",
-                        "introduction": "Usa le automazioni per far vivere la tua casa.",
+                        "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
                         "max": {
@@ -1266,7 +1266,7 @@
                             "queued": "Lunghezza della coda"
                         },
                         "modes": {
-                            "description": "La modalità controlla cosa succede quando l'automazione viene attivata mentre le azioni sono ancora in esecuzione da una attivazione precedente. Controllare {documentation_link} per maggiori informazioni.",
+                            "description": "La Modalità controlla cosa succede quando l'automazione viene attivata mentre le azioni sono ancora in esecuzione da una attivazione precedente. Controllare la {documentation_link} per maggiori informazioni.",
                             "documentation": "documentazione di automazione",
                             "label": "Modalità",
                             "parallel": "Parallelo",
@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "forum della comunità",
                         "error_no_url": "Inserisci l'URL del progetto.",
                         "file_name": "Percorso del progetto",
                         "header": "Importa un progetto",
                         "import_btn": "Anteprima del progetto",
                         "import_header": "Progetto \"{name}\"",
                         "import_introduction": "Puoi importare progetti di altri utenti da Github e dai forum della comunità. Immettere l'URL del progetto di seguito.",
+                        "import_introduction_link": "Puoi importare progetti di altri utenti da Github e {community_link} . Immettere l'URL del progetto di seguito.",
                         "importing": "Caricamento progetto ...",
                         "raw_blueprint": "Contenuto del progetto",
                         "save_btn": "Importa progetto",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Eliminare questo progetto?",
                         "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
                         "delete_blueprint": "Elimina progetto",
+                        "discover_more": "Scopri altri Progetti",
                         "header": "Editor del progetto",
                         "headers": {
                             "domain": "Dominio",
@@ -1737,9 +1740,9 @@
                             "filter": "Filtro",
                             "hidden_devices": "nascosto/i {number} {number, plural,\n  one {dispositivo}\n  other {dispositivi}\n}",
                             "show_all": "Mostra tutto",
-                            "show_disabled": "Mostra dispositivi disabilitati"
+                            "show_disabled": "Mostra i dispositivi disabilitati"
                         },
-                        "search": "Cerca dispositivi"
+                        "search": "Cerca i dispositivi"
                     },
                     "scene": {
                         "create": "Crea una Scena con il dispositivo",
@@ -1865,10 +1868,10 @@
                     "system_health": {
                         "checks": {
                             "cloud": {
-                                "alexa_enabled": "Alexa abilitato",
-                                "can_reach_cert_server": "Raggiungi il server dei certificati",
-                                "can_reach_cloud": "Raggiungi Home Assistant Cloud",
-                                "can_reach_cloud_auth": "Raggiungi il server di autenticazione",
+                                "alexa_enabled": "Alexa abilitata",
+                                "can_reach_cert_server": "Server dei Certificati raggiungibile",
+                                "can_reach_cloud": "Home Assistant Cloud raggiungibile",
+                                "can_reach_cloud_auth": "Server di Autenticazione raggiungibile",
                                 "google_enabled": "Google abilitato",
                                 "logged_in": "Accesso effettuato",
                                 "relayer_connected": "Relayer connesso",
@@ -2293,7 +2296,7 @@
                         "id": "ID Entità",
                         "id_already_exists": "Questo ID esiste già",
                         "id_already_exists_save_error": "Non è possibile salvare questo script perché l'ID non è univoco, scegliere un altro ID o lasciarlo vuoto per generarne automaticamente uno.",
-                        "introduction": "Utilizzare gli script per eseguire una sequenza di azioni.",
+                        "introduction": "Utilizza gli Script per eseguire una sequenza di azioni.",
                         "link_available_actions": "Ulteriori informazioni sulle azioni disponibili.",
                         "load_error_not_editable": "Solo gli script all'interno di scripts.yaml sono modificabili.",
                         "max": {
@@ -2301,8 +2304,8 @@
                             "queued": "Lunghezza della coda"
                         },
                         "modes": {
-                            "description": "La modalità controlla cosa succede quando lo script viene invocato mentre è ancora in esecuzione da una o più invocazioni precedenti. Controllare il {documentation_link} per maggiori informazioni.",
-                            "documentation": "documentazione dello script",
+                            "description": "La Modalità controlla cosa succede quando lo script viene invocato mentre è ancora in esecuzione una o più invocazioni precedenti. Controllare la {documentation_link} per maggiori informazioni.",
+                            "documentation": "documentazione degli script",
                             "label": "Modalità",
                             "parallel": "Parallelo",
                             "queued": "In coda",
@@ -2311,7 +2314,7 @@
                         },
                         "save_script": "Salva script",
                         "sequence": "Sequenza",
-                        "sequence_sentence": "Sequenza di azioni di questo script."
+                        "sequence_sentence": "Sequenza delle azioni di questo Script."
                     },
                     "picker": {
                         "add_script": "Aggiungi script",
@@ -2592,7 +2595,7 @@
                     "configured_in_yaml": "Le zone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente.",
                     "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
                     "create_zone": "Crea zona",
-                    "description": "Gestire le zone in cui si desidera tenere traccia delle persone",
+                    "description": "Gestisci le zone in cui si desidera tenere traccia delle persone",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",

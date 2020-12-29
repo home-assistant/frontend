@@ -7,6 +7,7 @@
         }
     },
     "groups": {
+        "owner": "Proprietário",
         "system-admin": "Administradores",
         "system-read-only": "Usuários somente leitura",
         "system-users": "Usuários"
@@ -19,6 +20,7 @@
         "logbook": "Log de eventos",
         "mailbox": "Caixa de correio",
         "map": "Mapa",
+        "media_browser": "Navegador Multimídia",
         "profile": "Perfil",
         "shopping_list": "Lista de compras",
         "states": "Visão geral"
@@ -359,7 +361,7 @@
             },
             "automation": {
                 "last_triggered": "Último disparo",
-                "trigger": "Gatilho"
+                "trigger": "Executar"
             },
             "camera": {
                 "not_available": "Imagem indisponível"
@@ -543,6 +545,8 @@
                 "add_new": "Adicionar nova área…",
                 "area": "Área",
                 "clear": "Limpar",
+                "no_areas": "Você não possui áreas",
+                "no_match": "Não foram encontradas áreas com esta configuração",
                 "show_areas": "Mostrar áreas"
             },
             "blueprint-picker": {
@@ -562,6 +566,7 @@
                 "clear": "Limpar",
                 "device": "Dispositivo",
                 "no_area": "Sem área",
+                "no_devices": "Você não possui dispositivos",
                 "show_devices": "Mostrar dispositivos",
                 "toggle": "Alternar"
             },
@@ -585,6 +590,11 @@
                 "by_service": "por serviço",
                 "entries_not_found": "Não foram encontradas entradas no registro",
                 "messages": {
+                    "became_unavailable": "ficou indisponível",
+                    "changed_to_state": "alterado para {state}",
+                    "cleared_device_class": "liberado ({device_class} não detectado(a))",
+                    "detected_device_class": "{device_class} detectado",
+                    "set": "Pôr do sol",
                     "turned_off": "desligou",
                     "turned_on": "ligou",
                     "was_at_home": "estava em casa",
@@ -592,6 +602,8 @@
                     "was_connected": "foi conectado",
                     "was_disconnected": "foi desconectado",
                     "was_locked": "foi trancada",
+                    "was_low": "estava baixo",
+                    "was_normal": "estava normal",
                     "was_opened": "foi aberto",
                     "was_plugged_in": "foi conectado",
                     "was_safe": "estava seguro",
@@ -668,6 +680,14 @@
             "service-picker": {
                 "service": "Serviço"
             },
+            "target-picker": {
+                "add_area_id": "Escolher área",
+                "add_device_id": "Escolher dispositivo",
+                "add_entity_id": "Escolher entidade",
+                "remove_area_id": "Remover área",
+                "remove_device_id": "Remover dispositivo",
+                "remove_entity_id": "Remover entidade"
+            },
             "user-picker": {
                 "add_user": "Adicionar Usuário",
                 "remove_user": "Remover usuário"
@@ -690,6 +710,7 @@
                 "editor": {
                     "confirm_delete": "Tem certeza que você deseja excluir esta entrada?",
                     "delete": "Excluir",
+                    "device_disabled": "O dispositivo desta entidade está desativado.",
                     "enabled_cause": "Desativado por {cause}.",
                     "enabled_description": "Entidades desativadas não serão adicionadas ao Home Assistant.",
                     "enabled_label": "Ativar entidade",
@@ -698,6 +719,7 @@
                     "icon_error": "Os ícones devem estar no formato 'prefixo:nome do ícone', ex: 'mdi:home'.",
                     "name": "Sobrescrever nome",
                     "note": "Nota: isso talvez ainda não funcione com todas as integrações.",
+                    "open_device_settings": "Abrir configurações do dispositivo",
                     "unavailable": "Esta entidade não está disponível no momento.",
                     "update": "Atualizar"
                 },
@@ -1138,7 +1160,7 @@
                             "documentation": "documentação da automação",
                             "label": "Modo",
                             "parallel": "Paralelo",
-                            "queued": "Enfileirado",
+                            "queued": "Fila",
                             "restart": "Reiniciar",
                             "single": "Único (padrão)"
                         },
@@ -1270,6 +1292,18 @@
                             "header": "Criar nova automação",
                             "language_note": "Nota: Por enquanto, apenas o Inglês é suportado."
                         }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "community_forums": "fórum da comunidade"
+                    },
+                    "overview": {
+                        "headers": {
+                            "domain": "Domínio",
+                            "file_name": "Nome do arquivo"
+                        },
+                        "use_blueprint": "Criar automação"
                     }
                 },
                 "cloud": {
@@ -1499,6 +1533,7 @@
                             "caption": "Só faça alguma coisa se ..."
                         },
                         "create": "Crie automação com o dispositivo",
+                        "create_disable": "Não é possível criar automatizações com dispositivos desativados",
                         "no_automations": "Sem automações",
                         "no_device_automations": "Não há automações disponíveis para este dispositivo.",
                         "triggers": {
@@ -1524,6 +1559,13 @@
                     "description": "Gerenciar dispositivos conectados",
                     "device_info": "Informação do dispositivo",
                     "device_not_found": "Dispositivo não encontrado.",
+                    "disabled": "Desativado",
+                    "disabled_by": {
+                        "integration": "Integração",
+                        "user": "Usuário"
+                    },
+                    "enabled_cause": "Dispositivo desativado por {cause}.",
+                    "enabled_label": "Habilitaar dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {entidade desabilitada}\n  other {entidades desabilitadas}\n}",
@@ -1533,14 +1575,24 @@
                     },
                     "name": "Nome",
                     "no_devices": "Sem dispositivos",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtro",
+                            "show_all": "Mostrar tudo",
+                            "show_disabled": "Mostrar dispositivos desativados"
+                        },
+                        "search": "Persquisar dispositivos"
+                    },
                     "scene": {
                         "create": "Criar cenário com o dispositivo",
+                        "create_disable": "Não é possível criar cenas com dispositivos desativados",
                         "no_scenes": "Sem cenários",
                         "scenes": "Cenários"
                     },
                     "scenes": "Cenários",
                     "script": {
                         "create": "Criar roteiro com o dispositivo",
+                        "create_disable": "Não é possível criar scripts com dispositivos desativados",
                         "no_scripts": "Sem roteiros",
                         "scripts": "Roteiros"
                     },
@@ -1572,6 +1624,7 @@
                         },
                         "header": "Registro de Entidades",
                         "headers": {
+                            "area": "Área",
                             "entity_id": "ID da entidade",
                             "integration": "Integração",
                             "name": "Nome",
@@ -2010,7 +2063,7 @@
                             "documentation": "documentação do script",
                             "label": "Modo",
                             "parallel": "Paralelo",
-                            "queued": "Enfileirado",
+                            "queued": "Fila",
                             "restart": "Reiniciar",
                             "single": "Único (padrão)"
                         },
@@ -2065,7 +2118,7 @@
                             "smtp": "Recarregar serviços de notificação de SMTP",
                             "statistics": "Recarregar estatísticas de entidades",
                             "template": "Recarregar entidades de modelo",
-                            "universal": "Recarregar entidades universais de media players",
+                            "universal": "Recarregar entidades de reprodutor de mídia universal",
                             "zone": "Recarregar zonas"
                         },
                         "server_management": {
@@ -2125,6 +2178,7 @@
                     "editor": {
                         "activate_user": "Ativar usuário",
                         "active": "Ativo",
+                        "active_tooltip": "Controla se o usuário pode fazer login",
                         "admin": "Administrador",
                         "caption": "Visualizar usuário",
                         "change_password": "Mudar senha",
@@ -2141,19 +2195,24 @@
                         "system_generated_users_not_editable": "Não é possível remover utilizadores gerados pelo sistema.",
                         "system_generated_users_not_removable": "Não foi possível remover usuários gerados pelo sistema.",
                         "unnamed_user": "Usuário sem nome",
-                        "update_user": "Atualizar"
+                        "update_user": "Atualizar",
+                        "username": "Nome de usuário"
                     },
                     "picker": {
                         "add_user": "Adicionar Usuário",
                         "headers": {
                             "group": "Grupo",
+                            "is_active": "Ativo",
+                            "is_owner": "Proprietário",
                             "name": "Nome",
-                            "system": "Sistema"
+                            "system": "Sistema",
+                            "username": "Nome de usuário"
                         }
                     },
                     "users_privileges_note": "Grupos de Usuários ainda é um recurso experimental. O usuário será incapaz de administrar através da interface grática. Nós ainda estamos auditando todos os endponts da API de gerenciamento para se certificar que eles limitam o acesso para administradores da maneira correta."
                 },
                 "zha": {
+                    "add_device": "Adicionar Dispositivo",
                     "add_device_page": {
                         "discovered_text": "Os dispositivos descobertos aparecerão aqui.",
                         "discovery_text": "Dispositivos descobertos serão exibidos aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) no modo de emparelhamento.",
@@ -2199,6 +2258,16 @@
                         "value": "Valor"
                     },
                     "description": "Gerenciamento de rede Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configuração Finalizada",
+                        "CONFIGURED_status_text": "Iniciando",
+                        "INITIALIZED": "Inicialização Finalizada",
+                        "INITIALIZED_status_text": "O dispositivo está pronto para ser utilizado",
+                        "INTERVIEW_COMPLETE": "Entrevista Finalizada",
+                        "INTERVIEW_COMPLETE_status_text": "Configurando",
+                        "PAIRED": "Dispositivo Encontrado",
+                        "PAIRED_status_text": "Iniciando Entrevista"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Dispositivo"
                     },
@@ -2214,6 +2283,7 @@
                         "unbind_button_label": "Desvincular grupo"
                     },
                     "groups": {
+                        "add_group": "Adicionar Grupo",
                         "add_members": "Adicionar membros",
                         "adding_members": "Adicionando membros",
                         "caption": "Grupos",
@@ -2256,7 +2326,10 @@
                         "hint_wakeup": "Alguns dispositivos, como sensores Xiaomi, têm um botão de despertar que você pode pressionar em intervalos de ~5 segundos que mantêm os dispositivos acordados enquanto interage com eles.",
                         "introduction": "Execute comandos ZHA que afetam um único dispositivo. Escolha um dispositivo para ver uma lista dos comandos disponíveis."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualização"
+                    }
                 },
                 "zone": {
                     "add_zone": "Adicionar Zona",
@@ -3086,10 +3159,13 @@
                 "change_password": {
                     "confirm_new_password": "Confirme a nova senha",
                     "current_password": "Senha atual",
+                    "error_new_is_old": "A nova senha deve ser diferente da senha atual",
+                    "error_new_mismatch": "Os valores para a nova senha não correspondem",
                     "error_required": "Obrigatório",
                     "header": "Alterar senha",
                     "new_password": "Nova Senha",
-                    "submit": "Enviar"
+                    "submit": "Enviar",
+                    "success": "A senha foi alterada com sucesso"
                 },
                 "current_user": "Você está logado como {fullName}.",
                 "customize_sidebar": {

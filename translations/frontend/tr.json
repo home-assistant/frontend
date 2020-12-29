@@ -1048,7 +1048,7 @@
                         "confirmation_text": "Bu alana ait tüm cihazlar atanmamış olur.",
                         "confirmation_title": "Bu alanı silmek istediğinizden emin misiniz?"
                     },
-                    "description": "Evinizdeki tüm alanlara genel bakış.",
+                    "description": "Cihazları ve varlıkları alanlar halinde gruplayın",
                     "editor": {
                         "area_id": "Alan Kimliği",
                         "create": "Oluştur",
@@ -1070,7 +1070,7 @@
                 },
                 "automation": {
                     "caption": "Otomasyon",
-                    "description": "Otomasyonları oluşturun ve düzenleyin",
+                    "description": "Eviniz için özel davranış kuralları oluşturun",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Bir taslak kullanın"
@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "topluluk forumları",
                         "error_no_url": "Lütfen taslağın URL'sini girin.",
                         "file_name": "Taslak Yolu",
                         "header": "Taslağı içeri aktar",
                         "import_btn": "Taslağı içe aktar",
                         "import_header": "Taslak \"{name}\"",
                         "import_introduction": "Diğer kullanıcıların taslaklarını Github'dan ve topluluk forumlarından içe aktarabilirsiniz. Taslağın URL'sini aşağıya girin.",
+                        "import_introduction_link": "Diğer kullanıcıların taslaklarını Github ve {community_link} den içe aktarabilirsiniz. Planın URL'sini aşağıya girin.",
                         "importing": "Taslak içe aktarılıyor...",
                         "raw_blueprint": "Taslak içeriği",
                         "save_btn": "Taslağı kaydet",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Bu taslak silinsin mi?",
                         "confirm_delete_text": "Bu taslağı silmek istediğinizden emin misiniz?",
                         "delete_blueprint": "Taslağı sil",
+                        "discover_more": "Daha Fazla Taslak Keşfedin",
                         "header": "Taslak Düzenleyici",
                         "headers": {
                             "domain": "Alan adı",
@@ -1528,7 +1531,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Evden uzakta kontrol edin, Alexa ve Google Asistan ile entegre edin.",
+                    "description_features": "Dışarıdayken evi kontrol edin ve Alexa ve Google Assistant ile entegre edin",
                     "description_login": "{email} olarak oturum açtınız",
                     "description_not_login": "Oturum açmadınız",
                     "dialog_certificate": {
@@ -1623,7 +1626,7 @@
                 },
                 "core": {
                     "caption": "Genel",
-                    "description": "Home Assistant yapılandırmanızı değiştirin",
+                    "description": "Birim sistemi, konum, saat dilimi ve diğer genel parametreler",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1711,7 +1714,7 @@
                         "no_devices": "Cihaz yok"
                     },
                     "delete": "Sil",
-                    "description": "Bağlı cihazları yönet",
+                    "description": "Yapılandırılmış aygıtları yönetme",
                     "device_info": "Cihaz bilgisi",
                     "device_not_found": "Cihaz bulunamadı.",
                     "disabled": "Devre dışı",
@@ -1816,7 +1819,7 @@
                 "header": "Home Assistant'ı yapılandır",
                 "helpers": {
                     "caption": "Yardımcılar",
-                    "description": "Otomasyon oluşturmaya yardımcı olan öğeleri yönetin",
+                    "description": "Otomasyon oluşturmaya yardımcı olan öğeler",
                     "dialog": {
                         "add_helper": "Yardımcı ekle",
                         "add_platform": "{platform} ekle",
@@ -2039,7 +2042,7 @@
                             "open": "Açık"
                         }
                     },
-                    "description": "Lovelace kontrol panellerinizi yapılandırın",
+                    "description": "Evinizi kontrol etmek için özelleştirilmiş kart setleri oluşturun",
                     "resources": {
                         "cant_edit_yaml": "Lovelace'ı YAML modunda kullanıyorsunuz, bu nedenle kaynaklarınızı kullanıcı arayüzü üzerinden yönetemezsiniz. Onları configuration.yaml dosyasında yönetin.",
                         "caption": "Kaynaklar",
@@ -2238,7 +2241,7 @@
                 "scene": {
                     "activated": "Etkin sahne {name} .",
                     "caption": "Sahneler",
-                    "description": "Sahneler oluşturun ve düzenleyin",
+                    "description": "Aygıt durumlarını yakalayın ve daha sonra kolayca geri çağırın",
                     "editor": {
                         "default_name": "Yeni Sahne",
                         "devices": {
@@ -2282,7 +2285,7 @@
                 },
                 "script": {
                     "caption": "Senaryo",
-                    "description": "Senaryoları oluşturun ve düzenleyin",
+                    "description": "Bir dizi eylemi gerçekleştirin",
                     "editor": {
                         "alias": "Ad",
                         "default_name": "Yeni Senaryo",
@@ -2381,7 +2384,7 @@
                             "check_config": "Yapılandırmayı kontrol et",
                             "heading": "Yapılandırma doğrulaması",
                             "introduction": "Yapılandırmanızda yakın bir zamanda değişiklikler yaptıysanız ve tümünün geçerli olduğundan emin olmak istiyorsanız yapılandırmanızı doğrulayın",
-                            "invalid": "Yapılandırma geçerli!",
+                            "invalid": "Yapılandırma geçersiz",
                             "valid": "Yapılandırma geçerli!"
                         }
                     }
@@ -2428,7 +2431,7 @@
                         "username": "Kullanıcı Adı"
                     },
                     "caption": "Kullanıcılar",
-                    "description": "Kullanıcıları yönet",
+                    "description": "Home Assistant kullanıcı hesaplarını yönetin",
                     "editor": {
                         "activate_user": "Kullanıcıyı etkinleştir",
                         "active": "Aktif",
@@ -2441,7 +2444,7 @@
                         "delete_user": "Kullanıcıyı sil",
                         "group": "grup",
                         "id": "İD",
-                        "name": "Ad",
+                        "name": "Ekran adı",
                         "new_password": "Yeni Parola",
                         "owner": "Sahibi",
                         "password_changed": "Parola başarıyla değiştirildi",
@@ -2458,8 +2461,8 @@
                             "group": "Grup",
                             "is_active": "Etkin",
                             "is_owner": "Sahibi",
-                            "name": "Ad",
-                            "system": "Sistem",
+                            "name": "Ekran adı",
+                            "system": "Sistem tarafından oluşturuldu",
                             "username": "Kullanıcı Adı"
                         }
                     },

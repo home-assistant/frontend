@@ -554,7 +554,7 @@
             "blueprint-picker": {
                 "add_user": "Afegeix usuari",
                 "remove_user": "Elimina usuari",
-                "select_blueprint": "Selecciona un plànol"
+                "select_blueprint": "Selecciona un blueprint"
             },
             "data-table": {
                 "no-data": "No hi ha dades",
@@ -901,7 +901,7 @@
                     "navigation": {
                         "areas": "Àrees",
                         "automation": "Automatització",
-                        "blueprint": "Plànols",
+                        "blueprint": "Blueprints",
                         "core": "General",
                         "customize": "Personalització",
                         "devices": "Dispositius",
@@ -1073,7 +1073,7 @@
                     "description": "Crea regles de comportament personalitzades per a casa teva",
                     "dialog_new": {
                         "blueprint": {
-                            "use_blueprint": "Utilitza un plànol"
+                            "use_blueprint": "Utilitza un blueprint"
                         },
                         "header": "Creació d'una nova automatització",
                         "how": "Com vols crear la nova automatització?",
@@ -1166,12 +1166,12 @@
                         },
                         "alias": "Nom",
                         "blueprint": {
-                            "blueprint_to_use": "Plànol a utilitzar",
-                            "header": "Plànol",
+                            "blueprint_to_use": "Blueprint a utilitzar",
+                            "header": "Blueprint",
                             "inputs": "Entrades",
-                            "manage_blueprints": "Gestiona els plànols",
-                            "no_blueprints": "No tens plànols",
-                            "no_inputs": "Aquest plànol no té entrades."
+                            "manage_blueprints": "Gestiona els blueprints",
+                            "no_blueprints": "No tens blueprints",
+                            "no_inputs": "Aquest blueprint no té entrades."
                         },
                         "conditions": {
                             "add": "Afegir condició",
@@ -1258,7 +1258,7 @@
                         "edit_ui": "Edita a través d'interfície",
                         "edit_yaml": "Edita com a YAML",
                         "enable_disable": "Activa/desactiva automatització",
-                        "introduction": "Utilitza les automatitzacions per donar més vida a la teva casa.",
+                        "introduction": "Utilitza les automatitzacions per donar vida a casa teva.",
                         "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
                         "load_error_unknown": "Error en carregar l'automatització ({err_no}).",
                         "max": {
@@ -1417,34 +1417,37 @@
                 },
                 "blueprint": {
                     "add": {
-                        "error_no_url": "Introdueix l'URL del plànol.",
-                        "file_name": "Directori del plànol",
-                        "header": "Importa un plànol nou",
-                        "import_btn": "Vista prèvia del plànol",
-                        "import_header": "Plànol \"{name}\"",
-                        "import_introduction": "Pots importar plànols d'altres usuaris des de Github i els fòrums de la comunitat. Introdueix, a sota,  l'URL del plànol.",
-                        "importing": "Carregant plànol...",
-                        "raw_blueprint": "Contingut del plànol",
-                        "save_btn": "Importa plànol",
-                        "saving": "Important plànol...",
-                        "unsupported_blueprint": "Aquest plànols no és compatible",
-                        "url": "URL del plànol"
+                        "community_forums": "fòrums de la comunitat",
+                        "error_no_url": "Introdueix l'URL del blueprint.",
+                        "file_name": "Directori del blueprint",
+                        "header": "Importa un blueprint nou",
+                        "import_btn": "Vista prèvia del blueprint",
+                        "import_header": "Blueprint \"{name}\"",
+                        "import_introduction": "Pots importar blueprints d'altres usuaris des de Github i els fòrums de la comunitat. Introdueix, a sota,  l'URL del blueprint.",
+                        "import_introduction_link": "Pots importar blueprints d'altres usuaris des de Github i des dels {community_link}. Introdueix, a sota,  l'URL del blueprint.",
+                        "importing": "Carregant blueprint...",
+                        "raw_blueprint": "Contingut del blueprint",
+                        "save_btn": "Importa blueprint",
+                        "saving": "Important blueprint...",
+                        "unsupported_blueprint": "Aquest blueprint no és compatible",
+                        "url": "URL del blueprint"
                     },
-                    "caption": "Plànols",
-                    "description": "Gestiona els plànols",
+                    "caption": "Blueprints",
+                    "description": "Gestiona els blueprints",
                     "overview": {
-                        "add_blueprint": "Importa plànol",
-                        "confirm_delete_header": "Eliminar aquest plànol?",
-                        "confirm_delete_text": "Segur que vols eliminar aquest plànol?",
-                        "delete_blueprint": "Elimina plànol",
-                        "header": "Editor de plànols",
+                        "add_blueprint": "Importa blueprint",
+                        "confirm_delete_header": "Eliminar aquest blueprint?",
+                        "confirm_delete_text": "Segur que vols eliminar aquest blueprint?",
+                        "delete_blueprint": "Elimina blueprint",
+                        "discover_more": "Descobreix més blueprints",
+                        "header": "Editor de blueprints",
                         "headers": {
                             "domain": "Domini",
                             "file_name": "Nom de l'arxiu",
                             "name": "Nom"
                         },
-                        "introduction": "La configuració de plànols et permet importar-ne i gestionar-los.",
-                        "learn_more": "Més informació sobre l'ús dels plànols",
+                        "introduction": "La configuració dels blueprints et permet importar-ne i gestionar-los.",
+                        "learn_more": "Més informació sobre l'ús dels blueprints",
                         "use_blueprint": "Crea automatització"
                     }
                 },
