@@ -1473,7 +1473,7 @@
             "add_blueprint": "Import blueprint",
             "use_blueprint": "Create automation",
             "delete_blueprint": "Delete blueprint",
-            "discover_more": "Discover more Blueprints"
+            "discover_more": "Discover more blueprints"
           },
           "add": {
             "header": "Import a blueprint",
