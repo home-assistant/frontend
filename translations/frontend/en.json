@@ -1258,7 +1258,7 @@
                         "edit_ui": "Edit with UI",
                         "edit_yaml": "Edit as YAML",
                         "enable_disable": "Enable/Disable automation",
-                        "introduction": "Use automations to bring your home to live.",
+                        "introduction": "Use automations to bring your home to life.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
                         "load_error_unknown": "Error loading automation ({err_no}).",
                         "max": {
@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "community forums",
                         "error_no_url": "Please enter the URL of the blueprint.",
                         "file_name": "Blueprint Path",
                         "header": "Import a blueprint",
                         "import_btn": "Preview blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "You can import blueprints of other users from Github and the community forums. Enter the URL of the blueprint below.",
+                        "import_introduction_link": "You can import blueprints of other users from Github and the {community_link}. Enter the URL of the blueprint below.",
                         "importing": "Loading blueprint...",
                         "raw_blueprint": "Blueprint content",
                         "save_btn": "Import blueprint",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Delete this blueprint?",
                         "confirm_delete_text": "Are you sure you want to delete this blueprint?",
                         "delete_blueprint": "Delete blueprint",
+                        "discover_more": "Discover more Blueprints",
                         "header": "Blueprint Editor",
                         "headers": {
                             "domain": "Domain",

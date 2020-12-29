@@ -1077,7 +1077,7 @@
                         },
                         "header": "Vytvoření automatizace",
                         "how": "Jak chcete vytvořit svou novou automatizaci?",
-                        "start_empty": "Začněte s prázdnou automatizací",
+                        "start_empty": "Začít s prázdnou automatizací",
                         "thingtalk": {
                             "create": "Vytvořit",
                             "header": "Popište automatizaci, kterou chcete vytvořit",
@@ -1110,8 +1110,8 @@
                                     "label": "Stav"
                                 },
                                 "delay": {
-                                    "delay": "Zpoždění",
-                                    "label": "Zpoždění"
+                                    "delay": "Pozdržení",
+                                    "label": "Pozdržení"
                                 },
                                 "device_id": {
                                     "action": "Akce",
@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "komunitních fór",
                         "error_no_url": "Zadejte adresu URL adresu šablony",
                         "file_name": "Cesta k šabloně",
                         "header": "Import šablony",
                         "import_btn": "Náhled šablony",
                         "import_header": "Šablona \"{name}\"",
                         "import_introduction": "Můžete importovat šablony od ostatních uživatelů z GitHubu a komunitních fór. Níže zadejte URL adresu šablony.",
+                        "import_introduction_link": "Můžete importovat šablony od ostatních uživatelů z GitHubu a {community_link}. Níže zadejte URL adresu šablony.",
                         "importing": "Načítám šablonu...",
                         "raw_blueprint": "Obsah šablony",
                         "save_btn": "Importovat šablonu",
@@ -1437,6 +1439,7 @@
                         "confirm_delete_header": "Odstranit tuto šablonu?",
                         "confirm_delete_text": "Opravdu chcete smazat tuto šablonu?",
                         "delete_blueprint": "Smazat šablonu",
+                        "discover_more": "Objevte další šablony",
                         "header": "Editor šablon",
                         "headers": {
                             "domain": "Doména",
@@ -1834,7 +1837,7 @@
                     },
                     "types": {
                         "counter": "Počítadlo",
-                        "input_boolean": "Přepnout",
+                        "input_boolean": "Přepínač",
                         "input_datetime": "Datum a/nebo čas",
                         "input_number": "Číslo",
                         "input_select": "Výběr",
@@ -2343,7 +2346,7 @@
                             "generic": "Nově načíst entity integrace Generic IP camera",
                             "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
                             "group": "Nově načíst skupiny, skupiny entit a notifikační služby",
-                            "heading": "Nastavení z YAML se načítá",
+                            "heading": "Nové načtení YAML konfigurace",
                             "history_stats": "Nově načíst entity integrace History stats",
                             "homekit": "Nově načíst entity integrace HomeKit",
                             "input_boolean": "Nově načíst pomocníky - přepínače",

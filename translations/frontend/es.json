@@ -706,10 +706,10 @@
                 "never": "Nunca",
                 "past": "Hace {time}",
                 "past_duration": {
-                    "day": "hace {count} {count, plural,\none {día}\nother {días}\n}",
-                    "hour": "hace {count} {count, plural,\none {hora}\nother {horas}\n}",
-                    "minute": "hace {count} {count, plural,\none {minuto}\nother {minutos}\n}",
-                    "second": "hace {count} {count, plural,\none {segundo}\nother {segundos}\n}",
+                    "day": "Hace {count} {count, plural,\none {día}\nother {días}\n}",
+                    "hour": "Hace {count} {count, plural,\none {hora}\nother {horas}\n}",
+                    "minute": "Hace {count} {count, plural,\none {minuto}\nother {minutos}\n}",
+                    "second": "Hace {count} {count, plural,\none {segundo}\nother {segundos}\n}",
                     "week": "hace {count} {count, plural,\none {semana}\nother {semanas}\n}"
                 }
             },
@@ -1169,7 +1169,7 @@
                             "blueprint_to_use": "Plano a usar",
                             "header": "Plano",
                             "inputs": "Entradas",
-                            "manage_blueprints": "Administrar planos",
+                            "manage_blueprints": "Administra los planos",
                             "no_blueprints": "No tienes ningún plano",
                             "no_inputs": "Este plano no tiene ninguna entrada."
                         },
@@ -1417,12 +1417,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "foros de la comunidad",
                         "error_no_url": "Por favor, introduce la URL del plano.",
                         "file_name": "Ruta del plano",
                         "header": "Importar un plano",
                         "import_btn": "Vista previa del plano",
                         "import_header": "Plano \"{name}\"",
                         "import_introduction": "Puedes importar planos de otros usuarios desde Github y los foros de la comunidad. Introduce la URL del plano a continuación.",
+                        "import_introduction_link": "Puedes importar planos de otros usuarios desde Github y {community_link}. Introduce la URL del plano a continuación.",
                         "importing": "Cargando plano...",
                         "raw_blueprint": "Contenido del plano",
                         "save_btn": "Importar plano",
@@ -1431,12 +1433,13 @@
                         "url": "URL del plano"
                     },
                     "caption": "Planos",
-                    "description": "Administrar planos",
+                    "description": "Administra los planos",
                     "overview": {
                         "add_blueprint": "Importar plano",
                         "confirm_delete_header": "¿Eliminar este plano?",
                         "confirm_delete_text": "¿Estás seguro de que quieres borrar este plano?",
                         "delete_blueprint": "Eliminar plano",
+                        "discover_more": "Descubre más planos",
                         "header": "Editor de planos",
                         "headers": {
                             "domain": "Dominio",
@@ -1987,7 +1990,7 @@
                 "logs": {
                     "caption": "Registros",
                     "clear": "Limpiar",
-                    "description": "Ver los registros de Home Assistant",
+                    "description": "Ve los registros de Home Assistant",
                     "details": "Detalles de registro ({level})",
                     "load_full_log": "Cargar registro completo de Home Assistant",
                     "loading_log": "Cargando registro de errores...",
