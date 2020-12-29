@@ -69,7 +69,7 @@ const STAGE_ICON = {
 const PERMIS_DESC = {
   stage: {
     title: "Add-on Stage",
-    description: `Add-ons can have one of three stages:\n\n<ha-svg-icon .path='${STAGE_ICON.stable}'></ha-svg-icon> **Stable**: These are add-ons ready to be used in production.\n\n<ha-svg-icon .path='${STAGE_ICON.experimental}'></ha-svg-icon> **Experimental**: These may contain bugs, and may be unfinished.\n\n<ha-svg-icon .path='${STAGE_ICON.deprecated}'></ha-svg-icon> **Deprecated**: These add-ons will no longer receive any updates.`,
+    description: `Add-ons can have one of three stages:\n\n<ha-svg-icon path="${STAGE_ICON.stable}"></ha-svg-icon> **Stable**: These are add-ons ready to be used in production.\n\n<ha-svg-icon path="${STAGE_ICON.experimental}"></ha-svg-icon> **Experimental**: These may contain bugs, and may be unfinished.\n\n<ha-svg-icon path="${STAGE_ICON.deprecated}"></ha-svg-icon> **Deprecated**: These add-ons will no longer receive any updates.`,
   },
   rating: {
     title: "Add-on Security Rating",
