@@ -119,13 +119,13 @@ class HaPanelHistory extends LitElement {
     todayEnd.setDate(todayEnd.getDate() + 1);
     todayEnd.setMilliseconds(todayEnd.getMilliseconds() - 1);
 
-    const todayCopy = new Date(today);
-
+    let todayCopy = new Date(today);
     const yesterday = new Date(todayCopy.setDate(today.getDate() - 1));
     const yesterdayEnd = new Date(yesterday);
     yesterdayEnd.setDate(yesterdayEnd.getDate() + 1);
     yesterdayEnd.setMilliseconds(yesterdayEnd.getMilliseconds() - 1);
 
+    todayCopy = new Date(today); // set again to prevent issues in case yesterdayEnd crossed into previous month
     const thisWeekStart = new Date(
       todayCopy.setDate(today.getDate() - today.getDay())
     );
@@ -134,6 +134,7 @@ class HaPanelHistory extends LitElement {
     );
     thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
 
+    todayCopy = new Date(today); // set again to prevent issues in case thisWeekEnd crossed into next month
     const lastWeekStart = new Date(
       todayCopy.setDate(today.getDate() - today.getDay() - 7)
     );
