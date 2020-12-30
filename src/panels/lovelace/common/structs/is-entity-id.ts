@@ -7,7 +7,7 @@ const isEntityId = (value: unknown, context: StructContext): StructResult => {
   if (!value.includes(".")) {
     return [
       context.fail({
-        type: "entity ID should be in the format 'domain.entity'",
+        type: "Entity ID should be in the format 'domain.entity'",
       }),
     ];
   }
@@ -20,9 +20,11 @@ const isEntityIdOrAll = (
   value: unknown,
   context: StructContext
 ): StructResult => {
-  if (typeof value === "string" && value === "all") return true;
+  if (typeof value === "string" && value === "all") {
+    return true;
+  }
 
   return isEntityId(value, context);
 };
 
-export const EntityIdOrAll = struct("entity-id", isEntityIdOrAll);
+export const EntityIdOrAll = struct("entity-id-all", isEntityIdOrAll);
