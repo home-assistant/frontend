@@ -1415,7 +1415,7 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "for społeczności",
+                        "community_forums": "fora społeczności",
                         "error_no_url": "Wprowadź adres URL schematu.",
                         "file_name": "Ścieżka do schematu",
                         "header": "Importuj schemat",

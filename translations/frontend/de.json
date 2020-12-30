@@ -554,7 +554,7 @@
             "blueprint-picker": {
                 "add_user": "Benutzer hinzufügen",
                 "remove_user": "Benutzer entfernen",
-                "select_blueprint": "Wähle einen Bauplan aus"
+                "select_blueprint": "Wähle eine Vorlage aus"
             },
             "data-table": {
                 "no-data": "Keine Daten",
@@ -840,7 +840,7 @@
                 "edit": "Entität bearbeiten",
                 "history": "Verlauf",
                 "last_changed": "Zuletzt geändert",
-                "last_updated": "Letztes Update",
+                "last_updated": "Zuletzt aktualisiert",
                 "person": {
                     "create_zone": "Zone vom aktuellen Standort erstellen"
                 },
@@ -901,7 +901,7 @@
                     "navigation": {
                         "areas": "Bereiche",
                         "automation": "Automatisierungen",
-                        "blueprint": "Baupläne",
+                        "blueprint": "Vorlagen",
                         "core": "Allgemein",
                         "customize": "Anpassungen",
                         "devices": "Geräte",
@@ -1039,16 +1039,16 @@
                     "link_profile_page": "deine Profilseite"
                 },
                 "areas": {
-                    "caption": "Bereichsregister",
+                    "caption": "Bereiche",
                     "data_table": {
                         "area": "Bereich",
                         "devices": "Geräte"
                     },
                     "delete": {
-                        "confirmation_text": "Die Zuordnung aller Geräte in diesem Bereich wird aufgelöst.",
+                        "confirmation_text": "Die Zuordnung aller Geräte zu diesem Bereich wird aufgelöst.",
                         "confirmation_title": "Möchtest du diesen Bereich wirklich löschen?"
                     },
-                    "description": "Bereiche in deinem Zuhause verwalten",
+                    "description": "Geräte und Entitäten in Bereiche gruppieren",
                     "editor": {
                         "area_id": "Bereich-ID",
                         "create": "Erstellen",
@@ -1065,15 +1065,15 @@
                         "integrations_page": "Integrationsseite",
                         "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um Sie bei der Organisation Ihrer Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
                         "introduction2": "Um Geräte in einem Bereich zu platzieren, navigiere mit dem Link unten zur Integrationsseite und klicke dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen.",
-                        "no_areas": "Sieht aus, als hätten Sie noch keine Bereiche!"
+                        "no_areas": "Sieht aus als hättest du noch keine Bereiche!"
                     }
                 },
                 "automation": {
-                    "caption": "Automatisierung",
-                    "description": "Automatisierungen verwalten",
+                    "caption": "Automatisierungen",
+                    "description": "Individuelle Regeln für dein Zuhause erstellen",
                     "dialog_new": {
                         "blueprint": {
-                            "use_blueprint": "Einen Bauplan benutzen"
+                            "use_blueprint": "Eine Vorlage verwenden"
                         },
                         "header": "Erstelle eine neue Automatisierung",
                         "how": "Wie möchtest du deine neue Automatisierung erstellen?",
@@ -1082,7 +1082,7 @@
                             "create": "Erstellen",
                             "header": "Beschreibe die Automatisierung, die du erstellen möchtest",
                             "input_label": "Was soll diese Automatisierung tun?",
-                            "intro": "Und wir werden versuchen, es für dich zu erstellen. Zum Beispiel: Schalten das Licht aus, wenn ich gehe."
+                            "intro": "Und wir werden versuchen, sie für dich zu erstellen. Zum Beispiel: Schalte das Licht aus, wenn ich gehe."
                         }
                     },
                     "editor": {
@@ -1166,12 +1166,12 @@
                         },
                         "alias": "Name",
                         "blueprint": {
-                            "blueprint_to_use": "Zu verwendender Bauplan",
-                            "header": "Bauplan",
+                            "blueprint_to_use": "Zu verwendende Vorlage",
+                            "header": "Vorlage",
                             "inputs": "Eingänge",
-                            "manage_blueprints": "Baupläne verwalten",
-                            "no_blueprints": "Du hast keine Baupläne",
-                            "no_inputs": "Dieser Bauplan hat keine Eingänge."
+                            "manage_blueprints": "Vorlagen verwalten",
+                            "no_blueprints": "Du hast keine Vorlagen",
+                            "no_inputs": "Diese Vorlage hat keine Eingänge."
                         },
                         "conditions": {
                             "add": "Bedingung hinzufügen",
@@ -1360,7 +1360,7 @@
                                 "time": {
                                     "at": "Um",
                                     "label": "Zeit",
-                                    "type_input": "Wert eines Datum/Zeit-Helfers",
+                                    "type_input": "Wert eines Datums-/Zeit-Helfers",
                                     "type_value": "Feste Zeit"
                                 },
                                 "webhook": {
@@ -1418,36 +1418,36 @@
                 "blueprint": {
                     "add": {
                         "community_forums": "Community-Foren",
-                        "error_no_url": "Bitte gebe die URL des Bauplans ein.",
-                        "file_name": "Bauplanpfad",
-                        "header": "Bauplan importieren",
-                        "import_btn": "Vorschau Bauplan",
-                        "import_header": "Bauplan \"{name}\"",
-                        "import_introduction": "Du kannst Baupläne anderer Benutzer aus GitHub und den Community-Foren importieren. Gib die URL des Bauplans unten ein.",
-                        "import_introduction_link": "Du kannst Blaupausen anderer Benutzer aus GitHub und den {community_link} importieren. Gib unten die URL des Bauplans ein.",
-                        "importing": "Bauplan wird geladen...",
-                        "raw_blueprint": "Inhalt des Bauplans",
-                        "save_btn": "Bauplan importieren",
-                        "saving": "Bauplan wird importiert...",
-                        "unsupported_blueprint": "Dieser Bauplan wird nicht unterstützt",
-                        "url": "URL des Bauplans"
+                        "error_no_url": "Bitte gebe die URL der Vorlage ein.",
+                        "file_name": "Vorlagenpfad",
+                        "header": "Vorlage importieren",
+                        "import_btn": "Vorschau Vorlage",
+                        "import_header": "Vorlage \"{name}\"",
+                        "import_introduction": "Du kannst Vorlagen anderer Benutzer aus GitHub und den Community-Foren importieren. Gib die URL der Vorlage unten ein.",
+                        "import_introduction_link": "Du kannst Vorlagen anderer Benutzer aus GitHub und den {community_link} importieren. Gib unten die URL der Vorlage ein.",
+                        "importing": "Vorlage wird geladen...",
+                        "raw_blueprint": "Inhalt der Vorlage",
+                        "save_btn": "Vorlage importieren",
+                        "saving": "Vorlage wird importiert...",
+                        "unsupported_blueprint": "Diese Vorlage wird nicht unterstützt",
+                        "url": "URL der Vorlage"
                     },
-                    "caption": "Baupläne",
-                    "description": "Baupläne verwalten",
+                    "caption": "Vorlagen",
+                    "description": "Vorlagen verwalten",
                     "overview": {
-                        "add_blueprint": "Bauplan hinzufügen",
-                        "confirm_delete_header": "Diesen Bauplan löschen?",
-                        "confirm_delete_text": "Bist du sicher, dass du diesen Bauplan löschen möchtest?",
-                        "delete_blueprint": "Bauplan löschen",
-                        "discover_more": "entdecke weitere Baupläne",
-                        "header": "Bauplan-Editor",
+                        "add_blueprint": "Vorlage hinzufügen",
+                        "confirm_delete_header": "Diese Vorlage löschen?",
+                        "confirm_delete_text": "Bist du sicher, dass du diese Vorlage löschen möchtest?",
+                        "delete_blueprint": "Vorlage löschen",
+                        "discover_more": "Entdecke weitere Vorlagen",
+                        "header": "Vorlagen-Editor",
                         "headers": {
                             "domain": "Domain",
                             "file_name": "Dateiname",
                             "name": "Name"
                         },
-                        "introduction": "Mit der Bauplankonfiguration kannst du deine Baupläne importieren und verwalten.",
-                        "learn_more": "Erfahre mehr über die Benutzung von Bauplänen",
+                        "introduction": "Mit der Vorlagenkonfiguration kannst du deine Vorlagen importieren und verwalten.",
+                        "learn_more": "Erfahre mehr über die Benutzung von Vorlagen",
                         "use_blueprint": "Automatisierung erstellen"
                     }
                 },
@@ -1531,7 +1531,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Fernsteuerung und Integration mit Alexa und Google Assistant.",
+                    "description_features": "Fernsteuerung und Integration mit Alexa und Google Assistant",
                     "description_login": "Angemeldet als {email}",
                     "description_not_login": "Nicht angemeldet",
                     "dialog_certificate": {
@@ -1626,7 +1626,7 @@
                 },
                 "core": {
                     "caption": "Allgemein",
-                    "description": "Bearbeite die allgemeine Konfiguration von Home Assistant",
+                    "description": "Mengeneinheiten, Standort, Zeitzone & andere allgemeine Parameter",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1658,7 +1658,7 @@
                     "attributes_override": "Du kannst sie überschreiben, wenn du möchtest.",
                     "attributes_set": "Die folgenden Attribute der Entität sind programmatisch festgelegt.",
                     "caption": "Anpassung",
-                    "description": "Elemente anpassen",
+                    "description": "Entitäten individuell anpassen",
                     "different_include": "Möglich über eine Domain, einen Glob oder einen anderen Include.",
                     "pick_attribute": "Wähle ein Attribut zum Überschreiben aus.",
                     "picker": {
@@ -1819,7 +1819,7 @@
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
                     "caption": "Helfer",
-                    "description": "Elemente verwalten, die beim Aufbau von Automatisierungen helfen können.",
+                    "description": "Elemente verwalten, die beim Aufbau von Automatisierungen helfen",
                     "dialog": {
                         "add_helper": "Helfer hinzufügen",
                         "add_platform": "{platform} hinzufügen",
@@ -1851,7 +1851,7 @@
                     "copy_github": "Für GitHub",
                     "copy_raw": "Roher Text",
                     "custom_uis": "Benutzerdefinierte UIs:",
-                    "description": "Informationen über deine Home Assistant Installation",
+                    "description": "Version, Systemzustand und Links zur Dokumentation",
                     "developed_by": "Entwickelt von einem Haufen toller Leute.",
                     "documentation": "Dokumentation",
                     "frontend": "Frontend-UI",
@@ -1957,7 +1957,7 @@
                     },
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
-                    "description": "Verbundene Integrationen verwalten",
+                    "description": "Integrationen zu Diensten, Geräten, usw. verwalten",
                     "details": "Details zur Integration",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
@@ -1990,7 +1990,7 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Leeren",
-                    "description": "Die Home Assistant Logs anschauen",
+                    "description": "Home Assistant Logs einsehen",
                     "details": "Protokolldetails ( {level} )",
                     "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
                     "loading_log": "Fehlerprotokoll wird geladen...",
@@ -2042,7 +2042,7 @@
                             "open": "Öffnen"
                         }
                     },
-                    "description": "Konfiguriere deine Lovelace-Dashboards",
+                    "description": "Erstelle individuelle Oberflächen, um dein Zuhause zu steuern",
                     "resources": {
                         "cant_edit_yaml": "Du verwendest Lovelace im YAML-Modus. Daher kannst du deine Ressourcen nicht über die Benutzeroberfläche verwalten. Verwalte sie in der configuration.yaml.",
                         "caption": "Ressourcen",
@@ -2100,7 +2100,7 @@
                         "node_id": "Knoten-ID",
                         "ozw_instance": "OpenZWave-Instanz",
                         "query_stage": "Abfragephase",
-                        "wakeup_instructions": "Weckanleitung",
+                        "wakeup_instructions": "Aufweckanleitung",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -2139,7 +2139,7 @@
                     },
                     "network": {
                         "header": "Netzwerkverwaltung",
-                        "introduction": "Verwalten Sie netzwerkweite Funktionen.",
+                        "introduction": "Verwalten netzwerkweiter Funktionen.",
                         "node_count": "{count} Knoten"
                     },
                     "node_config": {
@@ -2212,7 +2212,7 @@
                     "confirm_delete": "Möchtest du diese Person wirklich löschen?",
                     "confirm_delete2": "Alle Geräte, die zu dieser Person gehören, werden nicht mehr zugeordnet.",
                     "create_person": "Person erstellen",
-                    "description": "Personen verwalten, denen Home Assistant folgt.",
+                    "description": "Personen verwalten, denen Home Assistant folgt",
                     "detail": {
                         "admin": "Administrator",
                         "allow_login": "Erlaube dieser Person, sich einzuloggen.",
@@ -2241,7 +2241,7 @@
                 "scene": {
                     "activated": "Aktivierte Szene {name}.",
                     "caption": "Szenen",
-                    "description": "Szenen verwalten",
+                    "description": "Gerätezustände erfassen und später einfach wieder abrufen",
                     "editor": {
                         "default_name": "Neue Szene",
                         "devices": {
@@ -2259,7 +2259,7 @@
                             "without_device": "Entitäten ohne Gerät"
                         },
                         "icon": "Symbol",
-                        "introduction": "Benutze Szenen um deinem Zuhause Leben einzuhauchen.",
+                        "introduction": "Benutze Szenen, um deinem Zuhause Leben einzuhauchen.",
                         "load_error_not_editable": "Nur Szenen in der scenes.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Szene ({err_no}).",
                         "name": "Name",
@@ -2284,8 +2284,8 @@
                     }
                 },
                 "script": {
-                    "caption": "Skript",
-                    "description": "Skripte verwalten",
+                    "caption": "Skripte",
+                    "description": "Eine Sequenz aus Aktionen ausführen",
                     "editor": {
                         "alias": "Name",
                         "default_name": "Neues Skript",
@@ -2358,7 +2358,7 @@
                             "min_max": "Min/Max-Entitäten neu laden",
                             "mqtt": "Lade manuell konfigurierte MQTT-Entitäten neu",
                             "person": "Personen neu laden",
-                            "ping": "Binäre Ping-Sensorentitäten neu laden",
+                            "ping": "Binäre Ping Sensorentitäten neu laden",
                             "reload": "{domain} neu laden",
                             "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
                             "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
@@ -2368,7 +2368,7 @@
                             "statistics": "Statistik-Entitäten neu laden",
                             "telegram": "Telegram-Benachrichtigungsdienste neu laden",
                             "template": "Vorlagenentitäten neu laden",
-                            "trend": "Trendentitäten neu laden",
+                            "trend": "Trend-Entitäten neu laden",
                             "universal": "Universelle Media Player-Entitäten neu laden",
                             "zone": "Zonen neu laden"
                         },
@@ -2384,7 +2384,7 @@
                             "check_config": "Konfiguration prüfen",
                             "heading": "Konfiguration überprüfen",
                             "introduction": "Überprüfen Sie Ihre Konfiguration, wenn Sie kürzlich Änderungen vorgenommen haben und sicherstellen möchten, dass alle Änderungen gültig sind",
-                            "invalid": "Konfiguration ungültig",
+                            "invalid": "Konfiguration fehlerhaft",
                             "valid": "Konfiguration in Ordnung"
                         }
                     }
@@ -2396,7 +2396,7 @@
                     "confirm_remove": "Möchtest du den Tag {tag} wirklich entfernen?",
                     "confirm_remove_title": "Tag entfernen?",
                     "create_automation": "Automatisierung mit NFC Tag erstellen",
-                    "description": "NFC Tags verwalten",
+                    "description": "Automatisierungen auslösen wenn NFC Tag, QR Code, usw. gescannt wird",
                     "detail": {
                         "companion_apps": "Mobile Apps",
                         "create": "Erstellen",
@@ -2408,7 +2408,7 @@
                         "tag_id": "NFC Tag ID",
                         "tag_id_placeholder": "Automatisch generiert, wenn leer gelassen",
                         "update": "Aktualisieren",
-                        "usage": "Ein Tag kann eine Automatisierung auslösen, wenn er gescannt wird. Sie können NFC-Tags, QR-Codes oder jede andere Art von Tags verwenden. Verwenden Sie unsere {companion_link}, um diesen Tag in ein programmierbares NFC-Tag zu schreiben oder einen QR-Code zu erstellen."
+                        "usage": "Ein Tag kann eine Automatisierung auslösen, wenn er gescannt wird. Du kannst NFC-Tags, QR-Codes oder jede andere Art von Tags verwenden. Verwende unsere {companion_link}, um diesen Tag in ein programmierbares NFC-Tag zu schreiben oder einen QR-Code zu erstellen."
                     },
                     "edit": "Bearbeiten",
                     "headers": {
@@ -2431,7 +2431,7 @@
                         "username": "Benutzername"
                     },
                     "caption": "Benutzer",
-                    "description": "Benutzer verwalten",
+                    "description": "Home Assistant Benutzerkonten verwalten",
                     "editor": {
                         "activate_user": "Benutzer aktivieren",
                         "active": "Aktiv",
@@ -2444,14 +2444,14 @@
                         "delete_user": "Benutzer löschen",
                         "group": "Gruppe",
                         "id": "ID",
-                        "name": "Name",
+                        "name": "Anzeigename",
                         "new_password": "Neues Passwort",
                         "owner": "Besitzer",
                         "password_changed": "Das Passwort wurde erfolgreich geändert",
-                        "system_generated": "System generiert",
+                        "system_generated": "Systemgeneriert",
                         "system_generated_users_not_editable": "Systemgenerierte Benutzer können nicht aktualisiert werden.",
-                        "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
-                        "unnamed_user": "Unbenannter Benutzer",
+                        "system_generated_users_not_removable": "Systemgenerierte Benutzer können nicht entfernt werden.",
+                        "unnamed_user": "Namenloser Benutzer",
                         "update_user": "Aktualisieren",
                         "username": "Benutzername"
                     },
@@ -2461,8 +2461,8 @@
                             "group": "Gruppe",
                             "is_active": "Aktiv",
                             "is_owner": "Besitzer",
-                            "name": "Name",
-                            "system": "System",
+                            "name": "Anzeigename",
+                            "system": "System generiert",
                             "username": "Benutzername"
                         }
                     },
@@ -2595,7 +2595,7 @@
                     "configured_in_yaml": "Zonen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden.",
                     "confirm_delete": "Möchtest du diesen Bereich wirklich löschen?",
                     "create_zone": "Zone erstellen",
-                    "description": "Verwalte die Zonen, in denen du Personen folgen möchtest.",
+                    "description": "Verwalte die Zonen, in denen du Personen folgen möchtest",
                     "detail": {
                         "create": "Erstellen",
                         "delete": "Löschen",
@@ -2756,8 +2756,8 @@
                         "filter_attributes": "Attribute filtern",
                         "filter_entities": "Entitäten filtern",
                         "filter_states": "Zustände filtern",
-                        "last_changed": "Letzte Änderung",
-                        "last_updated": "Letzte Aktualisierung",
+                        "last_changed": "Zuletzt geändert",
+                        "last_updated": "Zuletzt aktualisiert",
                         "more_info": "Mehr Info",
                         "no_entities": "Keine Entitäten",
                         "set_state": "Status setzen",
@@ -2921,7 +2921,7 @@
                                 "last-changed": "Zuletzt geändert",
                                 "last-triggered": "Zuletzt ausgelöst",
                                 "last-updated": "Zuletzt aktualisiert",
-                                "none": "Keine Sekundärinformatrionen",
+                                "none": "Keine Sekundärinformation",
                                 "position": "Position",
                                 "tilt-position": "Neigung"
                             },
@@ -3212,7 +3212,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Dadurch wird die erste Karte in voller Breite angezeigt. Andere Karten und Marker in dieser Ansicht werden nicht angezeigt.",
+                            "description": "Hiermit wird die erste Karte in voller Breite angezeigt. Andere Karten und Marker in dieser Ansicht werden nicht angezeigt.",
                             "title": "Panel-Modus?",
                             "warning_multiple_cards": "Diese Ansicht enthält mehr als eine Karte, in einer Bedienfeldansicht kann jedoch nur eine Karte angezeigt werden."
                         }
@@ -3454,13 +3454,13 @@
                 "change_password": {
                     "confirm_new_password": "Neues Passwort Bestätigen",
                     "current_password": "Aktuelles Passwort",
-                    "error_new_is_old": "Das neue Kennwort muss sich von dem aktuellen Kennwort unterscheiden.",
+                    "error_new_is_old": "Das neue Passwort muss sich von dem aktuellen Passwort unterscheiden.",
                     "error_new_mismatch": "Eingegebene neue Passwörter stimmen nicht überein",
                     "error_required": "Erforderlich",
                     "header": "Passwort ändern",
                     "new_password": "Neues Passwort",
                     "submit": "Absenden",
-                    "success": "Das Passwort wurde erfolgreich geändert"
+                    "success": "Passwort wurde erfolgreich geändert"
                 },
                 "current_user": "Du bist derzeit als {fullName} angemeldet.",
                 "customize_sidebar": {
