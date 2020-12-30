@@ -145,14 +145,6 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
 
   private async _initialLoad(): Promise<void> {
     this._loaded = true;
-    await this.updateComplete;
-    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
-
-    if (!element || !this.parentElement) {
-      return;
-    }
-
-    element.hidden = this.parentElement.clientWidth <= 300;
   }
 
   private get _inputElement(): { value: string } {
