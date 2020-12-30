@@ -49,13 +49,15 @@ class StateHistoryCharts extends LitElement {
       </div>`;
     }
 
+    const computedEndTime = this._computeEndTime();
+
     return html`
       ${this.historyData.timeline.length
         ? html`
             <state-history-chart-timeline
               .hass=${this.hass}
               .data=${this.historyData.timeline}
-              .endTime=${this._computeEndTime()}
+              .endTime=${computedEndTime}
               .noSingle=${this.noSingle}
               .names=${this.names}
             ></state-history-chart-timeline>
@@ -71,7 +73,7 @@ class StateHistoryCharts extends LitElement {
             .isSingleDevice=${!this.noSingle &&
             line.data &&
             line.data.length === 1}
-            .endTime=${this._computeEndTime()}
+            .endTime=${computedEndTime}
             .names=${this.names}
           ></state-history-chart-line>
         `
