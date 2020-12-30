@@ -2,11 +2,13 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Intrare config",
+            "device": "Dispozitiv",
             "integration": "Integrare",
             "user": "Utilizator"
         }
     },
     "groups": {
+        "owner": "Proprietar",
         "system-admin": "Administratori",
         "system-read-only": "Utilizatori cu drepturi de citire",
         "system-users": "Utilizatori"
@@ -491,14 +493,19 @@
             "close": "Închide",
             "copied": "Copiat",
             "delete": "Șterge",
+            "disable": "Dezactivați",
+            "enable": "Activați",
             "error_required": "Necesar",
             "loading": "Se încarcă",
             "menu": "Meniu",
             "next": "Următorul",
             "no": "Nu",
+            "not_now": "Nu acum",
             "previous": "Anterior",
             "refresh": "Reîmprospătare",
+            "rename": "Redenumiți",
             "save": "Salvați",
+            "skip": "Sari peste",
             "successfully_deleted": "Șters cu succes",
             "successfully_saved": "Opțiunile salvate cu succes.",
             "undo": "Undo",
@@ -517,6 +524,10 @@
                 "area": "Zonă",
                 "clear": "Şterge",
                 "show_areas": "Arată zonele"
+            },
+            "blueprint-picker": {
+                "add_user": "Adăugați utilizator",
+                "remove_user": "Eliminați utilizatorul"
             },
             "data-table": {
                 "no-data": "Fără date",
@@ -615,7 +626,8 @@
             },
             "user-picker": {
                 "add_user": "Adăugați utilizator",
-                "no_user": "Niciun utilizator"
+                "no_user": "Niciun utilizator",
+                "remove_user": "Eliminați utilizatorul"
             }
         },
         "dialogs": {
@@ -753,6 +765,13 @@
                     "description": "Opțiunile salvate cu succes."
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "server_control": {
+                        "stop": "Stop"
+                    }
+                }
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant nu a auzit nimic",
                 "error": "Oops, a apărut o eroare",
@@ -851,6 +870,11 @@
                 "automation": {
                     "caption": "Automatizări",
                     "description": "Gestionarea automatizărilor",
+                    "dialog_new": {
+                        "thingtalk": {
+                            "create": "Creează"
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Adăugați o acțiune",
@@ -913,15 +937,15 @@
                                     "service_data": "Date serviciu"
                                 },
                                 "wait_for_trigger": {
-                                    "continue_timeout": "Continua la timeout",
+                                    "continue_timeout": "Continuă la timeout",
                                     "label": "Așteptați declanșatorul",
-                                    "timeout": "Timeout (optional)"
+                                    "timeout": "Timeout (opțional)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Continuați la expirare",
-                                    "label": "Asteptare",
+                                    "label": "Așteaptă",
                                     "timeout": "Timeout (opțional)",
-                                    "wait_template": "Sablon Asteptare"
+                                    "wait_template": "Șablon așteptare"
                                 }
                             },
                             "unsupported_action": "Acțiune nesuportată: {action}"
@@ -1038,7 +1062,7 @@
                                     "label": "Dispozitiv"
                                 },
                                 "event": {
-                                    "context_user_pick": "Selectare utilizatorul",
+                                    "context_user_pick": "Selectați utilizator",
                                     "event_data": "Date eveniment",
                                     "event_type": "Tip eveniment",
                                     "label": "Eveniment"
@@ -1127,15 +1151,29 @@
                         "only_editable": "Numai automatizările din automations.yaml pot fi editate.",
                         "pick_automation": "Alegeți automatizarea pentru a o edita",
                         "show_info_automation": "Afișați informații despre automatizare"
+                    },
+                    "thingtalk": {
+                        "task_selection": {
+                            "for_example": "De exemplu:",
+                            "header": "Creați o nouă automatizare",
+                            "language_note": "Notă: Deocamdată este acceptată numai limba engleză."
+                        }
                     }
                 },
                 "blueprint": {
                     "add": {
+                        "header": "Importați un plan",
                         "url": "Adresa URL a planului"
                     },
                     "overview": {
                         "add_blueprint": "Importați planul",
-                        "confirm_delete_text": "Sigur doriți să ștergeți acest plan?"
+                        "confirm_delete_header": "Ștergeți acest plan?",
+                        "confirm_delete_text": "Sigur doriți să ștergeți acest plan?",
+                        "headers": {
+                            "domain": "Domeniu",
+                            "file_name": "Nume fișier",
+                            "name": "Nume"
+                        }
                     }
                 },
                 "cloud": {
@@ -1269,6 +1307,12 @@
                     "description": "Gestionați dispozitivele conectate",
                     "device_info": "Informații despre dispozitiv",
                     "device_not_found": "Dispozitivul nu a fost găsit.",
+                    "disabled": "Dezactivat",
+                    "disabled_by": {
+                        "integration": "Integrare",
+                        "user": "Utilizator"
+                    },
+                    "enabled_label": "Activează dispozitiv",
                     "entities": {
                         "add_entities_lovelace": "Adăugați la Lovelace",
                         "entities": "Entități",
@@ -1276,6 +1320,13 @@
                     },
                     "name": "Nume",
                     "no_devices": "Nu există dispozitive",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtru",
+                            "show_all": "Arată tot"
+                        },
+                        "search": "Caută dispozitive"
+                    },
                     "scene": {
                         "create": "Creează un scenariu cu dispozitivul",
                         "no_scenes": "Nu există scenarii",
@@ -1372,6 +1423,7 @@
                 "info": {
                     "built_using": "Construit folosind",
                     "caption": "Info",
+                    "copy_github": "Pentru GitHub",
                     "documentation": "Documentație",
                     "frontend": "front-end-ui",
                     "home_assistant_logo": "Logo-ul Home Assistant",
@@ -1383,16 +1435,27 @@
                     "source": "Sursă:",
                     "system_health": {
                         "checks": {
+                            "cloud": {
+                                "logged_in": "Conectat"
+                            },
                             "homeassistant": {
+                                "arch": "Arhitectura CPU",
+                                "docker": "Docker",
                                 "hassio": "HassOS",
                                 "installation_type": "Tipul de instalare",
+                                "os_name": "Numele sistemului de operare",
+                                "os_version": "Versiunea sistemului de operare",
+                                "python_version": "Versiunea Python",
                                 "timezone": "Fus orar",
                                 "version": "Versiune"
                             },
                             "lovelace": {
+                                "dashboards": "Tablouri de bord",
+                                "mode": "Mod",
                                 "resources": "Resurse"
                             }
-                        }
+                        },
+                        "more_info": "mai multe informații"
                     },
                     "title": "Info"
                 },
@@ -1711,6 +1774,9 @@
                         }
                     }
                 },
+                "tags": {
+                    "confirm_remove_title": "Eliminați eticheta?"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Adăugați utilizator",
@@ -1731,17 +1797,22 @@
                         "delete_user": "Ștergeți utilizatorul",
                         "name": "Nume",
                         "system_generated_users_not_editable": "Nu s-au putut actualiza utilizatorii generați de sistem.",
-                        "update_user": "Actualizare"
+                        "update_user": "Actualizare",
+                        "username": "Nume de utilizator"
                     },
                     "picker": {
+                        "add_user": "Adăugați utilizator",
                         "headers": {
                             "group": "Grup",
+                            "is_owner": "Proprietar",
                             "name": "Nume",
-                            "system": "Sistem"
+                            "system": "Sistem",
+                            "username": "Nume de utilizator"
                         }
                     }
                 },
                 "zha": {
+                    "add_device": "Adaugă un dispozitiv",
                     "add_device_page": {
                         "discovered_text": "Dispozitivele vor apărea aici odată descoperite.",
                         "discovery_text": "Dispozitivele descoperite vor apărea aici. Urmați instrucțiunile pentru dispozitiv (e) și așezați dispozitivul (ele) în modul de împerechere.",
@@ -1782,6 +1853,11 @@
                         "value": "Valoare"
                     },
                     "description": "Managementul rețelei Zigbee Home Automation",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Configurare terminată",
+                        "CONFIGURED_status_text": "Iniţializare",
+                        "INTERVIEW_COMPLETE_status_text": "Configurez"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Dispozitiv"
                     },
@@ -1797,6 +1873,7 @@
                         "unbind_button_label": "Deconectează grupul"
                     },
                     "groups": {
+                        "add_group": "Adăugare grup",
                         "add_members": "Adăugați membri",
                         "adding_members": "Adăugarea membrilor",
                         "caption": "Grupuri",
@@ -1835,7 +1912,10 @@
                     "node_management": {
                         "header": "Gestionare dispozitive"
                     },
-                    "title": "Automatizare Zigbee Home"
+                    "title": "Automatizare Zigbee Home",
+                    "visualization": {
+                        "caption": "Vizualizare"
+                    }
                 },
                 "zone": {
                     "add_zone": "Adăugare zonă",
@@ -2015,7 +2095,7 @@
                         "result_type": "Tipul rezultatului",
                         "template_extensions": "Șabloane de extensie pentru Home Assistant",
                         "time": "Acest șablon se actualizează la fiecare 60 de secunde după ultimul eveniment modificat de stare.",
-                        "title": "Sabloane",
+                        "title": "Şablon",
                         "unknown_error_template": "Sa produs o eroare de randare necunoscută."
                     }
                 }
@@ -2244,6 +2324,12 @@
                         "custom_card": "Personalizare",
                         "no_description": "Nicio descriere disponibilă."
                     },
+                    "common": {
+                        "add": "Adaugă",
+                        "clear": "Şterge",
+                        "edit": "Editați",
+                        "none": "Niciunul"
+                    },
                     "edit_card": {
                         "add": "Adăugare card",
                         "confirm_cancel": "Ești sigur că vrei să anulezi?",
@@ -2280,6 +2366,8 @@
                     },
                     "header": "Editați interfața utilizator",
                     "header-footer": {
+                        "footer": "Subsol",
+                        "header": "Antet",
                         "types": {
                             "graph": {
                                 "name": "Grafic"
