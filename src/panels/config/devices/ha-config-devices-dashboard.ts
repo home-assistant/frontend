@@ -189,9 +189,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           ),
           model: device.model || "<unknown>",
           manufacturer: device.manufacturer || "<unknown>",
-          area: device.area_id
-            ? areaLookup[device.area_id].name
-            : this.hass.localize("ui.panel.config.devices.data_table.no_area"),
+          area: device.area_id ? areaLookup[device.area_id].name : undefined,
           integration: device.config_entries.length
             ? device.config_entries
                 .filter((entId) => entId in entryLookup)

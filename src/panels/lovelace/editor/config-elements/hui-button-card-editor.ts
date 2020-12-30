@@ -115,7 +115,7 @@ export class HuiButtonCardEditor extends LitElement
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
           )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.required"
+            "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
           .value=${this._entity}
