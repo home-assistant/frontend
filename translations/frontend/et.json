@@ -1439,7 +1439,7 @@
                         "confirm_delete_header": "Kas kustutada see kavand?",
                         "confirm_delete_text": "Kas soovid kindlasti selle kavandi kustutada?",
                         "delete_blueprint": "Kustuta kavand",
-                        "discover_more": "Avasta rohkem kavandeid",
+                        "discover_more": "Leia rohkem kavandeid",
                         "header": "Kavandi redaktor",
                         "headers": {
                             "domain": "Domeen",
@@ -1895,7 +1895,7 @@
                             "lovelace": {
                                 "dashboards": "Vaated",
                                 "mode": "Režiim",
-                                "resources": "Ressursid"
+                                "resources": "Ressursse"
                             }
                         },
                         "manage": "Halda",
@@ -2259,7 +2259,7 @@
                             "without_device": "Olemid ilma seadmeta"
                         },
                         "icon": "Ikoon",
-                        "introduction": "Kasutage stseene, et oma kodu mõnusamaks muuta.",
+                        "introduction": "Kasutage stseene, et oma kodu nutikamaks muuta.",
                         "load_error_not_editable": "Ainult scenes.yaml failis asuvad stseenid on muudetavad.",
                         "load_error_unknown": "Viga stseeni laadimisel ({err_no}).",
                         "name": "Nimi",
@@ -2345,7 +2345,7 @@
                             "filter": "TAASLAE FILTREERITUD OLEMID",
                             "generic": "TAASLAE IP KAAMERAD",
                             "generic_thermostat": "TAASLAE TERMOSTAADID",
-                            "group": "Taaslae grupid",
+                            "group": "Taaslae grupid, grupi olemid ja teavitusteenused",
                             "heading": "YAML konfiguratsiooni taaslaadimine",
                             "history_stats": "TAASLAE OLEMITE AJALUGU",
                             "homekit": "Taaslae HomeKit andmed",

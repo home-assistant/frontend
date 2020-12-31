@@ -533,6 +533,8 @@
                 "add_new": "Tilføj nyt område...",
                 "area": "Område",
                 "clear": "Ryd",
+                "no_areas": "Du har ikke nogen områder",
+                "no_match": "Ingen matchende områder fundet",
                 "show_areas": "Vis områder"
             },
             "blueprint-picker": {
@@ -553,6 +555,7 @@
                 "device": "Enhed",
                 "no_area": "Intet område",
                 "no_devices": "Du har ingen enheder",
+                "no_match": "Ingen matchende enheder fundet",
                 "show_devices": "Vis enheder",
                 "toggle": "Til/fra"
             },
@@ -563,6 +566,7 @@
                 "entity-picker": {
                     "clear": "Ryd",
                     "entity": "Entitet",
+                    "no_match": "Ingen matchende entiteter fundet",
                     "show_entities": "Vis entiteter"
                 }
             },
@@ -631,7 +635,10 @@
             },
             "target-picker": {
                 "add_device_id": "Vælg enhed",
-                "remove_device_id": "Fjern enhed"
+                "add_entity_id": "Vælg entitet",
+                "remove_area_id": "Fjern område",
+                "remove_device_id": "Fjern enhed",
+                "remove_entity_id": "Fjern entitet"
             },
             "user-picker": {
                 "add_user": "Tilføj bruger",
@@ -655,6 +662,7 @@
                 "editor": {
                     "confirm_delete": "Er du sikker på, at du vil slette denne post?",
                     "delete": "Slet",
+                    "device_disabled": "Denne entitets enheden er deaktiveret.",
                     "enabled_cause": "Deaktiveret af {cause}.",
                     "enabled_description": "Deaktiverede entiteter tilføjes ikke til Home Assistant.",
                     "enabled_label": "Aktivér entitet",
@@ -663,6 +671,7 @@
                     "icon_error": "Ikoner skal være i formatet 'præfiks:ikonnavn', fx. 'mdi:home'",
                     "name": "Brugerdefineret navn",
                     "note": "Bemærk: Dette virker muligvis ikke med alle integrationer endnu.",
+                    "open_device_settings": "Åbn enhedsindstillinger",
                     "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
                     "update": "Opdater"
                 },
@@ -715,6 +724,10 @@
                 "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugerfladen, der kan konfigureres herfra."
             },
             "more_info_control": {
+                "cover": {
+                    "close_cover": "Luk cover",
+                    "open_cover": "Åbn cover"
+                },
                 "details": "Detaljer",
                 "dismiss": "Afvis dialog",
                 "edit": "Rediger entitet",
@@ -776,6 +789,16 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "blueprint": "Tegninger",
+                        "core": "Generelt",
+                        "customize": "Tilpasninger",
+                        "entities": "Entiteter",
+                        "info": "Information",
+                        "server_control": "Serverstyring",
+                        "users": "Brugere",
+                        "zone": "Zoner"
+                    },
                     "server_control": {
                         "perform_action": "{action} server",
                         "restart": "Genstart",
@@ -892,6 +915,12 @@
                     "caption": "Automatiseringer",
                     "description": "Administrer automatiseringer",
                     "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Brug en tegning"
+                        },
+                        "header": "Opret en ny automatisering",
+                        "how": "Hvordan vil du oprette din nye automatisering?",
+                        "start_empty": "Start med en tom automatisering",
                         "thingtalk": {
                             "create": "Opret",
                             "header": "Beskriv automationen du vil lave",
@@ -973,6 +1002,13 @@
                             "unsupported_action": "Ikke-understøttet handling: {action}"
                         },
                         "alias": "Navn",
+                        "blueprint": {
+                            "blueprint_to_use": "Tegninger klar til brug",
+                            "header": "Tegninger",
+                            "inputs": "Indgange",
+                            "manage_blueprints": "Administrer tegninger",
+                            "no_blueprints": "Du har ingen tegninger"
+                        },
                         "conditions": {
                             "add": "Tilføj betingelse",
                             "delete": "Slet",
@@ -1190,14 +1226,22 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "Fællesskabsfora",
+                        "file_name": "Tegningssti",
                         "import_introduction": "Du kan importere skabeloner af andre brugere fra Github og {community_link} . Indtast URL'en til skabelonen nedenfor.",
-                        "import_introduction_link": "Du kan importere tegninger af andre brugere fra Github og {community_link} . Indtast webadressen til tegningen nedenfor."
+                        "import_introduction_link": "Du kan importere tegninger af andre brugere fra Github og {community_link} . Indtast webadressen til tegningen nedenfor.",
+                        "raw_blueprint": "Tegningsindhold",
+                        "unsupported_blueprint": "Denne tegning understøttes ikke"
                     },
                     "overview": {
+                        "add_blueprint": "Importer tegning",
+                        "delete_blueprint": "Slet tegning",
+                        "discover_more": "Find flere tegninger",
                         "headers": {
                             "domain": "Domæne",
                             "file_name": "Filnavn"
-                        }
+                        },
+                        "use_blueprint": "Opret automation"
                     }
                 },
                 "cloud": {
@@ -1448,9 +1492,12 @@
                     "device_not_found": "Enhed blev ikke fundet.",
                     "disabled": "Deaktiveret",
                     "disabled_by": {
+                        "config_entry": "Konfigurationsparameter",
                         "integration": "Integration",
                         "user": "Bruger"
                     },
+                    "enabled_cause": "Enheden er deaktiveret pga. {cause} .",
+                    "enabled_description": "Deaktiverede enheder vises ikke, og entiteter, der hører til enheden, deaktiveres og tilføjes ikke til Home Assistant.",
                     "enabled_label": "Aktiver enhed",
                     "entities": {
                         "add_entities_lovelace": "Tilføj til Lovelace",
@@ -1570,6 +1617,7 @@
                 "info": {
                     "built_using": "Bygget ved hjælp af",
                     "caption": "Oplysninger",
+                    "copy_github": "Til GitHub",
                     "copy_raw": "Rå tekst",
                     "custom_uis": "Tilpassede brugergrænseflader:",
                     "description": "Se oplysninger om din Home Assistant-installation",
@@ -1987,6 +2035,7 @@
                     "editor": {
                         "activate_user": "Aktivér bruger",
                         "active": "Aktiv",
+                        "active_tooltip": "Kontrollerer, om brugeren kan logge ind",
                         "admin": "Administrator",
                         "caption": "Vis bruger",
                         "change_password": "Skift adgangskode",
@@ -2007,6 +2056,7 @@
                         "username": "Brugernavn"
                     },
                     "picker": {
+                        "add_user": "Tilføj bruger",
                         "headers": {
                             "group": "Gruppe",
                             "is_active": "Aktiv",
@@ -2066,7 +2116,14 @@
                     },
                     "description": "Zigbee Home Automation-opsætning",
                     "device_pairing_card": {
-                        "INITIALIZED_status_text": "Enheden er klar til brug"
+                        "CONFIGURED": "Konfiguration fuldført",
+                        "CONFIGURED_status_text": "Initialiserer",
+                        "INITIALIZED": "Initialiseringen er fuldført",
+                        "INITIALIZED_status_text": "Enheden er klar til brug",
+                        "INTERVIEW_COMPLETE": "Interview fuldført",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurerer",
+                        "PAIRED": "Enhed fundet",
+                        "PAIRED_status_text": "Starter Interview"
                     },
                     "devices": {
                         "header": "Zigbee Home Automation - Enhed"
@@ -2126,7 +2183,11 @@
                         "hint_wakeup": "Nogle enheder som Xiaomi-sensorer har en vækkeknap, som du kan trykke på med ~5 sekunders intervaller, der holder enheder vågne, mens du interagerer med dem.",
                         "introduction": "Kør ZHA-kommandoer, der påvirker en enkelt enhed. Vælg en enhed for at se en liste over tilgængelige kommandoer."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualisering",
+                        "header": "Netværksvisualisering"
+                    }
                 },
                 "zone": {
                     "add_zone": "Tilføj zone",
@@ -2295,6 +2356,8 @@
                         "filter_attributes": "Filtrer egenskaber",
                         "filter_entities": "Filtrer entiteter",
                         "filter_states": "Filtrer tilstande",
+                        "last_changed": "Senest ændret",
+                        "last_updated": "Senest opdateret",
                         "more_info": "Mere information",
                         "no_entities": "Ingen entiteter",
                         "set_state": "Sæt tilstand",
@@ -2491,6 +2554,9 @@
                             "description": "Lys-kortet giver dig mulighed for at ændre lysets lysstyrke.",
                             "name": "Lys"
                         },
+                        "logbook": {
+                            "name": "Logbog"
+                        },
                         "map": {
                             "dark_mode": "Mørk tilstand?",
                             "default_zoom": "Standard-zoom",
@@ -2519,7 +2585,8 @@
                         },
                         "picture-glance": {
                             "description": "Billedblik-kortet viser et billede og den tilsvarende entitetstilstand som et ikon. Entiteterne på højre side tillader at skifte handlinger, andre viser dialogboksen for mere information.",
-                            "name": "Billedblik"
+                            "name": "Billedblik",
+                            "state_entity": "Entitet status"
                         },
                         "picture": {
                             "description": "Billedkortet giver dig mulighed for at indstille et billede, der skal bruges til navigation til forskellige stier i brugerfladen eller til at kalde en tjeneste.",
@@ -2883,10 +2950,13 @@
                 "change_password": {
                     "confirm_new_password": "Bekræft ny adgangskode",
                     "current_password": "Nuværende adgangskode",
+                    "error_new_is_old": "Ny adgangskode skal være forskellig fra den aktuelle adgangskode",
+                    "error_new_mismatch": "Indtastede nye adgangskoder er ikke ens",
                     "error_required": "Påkrævet",
                     "header": "Skift adgangskode",
                     "new_password": "Ny adgangskode",
-                    "submit": "Indsend"
+                    "submit": "Indsend",
+                    "success": "Adgangskoden blev ændret"
                 },
                 "current_user": "Du er logget ind som {fullName}.",
                 "customize_sidebar": {
