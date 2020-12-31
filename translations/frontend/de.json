@@ -706,11 +706,11 @@
                 "never": "Noch nie",
                 "past": "Vor {time}",
                 "past_duration": {
-                    "day": "vor {count} {count, plural,\n  one {Tag}\n  other {Tagen}\n}",
-                    "hour": "vor {count} {count, plural,\n  one {Stunde}\n  other {Stunden}\n}",
-                    "minute": "vor {count} {count, plural,\n  one {Minute}\n  other {Minuten}\n}",
-                    "second": "vor {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
-                    "week": "vor {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
+                    "day": "Vor {count} {count, plural,\n  one {Tag}\n  other {Tagen}\n}",
+                    "hour": "Vor {count} {count, plural,\n  one {Stunde}\n  other {Stunden}\n}",
+                    "minute": "Vor {count} {count, plural,\n  one {Minute}\n  other {Minuten}\n}",
+                    "second": "Vor {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
+                    "week": "Vor {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
                 }
             },
             "service-picker": {
@@ -2139,7 +2139,7 @@
                     },
                     "network": {
                         "header": "Netzwerkverwaltung",
-                        "introduction": "Verwalten netzwerkweiter Funktionen.",
+                        "introduction": "Verwalten der Netzwerk-Funktionen.",
                         "node_count": "{count} Knoten"
                     },
                     "node_config": {
@@ -2358,9 +2358,9 @@
                             "min_max": "Min/Max-Entitäten neu laden",
                             "mqtt": "Lade manuell konfigurierte MQTT-Entitäten neu",
                             "person": "Personen neu laden",
-                            "ping": "Binäre Ping Sensorentitäten neu laden",
+                            "ping": "Binäre Ping-Sensorentitäten neu laden",
                             "reload": "{domain} neu laden",
-                            "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
+                            "rest": "Rest-Entitäten und Benachrichtigungsdienste neu laden",
                             "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",
@@ -2431,7 +2431,7 @@
                         "username": "Benutzername"
                     },
                     "caption": "Benutzer",
-                    "description": "Home Assistant Benutzerkonten verwalten",
+                    "description": "Home Assistant-Benutzerkonten verwalten",
                     "editor": {
                         "activate_user": "Benutzer aktivieren",
                         "active": "Aktiv",
