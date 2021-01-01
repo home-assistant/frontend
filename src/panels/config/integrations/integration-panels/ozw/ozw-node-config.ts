@@ -319,6 +319,7 @@ class OZWNodeConfig extends LitElement {
     } catch (e) {
       this._errors[parameter] = e;
     }
+    this.requestUpdate();
   }
 
   private async _refreshNodeClicked() {
