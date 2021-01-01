@@ -61,6 +61,8 @@ class OZWNodeConfig extends LitElement {
 
   @internalProperty() private _error?: string;
 
+  @internalProperty() private _errors: { [key: number]: any } = {};
+
   protected firstUpdated() {
     if (!this.ozwInstance) {
       navigate(this, "/config/ozw/dashboard", true);
@@ -191,6 +193,11 @@ class OZWNodeConfig extends LitElement {
             >
             </ha-form>`
           : ``}
+        ${this._errors[item.parameter]
+          ? html`<span class="error"
+              >${this._errors[item.parameter].message}</span
+            >`
+          : ``}
         ${item.type === "BitSet"
           ? html`
               ${item.value.map(
@@ -296,9 +303,12 @@ class OZWNodeConfig extends LitElement {
 
   private async _updateConfigOption(ev: CustomEvent) {
     const parameter = (<OzwConfigFormButton>ev.currentTarget)!.parameter;
-    const value = this._configData[parameter];
+    const value = this._configData[parameter][
+      Object.keys(this._configData[parameter])[0]
+    ];
 
     try {
+      this._errors![parameter] = undefined;
       await this.hass.callWS({
         type: "ozw/set_config_parameter",
         node_id: this.nodeId,
@@ -307,7 +317,7 @@ class OZWNodeConfig extends LitElement {
         value: value,
       });
     } catch (e) {
-      console.log("error", e);
+      this._errors[parameter] = e;
     }
   }
 
