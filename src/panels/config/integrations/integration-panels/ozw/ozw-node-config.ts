@@ -203,17 +203,21 @@ class OZWNodeConfig extends LitElement {
               )}
               <p>
                 <em>
-                  This configuration option can't be edited from the UI yet
+                  ${this.hass.localize(
+                    "ui.panel.config.ozw.node_config.cant_edit_from_ui"
+                  )}
                 </em>
               </p>
             `
           : ``}
-        ${!["Byte", "Short", "Int", "List"].includes(item.type)
+        ${!["BitSet", "Byte", "Short", "Int", "List"].includes(item.type)
           ? html`
               <p>${item.value}</p>
               <p>
                 <em>
-                  This configuration option can't be edited from the UI yet
+                  ${this.hass.localize(
+                    "ui.panel.config.ozw.node_config.cant_edit_from_ui"
+                  )}
                 </em>
               </p>
             `
