@@ -341,6 +341,10 @@ class OZWNodeConfig extends LitElement {
           margin-top: 24px;
         }
 
+        .content:last-child {
+          margin-bottom: 24px;
+        }
+
         .sectionHeader {
           position: relative;
           padding-right: 40px;
