@@ -2405,7 +2405,7 @@
                         "description": "Descrizione",
                         "name": "Nome",
                         "new_tag": "Nuova etichetta",
-                        "tag_id": "Id etichetta",
+                        "tag_id": "ID etichetta",
                         "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
                         "update": "Aggiorna",
                         "usage": "Una etichetta può attivare un'automazione quando viene scansionata, puoi utilizzare etichette NFC, codici QR o qualsiasi altro tipo di tag. Utilizza il nostro {companion_link} per scrivere questa etichetta su un tag NFC programmabile o crea un codice QR di seguito."
