@@ -73,7 +73,7 @@ export class HaNumberSelector extends LitElement {
   }
 
   private _handleSliderChange(ev) {
-    const value = ev.target.value;
+    const value = ev.target.value || "0";
     if (this._value === value) {
       return;
     }
