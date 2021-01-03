@@ -23,7 +23,7 @@ export const handleAction = async (
     double_tap_action?: ActionConfig;
   },
   action: string
-): void => {
+): Promise<void> => {
   let actionConfig: ActionConfig | undefined;
 
   if (action === "double_tap" && config.double_tap_action) {
