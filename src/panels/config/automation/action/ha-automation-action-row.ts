@@ -105,7 +105,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @internalProperty() private _yamlMode = false;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
