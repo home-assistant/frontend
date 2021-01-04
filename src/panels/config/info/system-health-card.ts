@@ -197,7 +197,7 @@ class SystemHealthCard extends LitElement {
     });
   }
 
-  private _copyInfo(ev: CustomEvent<ActionDetail>): void {
+  private async _copyInfo(ev: CustomEvent<ActionDetail>): Promise<void> {
     const github = ev.detail.index === 1;
     let haContent: string | undefined;
     const domainParts: string[] = [];
@@ -250,13 +250,15 @@ class SystemHealthCard extends LitElement {
       }
     }
 
-    copyToClipboard(
+    await copyToClipboard(
       `${github ? "## " : ""}System Health\n${haContent}\n\n${domainParts.join(
         "\n\n"
       )}`
     );
 
-    showToast(this, { message: this.hass.localize("ui.common.copied") });
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   static get styles(): CSSResult {
