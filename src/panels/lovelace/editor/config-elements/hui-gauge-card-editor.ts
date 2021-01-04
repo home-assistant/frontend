@@ -12,8 +12,10 @@ import {
 import { assert, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-icon-input";
 import { HomeAssistant } from "../../../../types";
 import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
@@ -31,6 +33,7 @@ const cardConfigStruct = object({
   max: optional(number()),
   severity: optional(object()),
   theme: optional(string()),
+  icon: optional(string()),
 });
 
 const includeDomains = ["sensor"];
@@ -75,6 +78,10 @@ export class HuiGaugeCardEditor extends LitElement
     return this._config!.severity || undefined;
   }
 
+  get _icon(): string {
+    return this._config!.icon || "";
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -105,16 +112,30 @@ export class HuiGaugeCardEditor extends LitElement
           .configValue=${"name"}
           @value-changed="${this._valueChanged}"
         ></paper-input>
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.unit"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value="${this._unit}"
-          .configValue=${"unit"}
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
+        <div class="side-by-side">
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.unit"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            .value="${this._unit}"
+            .configValue=${"unit"}
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+          <ha-icon-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.icon"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            .value=${this._icon}
+            .placeholder=${this._icon ||
+            stateIcon(this.hass.states[this._entity])}
+            .configValue=${"icon"}
+            @value-changed=${this._valueChanged}
+          ></ha-icon-input>
+        </div>
         <hui-theme-select-editor
           .hass=${this.hass}
           .value="${this._theme}"
