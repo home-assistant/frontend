@@ -119,27 +119,21 @@ class HaPanelHistory extends LitElement {
     todayEnd.setDate(todayEnd.getDate() + 1);
     todayEnd.setMilliseconds(todayEnd.getMilliseconds() - 1);
 
-    const todayCopy = new Date(today);
-
-    const yesterday = new Date(todayCopy.setDate(today.getDate() - 1));
-    const yesterdayEnd = new Date(yesterday);
-    yesterdayEnd.setDate(yesterdayEnd.getDate() + 1);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayEnd = new Date(today);
     yesterdayEnd.setMilliseconds(yesterdayEnd.getMilliseconds() - 1);
 
-    const thisWeekStart = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay())
-    );
-    const thisWeekEnd = new Date(
-      todayCopy.setDate(thisWeekStart.getDate() + 7)
-    );
+    const thisWeekStart = new Date(today);
+    thisWeekStart.setDate(today.getDate() - today.getDay());
+    const thisWeekEnd = new Date(thisWeekStart);
+    thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
     thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
 
-    const lastWeekStart = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay() - 7)
-    );
-    const lastWeekEnd = new Date(
-      todayCopy.setDate(lastWeekStart.getDate() + 7)
-    );
+    const lastWeekStart = new Date(today);
+    lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
+    const lastWeekEnd = new Date(lastWeekStart);
+    lastWeekEnd.setDate(lastWeekStart.getDate() + 7);
     lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
 
     this._ranges = {
