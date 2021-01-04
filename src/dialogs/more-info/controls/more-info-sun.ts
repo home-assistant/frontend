@@ -80,6 +80,7 @@ class MoreInfoSun extends LitElement {
       }
       ha-relative-time {
         display: inline-block;
+        white-space: nowrap;
       }
       ha-relative-time::first-letter {
         text-transform: lowercase;
