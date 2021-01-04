@@ -197,7 +197,7 @@ class SystemHealthCard extends LitElement {
     });
   }
 
-  private async _copyInfo(ev: CustomEvent<ActionDetail>) {
+  private async _copyInfo(ev: CustomEvent<ActionDetail>): Promise<void> {
     const github = ev.detail.index === 1;
     let haContent: string | undefined;
     const domainParts: string[] = [];
