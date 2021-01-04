@@ -172,15 +172,14 @@ export class HuiGraphHeaderFooter extends LitElement
           : outHoursToShow
         ).push(entity)
       );
-      this._stateHistory = [];
 
       if (outHoursToShow.length) {
         // If we have values that are now outside of "hours to show", re-add the last entry. This could e.g. be
         // the "initial state" from the history backend. Without it, it would look like there is no history data
         // at the start at all in the database = graph would start suddenly instead of on the left side of the card.
-        this._stateHistory.push(outHoursToShow[outHoursToShow.length - 1]);
+        inHoursToShow.push(outHoursToShow[outHoursToShow.length - 1]);
       }
-      this._stateHistory = this._stateHistory.concat(inHoursToShow);
+      this._stateHistory = inHoursToShow;
     }
 
     const stateHistory = await fetchRecent(
