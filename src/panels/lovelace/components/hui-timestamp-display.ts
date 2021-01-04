@@ -58,7 +58,7 @@ class HuiTimestampDisplay extends LitElement {
 
     if (isNaN(this.ts.getTime())) {
       return html`${this.hass.localize(
-        "ui.panel.lovelace.component.timestamp-display.invalid"
+        "ui.panel.lovelace.components.timestamp-display.invalid"
       )}`;
     }
 
@@ -71,7 +71,7 @@ class HuiTimestampDisplay extends LitElement {
       return html` ${FORMATS[format](this.ts, this.hass.language)} `;
     }
     return html`${this.hass.localize(
-      "ui.panel.lovelace.component.timestamp-display.invalid_format"
+      "ui.panel.lovelace.components.timestamp-display.invalid_format"
     )}`;
   }
 

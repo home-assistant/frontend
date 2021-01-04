@@ -2834,7 +2834,7 @@
         "changed_toast": {
           "message": "The Lovelace UI configuration for this dashboard was updated. Refresh to see changes?"
         },
-        "component": {
+        "components": {
           "timestamp-display": {
             "invalid": "Invalid timestamp",
             "invalid_format": "Invalid display format"
