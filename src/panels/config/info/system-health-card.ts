@@ -256,7 +256,9 @@ class SystemHealthCard extends LitElement {
       )}`
     );
 
-    showToast(this, { message: this.hass.localize("ui.common.copied") });
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   static get styles(): CSSResult {
