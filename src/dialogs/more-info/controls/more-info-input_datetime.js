@@ -5,7 +5,6 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/ha-date-input";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
-import { setInputDateTimeValue } from "../../../data/input_datetime";
 import "../../../components/ha-relative-time";
 import "../../../components/paper-time-input";
 
@@ -26,8 +25,8 @@ class DatetimeInput extends PolymerElement {
         <template is="dom-if" if="[[doesHaveTime(stateObj)]]" restamp="">
           <div>
             <paper-time-input
-              hour="{{("0" + this.selectedHour).slice(-2)}}"
-              min="{{("0" + this.selectedMinute).slice(-2)}}"
+              hour="{{selectedHour}}"
+              min="{{selectedMinute}}"
               format="24"
             ></paper-time-input>
           </div>
@@ -74,31 +73,33 @@ class DatetimeInput extends PolymerElement {
     this.is_ready = true;
   }
 
-  /* Convert the date in the stateObj into a string usable by vaadin-date-picker */
+  /* Convert the date in the stateObj into a string useable by vaadin-date-picker */
   getDateString(stateObj) {
     if (stateObj.state === "unknown") {
       return "";
+    }
+    let monthFiller;
+    if (stateObj.attributes.month < 10) {
+      monthFiller = "0";
+    } else {
+      monthFiller = "";
+    }
+
+    let dayFiller;
+    if (stateObj.attributes.day < 10) {
+      dayFiller = "0";
+    } else {
+      dayFiller = "";
     }
 
     return (
       stateObj.attributes.year +
       "-" +
-      ("0" + stateObj.attributes.month).slice(-2) +
+      monthFiller +
+      stateObj.attributes.month +
       "-" +
-      ("0" + stateObj.attributes.day).slice(-2)
-    );
-  }
-
-  /* Convert the time in the stateObj into a string usable by vaadin-date-picker */
-  getTimeString(stateObj) {
-    if (stateObj.state === "unknown") {
-      return "";
-    }
-
-    return (
-      ("0" + stateObj.attributes.hour).slice(-2) +
-      ":" +
-      ("0" + stateObj.attributes.minute).slice(-2)
+      dayFiller +
+      stateObj.attributes.day
     );
   }
 
@@ -111,7 +112,11 @@ class DatetimeInput extends PolymerElement {
     }
 
     let changed = false;
-    let timeStr;
+    let minuteFiller;
+
+    const serviceData = {
+      entity_id: this.stateObj.entity_id,
+    };
 
     if (this.stateObj.attributes.has_time) {
       changed =
@@ -120,11 +125,14 @@ class DatetimeInput extends PolymerElement {
       changed =
         changed ||
         parseInt(this.selectedHour) !== this.stateObj.attributes.hour;
-
-      timeStr =
-        ("0" + this.selectedHour).slice(-2) +
-        ":" +
-        ("0" + this.selectedMinute).slice(-2);
+      if (this.selectedMinute < 10) {
+        minuteFiller = "0";
+      } else {
+        minuteFiller = "";
+      }
+      const timeStr =
+        this.selectedHour + ":" + minuteFiller + this.selectedMinute;
+      serviceData.time = timeStr;
     }
 
     if (this.stateObj.attributes.has_date) {
@@ -140,15 +148,12 @@ class DatetimeInput extends PolymerElement {
       );
 
       changed = changed || dateValState !== dateValInput;
+
+      serviceData.date = this.selectedDate;
     }
 
     if (changed) {
-      setInputDateTimeValue(
-        this.hass,
-        this.stateObj.entity_id,
-        timeStr,
-        this.selectedDate
-      );
+      this.hass.callService("input_datetime", "set_datetime", serviceData);
     }
   }
 
