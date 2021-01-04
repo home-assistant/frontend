@@ -25,7 +25,7 @@ import { handleAction } from "../common/handle-action";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 interface SensorEntityConfig extends EntitiesCardEntityConfig {
-  format?: "relative" | "date" | "time" | "datetime";
+  format?: "relative" | "total" | "date" | "time" | "datetime";
 }
 
 @customElement("hui-sensor-entity-row")
