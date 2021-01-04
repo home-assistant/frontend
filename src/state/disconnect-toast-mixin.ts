@@ -33,7 +33,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           duration: 0,
           dismissable: false,
           action: {
-            text: this.hass!.localize("ui.notification_toast.dismiss"),
+            text:
+              this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
             action: () => {},
           },
         });
