@@ -40,7 +40,7 @@ class MoreInfoCounter extends LitElement {
           ${this.hass!.localize("ui.card.counter.actions.decrement")}
         </mwc-button>
         <mwc-button
-          .action="${" reset"}"
+          .action="${"reset"}"
           @click=${this._handleActionClick}
           .disabled=${UNAVAILABLE_STATES.includes(this.stateObj!.state)}
         >
