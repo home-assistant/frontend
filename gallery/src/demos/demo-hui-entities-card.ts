@@ -241,3 +241,5 @@ class DemoEntities extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-entities-card", DemoEntities);

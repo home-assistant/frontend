@@ -95,3 +95,5 @@ class DemoAlarmPanelEntity extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-alarm-panel-card", DemoAlarmPanelEntity);

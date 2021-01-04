@@ -79,3 +79,5 @@ class DemoHuiMediaPlayerRows extends LitElement {
     hass.addEntities(createMediaPlayerEntities());
   }
 }
+
+customElements.define("demo-hui-media-player-card", DemoHuiMediaPlayerRows);

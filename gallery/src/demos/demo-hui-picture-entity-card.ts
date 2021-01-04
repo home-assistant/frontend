@@ -87,7 +87,7 @@ const CONFIGS = [
 ];
 
 @customElement("demo-hui-picture-entity-card")
-class DemoPicEntity extends LitElement {
+class DemoPictureEntity extends LitElement {
   @internalProperty() private _configs = CONFIGS;
 
   @query("#demos") private _demoRoot!: HTMLElement;
@@ -104,3 +104,5 @@ class DemoPicEntity extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-picture-entity-card", DemoPictureEntity);

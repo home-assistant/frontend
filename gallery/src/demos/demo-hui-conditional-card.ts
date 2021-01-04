@@ -77,3 +77,5 @@ class DemoConditional extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-conditional-card", DemoConditional);

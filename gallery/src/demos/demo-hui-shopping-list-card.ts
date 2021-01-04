@@ -50,3 +50,5 @@ class DemoShoppingListEntity extends LitElement {
     ]);
   }
 }
+
+customElements.define("demo-hui-shopping-list-card", DemoShoppingListEntity);

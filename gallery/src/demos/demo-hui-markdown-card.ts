@@ -278,3 +278,5 @@ class DemoMarkdown extends LitElement {
     mockTemplate(hass);
   }
 }
+
+customElements.define("demo-hui-markdown-card", DemoMarkdown);

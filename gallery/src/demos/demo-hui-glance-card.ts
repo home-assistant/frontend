@@ -242,3 +242,5 @@ class DemoGlanceEntity extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-glance-card", DemoGlanceEntity);

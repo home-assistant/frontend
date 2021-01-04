@@ -49,3 +49,5 @@ class DemoIframe extends LitElement {
     return html`<demo-cards id="demos" .configs=${this._configs}></demo-cards>`;
   }
 }
+
+customElements.define("demo-hui-iframe-card", DemoIframe);

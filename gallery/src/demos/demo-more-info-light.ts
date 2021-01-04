@@ -84,3 +84,5 @@ class DemoMoreInfoLight extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-more-info-light", DemoMoreInfoLight);

@@ -132,7 +132,7 @@ const CONFIGS = [
 ];
 
 @customElement("demo-hui-picture-elements-card")
-class DemoPicElements extends LitElement {
+class DemoPictureElements extends LitElement {
   @internalProperty() private _configs = CONFIGS;
 
   @query("#demos") private _demoRoot!: HTMLElement;
@@ -149,3 +149,5 @@ class DemoPicElements extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-picture-elements-card", DemoPictureElements);

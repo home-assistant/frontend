@@ -113,3 +113,5 @@ class DemoEntityFilter extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-entity-filter-card", DemoEntityFilter);

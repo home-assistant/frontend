@@ -157,3 +157,5 @@ class DemoStack extends LitElement {
     mockHistory(hass);
   }
 }
+
+customElements.define("demo-hui-stack-card", DemoStack);

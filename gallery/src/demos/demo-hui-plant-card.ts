@@ -54,3 +54,5 @@ export class DemoPlantEntity extends LitElement {
     hass.addEntities(createPlantEntities());
   }
 }
+
+customElements.define("demo-hui-plant-card", DemoPlantEntity);

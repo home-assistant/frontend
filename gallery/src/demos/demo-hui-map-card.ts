@@ -185,3 +185,5 @@ class DemoMap extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-map-card", DemoMap);

@@ -128,7 +128,7 @@ const CONFIGS = [
 ];
 
 @customElement("demo-hui-picture-glance-card")
-class DemoPicGlance extends LitElement {
+class DemoPictureGlance extends LitElement {
   @internalProperty() private _configs = CONFIGS;
 
   @query("#demos") private _demoRoot!: HTMLElement;
@@ -145,3 +145,5 @@ class DemoPicGlance extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-picture-glance-card", DemoPictureGlance);

@@ -165,7 +165,7 @@ const CONFIGS = [
 ];
 
 @customElement("demo-hui-media-control-card")
-class DemoHuiMediControlCard extends LitElement {
+class DemoHuiMediaControlCard extends LitElement {
   @internalProperty() private _configs = CONFIGS;
 
   @query("#demos") private _demoRoot!: HTMLElement;
@@ -182,3 +182,5 @@ class DemoHuiMediControlCard extends LitElement {
     hass.addEntities(createMediaPlayerEntities());
   }
 }
+
+customElements.define("demo-hui-media-control-card", DemoHuiMediaControlCard);

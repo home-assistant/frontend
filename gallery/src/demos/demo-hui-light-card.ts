@@ -87,3 +87,5 @@ class DemoLightEntity extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-light-card", DemoLightEntity);

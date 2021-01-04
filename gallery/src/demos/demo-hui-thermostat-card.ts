@@ -98,3 +98,5 @@ class DemoThermostatEntity extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-thermostat-card", DemoThermostatEntity);

@@ -131,3 +131,5 @@ class DemoGaugeEntity extends LitElement {
     hass.addEntities(ENTITIES);
   }
 }
+
+customElements.define("demo-hui-gauge-card", DemoGaugeEntity);
