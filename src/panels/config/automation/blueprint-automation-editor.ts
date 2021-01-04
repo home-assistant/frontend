@@ -165,7 +165,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                                 .selector=${value.selector}
                                 .key=${key}
                                 .value=${(this.config.use_blueprint.input &&
-                                  this.config.use_blueprint.input[key]) ||
+                                  this.config.use_blueprint.input[key]) ??
                                 value?.default}
                                 @value-changed=${this._inputChanged}
                               ></ha-selector>`
