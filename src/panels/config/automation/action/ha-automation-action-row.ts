@@ -15,12 +15,14 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -103,6 +105,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @internalProperty() private _yamlMode = false;
 
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
       return;
@@ -110,6 +114,10 @@ export default class HaAutomationActionRow extends LitElement {
     this._uiModeAvailable = Boolean(getType(this.action));
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
+    }
+
+    if (this._yamlMode && this._yamlEditor) {
+      this._yamlEditor.setValue(this.action);
     }
   }
 
