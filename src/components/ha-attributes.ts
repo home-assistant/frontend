@@ -63,7 +63,7 @@ class HaAttributes extends LitElement {
         justify-content: space-between;
       }
       .data-entry .value {
-        max-width: 50%;
+        max-width: 60%;
         overflow-wrap: break-word;
         text-align: right;
       }
