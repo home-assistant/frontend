@@ -53,7 +53,11 @@ export const handleAction = async (
       !(await showConfirmationDialog(node, {
         text:
           actionConfig.confirmation.text ||
-          `Are you sure you want to ${actionConfig.action}?`,
+          hass.localize(
+            "ui.panel.lovelace.cards.action_confirmation",
+            "action",
+            actionConfig.action
+          ),
       }))
     ) {
       return;
