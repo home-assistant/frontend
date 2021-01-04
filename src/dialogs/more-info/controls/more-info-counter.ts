@@ -23,26 +23,28 @@ class MoreInfoCounter extends LitElement {
       return html``;
     }
 
+    const disabled = UNAVAILABLE_STATES.includes(this.stateObj!.state);
+
     return html`
       <div class="actions">
         <mwc-button
           .action="${"increment"}"
           @click=${this._handleActionClick}
-          .disabled=${UNAVAILABLE_STATES.includes(this.stateObj!.state)}
+          .disabled=${disabled}
         >
           ${this.hass!.localize("ui.card.counter.actions.increment")}
         </mwc-button>
         <mwc-button
           .action="${"decrement"}"
           @click=${this._handleActionClick}
-          .disabled=${UNAVAILABLE_STATES.includes(this.stateObj!.state)}
+          .disabled=${disabled}
         >
           ${this.hass!.localize("ui.card.counter.actions.decrement")}
         </mwc-button>
         <mwc-button
           .action="${"reset"}"
           @click=${this._handleActionClick}
-          .disabled=${UNAVAILABLE_STATES.includes(this.stateObj!.state)}
+          .disabled=${disabled}
         >
           ${this.hass!.localize("ui.card.counter.actions.reset")}
         </mwc-button>
