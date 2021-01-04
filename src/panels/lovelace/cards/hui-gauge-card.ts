@@ -240,8 +240,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
       .row {
         display: flex;
-        padding: 8px 16px 0;
         justify-content: space-around;
+        padding-top: 4px;
       }
 
       .name {
