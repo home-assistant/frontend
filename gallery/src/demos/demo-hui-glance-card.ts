@@ -218,7 +218,7 @@ const CONFIGS = [
   },
 ];
 
-class DemoPicEntity extends PolymerElement {
+class DemoGlanceEntity extends PolymerElement {
   static get template() {
     return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
@@ -240,4 +240,4 @@ class DemoPicEntity extends PolymerElement {
   }
 }
 
-customElements.define("demo-hui-glance-card", DemoPicEntity);
+customElements.define("demo-hui-glance-card", DemoGlanceEntity);
