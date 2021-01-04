@@ -141,11 +141,15 @@ class OZWNodeDashboard extends LitElement {
                           ${this._metadata.metadata.ResetHelp}
                         </div>
                       </ha-card>
-                      <ha-card class="content" header="WakeUp">
-                        <div class="card-content">
-                          ${this._metadata.metadata.WakeupHelp}
-                        </div>
-                      </ha-card>
+                      ${this._metadata.metadata.WakeupHelp
+                        ? html`
+                            <ha-card class="content" header="WakeUp">
+                              <div class="card-content">
+                                ${this._metadata.metadata.WakeupHelp}
+                              </div>
+                            </ha-card>
+                          `
+                        : ``}
                     `
                   : ``}
               `
@@ -197,6 +201,10 @@ class OZWNodeDashboard extends LitElement {
 
         .content {
           margin-top: 24px;
+        }
+
+        .content:last-child {
+          margin-bottom: 24px;
         }
 
         .sectionHeader {
