@@ -544,9 +544,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     return this._config;
   }
 
-  private async _copyYaml() {
+  private async _copyYaml(): Promise<void> {
     if (this._editor?.yaml) {
       await copyToClipboard(this._editor.yaml);
+      showToast(this, { message: this.hass.localize("ui.common.copied") });
     }
   }
 
