@@ -78,6 +78,7 @@ class CloudLogin extends LocalizeMixin(
         .pwd-forgot-link {
           color: var(--secondary-text-color) !important;
           text-decoration: none !important;
+          text-align: right !important;
         }
       </style>
       <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
