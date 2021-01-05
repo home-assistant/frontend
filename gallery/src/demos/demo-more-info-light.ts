@@ -1,6 +1,12 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  html,
+  LitElement,
+  customElement,
+  property,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import "../../../src/components/ha-card";
 import {
   SUPPORT_BRIGHTNESS,
@@ -12,7 +18,10 @@ import {
   SUPPORT_WHITE_VALUE,
 } from "../../../src/data/light";
 import { getEntity } from "../../../src/fake_data/entity";
-import { provideHass } from "../../../src/fake_data/provide_hass";
+import {
+  provideHass,
+  MockHomeAssistant,
+} from "../../../src/fake_data/provide_hass";
 import "../components/demo-more-infos";
 import "../../../src/dialogs/more-info/more-info-content";
 
@@ -49,33 +58,25 @@ const ENTITIES = [
   }),
 ];
 
-class DemoMoreInfoLight extends PolymerElement {
-  static get template() {
+@customElement("demo-more-info-light")
+class DemoMoreInfoLight extends LitElement {
+  @property() public hass!: MockHomeAssistant;
+
+  @query("demo-more-infos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
     return html`
       <demo-more-infos
-        hass="[[hass]]"
-        entities="[[_entities]]"
+        .hass=${this.hass}
+        .entities=${ENTITIES.map((ent) => ent.entityId)}
       ></demo-more-infos>
     `;
   }
 
-  static get properties() {
-    return {
-      _entities: {
-        type: Array,
-        value: ENTITIES.map((ent) => ent.entityId),
-      },
-    };
-  }
-
-  public ready() {
-    super.ready();
-    this._setupDemo();
-  }
-
-  private async _setupDemo() {
-    const hass = provideHass(this);
-    await hass.updateTranslations(null, "en");
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }
