@@ -79,6 +79,11 @@ export class HaDeviceActionsZha extends LitElement {
                 "ui.dialogs.zha_device_info.buttons.clusters"
               )}
             </mwc-button>
+            <mwc-button @click=${this._onViewInVisualizationClick}>
+              ${this.hass!.localize(
+                "ui.dialogs.zha_device_info.buttons.view_in_visualization"
+              )}
+            </mwc-button>
             <mwc-button class="warning" @click=${this._removeDevice}>
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.remove"
@@ -86,11 +91,6 @@ export class HaDeviceActionsZha extends LitElement {
             </mwc-button>
           `
         : ""}
-      <mwc-button @click=${this._onViewInVisualizationClick}>
-        ${this.hass!.localize(
-          "ui.dialogs.zha_device_info.buttons.view_in_visualization"
-        )}
-      </mwc-button>
     `;
   }
 
