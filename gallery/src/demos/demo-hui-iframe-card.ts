@@ -1,6 +1,4 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { html, LitElement, customElement, TemplateResult } from "lit-element";
 import "../components/demo-cards";
 
 const CONFIGS = [
@@ -37,18 +35,10 @@ const CONFIGS = [
   },
 ];
 
-class DemoIframe extends PolymerElement {
-  static get template() {
-    return html` <demo-cards configs="[[_configs]]"></demo-cards> `;
-  }
-
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-    };
+@customElement("demo-hui-iframe-card")
+class DemoIframe extends LitElement {
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 }
 
