@@ -2,7 +2,6 @@ import {
   html,
   LitElement,
   customElement,
-  internalProperty,
   property,
   PropertyValues,
   query,
@@ -63,15 +62,13 @@ const ENTITIES = [
 class DemoMoreInfoLight extends LitElement {
   @property() public hass!: MockHomeAssistant;
 
-  @internalProperty() private _entities = ENTITIES.map((ent) => ent.entityId);
-
   @query("demo-more-infos") private _demoRoot!: HTMLElement;
 
   protected render(): TemplateResult {
     return html`
       <demo-more-infos
         .hass=${this.hass}
-        .entities=${this._entities}
+        .entities=${ENTITIES.map((ent) => ent.entityId)}
       ></demo-more-infos>
     `;
   }

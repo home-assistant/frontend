@@ -2,7 +2,6 @@ import {
   html,
   LitElement,
   customElement,
-  internalProperty,
   PropertyValues,
   query,
   TemplateResult,

@@ -1,10 +1,4 @@
-import {
-  html,
-  LitElement,
-  customElement,
-  internalProperty,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, customElement, TemplateResult } from "lit-element";
 import "../components/demo-cards";
 
 const CONFIGS = [
@@ -43,8 +37,6 @@ const CONFIGS = [
 
 @customElement("demo-hui-iframe-card")
 class DemoIframe extends LitElement {
-  @internalProperty() private _configs = CONFIGS;
-
   protected render(): TemplateResult {
     return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
