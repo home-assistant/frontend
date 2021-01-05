@@ -301,7 +301,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           opacity: var(--dark-primary-opacity);
         }
         .table-header {
-          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+          border-bottom: 1px solid --divider-color;
           padding: 0 16px;
           display: flex;
           align-items: center;
