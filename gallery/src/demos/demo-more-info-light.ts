@@ -80,7 +80,6 @@ class DemoMoreInfoLight extends LitElement {
     super.firstUpdated(changedProperties);
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
-    hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
   }
 }

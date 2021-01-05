@@ -166,12 +166,10 @@ const CONFIGS = [
 
 @customElement("demo-hui-media-control-card")
 class DemoHuiMediaControlCard extends LitElement {
-  @internalProperty() private _configs = CONFIGS;
-
   @query("#demos") private _demoRoot!: HTMLElement;
 
   protected render(): TemplateResult {
-    return html`<demo-cards id="demos" .configs=${this._configs}></demo-cards>`;
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {

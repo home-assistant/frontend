@@ -61,14 +61,12 @@ const CONFIGS = [
   },
 ];
 
-@customElement("demo-hui-media-player-card")
-class DemoHuiMediaPlayerRows extends LitElement {
-  @internalProperty() private _configs = CONFIGS;
-
+@customElement("demo-hui-media-player-row")
+class DemoHuiMediaPlayerRow extends LitElement {
   @query("#demos") private _demoRoot!: HTMLElement;
 
   protected render(): TemplateResult {
-    return html`<demo-cards id="demos" .configs=${this._configs}></demo-cards>`;
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {
@@ -80,4 +78,4 @@ class DemoHuiMediaPlayerRows extends LitElement {
   }
 }
 
-customElements.define("demo-hui-media-player-card", DemoHuiMediaPlayerRows);
+customElements.define("demo-hui-media-player-row", DemoHuiMediaPlayerRow);
