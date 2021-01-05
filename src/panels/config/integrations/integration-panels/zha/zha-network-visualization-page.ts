@@ -126,7 +126,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.zha.visualization.zoom_label"
             )}
-            .includeDomains="zha"
+            .includeDomains="['zha']"
             @value-changed=${this._zoomToDevice}
           ></ha-device-picker>
         </div>
@@ -238,22 +238,22 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+    const filterText = this._filter!.toLowerCase();
     if (!this._network) {
       return;
     }
-    if (this._filter && this._filter !== "") {
-      const filteredNodeIds: (string | number)[] = this._nodes
-        .filter(
-          (node: Node) =>
-            node.label &&
-            node.label.toLowerCase().includes(this._filter!.toLowerCase())
-        )
-        .map((node: Node) => node.id!);
+    if (this._filter) {
+      const filteredNodeIds: (string | number)[] = [];
+      this._nodes.forEach((node) => {
+        if (node.label && node.label.toLowerCase().includes(filterText)) {
+          filteredNodeIds.push(node.id!);
+        }
+      });
       this._zoomedDeviceId = "";
       this._zoomOut();
       this._network.selectNodes(filteredNodeIds, true);
     } else {
-      this._network.selectNodes([], false);
+      this._network.unselectAll();
     }
   }
 
@@ -264,7 +264,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       return;
     }
     this._filter = "";
-    if (!this._zoomedDeviceId || this._zoomedDeviceId === "") {
+    if (!this._zoomedDeviceId) {
       this._zoomOut();
     } else {
       const device: ZHADevice | undefined = this._devicesByDeviceId.get(
@@ -280,11 +280,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _zoomOut() {
-    const allNodeIds: (string | number)[] = this._nodes.map(
-      (node: Node) => node.id!
-    );
     this._network!.fit({
-      nodes: allNodeIds,
+      nodes: [],
       animation: { duration: 500, easingFunction: "easeOutQuad" },
     });
   }
