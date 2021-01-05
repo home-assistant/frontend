@@ -48,9 +48,9 @@ export class HuiServiceButtonElement extends LitElement
     return html`
       <ha-call-service-button
         .hass=${this.hass}
-        .domain="${this._domain}"
-        .service="${this._service}"
-        .serviceData="${this._config.service_data}"
+        .domain=${this._domain}
+        .service=${this._service}
+        .serviceData=${this._config.service_data}
         >${this._config.title}</ha-call-service-button
       >
     `;
