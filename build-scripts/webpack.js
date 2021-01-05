@@ -36,6 +36,7 @@ const createWebpackConfig = ({
   const ignorePackages = bundle.ignorePackages({ latestBuild });
   return {
     mode: isProdBuild ? "production" : "development",
+    target: ["web", latestBuild ? "es2017" : "es5"],
     devtool: isProdBuild
       ? "cheap-module-source-map"
       : "eval-cheap-module-source-map",
@@ -130,22 +131,6 @@ const createWebpackConfig = ({
           return `${chunk.name}.js`;
         }
         return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
-      },
-      environment: {
-        // The environment supports arrow functions ('() => { ... }').
-        arrowFunction: latestBuild,
-        // The environment supports BigInt as literal (123n).
-        bigIntLiteral: false,
-        // The environment supports const and let for variable declarations.
-        const: latestBuild,
-        // The environment supports destructuring ('{ a, b } = obj').
-        destructuring: latestBuild,
-        // The environment supports an async import() function to import EcmaScript modules.
-        dynamicImport: latestBuild,
-        // The environment supports 'for of' iteration ('for (const x of array) { ... }').
-        forOf: latestBuild,
-        // The environment supports ECMAScript Module syntax to import ECMAScript modules (import ... from '...').
-        module: latestBuild,
       },
       chunkFilename:
         isProdBuild && !isStatsBuild
