@@ -15,6 +15,12 @@ import { fetchDevices, ZHADevice } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import { Network, Edge, Node, EdgeOptions } from "vis-network";
+import "../../../../../common/search/search-input";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/device/ha-device-picker";
+import "../../../../../components/ha-svg-icon";
+import { formatAsPaddedHex } from "./functions";
+import { PolymerChangedEvent } from "../../../../../polymer-types";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -29,7 +35,19 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _devices: Map<string, ZHADevice> = new Map();
 
   @internalProperty()
+  private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
+
+  @internalProperty()
+  private _nodes: Node[] = [];
+
+  @internalProperty()
   private _network?: Network;
+
+  @internalProperty()
+  private _filter?: string;
+
+  @internalProperty()
+  private _zoomedDeviceId?: string;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -91,6 +109,27 @@ export class ZHANetworkVisualizationPage extends LitElement {
           "ui.panel.config.zha.visualization.header"
         )}
       >
+        <div class="table-header">
+          <search-input
+            no-label-float
+            no-underline
+            @value-changed=${this._handleSearchChange}
+            .filter=${this._filter}
+            .label=${this.hass.localize(
+              "ui.panel.config.zha.visualization.highlight_label"
+            )}
+          >
+          </search-input>
+          <ha-device-picker
+            .hass=${this.hass}
+            .value=${this._zoomedDeviceId}
+            .label=${this.hass.localize(
+              "ui.panel.config.zha.visualization.zoom_label"
+            )}
+            .includeDomains="['zha']"
+            @value-changed=${this._zoomToDevice}
+          ></ha-device-picker>
+        </div>
         <div id="visualization"></div>
       </hass-subpage>
     `;
@@ -101,15 +140,18 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._devices = new Map(
       devices.map((device: ZHADevice) => [device.ieee, device])
     );
+    this._devicesByDeviceId = new Map(
+      devices.map((device: ZHADevice) => [device.device_reg_id, device])
+    );
     this._updateDevices(devices);
   }
 
   private _updateDevices(devices: ZHADevice[]) {
-    const nodes: Node[] = [];
+    this._nodes = [];
     const edges: Edge[] = [];
 
     devices.forEach((device) => {
-      nodes.push({
+      this._nodes.push({
         id: device.ieee,
         label: this._buildLabel(device),
         shape: this._getShape(device),
@@ -137,7 +179,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     });
 
-    this._network?.setData({ nodes: nodes, edges: edges });
+    this._network?.setData({ nodes: this._nodes, edges: edges });
   }
 
   private _getLQI(lqi: number): EdgeOptions["color"] {
@@ -181,7 +223,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     label += `<b>IEEE: </b>${device.ieee}`;
     label += `\n<b>Device Type: </b>${device.device_type.replace("_", " ")}`;
     if (device.nwk != null) {
-      label += `\n<b>NWK: </b>${device.nwk}`;
+      label += `\n<b>NWK: </b>${formatAsPaddedHex(device.nwk)}`;
     }
     if (device.manufacturer != null && device.model != null) {
       label += `\n<b>Device: </b>${device.manufacturer} ${device.model}`;
@@ -192,6 +234,56 @@ export class ZHANetworkVisualizationPage extends LitElement {
       label += "\n<b>Device is <i>Offline</i></b>";
     }
     return label;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+    const filterText = this._filter!.toLowerCase();
+    if (!this._network) {
+      return;
+    }
+    if (this._filter) {
+      const filteredNodeIds: (string | number)[] = [];
+      this._nodes.forEach((node) => {
+        if (node.label && node.label.toLowerCase().includes(filterText)) {
+          filteredNodeIds.push(node.id!);
+        }
+      });
+      this._zoomedDeviceId = "";
+      this._zoomOut();
+      this._network.selectNodes(filteredNodeIds, true);
+    } else {
+      this._network.unselectAll();
+    }
+  }
+
+  private _zoomToDevice(event: PolymerChangedEvent<string>) {
+    event.stopPropagation();
+    this._zoomedDeviceId = event.detail.value;
+    if (!this._network) {
+      return;
+    }
+    this._filter = "";
+    if (!this._zoomedDeviceId) {
+      this._zoomOut();
+    } else {
+      const device: ZHADevice | undefined = this._devicesByDeviceId.get(
+        this._zoomedDeviceId
+      );
+      if (device) {
+        this._network.fit({
+          nodes: [device.ieee],
+          animation: { duration: 500, easingFunction: "easeInQuad" },
+        });
+      }
+    }
+  }
+
+  private _zoomOut() {
+    this._network!.fit({
+      nodes: [],
+      animation: { duration: 500, easingFunction: "easeOutQuad" },
+    });
   }
 
   static get styles(): CSSResult[] {
@@ -207,6 +299,30 @@ export class ZHANetworkVisualizationPage extends LitElement {
           letter-spacing: var(--paper-font-display1_-_letter-spacing);
           line-height: var(--paper-font-display1_-_line-height);
           opacity: var(--dark-primary-opacity);
+        }
+        .table-header {
+          border-bottom: 1px solid --divider-color;
+          padding: 0 16px;
+          display: flex;
+          align-items: center;
+          height: var(--header-height);
+        }
+        .search-toolbar {
+          display: flex;
+          align-items: center;
+          color: var(--secondary-text-color);
+          padding: 0 16px;
+        }
+        search-input {
+          position: relative;
+          top: 2px;
+          flex: 1;
+        }
+        search-input.header {
+          left: -8px;
+        }
+        ha-device-picker {
+          flex: 1;
         }
       `,
     ];

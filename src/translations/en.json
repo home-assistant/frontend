@@ -2271,7 +2271,9 @@
           },
           "visualization": {
             "header": "Network Visualization",
-            "caption": "Visualization"
+            "caption": "Visualization",
+            "highlight_label": "Highlight Devices",
+            "zoom_label": "Zoom To Device"
           },
           "group_binding": {
             "header": "Group Binding",
