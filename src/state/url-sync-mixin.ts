@@ -56,6 +56,13 @@ export const urlSyncMixin = <
 
         private _popstateChangeListener = (ev: PopStateEvent) => {
           if (this._ignoreNextPopState) {
+            if (ev.state?.oldState) {
+              if (DEBUG) {
+                console.log("remove old state", ev.state.oldState);
+              }
+              history.back();
+              return;
+            }
             this._ignoreNextPopState = false;
             return;
           }

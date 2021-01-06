@@ -12,7 +12,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-circular-progress";
@@ -82,6 +82,7 @@ export class HuiDialogEditView extends LitElement {
     this._params = undefined;
     this._config = {};
     this._badges = [];
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private get _viewConfigTitle(): string {

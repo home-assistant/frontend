@@ -21,6 +21,7 @@ import {
   LovelaceConfig,
   fetchConfig,
 } from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {
@@ -45,6 +46,7 @@ export class HuiDialogSelectView extends LitElement {
 
   public closeDialog(): void {
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
