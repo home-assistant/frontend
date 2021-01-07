@@ -6,9 +6,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -20,10 +20,10 @@ import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
 import { domainToName } from "../../data/integration";
 import { HomeAssistant } from "../../types";
+import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { brandsUrl } from "../../util/brands-url";
 
 interface HandlerObj {
   name: string;

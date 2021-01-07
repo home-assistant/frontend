@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button";
-import "../../../components/ha-icon-button";
+import { mdiHelpCircle, mdiPlus } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -14,20 +14,20 @@ import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import { triggerScript } from "../../../data/script";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import "../../../components/ha-svg-icon";
-import { mdiPlus, mdiHelpCircle } from "@mdi/js";
-import { stateIcon } from "../../../common/entity/state_icon";
-import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {

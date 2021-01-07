@@ -2,28 +2,28 @@ import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "../../../components/ha-circular-progress";
 import {
+  css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
-  css,
 } from "lit-element";
-import "../../../components/ha-dialog";
-import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-dialog";
+import "../../../components/ha-expansion-panel";
 import {
   BlueprintImportResult,
   importBlueprint,
   saveBlueprint,
 } from "../../../data/blueprint";
-import "../../../components/ha-expansion-panel";
+import { haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {

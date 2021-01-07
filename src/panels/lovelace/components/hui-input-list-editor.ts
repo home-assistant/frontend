@@ -1,4 +1,3 @@
-import "../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -10,6 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-icon-button";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
 

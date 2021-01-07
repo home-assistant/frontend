@@ -1,4 +1,3 @@
-import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
@@ -25,6 +24,7 @@ import { LocalizeFunc } from "../../../common/translations/localize";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import {
   ConfigEntry,
@@ -60,6 +60,7 @@ import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../ha-panel-config";
 import "./ha-integration-card";
 import type {
@@ -67,7 +68,6 @@ import type {
   ConfigEntryUpdatedEvent,
   HaIntegrationCard,
 } from "./ha-integration-card";
-import { brandsUrl } from "../../../util/brands-url";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
   localized_title?: string;

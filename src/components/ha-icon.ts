@@ -1,28 +1,28 @@
 import "@polymer/iron-icon/iron-icon";
 import {
-  customElement,
-  LitElement,
-  property,
-  internalProperty,
-  PropertyValues,
-  html,
-  TemplateResult,
   css,
   CSSResult,
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import "./ha-svg-icon";
-import { customIconsets, CustomIcon } from "../data/custom_iconsets";
+import { fireEvent } from "../common/dom/fire_event";
+import { debounce } from "../common/util/debounce";
+import { CustomIcon, customIconsets } from "../data/custom_iconsets";
 import {
-  Chunks,
-  MDI_PREFIXES,
-  getIcon,
-  findIconChunk,
-  Icons,
   checkCacheVersion,
+  Chunks,
+  findIconChunk,
+  getIcon,
+  Icons,
+  MDI_PREFIXES,
   writeCache,
 } from "../data/iconsets";
-import { debounce } from "../common/util/debounce";
-import { fireEvent } from "../common/dom/fire_event";
+import "./ha-svg-icon";
 
 interface DeprecatedIcon {
   [key: string]: {

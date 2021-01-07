@@ -15,11 +15,11 @@ import {
   TemplateResult,
   unsafeCSS,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { HaImageCropperDialogParams } from "./show-image-cropper-dialog";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("image-cropper-dialog")
 export class HaImagecropperDialog extends LitElement {

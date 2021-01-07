@@ -1,4 +1,3 @@
-import "../../src/resources/compatibility";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
 import {
@@ -6,6 +5,7 @@ import {
   provideHass,
 } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
+import "../../src/resources/compatibility";
 import { HomeAssistant } from "../../src/types";
 import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockAuth } from "./stubs/auth";

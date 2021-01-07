@@ -1,21 +1,19 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  CSSResult,
-  css,
-  customElement,
-  TemplateResult,
-  html,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
 import { UNAVAILABLE } from "../data/entity";
 import { HomeAssistant } from "../types";
 import CoverEntity from "../util/cover-model";
-
 import "./ha-icon-button";
 
 @customElement("ha-cover-tilt-controls")

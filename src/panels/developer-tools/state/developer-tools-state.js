@@ -1,20 +1,20 @@
 import "@material/mwc-button";
+import { mdiInformationOutline } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
+import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-code-editor";
+import "../../../components/ha-svg-icon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
-import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { mdiInformationOutline } from "@mdi/js";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 const ERROR_SENTINEL = {};
 /*

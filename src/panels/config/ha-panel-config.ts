@@ -1,10 +1,31 @@
+import {
+  mdiAccount,
+  mdiBadgeAccountHorizontal,
+  mdiDevices,
+  mdiHomeAssistant,
+  mdiInformation,
+  mdiMapMarkerRadius,
+  mdiMathLog,
+  mdiNfcVariant,
+  mdiPalette,
+  mdiPaletteSwatch,
+  mdiPencil,
+  mdiPuzzle,
+  mdiRobot,
+  mdiScriptText,
+  mdiServer,
+  mdiShape,
+  mdiSofa,
+  mdiTools,
+  mdiViewDashboard,
+} from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { PolymerElement } from "@polymer/polymer";
 import {
   customElement,
-  property,
   internalProperty,
+  property,
   PropertyValues,
 } from "lit-element";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -14,27 +35,6 @@ import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../types";
-import {
-  mdiPuzzle,
-  mdiDevices,
-  mdiShape,
-  mdiSofa,
-  mdiRobot,
-  mdiPalette,
-  mdiScriptText,
-  mdiTools,
-  mdiViewDashboard,
-  mdiAccount,
-  mdiMapMarkerRadius,
-  mdiBadgeAccountHorizontal,
-  mdiHomeAssistant,
-  mdiServer,
-  mdiInformation,
-  mdiMathLog,
-  mdiPencil,
-  mdiNfcVariant,
-  mdiPaletteSwatch,
-} from "@mdi/js";
 
 declare global {
   // for fire event

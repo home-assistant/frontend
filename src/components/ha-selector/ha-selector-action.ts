@@ -6,10 +6,10 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { ActionSelector } from "../../data/selector";
 import { Action } from "../../data/script";
+import { ActionSelector } from "../../data/selector";
 import "../../panels/config/automation/action/ha-automation-action";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-action")
 export class HaActionSelector extends LitElement {

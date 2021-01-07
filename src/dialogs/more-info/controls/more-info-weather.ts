@@ -1,18 +1,3 @@
-import "../../../components/ha-svg-icon";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
-import { HomeAssistant } from "../../../types";
-
-import { getWind, getWeatherUnit } from "../../../data/weather";
-
 import {
   mdiAlertCircleOutline,
   mdiEye,
@@ -34,7 +19,20 @@ import {
   mdiWeatherWindy,
   mdiWeatherWindyVariant,
 } from "@mdi/js";
+import { HassEntity } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  LitElement,
+  property,
+  PropertyValues,
+} from "lit-element";
+import { html, TemplateResult } from "lit-html";
 import { formatNumber } from "../../../common/string/format_number";
+import "../../../components/ha-svg-icon";
+import { getWeatherUnit, getWind } from "../../../data/weather";
+import { HomeAssistant } from "../../../types";
 
 const weatherIcons = {
   "clear-night": mdiWeatherNight,

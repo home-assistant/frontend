@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -14,6 +14,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { applyPatch, getPath } from "../../../../common/util/patch";
 import "../../../../components/device/ha-area-devices-picker";
+import "../../../../components/entity/ha-entity-picker";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -28,7 +29,6 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import "../../../../components/entity/ha-entity-picker";
 import { Placeholder, PlaceholderContainer } from "./dialog-thingtalk";
 
 declare global {

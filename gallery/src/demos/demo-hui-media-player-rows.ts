@@ -1,7 +1,7 @@
 import {
+  customElement,
   html,
   LitElement,
-  customElement,
   PropertyValues,
   query,
   TemplateResult,
@@ -31,9 +31,9 @@ const CONFIGS = [
     - entity: media_player.android_cast
       name: Screen casting
     - entity: media_player.image_display
-      name: Digital Picture Frame  
+      name: Digital Picture Frame
     - entity: media_player.sonos_idle
-      name: Sonos Idle  
+      name: Sonos Idle
     - entity: media_player.idle_browse_media
       name: Idle waiting for Browse Media
     - entity: media_player.theater_off
@@ -43,7 +43,7 @@ const CONFIGS = [
     - entity: media_player.theater_off_static
       name: Player Off (cannot be switched on)
     - entity: media_player.theater_on_static
-      name: Player On (cannot be switched off)  
+      name: Player On (cannot be switched off)
     - entity: media_player.idle
       name: Player Idle
     - entity: media_player.playing

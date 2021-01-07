@@ -5,13 +5,15 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
+import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-service-description";
 import {
@@ -23,10 +25,8 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-area-picker";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("zha-device-pairing-status-card")
 class ZHADevicePairingStatusCard extends LitElement {

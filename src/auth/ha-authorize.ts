@@ -2,21 +2,21 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
 } from "lit-element";
+import punycode from "punycode";
+import { extractSearchParamsObject } from "../common/url/search-params";
 import {
   AuthProvider,
-  fetchAuthProviders,
   AuthUrlSearchParams,
+  fetchAuthProviders,
 } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
-import { extractSearchParamsObject } from "../common/url/search-params";
-import punycode from "punycode";
 
 import("./ha-pick-auth-provider");
 

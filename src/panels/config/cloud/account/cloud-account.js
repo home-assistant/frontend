@@ -4,13 +4,13 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
 import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../styles/polymer-ha-style";
 import "../../ha-config-section";
 import "./cloud-alexa-pref";

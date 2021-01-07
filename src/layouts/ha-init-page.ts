@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import { css, CSSResult, html, LitElement, property } from "lit-element";
-import { removeInitSkeleton } from "../util/init-skeleton";
 import "../components/ha-circular-progress";
+import { removeInitSkeleton } from "../util/init-skeleton";
 
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;

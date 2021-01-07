@@ -20,9 +20,9 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { supportsFeature } from "../common/entity/supports-feature";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
-import { supportsFeature } from "../common/entity/supports-feature";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_content_type?: any;

@@ -1,8 +1,8 @@
-import "./ha-circular-progress";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import LocalizeMixin from "../mixins/localize-mixin";
+import "./ha-circular-progress";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 

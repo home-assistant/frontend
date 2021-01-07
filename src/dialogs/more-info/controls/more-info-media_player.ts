@@ -27,6 +27,7 @@ import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
   computeMediaControls,
   MediaPickedEvent,
+  MediaPlayerEntity,
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_PLAY_MEDIA,
   SUPPORT_SELECT_SOUND_MODE,
@@ -34,7 +35,6 @@ import {
   SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
-  MediaPlayerEntity,
 } from "../../../data/media-player";
 import { HomeAssistant } from "../../../types";
 
