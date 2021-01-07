@@ -28,6 +28,7 @@ import {
 } from "../../../data/blueprint";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 
@@ -148,9 +149,11 @@ export class HaBlueprintAutomationEditor extends LitElement {
                   There is an error in this Blueprint: ${blueprint.error}
                 </p>`
               : html`${blueprint?.metadata.description
-                  ? html`<p class="card-content pre-line">
-                      ${blueprint.metadata.description}
-                    </p>`
+                  ? html`<ha-markdown
+                      class="card-content"
+                      breaks
+                      .content=${blueprint.metadata.description}
+                    ></ha-markdown>`
                   : ""}
                 ${blueprint?.metadata?.input &&
                 Object.keys(blueprint.metadata.input).length
@@ -266,9 +269,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
       css`
         .padding {
           padding: 16px;
-        }
-        .pre-line {
-          white-space: pre-line;
         }
         .blueprint-picker-container {
           padding: 16px;
