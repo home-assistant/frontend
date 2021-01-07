@@ -76,7 +76,7 @@ export class HuiDialogEditLovelace extends LitElement {
           ></hui-lovelace-editor
         ></paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <mwc-button @click="${this.closeDialog}"
+          <mwc-button @click=${this.closeDialog}
             >${this.hass!.localize("ui.common.cancel")}</mwc-button
           >
           <mwc-button
