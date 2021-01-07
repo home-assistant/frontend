@@ -20,7 +20,7 @@ import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
   type: string(),
-  entity: string(),
+  entity: optional(string()),
   name: optional(string()),
   theme: optional(string()),
 });

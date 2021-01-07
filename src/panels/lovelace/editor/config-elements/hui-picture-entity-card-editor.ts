@@ -28,7 +28,7 @@ import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
   type: string(),
-  entity: string(),
+  entity: optional(string()),
   image: optional(string()),
   name: optional(string()),
   camera_image: optional(string()),
