@@ -1,9 +1,13 @@
 import { customElement, property, UpdatingElement } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
+import type { HomeAssistant } from "../types";
+import { HuiTimestampDisplay } from "../panels/lovelace/components/hui-timestamp-display";
 
 @customElement("ha-markdown-element")
 class HaMarkdownElement extends UpdatingElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property() public content?;
 
   @property({ type: Boolean }) public allowSvg = false;
@@ -55,6 +59,8 @@ class HaMarkdownElement extends UpdatingElement {
         // Fire a resize event when images loaded to notify content resized
       } else if (node instanceof HTMLImageElement) {
         node.addEventListener("load", this._resize);
+      } else if (node instanceof HuiTimestampDisplay) {
+        node.hass = this.hass;
       }
     }
   }

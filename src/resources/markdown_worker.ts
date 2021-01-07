@@ -24,6 +24,7 @@ const renderMarkdown = (
       ...(getDefaultWhiteList() as WhiteList),
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
+      "hui-timestamp-display": ["ts", "format"],
     };
   }
 

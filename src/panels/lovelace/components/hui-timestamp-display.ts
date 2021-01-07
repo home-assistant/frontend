@@ -22,10 +22,10 @@ const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
 const INTERVAL_FORMAT = ["relative", "total"];
 
 @customElement("hui-timestamp-display")
-class HuiTimestampDisplay extends LitElement {
+export class HuiTimestampDisplay extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public ts?: Date;
+  @property() public ts?: string | Date;
 
   @property() public format?: TimestampRenderingFormats;
 
@@ -52,7 +52,9 @@ class HuiTimestampDisplay extends LitElement {
       return html``;
     }
 
-    if (isNaN(this.ts.getTime())) {
+    const tsDate = new Date(this.ts);
+
+    if (isNaN(tsDate.getTime())) {
       return html`${this.hass.localize(
         "ui.panel.lovelace.components.timestamp-display.invalid"
       )}`;
@@ -64,7 +66,7 @@ class HuiTimestampDisplay extends LitElement {
       return html` ${this._relative} `;
     }
     if (format in FORMATS) {
-      return html` ${FORMATS[format](this.ts, this.hass.language)} `;
+      return html`${FORMATS[format](tsDate, this.hass.language)}`;
     }
     return html`${this.hass.localize(
       "ui.panel.lovelace.components.timestamp-display.invalid_format"
@@ -107,9 +109,9 @@ class HuiTimestampDisplay extends LitElement {
     if (this.ts && this.hass!.localize) {
       this._relative =
         this._format === "relative"
-          ? relativeTime(this.ts, this.hass!.localize)
+          ? relativeTime(new Date(this.ts), this.hass!.localize)
           : (this._relative = relativeTime(new Date(), this.hass!.localize, {
-              compareTime: this.ts,
+              compareTime: new Date(this.ts),
               includeTense: false,
             }));
     }
