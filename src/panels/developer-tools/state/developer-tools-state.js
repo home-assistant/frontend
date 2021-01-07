@@ -460,7 +460,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   saveAttributeCheckboxState(ev) {
-    localStorage.setItem("devToolsShowAttributes", ev.target.checked);
+    try {
+      localStorage.setItem("devToolsShowAttributes", ev.target.checked);
+    } catch (e) {
+      // Catch for Safari private mode
+    }
   }
 
   _computeParsedStateAttributes(stateAttributes) {
