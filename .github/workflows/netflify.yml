@@ -9,9 +9,6 @@ jobs:
     name: Trigger netlify build preview
     runs-on: "ubuntu-latest"
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-
       - name: Trigger Cast build
         run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{secrets.NETLIFY_CAST}}
 
