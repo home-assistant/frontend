@@ -1,6 +1,6 @@
 // Compat needs to be first import
-import "../onboarding/ha-onboarding";
 import "../resources/compatibility";
+import "../onboarding/ha-onboarding";
 import "../resources/ha-style";
 import "../resources/roboto";
 import "../resources/safari-14-attachshadow-patch";
