@@ -96,7 +96,7 @@ class HassioSupervisorInfo extends LitElement {
               Version
             </span>
             <span slot="description">
-              ${this.supervisor.supervisor.version}
+              supervisor-${this.supervisor.supervisor.version}
             </span>
           </ha-settings-row>
           <ha-settings-row>
@@ -104,7 +104,7 @@ class HassioSupervisorInfo extends LitElement {
               Newest Version
             </span>
             <span slot="description">
-              ${this.supervisor.supervisor.version_latest}
+              supervisor-${this.supervisor.supervisor.version_latest}
             </span>
             ${this.supervisor.supervisor.update_available
               ? html`
