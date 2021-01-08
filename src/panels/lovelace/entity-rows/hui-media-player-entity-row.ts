@@ -82,7 +82,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     }
 
     const stateObj = this.hass.states[this._config.entity] as MediaPlayerEntity;
-    const state = stateObj.state;
 
     if (!stateObj) {
       return html`
@@ -91,6 +90,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         </hui-warning>
       `;
     }
+
+    const state = stateObj.state;
 
     const buttons = html`
       ${!this._narrow &&
