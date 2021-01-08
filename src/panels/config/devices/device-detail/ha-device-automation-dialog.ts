@@ -133,7 +133,7 @@ export class DialogDeviceAutomation extends LitElement {
                 "ui.panel.config.devices.automation.no_device_automations"
               )}
         </div>
-        <mwc-button slot="primaryAction" @click="${this.closeDialog}">
+        <mwc-button slot="primaryAction" @click=${this.closeDialog}>
           ${this.hass.localize("ui.common.close")}
         </mwc-button>
       </ha-dialog>
