@@ -18,17 +18,17 @@ import { HistoryResult } from "../data/history";
 class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public historyData!: HistoryResult;
+  @property({ attribute: false }) public historyData!: HistoryResult;
 
-  @property() public names = false;
+  @property({ type: Boolean }) public names = false;
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property() public upToNow = false;
+  @property({ type: Boolean }) public upToNow = false;
 
-  @property() public noSingle = false;
+  @property({ type: Boolean }) public noSingle = false;
 
-  @property() public isLoadingData = false;
+  @property({ type: Boolean }) public isLoadingData = false;
 
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "history")) {
@@ -49,7 +49,9 @@ class StateHistoryCharts extends LitElement {
       </div>`;
     }
 
-    const computedEndTime = this.upToNow ? new Date() : this.endTime || new Date();
+    const computedEndTime = this.upToNow
+      ? new Date()
+      : this.endTime || new Date();
 
     return html`
       ${this.historyData.timeline.length
@@ -90,7 +92,6 @@ class StateHistoryCharts extends LitElement {
         this.historyData.line.length === 0);
     return !this.isLoadingData && historyDataEmpty;
   }
-
 
   static get styles(): CSSResult {
     return css`
