@@ -87,6 +87,10 @@ export const showDialog = async (
   dialogElement.showDialog(dialogParams);
 };
 
+export const replaceDialog = () => {
+  history.replaceState({ ...history.state, replaced: true }, "");
+};
+
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
     return true;

@@ -36,6 +36,7 @@ import "./ha-more-info-logbook";
 import "./controls/more-info-default";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import "./more-info-content";
+import { replaceDialog } from "../make-dialog-manager";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
@@ -294,6 +295,7 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _gotoSettings() {
+    replaceDialog();
     showEntityEditorDialog(this, {
       entity_id: this._entityId!,
     });

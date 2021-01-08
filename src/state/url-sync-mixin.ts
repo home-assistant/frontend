@@ -56,7 +56,8 @@ export const urlSyncMixin = <
 
         private _popstateChangeListener = (ev: PopStateEvent) => {
           if (this._ignoreNextPopState) {
-            if (ev.state?.oldState) {
+            if (ev.state?.oldState?.replaced) {
+              // if the previous dialog was replaced, and the current dialog is closed, we should also remove the replaced dialog from history
               if (DEBUG) {
                 console.log("remove old state", ev.state.oldState);
               }
