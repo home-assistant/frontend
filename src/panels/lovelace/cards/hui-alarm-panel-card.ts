@@ -197,7 +197,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ? html``
           : html`
               <div id="keypad">
-                ${BUTTONS.map((value, index) => {
+                ${BUTTONS.map((value) => {
                   return value === ""
                     ? html` <mwc-button disabled></mwc-button> `
                     : html`
@@ -206,7 +206,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                           @click="${this._handlePadClick}"
                           outlined
                           class=${classMap({
-                            numberkey: index !== BUTTONS.length - 1, // exclude last key = "clear"
+                            numberkey: value !== "clear",
                           })}
                         >
                           ${value === "clear"
