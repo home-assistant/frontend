@@ -121,6 +121,10 @@ export const getRecentWithCache = (
 
   const curCacheProm = cache.prom;
 
+  // For accurate history display of an input_datetime we require the attributes
+  // => we need a complete response => minimalResponse = false
+  const minimalResponse = entityId.split(".")[0] !== "input_datetime";
+
   const genProm = async () => {
     let fetchedHistory: HassEntity[][];
 
@@ -132,7 +136,9 @@ export const getRecentWithCache = (
           entityId,
           toFetchStartTime,
           endTime,
-          appendingToCache
+          appendingToCache,
+          undefined,
+          minimalResponse
         ),
       ]);
       fetchedHistory = results[1];

@@ -30,34 +30,17 @@ export const computeStateDisplay = (
   if (domain === "input_datetime") {
     let date: Date;
     if (!stateObj.attributes.has_time) {
-      date = new Date(
-        stateObj.attributes.year,
-        stateObj.attributes.month - 1,
-        stateObj.attributes.day
-      );
+      date = new Date(compareState);
       return formatDate(date, language);
     }
     if (!stateObj.attributes.has_date) {
-      const now = new Date();
-      date = new Date(
-        // Due to bugs.chromium.org/p/chromium/issues/detail?id=797548
-        // don't use artificial 1970 year.
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDay(),
-        stateObj.attributes.hour,
-        stateObj.attributes.minute
-      );
+      const parts = compareState.split(":").map(Number);
+      date = new Date();
+      date.setHours(parts[0], parts[1], parts[2]);
       return formatTime(date, language);
     }
 
-    date = new Date(
-      stateObj.attributes.year,
-      stateObj.attributes.month - 1,
-      stateObj.attributes.day,
-      stateObj.attributes.hour,
-      stateObj.attributes.minute
-    );
+    date = new Date(compareState);
     return formatDateTime(date, language);
   }
 

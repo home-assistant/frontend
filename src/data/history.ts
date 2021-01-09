@@ -54,7 +54,7 @@ export interface HistoryResult {
 
 export const fetchRecent = (
   hass,
-  entityId,
+  entityId: string,
   startTime,
   endTime,
   skipInitialState = false,
@@ -86,13 +86,14 @@ export const fetchDate = (
   hass: HomeAssistant,
   startTime: Date,
   endTime: Date,
-  entityId
+  entityId: string,
+  minimalResponse = true
 ): Promise<HassEntity[][]> => {
   return hass.callApi(
     "GET",
-    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response${
-      entityId ? `&filter_entity_id=${entityId}` : ``
-    }`
+    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}${
+      minimalResponse ? "&minimal_response" : ""
+    }${entityId ? `&filter_entity_id=${entityId}` : ``}`
   );
 };
 

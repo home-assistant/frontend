@@ -172,11 +172,17 @@ class HaPanelHistory extends LitElement {
 
   private async _getHistory() {
     this._isLoading = true;
+
+    // For accurate history display of an input_datetime we require the attributes
+    // => we need a complete response => minimalResponse = false
+    const minimalResponse = this._entityId.split(".")[0] !== "input_datetime";
+
     const dateHistory = await fetchDate(
       this.hass,
       this._startDate,
       this._endDate,
-      this._entityId
+      this._entityId,
+      minimalResponse
     );
     this._stateHistory = computeHistory(
       this.hass,
