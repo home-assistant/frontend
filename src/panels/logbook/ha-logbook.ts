@@ -19,8 +19,8 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
-import "../../components/ha-icon";
 import "../../components/ha-relative-time";
+import "../../components/entity/state-badge";
 import { LogbookEntry } from "../../data/logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -111,7 +111,9 @@ class HaLogbook extends LitElement {
     }
 
     const previous = this.entries[index - 1];
-    const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
+    const stateObj = item.entity_id
+      ? this.hass.states[item.entity_id]
+      : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
 
@@ -133,16 +135,20 @@ class HaLogbook extends LitElement {
           <div class="icon-message">
             ${!this.noIcon
               ? html`
-                  <ha-icon
-                    .icon=${item.icon ??
+                  <state-badge
+                    .hass=${this.hass}
+                    .overrideIcon=${item.icon ??
                     domainIcon(
                       item.entity_id
                         ? computeDomain(item.entity_id)
                         : item.domain,
-                      state,
+                      stateObj,
                       item.state
                     )}
-                  ></ha-icon>
+                    .overrideImage=${stateObj?.attributes
+                      .entity_picture_local ||
+                    stateObj?.attributes.entity_picture}
+                  ></state-badge>
                 `
               : ""}
             <div class="message-relative_time">
@@ -295,7 +301,7 @@ class HaLogbook extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-icon {
+        state-badge {
           margin-right: 16px;
           flex-shrink: 0;
           color: var(--state-icon-color);
@@ -330,7 +336,7 @@ class HaLogbook extends LitElement {
           padding: 8px;
         }
 
-        .narrow .icon-message ha-icon {
+        .narrow .icon-message state-badge {
           margin-left: 0;
         }
       `,

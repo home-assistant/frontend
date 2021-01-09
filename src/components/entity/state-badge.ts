@@ -40,7 +40,8 @@ export class StateBadge extends LitElement {
   protected render(): TemplateResult {
     const stateObj = this.stateObj;
 
-    if (!stateObj) {
+    // We either need a `stateObj` or one override
+    if (!stateObj && !this.overrideIcon && !this.overrideImage) {
       return html`<div class="missing">
         <ha-icon icon="hass:alert"></ha-icon>
       </div>`;
@@ -50,7 +51,7 @@ export class StateBadge extends LitElement {
       return html``;
     }
 
-    const domain = computeStateDomain(stateObj);
+    const domain = stateObj ? computeStateDomain(stateObj) : undefined;
 
     return html`
       <ha-icon
@@ -60,14 +61,18 @@ export class StateBadge extends LitElement {
             ? domain
             : undefined
         )}
-        data-state=${computeActiveState(stateObj)}
-        .icon=${this.overrideIcon || stateIcon(stateObj)}
+        data-state=${stateObj ? computeActiveState(stateObj) : ""}
+        .icon=${this.overrideIcon || (stateObj ? stateIcon(stateObj) : "")}
       ></ha-icon>
     `;
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!changedProps.has("stateObj") || !this.stateObj) {
+    if (
+      !changedProps.has("stateObj") &&
+      !changedProps.has("overrideImage") &&
+      !changedProps.has("overrideIcon")
+    ) {
       return;
     }
     const stateObj = this.stateObj;
@@ -117,7 +122,15 @@ export class StateBadge extends LitElement {
           iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
         }
       }
+    } else if (this.overrideImage) {
+      let imageUrl = this.overrideImage;
+      if (this.hass) {
+        imageUrl = this.hass.hassUrl(imageUrl);
+      }
+      hostStyle.backgroundImage = `url(${imageUrl})`;
+      this._showIcon = false;
     }
+
     this._iconStyle = iconStyle;
     Object.assign(this.style, hostStyle);
   }
