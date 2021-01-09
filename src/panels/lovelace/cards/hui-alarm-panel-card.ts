@@ -197,7 +197,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ? html``
           : html`
               <div id="keypad">
-                ${BUTTONS.map((value) => {
+                ${BUTTONS.map((value, index) => {
                   return value === ""
                     ? html` <mwc-button disabled></mwc-button> `
                     : html`
@@ -205,6 +205,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                           .value="${value}"
                           @click="${this._handlePadClick}"
                           outlined
+                          class=${classMap({
+                            numberkey: index !== BUTTONS.length - 1, // exclude last key = "clear"
+                          })}
                         >
                           ${value === "clear"
                             ? this.hass!.localize(
@@ -344,7 +347,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
 
       #keypad mwc-button {
-        text-size: 20px;
         padding: 8px;
         width: 30%;
         box-sizing: border-box;
@@ -363,6 +365,10 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
       mwc-button#disarm {
         color: var(--error-color);
+      }
+
+      mwc-button.numberkey {
+        --mdc-typography-button-font-size: 22px;
       }
     `;
   }
