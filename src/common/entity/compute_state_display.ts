@@ -40,7 +40,9 @@ export const computeStateDisplay = (
       return formatTime(date, language);
     }
 
-    date = new Date(compareState);
+    // For datetime, we have to ensure that we have an ISO date with the
+    // "T" separator to prevent issues on iOS and macOS.
+    date = new Date(compareState.replace(" ", "T"));
     return formatDateTime(date, language);
   }
 
