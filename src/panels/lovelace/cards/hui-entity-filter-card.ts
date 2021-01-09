@@ -15,6 +15,15 @@ import {
 import { computeCardSize } from "../common/compute-card-size";
 
 class EntityFilterCard extends UpdatingElement implements LovelaceCard {
+  public static getStubConfig(): EntityFilterCardConfig {
+    return {
+      type: "entity-filter",
+      entities: [{ entity: "sun.sun" }],
+      state_filter: ["above_horizon"],
+      card: { type: "entities", title: "Sun up" },
+    };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public isPanel = false;
