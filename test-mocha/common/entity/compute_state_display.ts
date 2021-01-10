@@ -139,7 +139,7 @@ describe("computeStateDisplay", () => {
   it("Localizes input_datetime with full date time", () => {
     const stateObj: any = {
       entity_id: "input_datetime.test",
-      state: "123",
+      state: "2017-11-18 11:12:13",
       attributes: {
         has_date: true,
         has_time: true,
@@ -160,7 +160,7 @@ describe("computeStateDisplay", () => {
   it("Localizes input_datetime with date", () => {
     const stateObj: any = {
       entity_id: "input_datetime.test",
-      state: "123",
+      state: "2017-11-18",
       attributes: {
         has_date: true,
         has_time: false,
@@ -181,7 +181,7 @@ describe("computeStateDisplay", () => {
   it("Localizes input_datetime with time", () => {
     const stateObj: any = {
       entity_id: "input_datetime.test",
-      state: "123",
+      state: "11:12:13",
       attributes: {
         has_date: false,
         has_time: true,
