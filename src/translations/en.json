@@ -2564,6 +2564,7 @@
           "action-editor": {
             "navigation_path": "Navigation Path",
             "url_path": "URL Path",
+            "editor_multiple_actions": "Multiple actions can only be entered in the code editor",
             "editor_service_data": "Service data can only be entered in the code editor",
             "actions": {
               "default_action": "Default Action",
@@ -2572,7 +2573,8 @@
               "toggle": "Toggle",
               "navigate": "Navigate",
               "url": "URL",
-              "none": "No Action"
+              "none": "No Action",
+              "multiple": "Multiple actions"
             }
           },
           "card": {

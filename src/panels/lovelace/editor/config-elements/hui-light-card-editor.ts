@@ -82,6 +82,7 @@ export class HuiLightCardEditor extends LitElement
       "url",
       "call-service",
       "none",
+      "multiple",
     ];
 
     return html`

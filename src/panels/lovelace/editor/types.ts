@@ -98,6 +98,7 @@ export const actionConfigStruct = object({
   url_path: optional(string()),
   service: optional(string()),
   service_data: optional(object()),
+  actions: optional(array()),
 });
 
 const buttonEntitiesRowConfigStruct = object({

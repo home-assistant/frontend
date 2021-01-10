@@ -130,6 +130,15 @@ export class HuiActionEditor extends LitElement {
             </b>
           `
         : ""}
+      ${this.config?.action === "multiple"
+        ? html`
+            <b>
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.editor_multiple_actions"
+              )}
+            </b>
+          `
+        : ""}
     `;
   }
 

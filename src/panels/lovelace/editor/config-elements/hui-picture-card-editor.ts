@@ -60,7 +60,7 @@ export class HuiPictureCardEditor extends LitElement
       return html``;
     }
 
-    const actions = ["navigate", "url", "call-service", "none"];
+    const actions = ["navigate", "url", "call-service", "none", "multiple"];
 
     return html`
       <div class="card-config">

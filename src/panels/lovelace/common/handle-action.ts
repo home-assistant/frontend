@@ -40,69 +40,74 @@ export const handleAction = async (
     };
   }
 
-  if (
-    actionConfig.confirmation &&
-    (!actionConfig.confirmation.exemptions ||
-      !actionConfig.confirmation.exemptions.some(
-        (e) => e.user === hass!.user!.id
-      ))
-  ) {
-    forwardHaptic("warning");
+  const actionConfigs =
+    actionConfig.action === "multiple" ? actionConfig.actions : [actionConfig];
 
+  for await (actionConfig of actionConfigs) {
     if (
-      !(await showConfirmationDialog(node, {
-        text:
-          actionConfig.confirmation.text ||
-          hass.localize(
-            "ui.panel.lovelace.cards.action_confirmation",
-            "action",
-            actionConfig.action
-          ),
-      }))
+      actionConfig.confirmation &&
+      (!actionConfig.confirmation.exemptions ||
+        !actionConfig.confirmation.exemptions.some(
+          (e) => e.user === hass!.user!.id
+        ))
     ) {
-      return;
-    }
-  }
+      forwardHaptic("warning");
 
-  switch (actionConfig.action) {
-    case "more-info": {
-      if (config.entity || config.camera_image) {
-        fireEvent(node, "hass-more-info", {
-          entityId: config.entity ? config.entity : config.camera_image!,
-        });
-      }
-      break;
-    }
-    case "navigate":
-      if (actionConfig.navigation_path) {
-        navigate(node, actionConfig.navigation_path);
-      }
-      break;
-    case "url": {
-      if (actionConfig.url_path) {
-        window.open(actionConfig.url_path);
-      }
-      break;
-    }
-    case "toggle": {
-      if (config.entity) {
-        toggleEntity(hass, config.entity!);
-        forwardHaptic("light");
-      }
-      break;
-    }
-    case "call-service": {
-      if (!actionConfig.service) {
-        forwardHaptic("failure");
+      if (
+        !(await showConfirmationDialog(node, {
+          text:
+            actionConfig.confirmation.text ||
+            hass.localize(
+              "ui.panel.lovelace.cards.action_confirmation",
+              "action",
+              actionConfig.action
+            ),
+        }))
+      ) {
         return;
       }
-      const [domain, service] = actionConfig.service.split(".", 2);
-      hass.callService(domain, service, actionConfig.service_data);
-      forwardHaptic("light");
-      break;
     }
-    case "fire-dom-event": {
-      fireEvent(node, "ll-custom", actionConfig);
+
+    switch (actionConfig.action) {
+      case "more-info": {
+        if (config.entity || config.camera_image) {
+          fireEvent(node, "hass-more-info", {
+            entityId: config.entity ? config.entity : config.camera_image!,
+          });
+        }
+        break;
+      }
+      case "navigate":
+        if (actionConfig.navigation_path) {
+          navigate(node, actionConfig.navigation_path);
+        }
+        break;
+      case "url": {
+        if (actionConfig.url_path) {
+          window.open(actionConfig.url_path);
+        }
+        break;
+      }
+      case "toggle": {
+        if (config.entity) {
+          toggleEntity(hass, config.entity!);
+          forwardHaptic("light");
+        }
+        break;
+      }
+      case "call-service": {
+        if (!actionConfig.service) {
+          forwardHaptic("failure");
+          return;
+        }
+        const [domain, service] = actionConfig.service.split(".", 2);
+        hass.callService(domain, service, actionConfig.service_data);
+        forwardHaptic("light");
+        break;
+      }
+      case "fire-dom-event": {
+        fireEvent(node, "ll-custom", actionConfig);
+      }
     }
   }
 };

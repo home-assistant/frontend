@@ -46,6 +46,7 @@ const actions = [
   "url",
   "call-service",
   "none",
+  "multiple",
 ];
 
 @customElement("hui-button-card-editor")

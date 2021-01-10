@@ -108,7 +108,14 @@ export class HuiPictureGlanceCardEditor extends LitElement
       return html``;
     }
 
-    const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
+    const actions = [
+      "more-info",
+      "toggle",
+      "navigate",
+      "call-service",
+      "none",
+      "multiple",
+    ];
     const views = ["auto", "live"];
 
     return html`
