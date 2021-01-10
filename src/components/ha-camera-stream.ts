@@ -12,6 +12,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import {
   CameraEntity,
   CAMERA_SUPPORT_STREAM,
@@ -86,7 +87,7 @@ class HaCameraStream extends LitElement {
   private get _shouldRenderMJPEG() {
     return (
       this._forceMJPEG === this.stateObj!.entity_id ||
-      !this.hass!.config.components.includes("stream") ||
+      !isComponentLoaded(this.hass!, "stream") ||
       !supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
     );
   }

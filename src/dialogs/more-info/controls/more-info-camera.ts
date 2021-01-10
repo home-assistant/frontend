@@ -11,6 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-camera-stream";
 import {
   CameraPreferences,
@@ -81,7 +82,7 @@ class MoreInfoCamera extends LitElement {
 
     if (
       curEntityId &&
-      this.hass!.config.components.includes("stream") &&
+      isComponentLoaded(this.hass!, "stream") &&
       supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
     ) {
       // Fetch in background while we set up the video.
