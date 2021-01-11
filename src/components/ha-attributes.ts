@@ -126,7 +126,7 @@ class HaAttributes extends LitElement {
         // If invalid URL, exception will be raised
         const url = new URL(value);
         if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a href="${value}">${value}</a>`;
+          return html`<a target="_blank" rel="noreferrer" href="${value}">${value}</a>`;
       } catch (_) {
         // Nothing to do here
       }
