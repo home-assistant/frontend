@@ -31,3 +31,46 @@ jobs:
         run: |
           yarn install
           script/build_frontend
+          python3 setup.py sdist
+
+  wheels-init:
+    name: Init wheels build
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate requirements.txt
+        run: |
+          # Sleep to give pypi time to populate the new version across mirrors
+          sleep 240
+          version="20200"
+          echo "home-assistant-frontend==$version" > ./requirements.txt
+
+      - name: Upload requirements.txt
+        uses: actions/upload-artifact@v2
+        with:
+          name: requirements
+          path: ./requirements.txt
+
+  build-wheels:
+    name: Build wheels for ${{ matrix.arch }}
+    needs: wheels-init
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
+    steps:
+      - name: Download requirements.txt
+        uses: actions/download-artifact@v2
+        with:
+          name: requirements
+
+      - name: Build wheels
+        uses: home-assistant/wheels@master
+        with:
+          tag: ${{ env.WHEELS_TAG }}
+          arch: ${{ matrix.arch }}
+          test: True
+          wheels-host: ${{ secrets.WHEELS_HOST }}
+          wheels-key: "lorem ipsum"
+          wheels-user: wheels
+          requirements: "requirements.txt"
