@@ -1,0 +1,33 @@
+name: test build time
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+env:
+  PYTHON_VERSION: 3.7
+  NODE_VERSION: 12.1
+
+jobs:
+  test:
+    name: test the build time
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Build package
+        run: |
+          yarn install
+          script/build_frontend
