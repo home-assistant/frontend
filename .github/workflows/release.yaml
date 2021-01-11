@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+env:
+  WHEELS_TAG: 3.7-alpine3.11
+  PYTHON_VERSION: 3.7
+  NODE_VERSION: 12.1
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Build and release package
+        run: |
+          export TWINE_USERNAME="__token__"
+          export TWINE_PASSWORD="${{ secrets.TWINE_TOKEN }}"
+
+          script/release
+
+  wheels-init:
+    name: Init wheels build
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate requirements.txt
+        run: |
+          # Sleep to give pypi time to populate the new version across mirrors
+          sleep 240
+          version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
+          echo "home-assistant-frontend==$version" > ./requirements.txt
+
+      - name: Upload requirements.txt
+        uses: actions/upload-artifact@v2
+        with:
+          name: requirements
+          path: ./requirements.txt
+
+  build-wheels:
+    name: Build wheels for ${{ matrix.arch }}
+    needs: wheels-init
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
+    steps:
+      - name: Download requirements.txt
+        uses: actions/download-artifact@v2
+        with:
+          name: requirements
+
+      - name: Build wheels
+        uses: home-assistant/wheels@master
+        with:
+          tag: ${{ env.WHEELS_TAG }}
+          arch: ${{ matrix.arch }}
+          wheels-host: ${{ secrets.WHEELS_HOST }}
+          wheels-key: ${{ secrets.WHEELS_KEY }}
+          wheels-user: wheels
+          requirements: "requirements.txt"
