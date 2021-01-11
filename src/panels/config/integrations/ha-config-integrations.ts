@@ -338,7 +338,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         />
                       </div>
                       <h2>
-                        ${item.localized_domain_name}
+                        ${// In 2020.2 we added support for item.title. All ignored entries before
+                        // that have title "Ignored" so we fallback to localized domain name.
+                        item.title === "Ignored"
+                          ? item.localized_domain_name
+                          : item.title}
                       </h2>
                       <mwc-button
                         @click=${this._removeIgnoredIntegration}
@@ -571,7 +575,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (!confirmed) {
       return;
     }
-    await ignoreConfigFlow(this.hass, flow.flow_id);
+    await ignoreConfigFlow(
+      this.hass,
+      flow.flow_id,
+      localizeConfigFlowTitle(this.hass.localize, flow)
+    );
     this._loadConfigEntries();
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
   }
