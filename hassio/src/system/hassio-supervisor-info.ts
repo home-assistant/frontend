@@ -326,6 +326,18 @@ class HassioSupervisorInfo extends LitElement {
     const button = ev.currentTarget as any;
     button.progress = true;
 
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Restart the Supervisor",
+      text: "Are you sure you want to restart the Supervisor",
+      confirmText: "restart",
+      dismissText: "cancel",
+    });
+
+    if (!confirmed) {
+      button.progress = false;
+      return;
+    }
+
     try {
       await restartSupervisor(this.hass);
     } catch (err) {
