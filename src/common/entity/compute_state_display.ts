@@ -30,7 +30,11 @@ export const computeStateDisplay = (
   if (domain === "input_datetime") {
     let date: Date;
     if (!stateObj.attributes.has_time) {
-      date = new Date(compareState);
+      const parts = compareState.split("-").map(Number);
+      date = new Date();
+      date.setFullYear(parts[0]);
+      date.setMonth(parts[1]);
+      date.setDate(parts[2]);
       return formatDate(date, language);
     }
     if (!stateObj.attributes.has_date) {
@@ -40,7 +44,7 @@ export const computeStateDisplay = (
       return formatTime(date, language);
     }
 
-    // For datetime, we have to ensure that we have an ISO date with the
+    // For datetime, we have to ensure that we have an ISO string with the
     // "T" separator to prevent issues on iOS and macOS.
     date = new Date(compareState.replace(" ", "T"));
     return formatDateTime(date, language);
