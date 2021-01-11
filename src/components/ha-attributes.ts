@@ -121,12 +121,14 @@ class HaAttributes extends LitElement {
       return html` <pre>${until(yaml, "")}</pre> `;
     }
     // URL handling
-    if ((value as string).startsWith("http")) {
+    if (!Array.isArray(value) && (value as string).startsWith("http")) {
       try {
         // If invalid URL, exception will be raised
         const url = new URL(value);
         if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a target="_blank" rel="noreferrer" href="${value}">${value}</a>`;
+          return html`<a target="_blank" rel="noreferrer" href="${value}"
+            >${value}</a
+          >`;
       } catch (_) {
         // Nothing to do here
       }
