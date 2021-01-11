@@ -121,7 +121,7 @@ class HaAttributes extends LitElement {
       return html` <pre>${until(yaml, "")}</pre> `;
     }
     // URL handling
-    if (!Array.isArray(value) && (value as string).startsWith("http")) {
+    if (typeof value === "string" && value.startsWith("http")) {
       try {
         // If invalid URL, exception will be raised
         const url = new URL(value);
