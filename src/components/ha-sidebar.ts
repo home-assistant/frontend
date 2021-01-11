@@ -772,9 +772,9 @@ class HaSidebar extends LitElement {
           border-bottom: 1px solid transparent;
           white-space: nowrap;
           font-weight: 400;
-          color: var(--primary-text-color);
+          color: var(--sidebar-menu-button-text-color, --primary-text-color);
           border-bottom: 1px solid var(--divider-color);
-          background-color: var(--primary-background-color);
+          background-color: var(--sidebar-menu-button-background-color, --primary-background-color);
           font-size: 20px;
           align-items: center;
           padding-left: calc(4px + env(safe-area-inset-left));
