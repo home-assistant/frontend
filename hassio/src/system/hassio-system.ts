@@ -41,18 +41,18 @@ class HassioSystem extends LitElement {
         <span slot="header">System</span>
         <div class="content">
           <div class="card-group">
-            <hassio-host-info
-              .hass=${this.hass}
-              .supervisor=${this.supervisor}
-            ></hassio-host-info>
-            <hassio-supervisor-info
-              .hass=${this.hass}
-              .supervisor=${this.supervisor}
-            ></hassio-supervisor-info>
             <hassio-core-info
               .hass=${this.hass}
               .supervisor=${this.supervisor}
             ></hassio-core-info>
+            <hassio-supervisor-info
+              .hass=${this.hass}
+              .supervisor=${this.supervisor}
+            ></hassio-supervisor-info>
+            <hassio-host-info
+              .hass=${this.hass}
+              .supervisor=${this.supervisor}
+            ></hassio-host-info>
           </div>
           <hassio-supervisor-log .hass=${this.hass}></hassio-supervisor-log>
         </div>
