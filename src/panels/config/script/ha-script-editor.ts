@@ -660,9 +660,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
       },
       (errors) => {
-        this._errors = errors.body.message;
+        this._errors = errors.body.message || errors.body;
         showToast(this, {
-          message: errors.body.message,
+          message: errors.body.message || errors.body,
         });
         throw errors;
       }
