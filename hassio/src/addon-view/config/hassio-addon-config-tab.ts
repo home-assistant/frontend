@@ -33,33 +33,34 @@ class HassioAddonConfigDashboard extends LitElement {
 
     return html`
       <div class="content">
-        ${hasOptions || hasSchema
+        ${hasOptions || hasSchema || this.addon.network || this.addon.audio
           ? html`
-              <hassio-addon-config
-                .hass=${this.hass}
-                .addon=${this.addon}
-              ></hassio-addon-config>
+              ${hasOptions || hasSchema
+                ? html`
+                    <hassio-addon-config
+                      .hass=${this.hass}
+                      .addon=${this.addon}
+                    ></hassio-addon-config>
+                  `
+                : ""}
+              ${this.addon.network
+                ? html`
+                    <hassio-addon-network
+                      .hass=${this.hass}
+                      .addon=${this.addon}
+                    ></hassio-addon-network>
+                  `
+                : ""}
+              ${this.addon.audio
+                ? html`
+                    <hassio-addon-audio
+                      .hass=${this.hass}
+                      .addon=${this.addon}
+                    ></hassio-addon-audio>
+                  `
+                : ""}
             `
-          : ""}
-        ${this.addon.network
-          ? html`
-              <hassio-addon-network
-                .hass=${this.hass}
-                .addon=${this.addon}
-              ></hassio-addon-network>
-            `
-          : ""}
-        ${this.addon.audio
-          ? html`
-              <hassio-addon-audio
-                .hass=${this.hass}
-                .addon=${this.addon}
-              ></hassio-addon-audio>
-            `
-          : ""}
-        ${!hasOptions && !hasSchema && !this.addon.network && !this.addon.audio
-          ? "This add-on does not expose configuration for you to mess with.... 👋"
-          : ""}
+          : "This add-on does not expose configuration for you to mess with.... 👋"}
       </div>
     `;
   }
