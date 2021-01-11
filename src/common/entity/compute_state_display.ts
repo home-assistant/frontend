@@ -33,7 +33,7 @@ export const computeStateDisplay = (
       const parts = compareState.split("-").map(Number);
       date = new Date();
       date.setFullYear(parts[0]);
-      date.setMonth(parts[1]);
+      date.setMonth(parts[1] - 1);
       date.setDate(parts[2]);
       return formatDate(date, language);
     }
