@@ -124,6 +124,18 @@ class HassioCoreInfo extends LitElement {
     const button = ev.currentTarget as any;
     button.progress = true;
 
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Restart Home Assistant Core",
+      text: "Are you sure you want to restart Home Assistant Core",
+      confirmText: "restart",
+      dismissText: "cancel",
+    });
+
+    if (!confirmed) {
+      button.progress = false;
+      return;
+    }
+
     try {
       await restartCore(this.hass);
     } catch (err) {
