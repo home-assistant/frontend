@@ -192,8 +192,10 @@ class HassioAddonStore extends LitElement {
 
   private async _loadData() {
     try {
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      const supervisor = await fetchHassioSupervisorInfo(this.hass);
+      const [addonsInfo, supervisor] = await Promise.all([
+        fetchHassioAddonsInfo(this.hass),
+        fetchHassioSupervisorInfo(this.hass),
+      ]);
       fireEvent(this, "supervisor-update", { supervisor });
       this._repos = addonsInfo.repositories;
       this._repos.sort(sortRepos);
