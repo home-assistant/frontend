@@ -105,7 +105,7 @@ class HassioCoreInfo extends LitElement {
             @click=${this._coreRestart}
             title="Restart Home Assistant Core"
           >
-            Core Restart
+            Restart Core
           </ha-progress-button>
         </div>
       </ha-card>

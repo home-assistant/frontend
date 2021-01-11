@@ -170,7 +170,7 @@ class HassioHostInfo extends LitElement {
                   class="warning"
                   @click=${this._hostReboot}
                 >
-                  Host Reboot
+                  Reboot Host
                 </ha-progress-button>
               `
             : ""}
@@ -181,7 +181,7 @@ class HassioHostInfo extends LitElement {
                   class="warning"
                   @click=${this._hostShutdown}
                 >
-                  Host Shutdown
+                  Shutdown Host
                 </ha-progress-button>
               `
             : ""}

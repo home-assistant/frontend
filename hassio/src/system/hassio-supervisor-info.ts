@@ -230,14 +230,14 @@ class HassioSupervisorInfo extends LitElement {
             @click=${this._supervisorReload}
             title="Reload parts of the Supervisor"
           >
-            Supervisor Reload
+            Reload Supervisor
           </ha-progress-button>
           <ha-progress-button
             class="warning"
             @click=${this._supervisorRestart}
             title="Restart the Supervisor"
           >
-            Supervisor Restart
+            Restart Supervisor
           </ha-progress-button>
         </div>
       </ha-card>
