@@ -25,8 +25,8 @@ jobs:
 
       - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v2
-          with:
-            node-version: ${{ env.NODE_VERSION }}
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Build and release package
         run: |
