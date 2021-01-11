@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
 import { atLeastVersion } from "../../../src/common/config/version";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/common/search/search-input";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-svg-icon";
@@ -22,6 +23,7 @@ import {
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import { fetchHassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -191,6 +193,8 @@ class HassioAddonStore extends LitElement {
   private async _loadData() {
     try {
       const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+      const supervisor = await fetchHassioSupervisorInfo(this.hass);
+      fireEvent(this, "supervisor-update", { supervisor });
       this._repos = addonsInfo.repositories;
       this._repos.sort(sortRepos);
       this._addons = addonsInfo.addons;
