@@ -12,9 +12,6 @@ export const stateCardType = (hass: HomeAssistant, stateObj: HassEntity) => {
 
   const domain = computeStateDomain(stateObj);
 
-  if (domain === "number") {
-    return "input_number";
-  }
   if (DOMAINS_WITH_CARD.includes(domain)) {
     return domain;
   }
