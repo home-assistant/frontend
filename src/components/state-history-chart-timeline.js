@@ -81,6 +81,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       unavailable: "#a0a0a0",
       unknown: "#606060",
       idle: 2,
+      ok: 1,
     };
     let stateHistory = this.data;
 
