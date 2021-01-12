@@ -2,11 +2,13 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Config Girişi",
+            "device": "Cihaz",
             "integration": "Entegrasyon",
             "user": "Kullanıcı"
         }
     },
     "groups": {
+        "owner": "Sahibi",
         "system-admin": "Yöneticiler",
         "system-read-only": "Salt Okunur Kullanıcılar",
         "system-users": "Kullanıcılar"
@@ -545,6 +547,8 @@
                 "add_new": "Yeni alan ekle…",
                 "area": "Alan",
                 "clear": "Temizle",
+                "no_areas": "Hiç alanınız yok",
+                "no_match": "Eşleşen alan bulunamadı",
                 "show_areas": "Alanları göster"
             },
             "blueprint-picker": {
@@ -565,6 +569,8 @@
                 "clear": "Temiz",
                 "device": "Cihaz",
                 "no_area": "Alan Yok",
+                "no_devices": "Hiç cihazınız yok",
+                "no_match": "Eşleşen cihaz bulunamadı",
                 "show_devices": "Cihazları göster",
                 "toggle": "Geçiş"
             },
@@ -576,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Temizle",
                     "entity": "Varlık",
+                    "no_match": "Eşleşen varlık bulunamadı",
                     "show_entities": "Varlıkları göster"
                 }
             },
@@ -709,6 +716,16 @@
             "service-picker": {
                 "service": "Servis"
             },
+            "target-picker": {
+                "add_area_id": "Alanı seç",
+                "add_device_id": "Cihazı seç",
+                "add_entity_id": "Varlığı seç",
+                "expand_area_id": "Bu alanı içerdiği ayrı cihazlarda ve varlıklarda genişletin. Genişletme sonrası, alan değiştiğinde cihazları ve varlıkları güncellemeyecektir.",
+                "expand_device_id": "Bu cihazı ayrı varlıklarda genişletin. Genişletme sonrası, cihaz değiştiğinde varlıklar güncellenmeyecektir.",
+                "remove_area_id": "Alanı kaldır",
+                "remove_device_id": "Cihazı kaldır",
+                "remove_entity_id": "Varlığı kaldır"
+            },
             "user-picker": {
                 "add_user": "Kullanıcı Ekle",
                 "no_user": "Kullanıcı yok",
@@ -732,6 +749,7 @@
                 "editor": {
                     "confirm_delete": "Bu girişi silmek istediğinizden emin misiniz?",
                     "delete": "Sil",
+                    "device_disabled": "Bu varlığın ait olduğu cihaz devre dışı.",
                     "enabled_cause": "{cause} tarafından devre dışı bırakılmış.",
                     "enabled_delay_confirm": "Etkinleştirilen varlıklar, {delay} saniye içinde Home Assistant'a eklenecek",
                     "enabled_description": "Devre dışı bırakılan varlıklar Home Assistant'a eklenmeyecek.",
@@ -742,6 +760,7 @@
                     "icon_error": "Simgeler 'önek: simge adı' biçiminde olmalıdır, örneğin 'mdi: home'",
                     "name": "Ad",
                     "note": "Not: Bu, tüm entegrasyonlarda henüz çalışmayabilir.",
+                    "open_device_settings": "Cihaz ayarlarını aç",
                     "unavailable": "Bu varlık şu anda kullanılamıyor.",
                     "update": "Güncelle"
                 },
@@ -1029,7 +1048,7 @@
                         "confirmation_text": "Bu alana ait tüm cihazlar atanmamış olur.",
                         "confirmation_title": "Bu alanı silmek istediğinizden emin misiniz?"
                     },
-                    "description": "Evinizdeki tüm alanlara genel bakış.",
+                    "description": "Cihazları ve varlıkları alanlar halinde gruplayın",
                     "editor": {
                         "area_id": "Alan Kimliği",
                         "create": "Oluştur",
@@ -1051,7 +1070,7 @@
                 },
                 "automation": {
                     "caption": "Otomasyon",
-                    "description": "Otomasyonları oluşturun ve düzenleyin",
+                    "description": "Eviniz için özel davranış kuralları oluşturun",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Bir taslak kullanın"
@@ -1398,12 +1417,16 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "topluluk forumları",
                         "error_no_url": "Lütfen taslağın URL'sini girin.",
-                        "header": "Yeni taslak ekle",
+                        "file_name": "Taslak Yolu",
+                        "header": "Taslağı içeri aktar",
                         "import_btn": "Taslağı içe aktar",
-                        "import_header": "{name} ( {domain} ) içe aktar",
+                        "import_header": "Taslak \"{name}\"",
                         "import_introduction": "Diğer kullanıcıların taslaklarını Github'dan ve topluluk forumlarından içe aktarabilirsiniz. Taslağın URL'sini aşağıya girin.",
+                        "import_introduction_link": "Diğer kullanıcıların taslaklarını Github ve {community_link} den içe aktarabilirsiniz. Planın URL'sini aşağıya girin.",
                         "importing": "Taslak içe aktarılıyor...",
+                        "raw_blueprint": "Taslak içeriği",
                         "save_btn": "Taslağı kaydet",
                         "saving": "Taslak kaydediliyor...",
                         "unsupported_blueprint": "Bu taslak desteklenmiyor",
@@ -1414,13 +1437,18 @@
                     "overview": {
                         "add_blueprint": "Taslak ekle",
                         "confirm_delete_header": "Bu taslak silinsin mi?",
-                        "confirm_delete_text": "Bu taslağı silmek istediğinizden emin misiniz",
+                        "confirm_delete_text": "Bu taslağı silmek istediğinizden emin misiniz?",
+                        "delete_blueprint": "Taslağı sil",
+                        "discover_more": "Daha Fazla Taslak Keşfedin",
                         "header": "Taslak Düzenleyici",
                         "headers": {
+                            "domain": "Alan adı",
+                            "file_name": "Dosya adı",
                             "name": "Ad"
                         },
                         "introduction": "Taslak düzenleyici, taslakları oluşturmanıza ve düzenlemenize olanak tanır.",
-                        "learn_more": "Taslaklar hakkında daha fazla bilgi edinin"
+                        "learn_more": "Taslaklar hakkında daha fazla bilgi edinin",
+                        "use_blueprint": "Otomasyon oluşturun"
                     }
                 },
                 "cloud": {
@@ -1503,7 +1531,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Evden uzakta kontrol edin, Alexa ve Google Asistan ile entegre edin.",
+                    "description_features": "Dışarıdayken evi kontrol edin ve Alexa ve Google Assistant ile entegre edin",
                     "description_login": "{email} olarak oturum açtınız",
                     "description_not_login": "Oturum açmadınız",
                     "dialog_certificate": {
@@ -1598,7 +1626,7 @@
                 },
                 "core": {
                     "caption": "Genel",
-                    "description": "Home Assistant yapılandırmanızı değiştirin",
+                    "description": "Birim sistemi, konum, saat dilimi ve diğer genel parametreler",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1660,6 +1688,7 @@
                             "unknown_condition": "Bilinmeyen durum"
                         },
                         "create": "Cihazla otomasyon oluşturun",
+                        "create_disable": "Devre dışı bırakılan cihazla otomasyon oluşturulamaz",
                         "no_automations": "Otomasyon yok",
                         "no_device_automations": "Bu cihaz için kullanılabilir otomasyon yok.",
                         "triggers": {
@@ -1685,9 +1714,18 @@
                         "no_devices": "Cihaz yok"
                     },
                     "delete": "Sil",
-                    "description": "Bağlı cihazları yönet",
+                    "description": "Yapılandırılmış aygıtları yönetme",
                     "device_info": "Cihaz bilgisi",
                     "device_not_found": "Cihaz bulunamadı.",
+                    "disabled": "Devre dışı",
+                    "disabled_by": {
+                        "config_entry": "Yapılandırma Girişi",
+                        "integration": "Entegrasyon",
+                        "user": "Kullanıcı"
+                    },
+                    "enabled_cause": "Cihaz {cause} tarafından devre dışı bırakıldı.",
+                    "enabled_description": "Devre dışı bırakılan cihazlar gösterilmeyecek ve cihaza ait varlıklar devre dışı bırakılacak ve Home Assistant'a eklenmeyecek.",
+                    "enabled_label": "Cihazı etkinleştir",
                     "entities": {
                         "add_entities_lovelace": "Tüm cihaz varlıklarını Lovelace kullanıcı arayüzüne ekle",
                         "disabled_entities": "+{count} {count, plural,\n  one {engelli varlık}\n  other {engelli varlıklar}\n}",
@@ -1697,14 +1735,25 @@
                     },
                     "name": "Ad",
                     "no_devices": "Cihaz yok",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtre",
+                            "hidden_devices": "{number} gizli {number, plural,\n  one {device}\n  other {devices}\n}",
+                            "show_all": "Tümünü göster",
+                            "show_disabled": "Devre dışı bırakılan aygıtları göster"
+                        },
+                        "search": "Cihazları ara"
+                    },
                     "scene": {
                         "create": "Aygıtla sahne oluşturma",
+                        "create_disable": "Devre dışı bırakılmış aygıtla sahne oluşturulamaz",
                         "no_scenes": "Sahne yok",
                         "scenes": "Sahneler"
                     },
                     "scenes": "Sahneler",
                     "script": {
                         "create": "Aygıtla sahne oluşturma",
+                        "create_disable": "Devre dışı bırakılmış cihazla komut dosyası oluşturulamaz",
                         "no_scripts": "Komut dosyası yok",
                         "scripts": "Komut dosyaları"
                     },
@@ -1737,6 +1786,7 @@
                         },
                         "header": "Varlıklar",
                         "headers": {
+                            "area": "Alan",
                             "entity_id": "Varlık kimliği",
                             "integration": "Entegrasyon",
                             "name": "Ad",
@@ -1769,7 +1819,7 @@
                 "header": "Home Assistant'ı yapılandır",
                 "helpers": {
                     "caption": "Yardımcılar",
-                    "description": "Otomasyon oluşturmaya yardımcı olan öğeleri yönetin",
+                    "description": "Otomasyon oluşturmaya yardımcı olan öğeler",
                     "dialog": {
                         "add_helper": "Yardımcı ekle",
                         "add_platform": "{platform} ekle",
@@ -1992,7 +2042,7 @@
                             "open": "Açık"
                         }
                     },
-                    "description": "Lovelace kontrol panellerinizi yapılandırın",
+                    "description": "Evinizi kontrol etmek için özelleştirilmiş kart setleri oluşturun",
                     "resources": {
                         "cant_edit_yaml": "Lovelace'ı YAML modunda kullanıyorsunuz, bu nedenle kaynaklarınızı kullanıcı arayüzü üzerinden yönetemezsiniz. Onları configuration.yaml dosyasında yönetin.",
                         "caption": "Kaynaklar",
@@ -2191,7 +2241,7 @@
                 "scene": {
                     "activated": "Etkin sahne {name} .",
                     "caption": "Sahneler",
-                    "description": "Sahneler oluşturun ve düzenleyin",
+                    "description": "Aygıt durumlarını yakalayın ve daha sonra kolayca geri çağırın",
                     "editor": {
                         "default_name": "Yeni Sahne",
                         "devices": {
@@ -2235,7 +2285,7 @@
                 },
                 "script": {
                     "caption": "Senaryo",
-                    "description": "Senaryoları oluşturun ve düzenleyin",
+                    "description": "Bir dizi eylemi gerçekleştirin",
                     "editor": {
                         "alias": "Ad",
                         "default_name": "Yeni Senaryo",
@@ -2334,7 +2384,7 @@
                             "check_config": "Yapılandırmayı kontrol et",
                             "heading": "Yapılandırma doğrulaması",
                             "introduction": "Yapılandırmanızda yakın bir zamanda değişiklikler yaptıysanız ve tümünün geçerli olduğundan emin olmak istiyorsanız yapılandırmanızı doğrulayın",
-                            "invalid": "Yapılandırma geçerli!",
+                            "invalid": "Yapılandırma geçersiz",
                             "valid": "Yapılandırma geçerli!"
                         }
                     }
@@ -2381,10 +2431,11 @@
                         "username": "Kullanıcı Adı"
                     },
                     "caption": "Kullanıcılar",
-                    "description": "Kullanıcıları yönet",
+                    "description": "Home Assistant kullanıcı hesaplarını yönetin",
                     "editor": {
                         "activate_user": "Kullanıcıyı etkinleştir",
                         "active": "Aktif",
+                        "active_tooltip": "Kullanıcının oturum açıp açamayacağını kontrol eder",
                         "admin": "Yönetici",
                         "caption": "Kullanıcıyı görüntüle",
                         "change_password": "Parolayı değiştir",
@@ -2393,7 +2444,7 @@
                         "delete_user": "Kullanıcıyı sil",
                         "group": "grup",
                         "id": "İD",
-                        "name": "Ad",
+                        "name": "Ekran adı",
                         "new_password": "Yeni Parola",
                         "owner": "Sahibi",
                         "password_changed": "Parola başarıyla değiştirildi",
@@ -2401,19 +2452,24 @@
                         "system_generated_users_not_editable": "Sistem tarafından oluşturulan kullanıcılar güncellenemiyor.",
                         "system_generated_users_not_removable": "Sistem tarafından oluşturulan kullanıcılar kaldırılamıyor.",
                         "unnamed_user": "Adsız Kullanıcı",
-                        "update_user": "Güncelle"
+                        "update_user": "Güncelle",
+                        "username": "Kullanıcı Adı"
                     },
                     "picker": {
                         "add_user": "Kullanıcı Ekle",
                         "headers": {
                             "group": "Grup",
-                            "name": "Ad",
-                            "system": "Sistem"
+                            "is_active": "Etkin",
+                            "is_owner": "Sahibi",
+                            "name": "Ekran adı",
+                            "system": "Sistem tarafından oluşturuldu",
+                            "username": "Kullanıcı Adı"
                         }
                     },
                     "users_privileges_note": "Kullanıcı grubu özelliği devam eden bir çalışmadır. Kullanıcı örneği Kullanıcı Arabirimi üzerinden yönetemez. Yöneticilere erişimi doğru şekilde sınırlandırdığından emin olmak için tüm yönetim API uç noktalarını denetlemeye devam ediyoruz."
                 },
                 "zha": {
+                    "add_device": "Cihaz Ekle",
                     "add_device_page": {
                         "discovered_text": "Cihazlar keşfedildikten sonra burada görünecektir.",
                         "discovery_text": "Keşfedilen cihazlar burada görünecektir. Cihaz (lar) ınız için talimatları izleyin ve cihazları eşleştirme moduna getirin.",
@@ -2459,6 +2515,16 @@
                         "value": "Değer"
                     },
                     "description": "Zigbee Ev Otomasyonu ağ yönetimi",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Yapılandırma Tamamlandı",
+                        "CONFIGURED_status_text": "Başlatılıyor",
+                        "INITIALIZED": "Başlatma Tamamlandı",
+                        "INITIALIZED_status_text": "Cihaz kullanıma hazır",
+                        "INTERVIEW_COMPLETE": "Görüşme Tamamlandı",
+                        "INTERVIEW_COMPLETE_status_text": "Yapılandırılıyor",
+                        "PAIRED": "Cihaz Bulundu",
+                        "PAIRED_status_text": "Görüşme Başlatılıyor"
+                    },
                     "devices": {
                         "header": "Zigbee Ev Otomasyonu - Cihaz"
                     },
@@ -2474,6 +2540,7 @@
                         "unbind_button_label": "Grubu Çöz"
                     },
                     "groups": {
+                        "add_group": "Grup Ekle",
                         "add_members": "Üye ekle",
                         "adding_members": "Üye Ekleme",
                         "caption": "Gruplar",
@@ -2516,7 +2583,11 @@
                         "hint_wakeup": "Xiaomi sensörleri gibi bazı cihazlarda, onlarla etkileşime girerken cihazları uyanık tutan ~ 5 saniyelik aralıklarla basabileceğiniz bir uyanma düğmesi bulunur.",
                         "introduction": "Tek bir cihazı etkileyen ZHA komutlarını çalıştırın. Kullanılabilir komutların listesini görmek için bir cihaz seçin."
                     },
-                    "title": "Zigbee Ev Otomasyonu"
+                    "title": "Zigbee Ev Otomasyonu",
+                    "visualization": {
+                        "caption": "Görselleştirme",
+                        "header": "Ağ Görselleştirme"
+                    }
                 },
                 "zone": {
                     "add_zone": "Bölge Ekle",
@@ -3383,10 +3454,13 @@
                 "change_password": {
                     "confirm_new_password": "Yeni Parolayı Onaylayın",
                     "current_password": "Güncel Parola",
+                    "error_new_is_old": "Yeni parola geçerli paroladan farklı olmalıdır",
+                    "error_new_mismatch": "Girilen yeni parola değerleri eşleşmiyor",
                     "error_required": "Gerekli",
                     "header": "Parolayı Değiştir",
                     "new_password": "Yeni Parola",
-                    "submit": "Gönder"
+                    "submit": "Gönder",
+                    "success": "Parola başarıyla değiştirildi"
                 },
                 "current_user": "{fullName} olarak giriş yaptınız.",
                 "customize_sidebar": {

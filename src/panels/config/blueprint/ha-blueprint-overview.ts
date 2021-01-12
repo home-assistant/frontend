@@ -1,6 +1,6 @@
 import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
-import { mdiPlus, mdiHelpCircle, mdiDelete, mdiRobot } from "@mdi/js";
+import { mdiHelpCircle, mdiDelete, mdiRobot, mdiDownload } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -112,7 +112,6 @@ class HaBlueprintOverview extends LitElement {
       create: {
         title: "",
         type: narrow ? "icon-button" : undefined,
-        width: narrow ? undefined : "180px",
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
@@ -126,8 +125,9 @@ class HaBlueprintOverview extends LitElement {
                   "ui.panel.config.blueprint.overview.use_blueprint"
                 )}
                 @click=${(ev) => this._createNew(ev)}
-                ><ha-svg-icon .path=${mdiRobot}></ha-svg-icon
-              ></mwc-icon-button>`
+              >
+                <ha-svg-icon .path=${mdiRobot}></ha-svg-icon>
+              </mwc-icon-button>`
             : html`<mwc-button
                 .blueprint=${blueprint}
                 @click=${(ev) => this._createNew(ev)}
@@ -170,6 +170,23 @@ class HaBlueprintOverview extends LitElement {
           "ui.panel.config.blueprint.overview.no_blueprints"
         )}
         hasFab
+        .appendRow=${html` <div
+          class="mdc-data-table__cell"
+          style="width: 100%; text-align: center;"
+          role="cell"
+        >
+          <a
+            href="https://www.home-assistant.io/get-blueprints"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.blueprint.overview.discover_more"
+              )}</mwc-button
+            >
+          </a>
+        </div>`}
       >
         <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
@@ -182,7 +199,7 @@ class HaBlueprintOverview extends LitElement {
           extended
           @click=${this._addBlueprint}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
@@ -195,7 +212,10 @@ class HaBlueprintOverview extends LitElement {
         ${this.hass.localize("ui.panel.config.blueprint.overview.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/blueprint/editor/")}"
+            href="${documentationUrl(
+              this.hass,
+              "/docs/automation/using_blueprints/"
+            )}"
             target="_blank"
             rel="noreferrer"
           >

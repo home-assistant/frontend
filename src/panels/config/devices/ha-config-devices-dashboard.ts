@@ -1,5 +1,6 @@
-import { mdiPlus, mdiFilterVariant } from "@mdi/js";
+import { mdiPlus, mdiFilterVariant, mdiCancel } from "@mdi/js";
 import "@material/mwc-list/mwc-list-item";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
@@ -188,9 +189,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           ),
           model: device.model || "<unknown>",
           manufacturer: device.manufacturer || "<unknown>",
-          area: device.area_id
-            ? areaLookup[device.area_id].name
-            : this.hass.localize("ui.panel.config.devices.data_table.no_area"),
+          area: device.area_id ? areaLookup[device.area_id].name : undefined,
           integration: device.config_entries.length
             ? device.config_entries
                 .filter((entId) => entId in entryLookup)
@@ -214,11 +213,13 @@ export class HaConfigDeviceDashboard extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer => {
+    (narrow: boolean, showDisabled: boolean): DataTableColumnContainer => {
       const columns: DataTableColumnContainer = narrow
         ? {
             name: {
-              title: "Device",
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.device"
+              ),
               sortable: true,
               filterable: true,
               direction: "asc",
@@ -304,6 +305,24 @@ export class HaConfigDeviceDashboard extends LitElement {
             : html` - `;
         },
       };
+      if (showDisabled) {
+        columns.disabled_by = {
+          title: "",
+          type: "icon",
+          template: (disabled_by) =>
+            disabled_by
+              ? html`<div
+                  tabindex="0"
+                  style="display:inline-block; position: relative;"
+                >
+                  <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
+                  <paper-tooltip animation-delay="0" position="left">
+                    ${this.hass.localize("ui.panel.config.devices.disabled")}
+                  </paper-tooltip>
+                </div>`
+              : "",
+        };
+      }
       return columns;
     }
   );
@@ -448,7 +467,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           : "/config"}
         .tabs=${configSections.integrations}
         .route=${this.route}
-        .columns=${this._columns(this.narrow)}
+        .columns=${this._columns(this.narrow, this._showDisabled)}
         .data=${devicesOutput}
         .filter=${this._filter}
         @row-click=${this._handleRowClicked}

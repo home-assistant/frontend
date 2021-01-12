@@ -30,6 +30,7 @@ import {
   subscribeAreaRegistry,
 } from "../data/area_registry";
 import {
+  computeDeviceName,
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../data/device_registry";
@@ -135,7 +136,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           return this._renderChip(
             "device_id",
             device_id,
-            device?.name || device_id,
+            device ? computeDeviceName(device, this.hass) : device_id,
             undefined,
             mdiDevices
           );
@@ -268,7 +269,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               >
                 <ha-svg-icon .path=${mdiUnfoldMoreVertical}></ha-svg-icon>
               </mwc-icon-button>
-              <paper-tooltip animation-delay="0"
+              <paper-tooltip class="expand" animation-delay="0"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
                 )}</paper-tooltip
@@ -435,10 +436,19 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     type: string,
     id: string
   ): this["value"] {
-    return {
-      ...value,
-      [type]: ensureArray(value![type])!.filter((val) => val !== id),
-    };
+    const newVal = ensureArray(value![type])!.filter((val) => val !== id);
+    if (newVal.length) {
+      return {
+        ...value,
+        [type]: newVal,
+      };
+    }
+    const val = { ...value }!;
+    delete val[type];
+    if (Object.keys(val).length) {
+      return val;
+    }
+    return undefined;
   }
 
   private _deviceMeetsFilter(device: DeviceRegistryEntry): boolean {
@@ -581,7 +591,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .mdc-chip:hover {
         z-index: 5;
       }
-      paper-tooltip {
+      paper-tooltip.expand {
         min-width: 200px;
       }
     `;

@@ -21,7 +21,7 @@
         "map": "Քարտեզ",
         "profile": "Անձնագիր",
         "shopping_list": "Գնումների ցուցակ",
-        "states": "Գլխավոր"
+        "states": "Ակնարկ"
     },
     "state_attributes": {
         "climate": {
@@ -89,7 +89,7 @@
             "disarmed": "Զինաթափված",
             "disarming": "Զինաթափող",
             "pending": "Սպասում",
-            "triggered": "պատճառը"
+            "triggered": "Գործարկել է"
         },
         "automation": {
             "off": "Անջատած",
@@ -207,7 +207,7 @@
         },
         "default": {
             "unavailable": "Անհասանելի",
-            "unknown": "հայտնի չէ"
+            "unknown": "Անհայտ"
         },
         "device_tracker": {
             "not_home": "Հեռու"
@@ -480,6 +480,9 @@
             },
             "service-picker": {
                 "service": "Ծառայություն"
+            },
+            "target-picker": {
+                "add_entity_id": "Ընտրեք սուբյեկտ"
             }
         },
         "dialogs": {
@@ -487,6 +490,11 @@
                 "enable_new_entities_description": "Եթե անջատված է, նոր հայտնաբերված օբյեկտները ավտոմատ կերպով չեն ավելացվի Home Assistant-ին:",
                 "enable_new_entities_label": "Միացնել նոր ավելացված օբյեկտները:",
                 "title": "Համակարգի Պարամետրերը"
+            },
+            "entity_registry": {
+                "editor": {
+                    "open_device_settings": "Բացել սարքի կարգավորումները"
+                }
             },
             "more_info_control": {
                 "script": {
@@ -796,6 +804,33 @@
                         "introduction": "Կսմթել յուրաքանչյուր անձի հատկանիշները: Անհապաղ գործողության մեջ կավելացվեն / խմբագրված փոփոխությունները: Հեռացված կարգավորումները ուժի մեջ են մտնում սուբյեկտի թարմացման դեպքում:"
                     }
                 },
+                "devices": {
+                    "automation": {
+                        "create_disable": "Հնարավոր չէ ստեղծել ավտոմատացում անջատված սարքով"
+                    },
+                    "disabled": "Անջատված",
+                    "disabled_by": {
+                        "config_entry": "Կարգավորման կետ",
+                        "integration": "Ինտեգրում",
+                        "user": "Օգտատեր"
+                    },
+                    "enabled_cause": "Անջատված է {cause}-ի կողմից",
+                    "enabled_label": "Միացնել սարքը",
+                    "picker": {
+                        "filter": {
+                            "filter": "Ֆիլտր",
+                            "show_all": "Ցույց տալ ամբողջը",
+                            "show_disabled": "Ցուցադրել ապաակտիվացված սարքերը"
+                        },
+                        "search": "Որոնել սարքեր"
+                    },
+                    "scene": {
+                        "create_disable": "Հնարավոր չէ սցենար ստեղծել անջատված սարքով"
+                    },
+                    "script": {
+                        "create_disable": "Անջատված սարքով հնարավոր չէ ստեղծել սկրիպտ"
+                    }
+                },
                 "entities": {
                     "caption": "Անշարժ գույքի ռեգիստր",
                     "description": "Բոլոր հայտնի սուբյեկտների ակնարկ:",
@@ -899,6 +934,7 @@
                     "description": "Կառավարեք օգտվողներին",
                     "editor": {
                         "activate_user": "Ակտիվացրեք օգտագործողին",
+                        "active_tooltip": "Վերահսկում է, եթե օգտագործողը կարող է մուտք գործել",
                         "caption": "Տեսնել օգտագործողին",
                         "change_password": "Փոխել գաղտնաբառը",
                         "deactivate_user": "Ապաակտիվացնել օգտագործողին",
@@ -1247,10 +1283,13 @@
                 "change_password": {
                     "confirm_new_password": "Հաստատեք նոր գաղտնաբառ",
                     "current_password": "Ընթացիկ գաղտնաբառ",
+                    "error_new_is_old": "Նոր գաղտնաբառը պետք է տարբերվի ներկայիս գաղտնաբառից",
+                    "error_new_mismatch": "Գաղտնաբառերը չեն համընկնում",
                     "error_required": "Պահանջվում է",
                     "header": "Փոխել գաղտնաբառը",
                     "new_password": "Նոր գաղտնաբառը",
-                    "submit": "Ներկայացնել"
+                    "submit": "Ներկայացնել",
+                    "success": "Գաղտնաբառը հաջողությամբ փոխվեց"
                 },
                 "current_user": "Դուք մուտք եք գործել որպես {fullName} :",
                 "force_narrow": {

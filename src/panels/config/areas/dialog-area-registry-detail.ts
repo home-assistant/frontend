@@ -17,6 +17,7 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
+import { navigate } from "../../../common/navigate";
 
 class DialogAreaDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -154,6 +155,8 @@ class DialogAreaDetail extends LitElement {
     } finally {
       this._submitting = false;
     }
+
+    navigate(this, "/config/areas/dashboard");
   }
 
   static get styles(): CSSResult[] {

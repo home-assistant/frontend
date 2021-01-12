@@ -32,6 +32,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { showToast } from "../../../util/toast";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import {
   AutomationConfig,
   AutomationEntity,
@@ -394,9 +395,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return cleanConfig;
   }
 
-  private async _copyYaml() {
+  private async _copyYaml(): Promise<void> {
     if (this._editor?.yaml) {
-      navigator.clipboard.writeText(this._editor.yaml);
+      await copyToClipboard(this._editor.yaml);
+      showToast(this, {
+        message: this.hass.localize("ui.common.copied_clipboard"),
+      });
     }
   }
 

@@ -1,6 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  html,
+  LitElement,
+  customElement,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -121,26 +126,21 @@ const CONFIGS = [
   },
 ];
 
-class DemoPicGlance extends PolymerElement {
-  static get template() {
-    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
+@customElement("demo-hui-picture-glance-card")
+class DemoPictureGlance extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-    };
-  }
-
-  public ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
   }
 }
 
-customElements.define("demo-hui-picture-glance-card", DemoPicGlance);
+customElements.define("demo-hui-picture-glance-card", DemoPictureGlance);

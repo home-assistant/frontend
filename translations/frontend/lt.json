@@ -1,5 +1,11 @@
 {
+    "config_entry": {
+        "disabled_by": {
+            "device": "Įrenginys"
+        }
+    },
     "groups": {
+        "owner": "Savininkas",
         "system-admin": "Administratoriai",
         "system-read-only": "Tik skaitymo privilegija",
         "system-users": "Vartotojai"
@@ -290,8 +296,24 @@
             "save": "Išsaugoti"
         },
         "components": {
+            "area-picker": {
+                "no_areas": "Neturite jokių sričių",
+                "no_match": "Nerasta atitinkančių sričių"
+            },
+            "blueprint-picker": {
+                "add_user": "Pridėti vartotoją",
+                "remove_user": "Pašalinti vartotoją",
+                "select_blueprint": "Pasirinkite techninį planą"
+            },
             "device-picker": {
-                "device": "Įrenginys"
+                "device": "Įrenginys",
+                "no_devices": "Neturite jokių įrenginių",
+                "no_match": "Nerasta atitinkančių įrenginių"
+            },
+            "entity": {
+                "entity-picker": {
+                    "no_match": "Nerasta atitinkančių objektų"
+                }
             },
             "logbook": {
                 "by_service": "pagal paslaugą",
@@ -331,6 +353,14 @@
                 },
                 "past": "prieš {time}"
             },
+            "target-picker": {
+                "add_area_id": "Pasirinkite sritį",
+                "add_device_id": "Pasirinkite įrenginį",
+                "add_entity_id": "Pasirinkite objektą",
+                "remove_area_id": "Pašalinti sritį",
+                "remove_device_id": "Pašalinti įrenginį",
+                "remove_entity_id": "Pašalinti objektą"
+            },
             "user-picker": {
                 "add_user": "Pridėti naudotoją",
                 "no_user": "Nėra vartotojo",
@@ -339,6 +369,10 @@
         },
         "dialogs": {
             "entity_registry": {
+                "editor": {
+                    "device_disabled": "Šio objekto įrenginys išjungtas.",
+                    "open_device_settings": "Atidaryti įrenginio nustatymus"
+                },
                 "faq": "dokumentacija"
             },
             "helper_settings": {
@@ -369,6 +403,31 @@
                 }
             },
             "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "areas": "Sritys",
+                        "automation": "Automatizacijos",
+                        "blueprint": "Techniniai planai",
+                        "core": "Bendra",
+                        "customize": "Tinkinimas",
+                        "devices": "Įrenginiai",
+                        "entities": "Objectai",
+                        "helpers": "Pagelbikliai",
+                        "info": "Informacija",
+                        "integrations": "Integracijos",
+                        "logs": "Įvykių žurnalai",
+                        "lovelace": "Lovelace ataskaitų sritis",
+                        "navigate_to": "Pereiti į {panel}",
+                        "navigate_to_config": "Pereiti į {panel} konfigūraciją",
+                        "person": "Žmonės",
+                        "scene": "Scenos",
+                        "script": "Skriptai",
+                        "server_control": "Serverio valdikliai",
+                        "tags": "Žymės",
+                        "users": "Vartotojai",
+                        "zone": "Zonos"
+                    }
+                },
                 "filter_placeholder": "Objekto filtras"
             }
         },
@@ -414,6 +473,20 @@
                     }
                 },
                 "automation": {
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Naudoti techninį planą"
+                        },
+                        "header": "Kurti naują automatizavimą",
+                        "how": "Kaip norite sukurti naują automatizavimą?",
+                        "start_empty": "Pradėkite nuo tuščios automatizacijos",
+                        "thingtalk": {
+                            "create": "Sukurti",
+                            "header": "Apibūdinkite automatizaciją, kurią norite sukurti",
+                            "input_label": "Ką turėtų atlikti šis automatizavimas?",
+                            "intro": "Ir mes pasistengsime jį jums sukurti. Pavyzdžiui: išeidami išjunkite šviesas."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Pridėti veiksmą",
@@ -435,6 +508,14 @@
                                     "label": "Laukti"
                                 }
                             }
+                        },
+                        "blueprint": {
+                            "blueprint_to_use": "Naudotini techniniai planai",
+                            "header": "Techninis planas",
+                            "inputs": "Įvestys",
+                            "manage_blueprints": "Tvarkyti techninius planus",
+                            "no_blueprints": "Neturite jokių techninių planų.",
+                            "no_inputs": "Šis techninis planas neturi jokių įvesčių."
                         },
                         "conditions": {
                             "delete": "Ištrinti",
@@ -544,6 +625,39 @@
                         "learn_more": "Sužinokite daugiau apie automatizavimą"
                     }
                 },
+                "blueprint": {
+                    "add": {
+                        "error_no_url": "Įveskite techninio plano universalųjį adresą (URL).",
+                        "file_name": "Kelias iki techninio plano",
+                        "header": "Importuoti techninį planą",
+                        "import_btn": "Peržiūrėti techninį planą",
+                        "import_header": "\"{Name}\" techninis planas",
+                        "import_introduction": "Galite importuoti kitų vartotojų techninius planus iš Github ir bendruomenės forumų. Žemiau įveskite projekto universalųjį adresą (URL).",
+                        "importing": "Įkeliamas techninis planas...",
+                        "raw_blueprint": "Techninio plano turinys",
+                        "save_btn": "Importuoti techninį planą",
+                        "saving": "Importuojamas techninis planas...",
+                        "unsupported_blueprint": "Šis techninis planas nepalaikomas",
+                        "url": "Techninio plano universalusis adresas (URL)"
+                    },
+                    "caption": "Techniniai planai",
+                    "description": "Tvarkyti techninius planus",
+                    "overview": {
+                        "add_blueprint": "Importuoti techninius planus",
+                        "confirm_delete_header": "Ištrinti šį techninį planą?",
+                        "confirm_delete_text": "Ar tikrai norite ištrinti šį techninį planą?",
+                        "delete_blueprint": "Ištrinti techninį planą",
+                        "header": "Techninių planų rengyklė",
+                        "headers": {
+                            "domain": "Domenas",
+                            "file_name": "Failo vardas",
+                            "name": "Pavadinimas"
+                        },
+                        "introduction": "Techninio plano konfigūracija leidžia importuoti ir valdyti jūsų techninius planus.",
+                        "learn_more": "Sužinokite daugiau apie techninių planų naudojimą",
+                        "use_blueprint": "Sukurti automatizavimą"
+                    }
+                },
                 "cloud": {
                     "account": {
                         "connected": "Prisijungęs",
@@ -570,6 +684,7 @@
                             "no_conditions": "Nėra sąlygų",
                             "unknown_condition": "Nežinoma sąlyga"
                         },
+                        "create_disable": "Negalima sukurti automatizavimo su išjungtu įrenginiu",
                         "triggers": {
                             "no_triggers": "Nėra paleidiklių",
                             "unknown_trigger": "Nežinomas paleidiklis"
@@ -581,7 +696,31 @@
                         "device": "Įrenginys",
                         "model": "Modelis"
                     },
-                    "description": "Tvarkyti prijungtus įrenginius"
+                    "description": "Tvarkyti prijungtus įrenginius",
+                    "disabled": "Išjungta",
+                    "disabled_by": {
+                        "config_entry": "Konfigūracijos įrašas",
+                        "integration": "Integracija",
+                        "user": "Vartotojas"
+                    },
+                    "enabled_cause": "Įrenginį išjungė {cause}.",
+                    "enabled_description": "Išjungti įrenginiai nebus rodomi, o įrenginiui priklausantys objektai bus išjungti ir nepridedami į Home Assistant.",
+                    "enabled_label": "Įgalinti įrenginį",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtras",
+                            "hidden_devices": "{number} paslėptas (-i) {number, plural,\n  one {įrenginys}\n  other {įrenginiai}\n}",
+                            "show_all": "Rodyti viską",
+                            "show_disabled": "Rodyti išjungtus įrenginius"
+                        },
+                        "search": "Ieškoti įrenginių"
+                    },
+                    "scene": {
+                        "create_disable": "Negalima sukurti scenos su išjungtu įrenginiu"
+                    },
+                    "script": {
+                        "create_disable": "Negalima sukurti skripto su išjungtu įrenginiu"
+                    }
                 },
                 "entities": {
                     "caption": "Subjektų registras",
@@ -591,6 +730,9 @@
                             "show_all": "Rodyti viską"
                         },
                         "header": "Subjektų registras",
+                        "headers": {
+                            "area": "Sritis"
+                        },
                         "introduction2": "Naudokite subjekto registrą, kad perrašytumėte pavadinimą, pakeiskite subjekto ID arba pašalintumėte įrašą iš namų asistento. Atminkite, kad pašalindami registro įrašą tai nepanaikins pačio subjekto. Norėdami tai padaryti, sekite toliau pateiktą nuorodą ir pašalinkite ją iš integracijos puslapio."
                     }
                 },
@@ -599,6 +741,27 @@
                     "types": {
                         "counter": "Skaitiklis",
                         "timer": "Laikmatis"
+                    }
+                },
+                "info": {
+                    "copy_github": "GitHub'ui",
+                    "copy_raw": "Neapdorotas tekstas",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa įgalinta",
+                                "google_enabled": "Google įgalinta",
+                                "logged_in": "Prisijungė",
+                                "remote_connected": "Nuotolinis prijungtas",
+                                "remote_enabled": "Nuotolinis įgalintas",
+                                "subscription_expiration": "Prenumeratos galiojimo laikas"
+                            },
+                            "lovelace": {
+                                "dashboards": "Ataskaitų sritys",
+                                "mode": "Režimas",
+                                "resources": "Ištekliai"
+                            }
+                        }
                     }
                 },
                 "integrations": {
@@ -657,6 +820,8 @@
                         "save_script": "Įrašyti scenarijų"
                     },
                     "picker": {
+                        "duplicate": "Dubliuoti",
+                        "duplicate_script": "Dubliuoti skriptą",
                         "run_script": "Vykdyti scenarijų"
                     }
                 },
@@ -676,16 +841,42 @@
                         "username": "Vartotojo vardas"
                     },
                     "editor": {
-                        "caption": "Peržiūrėti vartotoją"
+                        "active_tooltip": "Tikrina, ar vartotojas gali prisijungti",
+                        "caption": "Peržiūrėti vartotoją",
+                        "username": "Vartotojo vardas"
+                    },
+                    "picker": {
+                        "add_user": "Pridėti vartotoją",
+                        "headers": {
+                            "is_active": "Aktyvus",
+                            "is_owner": "Savininkas",
+                            "username": "Vartotojo vardas"
+                        }
                     }
                 },
                 "zha": {
+                    "add_device": "Pridėti įrenginį",
                     "add_device_page": {
                         "discovery_text": "Čia bus rodomi atrasti įrenginiai. Vadovaukitės jūsų įtaiso instrukcijomis ir nustatykite jį suporavimo režimui.",
                         "header": "„Zigbee“ namų automatika - pridėti įrenginių",
                         "spinner": "Ieškoma ZHA Zigbee įrenginių..."
                     },
-                    "description": "„Zigbee Home Automation“ tinklo valdymas"
+                    "description": "„Zigbee Home Automation“ tinklo valdymas",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfigūracija baigta",
+                        "CONFIGURED_status_text": "Inicijuojama",
+                        "INITIALIZED": "Inicijavimas baigtas",
+                        "INITIALIZED_status_text": "Įrenginys paruoštas naudoti",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigūruojama",
+                        "PAIRED": "Rastas įrenginys"
+                    },
+                    "groups": {
+                        "add_group": "Pridėti grupę"
+                    },
+                    "visualization": {
+                        "caption": "Vizualizacija",
+                        "header": "Tinklo vizualizacija"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -710,6 +901,8 @@
                         "title": "Paslaugos"
                     },
                     "states": {
+                        "last_changed": "Pakeista",
+                        "last_updated": "Atnaujinta",
                         "title": "Būsenos"
                     },
                     "templates": {
@@ -769,13 +962,27 @@
                                 "position": "Padėtis",
                                 "tilt-position": "Pakreipimo padėtis"
                             }
+                        },
+                        "logbook": {
+                            "description": "Veiksmų žurnalo kortelėje rodomas įvykių sąrašas.",
+                            "name": "Veiksmų žurnalas"
+                        },
+                        "picture-glance": {
+                            "state_entity": "Būsenos objektas"
                         }
+                    },
+                    "common": {
+                        "add": "Pridėti",
+                        "clear": "Išvalyti",
+                        "edit": "Redaguoti",
+                        "none": "Nė vienas"
                     },
                     "edit_badges": {
                         "panel_mode": "Šie ženkleliai nebus rodomi, nes šis rodinys yra „Skydelio režime“."
                     },
                     "edit_card": {
                         "add": "Pridėti kortelę",
+                        "clear": "Išvalyti",
                         "delete": "Ištrinti",
                         "edit": "Redaguoti",
                         "move": "Perkelti",
@@ -795,6 +1002,22 @@
                         "move_right": "Perkelti rodinį į dešinę"
                     },
                     "header": "Redaguoti UI",
+                    "header-footer": {
+                        "choose_header_footer": "Pasirinkite {type}",
+                        "footer": "Poraštė",
+                        "header": "Antraštė",
+                        "types": {
+                            "buttons": {
+                                "name": "Mygtukai"
+                            },
+                            "graph": {
+                                "name": "Diagrama"
+                            },
+                            "picture": {
+                                "name": "Paveikslėlis"
+                            }
+                        }
+                    },
                     "menu": {
                         "raw_editor": "Konfigūracijos redaktorius"
                     },
@@ -817,6 +1040,13 @@
                         "header": "Valdykite savo „Lovelace“ vartotojo sąsają",
                         "para_sure": "Ar tikrai norite kontroliuoti savo vartotojo sąsają?",
                         "save": "Kontroliuoti"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Poraštės rengyklė",
+                            "header": "Antraštės rengyklė",
+                            "row": "Objekto eilučių rengyklė"
+                        }
                     }
                 },
                 "menu": {
@@ -888,8 +1118,11 @@
             "profile": {
                 "change_password": {
                     "current_password": "Dabartinis slaptažodis",
+                    "error_new_is_old": "Naujas slaptažodis turi skirtis nuo dabartinio slaptažodžio",
+                    "error_new_mismatch": "Nesutampa naujojo slaptažodžio laukai",
                     "header": "Keisti slaptažodį",
-                    "new_password": "Naujas slaptažodis"
+                    "new_password": "Naujas slaptažodis",
+                    "success": "Slaptažodis pakeistas sėkmingai"
                 },
                 "language": {
                     "dropdown_label": "Kalba",

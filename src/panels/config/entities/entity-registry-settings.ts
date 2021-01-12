@@ -111,10 +111,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     return html`
       ${!stateObj
         ? html`
-            <div class="container">
+            <div class="container warning">
               ${this.hass!.localize(
                 "ui.dialogs.entity_registry.editor.unavailable"
               )}
+              ${this._device?.disabled_by
+                ? html`<br />${this.hass!.localize(
+                      "ui.dialogs.entity_registry.editor.device_disabled"
+                    )}<br /><mwc-button @click=${this._openDeviceSettings}>
+                      ${this.hass!.localize(
+                        "ui.dialogs.entity_registry.editor.open_device_settings"
+                      )}
+                    </mwc-button>`
+                : ""}
             </div>
           `
         : ""}
@@ -161,6 +170,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         <div class="row">
           <ha-switch
             .checked=${!this._disabledBy}
+            .disabled=${this._device?.disabled_by}
             @change=${this._disabledByChanged}
           >
           </ha-switch>

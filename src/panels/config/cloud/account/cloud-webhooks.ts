@@ -14,6 +14,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   CloudStatusLoggedIn,
   CloudWebhook,
@@ -202,7 +203,7 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _fetchData() {
-    this._localHooks = this.hass!.config.components.includes("webhook")
+    this._localHooks = isComponentLoaded(this.hass!, "webhook")
       ? await fetchWebhooks(this.hass!)
       : [];
   }

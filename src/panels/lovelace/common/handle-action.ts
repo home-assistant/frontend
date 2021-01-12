@@ -4,6 +4,7 @@ import { forwardHaptic } from "../../../data/haptics";
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { toggleEntity } from "./entity/toggle-entity";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 declare global {
   interface HASSDomEvents {
@@ -11,7 +12,7 @@ declare global {
   }
 }
 
-export const handleAction = (
+export const handleAction = async (
   node: HTMLElement,
   hass: HomeAssistant,
   config: {
@@ -22,7 +23,7 @@ export const handleAction = (
     double_tap_action?: ActionConfig;
   },
   action: string
-): void => {
+): Promise<void> => {
   let actionConfig: ActionConfig | undefined;
 
   if (action === "double_tap" && config.double_tap_action) {
@@ -49,10 +50,15 @@ export const handleAction = (
     forwardHaptic("warning");
 
     if (
-      !confirm(
-        actionConfig.confirmation.text ||
-          `Are you sure you want to ${actionConfig.action}?`
-      )
+      !(await showConfirmationDialog(node, {
+        text:
+          actionConfig.confirmation.text ||
+          hass.localize(
+            "ui.panel.lovelace.cards.action_confirmation",
+            "action",
+            actionConfig.action
+          ),
+      }))
     ) {
       return;
     }

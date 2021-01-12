@@ -38,3 +38,12 @@ export const addItem = (
     type: "shopping_list/items/add",
     name,
   });
+
+export const reorderItems = (
+  hass: HomeAssistant,
+  itemIds: [string]
+): Promise<ShoppingListItem> =>
+  hass.callWS({
+    type: "shopping_list/items/reorder",
+    item_ids: itemIds,
+  });

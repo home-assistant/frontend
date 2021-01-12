@@ -353,10 +353,9 @@ export class HuiCardPicker extends LitElement {
           max-width: 500px;
           display: flex;
           flex-direction: column;
-          border-radius: var(--ha-card-border-radius);
+          border-radius: var(--ha-card-border-radius, 4px);
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
-          box-sizing: border-box;
           position: relative;
         }
 
@@ -374,7 +373,6 @@ export class HuiCardPicker extends LitElement {
             --ha-card-background,
             var(--card-background-color, white)
           );
-          border-radius: 0 0 4px 4px;
           border-bottom: 1px solid var(--divider-color);
         }
 
@@ -407,11 +405,10 @@ export class HuiCardPicker extends LitElement {
           width: 100%;
           height: 100%;
           z-index: 1;
-          border: var(--ha-card-border-width, 1px) solid var(
-            --ha-card-border-color,
-            var(--divider-color)
-          );
-          border-radius: var(--ha-card-border-radius);
+          box-sizing: border-box;
+          border: var(--ha-card-border-width, 1px) solid
+            var(--ha-card-border-color, var(--divider-color));
+          border-radius: var(--ha-card-border-radius, 4px);
         }
 
         .manual {

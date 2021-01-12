@@ -8,7 +8,7 @@ export interface CreateCardDialogParams {
   entities?: string[]; // We can pass entity id's that will be added to the config when a card is picked
 }
 
-const importCreateCardDialog = () => import("./hui-dialog-create-card");
+export const importCreateCardDialog = () => import("./hui-dialog-create-card");
 
 export const showCreateCardDialog = (
   element: HTMLElement,
