@@ -1,6 +1,5 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
-import type { PaperItemElement } from "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@material/mwc-button";
 import { mdiPlayCircleOutline } from "@mdi/js";
