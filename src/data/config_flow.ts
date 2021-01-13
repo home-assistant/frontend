@@ -7,6 +7,7 @@ import { domainToName } from "./integration";
 
 export const DISCOVERY_SOURCES = [
   "unignore",
+  "dhcp",
   "homekit",
   "ssdp",
   "zeroconf",
