@@ -15,7 +15,6 @@ export class HaTextSelector extends LitElement {
     return html`<paper-textarea
       .label=${this.label}
       .value="${this.value}"
-      @keydown=${this._ignoreKeydown}
       @value-changed="${this._handleChange}"
       autocapitalize="none"
       autocomplete="off"
@@ -29,10 +28,6 @@ export class HaTextSelector extends LitElement {
       return;
     }
     fireEvent(this, "value-changed", { value });
-  }
-
-  private _ignoreKeydown(ev: KeyboardEvent) {
-    ev.stopPropagation();
   }
 }
 
