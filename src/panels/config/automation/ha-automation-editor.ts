@@ -355,6 +355,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ...baseConfig,
         ...initData,
       } as AutomationConfig;
+      this._entityId = undefined;
     }
 
     if (
