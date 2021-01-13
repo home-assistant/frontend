@@ -1,3 +1,5 @@
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -7,17 +9,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { attributeClassNames } from "../common/entity/attribute_class_names";
+import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";
-import { computeDomain } from "../common/entity/compute_domain";
 import "../components/entity/state-info";
+import { UNAVAILABLE_STATES } from "../data/entity";
 import "../panels/lovelace/components/hui-timestamp-display";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE_STATES } from "../data/entity";
 
 @customElement("state-card-display")
 export class StateCardDisplay extends LitElement {
