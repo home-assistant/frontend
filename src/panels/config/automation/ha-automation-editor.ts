@@ -502,7 +502,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
       },
       (errors) => {
-        this._errors = errors.body.message || errors.body;
+        this._errors = errors.body.message || errors.error || errors.body;
         showToast(this, {
           message: errors.body.message || errors.body,
         });
