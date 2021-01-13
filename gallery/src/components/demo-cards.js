@@ -2,10 +2,10 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../../src/components/ha-switch";
-import "../../../src/components/ha-formfield";
-import "./demo-card";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
+import "../../../src/components/ha-formfield";
+import "../../../src/components/ha-switch";
+import "./demo-card";
 
 class DemoCards extends PolymerElement {
   static get template() {

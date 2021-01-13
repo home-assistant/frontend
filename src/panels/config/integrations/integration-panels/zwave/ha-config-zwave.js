@@ -1,7 +1,6 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "../../../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -13,8 +12,9 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import { sortStatesByName } from "../../../../../common/entity/states_sort_by_name";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-menu-button";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
+import "../../../../../components/ha-menu-button";
 import "../../../../../components/ha-service-description";
 import "../../../../../layouts/ha-app-layout";
 import { EventsMixin } from "../../../../../mixins/events-mixin";

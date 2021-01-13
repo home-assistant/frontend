@@ -5,9 +5,9 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/ha-card";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "../../styles/polymer-ha-style";
 
 let registeredDialog = false;

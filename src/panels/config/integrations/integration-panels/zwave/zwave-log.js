@@ -8,8 +8,8 @@ import isPwa from "../../../../../common/config/is_pwa";
 import "../../../../../components/ha-card";
 import { EventsMixin } from "../../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../../mixins/localize-mixin";
-import "../../../ha-config-section";
 import "../../../../../styles/polymer-ha-style";
+import "../../../ha-config-section";
 
 let registeredDialog = false;
 

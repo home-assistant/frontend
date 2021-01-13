@@ -4,14 +4,15 @@ import {
   CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
+import { computeRTLDirection } from "../../../../../../common/util/compute_rtl";
 import "../../../../../../components/ha-dialog";
-import "../../../../../../components/ha-switch";
 import "../../../../../../components/ha-formfield";
+import "../../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import { computeDeviceName } from "../../../../../../data/device_registry";
 import {
@@ -23,7 +24,6 @@ import { HomeAssistant } from "../../../../../../types";
 import "./mqtt-discovery-payload";
 import "./mqtt-messages";
 import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
-import { computeRTLDirection } from "../../../../../../common/util/compute_rtl";
 
 @customElement("dialog-mqtt-device-debug-info")
 class DialogMQTTDeviceDebugInfo extends LitElement {

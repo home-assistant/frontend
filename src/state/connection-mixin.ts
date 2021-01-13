@@ -3,10 +3,10 @@ import {
   callService,
   Connection,
   ERR_INVALID_AUTH,
+  HassConfig,
   subscribeConfig,
   subscribeEntities,
   subscribeServices,
-  HassConfig,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { broadcastConnectionStatus } from "../data/connection-status";

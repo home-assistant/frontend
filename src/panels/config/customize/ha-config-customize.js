@@ -7,11 +7,11 @@ import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
 import "../../../layouts/hass-tabs-subpage";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import "../ha-entity-config";
 import { configSections } from "../ha-panel-config";
 import "./ha-form-customize";
-import { documentationUrl } from "../../../util/documentation-url";
 
 /*
  * @appliesMixin LocalizeMixin

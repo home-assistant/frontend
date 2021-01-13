@@ -1,5 +1,6 @@
-import { mdiPlus, mdiFilterVariant, mdiCancel } from "@mdi/js";
 import "@material/mwc-list/mwc-list-item";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -13,7 +14,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -39,9 +39,9 @@ import {
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import { haStyle } from "../../../resources/styles";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;

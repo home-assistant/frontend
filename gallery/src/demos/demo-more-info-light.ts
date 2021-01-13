@@ -1,7 +1,7 @@
 import {
+  customElement,
   html,
   LitElement,
-  customElement,
   property,
   PropertyValues,
   query,
@@ -10,20 +10,20 @@ import {
 import "../../../src/components/ha-card";
 import {
   SUPPORT_BRIGHTNESS,
+  SUPPORT_COLOR,
   SUPPORT_COLOR_TEMP,
   SUPPORT_EFFECT,
   SUPPORT_FLASH,
-  SUPPORT_COLOR,
   SUPPORT_TRANSITION,
   SUPPORT_WHITE_VALUE,
 } from "../../../src/data/light";
+import "../../../src/dialogs/more-info/more-info-content";
 import { getEntity } from "../../../src/fake_data/entity";
 import {
-  provideHass,
   MockHomeAssistant,
+  provideHass,
 } from "../../../src/fake_data/provide_hass";
 import "../components/demo-more-infos";
-import "../../../src/dialogs/more-info/more-info-content";
 
 const ENTITIES = [
   getEntity("light", "bed_light", "on", {

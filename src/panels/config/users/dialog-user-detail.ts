@@ -13,8 +13,8 @@ import {
 } from "lit-element";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-help-tooltip";
 import "../../../components/ha-formfield";
+import "../../../components/ha-help-tooltip";
 import "../../../components/ha-switch";
 import { adminChangePassword } from "../../../data/auth";
 import {

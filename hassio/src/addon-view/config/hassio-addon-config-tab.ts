@@ -7,11 +7,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../../src/components/ha-circular-progress";
 import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
-import "../../../../src/components/ha-circular-progress";
 import "./hassio-addon-audio";
 import "./hassio-addon-config";
 import "./hassio-addon-network";

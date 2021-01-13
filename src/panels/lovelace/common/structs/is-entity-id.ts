@@ -1,4 +1,4 @@
-import { StructResult, StructContext, struct } from "superstruct";
+import { struct, StructContext, StructResult } from "superstruct";
 
 const isEntityId = (value: unknown, context: StructContext): StructResult => {
   if (typeof value !== "string") {

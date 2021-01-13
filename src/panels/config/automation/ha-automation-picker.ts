@@ -1,6 +1,5 @@
-import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
-import { mdiPlus, mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircle, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -12,23 +11,24 @@ import {
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { navigate } from "../../../common/navigate";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import { AutomationEntity, triggerAutomation } from "../../../data/automation";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
 import { documentationUrl } from "../../../util/documentation-url";
+import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import { navigate } from "../../../common/navigate";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {

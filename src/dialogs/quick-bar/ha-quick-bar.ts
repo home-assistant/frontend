@@ -18,11 +18,13 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import { scroll } from "lit-virtualizer";
 import memoizeOne from "memoize-one";
+import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
+import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
 import { compare } from "../../common/string/compare";
 import {
@@ -34,6 +36,9 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import { domainToName } from "../../data/integration";
+import { getPanelIcon, getPanelNameTranslationKey } from "../../data/panel";
+import { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import { configSections } from "../../panels/config/ha-panel-config";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import {
@@ -41,11 +46,6 @@ import {
   showConfirmationDialog,
 } from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
-import { navigate } from "../../common/navigate";
-import { configSections } from "../../panels/config/ha-panel-config";
-import { PageNavigation } from "../../layouts/hass-tabs-subpage";
-import { canShowPage } from "../../common/config/can_show_page";
-import { getPanelIcon, getPanelNameTranslationKey } from "../../data/panel";
 
 const DEFAULT_NAVIGATION_ICON = "hass:arrow-right-circle";
 const DEFAULT_SERVER_ICON = "hass:server";

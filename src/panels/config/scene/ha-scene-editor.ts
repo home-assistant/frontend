@@ -1,4 +1,4 @@
-import "../../../components/ha-icon-button";
+import { mdiContentSave } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -8,9 +8,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -24,8 +24,10 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-input";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-input";
+import "../../../components/ha-svg-icon";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -48,18 +50,16 @@ import {
   SCENE_IGNORED_DOMAINS,
 } from "../../../data/scene";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import "../../../components/ha-svg-icon";
-import { showToast } from "../../../util/toast";
-import { mdiContentSave } from "@mdi/js";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 interface DeviceEntities {
   id: string;

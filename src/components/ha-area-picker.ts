@@ -1,5 +1,5 @@
-import "./ha-svg-icon";
 import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -11,27 +11,21 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
   PropertyValues,
   query,
+  TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeDomain } from "../common/entity/compute_domain";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../data/area_registry";
-import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../dialogs/generic/show-dialog-box";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
-import memoizeOne from "memoize-one";
 import {
   DeviceEntityLookup,
   DeviceRegistryEntry,
@@ -41,9 +35,15 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../data/entity_registry";
-import { computeDomain } from "../common/entity/compute_domain";
+import {
+  showAlertDialog,
+  showPromptDialog,
+} from "../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { PolymerChangedEvent } from "../polymer-types";
+import { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import "./ha-svg-icon";
 
 const rowRenderer = (
   root: HTMLElement,

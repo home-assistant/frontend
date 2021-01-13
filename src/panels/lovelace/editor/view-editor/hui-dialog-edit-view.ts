@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "../../../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
@@ -7,15 +6,16 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-icon-button";
 import type {
   LovelaceBadgeConfig,
   LovelaceCardConfig,

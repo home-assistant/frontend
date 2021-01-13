@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../components/ha-circular-progress";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/dialog/ha-paper-dialog";
+import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import { EventsMixin } from "../../mixins/events-mixin";

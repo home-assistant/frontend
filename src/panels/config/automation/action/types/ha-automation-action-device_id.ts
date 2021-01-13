@@ -1,9 +1,9 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -13,8 +13,8 @@ import "../../../../../components/ha-form/ha-form";
 import {
   DeviceAction,
   deviceAutomationsEqual,
-  fetchDeviceActionCapabilities,
   DeviceCapabilities,
+  fetchDeviceActionCapabilities,
 } from "../../../../../data/device_automation";
 import { HomeAssistant } from "../../../../../types";
 

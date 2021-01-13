@@ -1,32 +1,32 @@
 import "@polymer/paper-input/paper-input";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-area-picker";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
 import {
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-area-picker";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 @customElement("ha-registry-basic-editor")
 export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {

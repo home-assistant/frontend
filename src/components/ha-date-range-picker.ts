@@ -1,3 +1,9 @@
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import { mdiCalendar } from "@mdi/js";
+import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -5,20 +11,14 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../types";
-import { mdiCalendar } from "@mdi/js";
 import { formatDateTime } from "../common/datetime/format_date_time";
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import "./ha-svg-icon";
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-list/mwc-list";
-import "./date-range-picker";
 import { computeRTLDirection } from "../common/util/compute_rtl";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { HomeAssistant } from "../types";
+import "./date-range-picker";
+import "./ha-svg-icon";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];

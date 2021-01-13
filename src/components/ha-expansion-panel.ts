@@ -1,3 +1,4 @@
+import { mdiChevronDown } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -8,10 +9,9 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
-import { mdiChevronDown } from "@mdi/js";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-expansion-panel")
 class HaExpansionPanel extends LitElement {

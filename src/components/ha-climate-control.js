@@ -1,9 +1,9 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "./ha-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { EventsMixin } from "../mixins/events-mixin";
+import "./ha-icon-button";
 
 /*
  * @appliesMixin EventsMixin

@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "../../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -7,8 +6,10 @@ import "@polymer/paper-ripple/paper-ripple";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-next";
 import "../../../../layouts/hass-subpage";
 import { EventsMixin } from "../../../../mixins/events-mixin";
@@ -16,7 +17,6 @@ import LocalizeMixin from "../../../../mixins/localize-mixin";
 import NavigateMixin from "../../../../mixins/navigate-mixin";
 import "../../../../styles/polymer-ha-style";
 import "../../ha-config-section";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 
 /*
  * @appliesMixin NavigateMixin

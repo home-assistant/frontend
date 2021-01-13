@@ -1,11 +1,11 @@
 import "@polymer/paper-input/paper-textarea";
+import { property, PropertyValues, UpdatingElement } from "lit-element";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { createCardElement } from "../../create-element/create-card-element";
-import { LovelaceCard } from "../../types";
 import { createErrorCardConfig } from "../../create-element/create-element-base";
-import { property, PropertyValues, UpdatingElement } from "lit-element";
+import { LovelaceCard } from "../../types";
 
 export class HuiCardPreview extends UpdatingElement {
   @property({ attribute: false }) public hass?: HomeAssistant;

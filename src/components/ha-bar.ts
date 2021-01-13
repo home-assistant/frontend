@@ -7,7 +7,6 @@ import {
   svg,
   TemplateResult,
 } from "lit-element";
-
 import {
   getValueInPercentage,
   normalize,

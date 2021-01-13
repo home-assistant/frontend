@@ -7,13 +7,14 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import "web-animations-js/web-animations-next-lite.min";
+import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
 import {
   HassioAddonDetails,
@@ -28,7 +29,6 @@ import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
-import "../../../../src/components/buttons/ha-progress-button";
 
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {

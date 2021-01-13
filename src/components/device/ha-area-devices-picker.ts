@@ -1,5 +1,6 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -11,9 +12,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -37,9 +38,8 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import "./ha-devices-picker";
 import "../ha-svg-icon";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import "./ha-devices-picker";
 
 interface DevicesByArea {
   [areaId: string]: AreaDevices;

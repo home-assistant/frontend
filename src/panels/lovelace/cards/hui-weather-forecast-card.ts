@@ -26,8 +26,8 @@ import {
   getWeatherUnit,
   getWind,
   weatherAttrIcons,
-  weatherSVGStyles,
   WeatherEntity,
+  weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";

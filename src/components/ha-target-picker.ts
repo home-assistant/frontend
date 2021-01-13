@@ -1,3 +1,16 @@
+// @ts-ignore
+import chipStyles from "@material/chips/dist/mdc.chips.min.css";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-icon-button/mwc-icon-button";
+import {
+  mdiClose,
+  mdiDevices,
+  mdiPlus,
+  mdiSofa,
+  mdiUnfoldMoreVertical,
+} from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -9,22 +22,12 @@ import {
   query,
   unsafeCSS,
 } from "lit-element";
-import { HomeAssistant } from "../types";
-// @ts-ignore
-import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import {
-  mdiSofa,
-  mdiDevices,
-  mdiClose,
-  mdiPlus,
-  mdiUnfoldMoreVertical,
-} from "@mdi/js";
-import "./ha-svg-icon";
-import "./ha-icon";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { classMap } from "lit-html/directives/class-map";
-import "@material/mwc-button/mwc-button";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { fireEvent } from "../common/dom/fire_event";
+import { ensureArray } from "../common/ensure-array";
+import { computeDomain } from "../common/entity/compute_domain";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { stateIcon } from "../common/entity/state_icon";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -38,19 +41,16 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../data/entity_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import { computeStateName } from "../common/entity/compute_state_name";
-import { stateIcon } from "../common/entity/state_icon";
-import { fireEvent } from "../common/dom/fire_event";
-import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import { computeDomain } from "../common/entity/compute_domain";
 import { Target } from "../data/target";
-import { ensureArray } from "../common/ensure-array";
-import "./entity/ha-entity-picker";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
-import "./ha-area-picker";
+import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "./ha-area-picker";
+import "./ha-icon";
+import "./ha-svg-icon";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {

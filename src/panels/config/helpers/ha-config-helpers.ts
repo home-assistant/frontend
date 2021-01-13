@@ -1,4 +1,3 @@
-import "../../../components/ha-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -23,6 +22,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-loading-screen";

@@ -1,3 +1,4 @@
+import { mdiMicrophone } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -12,18 +13,15 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import { mdiMicrophone } from "@mdi/js";
-
-import { HomeAssistant } from "../../types";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import "../../components/ha-menu-button";
+import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
 import { createCardElement } from "../lovelace/create-element/create-card-element";
 import { LovelaceCard } from "../lovelace/types";
-import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-
-import "../../components/ha-menu-button";
-import "../../layouts/ha-app-layout";
 
 @customElement("ha-panel-shopping-list")
 class PanelShoppingList extends LitElement {

@@ -2,9 +2,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { ActionConfig } from "../../../data/lovelace";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { toggleEntity } from "./entity/toggle-entity";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 declare global {
   interface HASSDomEvents {

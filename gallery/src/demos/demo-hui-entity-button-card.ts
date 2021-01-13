@@ -1,7 +1,7 @@
 import {
+  customElement,
   html,
   LitElement,
-  customElement,
   PropertyValues,
   query,
   TemplateResult,
@@ -53,7 +53,7 @@ const CONFIGS = [
     config: `
 - type: button
   entity: light.bed_light
-  tap_action: 
+  tap_action:
     action: toggle
     `,
   },
