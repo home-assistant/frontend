@@ -91,7 +91,7 @@ export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
   state_filter: Array<{ key: string } | string>;
-  card: Partial<LovelaceCardConfig>;
+  card?: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }
 
