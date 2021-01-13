@@ -1,15 +1,15 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import {
+  customElement,
+  html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
-  html,
-  customElement,
 } from "lit-element";
-import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
-import "@material/mwc-icon-button/mwc-icon-button";
-import "./ha-svg-icon";
 import { HomeAssistant } from "../types";
+import "./ha-svg-icon";
 
 @customElement("ha-icon-button-arrow-next")
 export class HaIconButtonArrowNext extends LitElement {

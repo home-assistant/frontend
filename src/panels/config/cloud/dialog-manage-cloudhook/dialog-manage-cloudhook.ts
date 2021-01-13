@@ -6,8 +6,8 @@ import {
   css,
   CSSResult,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
 } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";

@@ -1,5 +1,5 @@
 import { PolymerElement } from "@polymer/polymer";
-import { customElement, property, internalProperty } from "lit-element";
+import { customElement, internalProperty, property } from "lit-element";
 import { navigate } from "../../../common/navigate";
 import { CloudStatus } from "../../../data/cloud";
 import {

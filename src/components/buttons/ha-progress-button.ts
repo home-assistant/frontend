@@ -7,10 +7,9 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-
 import "../ha-circular-progress";
 
 @customElement("ha-progress-button")

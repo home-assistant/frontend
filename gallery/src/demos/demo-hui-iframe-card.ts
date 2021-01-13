@@ -1,4 +1,4 @@
-import { html, LitElement, customElement, TemplateResult } from "lit-element";
+import { customElement, html, LitElement, TemplateResult } from "lit-element";
 import "../components/demo-cards";
 
 const CONFIGS = [

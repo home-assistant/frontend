@@ -5,14 +5,14 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
-import "../../../../components/ha-circular-progress";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import "../../../../components/ha-circular-progress";
 import type { LovelaceConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";

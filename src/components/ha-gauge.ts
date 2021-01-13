@@ -1,18 +1,17 @@
 import {
-  LitElement,
-  svg,
-  customElement,
   css,
-  property,
+  customElement,
   internalProperty,
+  LitElement,
+  property,
   PropertyValues,
+  svg,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
-import { afterNextRender } from "../common/util/render-status";
 import { ifDefined } from "lit-html/directives/if-defined";
-
-import { getValueInPercentage, normalize } from "../util/calculate";
+import { styleMap } from "lit-html/directives/style-map";
 import { formatNumber } from "../common/string/format_number";
+import { afterNextRender } from "../common/util/render-status";
+import { getValueInPercentage, normalize } from "../util/calculate";
 
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);

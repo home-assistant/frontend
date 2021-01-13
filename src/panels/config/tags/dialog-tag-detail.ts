@@ -10,7 +10,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";

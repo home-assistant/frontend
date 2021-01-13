@@ -1,4 +1,3 @@
-import "../../../components/ha-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -13,6 +12,7 @@ import {
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import "../../../components/user/ha-person-badge";
 import {

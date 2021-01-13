@@ -1,4 +1,3 @@
-import "../../../components/ha-fab";
 import { mdiPlus } from "@mdi/js";
 import {
   customElement,
@@ -13,6 +12,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import { deleteUser, fetchUsers, updateUser, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";

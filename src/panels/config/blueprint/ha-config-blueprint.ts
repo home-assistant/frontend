@@ -1,11 +1,11 @@
 import { customElement, property, PropertyValues } from "lit-element";
+import { Blueprints, fetchBlueprints } from "../../../data/blueprint";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import "./ha-blueprint-overview";
 import { HomeAssistant } from "../../../types";
-import { Blueprints, fetchBlueprints } from "../../../data/blueprint";
+import "./ha-blueprint-overview";
 
 declare global {
   // for fire event

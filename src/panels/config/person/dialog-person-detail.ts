@@ -10,33 +10,33 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-entities-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-formfield";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
+import { adminChangePassword } from "../../../data/auth";
 import { PersonMutableParams } from "../../../data/person";
+import {
+  deleteUser,
+  SYSTEM_GROUP_ID_ADMIN,
+  SYSTEM_GROUP_ID_USER,
+  updateUser,
+  User,
+} from "../../../data/user";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { PersonDetailDialogParams } from "./show-dialog-person-detail";
-import "../../../components/ha-formfield";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import {
-  User,
-  SYSTEM_GROUP_ID_ADMIN,
-  deleteUser,
-  SYSTEM_GROUP_ID_USER,
-  updateUser,
-} from "../../../data/user";
-import {
-  showAlertDialog,
-  showPromptDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
-import { adminChangePassword } from "../../../data/auth";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
+import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 
 const includeDomains = ["device_tracker"];
 

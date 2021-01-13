@@ -1,5 +1,4 @@
 import { wrap } from "comlink";
-
 import type { api } from "./markdown_worker";
 
 type RenderMarkdownType = api["renderMarkdown"];

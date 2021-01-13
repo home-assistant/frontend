@@ -1,5 +1,4 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "../ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -17,6 +16,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { compare } from "../../common/string/compare";
 import { fetchUsers, User } from "../../data/user";
 import { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "./ha-user-badge";
 
 class HaUserPicker extends LitElement {

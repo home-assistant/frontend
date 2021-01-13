@@ -1,6 +1,5 @@
-import "../../../components/ha-header-bar";
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiContentCopy, mdiClose } from "@mdi/js";
+import { mdiClose, mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -14,6 +13,7 @@ import {
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dialog";
+import "../../../components/ha-header-bar";
 import "../../../components/ha-svg-icon";
 import {
   domainToName,
@@ -24,9 +24,9 @@ import {
 import { getLoggedErrorIntegration } from "../../../data/system_log";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
-import { showToast } from "../../../util/toast";
 
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

@@ -1,24 +1,24 @@
-import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { computeRTL } from "../../common/util/compute_rtl";
-import "../../components/ha-menu-button";
-import "../../components/state-history-charts";
 import {
-  LitElement,
   css,
-  property,
   internalProperty,
+  LitElement,
+  property,
   PropertyValues,
 } from "lit-element";
 import { html } from "lit-html";
+import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/entity/ha-entity-picker";
+import "../../components/ha-circular-progress";
+import "../../components/ha-date-range-picker";
+import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-menu-button";
+import "../../components/state-history-charts";
+import { computeHistory, fetchDate } from "../../data/history";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
-import "../../components/ha-date-range-picker";
-import "../../components/entity/ha-entity-picker";
-import { fetchDate, computeHistory } from "../../data/history";
-import "../../components/ha-circular-progress";
 
 class HaPanelHistory extends LitElement {
   @property() hass!: HomeAssistant;

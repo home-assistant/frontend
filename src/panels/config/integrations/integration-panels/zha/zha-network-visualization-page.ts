@@ -9,18 +9,17 @@ import {
   PropertyValues,
   query,
 } from "lit-element";
-
+import { Edge, EdgeOptions, Network, Node } from "vis-network";
 import { navigate } from "../../../../../common/navigate";
+import "../../../../../common/search/search-input";
+import "../../../../../components/device/ha-device-picker";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-svg-icon";
 import { fetchDevices, ZHADevice } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../../../types";
-import { Network, Edge, Node, EdgeOptions } from "vis-network";
-import "../../../../../common/search/search-input";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/device/ha-device-picker";
-import "../../../../../components/ha-svg-icon";
-import { formatAsPaddedHex } from "./functions";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
+import type { HomeAssistant } from "../../../../../types";
+import { formatAsPaddedHex } from "./functions";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {

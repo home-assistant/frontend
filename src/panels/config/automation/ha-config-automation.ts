@@ -2,6 +2,7 @@ import { HassEntities } from "home-assistant-js-websocket";
 import { customElement, property, PropertyValues } from "lit-element";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { debounce } from "../../../common/util/debounce";
 import { AutomationEntity } from "../../../data/automation";
 import {
   HassRouterPage,
@@ -10,7 +11,6 @@ import {
 import { HomeAssistant } from "../../../types";
 import "./ha-automation-editor";
 import "./ha-automation-picker";
-import { debounce } from "../../../common/util/debounce";
 
 const equal = (a: AutomationEntity[], b: AutomationEntity[]): boolean => {
   if (a.length !== b.length) {

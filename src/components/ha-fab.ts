@@ -1,5 +1,5 @@
-import type { Fab } from "@material/mwc-fab";
 import "@material/mwc-fab";
+import type { Fab } from "@material/mwc-fab";
 import { customElement } from "lit-element";
 import { Constructor } from "../types";
 

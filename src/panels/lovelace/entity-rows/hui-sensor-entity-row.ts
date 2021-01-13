@@ -3,26 +3,26 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
+import { EntitiesCardEntityConfig } from "../cards/types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceRow } from "./types";
-import { EntitiesCardEntityConfig } from "../cards/types";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
-import { handleAction } from "../common/handle-action";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 interface SensorEntityConfig extends EntitiesCardEntityConfig {
   format?: "relative" | "total" | "date" | "time" | "datetime";

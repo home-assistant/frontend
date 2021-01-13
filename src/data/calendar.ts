@@ -1,7 +1,7 @@
-import type { HomeAssistant, CalendarEvent } from "../types";
-import { computeDomain } from "../common/entity/compute_domain";
 import { HA_COLOR_PALETTE } from "../common/const";
+import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
+import type { CalendarEvent, HomeAssistant } from "../types";
 
 export interface Calendar {
   entity_id: string;
