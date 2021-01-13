@@ -39,8 +39,12 @@ export class StateCardDisplay extends LitElement {
           .inDialog=${this.inDialog}
         >
         </state-info>
-        <div class="${this.computeClassNames(this.stateObj)}">
-          ${computeDomain(this.stateObj?.entity_id) === "sensor" &&
+        <div
+          class="state ${attributeClassNames(this.stateObj, [
+            " unit_of_measurement",
+          ])}"
+        >
+          ${computeDomain(this.stateObj.entity_id) === "sensor" &&
           this.stateObj.attributes.device_class === "timestamp" &&
           !UNAVAILABLE_STATES.includes(this.stateObj.state)
             ? html` <hui-timestamp-display
@@ -70,24 +74,10 @@ export class StateCardDisplay extends LitElement {
     }
   }
 
-  protected computeClassNames(stateObj) {
-    const classes = [
-      "state",
-      attributeClassNames(stateObj, ["unit_of_measurement"]),
-    ];
-    return classes.join(" ");
-  }
-
   static get styles(): CSSResult[] {
     return [
       haStyle,
       css`
-        :host {
-          @apply --layout-horizontal;
-          @apply --layout-justified;
-          @apply --layout-baseline;
-        }
-
         :host([rtl]) {
           direction: rtl;
           text-align: right;
@@ -98,11 +88,9 @@ export class StateCardDisplay extends LitElement {
           min-width: 0;
         }
         .state {
-          @apply --paper-font-body1;
           color: var(--primary-text-color);
           margin-left: 16px;
           text-align: right;
-          max-width: 40%;
           flex: 0 0 auto;
           overflow-wrap: break-word;
         }
