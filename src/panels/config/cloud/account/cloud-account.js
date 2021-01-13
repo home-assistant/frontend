@@ -16,6 +16,7 @@ import "../../ha-config-section";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import "./cloud-remote-pref";
+import "./cloud-tts-pref";
 import "./cloud-webhooks";
 
 /*
@@ -132,6 +133,12 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               cloud-status="[[cloudStatus]]"
               dir="[[_rtlDirection]]"
             ></cloud-remote-pref>
+
+            <cloud-tts-pref
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+              dir="[[_rtlDirection]]"
+            ></cloud-tts-pref>
 
             <cloud-alexa-pref
               hass="[[hass]]"

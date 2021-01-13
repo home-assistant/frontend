@@ -41,6 +41,7 @@ export interface CloudPreferences {
   };
   alexa_report_state: boolean;
   google_report_state: boolean;
+  tts_default_voice: [string, string];
 }
 
 export type CloudStatusLoggedIn = CloudStatusBase & {
@@ -113,6 +114,7 @@ export const updateCloudPref = (
     google_report_state?: CloudPreferences["google_report_state"];
     google_default_expose?: CloudPreferences["google_default_expose"];
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
+    tts_default_voice?: CloudPreferences["tts_default_voice"];
   }
 ) =>
   hass.callWS({
@@ -144,3 +146,10 @@ export const updateCloudAlexaEntityConfig = (
     entity_id: entityId,
     ...values,
   });
+
+export interface CloudTTSInfo {
+  languages: Array<[string, string]>;
+}
+
+export const getCloudTTSInfo = (hass: HomeAssistant) =>
+  hass.callWS<CloudTTSInfo>({ type: "cloud/tts/info" });
