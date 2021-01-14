@@ -249,9 +249,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     this.hass!.callService(
       "media_player",
-      stateObj.state === "off" || stateObj.state === "idle"
-        ? "turn_on"
-        : "turn_off",
+      stateObj.state === "off" ? "turn_on" : "turn_off",
       {
         entity_id: this._config!.entity,
       }
