@@ -82,7 +82,8 @@ const CONFIGS = [
     heading: "With title",
     config: `
 - type: glance
-  title: This is glance
+  title: Custom title
+  columns: 4
   entities:
     - device_tracker.demo_paulus
     - media_player.living_room
@@ -109,9 +110,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "No name",
+    heading: "No entity names",
     config: `
 - type: glance
+  columns: 4
   show_name: false
   entities:
     - device_tracker.demo_paulus
@@ -124,9 +126,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "No state",
+    heading: "No state labels",
     config: `
 - type: glance
+  columns: 4
   show_state: false
   entities:
     - device_tracker.demo_paulus
@@ -139,9 +142,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "No name and no state",
+    heading: "No names and no state labels",
     config: `
 - type: glance
+  columns: 4
   show_name: false
   show_state: false
   entities:
@@ -155,47 +159,24 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Custom name, custom icon",
+    heading: "Custom name + custom icon",
     config: `
 - type: glance
+  columns: 4
   entities:
     - entity: device_tracker.demo_paulus
       name: ¯\\_(ツ)_/¯
       icon: mdi:home-assistant
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - entity: light.kitchen_lights
-      icon: mdi:alarm-light
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
-  },
-  {
-    heading: "Custom tap action",
-    config: `
-- type: glance
-  entities:
-    - entity: lock.kitchen_door
-      tap_action:
-        type: toggle
-    - entity: light.ceiling_lights
-      tap_action:
-        action: call-service
-        service: light.turn_on
-        service_data:
-          entity_id: light.ceiling_lights
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
+    - entity: media_player.living_room
+      name: ¯\\_(ツ)_/¯
+      icon: mdi:home-assistant
     `,
   },
   {
     heading: "Selectively hidden name",
     config: `
 - type: glance
+  columns: 4
   entities:
     - device_tracker.demo_paulus
     - entity: media_player.living_room
@@ -204,21 +185,32 @@ const CONFIGS = [
     - entity: cover.kitchen_window
       name:
     - light.kitchen_lights
+    - entity: lock.kitchen_door
+      name: 
+    - light.ceiling_lights
     `,
   },
   {
-    heading: "Primary theme",
+    heading: "Custom tap action",
     config: `
 - type: glance
-  theming: primary
+  columns: 4  
   entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
+    - entity: lock.kitchen_door
+      name: Custom
+      tap_action:
+        type: toggle
+    - entity: light.ceiling_lights
+      name: Custom
+      tap_action:
+        action: call-service
+        service: light.turn_on
+        service_data:
+          entity_id: light.ceiling_lights
+    - entity: sun.sun
+      name: Regular
+    - entity: light.kitchen_lights
+      name: Regular
     `,
   },
 ];
