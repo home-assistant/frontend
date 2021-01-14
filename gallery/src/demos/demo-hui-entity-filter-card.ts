@@ -48,7 +48,7 @@ const ENTITIES = [
 
 const CONFIGS = [
   {
-    heading: "Controller",
+    heading: "Unfiltered controller",
     config: `
 - type: entities
   entities:
@@ -58,7 +58,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Basic",
+    heading: "Filtered entities card",
     config: `
 - type: entity-filter
   entities:
@@ -74,7 +74,27 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "With card config",
+    heading: 'With "entities" card config',
+    config: `
+- type: entity-filter
+  entities:
+    - device_tracker.demo_anne_therese
+    - device_tracker.demo_home_boy
+    - device_tracker.demo_paulus
+    - light.bed_light
+    - light.ceiling_lights
+    - light.kitchen_lights
+  state_filter:
+    - "on"
+    - not_home
+  card:
+    type: entities
+    title: Custom Title
+    show_header_toggle: false
+    `,
+  },
+  {
+    heading: 'With "glance" card config',
     config: `
 - type: entity-filter
   entities:
@@ -89,7 +109,8 @@ const CONFIGS = [
     - not_home
   card:
     type: glance
-    show_state: false
+    show_state: true
+    title: Custom Title
     `,
   },
 ];
