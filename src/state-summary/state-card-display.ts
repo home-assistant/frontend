@@ -40,9 +40,7 @@ export class StateCardDisplay extends LitElement {
         >
         </state-info>
         <div
-          class="state ${attributeClassNames(this.stateObj, [
-            " unit_of_measurement",
-          ])}"
+          class="state ${classMap({"has-unit_of_measurement": "unit_of_measurement" in this.stateObj.attributes})}"
         >
           ${computeDomain(this.stateObj.entity_id) === "sensor" &&
           this.stateObj.attributes.device_class === "timestamp" &&
