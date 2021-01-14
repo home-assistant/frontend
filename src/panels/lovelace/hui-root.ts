@@ -5,9 +5,9 @@ import {
   mdiClose,
   mdiCodeBraces,
   mdiCog,
-  mdiViewDashboard,
-  mdiViewDashboardOutline,
   mdiDotsVertical,
+  mdiFileMultiple,
+  mdiFormatListBulletedTriangle,
   mdiHelp,
   mdiHelpCircle,
   mdiMicrophone,
@@ -15,6 +15,7 @@ import {
   mdiPlus,
   mdiRefresh,
   mdiShape,
+  mdiViewDashboard,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
@@ -178,7 +179,11 @@ class HUIRoot extends LitElement {
                             )}
                             @request-selected="${this._handleUnusedEntities}"
                           >
-                            <ha-svg-icon slot="graphic"></ha-svg-icon>
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiFormatListBulletedTriangle}
+                            >
+                            </ha-svg-icon>
                             ${this.hass!.localize(
                               "ui.panel.lovelace.unused_entities.title"
                             )}
@@ -202,7 +207,7 @@ class HUIRoot extends LitElement {
                     >
                       <ha-svg-icon
                         slot="graphic"
-                        .path=${mdiViewDashboardOutline}
+                        .path=${mdiFileMultiple}
                       ></ha-svg-icon>
                       ${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.manage_resources"
