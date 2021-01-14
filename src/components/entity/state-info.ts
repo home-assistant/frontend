@@ -23,7 +23,7 @@ class StateInfo extends LitElement {
 
   @property({ type: Boolean }) public inDialog = false;
 
-  // property used only in css
+  // property used only in CSS
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
   protected render(): TemplateResult {
