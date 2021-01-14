@@ -50,7 +50,7 @@ class HaCoverTiltControls extends LitElement {
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStop,
+          invisible: !this._entityObj.supportsStopTilt,
         })}
         label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
         icon="hass:stop"
