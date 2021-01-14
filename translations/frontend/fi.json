@@ -553,7 +553,8 @@
             },
             "blueprint-picker": {
                 "add_user": "Lisää käyttäjä",
-                "remove_user": "Poista käyttäjä"
+                "remove_user": "Poista käyttäjä",
+                "select_blueprint": "Valitse pohjapiirros"
             },
             "data-table": {
                 "no-data": "Ei dataa",
@@ -694,9 +695,23 @@
                     "week": "{count} {count, plural,\n  one {viikko}\n  other {viikkoa}\n}"
                 },
                 "future": "{time} kuluttua",
+                "future_duration": {
+                    "day": "{count} {count, plural,\n  one {päivän}\n  other {päivän}\n} kuluessa",
+                    "hour": "{count} {count, plural,\none {tunnin\nother {tunnin}\n} kuluessa",
+                    "minute": "{count} {count, plural,\none {minuutin}\nother {minuutin}\n} kuluessa",
+                    "second": "{count} {count, plural,\none {sekunnin}\nother {sekunnin}\n} kuluessa",
+                    "week": "{count} {count, plural,\n  one {viikon}\n  other {viikon}\n} kuluessa"
+                },
                 "just_now": "Juuri nyt",
                 "never": "Ei koskaan",
-                "past": "{time} sitten"
+                "past": "{time} sitten",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n} sitten",
+                    "hour": "{count} {count, plural,\none {tunti}\nother {tuntia}\n} sitten",
+                    "minute": "{count} {count, plural,\none {minuutti}\nother {minuuttia}\n} sitten",
+                    "second": "{count} {count, plural,\none {sekunti}\nother {sekuntia}\n} sitten",
+                    "week": "{count} {count, plural,\n  one {viikkoa}\n  other {viikkoa}\n} sitten"
+                }
             },
             "service-picker": {
                 "service": "Palvelu"
@@ -814,6 +829,7 @@
                 "dismiss": "Sulje ikkuna",
                 "edit": "Muokkaa kohdetta",
                 "history": "Historia",
+                "last_changed": "Viimeksi muutettu",
                 "last_updated": "Viimeksi päivitetty",
                 "person": {
                     "create_zone": "Luo vyöhyke nykyisestä sijainnista"
@@ -875,6 +891,7 @@
                     "navigation": {
                         "areas": "Alueet",
                         "automation": "Automaatiot",
+                        "blueprint": "Pohjapiirrokset",
                         "core": "Yleinen",
                         "customize": "Kustomointi",
                         "devices": "Laitteet",
@@ -894,6 +911,7 @@
                         "zone": "Alueet"
                     },
                     "reload": {
+                        "filesize": "Päivitä tiedostojen koot",
                         "homekit": "Lataa HomeKit uudelleen",
                         "input_boolean": "Lataa booleanit uudelleen",
                         "input_datetime": "Lataa syöttöpäivämäärät uudelleen",
@@ -903,7 +921,14 @@
                         "rpi_gpio": "Lataa Raspberry Pi GPIO entiteetit uudelleen",
                         "scene": "Lataa tilanteet uudelleen",
                         "script": "Lataa scriptit uudelleen",
+                        "smtp": "Päivitä SMTP-ilmoituspalvelut",
+                        "telegram": "Päivitä Telegram-ilmoituspalvelut",
                         "zone": "Lataa alueet uudelleen"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Palvelin",
+                        "restart": "Käynnistä uudelleen",
+                        "stop": "Pysäytä"
                     }
                 },
                 "filter_placeholder": "Entiteetin suodatin"
@@ -1018,8 +1043,15 @@
                     "caption": "Automaatiot",
                     "description": "Luo ja muokkaa automaatioita",
                     "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Käytä pohjapiirrosta"
+                        },
                         "header": "Luo uusi automaatio",
-                        "how": "Miten haluat luoda uuden automaation?"
+                        "how": "Miten haluat luoda uuden automaation?",
+                        "thingtalk": {
+                            "header": "Kuvaile automaatiota, jonka haluat luoda",
+                            "intro": "Ja yritämme luoda sen sinulle. Esimerkiksi: Sammuta valot, kun lähden."
+                        }
                     },
                     "editor": {
                         "actions": {
@@ -1101,6 +1133,9 @@
                             "unsupported_action": "Toimintoa {action} ei tueta"
                         },
                         "alias": "Nimi",
+                        "blueprint": {
+                            "inputs": "Tulot"
+                        },
                         "conditions": {
                             "add": "Lisää ehto",
                             "delete": "Poista",
@@ -1344,9 +1379,15 @@
                 },
                 "blueprint": {
                     "add": {
-                        "file_name": "Blueprint polku"
+                        "community_forums": "yhteisön keskustelualueet",
+                        "file_name": "Blueprint polku",
+                        "import_introduction_link": "Voit tuoda muiden käyttäjien piirustuksia Githubista ja {community_link}. Kirjoita piirustuksen URL-osoite alle.",
+                        "raw_blueprint": "Piirustuksen sisältö",
+                        "save_btn": "Tuo pohjapiirros"
                     },
                     "overview": {
+                        "delete_blueprint": "Poista pohjapiirros",
+                        "discover_more": "Löydä lisää piirustuksia",
                         "headers": {
                             "domain": "Toimialue",
                             "file_name": "Tiedoston nimi",
@@ -1627,6 +1668,7 @@
                         "integration": "Integraatio",
                         "user": "Käyttäjä"
                     },
+                    "enabled_cause": "Laite on poistettu käytöstä. Syy: {cause} .",
                     "enabled_description": "Poistettuja laitteita ei näytetä, ja laitteeseen kuuluvat kohteet poistetaan käytöstä, eikä niitä lisätä Home Assistantiin.",
                     "enabled_label": "Ota laite käyttöön",
                     "entities": {
@@ -1835,6 +1877,7 @@
                         "reload_restart_confirm": "Viimeistele tämän integroinnin uudelleenlataaminen käynnistämällä Home Assistant uudelleen",
                         "rename": "Nimeä uudelleen",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
+                        "services": "{count} {count, plural,\n  one {palvelut}\n  other {palvelua}\n}",
                         "settings_button": "Muokkaa {integration}-asetuksia",
                         "system_options": "Järjestelmäasetukset",
                         "system_options_button": "{integration}-järjestelmän asetukset",
@@ -2052,6 +2095,7 @@
                         "product_manual": "Tuotteen käyttöopas"
                     },
                     "node_query_stages": {
+                        "associations": "Päivitetään yhdistysryhmiä ja jäsenyyksiä",
                         "cacheload": "Ladataan tietoja OpenZWave-välimuistitiedostosta. Akkukäyttöiset solmut pysyvät tässä vaiheessa, kunnes solmu herää.",
                         "complete": "Haastatteluprosessi on valmis",
                         "configuration": "Noudetaan solmun määritysarvot",
@@ -3368,6 +3412,7 @@
                     "header": "Kojelauta"
                 },
                 "enable_shortcuts": {
+                    "description": "Ota käyttöön tai poista käytöstä pikanäppäimet eri toimintojen suorittamiseksi käyttöliittymässä.",
                     "header": "Pikanäppäimet"
                 },
                 "force_narrow": {
@@ -3414,6 +3459,10 @@
                     "header": "Monivaiheisen tunnistautumisen moduulit"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Laitteen nimi",
+                        "title": "Miksi tätä laitetta tulisi kutsua?"
+                    },
                     "description": "Lähetä ilmoitukset tälle laitteelle.",
                     "error_load_platform": "Määritä notify.html5-komponentti",
                     "error_use_https": "Vaatii SSL suojauksen",

@@ -164,7 +164,8 @@ class HuiGenericEntityRow extends LitElement {
       }
       .info {
         margin-left: 16px;
-        flex: 1 0 60px;
+        margin-right: 8px;
+        flex: 1 0 30%;
       }
       .info,
       .info > * {
@@ -181,7 +182,6 @@ class HuiGenericEntityRow extends LitElement {
       }
       .secondary,
       ha-relative-time {
-        display: block;
         color: var(--secondary-text-color);
       }
       state-badge {

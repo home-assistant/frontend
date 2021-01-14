@@ -3,18 +3,19 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
-  CSSResult,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
-import type { Condition } from "../../../../data/automation";
-import type { HomeAssistant } from "../../../../types";
 import "../../../../components/ha-yaml-editor";
+import type { Condition } from "../../../../data/automation";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
 import "./types/ha-automation-condition-not";
@@ -25,7 +26,6 @@ import "./types/ha-automation-condition-sun";
 import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-zone";
-import { haStyle } from "../../../../resources/styles";
 
 const OPTIONS = [
   "device",

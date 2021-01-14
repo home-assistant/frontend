@@ -1,30 +1,30 @@
 import "@material/mwc-button";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-circular-progress";
+import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
+import "@polymer/paper-input/paper-textarea";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
-import "@polymer/paper-input/paper-textarea";
-import "../../../../../layouts/hass-tabs-subpage";
-import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant, Route } from "../../../../../types";
-import "./zha-device-pairing-status-card";
-import { zhaTabs } from "./zha-config-dashboard";
-import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 import {
   DEVICE_MESSAGE_TYPES,
   LOG_OUTPUT,
   ZHADevice,
 } from "../../../../../data/zha";
+import "../../../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../../../resources/styles";
+import { HomeAssistant, Route } from "../../../../../types";
+import { zhaTabs } from "./zha-config-dashboard";
+import "./zha-device-pairing-status-card";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {

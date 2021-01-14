@@ -1,4 +1,3 @@
-import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
@@ -25,6 +24,7 @@ import { LocalizeFunc } from "../../../common/translations/localize";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import {
   ConfigEntry,
@@ -60,6 +60,7 @@ import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../ha-panel-config";
 import "./ha-integration-card";
 import type {
@@ -67,7 +68,6 @@ import type {
   ConfigEntryUpdatedEvent,
   HaIntegrationCard,
 } from "./ha-integration-card";
-import { brandsUrl } from "../../../util/brands-url";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
   localized_title?: string;
@@ -338,7 +338,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         />
                       </div>
                       <h2>
-                        ${item.localized_domain_name}
+                        ${// In 2020.2 we added support for item.title. All ignored entries before
+                        // that have title "Ignored" so we fallback to localized domain name.
+                        item.title === "Ignored"
+                          ? item.localized_domain_name
+                          : item.title}
                       </h2>
                       <mwc-button
                         @click=${this._removeIgnoredIntegration}
@@ -571,7 +575,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (!confirmed) {
       return;
     }
-    await ignoreConfigFlow(this.hass, flow.flow_id);
+    await ignoreConfigFlow(
+      this.hass,
+      flow.flow_id,
+      localizeConfigFlowTitle(this.hass.localize, flow)
+    );
     this._loadConfigEntries();
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
   }

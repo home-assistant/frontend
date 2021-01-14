@@ -11,13 +11,14 @@ import {
   TemplateResult,
 } from "lit-element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-camera-stream";
 import {
+  CameraEntity,
   CameraPreferences,
   CAMERA_SUPPORT_STREAM,
   fetchCameraPrefs,
   updateCameraPrefs,
-  CameraEntity,
 } from "../../../data/camera";
 import type { HomeAssistant } from "../../../types";
 
@@ -81,7 +82,7 @@ class MoreInfoCamera extends LitElement {
 
     if (
       curEntityId &&
-      this.hass!.config.components.includes("stream") &&
+      isComponentLoaded(this.hass!, "stream") &&
       supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
     ) {
       // Fetch in background while we set up the video.

@@ -1,20 +1,20 @@
-import "../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-card";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-icon-button";
 import { domainToName } from "../../../data/integration";
 import {
   fetchSystemLog,

@@ -1,8 +1,8 @@
 import {
   customElement,
   property,
-  UpdatingElement,
   PropertyValues,
+  UpdatingElement,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";

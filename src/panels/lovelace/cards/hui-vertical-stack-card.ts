@@ -29,7 +29,10 @@ class HuiVerticalStackCard extends HuiStackCard {
           height: 100%;
         }
         #root > * {
-          margin: var(--vertical-stack-card-margin, var(--stack-card-margin, 4px 0));
+          margin: var(
+            --vertical-stack-card-margin,
+            var(--stack-card-margin, 4px 0)
+          );
         }
         #root > *:first-child {
           margin-top: 0;

@@ -1,8 +1,6 @@
-import "../../../components/ha-header-bar";
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiContentCopy, mdiClose } from "@mdi/js";
+import { mdiClose, mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import type { PaperTooltipElement } from "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
@@ -10,11 +8,12 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dialog";
+import "../../../components/ha-header-bar";
 import "../../../components/ha-svg-icon";
 import {
   domainToName,
@@ -25,6 +24,7 @@ import {
 import { getLoggedErrorIntegration } from "../../../data/system_log";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
@@ -34,8 +34,6 @@ class DialogSystemLogDetail extends LitElement {
   @internalProperty() private _params?: SystemLogDetailDialogParams;
 
   @internalProperty() private _manifest?: IntegrationManifest;
-
-  @query("paper-tooltip") private _toolTip?: PaperTooltipElement;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -83,15 +81,6 @@ class DialogSystemLogDetail extends LitElement {
           <mwc-icon-button id="copy" @click=${this._copyLog} slot="actionItems">
             <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
           </mwc-icon-button>
-          <paper-tooltip
-            slot="actionItems"
-            manual-mode
-            for="copy"
-            position="left"
-            animation-delay="0"
-            offset="4"
-            >${this.hass.localize("ui.common.copied")}</paper-tooltip
-          >
         </ha-header-bar>
         <div class="contents">
           <p>
@@ -162,23 +151,15 @@ class DialogSystemLogDetail extends LitElement {
     }
   }
 
-  private _copyLog(): void {
+  private async _copyLog(): Promise<void> {
     const copyElement = this.shadowRoot?.querySelector(
       ".contents"
     ) as HTMLElement;
 
-    const selection = window.getSelection()!;
-    const range = document.createRange();
-
-    range.selectNodeContents(copyElement);
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    document.execCommand("copy");
-    window.getSelection()!.removeAllRanges();
-
-    this._toolTip!.show();
-    setTimeout(() => this._toolTip?.hide(), 3000);
+    await copyToClipboard(copyElement.innerText);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   static get styles(): CSSResult[] {

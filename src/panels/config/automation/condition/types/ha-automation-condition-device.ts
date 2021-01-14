@@ -1,22 +1,22 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-condition-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
 import {
   deviceAutomationsEqual,
+  DeviceCapabilities,
   DeviceCondition,
   fetchDeviceConditionCapabilities,
-  DeviceCapabilities,
 } from "../../../../../data/device_automation";
 import { HomeAssistant } from "../../../../../types";
-import memoizeOne from "memoize-one";
 
 @customElement("ha-automation-condition-device")
 export class HaDeviceCondition extends LitElement {

@@ -1,13 +1,13 @@
+import { mdiNfcVariant } from "@mdi/js";
 import {
-  property,
-  customElement,
-  LitElement,
-  html,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
 } from "lit-element";
 import "../../../components/ha-svg-icon";
-import { mdiNfcVariant } from "@mdi/js";
 import { TagRowData } from "./ha-config-tags";
 
 @customElement("tag-image")

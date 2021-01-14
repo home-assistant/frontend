@@ -1,10 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { property, PropertyValues, UpdatingElement } from "lit-element";
-
-import { HomeAssistant } from "../../types";
 import dynamicContentUpdater from "../../common/dom/dynamic_content_updater";
-import { stateMoreInfoType } from "./state_more_info_control";
 import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
+import { HomeAssistant } from "../../types";
+import { stateMoreInfoType } from "./state_more_info_control";
 
 class MoreInfoContent extends UpdatingElement {
   @property({ attribute: false }) public hass?: HomeAssistant;

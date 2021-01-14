@@ -1,12 +1,12 @@
+import { mdiNetwork, mdiServerNetwork } from "@mdi/js";
 import { customElement, property } from "lit-element";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
+import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { HomeAssistant } from "../../../../../types";
 import { computeTail } from "./ozw-config-router";
-import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import { mdiServerNetwork, mdiNetwork } from "@mdi/js";
 
 export const ozwNetworkTabs = (instance: number): PageNavigation[] => {
   return [

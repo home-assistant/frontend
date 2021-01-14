@@ -1,26 +1,26 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   query,
   TemplateResult,
-  css,
-  CSSResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
-  HaDataTable,
   DataTableRowData,
+  HaDataTable,
 } from "../../../../../components/data-table/ha-data-table";
 import type {
   ZHADeviceEndpoint,
   ZHAEntityReference,
 } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
-import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 
 export interface DeviceEndpointRowData extends DataTableRowData {
   id: string;

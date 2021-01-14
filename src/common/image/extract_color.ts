@@ -1,7 +1,7 @@
-import Vibrant from "node-vibrant/lib/browser";
-import MMCQ from "@vibrant/quantizer-mmcq";
-import { BasicPipeline } from "@vibrant/core/lib/pipeline";
 import { Swatch, Vec3 } from "@vibrant/color";
+import { BasicPipeline } from "@vibrant/core/lib/pipeline";
+import MMCQ from "@vibrant/quantizer-mmcq";
+import Vibrant from "node-vibrant/lib/browser";
 import { getRGBContrastRatio } from "../color/rgb";
 
 const CONTRAST_RATIO = 4.5;

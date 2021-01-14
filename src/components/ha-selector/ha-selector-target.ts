@@ -1,3 +1,9 @@
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+import "@polymer/paper-input/paper-input";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -7,23 +13,17 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { TargetSelector } from "../../data/selector";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
-import "../ha-target-picker";
-import "@material/mwc-list/mwc-list-item";
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-list/mwc-list";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
+import { TargetSelector } from "../../data/selector";
 import { Target } from "../../data/target";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { HomeAssistant } from "../../types";
+import "../ha-target-picker";
 
 @customElement("ha-selector-target")
 export class HaTargetSelector extends SubscribeMixin(LitElement) {

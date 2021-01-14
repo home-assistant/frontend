@@ -1,6 +1,5 @@
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import type { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
@@ -8,9 +7,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -20,6 +19,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { SpeechRecognition } from "../../common/dom/speech-recognition";
 import { uid } from "../../common/util/uid";
 import "../../components/dialog/ha-paper-dialog";
+import "../../components/ha-icon-button";
 import {
   AgentInfo,
   getAgentInfo,
