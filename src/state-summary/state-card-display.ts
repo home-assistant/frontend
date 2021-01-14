@@ -9,7 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { attributeClassNames } from "../common/entity/attribute_class_names";
+import { classMap } from "lit-html/directives/class-map";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";
@@ -40,7 +40,10 @@ export class StateCardDisplay extends LitElement {
         >
         </state-info>
         <div
-          class="state ${classMap({"has-unit_of_measurement": "unit_of_measurement" in this.stateObj.attributes})}"
+          class="state ${classMap({
+            "has-unit_of_measurement":
+              "unit_of_measurement" in this.stateObj.attributes,
+          })}"
         >
           ${computeDomain(this.stateObj.entity_id) === "sensor" &&
           this.stateObj.attributes.device_class === "timestamp" &&
