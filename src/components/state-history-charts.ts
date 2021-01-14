@@ -26,7 +26,7 @@ class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public upToNow = false;
 
-  @property({ type: Boolean }) public noSingle = false;
+  @property({ type: Boolean, attribute: "no-single" }) public noSingle = false;
 
   @property({ type: Boolean }) public isLoadingData = false;
 
