@@ -75,10 +75,14 @@ class CloudLogin extends LocalizeMixin(
           right: auto;
           left: 8px;
         }
+        .login-form {
+          display: flex;
+          flex-direction: column;
+        }
         .pwd-forgot-link {
           color: var(--secondary-text-color) !important;
-          text-decoration: none !important;
           text-align: right !important;
+          align-self: flex-end;
         }
       </style>
       <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
@@ -126,7 +130,7 @@ class CloudLogin extends LocalizeMixin(
             <ha-card
               header="[[localize('ui.panel.config.cloud.login.sign_in')]]"
             >
-              <div class="card-content">
+              <div class="card-content login-form">
                 <div class="error" hidden$="[[!_error]]">[[_error]]</div>
                 <paper-input
                   label="[[localize('ui.panel.config.cloud.login.email')]]"
@@ -143,16 +147,14 @@ class CloudLogin extends LocalizeMixin(
                   type="password"
                   on-keydown="_keyDown"
                   error-message="[[localize('ui.panel.config.cloud.login.password_error_msg')]]"
+                ></paper-input>
+                <button
+                  class="link pwd-forgot-link"
+                  hidden="[[_requestInProgress]]"
+                  on-click="_handleForgotPassword"
                 >
-                  <button
-                    class="link pwd-forgot-link"
-                    slot="suffix"
-                    hidden="[[_requestInProgress]]"
-                    on-click="_handleForgotPassword"
-                  >
-                    [[localize('ui.panel.config.cloud.login.forgot_password')]]
-                  </button>
-                </paper-input>
+                  [[localize('ui.panel.config.cloud.login.forgot_password')]]
+                </button>
               </div>
               <div class="card-actions">
                 <ha-progress-button
