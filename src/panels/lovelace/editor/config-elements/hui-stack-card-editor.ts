@@ -46,8 +46,6 @@ export class HuiStackCardEditor extends LitElement
 
   @internalProperty() protected _guiModeAvailable? = true;
 
-  @internalProperty() protected _headerContent?: TemplateResult;
-
   @query("hui-card-element-editor")
   protected _cardEditorEl?: HuiCardElementEditor;
 
@@ -69,7 +67,6 @@ export class HuiStackCardEditor extends LitElement
 
     return html`
       <div class="card-config">
-        ${this._headerContent}
         <div class="toolbar">
           <paper-tabs
             .selected=${selected}

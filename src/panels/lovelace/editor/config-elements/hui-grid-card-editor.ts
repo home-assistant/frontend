@@ -34,35 +34,36 @@ export class HuiGridCardEditor extends HuiStackCardEditor {
       return html``;
     }
 
-    this._headerContent = html`
-      <div class="side-by-side">
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.grid.columns"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          type="number"
-          .value=${(this._config as GridCardConfig).columns}
-          .configValue=${"columns"}
-          @value-changed=${this._handleColumnsChanged}
-        ></paper-input>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.grid.square"
-          )}
-          .dir=${computeRTLDirection(this.hass)}
-        >
-          <ha-switch
-            .checked=${(this._config as GridCardConfig).square}
-            .configValue=${"square"}
-            @change=${this._handleSquareChanged}
-          ></ha-switch>
-        </ha-formfield>
+    return html`
+      <div class="card-config">
+        <div class="side-by-side">
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.grid.columns"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            type="number"
+            .value=${(this._config as GridCardConfig).columns}
+            .configValue=${"columns"}
+            @value-changed=${this._handleColumnsChanged}
+          ></paper-input>
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.grid.square"
+            )}
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked=${(this._config as GridCardConfig).square}
+              .configValue=${"square"}
+              @change=${this._handleSquareChanged}
+            ></ha-switch>
+          </ha-formfield>
+        </div>
       </div>
+      ${super.render()}
     `;
-
-    return super.render();
   }
 
   private _handleColumnsChanged(ev): void {
