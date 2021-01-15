@@ -3,15 +3,15 @@ import {
   any,
   array,
   assert,
+  boolean,
+  number,
   object,
   optional,
   string,
-  boolean,
-  number,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { GridCardConfig } from "../../cards/types";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { GridCardConfig } from "../../cards/types";
 import { HuiStackCardEditor } from "./hui-stack-card-editor";
 
 const cardConfigStruct = object({
