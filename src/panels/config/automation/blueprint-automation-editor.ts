@@ -175,8 +175,9 @@ export class HaBlueprintAutomationEditor extends LitElement {
                             : html`<paper-input
                                 .key=${key}
                                 required
-                                .value=${this.config.use_blueprint.input &&
-                                this.config.use_blueprint.input[key]}
+                                .value=${(this.config.use_blueprint.input &&
+                                  this.config.use_blueprint.input[key]) ??
+                                value?.default}
                                 @value-changed=${this._inputChanged}
                                 no-label-float
                               ></paper-input>`}
