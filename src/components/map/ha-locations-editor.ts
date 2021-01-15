@@ -21,8 +21,8 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   LeafletModuleType,
-  setupLeafletMap,
   replaceTileLayer,
+  setupLeafletMap,
 } from "../../common/dom/setup-leaflet-map";
 import { defaultRadiusColor } from "../../data/zone";
 import { HomeAssistant } from "../../types";

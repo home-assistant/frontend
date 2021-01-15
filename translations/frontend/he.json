@@ -1400,6 +1400,7 @@
                             "caption": "בצע משהו רק אם..."
                         },
                         "create": "צור אוטומציה עם המכשיר",
+                        "create_disable": "non posso creare automazioni condispositivi disabilitati",
                         "no_automations": "אין אוטומציות",
                         "no_device_automations": "אין אוטומציות זמינות עבור מכשיר זה.",
                         "triggers": {
@@ -1425,6 +1426,7 @@
                     "description": "ניהול התקנים מחוברים",
                     "device_info": "פרטי התקן",
                     "device_not_found": "המכשיר לא נמצא.",
+                    "disabled": "disabilitato",
                     "entities": {
                         "add_entities_lovelace": "הוסף לממשק Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
@@ -1434,14 +1436,24 @@
                     },
                     "name": "שם",
                     "no_devices": "אין התקנים",
+                    "picker": {
+                        "filter": {
+                            "filter": "filtro",
+                            "show_all": "mostra tutto",
+                            "show_disabled": "mostra entità disabilitate"
+                        },
+                        "search": "cerca dispositivi"
+                    },
                     "scene": {
                         "create": "צור סצינה עם המכשיר",
+                        "create_disable": "non posso creare scene con dispositivi disabilitati",
                         "no_scenes": "אין סצינות",
                         "scenes": "סצינות"
                     },
                     "scenes": "סצינות",
                     "script": {
                         "create": "צור סקריפט עם המכשיר",
+                        "create_disable": "non posso creare script con dispositivi disabilitati",
                         "no_scripts": "אין סקריפטים",
                         "scripts": "סקריפטים"
                     },
@@ -2908,10 +2920,12 @@
                 "change_password": {
                     "confirm_new_password": "אשר סיסמה חדשה",
                     "current_password": "סיסמה נוכחית",
+                    "error_new_is_old": "la nuova password deve essere diversa dalla attuale",
                     "error_required": "נדרש",
                     "header": "שינוי סיסמה",
                     "new_password": "סיסמה חדשה",
-                    "submit": "שלח"
+                    "submit": "שלח",
+                    "success": "cambio password riuscito"
                 },
                 "current_user": "אתה מחובר כעת כ- {fullName} .",
                 "dashboard": {

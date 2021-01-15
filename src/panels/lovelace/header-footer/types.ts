@@ -1,5 +1,5 @@
+import { array, number, object, optional, string, union } from "superstruct";
 import { ActionConfig } from "../../../data/lovelace";
-import { object, optional, union, string, number, array } from "superstruct";
 import { actionConfigStruct, entitiesConfigStruct } from "../editor/types";
 import { EntityConfig } from "../entity-rows/types";
 

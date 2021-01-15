@@ -1,14 +1,17 @@
+import { mdiMenu } from "@mdi/js";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
+import { navigate } from "../../../src/common/navigate";
 import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
@@ -17,13 +20,10 @@ import {
   createHassioSession,
   validateHassioSession,
 } from "../../../src/data/hassio/ingress";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import { navigate } from "../../../src/common/navigate";
-import { mdiMenu } from "@mdi/js";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {

@@ -3,9 +3,9 @@ import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
+import { formatNumber } from "../string/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
-import { formatNumber } from "../string/format_number";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,

@@ -14,8 +14,6 @@ import "../../src/styles/polymer-ha-style";
 // eslint-disable-next-line import/extensions
 import { DEMOS } from "../build/import-demos";
 
-const fixPath = (path) => path.substr(2, path.length - 5);
-
 class HaGallery extends PolymerElement {
   static get template() {
     return html`

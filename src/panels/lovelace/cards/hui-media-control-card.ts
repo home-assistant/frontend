@@ -21,8 +21,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { debounce } from "../../../common/util/debounce";
 import { extractColors } from "../../../common/image/extract_color";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -30,14 +30,14 @@ import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
-  computeMediaDescription,
   computeMediaControls,
+  computeMediaDescription,
   getCurrentProgress,
   MediaPickedEvent,
+  MediaPlayerEntity,
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_SEEK,
   SUPPORT_TURN_ON,
-  MediaPlayerEntity,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";

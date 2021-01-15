@@ -1,10 +1,10 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
-  internalProperty,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";

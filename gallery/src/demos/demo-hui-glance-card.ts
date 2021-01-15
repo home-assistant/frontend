@@ -1,6 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -77,7 +82,8 @@ const CONFIGS = [
     heading: "With title",
     config: `
 - type: glance
-  title: This is glance
+  title: Custom title
+  columns: 4
   entities:
     - device_tracker.demo_paulus
     - media_player.living_room
@@ -104,9 +110,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "No name",
+    heading: "No entity names",
     config: `
 - type: glance
+  columns: 4
   show_name: false
   entities:
     - device_tracker.demo_paulus
@@ -119,9 +126,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "No state",
+    heading: "No state labels",
     config: `
 - type: glance
+  columns: 4
   show_state: false
   entities:
     - device_tracker.demo_paulus
@@ -134,9 +142,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "No name and no state",
+    heading: "No names and no state labels",
     config: `
 - type: glance
+  columns: 4
   show_name: false
   show_state: false
   entities:
@@ -150,47 +159,24 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Custom name, custom icon",
+    heading: "Custom name + custom icon",
     config: `
 - type: glance
+  columns: 4
   entities:
     - entity: device_tracker.demo_paulus
       name: ¯\\_(ツ)_/¯
       icon: mdi:home-assistant
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - entity: light.kitchen_lights
-      icon: mdi:alarm-light
-    - lock.kitchen_door
-    - light.ceiling_lights
-    `,
-  },
-  {
-    heading: "Custom tap action",
-    config: `
-- type: glance
-  entities:
-    - entity: lock.kitchen_door
-      tap_action:
-        type: toggle
-    - entity: light.ceiling_lights
-      tap_action:
-        action: call-service
-        service: light.turn_on
-        service_data:
-          entity_id: light.ceiling_lights
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
+    - entity: media_player.living_room
+      name: ¯\\_(ツ)_/¯
+      icon: mdi:home-assistant
     `,
   },
   {
     heading: "Selectively hidden name",
     config: `
 - type: glance
+  columns: 4
   entities:
     - device_tracker.demo_paulus
     - entity: media_player.living_room
@@ -199,45 +185,51 @@ const CONFIGS = [
     - entity: cover.kitchen_window
       name:
     - light.kitchen_lights
+    - entity: lock.kitchen_door
+      name: 
+    - light.ceiling_lights
     `,
   },
   {
-    heading: "Primary theme",
+    heading: "Custom tap action",
     config: `
 - type: glance
-  theming: primary
+  columns: 4  
   entities:
-    - device_tracker.demo_paulus
-    - media_player.living_room
-    - sun.sun
-    - cover.kitchen_window
-    - light.kitchen_lights
-    - lock.kitchen_door
-    - light.ceiling_lights
+    - entity: lock.kitchen_door
+      name: Custom
+      tap_action:
+        type: toggle
+    - entity: light.ceiling_lights
+      name: Custom
+      tap_action:
+        action: call-service
+        service: light.turn_on
+        service_data:
+          entity_id: light.ceiling_lights
+    - entity: sun.sun
+      name: Regular
+    - entity: light.kitchen_lights
+      name: Regular
     `,
   },
 ];
 
-class DemoPicEntity extends PolymerElement {
-  static get template() {
-    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
+@customElement("demo-hui-glance-card")
+class DemoGlanceEntity extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-    };
-  }
-
-  public ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
   }
 }
 
-customElements.define("demo-hui-glance-card", DemoPicEntity);
+customElements.define("demo-hui-glance-card", DemoGlanceEntity);

@@ -1,4 +1,3 @@
-import "../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -10,6 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-icon-button";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
 
@@ -31,17 +31,17 @@ export class HuiInputListEditor extends LitElement {
         return html`
           <paper-input
             label="${this.inputLabel}"
-            .value="${listEntry}"
-            .configValue="${"entry"}"
-            .index="${index}"
-            @value-changed="${this._valueChanged}"
-            @blur="${this._consolidateEntries}"
+            .value=${listEntry}
+            .configValue=${"entry"}
+            .index=${index}
+            @value-changed=${this._valueChanged}
+            @blur=${this._consolidateEntries}
             ><ha-icon-button
               slot="suffix"
               class="clear-button"
               icon="hass:close"
               no-ripple
-              @click="${this._removeEntry}"
+              @click=${this._removeEntry}
               >Clear</ha-icon-button
             ></paper-input
           >
@@ -49,7 +49,7 @@ export class HuiInputListEditor extends LitElement {
       })}
       <paper-input
         label="${this.inputLabel}"
-        @change="${this._addEntry}"
+        @change=${this._addEntry}
       ></paper-input>
     `;
   }

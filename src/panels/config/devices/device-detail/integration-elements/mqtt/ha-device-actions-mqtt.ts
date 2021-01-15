@@ -1,18 +1,18 @@
 import {
+  css,
   CSSResult,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  css,
 } from "lit-element";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { removeMQTTDeviceEntry } from "../../../../../../data/mqtt";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
-import { showMQTTDeviceDebugInfoDialog } from "./show-dialog-mqtt-device-debug-info";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
+import { showMQTTDeviceDebugInfoDialog } from "./show-dialog-mqtt-device-debug-info";
 
 @customElement("ha-device-actions-mqtt")
 export class HaDeviceActionsMqtt extends LitElement {

@@ -4,8 +4,8 @@ import {
   CSSResultArray,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   property,
   TemplateResult,
 } from "lit-element";
@@ -13,19 +13,19 @@ import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../layouts/hass-tabs-subpage";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
-import "../../../ha-config-section";
 import {
-  fetchOZWNodeStatus,
   fetchOZWNodeMetadata,
+  fetchOZWNodeStatus,
   OZWDevice,
   OZWDeviceMetaDataResponse,
 } from "../../../../../data/ozw";
 import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
-import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
+import "../../../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../../../types";
+import "../../../ha-config-section";
 import { ozwNodeTabs } from "./ozw-node-router";
+import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
 
 @customElement("ozw-node-dashboard")
 class OZWNodeDashboard extends LitElement {
@@ -141,11 +141,15 @@ class OZWNodeDashboard extends LitElement {
                           ${this._metadata.metadata.ResetHelp}
                         </div>
                       </ha-card>
-                      <ha-card class="content" header="WakeUp">
-                        <div class="card-content">
-                          ${this._metadata.metadata.WakeupHelp}
-                        </div>
-                      </ha-card>
+                      ${this._metadata.metadata.WakeupHelp
+                        ? html`
+                            <ha-card class="content" header="WakeUp">
+                              <div class="card-content">
+                                ${this._metadata.metadata.WakeupHelp}
+                              </div>
+                            </ha-card>
+                          `
+                        : ``}
                     `
                   : ``}
               `
@@ -197,6 +201,10 @@ class OZWNodeDashboard extends LitElement {
 
         .content {
           margin-top: 24px;
+        }
+
+        .content:last-child {
+          margin-bottom: 24px;
         }
 
         .sectionHeader {

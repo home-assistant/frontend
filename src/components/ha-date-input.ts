@@ -12,6 +12,9 @@ documentContainer.innerHTML = `
         top: 2px;
         height: 30px;
       }
+      [part="value"] {
+        text-align: center;
+      }
       </style>
     </template>
   </dom-module>

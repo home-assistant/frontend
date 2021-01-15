@@ -173,8 +173,8 @@ class LovelaceFullConfigEditor extends LitElement {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
         ),
-        dismissText: this.hass!.localize("ui.common.leave"),
-        confirmText: this.hass!.localize("ui.common.stay"),
+        dismissText: this.hass!.localize("ui.common.stay"),
+        confirmText: this.hass!.localize("ui.common.leave"),
       }))
     ) {
       return;
