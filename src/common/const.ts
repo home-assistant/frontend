@@ -121,7 +121,7 @@ export const DOMAINS_HIDE_MORE_INFO = [
 export const DOMAINS_MORE_INFO_NO_HISTORY = ["camera", "configurator", "scene"];
 
 /** States that we consider "off". */
-export const STATES_OFF = ["closed", "locked", "off"];
+export const STATES_OFF = ["closed", "locked", "off", "scening"];
 
 /** Binary States */
 export const BINARY_STATE_ON = "on";
