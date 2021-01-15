@@ -66,6 +66,10 @@ const integrationsWithPanel = {
     buttonLocalizeKey: "ui.panel.config.zwave.button",
     path: "/config/zwave",
   },
+  zwave_js: {
+    buttonLocalizeKey: "ui.panel.config.zwave_js.button",
+    path: "/config/zwave_js/dashboard",
+  },
 };
 
 @customElement("ha-integration-card")
