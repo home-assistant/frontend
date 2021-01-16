@@ -2388,7 +2388,9 @@
             "network": "Network",
             "node_id": "Node ID",
             "home_id": "Home ID",
-            "close": "Close"
+            "close": "Close",
+            "add_node": "Add Node",
+            "remove_node": "Remove Node"
           },
           "dashboard": {
             "header": "Manage your Z-Wave Network",

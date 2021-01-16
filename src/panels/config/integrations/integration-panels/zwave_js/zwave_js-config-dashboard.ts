@@ -139,12 +139,16 @@ class ZWaveJSConfigDashboard extends LitElement {
                         )}
                       </mwc-button>
                     </a>
-                    <mwc-button @click=${this._addNodeClicked}
-                      >Add Node</mwc-button
-                    >
-                    <mwc-button @click=${this._removeNodeClicked}
-                      >Remove Node</mwc-button
-                    >
+                    <mwc-button @click=${this._addNodeClicked}>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.add_node"
+                      )}
+                    </mwc-button>
+                    <mwc-button @click=${this._removeNodeClicked}>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.remove_node"
+                      )}
+                    </mwc-button>
                   </div>
                 </ha-card>
               `
