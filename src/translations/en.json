@@ -2696,7 +2696,9 @@
             },
             "grid": {
               "name": "Grid",
-              "description": "The Grid card allows you to show multiple cards in a grid."
+              "description": "The Grid card allows you to show multiple cards in a grid.",
+              "columns": "Columns",
+              "square": "Render cards as squares"
             },
             "logbook": {
               "name": "Logbook",
