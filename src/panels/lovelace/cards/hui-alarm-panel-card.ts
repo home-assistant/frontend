@@ -205,6 +205,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                           .value="${value}"
                           @click="${this._handlePadClick}"
                           outlined
+                          class=${classMap({
+                            numberkey: value !== "clear",
+                          })}
                         >
                           ${value === "clear"
                             ? this.hass!.localize(
@@ -344,7 +347,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
 
       #keypad mwc-button {
-        text-size: 20px;
         padding: 8px;
         width: 30%;
         box-sizing: border-box;
@@ -363,6 +365,10 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
       mwc-button#disarm {
         color: var(--error-color);
+      }
+
+      mwc-button.numberkey {
+        --mdc-typography-button-font-size: var(--keypad-font-size, 0.875rem);
       }
     `;
   }
