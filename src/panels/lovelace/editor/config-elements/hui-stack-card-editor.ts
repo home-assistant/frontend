@@ -12,16 +12,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import {
-  any,
-  array,
-  assert,
-  boolean,
-  number,
-  object,
-  optional,
-  string,
-} from "superstruct";
+import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -32,13 +23,12 @@ import type { HuiCardElementEditor } from "../card-editor/hui-card-element-edito
 import "../card-editor/hui-card-picker";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { GUIModeChangedEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
   type: string(),
   cards: array(any()),
   title: optional(string()),
-  square: optional(boolean()),
-  columns: optional(number()),
 });
 
 @customElement("hui-stack-card-editor")
@@ -48,16 +38,16 @@ export class HuiStackCardEditor extends LitElement
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @internalProperty() private _config?: StackCardConfig;
+  @internalProperty() protected _config?: StackCardConfig;
 
-  @internalProperty() private _selectedCard = 0;
+  @internalProperty() protected _selectedCard = 0;
 
-  @internalProperty() private _GUImode = true;
+  @internalProperty() protected _GUImode = true;
 
-  @internalProperty() private _guiModeAvailable? = true;
+  @internalProperty() protected _guiModeAvailable? = true;
 
   @query("hui-card-element-editor")
-  private _cardEditorEl?: HuiCardElementEditor;
+  protected _cardEditorEl?: HuiCardElementEditor;
 
   public setConfig(config: Readonly<StackCardConfig>): void {
     assert(config, cardConfigStruct);
@@ -170,7 +160,7 @@ export class HuiStackCardEditor extends LitElement
     `;
   }
 
-  private _handleSelectedCard(ev) {
+  protected _handleSelectedCard(ev) {
     if (ev.target.id === "add-card") {
       this._selectedCard = this._config!.cards.length;
       return;
@@ -180,7 +170,7 @@ export class HuiStackCardEditor extends LitElement
     this._selectedCard = parseInt(ev.detail.selected, 10);
   }
 
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
+  protected _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
     ev.stopPropagation();
     if (!this._config) {
       return;
@@ -192,7 +182,7 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _handleCardPicked(ev) {
+  protected _handleCardPicked(ev) {
     ev.stopPropagation();
     if (!this._config) {
       return;
@@ -203,7 +193,7 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _handleDeleteCard() {
+  protected _handleDeleteCard() {
     if (!this._config) {
       return;
     }
@@ -214,7 +204,7 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _handleMove(ev: Event) {
+  protected _handleMove(ev: Event) {
     if (!this._config) {
       return;
     }
@@ -232,60 +222,63 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+  protected _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
     this._GUImode = ev.detail.guiMode;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
-  private _toggleMode(): void {
+  protected _toggleMode(): void {
     this._cardEditorEl?.toggleMode();
   }
 
-  private _setMode(value: boolean): void {
+  protected _setMode(value: boolean): void {
     this._GUImode = value;
     if (this._cardEditorEl) {
       this._cardEditorEl!.GUImode = value;
     }
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .toolbar {
-        display: flex;
-        --paper-tabs-selection-bar-color: var(--primary-color);
-        --paper-tab-ink: var(--primary-color);
-      }
-      paper-tabs {
-        display: flex;
-        font-size: 14px;
-        flex-grow: 1;
-      }
-      #add-card {
-        max-width: 32px;
-        padding: 0;
-      }
-
-      #card-options {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-      }
-
-      #editor {
-        border: 1px solid var(--divider-color);
-        padding: 12px;
-      }
-      @media (max-width: 450px) {
-        #editor {
-          margin: 0 -12px;
+  static get styles(): CSSResult[] {
+    return [
+      configElementStyle,
+      css`
+        .toolbar {
+          display: flex;
+          --paper-tabs-selection-bar-color: var(--primary-color);
+          --paper-tab-ink: var(--primary-color);
         }
-      }
+        paper-tabs {
+          display: flex;
+          font-size: 14px;
+          flex-grow: 1;
+        }
+        #add-card {
+          max-width: 32px;
+          padding: 0;
+        }
 
-      .gui-mode-button {
-        margin-right: auto;
-      }
-    `;
+        #card-options {
+          display: flex;
+          justify-content: flex-end;
+          width: 100%;
+        }
+
+        #editor {
+          border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        @media (max-width: 450px) {
+          #editor {
+            margin: 0 -12px;
+          }
+        }
+
+        .gui-mode-button {
+          margin-right: auto;
+        }
+      `,
+    ];
   }
 }
 
