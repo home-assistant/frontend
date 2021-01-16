@@ -267,6 +267,7 @@ class MoreInfoWeather extends LitElement {
     return date.toLocaleDateString(this.hass.language, {
       weekday: "long",
       hour: "numeric",
+      minute: "numeric",
     });
   }
 

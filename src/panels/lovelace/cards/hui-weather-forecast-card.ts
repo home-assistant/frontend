@@ -288,6 +288,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                 this.hass!.language,
                                 {
                                   hour: "numeric",
+                                  minute: "numeric",
                                 }
                               )}
                             `
