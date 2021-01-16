@@ -147,15 +147,6 @@ class ZWaveJSConfigDashboard extends LitElement {
                     >
                   </div>
                 </ha-card>
-
-                <ha-card style="margin-top: 32px">
-                  <mwc-button @click=${this._temp}
-                    >*Cancel Inclusion</mwc-button
-                  >
-                  <mwc-button @click=${this._temp2}
-                    >*Cancel Exclusion</mwc-button
-                  >
-                </ha-card>
               `
             : ``}
         </ha-config-section>
@@ -181,20 +172,6 @@ class ZWaveJSConfigDashboard extends LitElement {
   private async _removeNodeClicked() {
     showZWaveJSRemoveNodeDialog(this, {
       entry_id: this.configEntryId!,
-    });
-  }
-
-  private async _temp() {
-    this.hass.callWS({
-      type: "zwave_js/stop_inclusion",
-      entry_id: this.configEntryId,
-    });
-  }
-
-  private async _temp2() {
-    this.hass.callWS({
-      type: "zwave_js/stop_exclusion",
-      entry_id: this.configEntryId,
     });
   }
 
