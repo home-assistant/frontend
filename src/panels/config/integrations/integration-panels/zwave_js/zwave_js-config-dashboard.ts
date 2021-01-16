@@ -21,6 +21,8 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
+import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
+import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-config-dashboard")
@@ -137,7 +139,22 @@ class ZWaveJSConfigDashboard extends LitElement {
                         )}
                       </mwc-button>
                     </a>
+                    <mwc-button @click=${this._addNodeClicked}
+                      >Add Node</mwc-button
+                    >
+                    <mwc-button @click=${this._removeNodeClicked}
+                      >Remove Node</mwc-button
+                    >
                   </div>
+                </ha-card>
+
+                <ha-card style="margin-top: 32px">
+                  <mwc-button @click=${this._temp}
+                    >*Cancel Inclusion</mwc-button
+                  >
+                  <mwc-button @click=${this._temp2}
+                    >*Cancel Exclusion</mwc-button
+                  >
                 </ha-card>
               `
             : ``}
@@ -153,6 +170,32 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (this._status === "connected") {
       this._icon = mdiCheckCircle;
     }
+  }
+
+  private async _addNodeClicked() {
+    showZWaveJSAddNodeDialog(this, {
+      entry_id: this.configEntryId!,
+    });
+  }
+
+  private async _removeNodeClicked() {
+    showZWaveJSRemoveNodeDialog(this, {
+      entry_id: this.configEntryId!,
+    });
+  }
+
+  private async _temp() {
+    this.hass.callWS({
+      type: "zwave_js/stop_inclusion",
+      entry_id: this.configEntryId,
+    });
+  }
+
+  private async _temp2() {
+    this.hass.callWS({
+      type: "zwave_js/stop_exclusion",
+      entry_id: this.configEntryId,
+    });
   }
 
   static get styles(): CSSResultArray {
