@@ -75,6 +75,15 @@ class CloudLogin extends LocalizeMixin(
           right: auto;
           left: 8px;
         }
+        .login-form {
+          display: flex;
+          flex-direction: column;
+        }
+        .pwd-forgot-link {
+          color: var(--secondary-text-color) !important;
+          text-align: right !important;
+          align-self: flex-end;
+        }
       </style>
       <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
         <div class="content">
@@ -91,9 +100,8 @@ class CloudLogin extends LocalizeMixin(
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Nabu&nbsp;Casa,&nbsp;Inc
-                </a>
-                [[localize('ui.panel.config.cloud.login.introduction2a')]]
+                  Nabu&nbsp;Casa,&nbsp;Inc</a
+                >[[localize('ui.panel.config.cloud.login.introduction2a')]]
               </p>
               <p>
                 [[localize('ui.panel.config.cloud.login.introduction3')]]
@@ -122,7 +130,7 @@ class CloudLogin extends LocalizeMixin(
             <ha-card
               header="[[localize('ui.panel.config.cloud.login.sign_in')]]"
             >
-              <div class="card-content">
+              <div class="card-content login-form">
                 <div class="error" hidden$="[[!_error]]">[[_error]]</div>
                 <paper-input
                   label="[[localize('ui.panel.config.cloud.login.email')]]"
@@ -140,6 +148,13 @@ class CloudLogin extends LocalizeMixin(
                   on-keydown="_keyDown"
                   error-message="[[localize('ui.panel.config.cloud.login.password_error_msg')]]"
                 ></paper-input>
+                <button
+                  class="link pwd-forgot-link"
+                  hidden="[[_requestInProgress]]"
+                  on-click="_handleForgotPassword"
+                >
+                  [[localize('ui.panel.config.cloud.login.forgot_password')]]
+                </button>
               </div>
               <div class="card-actions">
                 <ha-progress-button
@@ -147,13 +162,6 @@ class CloudLogin extends LocalizeMixin(
                   progress="[[_requestInProgress]]"
                   >[[localize('ui.panel.config.cloud.login.sign_in')]]</ha-progress-button
                 >
-                <button
-                  class="link"
-                  hidden="[[_requestInProgress]]"
-                  on-click="_handleForgotPassword"
-                >
-                  [[localize('ui.panel.config.cloud.login.forgot_password')]]
-                </button>
               </div>
             </ha-card>
 
