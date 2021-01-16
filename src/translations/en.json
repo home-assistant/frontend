@@ -2378,6 +2378,28 @@
             "node_info": "Node Information",
             "refresh_entity": "Refresh Entity"
           }
+        },
+        "zwave_js": {
+          "button": "Configure",
+          "navigation": {
+            "network": "Network"
+          },
+          "common": {
+            "network": "Network"
+          },
+          "dashboard": {
+            "header": "Manage your Z-Wave Network",
+            "introduction": "Manage your Z-Wave network and Z-Wave nodes",
+            "driver_version": "Driver Version",
+            "server_version": "Server Version",
+            "home_id": "Home ID",
+            "node_count": "Node Count"
+          },
+          "network_status": {
+            "connected": "Connected",
+            "connecting": "Connecting",
+            "unknown": "Unknown"
+          }
         }
       },
       "history": {
