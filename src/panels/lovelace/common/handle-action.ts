@@ -1,6 +1,7 @@
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { ActionConfig } from "../../../data/lovelace";
@@ -119,7 +120,11 @@ export const handleAction = async (
 
         showToast(node, {
           message: hass.localize(
-            "ui.panel.lovelace.cards.actions.entity_cannot_toggle"
+            "ui.panel.lovelace.cards.actions.entity_cannot_toggle",
+            "entity_name",
+            hass.states[config.entity]
+              ? computeStateName(hass.states[config.entity])
+              : config.entity
           ),
         });
         forwardHaptic("failure");

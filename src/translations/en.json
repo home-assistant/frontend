@@ -2428,7 +2428,7 @@
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
             "no_service": "No service for execution specified",
-            "entity_cannot_toggle": "Entity cannot be toggled"
+            "entity_cannot_toggle": "Entity \"{entity_name}\" cannot be toggled"
           },
           "empty_state": {
             "title": "Welcome Home",
