@@ -74,6 +74,7 @@ class HaExpansionPanel extends LitElement {
           var(--divider-color, #e0e0e0)
         );
         border-radius: var(--ha-card-border-radius, 4px);
+        padding: 0 8px;
       }
 
       .summary {
@@ -83,6 +84,7 @@ class HaExpansionPanel extends LitElement {
         align-items: center;
         cursor: pointer;
         overflow: hidden;
+        font-weight: 500;
       }
 
       .summary-icon {

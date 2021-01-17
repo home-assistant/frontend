@@ -200,26 +200,52 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           </div>
         </div>
 
+        <p>
+          ${this.hass.localize(
+            "ui.dialogs.entity_registry.info_customize",
+            "customize_link",
+            html`<a
+              href="${"/config/customize/edit/" + this._entityId}"
+              rel="noreferrer"
+              >${this.hass.localize(
+                "ui.dialogs.entity_registry.customize_link"
+              )}</a
+            >`
+          )}
+        </p>
+
         ${this.entry.device_id
-          ? html`<ha-expansion-panel .header=${"Advanced"}>
+          ? html`<ha-expansion-panel
+              .header=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.advanced"
+              )}
+              outlined
+            >
               <p>
-                By default the entities of a device are in the same area as the
-                device. If you change the area of this entity, it will no longer
-                follow the area of the device.
+                ${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.area_note"
+                )}
               </p>
               ${this._areaId
                 ? html`<mwc-button @click=${this._clearArea}
-                    >Follow device area</mwc-button
+                    >${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.follow_device_area"
+                    )}</mwc-button
                   >`
                 : this._device
                 ? html`<mwc-button @click=${this._openDeviceSettings}
-                    >Change device area</mwc-button
+                    >${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.change_device_area"
+                    )}</mwc-button
                   >`
                 : ""}
               <ha-area-picker
                 .hass=${this.hass}
                 .value=${this._areaId}
                 .placeholder=${this._device?.area_id}
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.area"
+                )}
                 @value-changed=${this._areaPicked}
               ></ha-area-picker
             ></ha-expansion-panel>`
@@ -381,6 +407,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           color: var(--primary-text-color);
           display: flex;
           align-items: center;
+        }
+        p {
+          margin: 8px 0;
         }
       `,
     ];
