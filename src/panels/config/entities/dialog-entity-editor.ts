@@ -171,32 +171,30 @@ export class DialogEntityEditor extends LitElement {
         }
         return html`
           <div class="content">
-            <p>
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.no_unique_id",
-                "entity_id",
-                this._params!.entity_id,
-                "faq_link",
-                html`<a
-                  href="${documentationUrl(this.hass, "/faq/unique_id")}"
-                  target="_blank"
-                  rel="noreferrer"
-                  >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
-                >`
-              )}
-              <br /><br />
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.info_customize",
-                "customize_link",
-                html`<a
-                  href="${"/config/customize/edit/" + this._params!.entity_id}"
-                  rel="noreferrer"
-                  >${this.hass.localize(
-                    "ui.dialogs.entity_registry.customize_link"
-                  )}</a
-                >`
-              )}
-            </p>
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.no_unique_id",
+              "entity_id",
+              this._params!.entity_id,
+              "faq_link",
+              html`<a
+                href="${documentationUrl(this.hass, "/faq/unique_id")}"
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
+              >`
+            )}
+            <br /><br />
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.info_customize",
+              "customize_link",
+              html`<a
+                href="${"/config/customize/edit/" + this._params!.entity_id}"
+                rel="noreferrer"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.customize_link"
+                )}</a
+              >`
+            )}
           </div>
         `;
       case "tab-related":
