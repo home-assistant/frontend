@@ -11,6 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import "../../components/buttons/ha-progress-button";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-card";
 import "../../components/ha-circular-progress";
@@ -18,13 +19,12 @@ import { haStyle } from "../../resources/styles";
 import "../../styles/polymer-ha-style";
 import type { HomeAssistant } from "../../types";
 import { HaFormCustomize } from "./customize/ha-form-customize";
-import "../../components/buttons/ha-progress-button";
 
 @customElement("ha-entity-config")
 export class HaEntityConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selectedEntityId?: string;
+  @property() public selectedEntityId!: string;
 
   @property() private _formState: "initial" | "loading" | "saving" | "editing" =
     "initial";
@@ -39,7 +39,6 @@ export class HaEntityConfig extends LitElement {
             .hass=${this.hass}
             .value=${this.selectedEntityId}
             .configValue=${"entity"}
-            @change=${this._selectedEntityChanged}
             allow-custom-entity
             hideClearIcon
           >
@@ -73,10 +72,6 @@ export class HaEntityConfig extends LitElement {
       this._selectEntity(this.selectedEntityId);
       this.requestUpdate();
     }
-  }
-
-  private _selectedEntityChanged(ev) {
-    this._selectEntity(ev.target.value);
   }
 
   private _selectEntity(entityId?: string) {

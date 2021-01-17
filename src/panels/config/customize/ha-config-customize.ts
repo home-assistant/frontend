@@ -7,11 +7,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
-import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
-import "../../../styles/polymer-ha-style";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
@@ -28,7 +25,7 @@ class HaConfigCustomize extends LitElement {
 
   @property() public route!: Route;
 
-  private _selectedEntityId = "";
+  @property() private _selectedEntityId = "";
 
   protected render(): TemplateResult {
     return html`
@@ -80,8 +77,7 @@ class HaConfigCustomize extends LitElement {
       return;
     }
     const routeSegments = this.route.path.split("/edit/");
-    this._selectedEntityId =
-      routeSegments.length > 1 ? routeSegments[1] : undefined;
+    this._selectedEntityId = routeSegments.length > 1 ? routeSegments[1] : "";
   }
 
   static get styles(): CSSResult {
