@@ -19,9 +19,9 @@ class HaInitPage extends LitElement {
                     <p>
                       It is possible that you are seeing this screen because
                       your Home Assistant is not currently connected. You can
-                      ask it to come online via
-                      <a href="https://remote.nabucasa.com/"
-                        >the Remote UI portal</a
+                      ask it to come online from your
+                      <a href="https://account.nabucasa.com/"
+                        >Naba Casa account page</a
                       >.
                     </p>
                   `
