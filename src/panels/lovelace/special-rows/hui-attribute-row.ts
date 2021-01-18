@@ -9,7 +9,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import checkValidDatetimeString from "../../../common/datetime/check_valid_datetime_string";
+import checkValidDate from "../../../common/datetime/check_valid_date";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -56,14 +56,19 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    let date: Date | undefined;
+    if (this._config.format) {
+      date = new Date(attribute);
+    }
+
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div>
           ${this._config.prefix}
-          ${this._config.format && checkValidDatetimeString(attribute)
+          ${this._config.format && checkValidDate(date)
             ? html` <hui-timestamp-display
                 .hass=${this.hass}
-                .ts=${new Date(attribute)}
+                .ts=${date}
                 .format=${this._config.format}
               ></hui-timestamp-display>`
             : attribute ?? "-"}
