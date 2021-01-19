@@ -27,11 +27,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   @property() public device!: DeviceRegistryEntry;
 
-  @property() private entry_id?: string;
+  @internalProperty() private _entryId?: string;
 
-  @property() private node_id?: number;
+  @internalProperty() private _nodeId?: number;
 
-  @property() private home_id?: string;
+  @internalProperty() private _homeId?: string;
 
   @internalProperty() private _node?: ZWaveJSNode;
 
@@ -43,19 +43,19 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       if (!identifiers) {
         return;
       }
-      this.home_id = identifiers.home_id;
-      this.node_id = identifiers.node_id;
-      this.entry_id = this.device.config_entries[0];
+      this._homeId = identifiers.home_id;
+      this._nodeId = identifiers.node_id;
+      this._entryId = this.device.config_entries[0];
 
       this._fetchNodeDetails();
     }
   }
 
   protected async _fetchNodeDetails() {
-    if (!this.node_id || !this.entry_id) {
+    if (!this._nodeId || !this._entryId) {
       return;
     }
-    this._node = await fetchNodeStatus(this.hass, this.entry_id, this.node_id);
+    this._node = await fetchNodeStatus(this.hass, this._entryId, this._nodeId);
   }
 
   protected render(): TemplateResult {
@@ -68,7 +68,7 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       </h4>
       <div>
         ${this.hass.localize("ui.panel.config.zwave_js.common.home_id")}:
-        ${this.home_id}
+        ${this._homeId}
       </div>
       <div>
         ${this.hass.localize("ui.panel.config.zwave_js.common.node_id")}:
