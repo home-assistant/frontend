@@ -2385,7 +2385,9 @@
             "network": "Network"
           },
           "common": {
-            "network": "Network"
+            "network": "Network",
+            "node_id": "Node ID",
+            "home_id": "Home ID"
           },
           "dashboard": {
             "header": "Manage your Z-Wave Network",
@@ -2394,6 +2396,18 @@
             "server_version": "Server Version",
             "home_id": "Home ID",
             "node_count": "Node Count"
+          },
+          "device_info": {
+            "zwave_info": "Z-Wave Info",
+            "node_status": "Node Status",
+            "node_ready": "Node Ready"
+          },
+          "node_status": {
+            "unknown": "Unknown",
+            "asleep": "Asleep",
+            "awake": "Awake",
+            "dead": "Dead",
+            "alive": "Alive"
           },
           "network_status": {
             "connected": "Connected",
