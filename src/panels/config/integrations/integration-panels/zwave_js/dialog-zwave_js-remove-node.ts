@@ -9,7 +9,6 @@ import {
   TemplateResult,
   css,
 } from "lit-element";
-import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
