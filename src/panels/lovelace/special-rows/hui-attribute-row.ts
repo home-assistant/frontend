@@ -46,7 +46,6 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     }
 
     const stateObj = this.hass.states[this._config.entity];
-    const attribute = stateObj.attributes[this._config.attribute];
 
     if (!stateObj) {
       return html`
@@ -56,6 +55,7 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const attribute = stateObj.attributes[this._config.attribute];
     let date: Date | undefined;
     if (this._config.format) {
       date = new Date(attribute);
