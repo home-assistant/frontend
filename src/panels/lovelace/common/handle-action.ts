@@ -112,22 +112,8 @@ export const handleAction = async (
     }
     case "toggle": {
       if (config.entity) {
-        if (DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
-          toggleEntity(hass, config.entity!);
-          forwardHaptic("light");
-          return;
-        }
-
-        showToast(node, {
-          message: hass.localize(
-            "ui.panel.lovelace.cards.actions.entity_cannot_toggle",
-            "entity_name",
-            hass.states[config.entity]
-              ? computeStateName(hass.states[config.entity])
-              : config.entity
-          ),
-        });
-        forwardHaptic("failure");
+        toggleEntity(hass, config.entity!);
+        forwardHaptic("light");
       } else {
         showToast(node, {
           message: hass.localize(
