@@ -224,6 +224,10 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   private _unsubscribe(): void {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
     if (this._status === "started") {
       this.hass.callWS({
         type: "zwave_js/stop_inclusion",
@@ -235,10 +239,6 @@ class DialogZWaveJSAddNode extends LitElement {
     }
     if (this._addNodeTimeoutHandle) {
       clearTimeout(this._addNodeTimeoutHandle);
-    }
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
-      this._subscribed = undefined;
     }
   }
 

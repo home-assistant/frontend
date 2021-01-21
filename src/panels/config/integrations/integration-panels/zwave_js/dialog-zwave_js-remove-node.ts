@@ -187,6 +187,10 @@ class DialogZWaveJSRemoveNode extends LitElement {
   }
 
   private _unsubscribe(): void {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
     if (this._status === "started") {
       this.hass.callWS({
         type: "zwave_js/stop_exclusion",
@@ -198,10 +202,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
     }
     if (this._removeNodeTimeoutHandle) {
       clearTimeout(this._removeNodeTimeoutHandle);
-    }
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
-      this._subscribed = undefined;
     }
   }
 
