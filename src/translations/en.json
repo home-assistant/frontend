@@ -2435,7 +2435,14 @@
       "lovelace": {
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
-          "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+          "actions": {
+            "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+            "no_entity_more_info": "No entity provided for more info dialog",
+            "no_entity_toggle": "No entity provided to toggle",
+            "no_navigation_path": "No navigation path specified",
+            "no_url": "No URL to open specified",
+            "no_service": "No service for execution specified"
+          },
           "empty_state": {
             "title": "Welcome Home",
             "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
@@ -2458,7 +2465,7 @@
             "url": "Open window to {url_path}",
             "toggle": "Toggle {name}",
             "call_service": "Call service {name}",
-            "more_info": "Show more-info: {name}"
+            "more_info": "Show more info: {name}"
           },
           "safe-mode": {
             "header": "Safe Mode Activated",
@@ -2687,7 +2694,7 @@
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
-              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown."
+              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
             },
             "entity-filter": {
               "name": "Entity Filter",
@@ -2803,7 +2810,7 @@
             },
             "picture-glance": {
               "name": "Picture Glance",
-              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog.",
+              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more info dialog.",
               "state_entity": "State Entity"
             },
             "plant-status": {
