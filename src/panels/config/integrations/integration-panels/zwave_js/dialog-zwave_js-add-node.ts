@@ -81,13 +81,13 @@ class DialogZWaveJSAddNode extends LitElement {
                   ></ha-switch>
                 </ha-formfield>
                 <p>
-                  <em
-                    ><small
-                      >${this.hass!.localize(
+                  <em>
+                    <small>
+                      ${this.hass!.localize(
                         "ui.panel.config.zwave_js.add_node.secure_inclusion_warning"
-                      )}</small
-                    ></em
-                  >
+                      )}
+                    </small>
+                  </em>
                 </p>
               </div>
               <mwc-button slot="primaryAction" @click=${this._startInclusion}>
@@ -161,11 +161,11 @@ class DialogZWaveJSAddNode extends LitElement {
                     )}
                   </p>
                   <a href="${`/config/devices/device/${this._device!.id}`}">
-                    <mwc-button
-                      >${this.hass.localize(
+                    <mwc-button>
+                      ${this.hass.localize(
                         "ui.panel.config.zwave_js.add_node.view_device"
-                      )}</mwc-button
-                    >
+                      )}
+                    </mwc-button>
                   </a>
                 </div>
               </div>
