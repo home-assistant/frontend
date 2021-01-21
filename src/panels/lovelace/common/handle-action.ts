@@ -1,7 +1,4 @@
-import { DOMAINS_TOGGLE } from "../../../common/const";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { ActionConfig } from "../../../data/lovelace";
