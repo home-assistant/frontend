@@ -1,12 +1,16 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 
-export interface Theme {
+export interface ThemeVars {
   // Incomplete
   "primary-color": string;
   "text-primary-color": string;
   "accent-color": string;
   [key: string]: string;
 }
+
+export type Theme = ThemeVars & {
+  dark: boolean;
+};
 
 export interface Themes {
   default_theme: string;

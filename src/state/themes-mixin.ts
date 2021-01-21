@@ -25,9 +25,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
-        this._updateHass({
-          selectedTheme: { ...this.hass!.selectedTheme!, ...ev.detail },
-        });
+        const selectedTheme = { ...this.hass!.selectedTheme!, ...ev.detail };
+        if (ev.detail?.theme && ev.detail?.theme !== "default") {
+          selectedTheme.dark = ev.detail?.theme
+            ? this.hass!.themes.themes[ev.detail?.theme]?.dark
+            : false;
+        }
+        this._updateHass({ selectedTheme });
         this._applyTheme(mql.matches);
         storeState(this.hass!);
       });
@@ -72,9 +76,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
 
       const darkMode =
-        themeName === "default"
-          ? !!options?.dark
-          : !!(dark && this.hass.themes.default_dark_theme);
+        !!options?.dark || !!(dark && this.hass.themes.default_dark_theme);
 
       if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({
