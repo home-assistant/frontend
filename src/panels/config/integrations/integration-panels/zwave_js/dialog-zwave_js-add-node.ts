@@ -245,6 +245,8 @@ class DialogZWaveJSAddNode extends LitElement {
     this._unsubscribe();
     this.entry_id = undefined;
     this._status = "";
+    this._device = undefined;
+    this._use_secure_inclusion = false;
   }
 
   static get styles(): CSSResult[] {
