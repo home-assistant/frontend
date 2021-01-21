@@ -4,6 +4,7 @@ import { forwardHaptic } from "../../../data/haptics";
 import { ActionConfig } from "../../../data/lovelace";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import { toggleEntity } from "./entity/toggle-entity";
 
 declare global {
@@ -54,9 +55,12 @@ export const handleAction = async (
         text:
           actionConfig.confirmation.text ||
           hass.localize(
-            "ui.panel.lovelace.cards.action_confirmation",
+            "ui.panel.lovelace.cards.actions.action_confirmation",
             "action",
-            actionConfig.action
+            hass.localize(
+              "ui.panel.lovelace.editor.action-editor.actions." +
+                actionConfig.action
+            ) || actionConfig.action
           ),
       }))
     ) {
@@ -70,17 +74,36 @@ export const handleAction = async (
         fireEvent(node, "hass-more-info", {
           entityId: config.entity ? config.entity : config.camera_image!,
         });
+      } else {
+        showToast(node, {
+          message: hass.localize(
+            "ui.panel.lovelace.cards.actions.no_entity_more_info"
+          ),
+        });
+        forwardHaptic("failure");
       }
       break;
     }
     case "navigate":
       if (actionConfig.navigation_path) {
         navigate(node, actionConfig.navigation_path);
+      } else {
+        showToast(node, {
+          message: hass.localize(
+            "ui.panel.lovelace.cards.actions.no_navigation_path"
+          ),
+        });
+        forwardHaptic("failure");
       }
       break;
     case "url": {
       if (actionConfig.url_path) {
         window.open(actionConfig.url_path);
+      } else {
+        showToast(node, {
+          message: hass.localize("ui.panel.lovelace.cards.actions.no_url"),
+        });
+        forwardHaptic("failure");
       }
       break;
     }
@@ -88,11 +111,21 @@ export const handleAction = async (
       if (config.entity) {
         toggleEntity(hass, config.entity!);
         forwardHaptic("light");
+      } else {
+        showToast(node, {
+          message: hass.localize(
+            "ui.panel.lovelace.cards.actions.no_entity_toggle"
+          ),
+        });
+        forwardHaptic("failure");
       }
       break;
     }
     case "call-service": {
       if (!actionConfig.service) {
+        showToast(node, {
+          message: hass.localize("ui.panel.lovelace.cards.actions.no_service"),
+        });
         forwardHaptic("failure");
         return;
       }
