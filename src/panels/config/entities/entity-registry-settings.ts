@@ -200,20 +200,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           </div>
         </div>
 
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.entity_registry.info_customize",
-            "customize_link",
-            html`<a
-              href="${"/config/customize/edit/" + this._entityId}"
-              rel="noreferrer"
-              >${this.hass.localize(
-                "ui.dialogs.entity_registry.customize_link"
-              )}</a
-            >`
-          )}
-        </p>
-
         ${this.entry.device_id
           ? html`<ha-expansion-panel
               .header=${this.hass.localize(
@@ -403,7 +389,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           margin-right: 16px;
         }
         .row {
-          margin-top: 8px;
+          margin: 8px 0;
           color: var(--primary-text-color);
           display: flex;
           align-items: center;
