@@ -121,7 +121,7 @@ class DialogZWaveJSAddNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this._close}>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.add_node.cancel_inclusion"
                 )}
@@ -143,7 +143,7 @@ class DialogZWaveJSAddNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this._close}>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
@@ -170,7 +170,7 @@ class DialogZWaveJSAddNode extends LitElement {
                   </a>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this._close}>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `

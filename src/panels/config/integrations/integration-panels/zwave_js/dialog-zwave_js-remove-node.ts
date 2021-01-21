@@ -95,7 +95,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this._close}>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.remove_node.cancel_exclusion"
                 )}
@@ -117,7 +117,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this._close}>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
@@ -139,7 +139,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this._close}>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
