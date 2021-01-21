@@ -15,6 +15,7 @@ import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface ZWaveJSRemovedNode {
   node_id: number;
@@ -55,7 +56,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing="${this._close}"
+        @closed="${this.closeDialog}"
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.zwave_js.remove_node.title")
@@ -204,10 +205,12 @@ class DialogZWaveJSRemoveNode extends LitElement {
     }
   }
 
-  private _close(): void {
+  public closeDialog(): void {
     this._unsubscribe();
     this.entry_id = undefined;
     this._status = "";
+
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResult[] {
