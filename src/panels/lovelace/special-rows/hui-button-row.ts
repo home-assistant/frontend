@@ -10,6 +10,8 @@ import {
 } from "lit-element";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -29,8 +31,8 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       throw new Error("Invalid configuration");
     }
 
-    if (!config.name) {
-      throw new Error("No name specified");
+    if (!config.name && !config.entity) {
+      throw new Error("No name and no entity specified");
     }
 
     this._config = {
@@ -50,10 +52,21 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
+    const stateObj =
+      this._config.entity && this.hass
+        ? this.hass.states[this._config.entity]
+        : undefined;
+
     return html`
-      <ha-icon .icon=${this._config.icon || "hass:remote"}></ha-icon>
+      <ha-icon
+        .icon=${this._config.icon ||
+        (stateObj ? stateIcon(stateObj) : "hass:remote")}
+      >
+      </ha-icon>
       <div class="flex">
-        <div>${this._config.name}</div>
+        <div>
+          ${this._config.name || (stateObj ? computeStateName(stateObj) : "")}
+        </div>
         <mwc-button
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
