@@ -141,8 +141,8 @@ export class EntityRegistrySettingsHelper extends LitElement {
     }
     const stateObj = this.hass.states[this.entry.entity_id];
     return html`
-      ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
       <div class="form">
+        ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
         ${!this._componentLoaded
           ? this.hass.localize(
               "ui.dialogs.helper_settings.platform_not_loaded",
@@ -268,6 +268,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
         }
         .error {
           color: var(--error-color);
+          margin-bottom: 8px;
         }
         .row {
           margin-top: 8px;
