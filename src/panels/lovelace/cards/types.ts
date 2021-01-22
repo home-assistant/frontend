@@ -37,6 +37,7 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
 export interface EntityCardConfig extends LovelaceCardConfig {
   attribute?: string;
   unit?: string;
+  theme?: string;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -174,6 +175,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   entities: string[];
   title?: string;
   hours_to_show?: number;
+  theme?: string;
 }
 
 export interface MapCardConfig extends LovelaceCardConfig {
@@ -198,6 +200,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
+  theme?: string;
 }
 
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
@@ -311,4 +314,5 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   name?: string;
   show_forecast?: boolean;
   secondary_info_attribute?: string;
+  theme?: string;
 }

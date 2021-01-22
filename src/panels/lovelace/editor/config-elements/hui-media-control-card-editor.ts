@@ -11,12 +11,14 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../../../../types";
 import { MediaControlCardConfig } from "../../cards/types";
+import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 
 const cardConfigStruct = object({
   type: string(),
   entity: optional(string()),
+  theme: optional(string()),
 });
 
 const includeDomains = ["media_player"];
@@ -35,6 +37,10 @@ export class HuiMediaControlCardEditor extends LitElement
 
   get _entity(): string {
     return this._config!.entity || "";
+  }
+
+  get _theme(): string {
+    return this._config!.theme || "";
   }
 
   protected render(): TemplateResult {
@@ -57,6 +63,12 @@ export class HuiMediaControlCardEditor extends LitElement
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
+        <hui-theme-select-editor
+          .hass=${this.hass}
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
+        ></hui-theme-select-editor>
       </div>
     `;
   }
