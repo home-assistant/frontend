@@ -1,25 +1,28 @@
-import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-slider";
-import { UNAVAILABLE, UNKNOWN, UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
-  SUPPORT_PLAY,
+  computeMediaDescription,
+  MediaPlayerEntity,
   SUPPORT_NEXT_TRACK,
   SUPPORT_PAUSE,
+  SUPPORT_PLAY,
   SUPPORT_PREVIOUS_TRACK,
   SUPPORT_STOP,
   SUPPORT_TURN_OFF,
@@ -27,16 +30,13 @@ import {
   SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
-  computeMediaDescription,
-  MediaPlayerEntity,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
-import { installResizeObserver } from "../common/install-resize-observer";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
@@ -82,7 +82,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     }
 
     const stateObj = this.hass.states[this._config.entity] as MediaPlayerEntity;
-    const state = stateObj.state;
 
     if (!stateObj) {
       return html`
@@ -91,6 +90,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         </hui-warning>
       `;
     }
+
+    const state = stateObj.state;
 
     const buttons = html`
       ${!this._narrow &&
@@ -248,9 +249,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     this.hass!.callService(
       "media_player",
-      stateObj.state === "off" || stateObj.state === "idle"
-        ? "turn_on"
-        : "turn_off",
+      stateObj.state === "off" ? "turn_on" : "turn_off",
       {
         entity_id: this._config!.entity,
       }

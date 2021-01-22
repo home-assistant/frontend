@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -18,10 +18,10 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { timerTimeRemaining } from "../../common/entity/timer_time_remaining";
+import { formatNumber } from "../../common/string/format_number";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
-import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import { formatNumber } from "../../common/string/format_number";
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {

@@ -7,6 +7,7 @@ import { domainToName } from "./integration";
 
 export const DISCOVERY_SOURCES = [
   "unignore",
+  "dhcp",
   "homekit",
   "ssdp",
   "zeroconf",
@@ -51,8 +52,12 @@ export const handleConfigFlowStep = (
     HEADERS
   );
 
-export const ignoreConfigFlow = (hass: HomeAssistant, flowId: string) =>
-  hass.callWS({ type: "config_entries/ignore_flow", flow_id: flowId });
+export const ignoreConfigFlow = (
+  hass: HomeAssistant,
+  flowId: string,
+  title: string
+) =>
+  hass.callWS({ type: "config_entries/ignore_flow", flow_id: flowId, title });
 
 export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `config/config_entries/flow/${flowId}`);

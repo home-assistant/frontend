@@ -5,12 +5,12 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { AreaSelector } from "../../data/selector";
-import "../ha-area-picker";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import { EntityRegistryEntry } from "../../data/entity_registry";
+import { AreaSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
+import "../ha-area-picker";
 
 @customElement("ha-selector-area")
 export class HaAreaSelector extends LitElement {

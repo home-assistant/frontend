@@ -300,8 +300,8 @@
         "by": "by",
         "by_service": "by service",
         "messages": {
-          "was_away": "was away",
-          "was_at_state": "was at {state}",
+          "was_away": "was detected away",
+          "was_at_state": "was detected at {state}",
           "rose": "rose",
           "set": "set",
           "was_low": "was low",
@@ -314,7 +314,7 @@
           "was_locked": "was locked",
           "was_plugged_in": "was plugged in",
           "was_unplugged": "was unplugged",
-          "was_at_home": "was at home",
+          "was_at_home": "was detected at home",
           "was_unsafe": "was unsafe",
           "was_safe": "was safe",
           "detected_device_class": "detected {device_class}",
@@ -1604,7 +1604,7 @@
             "email_error_msg": "Invalid email",
             "password": "Password",
             "password_error_msg": "Passwords are at least 8 characters",
-            "forgot_password": "forgot password?",
+            "forgot_password": "Forgot password?",
             "start_trial": "Start your free 1 month trial",
             "trial_info": "No payment information necessary",
             "alert_password_change_required": "You need to change your password before logging in.",
@@ -1655,6 +1655,13 @@
             "connected": "Connected",
             "not_connected": "Not Connected",
             "fetching_subscription": "Fetching subscription…",
+            "tts": {
+              "title": "Text to Speech",
+              "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
+              "default_language": "Default language to use",
+              "male": "Male",
+              "female": "Female"
+            },
             "remote": {
               "title": "Remote Control",
               "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
@@ -1671,7 +1678,7 @@
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
-              "sync_entities": "Sync Entities",
+              "sync_entities": "Sync Entities to Amazon",
               "manage_entities": "Manage Entities",
               "sync_entities_error": "Failed to sync entities:",
               "state_reporting_error": "Unable to {enable_disable} report state.",
@@ -1722,8 +1729,8 @@
           },
           "dialog_certificate": {
             "certificate_information": "Certificate Information",
-            "certificate_expiration_date": "Certificate expiration date",
-            "will_be_auto_renewed": "Will be automatically renewed",
+            "certificate_expiration_date": "Certificate expiration date:",
+            "will_be_auto_renewed": "will be automatically renewed",
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
           },
@@ -2371,6 +2378,42 @@
             "node_info": "Node Information",
             "refresh_entity": "Refresh Entity"
           }
+        },
+        "zwave_js": {
+          "button": "Configure",
+          "navigation": {
+            "network": "Network"
+          },
+          "common": {
+            "network": "Network",
+            "node_id": "Node ID",
+            "home_id": "Home ID"
+          },
+          "dashboard": {
+            "header": "Manage your Z-Wave Network",
+            "introduction": "Manage your Z-Wave network and Z-Wave nodes",
+            "driver_version": "Driver Version",
+            "server_version": "Server Version",
+            "home_id": "Home ID",
+            "node_count": "Node Count"
+          },
+          "device_info": {
+            "zwave_info": "Z-Wave Info",
+            "node_status": "Node Status",
+            "node_ready": "Node Ready"
+          },
+          "node_status": {
+            "unknown": "Unknown",
+            "asleep": "Asleep",
+            "awake": "Awake",
+            "dead": "Dead",
+            "alive": "Alive"
+          },
+          "network_status": {
+            "connected": "Connected",
+            "connecting": "Connecting",
+            "unknown": "Unknown"
+          }
         }
       },
       "history": {
@@ -2392,7 +2435,14 @@
       "lovelace": {
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
-          "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+          "actions": {
+            "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+            "no_entity_more_info": "No entity provided for more info dialog",
+            "no_entity_toggle": "No entity provided to toggle",
+            "no_navigation_path": "No navigation path specified",
+            "no_url": "No URL to open specified",
+            "no_service": "No service for execution specified"
+          },
           "empty_state": {
             "title": "Welcome Home",
             "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
@@ -2415,7 +2465,7 @@
             "url": "Open window to {url_path}",
             "toggle": "Toggle {name}",
             "call_service": "Call service {name}",
-            "more_info": "Show more-info: {name}"
+            "more_info": "Show more info: {name}"
           },
           "safe-mode": {
             "header": "Safe Mode Activated",
@@ -2644,7 +2694,7 @@
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
-              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown."
+              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
             },
             "entity-filter": {
               "name": "Entity Filter",
@@ -2667,7 +2717,9 @@
             },
             "grid": {
               "name": "Grid",
-              "description": "The Grid card allows you to show multiple cards in a grid."
+              "description": "The Grid card allows you to show multiple cards in a grid.",
+              "columns": "Columns",
+              "square": "Render cards as squares"
             },
             "logbook": {
               "name": "Logbook",
@@ -2758,7 +2810,7 @@
             },
             "picture-glance": {
               "name": "Picture Glance",
-              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog.",
+              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more info dialog.",
               "state_entity": "State Entity"
             },
             "plant-status": {
@@ -2977,6 +3029,7 @@
       "page-authorize": {
         "initializing": "Initializing",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
+        "logging_in_to_with": "Logging in to **{locationName}** with **{authProviderName}**.",
         "logging_in_with": "Logging in with **{authProviderName}**.",
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",

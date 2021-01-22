@@ -61,6 +61,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   privileged: any;
   protected: boolean;
   rating: "1-6";
+  schema: Record<string, any>;
   services_role: string[];
   slug: string;
   startup: "initialize" | "system" | "services" | "application" | "once";

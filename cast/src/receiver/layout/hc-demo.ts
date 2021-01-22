@@ -1,8 +1,8 @@
 import {
   customElement,
   html,
-  property,
   internalProperty,
+  property,
   TemplateResult,
 } from "lit-element";
 import { mockHistory } from "../../../../demo/src/stubs/history";

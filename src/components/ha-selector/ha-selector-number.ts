@@ -1,3 +1,4 @@
+import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -6,12 +7,11 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { NumberSelector } from "../../data/selector";
-import "@polymer/paper-input/paper-input";
-import "../ha-slider";
-import { fireEvent } from "../../common/dom/fire_event";
 import { classMap } from "lit-html/directives/class-map";
+import { fireEvent } from "../../common/dom/fire_event";
+import { NumberSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
+import "../ha-slider";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {

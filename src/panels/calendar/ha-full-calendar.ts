@@ -296,7 +296,7 @@ export class HAFullCalendar extends LitElement {
         ${unsafeCSS(fullcalendarStyle)}
         ${unsafeCSS(daygridStyle)}
         ${unsafeCSS(listStyle)}
-        
+
         :host {
           display: flex;
           flex-direction: column;
@@ -368,7 +368,7 @@ export class HAFullCalendar extends LitElement {
         }
 
         a {
-            color: inherit !important; 
+            color: inherit !important;
         }
 
         .fc-theme-standard .fc-scrollgrid {

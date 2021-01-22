@@ -29,6 +29,7 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import { navigate } from "../../../common/navigate";
 import "../../../common/search/search-input";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -36,7 +37,16 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon";
+import {
+  AreaRegistryEntry,
+  subscribeAreaRegistry,
+} from "../../../data/area_registry";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
+import { UNAVAILABLE } from "../../../data/entity";
 import {
   computeEntityRegistryName,
   EntityRegistryEntry,
@@ -53,6 +63,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { DialogEntityEditor } from "./dialog-entity-editor";
@@ -60,17 +71,6 @@ import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
-import { haStyle } from "../../../resources/styles";
-import { UNAVAILABLE } from "../../../data/entity";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
-import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../../../data/area_registry";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;

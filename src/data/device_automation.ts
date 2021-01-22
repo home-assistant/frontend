@@ -1,6 +1,6 @@
 import { computeStateName } from "../common/entity/compute_state_name";
-import { HomeAssistant } from "../types";
 import { HaFormSchema } from "../components/ha-form/ha-form";
+import { HomeAssistant } from "../types";
 
 export interface DeviceAutomation {
   device_id: string;

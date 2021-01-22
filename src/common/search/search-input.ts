@@ -1,3 +1,5 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiClose, mdiMagnify } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -10,8 +12,6 @@ import { html, TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map";
 import "../../components/ha-svg-icon";
 import { fireEvent } from "../dom/fire_event";
-import { mdiMagnify, mdiClose } from "@mdi/js";
-import "@material/mwc-icon-button/mwc-icon-button";
 
 @customElement("search-input")
 class SearchInput extends LitElement {

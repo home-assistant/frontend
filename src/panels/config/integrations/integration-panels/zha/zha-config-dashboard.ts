@@ -1,6 +1,7 @@
+import "@material/mwc-button/mwc-button";
+import { mdiFolderMultipleOutline, mdiLan, mdiNetwork, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "../../../../../components/ha-fab";
 import {
   css,
   CSSResultArray,
@@ -10,16 +11,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-next";
+import "../../../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import { mdiNetwork, mdiFolderMultipleOutline, mdiPlus, mdiLan } from "@mdi/js";
-import "../../../../../layouts/hass-tabs-subpage";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import { computeRTL } from "../../../../../common/util/compute_rtl";
-import "@material/mwc-button/mwc-button";
 
 export const zhaTabs: PageNavigation[] = [
   {

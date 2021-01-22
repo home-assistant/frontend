@@ -1,9 +1,6 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../layouts/ha-app-layout";
-import "../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
-import "../../components/ha-tabs";
 import {
   css,
   CSSResultArray,
@@ -14,7 +11,10 @@ import {
   TemplateResult,
 } from "lit-element";
 import { navigate } from "../../common/navigate";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
+import "../../components/ha-tabs";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";

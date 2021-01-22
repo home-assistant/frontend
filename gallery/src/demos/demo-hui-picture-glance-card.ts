@@ -1,7 +1,7 @@
 import {
+  customElement,
   html,
   LitElement,
-  customElement,
   PropertyValues,
   query,
   TemplateResult,

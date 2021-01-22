@@ -1,11 +1,11 @@
+import {
+  STATE_NOT_RUNNING,
+  STATE_RUNNING,
+  STATE_STARTING,
+} from "home-assistant-js-websocket";
 import { Constructor } from "../types";
 import { showToast } from "../util/toast";
 import { HassBaseEl } from "./hass-base-mixin";
-import {
-  STATE_NOT_RUNNING,
-  STATE_STARTING,
-  STATE_RUNNING,
-} from "home-assistant-js-websocket";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {

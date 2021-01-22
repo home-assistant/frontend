@@ -1,18 +1,18 @@
+import {
+  internalProperty,
+  property,
+  PropertyValues,
+  UpdatingElement,
+} from "lit-element";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
+import { computeCardSize } from "../common/compute-card-size";
 import { evaluateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { EntityFilterCardConfig } from "./types";
-import {
-  property,
-  internalProperty,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
-import { computeCardSize } from "../common/compute-card-size";
 
 class EntityFilterCard extends UpdatingElement implements LovelaceCard {
   @property({ attribute: false }) public hass?: HomeAssistant;

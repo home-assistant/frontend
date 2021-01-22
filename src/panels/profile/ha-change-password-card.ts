@@ -1,5 +1,6 @@
-import "@polymer/paper-input/paper-input";
+import "@material/mwc-button";
 import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -11,9 +12,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-import "../../components/ha-circular-progress";
 import "../../components/ha-card";
+import "../../components/ha-circular-progress";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 

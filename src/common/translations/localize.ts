@@ -1,5 +1,5 @@
-import IntlMessageFormat from "intl-messageformat";
 import { shouldPolyfill } from "@formatjs/intl-pluralrules/should-polyfill";
+import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
 
 export type LocalizeFunc = (key: string, ...args: any[]) => string;

@@ -9,8 +9,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-counter")
 class MoreInfoCounter extends LitElement {

@@ -1,23 +1,23 @@
+import "@material/mwc-button/mwc-button";
 import {
+  css,
   CSSResult,
   customElement,
   html,
   LitElement,
   property,
-  TemplateResult,
-  css,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { haStyle } from "../../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../../types";
 import {
   getIdentifiersFromDevice,
   OZWNodeIdentifiers,
 } from "../../../../../../data/ozw";
+import { haStyle } from "../../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../../types";
 import { showOZWRefreshNodeDialog } from "../../../../integrations/integration-panels/ozw/show-dialog-ozw-refresh-node";
-import { navigate } from "../../../../../../common/navigate";
-import "@material/mwc-button/mwc-button";
 
 @customElement("ha-device-actions-ozw")
 export class HaDeviceActionsOzw extends LitElement {
