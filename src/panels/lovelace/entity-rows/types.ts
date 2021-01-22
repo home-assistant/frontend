@@ -1,6 +1,7 @@
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
+import { TimestampRenderingFormats } from "../components/types";
 
 export interface EntityConfig {
   entity: string;
@@ -84,8 +85,10 @@ export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
   conditions: Condition[];
 }
+
 export interface AttributeRowConfig extends EntityConfig {
   attribute: string;
   prefix?: string;
   suffix?: string;
+  format?: TimestampRenderingFormats;
 }
