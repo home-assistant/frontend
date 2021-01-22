@@ -32,6 +32,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
 import type { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
+import { replaceDialog } from "../../../dialogs/make-dialog-manager";
 
 interface Tabs {
   [key: string]: Tab;
@@ -235,6 +236,7 @@ export class DialogEntityEditor extends LitElement {
   }
 
   private _openMoreInfo(): void {
+    replaceDialog();
     fireEvent(this, "hass-more-info", {
       entityId: this._params!.entity_id,
     });
