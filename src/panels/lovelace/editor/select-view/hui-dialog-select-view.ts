@@ -17,6 +17,7 @@ import {
   LovelaceConfig,
   LovelaceDashboard,
 } from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-views-list";
@@ -45,6 +46,7 @@ export class HuiDialogSelectView extends LitElement {
 
   public closeDialog(): void {
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
