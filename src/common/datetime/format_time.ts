@@ -25,4 +25,4 @@ export const formatTimeWeekday = toLocaleTimeStringSupportsOptions
         hour: "numeric",
         minute: "2-digit",
       })
-  : (dateObj: Date) => format(dateObj, "dddd HH:mm");
+  : (dateObj: Date) => format(dateObj, "dddd, HH:mm");
