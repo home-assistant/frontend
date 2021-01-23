@@ -51,7 +51,7 @@ export class HaDeviceCondition extends LitElement {
   );
 
   protected render() {
-    const deviceId = this._deviceId || this.condition.device_id;
+    const deviceId = this._deviceId;
 
     return html`
       <ha-device-picker

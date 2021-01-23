@@ -51,7 +51,7 @@ export class HaDeviceTrigger extends LitElement {
   );
 
   protected render() {
-    const deviceId = this._deviceId || this.trigger.device_id;
+    const deviceId = this._deviceId;
 
     return html`
       <ha-device-picker

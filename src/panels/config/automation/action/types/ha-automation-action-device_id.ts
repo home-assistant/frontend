@@ -51,7 +51,7 @@ export class HaDeviceAction extends LitElement {
   );
 
   protected render() {
-    const deviceId = this._deviceId || this.action.device_id;
+    const deviceId = this._deviceId;
 
     return html`
       <ha-device-picker
@@ -98,7 +98,6 @@ export class HaDeviceAction extends LitElement {
   protected updated(changedPros) {
     const prevAction = changedPros.get("action");
     if (prevAction && !deviceAutomationsEqual(prevAction, this.action)) {
-      this._deviceId = undefined;
       this._getCapabilities();
     }
   }

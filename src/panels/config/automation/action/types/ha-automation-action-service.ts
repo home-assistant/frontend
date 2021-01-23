@@ -102,6 +102,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
               @value-changed=${this._entityPicked}
               .includeDomains=${this._domain(service)}
               allow-custom-entity
+              .configValue=${"entity_id"}
             ></ha-entity-picker>
           `
         : ""}
@@ -130,6 +131,11 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (ev.detail.value === this.action.service) {
       return;
     }
+    // If the domain of the service changed, also reset the entity ID
+    // to prevent invalid values from being left in the picker.
+    if (ev.detail.value.split(".")[0] !== this.action.service.split(".")[0])
+      this.action.entity_id = undefined;
+
     fireEvent(this, "value-changed", {
       value: { ...this.action, service: ev.detail.value },
     });
@@ -137,8 +143,20 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   private _entityPicked(ev: PolymerChangedEvent<string>) {
     ev.stopPropagation();
+    const target = ev.target as any;
+    const configValue = target.configValue;
+    const value = ev.detail.value;
+    if (this[`_${configValue}`] === value) {
+      return;
+    }
+    const newValue = { ...this.action };
+    if (value === undefined || value === "") {
+      delete newValue[configValue];
+    } else {
+      newValue[configValue] = ev.detail.value;
+    }
     fireEvent(this, "value-changed", {
-      value: { ...this.action, entity_id: ev.detail.value },
+      value: newValue,
     });
   }
 }
