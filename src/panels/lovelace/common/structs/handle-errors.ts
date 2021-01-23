@@ -12,11 +12,13 @@ export const handleStructError = (err: Error): string[] => {
       );
     } else {
       errors.push(
-        `The value of "${failure.path.join(
+        `The provided value for "${failure.path.join(
           "."
-        )}" is not supported by the UI editor, we support "${
+        )}" is not supported by the UI editor. We support (${
           failure.type
-        }" but received "${JSON.stringify(failure.value)}".`
+        }) but received ${
+          failure.value ? "(" + JSON.stringify(failure.value) + ")" : "no value"
+        }.`
       );
     }
   }
