@@ -8,6 +8,7 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeRTL } from "../common/util/compute_rtl";
 import LocalizeMixin from "../mixins/localize-mixin";
 import "./entity/ha-chart-base";
+
 class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
