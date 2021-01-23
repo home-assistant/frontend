@@ -53,7 +53,7 @@ export class HuiTimestampDisplay extends LitElement {
       return html``;
     }
 
-    const tsDate = new Date(this.ts);
+    const tsDate = this.ts instanceof Date ? this.ts : new Date(this.ts);
 
     if (checkValidDate(tsDate)) {
       return html`${this.hass.localize(
@@ -108,11 +108,12 @@ export class HuiTimestampDisplay extends LitElement {
 
   private _updateRelative(): void {
     if (this.ts && this.hass!.localize) {
+      const tsDate = this.ts instanceof Date ? this.ts : new Date(this.ts);
       this._relative =
         this._format === "relative"
-          ? relativeTime(new Date(this.ts), this.hass!.localize)
+          ? relativeTime(tsDate, this.hass!.localize)
           : (this._relative = relativeTime(new Date(), this.hass!.localize, {
-              compareTime: new Date(this.ts),
+              compareTime: tsDate,
               includeTense: false,
             }));
     }

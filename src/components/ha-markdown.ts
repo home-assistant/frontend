@@ -26,8 +26,13 @@ class HaMarkdown extends LitElement {
       return html``;
     }
 
-    return html`<ha-markdown-element .hass=${this.hass} .content=${this.content} .allowSvg=${this.allowSvg} .breaks=${this.breaks}>
-</ha-markdown-element>`;
+    return html` <ha-markdown-element
+      .hass=${this.hass}
+      .content=${this.content}
+      .allowSvg=${this.allowSvg}
+      .breaks=${this.breaks}
+    >
+    </ha-markdown-element>`;
   }
 
   static get styles(): CSSResult {
