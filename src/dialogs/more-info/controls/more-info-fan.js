@@ -7,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -42,26 +43,16 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <div class$="[[computeClassNames(stateObj)]]">
-        <div class="container-speed_list">
-          <ha-paper-dropdown-menu
-            label-float=""
-            dynamic-align=""
-            label="[[localize('ui.card.fan.speed')]]"
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              selected="[[stateObj.attributes.speed]]"
-              on-selected-changed="speedChanged"
-              attr-for-selected="item-name"
-            >
-              <template
-                is="dom-repeat"
-                items="[[stateObj.attributes.speed_list]]"
-              >
-                <paper-item item-name$="[[item]]">[[item]]</paper-item>
-              </template>
-            </paper-listbox>
-          </ha-paper-dropdown-menu>
+        <div class="container-percentage">
+          <ha-labeled-slider
+            caption="[[localize('ui.card.fan.speed')]]"
+            min="0"
+            max="100"
+            value="{{percentageSliderValue}}"
+            on-change="percentageChanged"
+            pin=""
+            extra=""
+          ></ha-labeled-slider>
         </div>
 
         <div class="container-oscillating">
@@ -96,7 +87,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <ha-attributes
         state-obj="[[stateObj]]"
-        extra-filters="speed,speed_list,oscillating,direction"
+        extra-filters="speed,speed_list,percentage,oscillating,direction"
       ></ha-attributes>
     `;
   }
@@ -115,6 +106,10 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
       oscillationToggleChecked: {
         type: Boolean,
       },
+
+      percentageSliderValue: {
+        type: Number,
+      },
     };
   }
 
@@ -122,6 +117,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (newVal) {
       this.setProperties({
         oscillationToggleChecked: newVal.attributes.oscillating,
+        percentageSliderValue: newVal.attributes.percentage,
       });
     }
 
@@ -139,15 +135,15 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     );
   }
 
-  speedChanged(ev) {
-    const oldVal = this.stateObj.attributes.speed;
-    const newVal = ev.detail.value;
+  percentageChanged(ev) {
+    const oldVal = parseInt(this.stateObj.attributes.percentage, 10);
+    const newVal = ev.target.value;
 
-    if (!newVal || oldVal === newVal) return;
+    if (isNaN(newVal) || isNaN(oldVal) || oldVal === newVal) return;
 
-    this.hass.callService("fan", "turn_on", {
+    this.hass.callService("fan", "set_percentage", {
       entity_id: this.stateObj.entity_id,
-      speed: newVal,
+      percentage: newVal,
     });
   }
 
