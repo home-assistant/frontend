@@ -7,7 +7,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-markdown-element";
 
