@@ -22,6 +22,7 @@ const renderMarkdown = (
   if (!whiteListNormal) {
     whiteListNormal = {
       ...(getDefaultWhiteList() as WhiteList),
+      style: [],
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
       "hui-timestamp-display": ["ts", "format"],

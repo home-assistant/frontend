@@ -11,5 +11,7 @@ export type TimestampRenderingFormats =
   | "relative"
   | "total"
   | "date"
+  | "date_weekday"
   | "time"
+  | "time_weekday"
   | "datetime";

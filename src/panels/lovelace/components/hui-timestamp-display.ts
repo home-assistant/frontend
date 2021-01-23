@@ -8,17 +8,25 @@ import {
   TemplateResult,
 } from "lit-element";
 import checkValidDate from "../../../common/datetime/check_valid_date";
-import { formatDate } from "../../../common/datetime/format_date";
+import {
+  formatDate,
+  formatDateWeekday,
+} from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
-import { formatTime } from "../../../common/datetime/format_time";
+import {
+  formatTime,
+  formatTimeWeekday,
+} from "../../../common/datetime/format_time";
 import relativeTime from "../../../common/datetime/relative_time";
 import { HomeAssistant } from "../../../types";
 import { TimestampRenderingFormats } from "./types";
 
 const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
   date: formatDate,
+  date_weekday: formatDateWeekday,
   datetime: formatDateTime,
   time: formatTime,
+  time_weekday: formatTimeWeekday,
 };
 const INTERVAL_FORMAT = ["relative", "total"];
 
@@ -55,7 +63,7 @@ export class HuiTimestampDisplay extends LitElement {
 
     const tsDate = this.ts instanceof Date ? this.ts : new Date(this.ts);
 
-    if (checkValidDate(tsDate)) {
+    if (!checkValidDate(tsDate)) {
       return html`${this.hass.localize(
         "ui.panel.lovelace.components.timestamp-display.invalid"
       )}`;
