@@ -7,6 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import checkValidDate from "../../../common/datetime/check_valid_date";
 import { formatDate } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
@@ -54,7 +55,7 @@ export class HuiTimestampDisplay extends LitElement {
 
     const tsDate = new Date(this.ts);
 
-    if (isNaN(tsDate.getTime())) {
+    if (checkValidDate(tsDate)) {
       return html`${this.hass.localize(
         "ui.panel.lovelace.components.timestamp-display.invalid"
       )}`;
