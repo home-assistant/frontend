@@ -1202,7 +1202,8 @@
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
-                    "for": "Duration"
+                    "for": "Duration",
+                    "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
                   }
                 },
                 "event": {
@@ -1404,7 +1405,9 @@
                   "label": "Device",
                   "action": "Action",
                   "extra_fields": {
-                    "code": "Code"
+                    "code": "Code",
+                    "message": "Message",
+                    "title": "Title"
                   }
                 },
                 "scene": {
