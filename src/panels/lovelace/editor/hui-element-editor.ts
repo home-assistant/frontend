@@ -350,6 +350,10 @@ export abstract class HuiElementEditor<T> extends LitElement {
       .error ul {
         margin: 4px 0;
       }
+      .warning li,
+      .error li {
+        white-space: pre-wrap;
+      }
       ha-circular-progress {
         display: block;
         margin: auto;

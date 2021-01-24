@@ -104,15 +104,18 @@ const actionConfigStructUser = object({
   user: string(),
 });
 
-const actionConfigStructConfirmation = object({
-  text: optional(string()),
-  excemptions: optional(array(actionConfigStructUser)),
-});
+const actionConfigStructConfirmation = union([
+  boolean(),
+  object({
+    text: optional(string()),
+    excemptions: optional(array(actionConfigStructUser)),
+  }),
+]);
 
 const actionConfigStructUrl = object({
   action: literal("url"),
   url_path: string(),
-  confirmation: optional(union([string(), actionConfigStructConfirmation])),
+  confirmation: optional(actionConfigStructConfirmation),
 });
 
 const actionConfigStructService = object({
