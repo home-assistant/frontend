@@ -2,6 +2,9 @@ import {
   any,
   array,
   boolean,
+  dynamic,
+  enums,
+  literal,
   number,
   object,
   optional,
@@ -92,12 +95,53 @@ export interface EditSubElementEvent {
   subElementConfig: SubElementEditorConfig;
 }
 
-export const actionConfigStruct = object({
-  action: string(),
-  navigation_path: optional(string()),
-  url_path: optional(string()),
-  service: optional(string()),
+export const actionConfigStruct = dynamic((value, context) => {
+  switch (context.branch[0][context.path[0]].action) {
+    case "url":
+      return actionConfigStructUrl;
+
+    case "navigate":
+      return actionConfigStructNavigate;
+
+    case "call-service":
+      return actionConfigStructService;
+
+    case "toggle":
+    case "more-info":
+    case "none":
+    default:
+      return actionConfigStructType;
+  }
+});
+
+export const actionConfigStructType = object({
+  action: enums([
+    "url",
+    "navigate",
+    "call-service",
+    "more-info",
+    "toggle",
+    "none",
+  ]),
+  confirmation: optional(string()),
+});
+
+export const actionConfigStructUrl = object({
+  action: literal("url"),
+  url_path: string(),
+  confirmation: optional(string()),
+});
+
+export const actionConfigStructService = object({
+  action: literal("call-service"),
+  service: string(),
   service_data: optional(object()),
+});
+
+export const actionConfigStructNavigate = object({
+  action: literal("navigate"),
+  navigation_path: string(),
+  dummy: string(),
 });
 
 const buttonEntitiesRowConfigStruct = object({

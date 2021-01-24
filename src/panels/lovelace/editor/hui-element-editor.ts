@@ -66,7 +66,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
   @internalProperty() private _GUImode = true;
 
   // Error: Configuration broken - do not save
-  @internalProperty() private _error?: string;
+  @internalProperty() private _errors?: string[];
 
   // Warning: GUI editor can't handle configuration - ok to save
   @internalProperty() private _warnings?: string[];
@@ -86,9 +86,9 @@ export abstract class HuiElementEditor<T> extends LitElement {
     this._yaml = _yaml;
     try {
       this._config = safeLoad(this.yaml);
-      this._error = undefined;
+      this._errors = undefined;
     } catch (err) {
-      this._error = err.message;
+      this._errors = [err.message];
     }
     this._setConfig();
   }
@@ -103,23 +103,22 @@ export abstract class HuiElementEditor<T> extends LitElement {
     }
     this._config = config;
     this._yaml = undefined;
-    this._error = undefined;
+    this._errors = undefined;
     this._setConfig();
   }
 
   private _setConfig(): void {
-    if (!this._error) {
+    if (!this._errors) {
       try {
         this._updateConfigElement();
-        this._error = undefined;
       } catch (err) {
-        this._error = err.message;
+        this._errors = [err.message];
       }
     }
 
     fireEvent(this, "config-changed", {
       config: this.value! as any,
-      error: this._error,
+      error: this._errors,
       guiModeAvailable: !(this.hasWarning || this.hasError),
     });
   }
@@ -129,7 +128,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
   }
 
   public get hasError(): boolean {
-    return this._error !== undefined;
+    return this._errors !== undefined;
   }
 
   public get GUImode(): boolean {
@@ -194,21 +193,25 @@ export abstract class HuiElementEditor<T> extends LitElement {
                   mode="yaml"
                   autofocus
                   .value=${this.yaml}
-                  .error=${Boolean(this._error)}
+                  .error=${Boolean(this._errors)}
                   .rtl=${computeRTL(this.hass)}
                   @value-changed=${this._handleYAMLChanged}
                   @keydown=${this._ignoreKeydown}
                 ></ha-code-editor>
               </div>
             `}
-        ${this._error
+        ${this._errors
           ? html`
               <div class="error">
-                ${this._error}
+                Configuration errors detected:
+                <br />
+                <ul>
+                  ${this._errors.map((error) => html`<li>${error}</li>`)}
+                </ul>
               </div>
             `
           : ""}
-        ${this._warnings
+        ${this._warnings && this._warnings.length > 0
           ? html`
               <div class="warning">
                 UI editor is not supported for this config:
@@ -261,7 +264,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
     let configElement: LovelaceGenericElementEditor | undefined;
 
     try {
-      this._error = undefined;
+      this._errors = undefined;
       this._warnings = undefined;
 
       if (this._configElementType !== this.configElementType) {
@@ -297,16 +300,19 @@ export abstract class HuiElementEditor<T> extends LitElement {
       try {
         this._configElement!.setConfig(this.value);
       } catch (err) {
+        const msgs = handleStructError(err);
         throw new GUISupportError(
           "Config is not supported",
-          handleStructError(err)
+          msgs.warnings,
+          msgs.errors
         );
       }
     } catch (err) {
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
+        this._errors = err.errors || undefined;
       } else {
-        this._error = err;
+        this._errors = err;
       }
       this.GUImode = false;
     } finally {
