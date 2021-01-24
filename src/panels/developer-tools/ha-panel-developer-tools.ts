@@ -109,7 +109,10 @@ class PanelDeveloperTools extends LitElement {
         ha-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);
           margin-right: max(env(safe-area-inset-right), 24px);
-          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
+          --paper-tabs-selection-bar-color: var(
+            --app-header-selection-bar-color,
+            var(--app-header-text-color, #fff)
+          );
           text-transform: uppercase;
         }
       `,
