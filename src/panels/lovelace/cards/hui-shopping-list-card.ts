@@ -398,7 +398,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
       }
 
       .checked span {
-        color: var(--primary-color);
+        color: var(--primary-text-color);
+        font-weight: 500;
       }
 
       .divider {
