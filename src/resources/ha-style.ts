@@ -48,6 +48,9 @@ documentContainer.innerHTML = `<custom-style>
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
 
+      /* for header */
+      --header-height: 56px;
+
       /* for label-badge */
       --label-badge-red: #DF4C1E;
       --label-badge-blue: #039be5;
@@ -82,7 +85,7 @@ documentContainer.innerHTML = `<custom-style>
       --light-primary-opacity: 1.0;
 
       /* set our slider style */
-      --ha-paper-slider-pin-font-size: 15px;
+      --ha-slider-pin-font-size: 15px;
 
       /* rgb */
       --rgb-primary-color: 3, 169, 244;
@@ -109,6 +112,11 @@ documentContainer.innerHTML = `<custom-style>
 
     paper-dialog-scrollable.can-scroll > .scrollable {
       -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* for paper-dialog */
+    iron-overlay-backdrop {
+      backdrop-filter: var(--dialog-backdrop-filter, none);
     }
   </style>
 </custom-style>`;

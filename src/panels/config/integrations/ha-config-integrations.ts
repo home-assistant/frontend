@@ -1,4 +1,3 @@
-import "@material/mwc-fab";
 import "@material/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
@@ -23,9 +22,9 @@ import "../../../common/search/search-input";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { nextRender } from "../../../common/util/render-status";
-import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import {
   ConfigEntry,
@@ -61,6 +60,7 @@ import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../ha-panel-config";
 import "./ha-integration-card";
 import type {
@@ -287,7 +287,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             .label=${this.hass.localize("ui.common.overflow_menu")}
             slot="trigger"
           >
-            <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item>
             ${this.hass.localize(
@@ -331,14 +331,18 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     <div class="card-content">
                       <div class="image">
                         <img
-                          src="https://brands.home-assistant.io/${item.domain}/logo.png"
+                          src=${brandsUrl(item.domain, "logo")}
                           referrerpolicy="no-referrer"
                           @error=${this._onImageError}
                           @load=${this._onImageLoad}
                         />
                       </div>
                       <h2>
-                        ${item.localized_domain_name}
+                        ${// In 2020.2 we added support for item.title. All ignored entries before
+                        // that have title "Ignored" so we fallback to localized domain name.
+                        item.title === "Ignored"
+                          ? item.localized_domain_name
+                          : item.title}
                       </h2>
                       <mwc-button
                         @click=${this._removeIgnoredIntegration}
@@ -379,7 +383,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       <div class="card-content">
                         <div class="image">
                           <img
-                            src="https://brands.home-assistant.io/${flow.handler}/logo.png"
+                            src=${brandsUrl(flow.handler, "logo")}
                             referrerpolicy="no-referrer"
                             @error=${this._onImageError}
                             @load=${this._onImageLoad}
@@ -474,14 +478,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               `
             : ""}
         </div>
-        <mwc-fab
+        <ha-fab
           slot="fab"
-          aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
-          title=${this.hass.localize("ui.panel.config.integrations.new")}
+          .label=${this.hass.localize(
+            "ui.panel.config.integrations.add_integration"
+          )}
+          extended
           @click=${this._createFlow}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -569,7 +575,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (!confirmed) {
       return;
     }
-    await ignoreConfigFlow(this.hass, flow.flow_id);
+    await ignoreConfigFlow(
+      this.hass,
+      flow.flow_id,
+      localizeConfigFlowTitle(this.hass.localize, flow)
+    );
     this._loadConfigEntries();
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
   }
@@ -739,6 +749,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         }
         h2 {
           margin-top: 0;
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: normal;
         }
       `,
     ];

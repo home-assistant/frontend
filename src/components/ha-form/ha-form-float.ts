@@ -21,7 +21,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @query("paper-input") private _input?: HTMLElement;
+  @query("paper-input", true) private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {

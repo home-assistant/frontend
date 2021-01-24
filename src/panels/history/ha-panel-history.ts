@@ -1,23 +1,24 @@
-import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { computeRTL } from "../../common/util/compute_rtl";
-import "../../components/ha-menu-button";
-import "../../components/state-history-charts";
 import {
-  LitElement,
   css,
-  property,
   internalProperty,
+  LitElement,
+  property,
   PropertyValues,
 } from "lit-element";
 import { html } from "lit-html";
+import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/entity/ha-entity-picker";
+import "../../components/ha-circular-progress";
+import "../../components/ha-date-range-picker";
+import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-menu-button";
+import "../../components/state-history-charts";
+import { computeHistory, fetchDate } from "../../data/history";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
-import "../../components/ha-date-range-picker";
-import { fetchDate, computeHistory } from "../../data/history";
-import "../../components/ha-circular-progress";
 
 class HaPanelHistory extends LitElement {
   @property() hass!: HomeAssistant;
@@ -77,6 +78,16 @@ class HaPanelHistory extends LitElement {
               .ranges=${this._ranges}
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
+
+            <ha-entity-picker
+              .hass=${this.hass}
+              .value=${this._entityId}
+              .label=${this.hass.localize(
+                "ui.components.entity.entity-picker.entity"
+              )}
+              .disabled=${this._isLoading}
+              @change=${this._entityPicked}
+            ></ha-entity-picker>
           </div>
           ${this._isLoading
             ? html`<div class="progress-wrapper">
@@ -108,27 +119,21 @@ class HaPanelHistory extends LitElement {
     todayEnd.setDate(todayEnd.getDate() + 1);
     todayEnd.setMilliseconds(todayEnd.getMilliseconds() - 1);
 
-    const todayCopy = new Date(today);
-
-    const yesterday = new Date(todayCopy.setDate(today.getDate() - 1));
-    const yesterdayEnd = new Date(yesterday);
-    yesterdayEnd.setDate(yesterdayEnd.getDate() + 1);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayEnd = new Date(today);
     yesterdayEnd.setMilliseconds(yesterdayEnd.getMilliseconds() - 1);
 
-    const thisWeekStart = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay())
-    );
-    const thisWeekEnd = new Date(
-      todayCopy.setDate(thisWeekStart.getDate() + 7)
-    );
+    const thisWeekStart = new Date(today);
+    thisWeekStart.setDate(today.getDate() - today.getDay());
+    const thisWeekEnd = new Date(thisWeekStart);
+    thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
     thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
 
-    const lastWeekStart = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay() - 7)
-    );
-    const lastWeekEnd = new Date(
-      todayCopy.setDate(lastWeekStart.getDate() + 7)
-    );
+    const lastWeekStart = new Date(today);
+    lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
+    const lastWeekEnd = new Date(lastWeekStart);
+    lastWeekEnd.setDate(lastWeekStart.getDate() + 7);
     lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
 
     this._ranges = {
@@ -170,7 +175,8 @@ class HaPanelHistory extends LitElement {
     const dateHistory = await fetchDate(
       this.hass,
       this._startDate,
-      this._endDate
+      this._endDate,
+      this._entityId
     );
     this._stateHistory = computeHistory(
       this.hass,
@@ -189,6 +195,10 @@ class HaPanelHistory extends LitElement {
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
     }
     this._endDate = endDate;
+  }
+
+  private _entityPicked(ev) {
+    this._entityId = ev.target.value;
   }
 
   static get styles() {
@@ -211,11 +221,31 @@ class HaPanelHistory extends LitElement {
           position: relative;
         }
 
+        ha-date-range-picker {
+          margin-right: 16px;
+          max-width: 100%;
+        }
+
+        :host([narrow]) ha-date-range-picker {
+          margin-right: 0;
+        }
+
         ha-circular-progress {
           position: absolute;
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);
+        }
+
+        ha-entity-picker {
+          display: inline-block;
+          flex-grow: 1;
+          max-width: 400px;
+        }
+
+        :host([narrow]) ha-entity-picker {
+          max-width: none;
+          width: 100%;
         }
       `,
     ];

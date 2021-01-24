@@ -1,4 +1,3 @@
-import "../../../components/ha-icon-button";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -6,9 +5,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   svg,
   TemplateResult,
@@ -18,8 +17,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
-import { HumidifierEntity } from "../../../data/humidifier";
+import "../../../components/ha-icon-button";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HumidifierEntity } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -30,9 +30,7 @@ import { HumidifierCardConfig } from "./types";
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-humidifier-card-editor" */ "../editor/config-elements/hui-humidifier-card-editor"
-    );
+    await import("../editor/config-elements/hui-humidifier-card-editor");
     return document.createElement("hui-humidifier-card-editor");
   }
 
@@ -61,12 +59,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
   @internalProperty() private _setHum?: number;
 
   public getCardSize(): number {
-    return 5;
+    return 6;
   }
 
   public setConfig(config: HumidifierCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "humidifier") {
-      throw new Error("Specify an entity from within the humidifier domain.");
+      throw new Error("Specify an entity from within the humidifier domain");
     }
 
     this._config = config;

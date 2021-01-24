@@ -50,15 +50,24 @@ export class DialogAddUser extends LitElement {
 
   @internalProperty() private _isAdmin?: boolean;
 
+  @internalProperty() private _allowChangeName = true;
+
   public showDialog(params: AddUserDialogParams) {
     this._params = params;
-    this._name = "";
+    this._name = this._params.name || "";
     this._username = "";
     this._password = "";
     this._passwordConfirm = "";
     this._isAdmin = false;
     this._error = undefined;
     this._loading = false;
+
+    if (this._params.name) {
+      this._allowChangeName = false;
+      this._maybePopulateUsername();
+    } else {
+      this._allowChangeName = true;
+    }
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {
@@ -84,24 +93,27 @@ export class DialogAddUser extends LitElement {
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-          <paper-input
-            class="name"
-            name="name"
-            .label=${this.hass.localize("ui.panel.config.users.add_user.name")}
-            .value=${this._name}
-            required
-            auto-validate
-            autocapitalize="on"
-            .errorMessage=${this.hass.localize("ui.common.error_required")}
-            @value-changed=${this._handleValueChanged}
-            @blur=${this._maybePopulateUsername}
-          ></paper-input>
-
+          ${this._allowChangeName
+            ? html` <paper-input
+                class="name"
+                name="name"
+                .label=${this.hass.localize(
+                  "ui.panel.config.users.editor.name"
+                )}
+                .value=${this._name}
+                required
+                auto-validate
+                autocapitalize="on"
+                .errorMessage=${this.hass.localize("ui.common.error_required")}
+                @value-changed=${this._handleValueChanged}
+                @blur=${this._maybePopulateUsername}
+              ></paper-input>`
+            : ""}
           <paper-input
             class="username"
             name="username"
             .label=${this.hass.localize(
-              "ui.panel.config.users.add_user.username"
+              "ui.panel.config.users.editor.username"
             )}
             .value=${this._username}
             required
@@ -229,7 +241,7 @@ export class DialogAddUser extends LitElement {
       user = userResponse.user;
     } catch (err) {
       this._loading = false;
-      this._error = err.code;
+      this._error = err.message;
       return;
     }
 
@@ -243,10 +255,11 @@ export class DialogAddUser extends LitElement {
     } catch (err) {
       await deleteUser(this.hass, user.id);
       this._loading = false;
-      this._error = err.code;
+      this._error = err.message;
       return;
     }
 
+    user.username = this._username;
     this._params!.userAddedCallback(user);
     this._close();
   }

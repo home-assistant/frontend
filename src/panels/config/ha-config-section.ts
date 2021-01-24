@@ -5,6 +5,8 @@ import { classMap } from "lit-html/directives/class-map";
 export class HaConfigSection extends LitElement {
   @property() public isWide = false;
 
+  @property({ type: Boolean }) public vertical = false;
+
   protected render() {
     return html`
       <div
@@ -16,8 +18,8 @@ export class HaConfigSection extends LitElement {
         <div
           class="together layout ${classMap({
             narrow: !this.isWide,
-            vertical: !this.isWide,
-            horizontal: this.isWide,
+            vertical: this.vertical || !this.isWide,
+            horizontal: !this.vertical && this.isWide,
           })}"
         >
           <div class="intro"><slot name="introduction"></slot></div>

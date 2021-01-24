@@ -1,36 +1,37 @@
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import {
+  css,
+  CSSResult,
   customElement,
+  html,
   LitElement,
   property,
-  html,
-  CSSResult,
-  css,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-import { ConfigEntryExtended } from "./ha-config-integrations";
-import { domainToName, IntegrationManifest } from "../../../data/integration";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import "../../../components/ha-icon-next";
 import {
   ConfigEntry,
-  updateConfigEntry,
   deleteConfigEntry,
   reloadConfigEntry,
+  updateConfigEntry,
 } from "../../../data/config_entries";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DeviceRegistryEntry } from "../../../data/device_registry";
-import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
+import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
-  showPromptDialog,
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import "../../../components/ha-icon-next";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
+import { ConfigEntryExtended } from "./ha-config-integrations";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -64,6 +65,10 @@ const integrationsWithPanel = {
   zwave: {
     buttonLocalizeKey: "ui.panel.config.zwave.button",
     path: "/config/zwave",
+  },
+  zwave_js: {
+    buttonLocalizeKey: "ui.panel.config.zwave_js.button",
+    path: "/config/zwave_js/dashboard",
   },
 };
 
@@ -107,7 +112,7 @@ export class HaIntegrationCard extends LitElement {
       <ha-card outlined class="group">
         <div class="group-header">
           <img
-            src="https://brands.home-assistant.io/${this.domain}/icon.png"
+            src=${brandsUrl(this.domain, "icon")}
             referrerpolicy="no-referrer"
             @error=${this._onImageError}
             @load=${this._onImageLoad}
@@ -157,7 +162,7 @@ export class HaIntegrationCard extends LitElement {
         <div class="card-content">
           <div class="image">
             <img
-              src="https://brands.home-assistant.io/${item.domain}/logo.png"
+              src=${brandsUrl(item.domain, "logo")}
               referrerpolicy="no-referrer"
               @error=${this._onImageError}
               @load=${this._onImageLoad}
@@ -249,7 +254,7 @@ export class HaIntegrationCard extends LitElement {
               .label=${this.hass.localize("ui.common.overflow_menu")}
               slot="trigger"
             >
-              <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item @request-selected="${this._handleSystemOptions}">
               ${this.hass.localize(
@@ -475,7 +480,7 @@ export class HaIntegrationCard extends LitElement {
           align-items: center;
           height: 40px;
           padding: 16px 16px 8px 16px;
-          vertical-align: middle;
+          justify-content: center;
         }
         .group-header h1 {
           margin: 0;
@@ -495,7 +500,6 @@ export class HaIntegrationCard extends LitElement {
           max-height: 100%;
           max-width: 90%;
         }
-
         .none-found {
           margin: auto;
           text-align: center;
@@ -507,8 +511,15 @@ export class HaIntegrationCard extends LitElement {
           margin-bottom: 0;
         }
         h2 {
-          margin-top: 0;
           min-height: 24px;
+        }
+        h3 {
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         ha-button-menu {
           color: var(--secondary-text-color);

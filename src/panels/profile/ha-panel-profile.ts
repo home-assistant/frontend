@@ -28,6 +28,7 @@ import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-advanced-mode-row";
 import "./ha-change-password-card";
+import "./ha-enable-shortcuts-row";
 import "./ha-force-narrow-row";
 import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";
@@ -132,7 +133,7 @@ class HaPanelProfile extends LitElement {
                   ></ha-force-narrow-row>
                 `
               : ""}
-            ${navigator.vibrate
+            ${"vibrate" in navigator
               ? html`
                   <ha-set-vibrate-row
                     .narrow=${this.narrow}
@@ -161,7 +162,10 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-set-suspend-row>
-
+            <ha-enable-shortcuts-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-enable-shortcuts-row>
             <div class="card-actions">
               <mwc-button class="warning" @click=${this._handleLogOut}>
                 ${this.hass.localize("ui.panel.profile.logout")}

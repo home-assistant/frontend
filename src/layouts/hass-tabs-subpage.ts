@@ -145,7 +145,7 @@ class HassTabsSubpage extends LitElement {
             `
           : html`
               <ha-icon-button-arrow-prev
-                aria-label="Back"
+                .hass=${this.hass}
                 @click=${this._backTapped}
               ></ha-icon-button-arrow-prev>
             `}
@@ -217,7 +217,7 @@ class HassTabsSubpage extends LitElement {
         display: flex;
         align-items: center;
         font-size: 20px;
-        height: 65px;
+        height: var(--header-height);
         background-color: var(--sidebar-background-color);
         font-weight: 400;
         color: var(--sidebar-text-color);
@@ -278,9 +278,10 @@ class HassTabsSubpage extends LitElement {
         );
         margin-left: env(safe-area-inset-left);
         margin-right: env(safe-area-inset-right);
-        height: calc(100% - 65px);
-        height: calc(100% - 65px - env(safe-area-inset-bottom));
-        overflow-y: auto;
+        height: calc(100% - 1px - var(--header-height));
+        height: calc(
+          100% - 1px - var(--header-height) - env(safe-area-inset-bottom)
+        );
         overflow: auto;
         -webkit-overflow-scrolling: touch;
       }

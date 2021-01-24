@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
+import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
 
 type HLSModule = typeof import("hls.js");
@@ -37,6 +38,7 @@ class HaHLSPlayer extends LitElement {
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
 
+  // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
   @internalProperty() private _attached = false;
@@ -93,39 +95,59 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _getUseExoPlayer(): Promise<boolean> {
-    return false;
+    if (!this.hass!.auth.external || !this.allowExoPlayer) {
+      return false;
+    }
+    const externalConfig = await getExternalConfig(this.hass!.auth.external);
+    return externalConfig && externalConfig.hasExoPlayer;
   }
 
   private async _startHls(): Promise<void> {
-    let hls: any;
     const videoEl = this._videoEl;
-    this._useExoPlayer = await this._getUseExoPlayer();
-    if (!this._useExoPlayer) {
-      hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
-        .default as HLSModule;
-      let hlsSupported = hls.isSupported();
+    const useExoPlayerPromise = this._getUseExoPlayer();
+    const masterPlaylistPromise = fetch(this.url);
 
-      if (!hlsSupported) {
-        hlsSupported =
-          videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
-      }
+    const hls = ((await import("hls.js")) as any).default as HLSModule;
+    let hlsSupported = hls.isSupported();
 
-      if (!hlsSupported) {
-        this._videoEl.innerHTML = this.hass.localize(
-          "ui.components.media-browser.video_not_supported"
-        );
-        return;
-      }
+    if (!hlsSupported) {
+      hlsSupported =
+        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
-    const url = this.url;
+    if (!hlsSupported) {
+      this._videoEl.innerHTML = this.hass.localize(
+        "ui.components.media-browser.video_not_supported"
+      );
+      return;
+    }
 
-    if (this._useExoPlayer) {
-      this._renderHLSExoPlayer(url);
-    } else if (hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, hls, url);
+    this._useExoPlayer = await useExoPlayerPromise;
+    const masterPlaylist = await (await masterPlaylistPromise).text();
+
+    // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
+    // See https://tools.ietf.org/html/rfc8216 for HLS spec details
+    const playlistRegexp = /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
+    const match = playlistRegexp.exec(masterPlaylist);
+    const matchTwice = playlistRegexp.exec(masterPlaylist);
+
+    // Get the regular playlist url from the input (master) playlist, falling back to the input playlist if necessary
+    // This avoids the player having to load and parse the master playlist again before loading the regular playlist
+    let playlist_url: string;
+    if (match !== null && matchTwice === null) {
+      // Only send the regular playlist url if we match exactly once
+      playlist_url = new URL(match[2], this.url).href;
     } else {
-      this._renderHLSNative(videoEl, url);
+      playlist_url = this.url;
+    }
+
+    // If codec is HEVC and ExoPlayer is supported, use ExoPlayer.
+    if (this._useExoPlayer && match !== null && match[1] !== undefined) {
+      this._renderHLSExoPlayer(playlist_url);
+    } else if (hls.isSupported()) {
+      this._renderHLSPolyfill(videoEl, hls, playlist_url);
+    } else {
+      this._renderHLSNative(videoEl, playlist_url);
     }
   }
 
@@ -143,6 +165,9 @@ class HaHLSPlayer extends LitElement {
   }
 
   private _resizeExoPlayer = () => {
+    if (!this._videoEl) {
+      return;
+    }
     const rect = this._videoEl.getBoundingClientRect();
     this.hass!.auth.external!.fireMessage({
       type: "exoplayer/resize",

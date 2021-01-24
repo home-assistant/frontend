@@ -12,6 +12,7 @@
         "logbook": "Nhật ký",
         "mailbox": "Hộp thư",
         "map": "Bản đồ",
+        "media_browser": "Trình duyệt Đa phương tiện",
         "profile": "Hồ sơ",
         "shopping_list": "Danh sách mua sắm",
         "states": "Tổng quan"
@@ -407,9 +408,16 @@
                 "unlock": "Mở khóa"
             },
             "media_player": {
+                "browse_media": "Duyệt nội dung đa phương tiện",
+                "media_next_track": "Kế tiếp",
+                "media_play": "Phát",
+                "media_play_pause": "Phát/tạm dừng",
+                "media_previous_track": "Ngay trước",
                 "sound_mode": "Chế độ âm thanh",
                 "source": "Nguồn",
-                "text_to_speak": "Văn bản sang giọng nói"
+                "text_to_speak": "Văn bản sang giọng nói",
+                "turn_off": "Tắt",
+                "turn_on": "Bật"
             },
             "persistent_notification": {
                 "dismiss": "Bỏ qua"
@@ -468,9 +476,11 @@
                     "wnw": "TTB",
                     "wsw": "TTN"
                 },
+                "day": "Ngày",
                 "forecast": "Dự báo",
                 "high": "Cao",
-                "low": "Thấp"
+                "low": "Thấp",
+                "night": "Đêm"
             }
         },
         "common": {
@@ -478,6 +488,8 @@
             "back": "Trở lại",
             "cancel": "Hủy bỏ",
             "close": "Đóng",
+            "continue": "Tiếp tục",
+            "copied": "Đã sao chép",
             "delete": "Xóa",
             "error_required": "Cần thiết",
             "loading": "Đang tải",
@@ -523,6 +535,10 @@
                 "toggle": "Chuyển đổi"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Thuộc tính",
+                    "show_attributes": "Hiển thị các thuộc tính"
+                },
                 "entity-picker": {
                     "clear": "Xoá",
                     "entity": "Thực thể",
@@ -532,6 +548,91 @@
             "history_charts": {
                 "loading_history": "Đang tải lịch sử trạng thái ...",
                 "no_history_found": "Không tìm thấy lịch sử trạng thái."
+            },
+            "logbook": {
+                "by": "bởi",
+                "by_service": "bởi dịch vụ",
+                "entries_not_found": "Không tìm thấy mục nhật ký nào.",
+                "messages": {
+                    "became_unavailable": "đã trở nên không khả dụng",
+                    "changed_to_state": "đã thay đổi thành {state}",
+                    "cleared_device_class": "trống trải (không phát hiện thấy {device_class})",
+                    "detected_device_class": "được phát hiện {device_class}",
+                    "rose": "đã tăng",
+                    "set": "được cài đặt",
+                    "turned_off": "đã tắt",
+                    "turned_on": "đã bật",
+                    "was_at_home": "ở nhà",
+                    "was_at_state": "đã ở {state}",
+                    "was_away": "đi vắng",
+                    "was_closed": "đã bị đóng",
+                    "was_connected": "đã kết nối",
+                    "was_disconnected": "đã mất kết nối",
+                    "was_locked": "đã khoá",
+                    "was_low": "là thấp",
+                    "was_normal": "là bình thường",
+                    "was_opened": "đã mở",
+                    "was_plugged_in": "được cắm vào",
+                    "was_safe": "an toàn",
+                    "was_unlocked": "đã mở khoá",
+                    "was_unplugged": "được rút ra",
+                    "was_unsafe": "không an toàn"
+                }
+            },
+            "media-browser": {
+                "audio_not_supported": "Trình duyệt của bạn không hỗ trợ âm thanh.",
+                "choose_player": "Chọn Bộ phát",
+                "choose-source": "Chọn Nguồn",
+                "class": {
+                    "album": "Album",
+                    "app": "Ứng dụng",
+                    "artist": "Nghệ sĩ",
+                    "channel": "Kênh",
+                    "composer": "Soạn nhạc",
+                    "contributing_artist": "Nghệ sĩ Tham gia",
+                    "directory": "Thư viện",
+                    "episode": "Tập phim",
+                    "game": "Trò chơi",
+                    "genre": "Thể loại",
+                    "image": "Ảnh",
+                    "movie": "Phim",
+                    "music": "Âm nhạc",
+                    "playlist": "Danh sách phát",
+                    "podcast": "Podcast",
+                    "season": "Mùa",
+                    "track": "Bài",
+                    "tv_show": "Chương trình Truyền hình",
+                    "url": "Url",
+                    "video": "Video"
+                },
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Nghệ sĩ",
+                    "library": "Thư viện",
+                    "playlist": "Danh sách phát",
+                    "server": "Máy chủ"
+                },
+                "documentation": "tài liệu",
+                "learn_adding_local_media": "Tìm hiểu thêm về cách thêm nội dung đa phương tiện trong {documentation} .",
+                "local_media_files": "Đặt các tệp video, âm thanh và hình ảnh của bạn vào thư mục media để có thể duyệt và phát chúng trong trình duyệt hoặc trên các trình phát đa phương tiện được hỗ trợ.",
+                "media_browsing_error": "Lỗi trình Duyệt Đa phương tiện",
+                "media_not_supported": "Trình phát Đa phương tiện không hỗ trợ loại này",
+                "media_player": "Trình phát Đa phương tiện",
+                "media-player-browser": "Trình duyệt Đa phương tiện",
+                "no_items": "Không có mục nào",
+                "no_local_media_found": "Không tìm thấy nội dung đa phương tiện cục bộ nào",
+                "no_media_folder": "Có vẻ như bạn chưa tạo thư mục đa phương tiện.",
+                "pick": "Chọn",
+                "pick-media": "Chọn nội dung Đa phương tiện",
+                "play": "Phát",
+                "play-media": "Phát nội dung Đa phương tiện",
+                "setup_local_help": "Xem {documentation} về cách thiết lập thư viện đa phương tiện cục bộ.",
+                "video_not_supported": "Trình duyệt của bạn không hỗ trợ video.",
+                "web-browser": "Trình duyệt Web"
+            },
+            "picture-upload": {
+                "label": "Hình ảnh",
+                "unsupported_format": "Định dạng không được hỗ trợ, vui lòng chọn hình ảnh dạng JPEG, PNG hoặc GIF."
             },
             "related-items": {
                 "area": "Khu vực",
@@ -553,6 +654,7 @@
                     "week": "{count} {count, plural,\n  one { tuần }\n  other { tuần }\n}"
                 },
                 "future": "Trong {time}",
+                "just_now": "Ngay bây giờ",
                 "never": "Không bao giờ",
                 "past": "{time} trước"
             },
@@ -563,6 +665,9 @@
         "dialogs": {
             "config_entry_system_options": {
                 "update": "Cập nhật"
+            },
+            "domain_toggler": {
+                "reset_entities": "Đặt lại các Thực thể"
             },
             "entity_registry": {
                 "control": "Điều khiển",
@@ -581,6 +686,7 @@
                     "unavailable": "Thực thể này hiện không có sẵn.",
                     "update": "Cập nhật"
                 },
+                "faq": "tài liệu",
                 "no_unique_id": "Thực thể này không có mã định danh duy nhất, do vậy không thể quản lý cài đặt của nó từ giao diện người dùng.",
                 "related": "Liên quan",
                 "settings": "Cài đặt"
@@ -629,9 +735,16 @@
                 "required_error_msg": "Trường này là cần thiết",
                 "yaml_not_editable": "Không thể sửa cài đặt của thực thể này từ giao diện người dùng. Chỉ các thực thể được thiết lập từ giao diện người dùng mới có thể được sửa chữa từ giao diện người dùng."
             },
+            "image_cropper": {
+                "crop": "Cắt bớt"
+            },
             "more_info_control": {
+                "controls": "Điều khiển",
+                "details": "Chi tiết",
                 "dismiss": "Bỏ qua hộp thoại",
                 "edit": "Chỉnh sửa thực thể",
+                "history": "Lịch sử",
+                "last_updated": "Cập nhật lần cuối",
                 "person": {
                     "create_zone": "Tạo vùng từ vị trí hiện tại"
                 },
@@ -776,6 +889,15 @@
                             "name": "Hành động",
                             "type_select": "Loại hành động",
                             "type": {
+                                "choose": {
+                                    "add_option": "Thêm tùy chọn",
+                                    "conditions": "Điều kiện",
+                                    "default": "Các hành động mặc định",
+                                    "label": "Chọn",
+                                    "option": "Tùy chọn {number}",
+                                    "remove_option": "Xóa tùy chọn",
+                                    "sequence": "Hành động"
+                                },
                                 "condition": {
                                     "label": "Điều kiện"
                                 },
@@ -794,11 +916,35 @@
                                     "label": "Kích hoạt Sự kiện",
                                     "service_data": "Dữ liệu cho dịch vụ"
                                 },
+                                "repeat": {
+                                    "label": "Lặp lại",
+                                    "sequence": "Hành động",
+                                    "type_select": "Dạng lặp lại",
+                                    "type": {
+                                        "count": {
+                                            "label": "Đếm"
+                                        },
+                                        "until": {
+                                            "conditions": "Đến khi thoả điều kiện",
+                                            "label": "Đến khi"
+                                        },
+                                        "while": {
+                                            "conditions": "Trong khi còn thoả điều kiện",
+                                            "label": "Trong khi"
+                                        }
+                                    }
+                                },
                                 "service": {
                                     "label": "Gọi dịch vụ",
                                     "service_data": "Dữ liệu dịch vụ"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Tiếp tục thực hiện sau quá hạn",
+                                    "label": "Đợi kích hoạt",
+                                    "timeout": "Thời gian quá hạn (tuỳ chọn)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Tiếp tục thực hiện sau quá hạn",
                                     "label": "Chờ",
                                     "timeout": "Thời gian chờ (tùy chọn)",
                                     "wait_template": "Mẫu chờ"
@@ -850,7 +996,18 @@
                                 "time": {
                                     "after": "Sau",
                                     "before": "Trước",
-                                    "label": "Thời gian"
+                                    "label": "Thời gian",
+                                    "type_input": "Giá trị của một hỗ trợ dạng ngày/giờ",
+                                    "type_value": "Thời gian cố định",
+                                    "weekdays": {
+                                        "fri": "Thứ Sáu",
+                                        "mon": "Thứ Hai",
+                                        "sat": "Thứ Bảy",
+                                        "sun": "Chủ Nhật",
+                                        "thu": "Thứ Năm",
+                                        "tue": "Thứ Ba",
+                                        "wed": "Thứ Tư"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Thực thể với vị trí",
@@ -928,6 +1085,7 @@
                                     "value_template": "Mẫu giá trị (tùy chọn)"
                                 },
                                 "state": {
+                                    "attribute": "Thuộc tính (Tùy chọn)",
                                     "for": "Cho",
                                     "from": "Từ",
                                     "label": "Trạng thái",
@@ -939,6 +1097,9 @@
                                     "offset": "Bù đắp (tùy chọn)",
                                     "sunrise": "Bình minh",
                                     "sunset": "Hoàng hôn"
+                                },
+                                "tag": {
+                                    "label": "Thẻ"
                                 },
                                 "template": {
                                     "label": "Mẫu",
@@ -952,7 +1113,9 @@
                                 },
                                 "time": {
                                     "at": "Lúc",
-                                    "label": "Thời gian"
+                                    "label": "Thời gian",
+                                    "type_input": "Giá trị của một hỗ trợ dạng ngày/giờ",
+                                    "type_value": "Thời gian cố định"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -975,6 +1138,8 @@
                         "add_automation": "Thêm Tự động hóa",
                         "delete_automation": "Xóa tự động hóa",
                         "delete_confirm": "Bạn có chắc bạn muốn xoá tự động hoá này không?",
+                        "duplicate": "Nhân bản",
+                        "duplicate_automation": "Nhân bản tự động hoá",
                         "edit_automation": "Chỉnh sửa tự động hóa",
                         "header": "Trình biên tập tự động hóa",
                         "headers": {
@@ -1061,6 +1226,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Chưa có {name} nào được thêm sử dụng thiết bị này. Bạn có thể thêm bằng nút + ở trên.",
                     "automation": {
                         "automations": "Tự động hóa",
                         "create": "Tạo tự động hóa với thiết bị",
@@ -1074,6 +1240,7 @@
                     "caption": "Thiết bị",
                     "confirm_delete": "Bạn có chắc bạn muốn xóa bỏ thiết bị này không?",
                     "confirm_rename_entity_ids": "Bạn cũng muốn đổi mã định danh của các thực thể?",
+                    "confirm_rename_entity_ids_warning": "Điều này sẽ không thay đổi bất kỳ cấu hình nào (như tự động hóa, kịch bản, ngữ cảnh, Lovelace) hiện đang sử dụng các thực thể này, bạn sẽ phải tự cập nhật chúng.",
                     "data_table": {
                         "area": "Khu vực",
                         "battery": "Pin",
@@ -1210,6 +1377,7 @@
                 },
                 "integrations": {
                     "add_integration": "Thêm tích hợp",
+                    "attention": "Cần chú ý",
                     "caption": "Các bộ tích hợp",
                     "config_entry": {
                         "delete": "Xóa",
@@ -1227,6 +1395,8 @@
                         "no_devices": "Bộ tích hợp này chưa có thiết bị nào",
                         "options": "Tùy Chọn",
                         "reload": "Tải lại",
+                        "reload_confirm": "Tích hợp đã được tải lại",
+                        "reload_restart_confirm": "Khởi động lại Home Assistant để hoàn tất tải lại tích hợp này",
                         "rename": "Đổi tên",
                         "restart_confirm": "Khởi động lại Home Assistant để hoàn tất xóa bộ tích hợp này",
                         "system_options": "Tùy chọn hệ thống",
@@ -1268,6 +1438,7 @@
                     "none": "Chưa có cấu hình nào",
                     "none_found": "Không tìm thấy tích hợp nào",
                     "none_found_detail": "Điều chỉnh tiêu chí tìm kiếm của bạn.",
+                    "reconfigure": "Cấu hình lại",
                     "rename_dialog": "Chỉnh sửa tên của mục cấu hình này",
                     "rename_input_label": "Tên mục",
                     "search": "Tìm các bộ tích hợp"
@@ -1377,6 +1548,32 @@
                     "topic": "chủ đề"
                 },
                 "ozw": {
+                    "navigation": {
+                        "nodes": "Các nút"
+                    },
+                    "network": {
+                        "header": "Quản lý Mạng lưới",
+                        "node_count": "{count} nút"
+                    },
+                    "node": {
+                        "button": "Chi tiết Nút",
+                        "not_found": "Không tìm thấy nút"
+                    },
+                    "nodes_table": {
+                        "failed": "Thất bại",
+                        "id": "ID",
+                        "manufacturer": "Nhà sản xuất",
+                        "model": "Mẫu",
+                        "query_stage": "Giai đoạn Truy vấn",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
+                    "refresh_node": {
+                        "button": "Làm mới Nút",
+                        "node_status": "Trạng thái Nút",
+                        "refreshing_description": "Đang làm mới thông tin nút...",
+                        "start_refresh_button": "Bắt đầu Làm mới",
+                        "step": "Bước"
+                    },
                     "services": {
                         "add_node": "Thêm Nút",
                         "remove_node": "Xoá Nút"
@@ -1386,6 +1583,9 @@
                     "caption": "Người",
                     "description": "Quản lý những người mà Home Assistant theo dõi.",
                     "detail": {
+                        "admin": "Quản trị viên",
+                        "allow_login": "Cho phép người này đăng nhập",
+                        "confirm_delete_user": "Bạn có chắc muốn xoá tài khoản của {name}? Bạn vẫn có thể tiếp tục theo dõi người dùng này nhưng người này sẽ không đăng nhập được nữa.",
                         "device_tracker_intro": "Chọn các thiết bị thuộc về người này.",
                         "device_tracker_pick": "Chọn thiết bị để theo dõi",
                         "device_tracker_picked": "Thiết bị theo dõi",
@@ -1461,6 +1661,7 @@
                             "restart": "Khởi động lại",
                             "single": "Đơn (mặc định)"
                         },
+                        "save_script": "Lưu kịch bản",
                         "sequence": "Trình tự",
                         "sequence_sentence": "Trình tự các hành động trong kịch bản này."
                     },
@@ -1469,6 +1670,7 @@
                         "headers": {
                             "name": "Tên"
                         },
+                        "run_script": "Chạy kịch bản",
                         "show_info": "Hiển thị thông tin về kịch bản",
                         "trigger_script": "Kích hoạt kịch bản"
                     }
@@ -1479,18 +1681,37 @@
                     "section": {
                         "reloading": {
                             "automation": "Tải lại tự động hóa",
+                            "command_line": "Tải lại các thực thể từ command line",
                             "core": "Tải lại lõi",
+                            "filesize": "Tải lại các thực thể kích thước tập tin",
+                            "filter": "Tải lại các thực thể filter",
+                            "generic": "Tải lại các thực thể từ generic IP camera",
+                            "generic_thermostat": "Tải lại các thực thể từ generic thermostat",
                             "group": "Tải lại nhóm",
                             "heading": "Đang tải lại cấu hình YAML",
+                            "history_stats": "Tải lại các thực thể history stats",
+                            "homekit": "Tải lại HomeKit",
                             "input_boolean": "Tải lại input boolean",
                             "input_datetime": "Tải lại input date time",
                             "input_number": "Tải lại input number",
                             "input_select": "Tải lại input select",
                             "input_text": "Tải lại input texts",
                             "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
+                            "min_max": "Tải lại các thực thể min/max",
+                            "mqtt": "Tải lại các thực thể mqtt",
                             "person": "Tải lại người",
+                            "ping": "Tải lại các thực thể cảm biến nhị phân từ ping",
+                            "reload": "Tải lại {domain}",
+                            "rest": "Tải lại các thực thể và dịch vụ thông báo từ rest",
+                            "rpi_gpio": "Tải lại các thực thể Raspberry Pi GPIO",
                             "scene": "Tải lại ngữ cảnh",
                             "script": "Tải lại kịch bản",
+                            "smtp": "Tải lại các dịch vụ thông báo qua smtp",
+                            "statistics": "Tải lại các thực thể statistics",
+                            "telegram": "Tải lại các dịch vụ thông báo qua telegram",
+                            "template": "Tải lại các thực thể từ template",
+                            "trend": "Tải lại các thực thể từ trend",
+                            "universal": "Tải lại các thực thể từ universal media player",
                             "zone": "Tải lại khu vực"
                         },
                         "server_management": {
@@ -1508,12 +1729,40 @@
                         }
                     }
                 },
+                "tags": {
+                    "add_tag": "Thêm thẻ",
+                    "automation_title": "Thẻ {name} được quét",
+                    "caption": "Thẻ",
+                    "create_automation": "Tạo tự động hóa với thẻ",
+                    "description": "Quản lý các thẻ",
+                    "detail": {
+                        "create": "Tạo",
+                        "create_and_write": "Tạo và Ghi",
+                        "delete": "Xóa",
+                        "description": "Mô tả",
+                        "name": "Tên",
+                        "new_tag": "Thẻ mới",
+                        "tag_id": "Thẻ",
+                        "tag_id_placeholder": "Tạo tự động nếu để trống",
+                        "update": "Cập nhật"
+                    },
+                    "edit": "Chỉnh sửa",
+                    "headers": {
+                        "last_scanned": "Lần quét cuối",
+                        "name": "Tên"
+                    },
+                    "never_scanned": "Chưa bao giờ được quét",
+                    "no_tags": "Không có thẻ",
+                    "write": "Ghi"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Thêm người dùng",
                         "create": "Tạo",
                         "name": "Tên",
                         "password": "Mật khẩu",
+                        "password_confirm": "Xác nhận Mật khẩu",
+                        "password_not_match": "Mật khẩu không khớp",
                         "username": "Tên đăng nhập"
                     },
                     "caption": "Người dùng",
@@ -1526,6 +1775,8 @@
                         "deactivate_user": "Hủy kích hoạt người dùng",
                         "delete_user": "Xóa người dùng",
                         "name": "Tên",
+                        "new_password": "Mật khẩu mới",
+                        "password_changed": "Mật khẩu đã được thay đổi thành công",
                         "system_generated_users_not_editable": "Không thể chỉnh sửa người dùng do hệ thống tạo ra.",
                         "update_user": "Cập nhật"
                     },
@@ -1654,8 +1905,10 @@
                     "node_management": {
                         "add_to_group": "Thêm vào Nhóm",
                         "entities": "Các thực thể của nút này",
+                        "entity_info": "Thông tin Thực thể",
                         "group": "Nhóm",
                         "node_to_control": "Nút để điều khiển",
+                        "remove_broadcast": "Xoá Phát sóng",
                         "remove_from_group": "Xóa Khỏi Nhóm"
                     },
                     "ozw_log": {
@@ -1732,8 +1985,14 @@
                         "title": "Trạng thái"
                     },
                     "templates": {
+                        "all_listeners": "Mẫu sẵn này lắng nghe tất cả các sự kiện thay đổi trạng thái.",
+                        "domain": "Tên miền",
                         "editor": "Trình soạn thảo bản mẫu",
+                        "entity": "Thực thể",
                         "jinja_documentation": "Tài liệu về Jinja2",
+                        "listeners": "Mẫu sẵn này lắng nghe các sự kiện thay đổi trạng thái sau:",
+                        "no_listeners": "Mẫu sẵn này không lắng nghe bất kỳ sự kiện thay đổi trạng thái nào và sẽ không tự động được cập nhật.",
+                        "reset": "Đặt lại mẫu sẵn về nội dung demo",
                         "title": "Mẫu sẵn",
                         "unknown_error_template": "Lỗi không xác định khi kết xuất bản mẫu"
                     }
@@ -1802,6 +2061,20 @@
                     "refresh": "Làm tươi"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Gọi Dịch vụ",
+                            "default_action": "Hành động Mặc định",
+                            "more-info": "Thông tin Thêm",
+                            "navigate": "Điều hướng",
+                            "none": "Không có Hoạt động",
+                            "toggle": "Đảo ngược",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Dữ liệu cho dịch vụ chỉ có thể được nhập bởi trình soạn thảo mã",
+                        "navigation_path": "Đường Dẫn Hướng",
+                        "url_path": "Đường dẫn url"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Các Trạng thái Khả dụng",
@@ -1809,12 +2082,20 @@
                             "name": "Bảng điều khiển Báo động"
                         },
                         "button": {
+                            "default_action_help": "Hành động mặc định phụ thuộc vào khả năng của thực thể, có thể là đảo ngược hoặc hiển thị thông tin khác.",
                             "description": "Thẻ Nút cho phép bạn thêm các nút để thực hiện các tác vụ.",
                             "name": "Nút"
                         },
                         "calendar": {
+                            "calendar_entities": "Các thực thể Lịch",
                             "description": "Thẻ Lịch dùng hiển thị lịch bao gồm ngày, tuần và xem dạng danh sách",
-                            "name": "Lịch"
+                            "inital_view": "Dạng xem Căn bản",
+                            "name": "Lịch",
+                            "views": {
+                                "dayGridDay": "Ngày",
+                                "dayGridMonth": "Tháng",
+                                "listWeek": "Danh sách"
+                            }
                         },
                         "conditional": {
                             "card": "Thẻ",
@@ -1829,8 +2110,31 @@
                         },
                         "entities": {
                             "description": "Thẻ Các Thực thể là loại thẻ phổ biến nhất. Nó nhóm các mục với nhau thành một danh sách.",
+                            "edit_special_row": "Xem chi tiết của hàng này bằng cách bấm nút chỉnh sửa",
+                            "entity_row_editor": "Trình soạn thảo Thực thể",
+                            "entity_row": {
+                                "attribute": "Thuộc tính",
+                                "button": "Nút",
+                                "buttons": "Nút",
+                                "call-service": "Gọi Dịch vụ",
+                                "cast": "Cast",
+                                "conditional": "Có điều kiện",
+                                "divider": "Chia",
+                                "section": "Phần",
+                                "weblink": "Liên kết Web"
+                            },
                             "name": "Các Thực thể",
-                            "show_header_toggle": "Hiển thị Nút chuyển đổi ở Trên cùng"
+                            "secondary_info_values": {
+                                "brightness": "Độ sáng",
+                                "entity-id": "Mã định danh Thực thể",
+                                "last-changed": "Lần Thay đổi cuối",
+                                "last-triggered": "Lần Kích hoạt cuối",
+                                "none": "Không có Thông tin Phụ",
+                                "position": "Vị trí",
+                                "tilt-position": "Vị trí Nghiêng"
+                            },
+                            "show_header_toggle": "Hiển thị Nút chuyển đổi ở Trên cùng",
+                            "special_row": "hàng đặc biệt"
                         },
                         "entity-filter": {
                             "description": "Thẻ Bộ lọc Thực thể cho phép bạn xác định danh sách các thực thể mà bạn muốn theo dõi chỉ khi chúng ở trạng thái nhất định.",
@@ -1852,7 +2156,8 @@
                             "manual_description": "Cần thêm một thẻ tuỳ chỉnh hay chỉ muốn viết cấu hình yaml thủ công?",
                             "no_theme": "Không có theme.",
                             "search": "Tìm kiếm",
-                            "state": "Trạng thái"
+                            "state": "Trạng thái",
+                            "state_color": "Thay đổi màu sắc biểu tượng theo trạng thái?"
                         },
                         "glance": {
                             "description": "Thẻ Xem nhanh rất hữu ích để hiển thị nhiều cảm biến trong một không gian nhỏ gọn.",
@@ -1912,7 +2217,8 @@
                         },
                         "sensor": {
                             "description": "Thẻ Cảm biến cung cấp cho bạn tổng quan nhanh về trạng thái cảm biến của bạn với một biểu đồ tùy chọn thể hiện sự thay đổi qua thời gian.",
-                            "name": "Cảm biến"
+                            "name": "Cảm biến",
+                            "show_more_detail": "Hiển thị thêm chi tiết"
                         },
                         "shopping-list": {
                             "description": "Thẻ Danh sách mua sắm cho phép bạn thêm, chỉnh sửa, kiểm tra và xóa các mục khỏi danh sách mua sắm của bạn.",
@@ -1934,7 +2240,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Theo loại Thẻ",
+                        "by_entity": "Theo Thực thể",
                         "custom_card": "Tuỳ chỉnh",
+                        "domain": "Miền",
+                        "entity": "Thực thể",
                         "no_description": "Không có mô tả nào."
                     },
                     "edit_card": {
@@ -1945,9 +2255,12 @@
                         "edit": "Chỉnh sửa",
                         "header": "Cấu hình Thẻ",
                         "move": "Di chuyển",
+                        "move_after": "Di chuyển thẻ sau",
+                        "move_before": "Di chuyển thẻ trước",
                         "options": "Tùy Chọn",
                         "pick_card": "Chọn Thẻ bạn muốn thêm.",
                         "pick_card_view_title": "Loại thẻ nào bạn muốn thêm vào chế độ xem {name}?",
+                        "search_cards": "Tìm kiếm các thẻ",
                         "show_code_editor": "Sửa mã nguồn",
                         "show_visual_editor": "Hiển thị Chỉnh sửa Trực quan",
                         "toggle_editor": "Đổi trình biên tập",
@@ -2196,6 +2509,7 @@
                     "intro": "Xin chào {name} , chào mừng bạn đến với Home Assistant. Bạn muốn đặt tên nhà của bạn thế nào?",
                     "intro_location": "Chúng tôi muốn biết nơi bạn sống. Thông tin này sẽ giúp hiển thị thông tin và thiết lập tự động dựa trên mặt trời. Dữ liệu này không bao giờ được chia sẻ bên ngoài mạng của bạn.",
                     "intro_location_detect": "Chúng tôi có thể giúp bạn điền thông tin này bằng cách yêu cầu một lần cho dịch vụ bên ngoài.",
+                    "location_name": "Tên Home Assistant của bạn",
                     "location_name_default": "Nhà"
                 },
                 "integration": {
@@ -2204,6 +2518,12 @@
                     "more_integrations": "Thêm"
                 },
                 "intro": "Bạn đã sẵn sàng để đánh thức ngôi nhà của mình, đòi lại sự riêng tư của bạn và tham gia vào một cộng đồng tinker trên toàn thế giới?",
+                "restore": {
+                    "description": "Thay vì vậy bạn có thể phục hồi từ một bản chụp nhanh trước đó.",
+                    "hide_log": "Ẩn nhật ký đầy đủ",
+                    "in_progress": "Đang khôi phục",
+                    "show_log": "Hiển thị nhật ký đầy đủ"
+                },
                 "user": {
                     "create_account": "Tạo tài khoản",
                     "data": {
@@ -2235,6 +2555,11 @@
                     "submit": "Gửi đi"
                 },
                 "current_user": "Bạn hiện đang đăng nhập với tên {fullName} .",
+                "customize_sidebar": {
+                    "button": "Chỉnh sửa",
+                    "description": "Bạn cũng có thể nhấn và giữ tiêu đề của thanh bên để kích hoạt chế độ chỉnh sửa.",
+                    "header": "Thay đổi thứ tự và ẩn các mục khỏi thanh bên"
+                },
                 "dashboard": {
                     "description": "Chọn bảng thông tin mặc định cho thiết bị này.",
                     "dropdown_label": "Bảng điều khiển",
@@ -2257,6 +2582,7 @@
                     "confirm_delete": "Bạn có chắn chắn muốn xóa token truy cập {name}?",
                     "create": "Tạo Token",
                     "create_failed": "Không thể tạo token truy cập.",
+                    "created": "Được tạo {date}",
                     "created_at": "Được tạo lúc {date}",
                     "delete_failed": "Không thể xóa token truy cập.",
                     "description": "Tạo mã truy cập tồn tại lâu dài để cho phép script của bạn tương tác với Home assistant. Mỗi mã truy cập sẽ có hiệu lực trong 10 năm kể từ khi tạo. Các mã truy cập hiện đang hoạt động được thể hiện trong danh sách sau.",
@@ -2264,6 +2590,7 @@
                     "header": "Token truy cập thời hạn dài",
                     "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
                     "learn_auth_requests": "Làm thế nào để thực hiện yêu cầu xác thực.",
+                    "name": "Tên",
                     "not_used": "Chưa bao giờ được sử dụng",
                     "prompt_copy_token": "Sao chép token truy cập của bạn. Nó sẽ không đươc hiển thị nữa.",
                     "prompt_name": "Tên?"
@@ -2305,10 +2632,18 @@
                     "header": "Tự động đóng kết nối"
                 },
                 "themes": {
+                    "accent_color": "Màu nhấn mạnh",
+                    "dark_mode": {
+                        "auto": "Tự động",
+                        "dark": "Tối",
+                        "light": "Sáng"
+                    },
                     "dropdown_label": "Giao diện",
                     "error_no_theme": "Không có giao diện nào.",
                     "header": "Giao diện",
-                    "link_promo": "Tìm hiểu về giao diện"
+                    "link_promo": "Tìm hiểu về giao diện",
+                    "primary_color": "Màu chính",
+                    "reset": "Thiết đặt lại"
                 }
             },
             "shopping-list": {
@@ -2318,6 +2653,7 @@
             }
         },
         "sidebar": {
+            "done": "Xong rồi",
             "external_app_configuration": "Cấu hình ứng dụng",
             "sidebar_toggle": "Ẩn/Hiện Thanh Bên"
         }

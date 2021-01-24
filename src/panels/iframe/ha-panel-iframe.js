@@ -13,7 +13,7 @@ class HaPanelIframe extends PolymerElement {
           border: 0;
           width: 100%;
           position: absolute;
-          height: calc(100% - 64px);
+          height: calc(100% - var(--header-height));
           background-color: var(--primary-background-color);
         }
       </style>
@@ -24,7 +24,7 @@ class HaPanelIframe extends PolymerElement {
 
       <iframe
         src="[[panel.config.url]]"
-        sandbox="allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts"
+        sandbox="allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts allow-modals"
         allowfullscreen="true"
         webkitallowfullscreen="true"
         mozallowfullscreen="true"

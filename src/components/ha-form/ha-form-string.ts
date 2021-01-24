@@ -1,16 +1,16 @@
-import "../ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-icon-button";
 import type {
   HaFormElement,
   HaFormStringData,
@@ -55,6 +55,7 @@ export class HaFormString extends LitElement implements HaFormElement {
               id="iconButton"
               title="Click to toggle between masked and clear password"
               @click=${this._toggleUnmaskedPassword}
+              tabindex="-1"
             >
             </ha-icon-button>
           </paper-input>

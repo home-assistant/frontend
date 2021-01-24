@@ -3,8 +3,8 @@ import {
   CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-icon";
@@ -19,7 +19,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: WeblinkConfig): void {
     if (!config || !config.url) {
-      throw new Error("Invalid Configuration: 'url' required");
+      throw new Error("URL required");
     }
 
     this._config = {

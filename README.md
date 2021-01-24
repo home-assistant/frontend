@@ -14,7 +14,7 @@ This is the repository for the official [Home Assistant](https://home-assistant.
 - Development: [Instructions](https://developers.home-assistant.io/docs/frontend/development/)
 - Production build: `script/build_frontend`
 - Gallery: `cd gallery && script/develop_gallery`
-- Hass.io: [Instructions](https://developers.home-assistant.io/docs/en/hassio_hass.html)
+- Supervisor: [Instructions](https://developers.home-assistant.io/docs/supervisor/developing)
 
 ## Frontend development
 
@@ -26,4 +26,4 @@ A complete guide can be found at the following [link](https://www.home-assistant
 
 Home Assistant is open-source and Apache 2 licensed. Feel free to browse the repository, learn and reuse parts in your own projects.
 
-We use [BrowserStack](https://www.browserstack.com) to test Home Assistant on a large variation of devices.
+We use [BrowserStack](https://www.browserstack.com) to test Home Assistant on a large variety of devices.

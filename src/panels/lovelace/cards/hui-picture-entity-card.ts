@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -32,9 +32,7 @@ import { PictureEntityCardConfig } from "./types";
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-picture-entity-card-editor" */ "../editor/config-elements/hui-picture-entity-card-editor"
-    );
+    await import("../editor/config-elements/hui-picture-entity-card-editor");
     return document.createElement("hui-picture-entity-card-editor");
   }
 
@@ -69,7 +67,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: PictureEntityCardConfig): void {
     if (!config || !config.entity) {
-      throw new Error("Invalid Configuration: 'entity' required");
+      throw new Error("Entity must be specified");
     }
 
     if (
@@ -78,7 +76,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       !config.state_image &&
       !config.camera_image
     ) {
-      throw new Error("No image source configured.");
+      throw new Error("No image source configured");
     }
 
     this._config = { show_name: true, show_state: true, ...config };
@@ -139,9 +137,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         </div>
       `;
     } else if (this._config.show_name) {
-      footer = html` <div class="footer">${name}</div> `;
+      footer = html`<div class="footer">${name}</div>`;
     } else if (this._config.show_state) {
-      footer = html` <div class="footer state">${state}</div> `;
+      footer = html`<div class="footer state">${state}</div>`;
     }
 
     return html`
@@ -182,6 +180,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         min-height: 75px;
         overflow: hidden;
         position: relative;
+        height: 100%;
+        box-sizing: border-box;
       }
 
       hui-image.clickable {

@@ -19,7 +19,7 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: SectionConfig): void {
     if (!config) {
-      throw new Error("Error in card configuration.");
+      throw new Error("Invalid configuration");
     }
 
     this._config = config;
@@ -41,10 +41,11 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
   static get styles(): CSSResult {
     return css`
       .label {
-        color: var(--primary-color);
+        color: var(--primary-text-color);
         margin-left: 8px;
-        margin-bottom: 16px;
+        margin-bottom: 8px;
         margin-top: 16px;
+        font-weight: 500;
       }
       .divider {
         height: 1px;

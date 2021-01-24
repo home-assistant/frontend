@@ -1,26 +1,26 @@
 import {
+  css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
-  css,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { haStyle } from "../../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../../types";
 import {
-  ZHADevice,
   fetchZHADevice,
   reconfigureNode,
+  ZHADevice,
 } from "../../../../../../data/zha";
-import { navigate } from "../../../../../../common/navigate";
-import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../../types";
 import { showZHAClusterDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-cluster";
+import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
 
 @customElement("ha-device-actions-zha")
 export class HaDeviceActionsZha extends LitElement {
@@ -120,7 +120,7 @@ export class HaDeviceActionsZha extends LitElement {
     }
 
     await this.hass.callService("zha", "remove", {
-      ieee_address: this._zhaDevice!.ieee,
+      ieee: this._zhaDevice!.ieee,
     });
 
     history.back();

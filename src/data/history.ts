@@ -19,7 +19,7 @@ const LINE_ATTRIBUTES_TO_KEEP = [
 export interface LineChartState {
   state: string;
   last_changed: string;
-  attributes?: { [key: string]: any };
+  attributes?: Record<string, any>;
 }
 
 export interface LineChartEntity {
@@ -85,11 +85,14 @@ export const fetchRecent = (
 export const fetchDate = (
   hass: HomeAssistant,
   startTime: Date,
-  endTime: Date
+  endTime: Date,
+  entityId
 ): Promise<HassEntity[][]> => {
   return hass.callApi(
     "GET",
-    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response`
+    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response${
+      entityId ? `&filter_entity_id=${entityId}` : ``
+    }`
   );
 };
 

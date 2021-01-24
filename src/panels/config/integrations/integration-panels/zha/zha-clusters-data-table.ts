@@ -7,16 +7,15 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/entity/ha-state-icon";
 import type { Cluster } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 
 export interface ClusterRowData extends Cluster {
   cluster?: Cluster;
@@ -31,7 +30,7 @@ export class ZHAClustersDataTable extends LitElement {
 
   @property() public clusters: Cluster[] = [];
 
-  @query("ha-data-table") private _dataTable!: HaDataTable;
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   private _clusters = memoizeOne((clusters: Cluster[]) => {
     let outputClusters: ClusterRowData[] = clusters;

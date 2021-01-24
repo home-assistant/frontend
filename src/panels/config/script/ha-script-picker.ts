@@ -1,6 +1,8 @@
-import "../../../components/ha-icon-button";
+import "@material/mwc-icon-button";
+import { mdiHelpCircle, mdiPlus } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
   CSSResult,
   customElement,
   html,
@@ -12,20 +14,20 @@ import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import "@material/mwc-fab";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import { triggerScript } from "../../../data/script";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
-import { stateIcon } from "../../../common/entity/state_icon";
-import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -61,7 +63,7 @@ class HaScriptPicker extends LitElement {
                 .script=${script}
                 icon="hass:play"
                 title="${this.hass.localize(
-                  "ui.panel.config.script.picker.activate_script"
+                  "ui.panel.config.script.picker.run_script"
                 )}"
                 @click=${(ev: Event) => this._runScript(ev)}
               ></ha-icon-button>
@@ -141,22 +143,21 @@ class HaScriptPicker extends LitElement {
         )}
         hasFab
       >
-        <ha-icon-button
-          slot="toolbar-icon"
-          icon="hass:help-circle"
-          @click=${this._showHelp}
-        ></ha-icon-button>
+        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
+          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+        </mwc-icon-button>
         <a href="/config/script/edit/new" slot="fab">
-          <mwc-fab
+          <ha-fab
             ?is-wide=${this.isWide}
             ?narrow=${this.narrow}
-            title="${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.config.script.picker.add_script"
-            )}"
+            )}
+            extended
             ?rtl=${computeRTL(this.hass)}
           >
-            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-          </mwc-fab>
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          </ha-fab>
         </a>
       </hass-tabs-subpage-data-table>
     `;
@@ -199,8 +200,15 @@ class HaScriptPicker extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return haStyle;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        a {
+          text-decoration: none;
+        }
+      `,
+    ];
   }
 }
 

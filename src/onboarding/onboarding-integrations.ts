@@ -29,6 +29,8 @@ import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
 
+const HIDDEN_DOMAINS = new Set(["met", "rpi_power"]);
+
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -135,9 +137,7 @@ class OnboardingIntegrations extends LitElement {
     loadConfigFlowDialog();
     this._loadConfigEntries();
     /* polyfill for paper-dropdown */
-    import(
-      /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
-    );
+    import("web-animations-js/web-animations-next-lite.min");
   }
 
   private _createFlow() {
@@ -161,10 +161,12 @@ class OnboardingIntegrations extends LitElement {
 
   private async _loadConfigEntries() {
     const entries = await getConfigEntries(this.hass!);
-    // We filter out the config entry for the local weather.
+    // We filter out the config entry for the local weather and rpi_power.
     // It is one that we create automatically and it will confuse the user
     // if it starts showing up during onboarding.
-    this._entries = entries.filter((entry) => entry.domain !== "met");
+    this._entries = entries.filter(
+      (entry) => !HIDDEN_DOMAINS.has(entry.domain)
+    );
   }
 
   private async _finish() {

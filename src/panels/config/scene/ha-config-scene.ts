@@ -2,6 +2,7 @@ import { HassEntities } from "home-assistant-js-websocket";
 import { customElement, property, PropertyValues } from "lit-element";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { debounce } from "../../../common/util/debounce";
 import { SceneEntity } from "../../../data/scene";
 import {
   HassRouterPage,
@@ -10,7 +11,6 @@ import {
 import { HomeAssistant } from "../../../types";
 import "./ha-scene-dashboard";
 import "./ha-scene-editor";
-import { debounce } from "../../../common/util/debounce";
 
 const equal = (a: SceneEntity[], b: SceneEntity[]): boolean => {
   if (a.length !== b.length) {

@@ -17,6 +17,8 @@
           --primary-text-color: #e1e1e1;
           --secondary-text-color: #9b9b9b;
           --disabled-text-color: #6f6f6f;
+          --mdc-theme-surface: #1e1e1e;
+          --ha-card-background: #1e1e1e;
         }
       }
       .content {
@@ -52,17 +54,17 @@
     <%= renderTemplate('_js_base') %>
     <%= renderTemplate('_preload_roboto') %>
 
-    <script type="module" crossorigin="use-credentials">
-      import "<%= latestPageJS %>";
+    <script crossorigin="use-credentials">
+      import("<%= latestPageJS %>");
+      window.latestJS = true;
       window.stepsPromise = fetch("/api/onboarding", {
         credentials: "same-origin",
       });
     </script>
 
-    <script nomodule>
+    <script>
       (function() {
-        // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
-        if (!isS101) {
+        if (!window.latestJS) {
           <% if (useRollup) { %>
             _ls("/static/js/s.min.js").onload = function() {
               System.import("<%= es5PageJS %>");

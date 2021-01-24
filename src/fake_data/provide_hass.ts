@@ -20,7 +20,7 @@ type MockRestCallback = (
   hass: MockHomeAssistant,
   method: string,
   path: string,
-  parameters: { [key: string]: any } | undefined
+  parameters: Record<string, any> | undefined
 ) => any;
 
 export interface MockHomeAssistant extends HomeAssistant {
@@ -35,7 +35,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
   mockEvent(event);
-  mockTheme(theme: { [key: string]: string } | null);
+  mockTheme(theme: Record<string, string> | null);
 }
 
 export const provideHass = (
@@ -53,19 +53,21 @@ export const provideHass = (
   } = {};
   const entities = {};
 
-  function updateTranslations(fragment: null | string, language?: string) {
+  async function updateTranslations(
+    fragment: null | string,
+    language?: string
+  ) {
     const lang = language || getLocalLanguage();
-    getTranslation(fragment, lang).then((translation) => {
-      const resources = {
-        [lang]: {
-          ...(hass().resources && hass().resources[lang]),
-          ...translation.data,
-        },
-      };
-      hass().updateHass({
-        resources,
-        localize: computeLocalize(elements[0], lang, resources),
-      });
+    const translation = await getTranslation(fragment, lang);
+    const resources = {
+      [lang]: {
+        ...(hass().resources && hass().resources[lang]),
+        ...translation.data,
+      },
+    };
+    hass().updateHass({
+      resources,
+      localize: await computeLocalize(elements[0], lang, resources),
     });
   }
 

@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "../../../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -8,9 +7,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -19,6 +18,7 @@ import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-call-service-button";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
 import {
   bindDeviceToGroup,
@@ -59,7 +59,7 @@ export class ZHAGroupBindingControl extends LitElement {
 
   private _clustersToBind?: Cluster[];
 
-  @query("zha-clusters-data-table")
+  @query("zha-clusters-data-table", true)
   private _zhaClustersDataTable!: ZHAClustersDataTable;
 
   protected updated(changedProperties: PropertyValues): void {

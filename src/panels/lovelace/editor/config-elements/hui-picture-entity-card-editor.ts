@@ -3,6 +3,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -27,7 +28,7 @@ import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
   type: string(),
-  entity: string(),
+  entity: optional(string()),
   image: optional(string()),
   name: optional(string()),
   camera_image: optional(string()),
@@ -108,7 +109,6 @@ export class HuiPictureEntityCardEditor extends LitElement
     const dir = computeRTLDirection(this.hass!);
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -292,6 +292,10 @@ export class HuiPictureEntityCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

@@ -9,19 +9,19 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-icon";
 import {
   HaFormElement,
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
 } from "./ha-form";
-import "../ha-icon";
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
@@ -35,7 +35,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @internalProperty() private _init = false;
 
-  @query("paper-menu-button") private _input?: HTMLElement;
+  @query("paper-menu-button", true) private _input?: HTMLElement;
 
   public focus(): void {
     if (this._input) {

@@ -10,10 +10,7 @@ export interface SuggestCardDialogParams {
   cardConfig?: LovelaceCardConfig[]; // We can pass a suggested config
 }
 
-const importsuggestCardDialog = () =>
-  import(
-    /* webpackChunkName: "hui-dialog-suggest-card" */ "./hui-dialog-suggest-card"
-  );
+const importsuggestCardDialog = () => import("./hui-dialog-suggest-card");
 
 export const showSuggestCardDialog = (
   element: HTMLElement,

@@ -1,25 +1,26 @@
 import "@polymer/app-route/app-location";
 import {
+  customElement,
   html,
   internalProperty,
   PropertyValues,
-  customElement,
 } from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
+import QuickBarMixin from "../state/quick-bar-mixin";
 import { HomeAssistant, Route } from "../types";
+import { storeState } from "../util/ha-pref-storage";
 import {
   registerServiceWorker,
   supportsServiceWorker,
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
-import { storeState } from "../util/ha-pref-storage";
 
 @customElement("home-assistant")
-export class HomeAssistantAppEl extends HassElement {
+export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @internalProperty() private _route?: Route;
 
   @internalProperty() private _error = false;
@@ -58,9 +59,7 @@ export class HomeAssistantAppEl extends HassElement {
     this._initialize();
     setTimeout(() => registerServiceWorker(this), 1000);
     /* polyfill for paper-dropdown */
-    import(
-      /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
-    );
+    import("web-animations-js/web-animations-next-lite.min");
     this.addEventListener("hass-suspend-when-hidden", (ev) => {
       this._updateHass({ suspendWhenHidden: ev.detail.suspend });
       storeState(this.hass!);

@@ -8,7 +8,7 @@ export const handleStructError = (err: Error): string[] => {
   for (const failure of err.failures()) {
     if (failure.type === "never") {
       errors.push(
-        `Key "${failure.path[0]}" is not supported by the UI editor.`
+        `Key "${failure.path.join(".")}" is not supported by the UI editor.`
       );
     } else {
       errors.push(

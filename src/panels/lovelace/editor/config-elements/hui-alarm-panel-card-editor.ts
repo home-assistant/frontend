@@ -3,14 +3,15 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { array, assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
@@ -20,7 +21,6 @@ import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { assert, object, string, optional, array } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -68,7 +68,6 @@ export class HuiAlarmPanelCardEditor extends LitElement
     const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -128,22 +127,25 @@ export class HuiAlarmPanelCardEditor extends LitElement
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .states {
-        display: flex;
-        flex-direction: row;
-      }
-      .deleteState {
-        visibility: hidden;
-      }
-      .states:hover > .deleteState {
-        visibility: visible;
-      }
-      ha-icon {
-        padding-top: 12px;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .states {
+          display: flex;
+          flex-direction: row;
+        }
+        .deleteState {
+          visibility: hidden;
+        }
+        .states:hover > .deleteState {
+          visibility: visible;
+        }
+        ha-icon {
+          padding-top: 12px;
+        }
+      `,
+    ];
   }
 
   private _stateRemoved(ev: EntitiesEditorEvent): void {

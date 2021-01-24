@@ -2,9 +2,23 @@ const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
-const WorkerPlugin = require("worker-plugin");
 const paths = require("./paths.js");
 const bundle = require("./bundle");
+const log = require("fancy-log");
+
+class LogStartCompilePlugin {
+  ignoredFirst = false;
+
+  apply(compiler) {
+    compiler.hooks.beforeCompile.tap("LogStartCompilePlugin", () => {
+      if (!this.ignoredFirst) {
+        this.ignoredFirst = true;
+        return;
+      }
+      log("Changes detected. Starting compilation");
+    });
+  }
+}
 
 const createWebpackConfig = ({
   entry,
@@ -22,6 +36,7 @@ const createWebpackConfig = ({
   const ignorePackages = bundle.ignorePackages({ latestBuild });
   return {
     mode: isProdBuild ? "production" : "development",
+    target: ["web", latestBuild ? "es2017" : "es5"],
     devtool: isProdBuild
       ? "cheap-module-source-map"
       : "eval-cheap-module-source-map",
@@ -30,7 +45,7 @@ const createWebpackConfig = ({
     module: {
       rules: [
         {
-          test: /\.js$|\.ts$/,
+          test: /\.m?js$|\.ts$/,
           exclude: bundle.babelExclude(),
           use: {
             loader: "babel-loader",
@@ -46,16 +61,13 @@ const createWebpackConfig = ({
     optimization: {
       minimizer: [
         new TerserPlugin({
-          cache: true,
           parallel: true,
           extractComments: true,
-          sourceMap: true,
           terserOptions: bundle.terserOptions(latestBuild),
         }),
       ],
     },
     plugins: [
-      new WorkerPlugin(),
       new ManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
@@ -99,7 +111,17 @@ const createWebpackConfig = ({
         new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
-    ],
+      // We need to change the import of the polyfill for EventTarget, so we replace the polyfill file with our customized one
+      new webpack.NormalModuleReplacementPlugin(
+        new RegExp(
+          require.resolve(
+            "lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
+          )
+        ),
+        path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
+      ),
+      !isProdBuild && new LogStartCompilePlugin(),
+    ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
     },

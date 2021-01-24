@@ -4,16 +4,17 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-switch";
 import "../../../components/ha-formfield";
+import "../../../components/ha-switch";
 import "../../../components/map/ha-location-editor";
 import {
   defaultRadiusColor,
@@ -24,7 +25,6 @@ import {
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 class DialogZoneDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -301,9 +301,6 @@ class DialogZoneDetail extends LitElement {
           margin-left: 4px;
         }
         ha-location-editor {
-          margin-top: 16px;
-        }
-        ha-user-picker {
           margin-top: 16px;
         }
         a {

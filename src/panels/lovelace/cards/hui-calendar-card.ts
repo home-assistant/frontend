@@ -3,41 +3,38 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
+  query,
   TemplateResult,
-  internalProperty,
 } from "lit-element";
-
+import { HA_COLOR_PALETTE } from "../../../common/const";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import "../../calendar/ha-full-calendar";
-
+import { Calendar, fetchCalendarEvents } from "../../../data/calendar";
 import type {
-  HomeAssistant,
   CalendarEvent,
-  Calendar,
   CalendarViewChanged,
   FullCalendarView,
+  HomeAssistant,
 } from "../../../types";
+import "../../calendar/ha-full-calendar";
+import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
+import { findEntities } from "../common/find-entites";
+import { installResizeObserver } from "../common/install-resize-observer";
+import "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { CalendarCardConfig } from "./types";
-import { findEntities } from "../common/find-entites";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import "../components/hui-warning";
-import { fetchCalendarEvents } from "../../../data/calendar";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { HA_COLOR_PALETTE } from "../../../common/const";
-import { debounce } from "../../../common/util/debounce";
-import { installResizeObserver } from "../common/install-resize-observer";
 
 @customElement("hui-calendar-card")
 export class HuiCalendarCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-calendar-card-editor" */ "../editor/config-elements/hui-calendar-card-editor"
-    );
+    await import("../editor/config-elements/hui-calendar-card-editor");
     return document.createElement("hui-calendar-card-editor");
   }
 
@@ -73,11 +70,17 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _veryNarrow = false;
 
+  @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
+
+  private _startDate?: Date;
+
+  private _endDate?: Date;
+
   private _resizeObserver?: ResizeObserver;
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
-      throw new Error("Entities must be defined");
+      throw new Error("Entities must be specified");
     }
 
     if (!Array.isArray(config.entities)) {
@@ -91,11 +94,15 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       };
     });
 
-    this._config = config;
+    if (this._config?.entities !== config.entities) {
+      this._fetchCalendarEvents();
+    }
+
+    this._config = { initial_view: "dayGridMonth", ...config };
   }
 
   public getCardSize(): number {
-    return 4;
+    return this._config?.header ? 1 : 0 + 11;
   }
 
   public connectedCallback(): void {
@@ -115,8 +122,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     const views: FullCalendarView[] = this._veryNarrow
-      ? ["listWeek"]
-      : ["listWeek", "dayGridMonth", "dayGridDay"];
+      ? ["list"]
+      : ["list", "dayGridMonth", "dayGridDay"];
 
     return html`
       <ha-card>
@@ -126,6 +133,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .events=${this._events}
           .hass=${this.hass}
           .views=${views}
+          .initialView=${this._config.initial_view!}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -153,13 +161,21 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private async _handleViewChanged(
-    ev: HASSDomEvent<CalendarViewChanged>
-  ): Promise<void> {
+  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+    this._startDate = ev.detail.start;
+    this._endDate = ev.detail.end;
+    this._fetchCalendarEvents();
+  }
+
+  private async _fetchCalendarEvents(): Promise<void> {
+    if (!this._startDate || !this._endDate) {
+      return;
+    }
+
     this._events = await fetchCalendarEvents(
       this.hass!,
-      ev.detail.start,
-      ev.detail.end,
+      this._startDate,
+      this._endDate,
       this._calendars
     );
   }
@@ -171,6 +187,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
     this._narrow = card.offsetWidth < 870;
     this._veryNarrow = card.offsetWidth < 350;
+
+    this._calendar?.updateSize();
   }
 
   private async _attachObserver(): Promise<void> {
@@ -193,6 +211,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       ha-card {
         position: relative;
         padding: 0 8px 8px;
+        box-sizing: border-box;
+        height: 100%;
       }
 
       .header {

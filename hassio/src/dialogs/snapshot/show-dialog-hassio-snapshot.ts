@@ -2,7 +2,8 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 
 export interface HassioSnapshotDialogParams {
   slug: string;
-  onDelete: () => void;
+  onDelete?: () => void;
+  onboarding?: boolean;
 }
 
 export const showHassioSnapshotDialog = (
@@ -11,10 +12,7 @@ export const showHassioSnapshotDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-hassio-snapshot",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "dialog-hassio-snapshot" */ "./dialog-hassio-snapshot"
-      ),
+    dialogImport: () => import("./dialog-hassio-snapshot"),
     dialogParams,
   });
 };

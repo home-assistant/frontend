@@ -2,27 +2,27 @@ import {
   css,
   CSSResult,
   customElement,
+  eventOptions,
   html,
   LitElement,
   property,
   TemplateResult,
-  eventOptions,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import "../components/ha-menu-button";
-import "../components/ha-icon-button-arrow-prev";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
+import { HomeAssistant } from "../types";
 
 @customElement("hass-subpage")
 class HassSubpage extends LitElement {
-  @property()
-  public header?: string;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean })
-  public showBackButton = true;
+  @property() public header?: string;
 
-  @property({ type: Boolean })
-  public hassio = false;
+  @property({ type: Boolean }) public showBackButton = true;
+
+  @property({ type: Boolean }) public hassio = false;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -31,7 +31,7 @@ class HassSubpage extends LitElement {
     return html`
       <div class="toolbar">
         <ha-icon-button-arrow-prev
-          aria-label="Back"
+          .hass=${this.hass}
           @click=${this._backTapped}
           class=${classMap({ hidden: !this.showBackButton })}
         ></ha-icon-button-arrow-prev>
@@ -69,7 +69,7 @@ class HassSubpage extends LitElement {
         display: flex;
         align-items: center;
         font-size: 20px;
-        height: 65px;
+        height: var(--header-height);
         padding: 0 16px;
         pointer-events: none;
         background-color: var(--app-header-background-color);
@@ -97,7 +97,7 @@ class HassSubpage extends LitElement {
       .content {
         position: relative;
         width: 100%;
-        height: calc(100% - 65px);
+        height: calc(100% - 1px - var(--header-height));
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;

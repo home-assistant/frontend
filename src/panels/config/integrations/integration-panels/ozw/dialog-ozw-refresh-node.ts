@@ -1,27 +1,26 @@
 import {
+  css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
   PropertyValues,
-  css,
+  TemplateResult,
 } from "lit-element";
-import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import {
+  fetchOZWNodeMetadata,
+  nodeQueryStages,
+  OZWDevice,
+  OZWDeviceMetaData,
+} from "../../../../../data/ozw";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { OZWRefreshNodeDialogParams } from "./show-dialog-ozw-refresh-node";
-
-import {
-  fetchOZWNodeMetadata,
-  OZWDeviceMetaData,
-  OZWDevice,
-  nodeQueryStages,
-} from "../../../../../data/ozw";
 
 @customElement("dialog-ozw-refresh-node")
 class DialogOZWRefreshNode extends LitElement {

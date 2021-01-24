@@ -3,7 +3,10 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -11,6 +14,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-help-tooltip";
 import "../../../components/ha-service-picker";
 import {
   ActionConfig,
@@ -29,11 +33,9 @@ export class HuiActionEditor extends LitElement {
 
   @property() public actions?: string[];
 
-  @property() protected hass?: HomeAssistant;
+  @property() public tooltipText?: string;
 
-  get _action(): string {
-    return this.config?.action || "";
-  }
+  @property() protected hass?: HomeAssistant;
 
   get _navigation_path(): string {
     const config = this.config as NavigateActionConfig;
@@ -54,71 +56,130 @@ export class HuiActionEditor extends LitElement {
     if (!this.hass || !this.actions) {
       return html``;
     }
+
     return html`
-      <paper-dropdown-menu
-        .label="${this.label}"
-        .configValue="${"action"}"
-        @value-changed="${this._valueChanged}"
-      >
-        <paper-listbox
-          slot="dropdown-content"
-          .selected="${this.actions.indexOf(this._action)}"
+      <div class="dropdown">
+        <paper-dropdown-menu
+          .label=${this.label}
+          .configValue=${"action"}
+          @iron-select=${this._actionPicked}
         >
-          ${this.actions.map((action) => {
-            return html` <paper-item>${action}</paper-item> `;
-          })}
-        </paper-listbox>
-      </paper-dropdown-menu>
-      ${this._action === "navigate"
+          <paper-listbox
+            slot="dropdown-content"
+            attr-for-selected="value"
+            .selected=${this.config?.action ?? "default"}
+          >
+            <paper-item .value=${"default"}
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.actions.default_action"
+              )}</paper-item
+            >
+            ${this.actions.map((action) => {
+              return html`
+                <paper-item .value=${action}
+                  >${this.hass!.localize(
+                    `ui.panel.lovelace.editor.action-editor.actions.${action}`
+                  )}</paper-item
+                >
+              `;
+            })}
+          </paper-listbox>
+        </paper-dropdown-menu>
+        ${this.tooltipText
+          ? html`
+              <ha-help-tooltip .label=${this.tooltipText}></ha-help-tooltip>
+            `
+          : ""}
+      </div>
+      ${this.config?.action === "navigate"
         ? html`
             <paper-input
-              label="Navigation Path"
-              .value="${this._navigation_path}"
-              .configValue="${"navigation_path"}"
-              @value-changed="${this._valueChanged}"
+              label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.navigation_path"
+              )}
+              .value=${this._navigation_path}
+              .configValue=${"navigation_path"}
+              @value-changed=${this._valueChanged}
             ></paper-input>
           `
         : ""}
-      ${this._action === "url"
+      ${this.config?.action === "url"
         ? html`
             <paper-input
-              label="Url Path"
-              .value="${this._url_path}"
-              .configValue="${"url_path"}"
-              @value-changed="${this._valueChanged}"
+              label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.url_path"
+              )}
+              .value=${this._url_path}
+              .configValue=${"url_path"}
+              @value-changed=${this._valueChanged}
             ></paper-input>
           `
         : ""}
-      ${this.config && this.config.action === "call-service"
+      ${this.config?.action === "call-service"
         ? html`
             <ha-service-picker
               .hass=${this.hass}
-              .value="${this._service}"
-              .configValue="${"service"}"
-              @value-changed="${this._valueChanged}"
+              .value=${this._service}
+              .configValue=${"service"}
+              @value-changed=${this._valueChanged}
             ></ha-service-picker>
-            <b>Service data can only be entered in the code editor</b>
+            <b>
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.editor_service_data"
+              )}
+            </b>
           `
         : ""}
     `;
   }
 
-  private _valueChanged(ev: Event): void {
+  private _actionPicked(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this.hass) {
+      return;
+    }
+    const item = ev.detail.item;
+    const value = item.value;
+    if (this.config?.action === value) {
+      return;
+    }
+    if (value === "default") {
+      fireEvent(this, "value-changed", { value: undefined });
+      if (this.config?.action) {
+        (this.shadowRoot!.querySelector(
+          "paper-listbox"
+        ) as PaperListboxElement).select(this.config.action);
+      }
+      return;
+    }
+    fireEvent(this, "value-changed", {
+      value: { action: value },
+    });
+  }
+
+  private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (this[`_${target.configValue}`] === target.value) {
+    const value = ev.detail.value;
+    if (this[`_${target.configValue}`] === value) {
       return;
     }
     if (target.configValue) {
-      const newConfig =
-        target.configValue === "action"
-          ? { action: target.value }
-          : { ...this.config!, [target.configValue!]: target.value };
-      fireEvent(this, "value-changed", { value: newConfig });
+      fireEvent(this, "value-changed", {
+        value: { ...this.config!, [target.configValue!]: value },
+      });
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .dropdown {
+        display: flex;
+      }
+    `;
   }
 }
 

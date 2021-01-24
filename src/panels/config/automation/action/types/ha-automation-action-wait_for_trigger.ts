@@ -17,7 +17,7 @@ export class HaWaitForTriggerAction extends LitElement
   @property() public action!: WaitForTriggerAction;
 
   public static get defaultConfig() {
-    return { wait_for_trigger: [], timeout: "" };
+    return { wait_for_trigger: [] };
   }
 
   protected render() {
@@ -35,11 +35,11 @@ export class HaWaitForTriggerAction extends LitElement
       <br />
       <ha-formfield
         .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.wait_for_trigger.timeout"
+          "ui.panel.config.automation.editor.actions.type.wait_for_trigger.continue_timeout"
         )}
       >
         <ha-switch
-          .checked=${continue_on_timeout}
+          .checked=${continue_on_timeout ?? true}
           @change=${this._continueChanged}
         ></ha-switch>
       </ha-formfield>

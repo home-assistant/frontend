@@ -1,16 +1,16 @@
+import { safeDump } from "js-yaml";
 import {
   css,
   CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { ErrorCardConfig } from "./types";
-import { safeDump } from "js-yaml";
 
 @customElement("hui-error-card")
 export class HuiErrorCard extends LitElement implements LovelaceCard {
@@ -49,6 +49,9 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
         font-weight: 500;
         user-select: text;
         cursor: default;
+      }
+      pre {
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }

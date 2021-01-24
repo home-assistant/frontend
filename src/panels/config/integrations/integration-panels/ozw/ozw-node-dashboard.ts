@@ -1,12 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-fab";
 import {
   css,
   CSSResultArray,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   property,
   TemplateResult,
 } from "lit-element";
@@ -14,19 +13,19 @@ import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../layouts/hass-tabs-subpage";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
-import "../../../ha-config-section";
 import {
-  fetchOZWNodeStatus,
   fetchOZWNodeMetadata,
+  fetchOZWNodeStatus,
   OZWDevice,
   OZWDeviceMetaDataResponse,
 } from "../../../../../data/ozw";
 import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
+import "../../../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../../../types";
+import "../../../ha-config-section";
+import { ozwNodeTabs } from "./ozw-node-router";
 import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
-import { ozwNetworkTabs } from "./ozw-network-router";
 
 @customElement("ozw-node-dashboard")
 class OZWNodeDashboard extends LitElement {
@@ -64,7 +63,8 @@ class OZWNodeDashboard extends LitElement {
     if (this._not_found) {
       return html`
         <hass-error-screen
-          .error="${this.hass.localize("ui.panel.config.ozw.node.not_found")}"
+          .hass=${this.hass}
+          .error=${this.hass.localize("ui.panel.config.ozw.node.not_found")}
         ></hass-error-screen>
       `;
     }
@@ -74,7 +74,7 @@ class OZWNodeDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${ozwNetworkTabs(this.ozwInstance)}
+        .tabs=${ozwNodeTabs(this.ozwInstance, this.nodeId)}
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
@@ -87,19 +87,29 @@ class OZWNodeDashboard extends LitElement {
           ${this._node
             ? html`
                 <ha-card class="content">
-                  <div class="card-content">
-                    <b
-                      >${this._node.node_manufacturer_name}
-                      ${this._node.node_product_name}</b
-                    ><br />
-                    Node ID: ${this._node.node_id}<br />
-                    Query Stage: ${this._node.node_query_stage}
-                    ${this._metadata?.metadata.ProductManualURL
-                      ? html` <a
-                          href="${this._metadata.metadata.ProductManualURL}"
-                        >
-                          <p>Product Manual</p>
-                        </a>`
+                  <div class="card-content flex">
+                    <div class="node-details">
+                      <b>
+                        ${this._node.node_manufacturer_name}
+                        ${this._node.node_product_name}
+                      </b>
+                      <br />
+                      Node ID: ${this._node.node_id}<br />
+                      Query Stage: ${this._node.node_query_stage}
+                      ${this._metadata?.metadata.ProductManualURL
+                        ? html` <a
+                            href="${this._metadata.metadata.ProductManualURL}"
+                          >
+                            <p>Product Manual</p>
+                          </a>`
+                        : ``}
+                    </div>
+                    ${this._metadata?.metadata.ProductPicBase64
+                      ? html`<img
+                          class="product-image"
+                          src="data:image/png;base64,${this._metadata?.metadata
+                            .ProductPicBase64}"
+                        />`
                       : ``}
                   </div>
                   <div class="card-actions">
@@ -131,11 +141,15 @@ class OZWNodeDashboard extends LitElement {
                           ${this._metadata.metadata.ResetHelp}
                         </div>
                       </ha-card>
-                      <ha-card class="content" header="WakeUp">
-                        <div class="card-content">
-                          ${this._metadata.metadata.WakeupHelp}
-                        </div>
-                      </ha-card>
+                      ${this._metadata.metadata.WakeupHelp
+                        ? html`
+                            <ha-card class="content" header="WakeUp">
+                              <div class="card-content">
+                                ${this._metadata.metadata.WakeupHelp}
+                              </div>
+                            </ha-card>
+                          `
+                        : ``}
                     `
                   : ``}
               `
@@ -189,6 +203,10 @@ class OZWNodeDashboard extends LitElement {
           margin-top: 24px;
         }
 
+        .content:last-child {
+          margin-bottom: 24px;
+        }
+
         .sectionHeader {
           position: relative;
           padding-right: 40px;
@@ -197,6 +215,11 @@ class OZWNodeDashboard extends LitElement {
         ha-card {
           margin: 0 auto;
           max-width: 600px;
+        }
+
+        .flex {
+          display: flex;
+          justify-content: space-between;
         }
 
         .card-actions.warning ha-call-service-button {
@@ -218,6 +241,15 @@ class OZWNodeDashboard extends LitElement {
 
         [hidden] {
           display: none;
+        }
+
+        .product-image {
+          padding: 12px;
+          max-height: 140px;
+          max-width: 140px;
+        }
+        .card-actions {
+          clear: right;
         }
       `,
     ];

@@ -4,8 +4,9 @@ import {
 } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
 import { Context, HomeAssistant } from "../types";
+import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
-import { Action } from "./script";
+import { Action, MODES } from "./script";
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -14,15 +15,23 @@ export interface AutomationEntity extends HassEntityBase {
   };
 }
 
-export interface AutomationConfig {
+export type AutomationConfig =
+  | ManualAutomationConfig
+  | BlueprintAutomationConfig;
+
+export interface ManualAutomationConfig {
   id?: string;
-  alias: string;
-  description: string;
+  alias?: string;
+  description?: string;
   trigger: Trigger[];
   condition?: Condition[];
   action: Action[];
-  mode?: "single" | "restart" | "queued" | "parallel";
+  mode?: typeof MODES[number];
   max?: number;
+}
+
+export interface BlueprintAutomationConfig extends ManualAutomationConfig {
+  use_blueprint: { path: string; input?: BlueprintInput };
 }
 
 export interface ForDict {
@@ -109,10 +118,17 @@ export interface TemplateTrigger {
   value_template: string;
 }
 
+export interface ContextConstraint {
+  context_id?: string;
+  parent_id?: string;
+  user_id?: string | string[];
+}
+
 export interface EventTrigger {
   platform: "event";
   event_type: string;
-  event_data: any;
+  event_data?: any;
+  context?: ContextConstraint;
 }
 
 export type Trigger =
@@ -141,6 +157,7 @@ export interface StateCondition {
   entity_id: string;
   attribute?: string;
   state: string | number;
+  for?: string | number | ForDict;
 }
 
 export interface NumericStateCondition {
@@ -168,8 +185,9 @@ export interface ZoneCondition {
 
 export interface TimeCondition {
   condition: "time";
-  after: string;
-  before: string;
+  after?: string;
+  before?: string;
+  weekday?: string | string[];
 }
 
 export interface TemplateCondition {
@@ -216,12 +234,12 @@ export const subscribeTrigger = (
   hass: HomeAssistant,
   onChange: (result: {
     variables: {
-      trigger: {};
+      trigger: Record<string, unknown>;
     };
     context: Context;
   }) => void,
   trigger: Trigger | Trigger[],
-  variables?: {}
+  variables?: Record<string, unknown>
 ) =>
   hass.connection.subscribeMessage(onChange, {
     type: "subscribe_trigger",
@@ -232,7 +250,7 @@ export const subscribeTrigger = (
 export const testCondition = (
   hass: HomeAssistant,
   condition: Condition | Condition[],
-  variables?: {}
+  variables?: Record<string, unknown>
 ) =>
   hass.callWS<{ result: boolean }>({
     type: "test_condition",

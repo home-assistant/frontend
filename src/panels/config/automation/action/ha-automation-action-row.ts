@@ -15,12 +15,14 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -103,6 +105,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @internalProperty() private _yamlMode = false;
 
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
       return;
@@ -110,6 +114,10 @@ export default class HaAutomationActionRow extends LitElement {
     this._uiModeAvailable = Boolean(getType(this.action));
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
+    }
+
+    if (this._yamlMode && this._yamlEditor) {
+      this._yamlEditor.setValue(this.action);
     }
   }
 
@@ -133,7 +141,7 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                     @click=${this._moveUp}
                   >
-                    <ha-svg-icon path=${mdiArrowUp}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon>
                   </mwc-icon-button>
                 `
               : ""}
@@ -148,7 +156,7 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                     @click=${this._moveDown}
                   >
-                    <ha-svg-icon path=${mdiArrowDown}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
                   </mwc-icon-button>
                 `
               : ""}
@@ -157,7 +165,7 @@ export default class HaAutomationActionRow extends LitElement {
                 slot="trigger"
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
-                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
               <mwc-list-item .disabled=${!this._uiModeAvailable}>
                 ${yamlMode
@@ -187,7 +195,7 @@ export default class HaAutomationActionRow extends LitElement {
                 <ul>
                   ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
                 </ul>
-                You can still edit your config in yaml.
+                You can still edit your config in YAML.
               </div>`
             : ""}
           ${yamlMode
@@ -276,8 +284,8 @@ export default class HaAutomationActionRow extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.automation.editor.actions.delete_confirm"
       ),
-      dismissText: this.hass.localize("ui.common.no"),
-      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
       },

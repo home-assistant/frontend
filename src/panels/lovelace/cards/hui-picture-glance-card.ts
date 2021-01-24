@@ -38,9 +38,7 @@ const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-picture-glance-card-editor" */ "../editor/config-elements/hui-picture-glance-card-editor"
-    );
+    await import("../editor/config-elements/hui-picture-glance-card-editor");
     return document.createElement("hui-picture-glance-card-editor");
   }
 
@@ -86,7 +84,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       !(config.image || config.camera_image || config.state_image) ||
       (config.state_image && !config.entity)
     ) {
-      throw new Error("Invalid card configuration");
+      throw new Error("Invalid configuration");
     }
 
     const entities = processConfigEntities(config.entities);
@@ -266,7 +264,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           `}
         ></ha-icon-button>
         ${this._config!.show_state !== true && entityConf.show_state !== true
-          ? html` <div class="state"></div> `
+          ? html`<div class="state"></div>`
           : html`
               <div class="state">
                 ${entityConf.attribute
@@ -297,6 +295,8 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         position: relative;
         min-height: 48px;
         overflow: hidden;
+        height: 100%;
+        box-sizing: border-box;
       }
 
       hui-image.clickable {

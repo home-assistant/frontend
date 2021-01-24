@@ -3,10 +3,10 @@ import { User } from "../../../data/user";
 
 export interface AddUserDialogParams {
   userAddedCallback: (user: User) => void;
+  name?: string;
 }
 
-export const loadAddUserDialog = () =>
-  import(/* webpackChunkName: "add-user-dialog" */ "./dialog-add-user");
+export const loadAddUserDialog = () => import("./dialog-add-user");
 
 export const showAddUserDialog = (
   element: HTMLElement,

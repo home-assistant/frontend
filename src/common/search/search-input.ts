@@ -1,3 +1,5 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiClose, mdiMagnify } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -10,8 +12,6 @@ import { html, TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map";
 import "../../components/ha-svg-icon";
 import { fireEvent } from "../dom/fire_event";
-import { mdiMagnify, mdiClose } from "@mdi/js";
-import "@material/mwc-icon-button/mwc-icon-button";
 
 @customElement("search-input")
 class SearchInput extends LitElement {
@@ -51,21 +51,17 @@ class SearchInput extends LitElement {
         @value-changed=${this._filterInputChanged}
         .noLabelFloat=${this.noLabelFloat}
       >
-        <ha-svg-icon
-          path=${mdiMagnify}
-          slot="prefix"
-          class="prefix"
-        ></ha-svg-icon>
+        <slot name="prefix" slot="prefix">
+          <ha-svg-icon class="prefix" .path=${mdiMagnify}></ha-svg-icon>
+        </slot>
         ${this.filter &&
         html`
           <mwc-icon-button
             slot="suffix"
-            class="suffix"
             @click=${this._clearSearch}
-            alt="Clear"
             title="Clear"
           >
-            <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
           </mwc-icon-button>
         `}
       </paper-input>

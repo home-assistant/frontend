@@ -6,9 +6,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { formatTime } from "../../../common/datetime/format_time";
@@ -142,6 +142,9 @@ class EventSubscribeCard extends LitElement {
       }
       .event:last-child {
         border-bottom: 0;
+      }
+      pre {
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }

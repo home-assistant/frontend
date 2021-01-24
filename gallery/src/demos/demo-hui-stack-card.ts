@@ -1,6 +1,12 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
+import { mockHistory } from "../../../demo/src/stubs/history";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -35,6 +41,10 @@ const ENTITIES = [
     gps_accuracy: 91,
     battery: 71,
     friendly_name: "Home Boy",
+  }),
+  getEntity("sensor", "illumination", "23", {
+    friendly_name: "Illumination",
+    unit_of_measurement: "lx",
   }),
 ];
 
@@ -89,27 +99,59 @@ const CONFIGS = [
       entity: light.bed_light
     `,
   },
+  {
+    heading: "Default Grid",
+    config: `
+- type: grid
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    - type: entity
+      entity: device_tracker.demo_paulus
+    - type: sensor
+      entity: sensor.illumination
+      graph: line
+    - type: entity
+      entity: device_tracker.demo_anne_therese
+    `,
+  },
+  {
+    heading: "Non-square Grid with 2 columns",
+    config: `
+- type: grid
+  columns: 2
+  square: false
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    - type: entity
+      entity: device_tracker.demo_paulus
+    - type: sensor
+      entity: sensor.illumination
+      graph: line
+    `,
+  },
 ];
 
-class DemoStack extends PolymerElement {
-  static get template() {
-    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
+@customElement("demo-hui-stack-card")
+class DemoStack extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-    };
-  }
-
-  public ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
+    mockHistory(hass);
   }
 }
 

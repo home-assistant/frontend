@@ -2,11 +2,13 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfigurationseintrag",
+            "device": "Gerät",
             "integration": "Integration",
             "user": "Benutzer"
         }
     },
     "groups": {
+        "owner": "Besitzer",
         "system-admin": "Administratoren",
         "system-read-only": "Nur-Lesen Benutzer",
         "system-users": "Benutzer"
@@ -19,6 +21,7 @@
         "logbook": "Logbuch",
         "mailbox": "Posteingang",
         "map": "Karte",
+        "media_browser": "Medien-Browser",
         "profile": "Profil",
         "shopping_list": "Einkaufsliste",
         "states": "Übersicht"
@@ -419,8 +422,11 @@
                 "unlock": "Entriegeln"
             },
             "media_player": {
+                "browse_media": "Medien durchsuchen",
                 "media_next_track": "Weiter",
                 "media_play": "Abspielen",
+                "media_play_pause": "Spielen/Pause",
+                "media_previous_track": "Vorheriger Titel",
                 "sound_mode": "Sound-Modus",
                 "source": "Quelle",
                 "text_to_speak": "Text zum Sprechen",
@@ -492,9 +498,11 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
+                "day": "Tag",
                 "forecast": "Prognose",
                 "high": "Hoch",
-                "low": "Niedrig"
+                "low": "Niedrig",
+                "night": "Nacht"
             }
         },
         "common": {
@@ -505,18 +513,26 @@
             "continue": "Weiter",
             "copied": "Kopiert",
             "delete": "Löschen",
+            "disable": "Deaktivieren",
+            "enable": "Aktivieren",
             "error_required": "Benötigt",
+            "leave": "Verlassen",
             "loading": "Laden",
             "menu": "Menü",
             "next": "Weiter",
             "no": "Nein",
+            "not_now": "Später",
             "overflow_menu": "Überlauf-Menü",
             "previous": "Vorher",
             "refresh": "Aktualisieren",
+            "remove": "Entfernen",
+            "rename": "Umbenennen",
             "save": "Speichern",
+            "skip": "Überspringen",
+            "stay": "Bleiben",
             "successfully_deleted": "Erfolgreich gelöscht",
             "successfully_saved": "Erfolgreich gespeichert",
-            "undo": "Rückgängig machen",
+            "undo": "Rückgängig",
             "yes": "Ja"
         },
         "components": {
@@ -531,7 +547,14 @@
                 "add_new": "Neuen Bereich hinzufügen...",
                 "area": "Bereich",
                 "clear": "Löschen",
+                "no_areas": "Du hast keine Bereiche",
+                "no_match": "Keine übereinstimmende Bereiche gefunden",
                 "show_areas": "Bereiche anzeigen"
+            },
+            "blueprint-picker": {
+                "add_user": "Benutzer hinzufügen",
+                "remove_user": "Benutzer entfernen",
+                "select_blueprint": "Wähle eine Vorlage aus"
             },
             "data-table": {
                 "no-data": "Keine Daten",
@@ -546,13 +569,20 @@
                 "clear": "Löschen",
                 "device": "Gerät",
                 "no_area": "Kein Bereich",
+                "no_devices": "Du hast keine Geräte",
+                "no_match": "Keine übereinstimmende Geräte gefunden",
                 "show_devices": "Geräte anzeigen",
                 "toggle": "Umschalten"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Attribute anzeigen"
+                },
                 "entity-picker": {
                     "clear": "Löschen",
                     "entity": "Entität",
+                    "no_match": "Keine übereinstimmende Entitäten gefunden",
                     "show_entities": "Entitäten anzeigen"
                 }
             },
@@ -561,22 +591,58 @@
                 "no_history_found": "Kein Zustandsverlauf gefunden."
             },
             "logbook": {
-                "entries_not_found": "Keine Logbucheinträge gefunden."
+                "by": "durch",
+                "by_service": "durch Service",
+                "entries_not_found": "Keine Logbucheinträge gefunden.",
+                "messages": {
+                    "became_unavailable": "nicht mehr verfügbar",
+                    "changed_to_state": "wechselte zu {state}",
+                    "cleared_device_class": "gelöscht (keine {device_class} erkannt)",
+                    "detected_device_class": "erkannt {device_class}",
+                    "rose": "aufgegangen",
+                    "set": "einstellen",
+                    "turned_off": "ausgeschaltet",
+                    "turned_on": "eingeschaltet",
+                    "was_at_home": "war zu Hause",
+                    "was_at_state": "war bei {state}",
+                    "was_away": "war abwesend",
+                    "was_closed": "wurde geschlossen",
+                    "was_connected": "wurde verbunden",
+                    "was_disconnected": "wurde getrennt",
+                    "was_locked": "wurde gesperrt",
+                    "was_low": "war niedrig",
+                    "was_normal": "war normal",
+                    "was_opened": "wurde geöffnet",
+                    "was_plugged_in": "wurde eingesteckt",
+                    "was_safe": "war sicher",
+                    "was_unlocked": "wurde entsperrt",
+                    "was_unplugged": "wurde ausgesteckt",
+                    "was_unsafe": "war unsicher"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Ihr Browser unterstützt das Audioelement nicht.",
+                "choose_player": "Wähle ein Abspielgerät",
                 "choose-source": "Quelle wählen",
                 "class": {
                     "album": "Album",
                     "app": "App",
+                    "artist": "Künstler",
+                    "channel": "Kanal",
+                    "composer": "Komponist",
+                    "contributing_artist": "Mitwirkender Künstler",
                     "directory": "Bibliothek",
                     "episode": "Episode",
                     "game": "Spiel",
+                    "genre": "Genre",
+                    "image": "Bild",
                     "movie": "Film",
                     "music": "Musik",
                     "playlist": "Wiedergabeliste",
                     "podcast": "Podcast",
                     "season": "Episode",
+                    "track": "Titel",
+                    "tv_show": "TV-Sendung",
                     "url": "URL",
                     "video": "Video"
                 },
@@ -587,9 +653,23 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
+                "documentation": "Dokumentation",
+                "learn_adding_local_media": "Erfahre mehr über das Hinzufügen von Medien in der {documentation}.",
+                "local_media_files": "Platziere deine Video-, Audio- und Bilddateien im Medienverzeichnis, um sie im Browser oder auf unterstützten Mediaplayern durchsuchen und abspielen zu können.",
+                "media_browsing_error": "Fehler beim Durchsuchen der Medien",
+                "media_not_supported": "Der Browser Media Player unterstützt diese Art von Medien nicht",
+                "media_player": "Media Player",
+                "media-player-browser": "Medien-Browser",
                 "no_items": "Keine Einträge",
+                "no_local_media_found": "Keine lokalen Medien gefunden",
+                "no_media_folder": "Es sieht so aus, als hättest du noch kein Medienverzeichnis erstellt.",
+                "pick": "Auswählen",
+                "pick-media": "Medien auswählen",
                 "play": "Abspielen",
-                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht."
+                "play-media": "Medien abspielen",
+                "setup_local_help": "Lese die {documentation} über die Einrichtung lokaler Medien.",
+                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht.",
+                "web-browser": "Webbrowser"
             },
             "picture-upload": {
                 "label": "Bild",
@@ -615,12 +695,41 @@
                     "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
                 },
                 "future": "In {time}",
+                "future_duration": {
+                    "day": "In {count} {count, plural,\n  one {Tag}\n  other {Tagen}\n}",
+                    "hour": "In {count} {count, plural,\n  one {Stunde}\n  other {Stunden}\n}",
+                    "minute": "In {count} {count, plural,\n  one {Minute}\n  other {Minuten}\n}",
+                    "second": "In {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
+                    "week": "In {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
+                },
                 "just_now": "Gerade jetzt",
                 "never": "Noch nie",
-                "past": "Vor {time}"
+                "past": "Vor {time}",
+                "past_duration": {
+                    "day": "Vor {count} {count, plural,\n  one {Tag}\n  other {Tagen}\n}",
+                    "hour": "Vor {count} {count, plural,\n  one {Stunde}\n  other {Stunden}\n}",
+                    "minute": "Vor {count} {count, plural,\n  one {Minute}\n  other {Minuten}\n}",
+                    "second": "Vor {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
+                    "week": "Vor {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
+                }
             },
             "service-picker": {
                 "service": "Dienst"
+            },
+            "target-picker": {
+                "add_area_id": "Bereich auswählen",
+                "add_device_id": "Gerät auswählen",
+                "add_entity_id": "Entität auswählen",
+                "expand_area_id": "Erweitere diesen Bereich in einzelne Geräte und Entitäten. Nach der Erweiterung werden die Geräte und Entitäten nicht aktualisiert, wenn sich der Bereich ändert.",
+                "expand_device_id": "Erweitern Sie dieses Gerät in separate Entitäten. Nach dem Erweitern werden die Entitäten nicht aktualisiert, wenn sich das Gerät ändert.",
+                "remove_area_id": "Bereich entfernen",
+                "remove_device_id": "Gerät entfernen",
+                "remove_entity_id": "Entität entfernen"
+            },
+            "user-picker": {
+                "add_user": "Benutzer hinzufügen",
+                "no_user": "Kein Benutzer",
+                "remove_user": "Benutzer entfernen"
             }
         },
         "dialogs": {
@@ -631,6 +740,7 @@
                 "update": "Aktualisieren"
             },
             "domain_toggler": {
+                "reset_entities": "Entitäten zurücksetzen",
                 "title": "Domänen umschalten"
             },
             "entity_registry": {
@@ -639,18 +749,23 @@
                 "editor": {
                     "confirm_delete": "Möchtest du diesen Eintrag wirklich löschen?",
                     "delete": "Löschen",
+                    "device_disabled": "Das Gerät dieser Entität ist deaktiviert.",
                     "enabled_cause": "Deaktiviert durch {cause}.",
+                    "enabled_delay_confirm": "Die aktivierten Entitäten werden in {delay} Sekunden zu Home Assistant hinzugefügt",
                     "enabled_description": "Deaktivierte Entitäten werden nicht zu Home Assistant hinzugefügt.",
                     "enabled_label": "Entität aktivieren",
+                    "enabled_restart_confirm": "Starte Home Assistant neu, um die Aktivierung der Entitäten abzuschließen",
                     "entity_id": "Entitäts-ID",
-                    "icon": "Symbol Überschreiben",
+                    "icon": "Symbol",
                     "icon_error": "Symbole sollten das Format 'Präfix:iconname' haben, z. B. 'mdi:home'",
-                    "name": "Namen überschreiben",
+                    "name": "Namen",
                     "note": "Hinweis: Dies funktioniert möglicherweise noch nicht bei allen Integrationen.",
+                    "open_device_settings": "Geräteeinstellungen öffnen",
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                     "update": "Aktualisieren"
                 },
-                "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden.",
+                "faq": "Dokumentation",
+                "no_unique_id": "Diese Entität (\"{entity_id}\") hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden. Schaue in der {faq_link} nach für mehr Details.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
             },
@@ -661,6 +776,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Anfangswert",
+                    "maximum": "Maximaler Wert",
+                    "minimum": "Minimaler Wert",
+                    "restore": "Den letzten bekannten Wert wiederherstellen, wenn Home Assistant startet",
+                    "step": "Schrittgröße"
+                },
                 "generic": {
                     "icon": "Symbol",
                     "name": "Name"
@@ -694,15 +816,31 @@
                     "pattern": "Regex-Muster für die clientseitige Validierung",
                     "text": "Text"
                 },
-                "platform_not_loaded": "Die {platform} -Komponente ist nicht geladen. Füge sie bitte deiner Konfiguration hinzu. Entweder durch Hinzufügen von 'default_config:' oder ''{platform}:''.",
+                "platform_not_loaded": "Die {platform}-Integration ist nicht geladen. Bitte füge sie deiner Konfiguration hinzu, indem du entweder 'default_config:' oder ''{platform}:'' einfügst.",
                 "required_error_msg": "Dieses Feld ist erforderlich",
+                "timer": {
+                    "duration": "Dauer"
+                },
                 "yaml_not_editable": "Die Einstellungen dieser Entität können nicht über die Benutzeroberfläche bearbeitet werden. Nur über die Benutzeroberfläche eingerichtete Entitäten können über die Benutzeroberfläche konfiguriert werden."
             },
+            "image_cropper": {
+                "crop": "Zuschneiden"
+            },
             "more_info_control": {
+                "controls": "Steuerelemente",
+                "cover": {
+                    "close_cover": "Abdeckung schließen",
+                    "close_tile_cover": "Abdeckung kippend schließen",
+                    "open_cover": "Abdeckung öffnen",
+                    "open_tilt_cover": "Abdeckung kippend öffnen",
+                    "stop_cover": "Abdeckung anhalten"
+                },
                 "details": "Details",
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
                 "history": "Verlauf",
+                "last_changed": "Zuletzt geändert",
+                "last_updated": "Zuletzt aktualisiert",
                 "person": {
                     "create_zone": "Zone vom aktuellen Standort erstellen"
                 },
@@ -758,6 +896,72 @@
                     "description": "Optionen wurden erfolgreich gespeichert."
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "areas": "Bereiche",
+                        "automation": "Automatisierungen",
+                        "blueprint": "Vorlagen",
+                        "core": "Allgemein",
+                        "customize": "Anpassungen",
+                        "devices": "Geräte",
+                        "entities": "Entitäten",
+                        "helpers": "Helfer",
+                        "info": "Info",
+                        "integrations": "Integrationen",
+                        "logs": "Logs",
+                        "lovelace": "Lovelace Dashboards",
+                        "navigate_to": "Navigiere zu {panel}",
+                        "navigate_to_config": "Navigiere zur {panel} Konfiguration",
+                        "person": "Personen",
+                        "scene": "Szenen",
+                        "script": "Skripte",
+                        "server_control": "Serversteuerung",
+                        "tags": "Tags",
+                        "users": "Benutzer",
+                        "zone": "Zonen"
+                    },
+                    "reload": {
+                        "automation": "Automationen neu laden",
+                        "command_line": "Komandozeilenentätien neu laden",
+                        "core": "Positionsdaten und Anpassungen neu laden",
+                        "filesize": "Dateigröße-Entitäten neu laden",
+                        "filter": "Filterentitäten neu laden",
+                        "generic": "Allgemeine IP-Kamera-Entitäten neu laden",
+                        "generic_thermostat": "Allgemeine Thermostat-Entitäten neu laden",
+                        "group": "Gruppen, Gruppenentitäten und Benachrichtigungsservices neu laden",
+                        "history_stats": "Verlaufsstatistiken neu laden",
+                        "homekit": "HomeKit neu laden",
+                        "input_boolean": "Input-Booleans neu laden",
+                        "input_datetime": "Input-Datum/Zeit neu laden",
+                        "input_number": "Input-Numern neu laden",
+                        "input_select": "Input-Selektionen neu laden",
+                        "input_text": "Input-Texte neu laden",
+                        "min_max": "Min/Max-Entitäten neu laden",
+                        "mqtt": "MQTT-Entitäten neu laden",
+                        "person": "Personen neu laden",
+                        "ping": "Binäre-Ping-Entitäten neu laden",
+                        "reload": "{domain} neu laden",
+                        "rest": "REST-Entitäten und Benachrichtigunsdienste neu laden",
+                        "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
+                        "scene": "Szenen neu laden",
+                        "script": "Skripte neu laden",
+                        "smtp": "SMTP-Benachrichtigungsdienst neu laden",
+                        "statistics": "Statistikentitäten neu laden",
+                        "telegram": "Telegram-Benachrichtigungsdienst neu laden",
+                        "template": "Templates neu laden",
+                        "trend": "Trend-Entitäten neu laden",
+                        "universal": "Universelle Medien-Player-Entitäten neu laden",
+                        "zone": "Zonen neu laden"
+                    },
+                    "server_control": {
+                        "perform_action": "Server {action}",
+                        "restart": "Neustarten",
+                        "stop": "Stoppen"
+                    }
+                },
+                "filter_placeholder": "Entitätsfilter"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant hat nichts gehört",
                 "error": "Ups, ein Fehler ist aufgetreten.",
@@ -812,12 +1016,14 @@
         "notification_drawer": {
             "click_to_configure": "Klicke auf die Schaltfläche, um {entity} zu konfigurieren",
             "close": "Schließen",
+            "dismiss_all": "Alle schließen",
             "empty": "Keine Benachrichtigungen",
             "title": "Benachrichtigungen"
         },
         "notification_toast": {
             "connection_lost": "Verbindung getrennt. Verbinde erneut...",
-            "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
+            "dismiss": "Ausblenden",
+            "service_call_failed": "Fehler beim Aufrufen des Diensts {service}.",
             "started": "Home Assistant wurde vollständig gestartet!",
             "starting": "Home Assistant startet. Währenddessen kann es sein, dass nicht alles verfügbar ist.",
             "triggered": "{name} ausgelöst"
@@ -833,16 +1039,16 @@
                     "link_profile_page": "deine Profilseite"
                 },
                 "areas": {
-                    "caption": "Bereichsregister",
+                    "caption": "Bereiche",
                     "data_table": {
                         "area": "Bereich",
                         "devices": "Geräte"
                     },
                     "delete": {
-                        "confirmation_text": "Alle Geräte in diesem Bereich werden nicht mehr zugewiesen sein.",
+                        "confirmation_text": "Die Zuordnung aller Geräte zu diesem Bereich wird aufgelöst.",
                         "confirmation_title": "Möchtest du diesen Bereich wirklich löschen?"
                     },
-                    "description": "Die Bereiche deines Zuhause verwalten",
+                    "description": "Geräte und Entitäten in Bereiche gruppieren",
                     "editor": {
                         "area_id": "Bereich-ID",
                         "create": "Erstellen",
@@ -859,12 +1065,26 @@
                         "integrations_page": "Integrationsseite",
                         "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um Sie bei der Organisation Ihrer Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
                         "introduction2": "Um Geräte in einem Bereich zu platzieren, navigiere mit dem Link unten zur Integrationsseite und klicke dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen.",
-                        "no_areas": "Sieht aus, als hätten Sie noch keine Bereiche!"
+                        "no_areas": "Sieht aus als hättest du noch keine Bereiche!"
                     }
                 },
                 "automation": {
-                    "caption": "Automatisierung",
-                    "description": "Automatisierungen verwalten",
+                    "caption": "Automatisierungen",
+                    "description": "Individuelle Regeln für dein Zuhause erstellen",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Eine Vorlage verwenden"
+                        },
+                        "header": "Erstelle eine neue Automatisierung",
+                        "how": "Wie möchtest du deine neue Automatisierung erstellen?",
+                        "start_empty": "Mit einer leeren Automatisierung starten",
+                        "thingtalk": {
+                            "create": "Erstellen",
+                            "header": "Beschreibe die Automatisierung, die du erstellen möchtest",
+                            "input_label": "Was soll diese Automatisierung tun?",
+                            "intro": "Und wir werden versuchen, sie für dich zu erstellen. Zum Beispiel: Schalte das Licht aus, wenn ich gehe."
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Aktion hinzufügen",
@@ -914,9 +1134,11 @@
                                             "label": "Anzahl"
                                         },
                                         "until": {
+                                            "conditions": "Bis-Bedingungen",
                                             "label": "Bis"
                                         },
                                         "while": {
+                                            "conditions": "Während-Bedingungen",
                                             "label": "Während"
                                         }
                                     }
@@ -928,15 +1150,29 @@
                                     "label": "Dienst ausführen",
                                     "service_data": "Dienstdaten"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Bei Zeitüberschreitung fortfahren",
+                                    "label": "Auf Auslöser warten",
+                                    "timeout": "Zeitüberschreitung (optional)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Bei Timeout fortsetzen",
                                     "label": "Warten",
                                     "timeout": "Timeout (optional)",
                                     "wait_template": "Warte-Template"
                                 }
                             },
-                            "unsupported_action": "Nicht unterstützte Aktion: {action}"
+                            "unsupported_action": "Keine UI-Unterstützung für Aktion: {action}"
                         },
                         "alias": "Name",
+                        "blueprint": {
+                            "blueprint_to_use": "Zu verwendende Vorlage",
+                            "header": "Vorlage",
+                            "inputs": "Eingänge",
+                            "manage_blueprints": "Vorlagen verwalten",
+                            "no_blueprints": "Du hast keine Vorlagen",
+                            "no_inputs": "Diese Vorlage hat keine Eingänge."
+                        },
                         "conditions": {
                             "add": "Bedingung hinzufügen",
                             "delete": "Löschen",
@@ -992,7 +1228,18 @@
                                 "time": {
                                     "after": "Nach",
                                     "before": "Vor",
-                                    "label": "Zeit"
+                                    "label": "Zeit",
+                                    "type_input": "Wert eines Datum/Zeit-Helfers",
+                                    "type_value": "Feste Zeit",
+                                    "weekdays": {
+                                        "fri": "Freitag",
+                                        "mon": "Montag",
+                                        "sat": "Samstag",
+                                        "sun": "Sonntag",
+                                        "thu": "Donnerstag",
+                                        "tue": "Dienstag",
+                                        "wed": "Mittwoch"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entität mit Standort",
@@ -1002,6 +1249,7 @@
                             },
                             "unsupported_condition": "Nicht unterstützte Bedingung: {condition}"
                         },
+                        "copy_to_clipboard": "In die Zwischenablage kopieren",
                         "default_name": "Neue Automatisierung",
                         "description": {
                             "label": "Beschreibung",
@@ -1010,7 +1258,7 @@
                         "edit_ui": "Mit der Benutzeroberfläche bearbeiten",
                         "edit_yaml": "Als YAML bearbeiten",
                         "enable_disable": "Automatisierung aktivieren / deaktivieren",
-                        "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
+                        "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen.",
                         "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no}).",
                         "max": {
@@ -1018,7 +1266,7 @@
                             "queued": "Länge der Warteschlange"
                         },
                         "modes": {
-                            "description": "Der Modus steuert, was passiert, wenn ein Skript aufgerufen wird, während es noch von einem oder mehreren vorherigen Aufrufen ausgeführt wird. Überprüfen Sie den {documentation_link} für weitere Informationen.",
+                            "description": "Der Modus steuert, was passiert, wenn ein Skript aufgerufen wird, während es noch von einem oder mehreren vorherigen Aufrufen ausgeführt wird. Lies {documentation_link} für weitere Informationen.",
                             "documentation": "Automatisierungs-Dokumentation",
                             "label": "Modus",
                             "parallel": "Parallel",
@@ -1050,6 +1298,9 @@
                                     "trigger": "Auslöser"
                                 },
                                 "event": {
+                                    "context_user_pick": "Benutzer auswählen",
+                                    "context_user_picked": "Ereignis auslösender Benutzer",
+                                    "context_users": "Auf Ereignisse beschränken, die ausgelöst wurden durch",
                                     "event_data": "Ereignisdaten",
                                     "event_type": "Ereignistyp",
                                     "label": "Ereignis"
@@ -1093,6 +1344,9 @@
                                     "sunrise": "Sonnenaufgang",
                                     "sunset": "Sonnenuntergang"
                                 },
+                                "tag": {
+                                    "label": "Tag"
+                                },
                                 "template": {
                                     "label": "Template",
                                     "value_template": "Wert-Template"
@@ -1106,6 +1360,7 @@
                                 "time": {
                                     "at": "Um",
                                     "label": "Zeit",
+                                    "type_input": "Wert eines Datums-/Zeit-Helfers",
                                     "type_value": "Feste Zeit"
                                 },
                                 "webhook": {
@@ -1142,6 +1397,58 @@
                         "only_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "show_info_automation": "Informationen über die Automatisierung anzeigen"
+                    },
+                    "thingtalk": {
+                        "create": "Automatisierung erstellen",
+                        "link_devices": {
+                            "ambiguous_entities": "Ein oder mehrere Geräte haben mehr als eine übereinstimmende Entität. Wähle diejenige aus, die du verwenden möchtest.",
+                            "header": "Großartig! Jetzt müssen wir einige Geräte verknüpfen",
+                            "unknown_placeholder": "Unbekannter Platzhalter"
+                        },
+                        "task_selection": {
+                            "error_empty": "Gib einen Befehl ein oder tippe auf Überspringen.",
+                            "error_unsupported": "Dafür konnten wir (noch?) keine Automatisierung erstellen.",
+                            "for_example": "Zum Beispiel:",
+                            "header": "Eine neue Automatisierung erstellen",
+                            "introduction": "Gib unten ein, was diese Automatisierung tun soll und wir werden versuchen, dies in eine Home Assistant-Automatisierung umzuwandeln.",
+                            "language_note": "Hinweis: Im Moment wird nur Englisch unterstützt."
+                        }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "community_forums": "Community-Foren",
+                        "error_no_url": "Bitte gebe die URL der Vorlage ein.",
+                        "file_name": "Vorlagenpfad",
+                        "header": "Vorlage importieren",
+                        "import_btn": "Vorschau Vorlage",
+                        "import_header": "Vorlage \"{name}\"",
+                        "import_introduction": "Du kannst Vorlagen anderer Benutzer aus GitHub und den Community-Foren importieren. Gib die URL der Vorlage unten ein.",
+                        "import_introduction_link": "Du kannst Vorlagen anderer Benutzer aus GitHub und den {community_link} importieren. Gib unten die URL der Vorlage ein.",
+                        "importing": "Vorlage wird geladen...",
+                        "raw_blueprint": "Inhalt der Vorlage",
+                        "save_btn": "Vorlage importieren",
+                        "saving": "Vorlage wird importiert...",
+                        "unsupported_blueprint": "Diese Vorlage wird nicht unterstützt",
+                        "url": "URL der Vorlage"
+                    },
+                    "caption": "Vorlagen",
+                    "description": "Vorlagen verwalten",
+                    "overview": {
+                        "add_blueprint": "Vorlage hinzufügen",
+                        "confirm_delete_header": "Diese Vorlage löschen?",
+                        "confirm_delete_text": "Bist du sicher, dass du diese Vorlage löschen möchtest?",
+                        "delete_blueprint": "Vorlage löschen",
+                        "discover_more": "Entdecke weitere Vorlagen",
+                        "header": "Vorlagen-Editor",
+                        "headers": {
+                            "domain": "Domain",
+                            "file_name": "Dateiname",
+                            "name": "Name"
+                        },
+                        "introduction": "Mit der Vorlagenkonfiguration kannst du deine Vorlagen importieren und verwalten.",
+                        "learn_more": "Erfahre mehr über die Benutzung von Vorlagen",
+                        "use_blueprint": "Automatisierung erstellen"
                     }
                 },
                 "cloud": {
@@ -1212,13 +1519,19 @@
                     },
                     "alexa": {
                         "banner": "Das Bearbeiten der Entitäten, die über diese Benutzeroberfläche verfügbar gemacht werden, ist deaktiviert, da in configuration.yaml Entitätsfilter konfiguriert sind.",
+                        "dont_expose_entity": "Entität nicht anzeigen",
                         "expose": "In Alexa anzeigen",
+                        "expose_entity": "Entität anzeigen",
+                        "exposed": "{selected} verfügbar gemacht",
                         "exposed_entities": "Exponierte Entitäten",
-                        "not_exposed_entities": "Nicht exponierte Entitäten",
+                        "follow_domain": "Domain folgen",
+                        "manage_domains": "Domains verwalten",
+                        "not_exposed": "{selected} wird nicht verfügbar gemacht",
+                        "not_exposed_entities": "Nicht angezeigte Entitäten",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Fernsteuerung und Integration mit Alexa und Google Assistant.",
+                    "description_features": "Fernsteuerung und Integration mit Alexa und Google Assistant",
                     "description_login": "Angemeldet als {email}",
                     "description_not_login": "Nicht angemeldet",
                     "dialog_certificate": {
@@ -1251,9 +1564,15 @@
                     "google": {
                         "banner": "Das Bearbeiten der Entitäten, die über diese Benutzeroberfläche verfügbar gemacht werden, ist deaktiviert, da in configuration.yaml Entitätsfilter konfiguriert sind.",
                         "disable_2FA": "Zweifaktor-Authentifizierung deaktivieren",
+                        "dont_expose_entity": "Entität nicht verfügbar machen",
                         "expose": "Im Google Assistenten anzeigen",
+                        "expose_entity": "Entität verfügbar machen",
+                        "exposed": "{selected} verfügbar gemacht",
                         "exposed_entities": "Exponierte Entitäten",
-                        "not_exposed_entities": "Nicht exponierte Entitäten",
+                        "follow_domain": "Domain folgen",
+                        "manage_domains": "Domains verwalten",
+                        "not_exposed": "{selected} wird nicht verfügbar gemacht",
+                        "not_exposed_entities": "Nicht angezeigte Entitäten",
                         "sync_to_google": "Änderungen mit Google synchronisieren.",
                         "title": "Google Assistant"
                     },
@@ -1307,7 +1626,7 @@
                 },
                 "core": {
                     "caption": "Allgemein",
-                    "description": "Bearbeite die allgemeine Konfiguration von Home Assistant",
+                    "description": "Mengeneinheiten, Standort, Zeitzone & andere allgemeine Parameter",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1339,10 +1658,11 @@
                     "attributes_override": "Du kannst sie überschreiben, wenn du möchtest.",
                     "attributes_set": "Die folgenden Attribute der Entität sind programmatisch festgelegt.",
                     "caption": "Anpassung",
-                    "description": "Elemente anpassen",
+                    "description": "Entitäten individuell anpassen",
                     "different_include": "Möglich über eine Domain, einen Glob oder einen anderen Include.",
                     "pick_attribute": "Wähle ein Attribut zum Überschreiben aus.",
                     "picker": {
+                        "documentation": "Anpassungsdokumentation",
                         "entity": "Entität",
                         "header": "Anpassungen",
                         "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte/bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
@@ -1357,23 +1677,32 @@
                     "add_prompt": "Mit diesem Gerät wurden noch keine {name} hinzugefügt. Du kannst eins hinzufügen, indem du auf den + Knopf drückst.",
                     "automation": {
                         "actions": {
-                            "caption": "Wenn etwas ausgelöst wird ..."
+                            "caption": "Wenn etwas ausgelöst wird ...",
+                            "no_actions": "Keine Aktionen",
+                            "unknown_action": "Unbekannte Aktion"
                         },
                         "automations": "Automatisierungen",
                         "conditions": {
-                            "caption": "Tue nur dann etwas, wenn....."
+                            "caption": "Tue nur dann etwas, wenn.....",
+                            "no_conditions": "Keine Bedingungen",
+                            "unknown_condition": "Unbekannte Bedingung"
                         },
                         "create": "Automatisierung mit Gerät erstellen",
+                        "create_disable": "Kann keine Automatisierung mit deaktiviertem Gerät erstellen",
                         "no_automations": "Keine Automatisierungen",
                         "no_device_automations": "Für dieses Gerät sind keine Automatisierungen verfügbar.",
                         "triggers": {
-                            "caption": "Tue etwas, wenn..."
-                        }
+                            "caption": "Tue etwas, wenn...",
+                            "no_triggers": "Keine Auslöser",
+                            "unknown_trigger": "Unbekannter Auslöser"
+                        },
+                        "unknown_automation": "Unbekannte Automatisierung"
                     },
                     "cant_edit": "Du kannst nur Elemente bearbeiten, die in der Benutzeroberfläche erstellt wurden.",
                     "caption": "Geräte",
                     "confirm_delete": "Möchtest du dieses Gerät wirklich löschen?",
                     "confirm_rename_entity_ids": "Möchten Sie auch die Entitäts-IDs Ihrer Entitäten umbenennen?",
+                    "confirm_rename_entity_ids_warning": "Dies ändert keine Konfiguration (wie Automatisierungen, Skripte, Szenen, Dashboards), die derzeit diese Entitäten verwendet! Du musst sie selbst aktualisieren, um die neuen Entitäts-IDs zu verwenden!",
                     "data_table": {
                         "area": "Bereich",
                         "battery": "Batterie",
@@ -1385,26 +1714,46 @@
                         "no_devices": "keine Geräte"
                     },
                     "delete": "Löschen",
-                    "description": "Verwalte verbundene Geräte",
+                    "description": "Verbundene Geräte verwalten",
                     "device_info": "Geräteinformationen",
                     "device_not_found": "Gerät nicht gefunden.",
+                    "disabled": "Deaktiviert",
+                    "disabled_by": {
+                        "config_entry": "Konfigurationseintrag",
+                        "integration": "Integration",
+                        "user": "Benutzer"
+                    },
+                    "enabled_cause": "Das Gerät ist durch {cause} deaktiviert.",
+                    "enabled_description": "Deaktivierte Geräte werden nicht angezeigt und zum Gerät gehörende Entitäten werden deaktiviert und nicht zum Home Assistant hinzugefügt.",
+                    "enabled_label": "Gerät aktivieren",
                     "entities": {
                         "add_entities_lovelace": "Zu Lovelace hinzufügen",
                         "disabled_entities": "+{count} {count, plural,\n  one {deaktivierte Entität}\n  other {deaktivierte Entitäten}\n}",
                         "entities": "Entitäten",
-                        "hide_disabled": "Ausblenden deaktiviert",
+                        "hide_disabled": "Deaktivierte ausblenden",
                         "none": "Dieses Gerät hat keine Entitäten"
                     },
                     "name": "Name",
                     "no_devices": "Keine Geräte",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter",
+                            "hidden_devices": "{number} {number, plural,\n  one {verstecktes Gerät}\n  other {versteckte Geräte}\n}",
+                            "show_all": "Alle anzeigen",
+                            "show_disabled": "Deaktivierte Geräte anzeigen"
+                        },
+                        "search": "Geräte suchen"
+                    },
                     "scene": {
                         "create": "Szene mit Gerät erstellen",
+                        "create_disable": "Kann keine Szene mit deaktiviertem Gerät erstellen",
                         "no_scenes": "Keine Szenen",
                         "scenes": "Szenen"
                     },
                     "scenes": "Szenen",
                     "script": {
                         "create": "Szene mit Gerät erstellen",
+                        "create_disable": "Kann kein Skript mit deaktiviertem Gerät erstellen",
                         "no_scripts": "Keine Skripte",
                         "scripts": "Skripte"
                     },
@@ -1415,26 +1764,29 @@
                 },
                 "entities": {
                     "caption": "Entitäten",
-                    "description": "Überblick aller bekannten Elemente.",
+                    "description": "Bekannte Entitäten verwalten",
                     "picker": {
                         "disable_selected": {
                             "button": "Ausgewählte deaktivieren",
                             "confirm_text": "Deaktivierte Entitäten werden zu Home Assistant nicht hinzugefügt.",
-                            "confirm_title": "Möchtest du {number} Entitäten deaktivieren?"
+                            "confirm_title": "Möchtest du {number} {number, plural,\n  one {Entität}\n  other {Entitäten}\n} deaktivieren?"
                         },
                         "enable_selected": {
                             "button": "Ausgewählte aktivieren",
                             "confirm_text": "Dadurch stehen sie in Home Assistant wieder zur Verfügung, wenn sie jetzt deaktiviert sind.",
-                            "confirm_title": "Möchtest du {number} Entitäten aktivieren?"
+                            "confirm_title": "Möchtest du {number} {number, plural,\n  one {Entität}\n  other {Entitäten}\n} aktivieren?"
                         },
                         "filter": {
                             "filter": "Filter",
+                            "hidden_entities": "{number} versteckte {number, plural,\n  one {Entität}\n  other {Entitäten}\n}",
+                            "show_all": "Alle anzeigen",
                             "show_disabled": "Anzeigen deaktivierter Entitäten",
                             "show_readonly": "Anzeigen schreibgeschützter Entitäten",
                             "show_unavailable": "Anzeigen nicht verfügbarer Entitäten"
                         },
                         "header": "Entitäten",
                         "headers": {
+                            "area": "Bereich",
                             "entity_id": "Entitäts-ID",
                             "integration": "Integration",
                             "name": "Name",
@@ -1445,9 +1797,9 @@
                         "remove_selected": {
                             "button": "Ausgewählte entfernen",
                             "confirm_partly_text": "Du kannst nur {removable} der ausgewählten {selected} Entitäten entfernen. Entitäten können nur entfernt werden, wenn die Integration die Entitäten nicht mehr bereitstellt. Manchmal musst du Home Assistant neu starten, bevor du die Entitäten einer entfernten Integration entfernen kannst. Möchtest du die entfernbaren Entitäten wirklich entfernen?",
-                            "confirm_partly_title": "Es können nur {number} ausgewählte Objekte entfernt werden.",
+                            "confirm_partly_title": "Nur {number} {number, plural,\n  one {markierte Entität kann}\n  other {markierte Entitäten können}\n} entfernt werden.",
                             "confirm_text": "Du solltest sie aus deiner Lovelace-Konfiguration und deinen Automatisierungen entfernen, wenn sie diese Entitäten enthalten.",
-                            "confirm_title": "Möchtest du {number} Entitäten entfernen?"
+                            "confirm_title": "Möchtest du {number} {number, plural,\n  one {Entität}\n  other {Entitäten}\n} entfernen?"
                         },
                         "search": "Entitäten suchen",
                         "selected": "{number} ausgewählt",
@@ -1467,7 +1819,7 @@
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
                     "caption": "Helfer",
-                    "description": "Elemente, die beim Aufbau von Automatisierungen helfen können.",
+                    "description": "Elemente verwalten, die beim Aufbau von Automatisierungen helfen",
                     "dialog": {
                         "add_helper": "Helfer hinzufügen",
                         "add_platform": "{platform} hinzufügen",
@@ -1484,18 +1836,22 @@
                         "no_helpers": "Sieht so aus, als hättest du noch keine Helfer!"
                     },
                     "types": {
+                        "counter": "Zähler",
                         "input_boolean": "Umschalten",
                         "input_datetime": "Datum und/oder Uhrzeit",
                         "input_number": "Nummer",
                         "input_select": "Dropdown",
-                        "input_text": "Text"
+                        "input_text": "Text",
+                        "timer": "Timer"
                     }
                 },
                 "info": {
                     "built_using": "Gebaut mit",
                     "caption": "Info",
+                    "copy_github": "Für GitHub",
+                    "copy_raw": "Roher Text",
                     "custom_uis": "Benutzerdefinierte UIs:",
-                    "description": "Informationen über deine Home Assistant Installation",
+                    "description": "Version, Systemzustand und Links zur Dokumentation",
                     "developed_by": "Entwickelt von einem Haufen toller Leute.",
                     "documentation": "Dokumentation",
                     "frontend": "Frontend-UI",
@@ -1509,6 +1865,42 @@
                     "server": "Server",
                     "source": "Quelle:",
                     "system_health_error": "System Health-Komponente wird nicht geladen. Füge 'system_health:' zu configuration.yaml hinzu",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "alexa_enabled": "Alexa aktiviert",
+                                "can_reach_cert_server": "Zertifikatsserver erreichbar",
+                                "can_reach_cloud": "Home Assistant Cloud erreichbar",
+                                "can_reach_cloud_auth": "Authentifizierungsserver erreichbar",
+                                "google_enabled": "Google aktiviert",
+                                "logged_in": "Eingeloggt",
+                                "relayer_connected": "Relayer verbunden",
+                                "remote_connected": "Remote verbunden",
+                                "remote_enabled": "Remote aktiviert",
+                                "subscription_expiration": "Ende des Abos"
+                            },
+                            "homeassistant": {
+                                "arch": "CPU-Architektur",
+                                "dev": "Entwicklung",
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "installation_type": "Installationstyp",
+                                "os_name": "Betriebssystemname",
+                                "os_version": "Betriebssystemversion",
+                                "python_version": "Python Version",
+                                "timezone": "Zeitzone",
+                                "version": "Version",
+                                "virtualenv": "Virtuelle Umgebung"
+                            },
+                            "lovelace": {
+                                "dashboards": "Dashboards",
+                                "mode": "Modus",
+                                "resources": "Ressourcen"
+                            }
+                        },
+                        "manage": "Verwalten",
+                        "more_info": "Mehr Info"
+                    },
                     "title": "Info"
                 },
                 "integration_panel_move": {
@@ -1539,8 +1931,10 @@
                         "options": "Optionen",
                         "reload": "Neu laden",
                         "reload_confirm": "Die Integration wurde neu geladen",
+                        "reload_restart_confirm": "Home Assistant neu starten, um das Neuladen dieser Integration abzuschließen",
                         "rename": "Umbenennen",
                         "restart_confirm": "Starte Home Assistant neu, um das Entfernen dieser Integration abzuschließen",
+                        "services": "{count} {count, plural,\n  one {Dienst}\n  other {Dienste}\n}",
                         "settings_button": "Einstellungen für {integration} bearbeiten",
                         "system_options": "Systemoptionen",
                         "system_options_button": "Systemoptionen für {integration}",
@@ -1563,7 +1957,7 @@
                     },
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
-                    "description": "Verwalte verbundene Integrationen",
+                    "description": "Integrationen zu Diensten, Geräten, usw. verwalten",
                     "details": "Details zur Integration",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
@@ -1581,7 +1975,7 @@
                     "integration": "Integration",
                     "integration_not_found": "Integration nicht gefunden.",
                     "new": "Richte eine neue Integration ein",
-                    "no_integrations": "Du hast anscheinend noch keine Integrationen konfiguriert. Klicke auf die Schaltfläche unten, um Deine erste Integration hinzuzufügen!",
+                    "no_integrations": "Du hast anscheinend noch keine Integrationen konfiguriert. Klicke auf die Schaltfläche unten, um eine erste Integration hinzuzufügen!",
                     "none": "Noch nichts konfiguriert",
                     "none_found": "Keine Integrationen gefunden",
                     "none_found_detail": "Passe deine Suchkriterien an.",
@@ -1596,7 +1990,7 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Leeren",
-                    "description": "Die Home Assistant Logs anschauen",
+                    "description": "Home Assistant Logs einsehen",
                     "details": "Protokolldetails ( {level} )",
                     "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
                     "loading_log": "Fehlerprotokoll wird geladen...",
@@ -1613,7 +2007,7 @@
                         "cant_edit_yaml": "In YAML definierte Dashboards können nicht über die Benutzeroberfläche bearbeitet werden. Du kannst sie aber in der configuration.yaml ändern.",
                         "caption": "Dashboards",
                         "conf_mode": {
-                            "storage": "UI gesteuert",
+                            "storage": "Grafischer Editor",
                             "yaml": "YAML-Datei"
                         },
                         "confirm_delete": "Bist du sicher, dass du dieses Dashboard löschen möchtest?",
@@ -1641,14 +2035,14 @@
                                 "conf_mode": "Konfigurationsmethode",
                                 "default": "Standard",
                                 "filename": "Dateiname",
-                                "require_admin": "Nur für Administratoren",
+                                "require_admin": "Nur Admin",
                                 "sidebar": "In der Seitenleiste anzeigen",
                                 "title": "Titel"
                             },
                             "open": "Öffnen"
                         }
                     },
-                    "description": "Konfiguriere deine Lovelace-Dashboards",
+                    "description": "Erstelle individuelle Oberflächen, um dein Zuhause zu steuern",
                     "resources": {
                         "cant_edit_yaml": "Du verwendest Lovelace im YAML-Modus. Daher kannst du deine Ressourcen nicht über die Benutzeroberfläche verwalten. Verwalte sie in der configuration.yaml.",
                         "caption": "Ressourcen",
@@ -1663,7 +2057,7 @@
                             "url": "URL",
                             "url_error_msg": "URL ist ein Pflichtfeld",
                             "warning_header": "Sei vorsichtig!",
-                            "warning_text": "Das Hinzufügen von Ressourcen kann gefährlich sein. Stelle sicher, dass du die Quelle der Ressource kennst und ihr vertraust. Schlechte Ressourcen können dein System ernsthaft beschädigen."
+                            "warning_text": "Das Hinzufügen von Ressourcen kann gefährlich sein. Stelle sicher, dass du die Quelle der Ressource kennst und ihr vertraust. Ressourcen aus bösartigen Quellen können dein System ernsthaft beschädigen."
                         },
                         "picker": {
                             "add_resource": "Ressource hinzufügen",
@@ -1673,7 +2067,7 @@
                             },
                             "no_resources": "keine Ressourcen"
                         },
-                        "refresh_body": "Die Seite muss aktualisiert werden, um das Entfernen abzuschließen. Möchtest du sie jetzt aktualisieren?",
+                        "refresh_body": "Die Seite muss aktualisiert werden, um das Entfernen abzuschließen. Möchtest du jetzt aktualisieren?",
                         "refresh_header": "Möchtest du aktualisieren?",
                         "types": {
                             "css": "Stylesheet",
@@ -1700,24 +2094,43 @@
                 "ozw": {
                     "button": "Konfigurieren",
                     "common": {
+                        "controller": "Controller",
                         "instance": "Instanz",
                         "network": "Netzwerk",
+                        "node_id": "Knoten-ID",
+                        "ozw_instance": "OpenZWave-Instanz",
+                        "query_stage": "Abfragephase",
+                        "wakeup_instructions": "Aufweckanleitung",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
+                        "node_failed": "Knoten fehlgeschlagen",
+                        "stage": "Phase",
                         "zwave_info": "Z-Wave Infos"
                     },
                     "navigation": {
                         "network": "Netzwerk",
+                        "node": {
+                            "config": "Konfiguration",
+                            "dashboard": "Dashboard"
+                        },
+                        "nodes": "Knoten",
                         "select_instance": "Instanz auswählen"
                     },
                     "network_status": {
                         "details": {
+                            "driverallnodesqueried": "Alle Knoten wurden abgefragt",
+                            "driverallnodesqueriedsomedead": "Alle Knoten wurden abgefragt. Einige Knoten wurden tot aufgefunden",
+                            "driverawakenodesqueries": "Alle wachen Knoten wurden abgefragt",
+                            "driverfailed": "Verbindung zum Z-Wave-Controller fehlgeschlagen",
+                            "driverready": "Initialisierung des Z-Wave Controllers",
                             "driverremoved": "Der Treiber wurde entfernt",
                             "driverreset": "Der Treiber wurde zurückgesetzt",
+                            "offline": "OZWDaemon offline",
                             "ready": "Bereit zum Verbinden",
-                            "started": "Verbindung mit MQTT hergestellt",
-                            "starting": "Verbinde zu MQTT"
+                            "started": "Verbunden mit MQTT",
+                            "starting": "Verbinde zu MQTT",
+                            "stopped": "OpenZWave gestoppt"
                         },
                         "offline": "Offline",
                         "online": "Online",
@@ -1725,14 +2138,72 @@
                         "unknown": "Unbekannt"
                     },
                     "network": {
-                        "header": "Netzwerkverwaltung"
+                        "header": "Netzwerkverwaltung",
+                        "introduction": "Verwalten der Netzwerk-Funktionen.",
+                        "node_count": "{count} Knoten"
+                    },
+                    "node_config": {
+                        "header": "Knotenkonfiguration",
+                        "help_source": "Hilfetexte und Beschreibungen der Konfigurationsparameter stellt das OpenZWave-Projekt zur Verfügung.",
+                        "introduction": "Verwalten Sie die verschiedenen Konfigurationsparameter für einen Z-Wave Knoten.",
+                        "wakeup_help": "Batteriebetriebene Knoten müssen wach sein, um ihre Konfiguration zu ändern. Wenn der Knoten nicht aktiv ist, versucht OpenZWave beim nächsten Aufwachen, die Konfiguration des Knotens zu aktualisieren. Dies kann mehrere Stunden (oder Tage) später sein. Führen Sie die folgenden Schritte aus, um Ihr Gerät zu aktivieren:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Produkthandbuch"
+                    },
+                    "node_query_stages": {
+                        "associations": "Aktualisiert die verbundenen Gruppen und Mitgliedschaften",
+                        "cacheload": "Informationen aus der OpenZWave-Cache-Datei laden. Die Batterieknoten bleiben in diesem Stadium, bis der Knoten aufwacht.",
+                        "complete": "Der Interviewprozess ist abgeschlossen",
+                        "configuration": "Die Konfigurationsdaten werden vom Netzknoten abrufen",
+                        "dynamic": "Abrufen häufig wechselnder Werte vom Knoten",
+                        "instances": "Details den vom Gerät unterstützten Instanzen oder Kanälen werden abgerufen",
+                        "manufacturerspecific1": "Abrufen von Hersteller- und Produkt-ID-Codes vom Knoten",
+                        "manufacturerspecific2": "Zusätzliche Hersteller- und Produkt-ID-Codes vom Knoten abrufen",
+                        "neighbors": "Eine Liste der Umgebung des Netzknoten wird abgerufen",
+                        "nodeinfo": "Abrufen unterstützter Befehlsklassen vom Knoten",
+                        "nodeplusinfo": "Abrufen von Z-Wave + Informationen vom Knoten",
+                        "probe": "Prüfen, ob der Knoten wach/lebendig ist",
+                        "protocolinfo": "Abrufen grundlegender Z-Wave-Funktionen dieses Knotens vom Controller",
+                        "session": "Abrufen sporadisch wechselnder Werte vom Knoten",
+                        "static": "Statische Werte des Gerätes werden abgerufen",
+                        "versions": "Abrufen von Informationen zu Firmware- und Befehlsklassenversionen",
+                        "wakeup": "Unterstützung für Weckwarteschlangen und Nachrichten einrichten"
+                    },
+                    "node": {
+                        "button": "Gerätedetails",
+                        "not_found": "Gerät nicht gefunden."
                     },
                     "nodes_table": {
                         "failed": "Fehlgeschlagen",
-                        "manufacturer": "Hersteller"
+                        "id": "ID",
+                        "manufacturer": "Hersteller",
+                        "model": "Modell",
+                        "query_stage": "Abfragephase",
+                        "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
-                        "start_refresh_button": "Aktualisierung starten"
+                        "battery_note": "Wenn der Netzknoten batteriebetrieben ist, muss er zunächst aktiviert werden, bevor du fortfahren kannst.",
+                        "button": "Geräte aktualisieren",
+                        "complete": "Netzknotenaktualisierung abgeschlossen",
+                        "description": "Dies wird OpenZWave anweisen, einen Knoten erneut zu befragen und die Befehlsklassen, Funktionen und Werte des Knotens zu aktualisieren.",
+                        "node_status": "Netzknotenstatus",
+                        "refreshing_description": "Netzknoteninformationen werden aktualisiert...",
+                        "start_refresh_button": "Aktualisierung starten",
+                        "step": "Schritt",
+                        "title": "Knoteninformationen aktualisieren",
+                        "wakeup_header": "Weckanleitung für",
+                        "wakeup_instructions_source": "Weckanweisungen stammen aus der OpenZWave-Community-Gerätedatenbank."
+                    },
+                    "select_instance": {
+                        "header": "OpenZWave Instanz auswählen",
+                        "introduction": "Du hast mehr als eine aktive OpenZWave-Instanz. Welche möchtest du verwalten?",
+                        "none_found": "Wir haben keine OpenZWave-Instanz gefunden. Wenn du der Meinung bist, dass dies nicht korrekt ist, überprüfe deine OpenZWave- und MQTT-Setups und stelle sicher, dass der Home Assistant mit dem MQTT-Broker kommunizieren kann."
+                    },
+                    "services": {
+                        "add_node": "Knoten hinzufügen",
+                        "cancel_command": "Befehl abbrechen",
+                        "remove_node": "Knoten entfernen"
                     }
                 },
                 "person": {
@@ -1741,8 +2212,11 @@
                     "confirm_delete": "Möchtest du diese Person wirklich löschen?",
                     "confirm_delete2": "Alle Geräte, die zu dieser Person gehören, werden nicht mehr zugeordnet.",
                     "create_person": "Person erstellen",
-                    "description": "Verwalte die Personen, die Home Assistant verfolgt.",
+                    "description": "Personen verwalten, denen Home Assistant folgt",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Erlaube dieser Person, sich einzuloggen.",
+                        "confirm_delete_user": "Bist Du sicher, dass Du das Benutzerkonto für {name} löschen möchtest? Du kannst der Person immer noch folgen, aber sie kann sich nicht mehr anmelden.",
                         "create": "Erstellen",
                         "delete": "Löschen",
                         "device_tracker_intro": "Wähle die Geräte, die dieser Person gehören.",
@@ -1758,13 +2232,16 @@
                         "update": "Aktualisieren"
                     },
                     "introduction": "Hier können Sie jede Person von Interesse in Home Assistant definieren.",
+                    "learn_more": "Erfahre mehr über Person",
                     "no_persons_created_yet": "Sieht so aus, als hättest du noch keine Personen angelegt.",
-                    "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden."
+                    "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden.",
+                    "person_not_found": "Wir konnten die Person, die du bearbeiten wolltest, nicht finden.",
+                    "person_not_found_title": "Person nicht gefunden"
                 },
                 "scene": {
                     "activated": "Aktivierte Szene {name}.",
                     "caption": "Szenen",
-                    "description": "Szenen verwalten",
+                    "description": "Gerätezustände erfassen und später einfach wieder abrufen",
                     "editor": {
                         "default_name": "Neue Szene",
                         "devices": {
@@ -1782,7 +2259,7 @@
                             "without_device": "Entitäten ohne Gerät"
                         },
                         "icon": "Symbol",
-                        "introduction": "Benutze Szenen um deinem Zuhause Leben einzuhauchen.",
+                        "introduction": "Benutze Szenen, um deinem Zuhause Leben einzuhauchen.",
                         "load_error_not_editable": "Nur Szenen in der scenes.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Szene ({err_no}).",
                         "name": "Name",
@@ -1807,8 +2284,8 @@
                     }
                 },
                 "script": {
-                    "caption": "Skript",
-                    "description": "Skripte verwalten",
+                    "caption": "Skripte",
+                    "description": "Eine Sequenz aus Aktionen ausführen",
                     "editor": {
                         "alias": "Name",
                         "default_name": "Neues Skript",
@@ -1827,7 +2304,7 @@
                             "queued": "Länge der Warteschlange"
                         },
                         "modes": {
-                            "description": "Der Modus steuert, was passiert, wenn ein Skript aufgerufen wird, während es noch von einem oder mehreren vorherigen Aufrufen ausgeführt wird. Überprüfen Sie den {documentation_link} für weitere Informationen.",
+                            "description": "Der Modus steuert, was passiert, wenn ein Skript aufgerufen wird, während es noch von einem oder mehreren vorherigen Aufrufen ausgeführt wird. Lies {documentation_link} für weitere Informationen.",
                             "documentation": "Skript-Dokumentation",
                             "label": "Modus",
                             "parallel": "Parallel",
@@ -1835,11 +2312,14 @@
                             "restart": "Neu starten",
                             "single": "Einzeln (Standard)"
                         },
+                        "save_script": "Skript speichern",
                         "sequence": "Sequenz",
                         "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts."
                     },
                     "picker": {
-                        "add_script": "Skript hinzufügen",
+                        "add_script": "Neues Skript erstellen",
+                        "duplicate": "Duplizieren",
+                        "duplicate_script": "Skript duplizieren",
                         "edit_script": "Skript bearbeiten",
                         "header": "Skript-Editor",
                         "headers": {
@@ -1848,6 +2328,7 @@
                         "introduction": "Mit dem Skript-Editor können Skripte erstellt und bearbeitet werden. Bitte folge dem untenstehenden Link, um die Anleitung zu finden. Das stellt sicher, dass Home Assistant richtig konfiguriert ist.",
                         "learn_more": "Weitere Informationen zu Skripten",
                         "no_scripts": "Wir konnten keine bearbeitbaren Skripte finden",
+                        "run_script": "Skript ausführen",
                         "show_info": "Informationen zum Skript anzeigen",
                         "trigger_script": "Skript auslösen"
                     }
@@ -1858,9 +2339,15 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatisierungen neu laden",
+                            "command_line": "Kommandozeilen-Entitäten neu laden",
                             "core": "Ort & Anpassungen neu laden",
-                            "group": "Gruppen neu laden",
+                            "filesize": "Dateigröße-Entitäten neu laden",
+                            "filter": "Filter-Entitäten neu laden",
+                            "generic": "Allgemeine IP-Kamera Entitäten neu laden",
+                            "generic_thermostat": "Generische Thermostatentitäten neu laden",
+                            "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
+                            "history_stats": "Verlaufsstatistik-Entitäten neu laden",
                             "homekit": "HomeKit neu laden",
                             "input_boolean": "Eingabe-Booleans neu laden",
                             "input_datetime": "Eingabe-Datums- und Zeitfelder neu laden",
@@ -1868,10 +2355,21 @@
                             "input_select": "Eingabe-Auswahl neu laden",
                             "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
+                            "min_max": "Min/Max-Entitäten neu laden",
+                            "mqtt": "Lade manuell konfigurierte MQTT-Entitäten neu",
                             "person": "Personen neu laden",
+                            "ping": "Binäre Ping-Sensorentitäten neu laden",
+                            "reload": "{domain} neu laden",
+                            "rest": "Rest-Entitäten und Benachrichtigungsdienste neu laden",
+                            "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",
+                            "smtp": "SMTP-Benachrichtigungsdienste neu laden",
+                            "statistics": "Statistik-Entitäten neu laden",
                             "telegram": "Telegram-Benachrichtigungsdienste neu laden",
+                            "template": "Vorlagenentitäten neu laden",
+                            "trend": "Trend-Entitäten neu laden",
+                            "universal": "Universelle Media Player-Entitäten neu laden",
                             "zone": "Zonen neu laden"
                         },
                         "server_management": {
@@ -1886,24 +2384,40 @@
                             "check_config": "Konfiguration prüfen",
                             "heading": "Konfiguration überprüfen",
                             "introduction": "Überprüfen Sie Ihre Konfiguration, wenn Sie kürzlich Änderungen vorgenommen haben und sicherstellen möchten, dass alle Änderungen gültig sind",
-                            "invalid": "Konfiguration ungültig",
+                            "invalid": "Konfiguration fehlerhaft",
                             "valid": "Konfiguration in Ordnung"
                         }
                     }
                 },
                 "tags": {
+                    "add_tag": "Tag hinzufügen",
+                    "automation_title": "NFC Tag {name} ist gescannt",
+                    "caption": "NFC Tags",
+                    "confirm_remove": "Möchtest du den Tag {tag} wirklich entfernen?",
+                    "confirm_remove_title": "Tag entfernen?",
+                    "create_automation": "Automatisierung mit NFC Tag erstellen",
+                    "description": "Automatisierungen auslösen wenn NFC Tag, QR Code, usw. gescannt wird",
                     "detail": {
+                        "companion_apps": "Mobile Apps",
+                        "create": "Erstellen",
+                        "create_and_write": "Erstellen und schreiben",
                         "delete": "Löschen",
                         "description": "Beschreibung",
                         "name": "Name",
-                        "update": "Aktualisieren"
+                        "new_tag": "Neuer NFC Tag",
+                        "tag_id": "NFC Tag ID",
+                        "tag_id_placeholder": "Automatisch generiert, wenn leer gelassen",
+                        "update": "Aktualisieren",
+                        "usage": "Ein Tag kann eine Automatisierung auslösen, wenn er gescannt wird. Du kannst NFC-Tags, QR-Codes oder jede andere Art von Tags verwenden. Verwende unsere {companion_link}, um diesen Tag in ein programmierbares NFC-Tag zu schreiben oder einen QR-Code zu erstellen."
                     },
                     "edit": "Bearbeiten",
                     "headers": {
                         "last_scanned": "Zuletzt gescannt",
                         "name": "Name"
                     },
+                    "learn_more": "Erfahre mehr über NFC Tags",
                     "never_scanned": "Nie gescannt",
+                    "no_tags": "Keine NFC Tags",
                     "write": "Schreiben"
                 },
                 "users": {
@@ -1913,13 +2427,15 @@
                         "name": "Name",
                         "password": "Passwort",
                         "password_confirm": "Passwort bestätigen",
+                        "password_not_match": "Passwörter stimmen nicht überein",
                         "username": "Benutzername"
                     },
                     "caption": "Benutzer",
-                    "description": "Benutzer verwalten",
+                    "description": "Home Assistant-Benutzerkonten verwalten",
                     "editor": {
                         "activate_user": "Benutzer aktivieren",
                         "active": "Aktiv",
+                        "active_tooltip": "Steuert, ob sich der Benutzer anmelden kann",
                         "admin": "Administrator",
                         "caption": "Benutzer anzeigen",
                         "change_password": "Passwort ändern",
@@ -1928,26 +2444,32 @@
                         "delete_user": "Benutzer löschen",
                         "group": "Gruppe",
                         "id": "ID",
-                        "name": "Name",
+                        "name": "Anzeigename",
                         "new_password": "Neues Passwort",
                         "owner": "Besitzer",
-                        "password_changed": "Das Passwort wurde geändert!",
-                        "system_generated": "System generiert",
+                        "password_changed": "Das Passwort wurde erfolgreich geändert",
+                        "system_generated": "Systemgeneriert",
                         "system_generated_users_not_editable": "Systemgenerierte Benutzer können nicht aktualisiert werden.",
-                        "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
-                        "unnamed_user": "Unbenannter Benutzer",
-                        "update_user": "Aktualisieren"
+                        "system_generated_users_not_removable": "Systemgenerierte Benutzer können nicht entfernt werden.",
+                        "unnamed_user": "Namenloser Benutzer",
+                        "update_user": "Aktualisieren",
+                        "username": "Benutzername"
                     },
                     "picker": {
+                        "add_user": "Benutzer hinzufügen",
                         "headers": {
                             "group": "Gruppe",
-                            "name": "Name",
-                            "system": "System"
+                            "is_active": "Aktiv",
+                            "is_owner": "Besitzer",
+                            "name": "Anzeigename",
+                            "system": "System generiert",
+                            "username": "Benutzername"
                         }
                     },
-                    "users_privileges_note": "Benutzergruppen sind derzeit noch nicht fertig entwickelt. Der Benutzer wird nicht in der Lage sein Änderungen an der Instanz über das UI vorzunehmen. Derzeit überprüfen wir noch alle API Endpunkte um sicherzustellen dass diese nur von Administratoren genutzt werden können."
+                    "users_privileges_note": "Benutzergruppen befinden sich derzeit noch in Entwicklung. Der Benutzer wird nicht in der Lage sein, Änderungen an der Instanz über die Benutzeroberfläche vorzunehmen. Derzeit überprüfen wir noch alle API Endpunkte und stellen sicher, dass diese nur von Administratoren genutzt werden können."
                 },
                 "zha": {
+                    "add_device": "Gerät hinzufügen",
                     "add_device_page": {
                         "discovered_text": "Geräte werden hier angezeigt sobald sie erkannt worden sind.",
                         "discovery_text": "Erkannte Geräte werden hier angezeigt. Befolgen Sie die Anweisungen für Ihr Gerät und versetzen Sie das Gerät in den Pairing-Modus.",
@@ -1993,6 +2515,16 @@
                         "value": "Wert"
                     },
                     "description": "Zigbee Home Automation Netzwerkmanagement",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Konfiguration abgeschlossen",
+                        "CONFIGURED_status_text": "Initialisieren",
+                        "INITIALIZED": "Initialisierung abgeschlossen",
+                        "INITIALIZED_status_text": "Das Gerät ist einsatzbereit",
+                        "INTERVIEW_COMPLETE": "Interview abgeschlossen",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurieren",
+                        "PAIRED": "Gerät gefunden",
+                        "PAIRED_status_text": "Interview starten"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Gerät"
                     },
@@ -2008,6 +2540,7 @@
                         "unbind_button_label": "Gruppe auflösen"
                     },
                     "groups": {
+                        "add_group": "Gruppe hinzufügen",
                         "add_members": "Mitglieder hinzufügen",
                         "adding_members": "Füge Mitglieder hinzu",
                         "caption": "Gruppen",
@@ -2015,7 +2548,7 @@
                         "create_group": "Zigbee Home Automation - Gruppe erstellen",
                         "create_group_details": "Gib die erforderlichen Details ein, um eine neue Zigbee-Gruppe zu erstellen",
                         "creating_group": "Erstelle Gruppe",
-                        "description": "Verwalten von Zigbee-Gruppen",
+                        "description": "Zigbee-Gruppen verwalten",
                         "group_details": "Hier sind alle Details der ausgewählten Zigbee Gruppe.",
                         "group_id": "Gruppen-ID",
                         "group_info": "Gruppen Information",
@@ -2050,7 +2583,11 @@
                         "hint_wakeup": "Einige Geräte, z. B. Xiaomi-Sensoren, verfügen über eine Wecktaste, die in Intervallen von ~5 Sekunden gedrückt werden kann, um die Geräte wach zu halten, während mit ihnen interagiert wird.",
                         "introduction": "ZHA-Befehle ausführen, die sich auf ein einzelnes Gerät auswirken. Wählen Sie ein Gerät aus, um eine Liste der verfügbaren Befehle anzuzeigen."
                     },
-                    "title": "Zigbee Home Automation"
+                    "title": "Zigbee Home Automation",
+                    "visualization": {
+                        "caption": "Visualisierung",
+                        "header": "Netzwerkvisualisierung"
+                    }
                 },
                 "zone": {
                     "add_zone": "Zone hinzufügen",
@@ -2058,12 +2595,12 @@
                     "configured_in_yaml": "Zonen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden.",
                     "confirm_delete": "Möchtest du diesen Bereich wirklich löschen?",
                     "create_zone": "Zone erstellen",
-                    "description": "Verwalte die Zonen, in denen du Personen verfolgen möchtest.",
+                    "description": "Verwalte die Zonen, in denen du Personen folgen möchtest",
                     "detail": {
                         "create": "Erstellen",
                         "delete": "Löschen",
                         "icon": "Icon",
-                        "icon_error_msg": "Das Icon sollte das Format Präfix:ICONNAME haben, zum Beispiel: mdi:home",
+                        "icon_error_msg": "Das Icon sollte das Format \"Präfix:ICONNAME\" haben, zum Beispiel: \"mdi:home\"",
                         "latitude": "Breitengrad",
                         "longitude": "Längengrad",
                         "name": "Name",
@@ -2119,12 +2656,12 @@
                         "add_to_group": "Zur Gruppe hinzufügen",
                         "entities": "Entitäten dieses Knotens",
                         "entity_info": "Entitätsinformationen",
-                        "exclude_entity": "Schließe diese Entität vom Home Assistant aus",
+                        "exclude_entity": "Entität von Home Assistant ausschließen",
                         "group": "Gruppe",
                         "header": "Z-Wave-Knotenverwaltung",
                         "introduction": "Führe Z-Wave-Befehle aus, die einen einzelnen Knoten betreffen. Wähle einen Knoten aus, um eine Liste der verfügbaren Befehle anzuzeigen.",
-                        "max_associations": "Max Assoziationen:",
-                        "node_group_associations": "Knotengruppenzuordnungen",
+                        "max_associations": "Maximale Zuordnungen:",
+                        "node_group_associations": "Zuordnungen zu Kontengruppen",
                         "node_protection": "Knotenschutz",
                         "node_to_control": "Zu steuernder Knoten",
                         "nodes": "Knoten",
@@ -2219,6 +2756,8 @@
                         "filter_attributes": "Attribute filtern",
                         "filter_entities": "Entitäten filtern",
                         "filter_states": "Zustände filtern",
+                        "last_changed": "Zuletzt geändert",
+                        "last_updated": "Zuletzt aktualisiert",
                         "more_info": "Mehr Info",
                         "no_entities": "Keine Entitäten",
                         "set_state": "Status setzen",
@@ -2227,11 +2766,18 @@
                         "title": "Zustände"
                     },
                     "templates": {
+                        "all_listeners": "Diese Vorlage überwacht alle Zustandsänderungsereignisse.",
                         "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
+                        "domain": "Domain",
                         "editor": "Vorlageneditor",
+                        "entity": "Entität",
                         "jinja_documentation": "Jinja2 Template Dokumentation",
+                        "listeners": "Diese Vorlage überwacht die folgenden Statusänderungsereignisse:",
+                        "no_listeners": "Diese Vorlage überwacht keine Ereignisse und wird nicht automatisch aktualisiert.",
                         "reset": "Zurücksetzen auf Demo-Vorlage",
+                        "result_type": "Ergebnistyp",
                         "template_extensions": "Home Assistant-Vorlagenerweiterungen",
+                        "time": "Diese Vorlage wird zu Beginn jeder Minute aktualisiert.",
                         "title": "Vorlage",
                         "unknown_error_template": "Unbekannter Fehler beim Rendern der Vorlage"
                     }
@@ -2302,18 +2848,41 @@
                     "refresh": "Aktualisieren"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Dienst aufrufen",
+                            "default_action": "Standardaktion",
+                            "more-info": "Mehr Info",
+                            "navigate": "Navigieren",
+                            "none": "Keine Aktion",
+                            "toggle": "Umschalten",
+                            "url": "URL"
+                        },
+                        "editor_service_data": "Servicedaten können nur im Code-Editor eingegeben werden",
+                        "navigation_path": "Navigationspfad",
+                        "url_path": "URL Pfad"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Verfügbare Zustände",
-                            "description": "Mit der Alarmzentralen-Karte kannst du die Integrationen Ihrer Alarmzentrale aktivieren und deaktivieren.",
+                            "description": "Mit der Alarmzentralen-Karte kannst du integrierte Alarmzentralen scharfschalten oder deaktivieren.",
                             "name": "Alarmpanel"
                         },
                         "button": {
+                            "default_action_help": "Die Standardaktion hängt von den Funktionen der Entität ab: sie wird entweder umgeschaltet oder die weiteren Informationen werden angezeigt.",
                             "description": "Mit der Schaltflächen-Karte kannst du Schaltflächen hinzufügen, um Aufgaben auszuführen.",
                             "name": "Schaltfläche"
                         },
                         "calendar": {
-                            "name": "Kalender"
+                            "calendar_entities": "Kalender-Entitäten",
+                            "description": "Die Kalenderkarte zeigt einen Kalender mit Tages-, Wochen- und Listenansichten an",
+                            "inital_view": "Initiale Ansicht",
+                            "name": "Kalender",
+                            "views": {
+                                "dayGridDay": "Tag",
+                                "dayGridMonth": "Monat",
+                                "listWeek": "Liste"
+                            }
                         },
                         "conditional": {
                             "card": "Karte",
@@ -2332,8 +2901,32 @@
                         },
                         "entities": {
                             "description": "Die Entitäts-Karte ist der am häufigsten verwendete Kartentyp. Sie gruppiert Elemente in Listen.",
+                            "edit_special_row": "Zeige die Details dieser Zeile an, indem du auf die Schaltfläche Bearbeiten klickst",
+                            "entity_row_editor": "Editor für Entitätszeilen",
+                            "entity_row": {
+                                "attribute": "Attribut",
+                                "button": "Schalter",
+                                "buttons": "Tasten",
+                                "call-service": "Dienst ausführen",
+                                "cast": "Cast",
+                                "conditional": "Bedingte Elemente",
+                                "divider": "Trennlinie",
+                                "section": "Abschnitt",
+                                "weblink": "Webseiten Link"
+                            },
                             "name": "Elemente",
+                            "secondary_info_values": {
+                                "brightness": "Helligkeit",
+                                "entity-id": "Entitäts-ID",
+                                "last-changed": "Zuletzt geändert",
+                                "last-triggered": "Zuletzt ausgelöst",
+                                "last-updated": "Zuletzt aktualisiert",
+                                "none": "Keine Sekundärinformation",
+                                "position": "Position",
+                                "tilt-position": "Neigung"
+                            },
                             "show_header_toggle": "Schalter anzeigen?",
+                            "special_row": "spezielle Reihe",
                             "toggle": "Entitäten umschalten"
                         },
                         "entity-filter": {
@@ -2341,14 +2934,14 @@
                             "name": "Entität Filter"
                         },
                         "entity": {
-                            "description": "Mit der Entitätskarte erhältst du einen schnellen Überblick über den Status Ihrer Entität.",
+                            "description": "Mit der Entitätskarte erhältst du einen schnellen Überblick über den Status einer Entität.",
                             "name": "Entität"
                         },
                         "gauge": {
                             "description": "Die Messkarte ist eine Basiskarte, mit der Sensordaten visuell angezeigt werden können.",
                             "name": "Gauge",
                             "severity": {
-                                "define": "Schweregrad definieren?",
+                                "define": "Schwellenwerte definieren?",
                                 "green": "Grün",
                                 "red": "Rot",
                                 "yellow": "Gelb"
@@ -2360,7 +2953,7 @@
                             "camera_image": "Kamera-Entität",
                             "camera_view": "Kameraansicht",
                             "double_tap_action": "Doppeltipp-Aktion",
-                            "entities": "Ungenutzte Elemente",
+                            "entities": "Entitäten",
                             "entity": "Entität",
                             "hold_action": "Halte-Aktion",
                             "hours_to_show": "Stunden",
@@ -2380,16 +2973,21 @@
                             "show_name": "Namen anzeigen?",
                             "show_state": "Status anzeigen?",
                             "state": "Zustand",
+                            "state_color": "Symbole basierend auf dem Status einfärben?",
                             "tap_action": "Tipp-Aktion",
                             "theme": "Aussehen",
                             "title": "Titel",
                             "unit": "Einheit",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Spalten",
                             "description": "Die Glance-Karte ist nützlich, um mehrere Sensoren in einer kompakten Übersicht zu gruppieren.",
                             "name": "Glance"
+                        },
+                        "grid": {
+                            "description": "Mit der Grid-Karte können Sie mehrere Karten in einem Raster anzeigen.",
+                            "name": "Raster"
                         },
                         "history-graph": {
                             "description": "Mit der Verlaufsdiagramm-Karte kannst du für jedes der aufgelisteten Objekte ein Diagramm anzeigen.",
@@ -2411,10 +3009,14 @@
                             "description": "Mit der Licht-Karte kannst du die Helligkeit des Lichts ändern.",
                             "name": "Licht"
                         },
+                        "logbook": {
+                            "description": "Die Logbuchkarte zeigt eine Liste von Ereignissen für Entitäten.",
+                            "name": "Logbuch"
+                        },
                         "map": {
                             "dark_mode": "Dunkler Modus?",
                             "default_zoom": "Standard-Zoom",
-                            "description": "Mit der Map-Karte kannst du Objekte auf einer Karte anzeigen lassen.",
+                            "description": "Mit der Map-Karte kannst du Objekte auf einer Landkarte anzeigen lassen.",
                             "geo_location_sources": "Geolocation-Quellen",
                             "hours_to_show": "Zu zeigende Stunden",
                             "name": "Karte",
@@ -2430,7 +3032,7 @@
                             "name": "Mediensteuerung"
                         },
                         "picture-elements": {
-                            "description": "Die Bilder-Karte ist eine der vielseitigsten Arten von Karten. Mit den Karten kannst du Symbole, Text und sogar Dienste positionieren! Auf einem Bild basierend auf Koordinaten.",
+                            "description": "Die Bilder-Karte ist eine der vielseitigsten Karten. Hier kannst du Symbole, Texte und sogar Dienste basierend auf Bildkoordinaten positionieren.",
                             "name": "Picture Elements"
                         },
                         "picture-entity": {
@@ -2439,11 +3041,12 @@
                         },
                         "picture-glance": {
                             "description": "Die Bild Glance-Karte zeigt ein Bild und die entsprechenden Entitätszustände als Symbol. Die Entitäten auf der rechten Seite ermöglichen das Umschalten von Aktionen, andere zeigen den Dialog mit weiteren Informationen an.",
-                            "name": "Picture Glance"
+                            "name": "Bild Glance",
+                            "state_entity": "Status Entität"
                         },
                         "picture": {
                             "description": "Mit der Bildkarte kannst du ein Bild festlegen, das für die Navigation zu verschiedenen Pfaden in deiner Benutzeroberfläche oder zum Aufrufen eines Dienstes verwendet werden soll.",
-                            "name": "Picture"
+                            "name": "Bild"
                         },
                         "plant-status": {
                             "description": "Die Pflanzenstatuskarte ist für alle liebenswerten Botaniker da draußen.",
@@ -2453,7 +3056,8 @@
                             "description": "Die Sensorkarte gibt dir einen schnellen Überblick über Ihren Sensorstatus mit einem optionalen Diagramm, um Änderungen im Zeitverlauf zu visualisieren.",
                             "graph_detail": "Diagrammdetail",
                             "graph_type": "Typ",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Weitere Details anzeigen"
                         },
                         "shopping-list": {
                             "description": "Mit der Einkaufslistenkarte kannst du Artikel zu deiner Einkaufsliste hinzufügen, bearbeiten, abhaken und löschen.",
@@ -2475,20 +3079,37 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Nach Karte",
+                        "by_entity": "Nach Entität",
                         "custom_card": "Benutzerdefiniert",
+                        "domain": "Domain",
+                        "entity": "Entität",
                         "no_description": "Keine Beschreibung verfügbar."
+                    },
+                    "common": {
+                        "add": "Hinzufügen",
+                        "clear": "Löschen",
+                        "edit": "Bearbeiten",
+                        "none": "Keine"
+                    },
+                    "edit_badges": {
+                        "panel_mode": "Diese Badges werden nicht angezeigt, da sich diese Ansicht im \"Panel-Modus\" befindet."
                     },
                     "edit_card": {
                         "add": "Karte hinzufügen",
+                        "clear": "Löschen",
                         "confirm_cancel": "Bist du sicher, dass du Abbrechen willst?",
-                        "delete": "Löschen",
+                        "delete": "Karte löschen",
                         "duplicate": "Karte duplizieren",
                         "edit": "Bearbeiten",
                         "header": "Kartenkonfiguration",
-                        "move": "Zur Ansicht Bewegen",
+                        "move": "Ansicht wechseln",
+                        "move_after": "Karte nach hinten verschieben",
+                        "move_before": "Karte nach vorne verschieben",
                         "options": "Mehr Optionen",
                         "pick_card": "Karte auswählen, die hinzugefügt werden soll.",
                         "pick_card_view_title": "Welche Karte möchten Sie Ihrer {name} -Ansicht hinzufügen?",
+                        "search_cards": "Karten suchen",
                         "show_code_editor": "Code-Editor anzeigen",
                         "show_visual_editor": "Visuellen Editor anzeigen",
                         "toggle_editor": "Editor umschalten",
@@ -2509,14 +3130,30 @@
                         "header_name": "{name} Konfiguration anzeigen",
                         "move_left": "Ansicht nach links verschieben",
                         "move_right": "Ansicht nach rechts verschieben",
-                        "tab_badges": "Abzeichen",
+                        "tab_badges": "Plaketten",
                         "tab_settings": "Einstellungen",
-                        "tab_visibility": "Sichtweite",
+                        "tab_visibility": "Sichtbarkeit",
                         "visibility": {
                             "select_users": "Wähle aus, welche Benutzer diese Ansicht in der Navigation sehen sollen"
                         }
                     },
                     "header": "Benutzeroberfläche bearbeiten",
+                    "header-footer": {
+                        "choose_header_footer": "Wähle einen {type}",
+                        "footer": "Fußzeile",
+                        "header": "Kopfzeile",
+                        "types": {
+                            "buttons": {
+                                "name": "Tasten"
+                            },
+                            "graph": {
+                                "name": "Graph"
+                            },
+                            "picture": {
+                                "name": "Bild"
+                            }
+                        }
+                    },
                     "menu": {
                         "open": "Lovelace-Menü öffnen",
                         "raw_editor": "Raw-Konfigurationseditor"
@@ -2526,6 +3163,9 @@
                         "migrate": "Konfiguration migrieren",
                         "para_migrate": "Home Assistant kann für alle deine Karten und Ansichten die IDs automatisch generieren, wenn du den \"Konfiguration migrieren\"-Button klickst.",
                         "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu."
+                    },
+                    "move_card": {
+                        "header": "Wähle eine Ansicht, in die die Karte verschoben werden soll"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Wir generieren automatisch deine Lovelace-Ansichten mit deinen Bereichen und Geräten, wenn du deine Lovelace-Konfiguration entfernst.",
@@ -2551,8 +3191,19 @@
                         "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
                         "save": "Kontrolle übernehmen",
                         "yaml_config": "Um dir den Einstieg zu erleichtern, findest du hier die aktuelle Konfiguration dieses Dashboards:",
-                        "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstelle eine YAML-Datei mit dem Namen, den du in Deiner Konfiguration für dieses Dashboard angegeben hast, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Du verwendest den YAML-Modus für dieses Dashboard. Dies bedeutet, dass Du Deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern kannst. Wenn du dieses Dashboard über die Benutzeroberfläche verwalten möchtest, entferne \"mode: yaml\" aus Deiner Lovelace-Konfiguration in \"configuration.yaml\"."
+                        "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstelle eine YAML-Datei mit dem Namen, den du in deiner Konfiguration für dieses Dashboard angegeben hast, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Du verwendest den YAML-Modus für dieses Dashboard. Dies bedeutet, dass du deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern kannst. Wenn du dieses Dashboard über die Benutzeroberfläche verwalten möchtest, entferne \"mode: yaml\" aus Deiner Lovelace-Konfiguration in \"configuration.yaml\"."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Dashboard",
+                        "header": "Wähle eine Ansicht"
+                    },
+                    "sub-element-editor": {
+                        "types": {
+                            "footer": "Fußzeilen-Editor",
+                            "header": "Kopfzeilen-Editor",
+                            "row": "Editor für Entitätszeilen"
+                        }
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",
@@ -2561,7 +3212,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Dadurch wird die erste Karte in voller Breite gerendert. Andere Karten in dieser Ansicht werden nicht gerendert.",
+                            "description": "Hiermit wird die erste Karte in voller Breite angezeigt. Andere Karten und Marker in dieser Ansicht werden nicht angezeigt.",
                             "title": "Panel-Modus?",
                             "warning_multiple_cards": "Diese Ansicht enthält mehr als eine Karte, in einer Bedienfeldansicht kann jedoch nur eine Karte angezeigt werden."
                         }
@@ -2573,11 +3224,12 @@
                     "exit_edit_mode": "Schließen des UI-Bearbeitungsmodus",
                     "help": "Hilfe",
                     "refresh": "Aktualisieren",
-                    "reload_resources": "Ressourcen neu laden"
+                    "reload_resources": "Ressourcen neu laden",
+                    "start_conversation": "Konversation starten"
                 },
                 "reload_lovelace": "Benutzeroberfläche neu laden",
                 "reload_resources": {
-                    "refresh_body": "Du musst die Seite aktualisieren, um das Neuladen abzuschließen. Möchtest du sie jetzt aktualisieren?",
+                    "refresh_body": "Du musst die Seite aktualisieren, um das Neuladen abzuschließen. Möchtest du jetzt aktualisieren?",
                     "refresh_header": "Möchtest du aktualisieren?"
                 },
                 "unused_entities": {
@@ -2601,7 +3253,7 @@
                     "attribute_not_found": "Attribut {attribute} nicht verfügbar in: {entity}",
                     "entity_non_numeric": "Die Entität ist nicht-numerisch: {entity}",
                     "entity_not_found": "Entität nicht verfügbar: {entity}",
-                    "entity_unavailable": "{entity} ist derzeit nicht verfügbar",
+                    "entity_unavailable": "Entität ist derzeit nicht verfügbar: {entity}",
                     "starting": "Home Assistant startet gerade, eventuell ist noch nicht alles verfügbar"
                 }
             },
@@ -2615,7 +3267,7 @@
                 "abort_intro": "Anmeldung abgebrochen",
                 "authorizing_client": "Sie sind dabei, {clientId} Zugriff auf Ihre Home Assistant-Instanz zu gewähren.",
                 "form": {
-                    "error": "Fehler",
+                    "error": "Fehler: {error}",
                     "next": "Weiter",
                     "providers": {
                         "command_line": {
@@ -2771,6 +3423,12 @@
                     "more_integrations": "Mehr"
                 },
                 "intro": "Sind Sie bereit, dein Zuhause zu wecken, Ihre Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
+                "restore": {
+                    "description": "Alternativ kannst du von einem vorherigen Snapshot wiederherstellen.",
+                    "hide_log": "Vollständiges Protokoll ausblenden",
+                    "in_progress": "Wiederherstellung im Gange",
+                    "show_log": "Vollständiges Protokoll anzeigen"
+                },
                 "user": {
                     "create_account": "Benutzerkonto anlegen",
                     "data": {
@@ -2789,26 +3447,35 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistent verbirgt standardmäßig erweiterte Funktionen und Optionen. Mache diese Funktionen zugänglich, indem diese Option aktiviert wird. Dies ist eine benutzerspezifische Einstellung, die sich nicht auf andere Benutzer auswirkt, die Home Assistant verwenden.",
+                    "description": "Home Assistant verbirgt standardmäßig erweiterte Funktionen und Optionen. Mache diese Funktionen zugänglich, indem diese Option aktiviert wird. Dies ist eine benutzerspezifische Einstellung, die sich nicht auf andere Benutzer auswirkt, die Home Assistant verwenden.",
                     "link_promo": "Mehr erfahren",
                     "title": "Erweiterter Modus"
                 },
                 "change_password": {
                     "confirm_new_password": "Neues Passwort Bestätigen",
                     "current_password": "Aktuelles Passwort",
+                    "error_new_is_old": "Das neue Passwort muss sich von dem aktuellen Passwort unterscheiden.",
+                    "error_new_mismatch": "Eingegebene neue Passwörter stimmen nicht überein",
                     "error_required": "Erforderlich",
                     "header": "Passwort ändern",
                     "new_password": "Neues Passwort",
-                    "submit": "Absenden"
+                    "submit": "Absenden",
+                    "success": "Passwort wurde erfolgreich geändert"
                 },
-                "current_user": "Sie sind derzeit als {fullName} angemeldet.",
+                "current_user": "Du bist derzeit als {fullName} angemeldet.",
                 "customize_sidebar": {
-                    "button": "Bearbeiten"
+                    "button": "Bearbeiten",
+                    "description": "Du kannst auch die Kopfzeile der Seitenleiste gedrückt halten, um den Bearbeitungsmodus zu aktivieren.",
+                    "header": "Elemente in der Seitenleiste verstecken und Reihenfolge ändern"
                 },
                 "dashboard": {
                     "description": "Wähle ein Standard-Dashboard für dieses Gerät.",
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
+                },
+                "enable_shortcuts": {
+                    "description": "Aktiviere oder deaktiviere Tastaturkürzel, um verschiedene Aktionen in der Benutzeroberfläche auszuführen.",
+                    "header": "Tastaturkürzel"
                 },
                 "force_narrow": {
                     "description": "Dies blendet die Seitenleiste standardmäßig aus, ähnlich der Nutzung auf Mobilgeräten.",
@@ -2833,12 +3500,12 @@
                     "description": "Erstelle langlebige Zugriffstoken, damit deine Skripte mit deiner Home Assistant-Instanz interagieren können. Jedes Token ist ab der Erstellung für 10 Jahre gültig. Die folgenden langlebigen Zugriffstoken sind derzeit aktiv.",
                     "empty_state": "Sie haben noch keine langlebigen Zugangs-Token.",
                     "header": "Langlebige Zugangs-Token",
-                    "last_used": "Zuletzt verwendet am {date} in {location}",
+                    "last_used": "Zuletzt verwendet {date} von {location}",
                     "learn_auth_requests": "Erfahre, wie du authentifizierte Anfragen stellen kannst.",
                     "name": "Name",
                     "not_used": "Wurde noch nie benutzt",
                     "prompt_copy_token": "Kopiere deinen Zugangs-Token. Er wird nicht wieder angezeigt werden.",
-                    "prompt_name": "Name?"
+                    "prompt_name": "Gib den Token einen Namen"
                 },
                 "mfa_setup": {
                     "close": "Schließen",
@@ -2851,9 +3518,13 @@
                     "confirm_disable": "Möchtest du {name} wirklich deaktivieren?",
                     "disable": "Deaktivieren",
                     "enable": "Aktivieren",
-                    "header": "2-Faktor-Authentifizierung-Module"
+                    "header": "Multi-Faktor-Authentifizierungsmodul"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Gerätename",
+                        "title": "Wie soll dieses Gerät genannt werden?"
+                    },
                     "description": "Sende Benachrichtigungen an dieses Gerät.",
                     "error_load_platform": "Konfiguriere notify.html5.",
                     "error_use_https": "Erfordert aktiviertes SSL/TLS für das Frontend.",
@@ -2868,7 +3539,7 @@
                     "delete_failed": "Fehler beim Löschen das Aktualisierungs-Token.",
                     "description": "Jedes Aktualisierungs-Token stellt eine Anmeldesitzung dar. Aktualisierungs-Token werden automatisch entfernt, wenn Sie Abmelden klicken. Die folgenden Aktualisierungs-Token sind derzeit für Ihr Konto aktiv.",
                     "header": "Aktualisierungs-Tokens",
-                    "last_used": "Zuletzt verwendet am {date} in {location}",
+                    "last_used": "Zuletzt verwendet {date} von {location}",
                     "not_used": "Wurde noch nie benutzt",
                     "token_title": "Aktualisierungs-Token für {clientId}"
                 },
@@ -2895,9 +3566,12 @@
                     "header": "Vibrieren"
                 }
             },
+            "shopping_list": {
+                "start_conversation": "Konversation starten"
+            },
             "shopping-list": {
                 "add_item": "Artikel hinzufügen",
-                "clear_completed": "Erledigte entfernen",
+                "clear_completed": "Abgehakte entfernen",
                 "microphone_tip": "Tippe oben rechts auf das Mikrofon und sage oder schreibe “Süßigkeiten zu meiner Einkaufsliste hinzufügen”"
             }
         },

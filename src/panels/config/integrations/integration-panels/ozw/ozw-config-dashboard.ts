@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-fab";
 import { mdiCheckCircle, mdiCircle, mdiCloseCircle, mdiZWave } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -23,6 +22,8 @@ import {
   networkStartingStatuses,
   OZWInstance,
 } from "../../../../../data/ozw";
+import "../../../../../layouts/hass-error-screen";
+import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -43,13 +44,26 @@ class OZWConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @internalProperty() private _instances: OZWInstance[] = [];
+  @internalProperty() private _instances?: OZWInstance[];
 
   protected firstUpdated() {
     this._fetchData();
   }
 
   protected render(): TemplateResult {
+    if (!this._instances) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
+    if (this._instances.length === 0) {
+      return html`<hass-error-screen
+        .hass=${this.hass}
+        .error=${this.hass.localize(
+          "ui.panel.config.ozw.select_instance.none_found"
+        )}
+      ></hass-error-screen>`;
+    }
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}

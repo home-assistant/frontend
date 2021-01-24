@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -15,8 +15,8 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
 import {
-  subscribeRenderTemplate,
   RenderTemplateResult,
+  subscribeRenderTemplate,
 } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -25,9 +25,7 @@ import type { MarkdownCardConfig } from "./types";
 @customElement("hui-markdown-card")
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-markdown-card-editor" */ "../editor/config-elements/hui-markdown-card-editor"
-    );
+    await import("../editor/config-elements/hui-markdown-card-editor");
     return document.createElement("hui-markdown-card-editor");
   }
 
@@ -58,7 +56,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: MarkdownCardConfig): void {
     if (!config.content) {
-      throw new Error("Invalid Configuration: Content Required");
+      throw new Error("Content required");
     }
 
     if (this._config?.content !== config.content) {
@@ -144,7 +142,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     } catch (_err) {
       this._templateResult = {
         result: this._config!.content,
-        listeners: { all: false, domains: [], entities: [] },
+        listeners: { all: false, domains: [], entities: [], time: false },
       };
       this._unsubRenderTemplate = undefined;
     }
@@ -170,6 +168,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+      }
       ha-markdown {
         padding: 0 16px 16px;
       }

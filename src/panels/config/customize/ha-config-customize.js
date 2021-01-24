@@ -7,6 +7,7 @@ import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
 import "../../../layouts/hass-tabs-subpage";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import "../ha-entity-config";
 import { configSections } from "../ha-panel-config";
@@ -34,6 +35,14 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
             </span>
             <span slot="introduction">
               [[localize('ui.panel.config.customize.picker.introduction')]]
+              <br />
+              <a
+                href="[[_computeDocumentationUrl(hass)]]"
+                target="_blank"
+                rel="noreferrer"
+              >
+                [[localize("ui.panel.config.customize.picker.documentation")]]
+              </a>
             </span>
             <ha-entity-config
               hass="[[hass]]"
@@ -83,13 +92,20 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
   }
 
   _computeTabs() {
-    return configSections.general;
+    return configSections.advanced;
   }
 
   computeEntities(hass) {
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
       .sort(sortStatesByName);
+  }
+
+  _computeDocumentationUrl(hass) {
+    return documentationUrl(
+      hass,
+      "/docs/configuration/customizing-devices/#customization-using-the-ui"
+    );
   }
 }
 customElements.define("ha-config-customize", HaConfigCustomize);

@@ -5,9 +5,9 @@ import {
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -28,7 +28,7 @@ export class HuiDialogDeleteCard extends LitElement {
 
   @internalProperty() private _cardConfig?: LovelaceCardConfig;
 
-  @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
+  @query("ha-paper-dialog", true) private _dialog!: HaPaperDialog;
 
   public async showDialog(params: DeleteCardDialogParams): Promise<void> {
     this._params = params;

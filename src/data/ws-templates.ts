@@ -9,6 +9,7 @@ interface TemplateListeners {
   all: boolean;
   domains: string[];
   entities: string[];
+  time: boolean;
 }
 
 export const subscribeRenderTemplate = (
@@ -17,7 +18,8 @@ export const subscribeRenderTemplate = (
   params: {
     template: string;
     entity_ids?: string | string[];
-    variables?: object;
+    variables?: Record<string, unknown>;
+    timeout?: number;
   }
 ): Promise<UnsubscribeFunc> => {
   return conn.subscribeMessage((msg: RenderTemplateResult) => onChange(msg), {

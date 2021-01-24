@@ -1,4 +1,5 @@
-import "../ha-icon-button";
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -12,6 +13,8 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -35,12 +38,17 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import "../ha-svg-icon";
 
 interface Device {
   name: string;
   area: string;
   id: string;
 }
+
+export type HaDevicePickerDeviceFilterFunc = (
+  device: DeviceRegistryEntry
+) => boolean;
 
 const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
   if (!root.firstElementChild) {
@@ -102,8 +110,14 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+
   @property({ type: Boolean })
   private _opened?: boolean;
+
+  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+
+  private _init = false;
 
   private _getDevices = memoizeOne(
     (
@@ -112,21 +126,31 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       entities: EntityRegistryEntry[],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
-      includeDeviceClasses: this["includeDeviceClasses"]
+      includeDeviceClasses: this["includeDeviceClasses"],
+      deviceFilter: this["deviceFilter"]
     ): Device[] => {
       if (!devices.length) {
-        return [];
+        return [
+          {
+            id: "",
+            area: "",
+            name: this.hass.localize("ui.components.device-picker.no_devices"),
+          },
+        ];
       }
 
       const deviceEntityLookup: DeviceEntityLookup = {};
-      for (const entity of entities) {
-        if (!entity.device_id) {
-          continue;
+
+      if (includeDomains || excludeDomains || includeDeviceClasses) {
+        for (const entity of entities) {
+          if (!entity.device_id) {
+            continue;
+          }
+          if (!(entity.device_id in deviceEntityLookup)) {
+            deviceEntityLookup[entity.device_id] = [];
+          }
+          deviceEntityLookup[entity.device_id].push(entity);
         }
-        if (!(entity.device_id in deviceEntityLookup)) {
-          deviceEntityLookup[entity.device_id] = [];
-        }
-        deviceEntityLookup[entity.device_id].push(entity);
       }
 
       const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
@@ -134,7 +158,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         areaLookup[area.area_id] = area;
       }
 
-      let inputDevices = [...devices];
+      let inputDevices = devices.filter(
+        (device) => device.id === this.value || !device.disabled_by
+      );
 
       if (includeDomains) {
         inputDevices = inputDevices.filter((device) => {
@@ -180,6 +206,14 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         });
       }
 
+      if (deviceFilter) {
+        inputDevices = inputDevices.filter(
+          (device) =>
+            // We always want to include the device of the current value
+            device.id === this.value || deviceFilter!(device)
+        );
+      }
+
       const outputDevices = inputDevices.map((device) => {
         return {
           id: device.id,
@@ -193,12 +227,33 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
             : this.hass.localize("ui.components.device-picker.no_area"),
         };
       });
+      if (!outputDevices.length) {
+        return [
+          {
+            id: "",
+            area: "",
+            name: this.hass.localize("ui.components.device-picker.no_match"),
+          },
+        ];
+      }
       if (outputDevices.length === 1) {
         return outputDevices;
       }
       return outputDevices.sort((a, b) => compare(a.name || "", b.name || ""));
     }
   );
+
+  public open() {
+    this.updateComplete.then(() => {
+      (this.shadowRoot?.querySelector("vaadin-combo-box-light") as any)?.open();
+    });
+  }
+
+  public focus() {
+    this.updateComplete.then(() => {
+      this.shadowRoot?.querySelector("paper-input")?.focus();
+    });
+  }
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -214,24 +269,33 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     ];
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (
+      (!this._init && this.devices && this.areas && this.entities) ||
+      (changedProps.has("_opened") && this._opened)
+    ) {
+      this._init = true;
+      (this._comboBox as any).items = this._getDevices(
+        this.devices!,
+        this.areas!,
+        this.entities!,
+        this.includeDomains,
+        this.excludeDomains,
+        this.includeDeviceClasses,
+        this.deviceFilter
+      );
+    }
+  }
+
   protected render(): TemplateResult {
     if (!this.devices || !this.areas || !this.entities) {
       return html``;
     }
-    const devices = this._getDevices(
-      this.devices,
-      this.areas,
-      this.entities,
-      this.includeDomains,
-      this.excludeDomains,
-      this.includeDeviceClasses
-    );
     return html`
       <vaadin-combo-box-light
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
-        .items=${devices}
         .value=${this._value}
         .renderer=${rowRenderer}
         @opened-changed=${this._openedChanged}
@@ -249,34 +313,30 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         >
           ${this.value
             ? html`
-                <ha-icon-button
-                  aria-label=${this.hass.localize(
+                <mwc-icon-button
+                  .label=${this.hass.localize(
                     "ui.components.device-picker.clear"
                   )}
                   slot="suffix"
                   class="clear-button"
-                  icon="hass:close"
                   @click=${this._clearValue}
-                  no-ripple
                 >
-                  Clear
-                </ha-icon-button>
+                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+                </mwc-icon-button>
               `
             : ""}
-          ${devices.length > 0
-            ? html`
-                <ha-icon-button
-                  aria-label=${this.hass.localize(
-                    "ui.components.device-picker.show_devices"
-                  )}
-                  slot="suffix"
-                  class="toggle-button"
-                  .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
-                >
-                  Toggle
-                </ha-icon-button>
-              `
-            : ""}
+
+          <mwc-icon-button
+            .label=${this.hass.localize(
+              "ui.components.device-picker.show_devices"
+            )}
+            slot="suffix"
+            class="toggle-button"
+          >
+            <ha-svg-icon
+              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
+            ></ha-svg-icon>
+          </mwc-icon-button>
         </paper-input>
       </vaadin-combo-box-light>
     `;
@@ -313,7 +373,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResult {
     return css`
-      paper-input > ha-icon-button {
+      paper-input > mwc-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);

@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -62,14 +62,14 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: PictureElementsCardConfig): void {
     if (!config) {
-      throw new Error("Invalid Configuration");
+      throw new Error("Invalid configuration");
     } else if (
       !(config.image || config.camera_image || config.state_image) ||
       (config.state_image && !config.entity)
     ) {
-      throw new Error("Invalid Configuration: image required");
+      throw new Error("Image required");
     } else if (!Array.isArray(config.elements)) {
-      throw new Error("Invalid Configuration: elements required");
+      throw new Error("Elements required");
     }
 
     this._config = config;
@@ -129,6 +129,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .cameraView=${this._config.camera_view}
             .entity=${this._config.entity}
             .aspectRatio=${this._config.aspect_ratio}
+            .darkModeFilter=${this._config.dark_mode_filter}
+            .darkModeImage=${this._config.dark_mode_image}
           ></hui-image>
           ${this._elements}
         </div>
@@ -149,6 +151,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
       ha-card {
         overflow: hidden;
+        height: 100%;
+        box-sizing: border-box;
       }
     `;
   }

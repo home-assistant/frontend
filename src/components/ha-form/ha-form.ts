@@ -9,13 +9,13 @@ import {
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import "./ha-form-boolean";
+import "./ha-form-constant";
 import "./ha-form-float";
 import "./ha-form-integer";
 import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
 import "./ha-form-select";
 import "./ha-form-string";
-import "./ha-form-constant";
 
 export type HaFormSchema =
   | HaFormConstantSchema
@@ -54,7 +54,7 @@ export interface HaFormSelectSchema extends HaFormBaseSchema {
 
 export interface HaFormMultiSelectSchema extends HaFormBaseSchema {
   type: "multi_select";
-  options?: { [key: string]: string } | string[] | Array<[string, string]>;
+  options?: Record<string, string> | string[] | Array<[string, string]>;
 }
 
 export interface HaFormFloatSchema extends HaFormBaseSchema {

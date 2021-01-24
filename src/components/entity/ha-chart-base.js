@@ -71,13 +71,24 @@ class HaChartBase extends mixinBehaviors(
           margin: 5px 0 0 0;
           width: 100%;
         }
+        .chartTooltip ul {
+          margin: 0 3px;
+        }
         .chartTooltip li {
           display: block;
           white-space: pre-line;
         }
+        .chartTooltip li::first-line {
+          line-height: 0;
+        }
         .chartTooltip .title {
           text-align: center;
           font-weight: 500;
+        }
+        .chartTooltip .beforeBody {
+          text-align: center;
+          font-weight: 300;
+          word-break: break-all;
         }
         .chartLegend li {
           display: inline-block;
@@ -133,6 +144,9 @@ class HaChartBase extends mixinBehaviors(
           style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px"
         >
           <div class="title">[[tooltip.title]]</div>
+          <template is="dom-if" if="[[tooltip.beforeBody]]">
+            <div class="beforeBody">[[tooltip.beforeBody]]</div>
+          </template>
           <div>
             <ul>
               <template is="dom-repeat" items="[[tooltip.lines]]">
@@ -216,9 +230,7 @@ class HaChartBase extends mixinBehaviors(
     }
 
     if (scriptsLoaded === null) {
-      scriptsLoaded = import(
-        /* webpackChunkName: "load_chart" */ "../../resources/ha-chart-scripts.js"
-      );
+      scriptsLoaded = import("../../resources/ha-chart-scripts.js");
     }
     scriptsLoaded.then((ChartModule) => {
       this.ChartClass = ChartModule.default;
@@ -263,6 +275,10 @@ class HaChartBase extends mixinBehaviors(
 
     const title = tooltip.title ? tooltip.title[0] || "" : "";
     this.set(["tooltip", "title"], title);
+
+    if (tooltip.beforeBody) {
+      this.set(["tooltip", "beforeBody"], tooltip.beforeBody.join("\n"));
+    }
 
     const bodyLines = tooltip.body.map((n) => n.lines);
 

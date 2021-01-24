@@ -1,5 +1,5 @@
-import "@material/mwc-fab";
-import { mdiPlus } from "@mdi/js";
+import "@material/mwc-icon-button";
+import { mdiHelpCircle, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -16,6 +16,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -147,19 +148,18 @@ class HaSceneDashboard extends LitElement {
         )}
         hasFab
       >
-        <ha-icon-button
-          slot="toolbar-icon"
-          icon="hass:help-circle"
-          @click=${this._showHelp}
-        ></ha-icon-button>
+        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
+          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+        </mwc-icon-button>
         <a href="/config/scene/edit/new" slot="fab">
-          <mwc-fab
-            title=${this.hass.localize(
+          <ha-fab
+            .label=${this.hass.localize(
               "ui.panel.config.scene.picker.add_scene"
             )}
+            extended
           >
-            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-          </mwc-fab>
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          </ha-fab>
         </a>
       </hass-tabs-subpage-data-table>
     `;
@@ -208,7 +208,7 @@ class HaSceneDashboard extends LitElement {
       haStyle,
       css`
         a {
-          color: var(--primary-color);
+          text-decoration: none;
         }
       `,
     ];

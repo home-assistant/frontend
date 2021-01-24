@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-fab";
 import { mdiAlert, mdiCheck } from "@mdi/js";
 import {
   CSSResult,
@@ -117,6 +116,7 @@ class OZWNetworkNodes extends LitElement {
         .data=${this._nodes}
         id="node_id"
         @row-click=${this._handleRowClicked}
+        clickable
       >
       </hass-tabs-subpage-data-table>
     `;

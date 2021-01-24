@@ -1,4 +1,6 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-icon-button";
+import { mdiPlayBoxMultiple } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -19,33 +21,28 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-slider";
+import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
-  ControlButton,
+  computeMediaControls,
   MediaPickedEvent,
-  SUPPORTS_PLAY,
+  MediaPlayerEntity,
   SUPPORT_BROWSE_MEDIA,
-  SUPPORT_NEXT_TRACK,
-  SUPPORT_PAUSE,
   SUPPORT_PLAY_MEDIA,
-  SUPPORT_PREVIOUS_TRACK,
   SUPPORT_SELECT_SOUND_MODE,
   SUPPORT_SELECT_SOURCE,
-  SUPPORT_STOP,
-  SUPPORT_TURN_OFF,
-  SUPPORT_TURN_ON,
   SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
 } from "../../../data/media-player";
-import { HomeAssistant, MediaEntity } from "../../../types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: MediaEntity;
+  @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
   @query("#ttsInput") private _ttsInput?: HTMLInputElement;
 
@@ -54,8 +51,8 @@ class MoreInfoMediaPlayer extends LitElement {
       return html``;
     }
 
-    const controls = this._getControls();
     const stateObj = this.stateObj;
+    const controls = computeMediaControls(stateObj);
 
     return html`
       ${!controls
@@ -75,14 +72,13 @@ class MoreInfoMediaPlayer extends LitElement {
               </div>
               ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
                 ? html`
-                    <ha-icon-button
-                      icon="hass:folder-multiple"
+                    <mwc-icon-button
                       .title=${this.hass.localize(
                         "ui.card.media_player.browse_media"
                       )}
                       @click=${this._showBrowseMedia}
-                    >
-                    </ha-icon-button>
+                      ><ha-svg-icon .path=${mdiPlayBoxMultiple}></ha-svg-icon
+                    ></mwc-icon-button>
                   `
                 : ""}
             </div>
@@ -102,18 +98,7 @@ class MoreInfoMediaPlayer extends LitElement {
                     ></ha-icon-button>
                   `
                 : ""}
-              ${supportsFeature(stateObj, SUPPORT_VOLUME_SET)
-                ? html`
-                    <ha-slider
-                      id="input"
-                      pin
-                      ignore-bar-touch
-                      .dir=${computeRTLDirection(this.hass!)}
-                      .value=${Number(stateObj.attributes.volume_level) * 100}
-                      @change=${this._selectedValueChanged}
-                    ></ha-slider>
-                  `
-                : supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+              ${supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
                 ? html`
                     <ha-icon-button
                       action="volume_down"
@@ -125,6 +110,18 @@ class MoreInfoMediaPlayer extends LitElement {
                       icon="hass:volume-plus"
                       @click=${this._handleClick}
                     ></ha-icon-button>
+                  `
+                : ""}
+              ${supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+                ? html`
+                    <ha-slider
+                      id="input"
+                      pin
+                      ignore-bar-touch
+                      .dir=${computeRTLDirection(this.hass!)}
+                      .value=${Number(stateObj.attributes.volume_level) * 100}
+                      @change=${this._selectedValueChanged}
+                    ></ha-slider>
                   `
                 : ""}
             </div>
@@ -194,8 +191,8 @@ class MoreInfoMediaPlayer extends LitElement {
                 )}
                 @keydown=${this._ttsCheckForEnter}
               ></paper-input>
-              <ha-icon-button 
-                icon="hass:send"                 
+              <ha-icon-button
+                icon="hass:send"
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 @click=${this._sendTTS}
               ></ha-icon-button>
@@ -249,84 +246,6 @@ class MoreInfoMediaPlayer extends LitElement {
         cursor: pointer;
       }
     `;
-  }
-
-  private _getControls(): ControlButton[] | undefined {
-    const stateObj = this.stateObj;
-
-    if (!stateObj) {
-      return undefined;
-    }
-
-    const state = stateObj.state;
-
-    if (UNAVAILABLE_STATES.includes(state)) {
-      return undefined;
-    }
-
-    if (state === "off") {
-      return supportsFeature(stateObj, SUPPORT_TURN_ON)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_on",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "idle") {
-      return supportsFeature(stateObj, SUPPORTS_PLAY)
-        ? [
-            {
-              icon: "hass:play",
-              action: "media_play",
-            },
-          ]
-        : undefined;
-    }
-
-    const buttons: ControlButton[] = [];
-
-    if (supportsFeature(stateObj, SUPPORT_TURN_OFF)) {
-      buttons.push({
-        icon: "hass:power",
-        action: "turn_off",
-      });
-    }
-
-    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-previous",
-        action: "media_previous_track",
-      });
-    }
-
-    if (
-      (state === "playing" &&
-        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-          supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
-    ) {
-      buttons.push({
-        icon:
-          state !== "playing"
-            ? "hass:play"
-            : supportsFeature(stateObj, SUPPORT_PAUSE)
-            ? "hass:pause"
-            : "hass:stop",
-        action: "media_play_pause",
-      });
-    }
-
-    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-next",
-        action: "media_next_track",
-      });
-    }
-
-    return buttons.length > 0 ? buttons : undefined;
   }
 
   private _handleClick(e: MouseEvent): void {

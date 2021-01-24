@@ -4,18 +4,19 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
 import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../styles/polymer-ha-style";
 import "../../ha-config-section";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import "./cloud-remote-pref";
+import "./cloud-tts-pref";
 import "./cloud-webhooks";
 
 /*
@@ -61,12 +62,10 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           color: var(--primary-color);
         }
       </style>
-      <hass-subpage header="[[localize('ui.panel.config.cloud.caption')]]">
+      <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
-            <span slot="header"
-              >[[localize('ui.panel.config.cloud.caption')]]</span
-            >
+            <span slot="header">Home Assistant Cloud</span>
             <div slot="introduction">
               <p>
                 [[localize('ui.panel.config.cloud.account.thank_you_note')]]
@@ -124,7 +123,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  [[localize('ui.panel.config.cloud.account.integrations_link_all_features')]] </a
+                  [[localize('ui.panel.config.cloud.account.integrations_link_all_features')]]</a
                 >.
               </p>
             </div>
@@ -134,6 +133,12 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               cloud-status="[[cloudStatus]]"
               dir="[[_rtlDirection]]"
             ></cloud-remote-pref>
+
+            <cloud-tts-pref
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+              dir="[[_rtlDirection]]"
+            ></cloud-tts-pref>
 
             <cloud-alexa-pref
               hass="[[hass]]"

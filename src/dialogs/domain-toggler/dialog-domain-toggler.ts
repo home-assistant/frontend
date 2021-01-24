@@ -19,7 +19,8 @@ import { HassDialog } from "../make-dialog-manager";
 import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
 
 @customElement("dialog-domain-toggler")
-class DomainTogglerDialog extends LitElement implements HassDialog {
+class DomainTogglerDialog extends LitElement
+  implements HassDialog<HaDomainTogglerDialogParams> {
   public hass!: HomeAssistant;
 
   @internalProperty() private _params?: HaDomainTogglerDialogParams;

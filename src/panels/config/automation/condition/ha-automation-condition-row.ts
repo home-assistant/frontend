@@ -71,7 +71,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
                 slot="trigger"
-                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
+                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon
               ></mwc-icon-button>
               <mwc-list-item>
                 ${this._yamlMode
@@ -123,8 +123,8 @@ export default class HaAutomationConditionRow extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.automation.editor.conditions.delete_confirm"
       ),
-      dismissText: this.hass.localize("ui.common.no"),
-      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
       },

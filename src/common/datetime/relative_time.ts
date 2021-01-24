@@ -38,13 +38,11 @@ export default function relativeTime(
     roundedDelta = Math.round(delta);
   }
 
-  const timeDesc = localize(
-    `ui.components.relative_time.duration.${unit}`,
+  return localize(
+    options.includeTense === false
+      ? `ui.components.relative_time.duration.${unit}`
+      : `ui.components.relative_time.${tense}_duration.${unit}`,
     "count",
     roundedDelta
   );
-
-  return options.includeTense === false
-    ? timeDesc
-    : localize(`ui.components.relative_time.${tense}`, "time", timeDesc);
 }

@@ -4,8 +4,8 @@ import { CustomPanelInfo } from "../../data/panel_custom";
 import { HomeAssistant, Route } from "../../types";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
 import {
-  loadCustomPanel,
   getUrl,
+  loadCustomPanel,
 } from "../../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
 
@@ -24,7 +24,7 @@ export class HaPanelCustom extends UpdatingElement {
 
   @property() public panel!: CustomPanelInfo;
 
-  private _setProperties?: (props: {}) => void | undefined;
+  private _setProperties?: (props: Record<string, unknown>) => void | undefined;
 
   // Since navigate fires events on `window`, we need to expose this as a function
   // to allow custom panels to forward their location changes to the main window

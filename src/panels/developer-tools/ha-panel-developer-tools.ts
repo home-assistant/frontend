@@ -1,9 +1,6 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../layouts/ha-app-layout";
-import "../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import {
   css,
   CSSResultArray,
@@ -14,7 +11,10 @@ import {
   TemplateResult,
 } from "lit-element";
 import { navigate } from "../../common/navigate";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
+import "../../components/ha-tabs";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
@@ -44,7 +44,7 @@ class PanelDeveloperTools extends LitElement {
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.developer_tools")}</div>
           </app-toolbar>
-          <paper-tabs
+          <ha-tabs
             scrollable
             attr-for-selected="page-name"
             .selected=${page}
@@ -70,7 +70,7 @@ class PanelDeveloperTools extends LitElement {
                 "ui.panel.developer-tools.tabs.events.title"
               )}
             </paper-tab>
-          </paper-tabs>
+          </ha-tabs>
         </app-header>
         <developer-tools-router
           .route=${this.route}
@@ -106,9 +106,10 @@ class PanelDeveloperTools extends LitElement {
           display: block;
           height: calc(100vh - 112px);
         }
-        paper-tabs {
-          margin-left: 12px;
-          --paper-tabs-selection-bar-color: #fff;
+        ha-tabs {
+          margin-left: max(env(safe-area-inset-left), 24px);
+          margin-right: max(env(safe-area-inset-right), 24px);
+          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
       `,

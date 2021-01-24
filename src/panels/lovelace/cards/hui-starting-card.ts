@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -6,16 +7,15 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 @customElement("hui-starting-card")
 export class HuiStartingCard extends LitElement implements LovelaceCard {
@@ -57,7 +57,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
-        height: calc(100vh - 64px);
+        height: calc(100vh - var(--header-height));
       }
       ha-circular-progress {
         padding-bottom: 20px;

@@ -1,26 +1,26 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "../../../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
 } from "lit-element";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-circular-progress";
 import {
   addGroup,
   fetchGroupableDevices,
-  ZHAGroup,
   ZHADeviceEndpoint,
+  ZHAGroup,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
@@ -42,7 +42,7 @@ export class ZHAAddGroupPage extends LitElement {
 
   @internalProperty() private _groupName = "";
 
-  @query("zha-device-endpoint-data-table")
+  @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
 
   private _firstUpdatedCalled = false;
@@ -67,6 +67,7 @@ export class ZHAAddGroupPage extends LitElement {
   protected render() {
     return html`
       <hass-subpage
+        .hass=${this.hass}
         .header=${this.hass.localize("ui.panel.config.zha.groups.create_group")}
       >
         <ha-config-section .isWide=${!this.narrow}>
@@ -105,12 +106,15 @@ export class ZHAAddGroupPage extends LitElement {
               @click="${this._createGroup}"
               class="button"
             >
-              <ha-circular-progress
-                ?active="${this._processingAdd}"
-                alt="${this.hass!.localize(
-                  "ui.panel.config.zha.groups.creating_group"
-                )}"
-              ></ha-circular-progress>
+              ${this._processingAdd
+                ? html`<ha-circular-progress
+                    active
+                    size="small"
+                    .title=${this.hass!.localize(
+                      "ui.panel.config.zha.groups.creating_group"
+                    )}
+                  ></ha-circular-progress>`
+                : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.create"
               )}</mwc-button
@@ -171,17 +175,6 @@ export class ZHAAddGroupPage extends LitElement {
 
         ha-config-section *:last-child {
           padding-bottom: 24px;
-        }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[active] {
-          display: block;
         }
         .paper-dialog-buttons {
           align-items: flex-end;

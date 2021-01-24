@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import "../../../components/user/ha-person-badge";
 import {
@@ -22,10 +23,14 @@ import {
   updatePerson,
 } from "../../../data/person";
 import { fetchUsers, User } from "../../../data/user";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {
@@ -70,7 +75,9 @@ class HaConfigPerson extends LitElement {
             >${hass.localize("ui.panel.config.person.caption")}</span
           >
           <span slot="introduction">
-            ${hass.localize("ui.panel.config.person.introduction")}
+            <p>
+              ${hass.localize("ui.panel.config.person.introduction")}
+            </p>
             ${this._configItems.length > 0
               ? html`
                   <p>
@@ -80,7 +87,16 @@ class HaConfigPerson extends LitElement {
                   </p>
                 `
               : ""}
+
+            <a
+              href=${documentationUrl(this.hass, "/integrations/person/")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              ${this.hass.localize("ui.panel.config.person.learn_more")}
+            </a>
           </span>
+
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
@@ -130,13 +146,14 @@ class HaConfigPerson extends LitElement {
               `
             : ""}
         </ha-config-section>
-        <mwc-fab
+        <ha-fab
           slot="fab"
-          title="${hass.localize("ui.panel.config.person.add_person")}"
+          .label=${hass.localize("ui.panel.config.person.add_person")}
+          extended
           @click=${this._createPerson}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -157,6 +174,31 @@ class HaConfigPerson extends LitElement {
     this._configItems = personData.config.sort((ent1, ent2) =>
       compare(ent1.name, ent2.name)
     );
+    this._openDialogIfPersonSpecifiedInRoute();
+  }
+
+  private _openDialogIfPersonSpecifiedInRoute() {
+    if (!this.route.path.includes("/edit/")) {
+      return;
+    }
+
+    const routeSegments = this.route.path.split("/edit/");
+    const personId = routeSegments.length > 1 ? routeSegments[1] : null;
+    if (!personId) {
+      return;
+    }
+
+    const personToEdit = this._storageItems!.find((p) => p.id === personId);
+    if (personToEdit) {
+      this._openDialog(personToEdit);
+    } else {
+      showAlertDialog(this, {
+        title: this.hass?.localize(
+          "ui.panel.config.person.person_not_found_title"
+        ),
+        text: this.hass?.localize("ui.panel.config.person.person_not_found"),
+      });
+    }
   }
 
   private _createPerson() {
@@ -206,8 +248,8 @@ class HaConfigPerson extends LitElement {
           !(await showConfirmationDialog(this, {
             title: this.hass!.localize("ui.panel.config.person.confirm_delete"),
             text: this.hass!.localize("ui.panel.config.person.confirm_delete2"),
-            dismissText: this.hass!.localize("ui.common.no"),
-            confirmText: this.hass!.localize("ui.common.yes"),
+            dismissText: this.hass!.localize("ui.common.cancel"),
+            confirmText: this.hass!.localize("ui.common.delete"),
           }))
         ) {
           return false;
@@ -222,6 +264,9 @@ class HaConfigPerson extends LitElement {
         } catch (err) {
           return false;
         }
+      },
+      refreshUsers: () => {
+        this._usersLoad = fetchUsers(this.hass!);
       },
     });
   }

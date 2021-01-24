@@ -1,7 +1,8 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-icon-button";
-import "../../../components/ha-button-menu";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -9,21 +10,20 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   queryAssignedNodes,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { swapCard, moveCard, addCard, deleteCard } from "../editor/config-util";
-import { confDeleteCard } from "../editor/delete-card";
-import { Lovelace, LovelaceCard } from "../types";
-import { computeCardSize } from "../common/compute-card-size";
-import { mdiDotsVertical, mdiArrowDown, mdiArrowUp } from "@mdi/js";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button-menu";
 import { saveConfig } from "../../../data/lovelace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
+import { computeCardSize } from "../common/compute-card-size";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { addCard, deleteCard, moveCard, swapCard } from "../editor/config-util";
+import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
+import { Lovelace, LovelaceCard } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -58,14 +58,14 @@ export class HuiCardOptions extends LitElement {
                 .length ===
               this.path![1] + 1}
             >
-              <ha-svg-icon path=${mdiArrowDown}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-icon-button
               title="Move card up"
               class="move-arrow"
               @click=${this._cardUp}
               ?disabled=${this.path![1] === 0}
-              ><ha-svg-icon path=${mdiArrowUp}></ha-svg-icon
+              ><ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon
             ></mwc-icon-button>
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button
@@ -77,7 +77,7 @@ export class HuiCardOptions extends LitElement {
                   "ui.panel.lovelace.editor.edit_card.options"
                 )}"
               >
-                <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
 
               <mwc-list-item>
@@ -106,6 +106,10 @@ export class HuiCardOptions extends LitElement {
     return css`
       :host(:hover) {
         outline: 2px solid var(--primary-color);
+      }
+
+      ::slotted(*) {
+        display: block;
       }
 
       ha-card {
@@ -164,11 +168,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _editCard(): void {
-    showEditCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: this.path!,
-    });
+    fireEvent(this, "ll-edit-card", { path: this.path! });
   }
 
   private _cardUp(): void {
@@ -225,7 +225,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _deleteCard(): void {
-    confDeleteCard(this, this.hass!, this.lovelace!, this.path!);
+    fireEvent(this, "ll-delete-card", { path: this.path! });
   }
 }
 

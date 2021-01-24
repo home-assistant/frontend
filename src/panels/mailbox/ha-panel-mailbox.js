@@ -1,18 +1,18 @@
 import "@material/mwc-button";
-import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
+import "../../components/ha-tabs";
+import "../../layouts/ha-app-layout";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../styles/polymer-ha-style";
@@ -44,6 +44,13 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         paper-item {
           cursor: pointer;
+        }
+
+        ha-tabs {
+          margin-left: max(env(safe-area-inset-left), 24px);
+          margin-right: max(env(safe-area-inset-right), 24px);
+          --paper-tabs-selection-bar-color: #fff;
+          text-transform: uppercase;
         }
 
         .empty {
@@ -86,7 +93,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <div main-title>[[localize('panel.mailbox')]]</div>
           </app-toolbar>
           <div sticky hidden$="[[areTabsHidden(platforms)]]">
-            <paper-tabs
+            <ha-tabs
               scrollable
               selected="[[_currentPlatform]]"
               on-iron-activate="handlePlatformSelected"
@@ -96,7 +103,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   [[getPlatformName(item)]]
                 </paper-tab>
               </template>
-            </paper-tabs>
+            </ha-tabs>
           </div>
         </app-header>
         <div class="content">
@@ -155,10 +162,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-audio-message-dialog",
         dialogTag: "ha-dialog-show-audio-message",
-        dialogImport: () =>
-          import(
-            /* webpackChunkName: "ha-dialog-show-audio-message" */ "./ha-dialog-show-audio-message"
-          ),
+        dialogImport: () => import("./ha-dialog-show-audio-message"),
       });
     }
     this.hassChanged = this.hassChanged.bind(this);

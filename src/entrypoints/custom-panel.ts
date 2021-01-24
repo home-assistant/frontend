@@ -1,10 +1,11 @@
+// Compat needs to be first import
 import "../resources/compatibility";
-import "../resources/safari-14-attachshadow-patch";
 import { PolymerElement } from "@polymer/polymer";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadJS } from "../common/dom/load_resource";
 import { webComponentsSupported } from "../common/feature-detect/support-web-components";
 import { CustomPanelInfo } from "../data/panel_custom";
+import "../resources/safari-14-attachshadow-patch";
 import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
@@ -35,7 +36,10 @@ function setProperties(properties) {
   setCustomPanelProperties(panelEl, properties);
 }
 
-function initialize(panel: CustomPanelInfo, properties: {}) {
+function initialize(
+  panel: CustomPanelInfo,
+  properties: Record<string, unknown>
+) {
   const style = document.createElement("style");
   style.innerHTML = "body{margin:0}";
   document.head.appendChild(style);

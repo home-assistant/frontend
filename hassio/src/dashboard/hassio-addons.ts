@@ -10,8 +10,9 @@ import {
 } from "lit-element";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
+import { compare } from "../../../src/common/string/compare";
 import "../../../src/components/ha-card";
-import { HassioAddonInfo } from "../../../src/data/hassio/addon";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
@@ -21,25 +22,27 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioAddons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public addons?: HassioAddonInfo[];
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   protected render(): TemplateResult {
     return html`
       <div class="content">
         <h1>Add-ons</h1>
         <div class="card-group">
-          ${!this.addons
+          ${!this.supervisor.supervisor.addons?.length
             ? html`
                 <ha-card>
                   <div class="card-content">
                     You don't have any add-ons installed yet. Head over to
-                    <a href="#" @click=${this._openStore}>the add-on store</a>
+                    <button class="link" @click=${this._openStore}>
+                      the add-on store
+                    </button>
                     to get started!
                   </div>
                 </ha-card>
               `
-            : this.addons
-                .sort((a, b) => (a.name > b.name ? 1 : -1))
+            : this.supervisor.supervisor.addons
+                .sort((a, b) => compare(a.name, b.name))
                 .map(
                   (addon) => html`
                     <ha-card .addon=${addon} @click=${this._addonTapped}>
@@ -49,22 +52,21 @@ class HassioAddons extends LitElement {
                           .title=${addon.name}
                           .description=${addon.description}
                           available
-                          .showTopbar=${addon.installed !== addon.version}
+                          .showTopbar=${addon.update_available}
                           topbarClass="update"
-                          .icon=${addon.installed !== addon.version
+                          .icon=${addon.update_available!
                             ? mdiArrowUpBoldCircle
                             : mdiPuzzle}
                           .iconTitle=${addon.state !== "started"
                             ? "Add-on is stopped"
-                            : addon.installed !== addon.version
+                            : addon.update_available!
                             ? "New version available"
                             : "Add-on is running"}
-                          .iconClass=${addon.installed &&
-                          addon.installed !== addon.version
+                          .iconClass=${addon.update_available
                             ? addon.state === "started"
                               ? "update"
                               : "update stopped"
-                            : addon.installed && addon.state === "started"
+                            : addon.state === "started"
                             ? "running"
                             : "stopped"}
                           .iconImage=${atLeastVersion(

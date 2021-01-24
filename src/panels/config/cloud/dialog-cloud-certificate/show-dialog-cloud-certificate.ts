@@ -11,10 +11,7 @@ export const showCloudCertificateDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-cloud-certificate",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "dialog-cloud-certificate" */ "./dialog-cloud-certificate"
-      ),
+    dialogImport: () => import("./dialog-cloud-certificate"),
     dialogParams: webhookDialogParams,
   });
 };

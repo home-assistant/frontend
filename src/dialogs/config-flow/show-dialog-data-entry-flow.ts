@@ -7,6 +7,7 @@ import {
   DataEntryFlowStepCreateEntry,
   DataEntryFlowStepExternal,
   DataEntryFlowStepForm,
+  DataEntryFlowStepProgress,
 } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
 
@@ -22,7 +23,7 @@ export interface FlowConfig {
   handleFlowStep(
     hass: HomeAssistant,
     flowId: string,
-    data: { [key: string]: any }
+    data: Record<string, any>
   ): Promise<DataEntryFlowStep>;
 
   deleteFlow(hass: HomeAssistant, flowId: string): Promise<unknown>;
@@ -68,6 +69,16 @@ export interface FlowConfig {
     hass: HomeAssistant,
     step: DataEntryFlowStepCreateEntry
   ): TemplateResult | "";
+
+  renderShowFormProgressHeader(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepProgress
+  ): string;
+
+  renderShowFormProgressDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepProgress
+  ): TemplateResult | "";
 }
 
 export interface DataEntryFlowDialogParams {
@@ -78,10 +89,7 @@ export interface DataEntryFlowDialogParams {
   showAdvanced?: boolean;
 }
 
-export const loadDataEntryFlowDialog = () =>
-  import(
-    /* webpackChunkName: "dialog-config-flow" */ "./dialog-data-entry-flow"
-  );
+export const loadDataEntryFlowDialog = () => import("./dialog-data-entry-flow");
 
 export const showFlowDialog = (
   element: HTMLElement,

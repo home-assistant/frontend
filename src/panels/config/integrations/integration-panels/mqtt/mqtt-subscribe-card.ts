@@ -5,9 +5,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { formatTime } from "../../../../../common/datetime/format_time";
@@ -154,6 +154,9 @@ class MqttSubscribeCard extends LitElement {
       .bottom {
         font-size: 80%;
         color: var(--secondary-text-color);
+      }
+      pre {
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }

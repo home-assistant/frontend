@@ -37,7 +37,13 @@ export class StateBadge extends LitElement {
   protected render(): TemplateResult {
     const stateObj = this.stateObj;
 
-    if (!stateObj || !this._showIcon) {
+    if (!stateObj) {
+      return html`<div class="missing">
+        <ha-icon icon="hass:alert"></ha-icon>
+      </div>`;
+    }
+
+    if (!this._showIcon) {
       return html``;
     }
 
@@ -139,6 +145,9 @@ export class StateBadge extends LitElement {
       }
       ha-icon {
         transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
+      }
+      .missing {
+        color: #fce588;
       }
 
       ${iconColorCSS}

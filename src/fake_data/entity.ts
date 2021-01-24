@@ -21,9 +21,9 @@ export class Entity {
 
   public state: string;
 
-  public baseAttributes: HassEntityAttributeBase & { [key: string]: any };
+  public baseAttributes: HassEntityAttributeBase & Record<string, any>;
 
-  public attributes: HassEntityAttributeBase & { [key: string]: any };
+  public attributes: HassEntityAttributeBase & Record<string, any>;
 
   public hass?: any;
 
@@ -39,7 +39,7 @@ export class Entity {
     this.attributes = baseAttributes;
   }
 
-  public async handleService(domain, service, data: { [key: string]: any }) {
+  public async handleService(domain, service, data: Record<string, any>) {
     // eslint-disable-next-line
     console.log(
       `Unmocked service for ${this.entityId}: ${domain}/${service}`,

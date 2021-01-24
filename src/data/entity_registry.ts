@@ -10,19 +10,27 @@ export interface EntityRegistryEntry {
   platform: string;
   config_entry_id?: string;
   device_id?: string;
+  area_id?: string;
   disabled_by: string | null;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   unique_id: string;
-  capabilities: object;
+  capabilities: Record<string, unknown>;
   original_name?: string;
   original_icon?: string;
+}
+
+export interface UpdateEntityRegistryEntryResult {
+  entity_entry: ExtEntityRegistryEntry;
+  reload_delay?: number;
+  require_restart?: boolean;
 }
 
 export interface EntityRegistryEntryUpdateParams {
   name?: string | null;
   icon?: string | null;
+  area_id?: string | null;
   disabled_by?: string | null;
   new_entity_id?: string;
 }
@@ -72,7 +80,7 @@ export const updateEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
-): Promise<ExtEntityRegistryEntry> =>
+): Promise<UpdateEntityRegistryEntryResult> =>
   hass.callWS({
     type: "config/entity_registry/update",
     entity_id: entityId,
@@ -88,7 +96,7 @@ export const removeEntityRegistryEntry = (
     entity_id: entityId,
   });
 
-const fetchEntityRegistry = (conn) =>
+export const fetchEntityRegistry = (conn) =>
   conn.sendMessagePromise({
     type: "config/entity_registry/list",
   });

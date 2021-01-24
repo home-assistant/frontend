@@ -1,29 +1,31 @@
-import "@polymer/paper-tabs";
-import "@polymer/paper-tabs/paper-tab";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
+import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import { LovelaceConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { ConditionalCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
-import {
-  ConfigChangedEvent,
-  HuiCardEditor,
-} from "../card-editor/hui-card-editor";
+import "../card-editor/hui-card-element-editor";
+import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
+import "../hui-element-editor";
+import type { ConfigChangedEvent } from "../hui-element-editor";
 import { GUIModeChangedEvent } from "../types";
-import { string, any, object, optional, array, assert } from "superstruct";
+import { configElementStyle } from "./config-elements-style";
 
 const conditionStruct = object({
   entity: string(),
@@ -51,7 +53,8 @@ export class HuiConditionalCardEditor extends LitElement
 
   @internalProperty() private _cardTab = false;
 
-  @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
+  @query("hui-card-element-editor")
+  private _cardEditorEl?: HuiCardElementEditor;
 
   public setConfig(config: ConditionalCardConfig): void {
     assert(config, cardConfigStruct);
@@ -68,21 +71,21 @@ export class HuiConditionalCardEditor extends LitElement
     }
 
     return html`
-      <paper-tabs
-        .selected=${this._cardTab ? "1" : "0"}
-        @iron-select=${this._selectTab}
+      <mwc-tab-bar
+        .activeIndex=${this._cardTab ? 1 : 0}
+        @MDCTabBar:activated=${this._selectTab}
       >
-        <paper-tab
-          >${this.hass!.localize(
+        <mwc-tab
+          .label=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.conditions"
-          )}</paper-tab
-        >
-        <paper-tab
-          >${this.hass!.localize(
+          )}
+        ></mwc-tab>
+        <mwc-tab
+          .label=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.card"
-          )}</paper-tab
-        >
-      </paper-tabs>
+          )}
+        ></mwc-tab>
+      </mwc-tab-bar>
       ${this._cardTab
         ? html`
             <div class="card">
@@ -106,13 +109,13 @@ export class HuiConditionalCardEditor extends LitElement
                         )}</mwc-button
                       >
                     </div>
-                    <hui-card-editor
+                    <hui-card-element-editor
                       .hass=${this.hass}
                       .value=${this._config.card}
                       .lovelace=${this.lovelace}
                       @config-changed=${this._handleCardChanged}
                       @GUImode-changed=${this._handleGUIModeChanged}
-                    ></hui-card-editor>
+                    ></hui-card-element-editor>
                   `
                 : html`
                     <hui-card-picker
@@ -190,8 +193,8 @@ export class HuiConditionalCardEditor extends LitElement
     `;
   }
 
-  private _selectTab(ev: Event): void {
-    this._cardTab = parseInt((ev.target! as any).selected!, 10) === 1;
+  private _selectTab(ev: MDCTabBarActivatedEvent): void {
+    this._cardTab = ev.detail.index === 1;
   }
 
   private _toggleMode(): void {
@@ -227,7 +230,10 @@ export class HuiConditionalCardEditor extends LitElement
     if (!this._config) {
       return;
     }
-    this._config = { ...this._config, card: ev.detail.config };
+    this._config = {
+      ...this._config,
+      card: ev.detail.config as LovelaceCardConfig,
+    };
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -292,52 +298,53 @@ export class HuiConditionalCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      paper-tabs {
-        --paper-tabs-selection-bar-color: var(--primary-color);
-        --paper-tab-ink: var(--primary-color);
-        border-bottom: 1px solid var(--divider-color);
-      }
-      .conditions {
-        margin-top: 8px;
-      }
-      .condition {
-        margin-top: 8px;
-        border: 1px solid var(--divider-color);
-        padding: 12px;
-      }
-      .condition .state {
-        display: flex;
-        align-items: flex-end;
-      }
-      .condition .state paper-dropdown-menu {
-        margin-right: 16px;
-      }
-      .condition .state paper-input {
-        flex-grow: 1;
-      }
-
-      .card {
-        margin-top: 8px;
-        border: 1px solid var(--divider-color);
-        padding: 12px;
-      }
-      @media (max-width: 450px) {
-        .card,
-        .condition {
-          margin: 8px -12px 0;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        mwc-tab-bar {
+          border-bottom: 1px solid var(--divider-color);
         }
-      }
-      .card .card-options {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-      }
-      .gui-mode-button {
-        margin-right: auto;
-      }
-    `;
+        .conditions {
+          margin-top: 8px;
+        }
+        .condition {
+          margin-top: 8px;
+          border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        .condition .state {
+          display: flex;
+          align-items: flex-end;
+        }
+        .condition .state paper-dropdown-menu {
+          margin-right: 16px;
+        }
+        .condition .state paper-input {
+          flex-grow: 1;
+        }
+
+        .card {
+          margin-top: 8px;
+          border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        @media (max-width: 450px) {
+          .card,
+          .condition {
+            margin: 8px -12px 0;
+          }
+        }
+        .card .card-options {
+          display: flex;
+          justify-content: flex-end;
+          width: 100%;
+        }
+        .gui-mode-button {
+          margin-right: auto;
+        }
+      `,
+    ];
   }
 }
 

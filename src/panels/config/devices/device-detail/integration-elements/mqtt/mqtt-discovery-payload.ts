@@ -4,16 +4,16 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
 @customElement("mqtt-discovery-payload")
 class MQTTDiscoveryPayload extends LitElement {
-  @property() public payload!: object;
+  @property() public payload!: Record<string, unknown>;
 
   @property() public showAsYaml = false;
 
@@ -83,6 +83,7 @@ class MQTTDiscoveryPayload extends LitElement {
         font-size: 0.9em;
         padding-left: 4px;
         padding-right: 4px;
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }

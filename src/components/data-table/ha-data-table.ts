@@ -73,13 +73,17 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   hidden?: boolean;
 }
 
+type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
+  title?: string;
+};
+
 export interface DataTableRowData {
   [key: string]: any;
   selectable?: boolean;
 }
 
 export interface SortableColumnContainer {
-  [key: string]: DataTableSortColumnData;
+  [key: string]: ClonedDataTableColumnData;
 }
 
 @customElement("ha-data-table")
@@ -90,7 +94,15 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public selectable = false;
 
+  @property({ type: Boolean }) public clickable = false;
+
   @property({ type: Boolean }) public hasFab = false;
+
+  /**
+   * Add an extra row at the bottom of the data table
+   * @type {TemplateResult}
+   */
+  @property({ attribute: false }) public appendRow?;
 
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
@@ -100,6 +112,9 @@ export class HaDataTable extends LitElement {
   @property({ type: String }) public noDataText?: string;
 
   @property({ type: String }) public searchLabel?: string;
+
+  @property({ type: Boolean, attribute: "no-label-float" })
+  public noLabelFloat? = false;
 
   @property({ type: String }) public filter = "";
 
@@ -113,9 +128,11 @@ export class HaDataTable extends LitElement {
 
   @internalProperty() private _filteredData: DataTableRowData[] = [];
 
+  @internalProperty() private _headerHeight = 0;
+
   @query("slot[name='header']") private _header!: HTMLSlotElement;
 
-  @query(".mdc-data-table__table") private _table!: HTMLDivElement;
+  private _items: DataTableRowData[] = [];
 
   private _checkableRowsCount?: number;
 
@@ -166,11 +183,13 @@ export class HaDataTable extends LitElement {
       }
 
       const clonedColumns: DataTableColumnContainer = deepClone(this.columns);
-      Object.values(clonedColumns).forEach((column: DataTableColumnData) => {
-        delete column.title;
-        delete column.type;
-        delete column.template;
-      });
+      Object.values(clonedColumns).forEach(
+        (column: ClonedDataTableColumnData) => {
+          delete column.title;
+          delete column.type;
+          delete column.template;
+        }
+      );
 
       this._sortColumns = clonedColumns;
     }
@@ -206,6 +225,7 @@ export class HaDataTable extends LitElement {
                   <search-input
                     @value-changed=${this._handleSearchChange}
                     .label=${this.searchLabel}
+                    .noLabelFloat=${this.noLabelFloat}
                   ></search-input>
                 </div>
               `
@@ -220,7 +240,7 @@ export class HaDataTable extends LitElement {
           style=${styleMap({
             height: this.autoHeight
               ? `${(this._filteredData.length || 1) * 53 + 57}px`
-              : `calc(100% - ${this._header?.clientHeight}px)`,
+              : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
           <div class="mdc-data-table__header-row" role="row">
@@ -306,10 +326,13 @@ export class HaDataTable extends LitElement {
                   @scroll=${this._saveScrollPos}
                 >
                   ${scroll({
-                    items: !this.hasFab
-                      ? this._filteredData
-                      : [...this._filteredData, ...[{ empty: true }]],
+                    items: this._items,
                     renderItem: (row: DataTableRowData, index) => {
+                      if (row.append) {
+                        return html`
+                          <div class="mdc-data-table__row">${row.content}</div>
+                        `;
+                      }
                       if (row.empty) {
                         return html` <div class="mdc-data-table__row"></div> `;
                       }
@@ -317,12 +340,13 @@ export class HaDataTable extends LitElement {
                         <div
                           aria-rowindex=${index}
                           role="row"
-                          .rowId="${row[this.id]}"
+                          .rowId=${row[this.id]}
                           @click=${this._handleRowClick}
                           class="mdc-data-table__row ${classMap({
                             "mdc-data-table__row--selected": this._checkedRows.includes(
                               String(row[this.id])
                             ),
+                            clickable: this.clickable,
                           })}"
                           aria-selected=${ifDefined(
                             this._checkedRows.includes(String(row[this.id]))
@@ -340,6 +364,7 @@ export class HaDataTable extends LitElement {
                                   <ha-checkbox
                                     class="mdc-data-table__row-checkbox"
                                     @change=${this._handleRowCheckboxClick}
+                                    .rowId=${row[this.id]}
                                     .disabled=${row.selectable === false}
                                     .checked=${this._checkedRows.includes(
                                       String(row[this.id])
@@ -433,6 +458,20 @@ export class HaDataTable extends LitElement {
     if (this.curRequest !== curRequest) {
       return;
     }
+
+    if (this.appendRow || this.hasFab) {
+      this._items = [...data];
+
+      if (this.appendRow) {
+        this._items.push({ append: true, content: this.appendRow });
+      }
+
+      if (this.hasFab) {
+        this._items.push({ empty: true });
+      }
+    } else {
+      this._items = data;
+    }
     this._filteredData = data;
   }
 
@@ -447,9 +486,7 @@ export class HaDataTable extends LitElement {
   );
 
   private _handleHeaderClick(ev: Event) {
-    const columnId = ((ev.target as HTMLElement).closest(
-      ".mdc-data-table__header-cell"
-    ) as any).columnId;
+    const columnId = (ev.currentTarget as any).columnId;
     if (!this.columns[columnId].sortable) {
       return;
     }
@@ -483,8 +520,8 @@ export class HaDataTable extends LitElement {
   }
 
   private _handleRowCheckboxClick(ev: Event) {
-    const checkbox = ev.target as HaCheckbox;
-    const rowId = (checkbox.closest(".mdc-data-table__row") as any).rowId;
+    const checkbox = ev.currentTarget as HaCheckbox;
+    const rowId = (checkbox as any).rowId;
 
     if (checkbox.checked) {
       if (this._checkedRows.includes(rowId)) {
@@ -502,7 +539,7 @@ export class HaDataTable extends LitElement {
     if (target.tagName === "HA-CHECKBOX") {
       return;
     }
-    const rowId = (target.closest(".mdc-data-table__row") as any).rowId;
+    const rowId = (ev.currentTarget as any).rowId;
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   }
 
@@ -523,7 +560,7 @@ export class HaDataTable extends LitElement {
       return;
     }
     await this.updateComplete;
-    this._table.style.height = `calc(100% - ${this._header.clientHeight}px)`;
+    this._headerHeight = this._header.clientHeight;
   }
 
   @eventOptions({ passive: true })
@@ -875,6 +912,9 @@ export class HaDataTable extends LitElement {
       }
       .forceLTR {
         direction: ltr;
+      }
+      .clickable {
+        cursor: pointer;
       }
     `;
   }

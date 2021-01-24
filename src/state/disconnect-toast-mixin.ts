@@ -1,20 +1,18 @@
+import {
+  STATE_NOT_RUNNING,
+  STATE_RUNNING,
+  STATE_STARTING,
+} from "home-assistant-js-websocket";
 import { Constructor } from "../types";
 import { showToast } from "../util/toast";
 import { HassBaseEl } from "./hass-base-mixin";
-import {
-  STATE_NOT_RUNNING,
-  STATE_STARTING,
-  STATE_RUNNING,
-} from "home-assistant-js-websocket";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
-      import(
-        /* webpackChunkName: "notification-manager" */ "../managers/notification-manager"
-      );
+      import("../managers/notification-manager");
     }
 
     updated(changedProperties) {
@@ -34,6 +32,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             "Home Assistant is starting, not everything will be available until it is finished.",
           duration: 0,
           dismissable: false,
+          action: {
+            text:
+              this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
+            action: () => {},
+          },
         });
       } else if (
         oldHass?.config &&

@@ -6,6 +6,7 @@
         }
     },
     "groups": {
+        "owner": "Eigandi",
         "system-admin": "Stjórnendur",
         "system-read-only": "Notendur með lesaðgang",
         "system-users": "Notendur"
@@ -125,7 +126,7 @@
                 "on": "Opin"
             },
             "gas": {
-                "off": "Hreinsa",
+                "off": "Hreint",
                 "on": "Uppgötvað"
             },
             "heat": {
@@ -161,7 +162,7 @@
                 "on": "Óöruggt"
             },
             "smoke": {
-                "off": "Hreinsa",
+                "off": "Hreint",
                 "on": "Uppgötvað"
             },
             "sound": {
@@ -461,7 +462,9 @@
                     "wnw": "VNV",
                     "wsw": "VSV"
                 },
-                "forecast": "Spá"
+                "day": "Dagur",
+                "forecast": "Spá",
+                "night": "Nótt"
             }
         },
         "common": {
@@ -469,15 +472,19 @@
             "back": "Til baka",
             "cancel": "Hætta við",
             "close": "Loka",
+            "continue": "Halda áfram",
             "delete": "Eyða",
             "error_required": "Skilyrt",
             "loading": "Hleð",
             "menu": "Valmynd",
             "next": "Næsta",
             "no": "Nei",
+            "not_now": "Ekki núna",
             "previous": "Fyrri",
             "refresh": "Endurnýja",
+            "rename": "Endurnefna",
             "save": "Vista",
+            "skip": "Sleppa",
             "undo": "Afturkalla",
             "yes": "Já"
         },
@@ -492,6 +499,11 @@
                 "clear": "Hreinsa",
                 "show_areas": "Birta svæði"
             },
+            "blueprint-picker": {
+                "add_user": "Bæta við notanda",
+                "remove_user": "Fjarlægja notanda",
+                "select_blueprint": "Velja uppdrátt"
+            },
             "data-table": {
                 "search": "Leita"
             },
@@ -504,17 +516,34 @@
                 "clear": "Hreinsa",
                 "device": "Tæki",
                 "no_area": "Ekkert svæði",
+                "no_devices": "Þú ert ekki með nein tæki",
+                "no_match": "Engin samsvarandi tæki fundust",
                 "show_devices": "Sýna tæki"
             },
             "entity": {
                 "entity-picker": {
                     "clear": "Hreinsa",
-                    "entity": "Eining"
+                    "entity": "Eining",
+                    "no_match": "Engar samsvarandi einingar fundust"
                 }
             },
             "history_charts": {
                 "loading_history": "Hleð stöðusögu...",
                 "no_history_found": "Engin stöðusaga fannst."
+            },
+            "logbook": {
+                "messages": {
+                    "was_closed": "var lokað",
+                    "was_opened": "var opnað"
+                }
+            },
+            "media-browser": {
+                "choose_player": "Veldu spilara",
+                "class": {
+                    "music": "Tónlist",
+                    "podcast": "Hlaðvarp",
+                    "tv_show": "Sjónvarpsþáttur"
+                }
             },
             "related-items": {
                 "area": "Svæði",
@@ -530,11 +559,18 @@
                     "week": "{count} {count, plural,\n  one {vika}\n  other {vikur}\n}"
                 },
                 "future": "Eftir {time}",
+                "just_now": "Rétt í þessu",
                 "never": "Aldrei",
                 "past": "{time} síðan"
             },
             "service-picker": {
                 "service": "Þjónusta"
+            },
+            "target-picker": {
+                "add_area_id": "Veldu svæði",
+                "add_device_id": "Velja tæki",
+                "remove_device_id": "Fjarlægja tæki",
+                "remove_entity_id": "Fjarlægja einingu"
             }
         },
         "dialogs": {
@@ -596,6 +632,8 @@
             },
             "more_info_control": {
                 "edit": "Breyta einingu",
+                "history": "Saga",
+                "last_changed": "Síðast breytt",
                 "restored": {
                     "confirm_remove_title": "Fjarlægja einingu?",
                     "remove_action": "Fjarlægja einingu"
@@ -630,6 +668,33 @@
             "options_flow": {
                 "form": {
                     "header": "Valkostir"
+                }
+            },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "automation": "Sjálfvirkni",
+                        "core": "Almennt",
+                        "devices": "Tæki",
+                        "entities": "Einingar",
+                        "helpers": "Hjálp",
+                        "info": "Upplýsingar",
+                        "integrations": "Samþættingar",
+                        "lovelace": "Skjáborð",
+                        "person": "Persónur",
+                        "scene": "Senur",
+                        "script": "Skriftur",
+                        "tags": "Strikamerki",
+                        "users": "Notendur",
+                        "zone": "Svæði"
+                    },
+                    "reload": {
+                        "homekit": "Endurhlaða HomeKit"
+                    },
+                    "server_control": {
+                        "restart": "Endurræsa",
+                        "stop": "Stöðva"
+                    }
                 }
             },
             "voice_command": {
@@ -712,6 +777,17 @@
                 "automation": {
                     "caption": "Sjálfvirkni",
                     "description": "Stofna og breyta sjálfvirkni",
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "Nota uppdrátt"
+                        },
+                        "how": "Hvernig viltu búa til nýju sjálfvirknina?",
+                        "thingtalk": {
+                            "create": "Stofna",
+                            "header": "Lýstu sjálfvirkninni sem þú vilt búa til",
+                            "input_label": "Hvað ætti þessi sjálfvirkni að gera?"
+                        }
+                    },
                     "editor": {
                         "actions": {
                             "add": "Bæta við aðgerð",
@@ -759,6 +835,9 @@
                             "unsupported_action": "Óstudd aðgerð: {action}"
                         },
                         "alias": "Nafn",
+                        "blueprint": {
+                            "header": "Uppdráttur"
+                        },
                         "conditions": {
                             "add": "Bæta við skilyrði",
                             "delete": "Eyða",
@@ -812,7 +891,16 @@
                                 "time": {
                                     "after": "Eftir",
                                     "before": "Fyrir",
-                                    "label": "Tími"
+                                    "label": "Tími",
+                                    "weekdays": {
+                                        "fri": "Föstudagur",
+                                        "mon": "Mánudagur",
+                                        "sat": "Laugardag",
+                                        "sun": "Sunnudagur",
+                                        "thu": "Fimmtudagur",
+                                        "tue": "Þriðjudagur",
+                                        "wed": "Miðvikudagur"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Eining með staðsetningu",
@@ -859,6 +947,7 @@
                                     "label": "Tæki"
                                 },
                                 "event": {
+                                    "context_user_pick": "Veldu notanda",
                                     "event_data": "Viðburðargögn",
                                     "event_type": "Gerð viðburðar",
                                     "label": "Viðburður"
@@ -931,6 +1020,8 @@
                     "picker": {
                         "add_automation": "Bæta við sjálfvirkni",
                         "delete_automation": "Eyða sjálfvirkni",
+                        "duplicate": "Fjölfalda",
+                        "duplicate_automation": "Fjölfalda sjálfvirkni",
                         "edit_automation": "Breyta sjálfvirkni",
                         "header": "Sjálfvirkniritill",
                         "headers": {
@@ -941,6 +1032,36 @@
                         "only_editable": "Eingöngu er hægt að breyta sjálfvirkni sem skilgreind er í automations.yaml",
                         "pick_automation": "Veldu sjálfvirkni sem á að breyta",
                         "show_info_automation": "Sýna upplýsingar um sjálfvirkni"
+                    },
+                    "thingtalk": {
+                        "create": "Búa til sjálfvirkni",
+                        "task_selection": {
+                            "for_example": "Til dæmis:",
+                            "header": "Búa til nýja sjálfvirkni",
+                            "language_note": "Athugið: Aðeins enska er studd í bili."
+                        }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "file_name": "Slóð uppdráttar",
+                        "header": "Flytja inn uppdrátt",
+                        "import_btn": "Forskoða uppdrátt",
+                        "importing": "Hleð inn uppdrátt...",
+                        "raw_blueprint": "Innihald uppdráttar",
+                        "save_btn": "Flytja inn uppdrátt",
+                        "saving": "Flyt inn uppdrátt..."
+                    },
+                    "caption": "Uppdrættir",
+                    "overview": {
+                        "add_blueprint": "Flytja inn uppdrátt",
+                        "delete_blueprint": "Eyða uppdrátt",
+                        "discover_more": "Uppgötva fleiri uppdrætti",
+                        "headers": {
+                            "file_name": "Skráarnafn",
+                            "name": "Nafn"
+                        },
+                        "learn_more": "Læra meira um hvernig nota á uppdrætti"
                     }
                 },
                 "cloud": {
@@ -1097,6 +1218,13 @@
                     "description": "Stjórna tengdum tækjum",
                     "device_info": "Upplýsingar um tæki",
                     "device_not_found": "Tæki fannst ekki.",
+                    "disabled": "Afvirkjað",
+                    "disabled_by": {
+                        "integration": "Samþætting",
+                        "user": "Notandi"
+                    },
+                    "enabled_cause": "Afvirkjað vegna {cause}.",
+                    "enabled_label": "Virkja einingu",
                     "entities": {
                         "add_entities_lovelace": "Bæta við í Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {óvirk eining}\n  other {óvirkar einingar}\n}",
@@ -1104,6 +1232,15 @@
                     },
                     "name": "Nafn",
                     "no_devices": "Engin tæki",
+                    "picker": {
+                        "filter": {
+                            "filter": "Sía",
+                            "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+                            "show_all": "Sýna allt",
+                            "show_disabled": "Sýna óvirk tæki"
+                        },
+                        "search": "Leit að tækjum"
+                    },
                     "scene": {
                         "no_scenes": "Engar senur",
                         "scenes": "Senur"
@@ -1178,9 +1315,25 @@
                 "info": {
                     "built_using": "Byggt með",
                     "caption": "Upplýsingar",
+                    "copy_raw": "Hrár texti",
                     "documentation": "Skjölun",
                     "icons_by": "Smátákn eftir",
                     "integrations": "Samþættingar",
+                    "system_health": {
+                        "checks": {
+                            "homeassistant": {
+                                "docker": "Docker",
+                                "hassio": "HassOS",
+                                "os_name": "Nafn stýrikerfis",
+                                "os_version": "Stýrikerfisútgáfa",
+                                "timezone": "Tímabelti",
+                                "version": "Útgáfa"
+                            },
+                            "lovelace": {
+                                "mode": "Hamur"
+                            }
+                        }
+                    },
                     "title": "Upplýsingar"
                 },
                 "integration_panel_move": {
@@ -1206,6 +1359,7 @@
                         "no_device": "Einingar án tækja",
                         "no_devices": "Þessi samþætting hefur engin tæki.",
                         "options": "Valkostir",
+                        "reload": "Endurhlaða",
                         "rename": "Endurnefna",
                         "restart_confirm": "Endurræsa Home Assitant til að klára að fjarlægja þessa samþættingu",
                         "settings_button": "Breyta stillingum fyrir {integration}",
@@ -1307,6 +1461,16 @@
                     "listening_to": "Hlusta á",
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "common": {
+                        "zwave": "Z-Wave"
+                    },
+                    "nodes_table": {
+                        "manufacturer": "Framleiðandi",
+                        "model": "Gerð",
+                        "zwave_plus": "Z-Wave Plus"
+                    }
+                },
                 "person": {
                     "add_person": "Bæta við persónu",
                     "caption": "Persónur",
@@ -1395,6 +1559,7 @@
                             "core": "Endurhlaða kjarna",
                             "group": "Endurhlaða hópa",
                             "heading": "Endurhleðsla stillinga",
+                            "homekit": "Endurhlaða HomeKit",
                             "introduction": "Sumir hlutar af Home Assistant er hægt að hlaða inn að nýju án þess að það krefjist endurræsingar. Með því að velja að endurhlaða þá mun sú aðgerð hlaða inn nýjum stillingum.",
                             "scene": "Endurhlaða senum",
                             "script": "Endurhlaða skriftum"
@@ -1416,12 +1581,27 @@
                         }
                     }
                 },
+                "tags": {
+                    "detail": {
+                        "create": "Stofna",
+                        "delete": "Eyða",
+                        "description": "Lýsing",
+                        "name": "Nafn",
+                        "update": "Uppfæra"
+                    },
+                    "edit": "Breyta",
+                    "headers": {
+                        "name": "Nafn"
+                    }
+                },
                 "users": {
                     "add_user": {
                         "caption": "Bæta við notanda",
                         "create": "Stofna",
                         "name": "Nafn",
                         "password": "Lykilorð",
+                        "password_confirm": "Staðfesta lykilorð",
+                        "password_not_match": "Lykilorð passa ekki saman",
                         "username": "Notandanafn"
                     },
                     "caption": "Notendur",
@@ -1437,15 +1617,20 @@
                         "group": "Hópur",
                         "id": "ID",
                         "name": "Nafn",
+                        "new_password": "Nýtt lykilorð",
                         "owner": "Eigandi",
                         "unnamed_user": "Ónefndur notandi",
-                        "update_user": "Uppfæra"
+                        "update_user": "Uppfæra",
+                        "username": "Notandanafn"
                     },
                     "picker": {
+                        "add_user": "Bæta við notanda",
                         "headers": {
                             "group": "Hópur",
+                            "is_owner": "Eigandi",
                             "name": "Nafn",
-                            "system": "Kerfi"
+                            "system": "Kerfi",
+                            "username": "Notandanafn"
                         }
                     }
                 },
@@ -1580,6 +1765,8 @@
                     "states": {
                         "current_entities": "Tiltækar einingar",
                         "entity": "Eining",
+                        "last_changed": "Síðast breytt",
+                        "last_updated": "Síðast uppfært",
                         "more_info": "Frekari upplýsingar",
                         "no_entities": "Engar einingar",
                         "set_state": "Setja stöðu",
@@ -1587,6 +1774,7 @@
                         "title": "Stöður"
                     },
                     "templates": {
+                        "domain": "Lén",
                         "title": "Skapalón"
                     }
                 }
@@ -1638,12 +1826,24 @@
                     "refresh": "Endurnýja"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "more-info": "Frekari upplýsingar"
+                        }
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Tiltækar stöður"
                         },
                         "button": {
                             "name": "Hnappur"
+                        },
+                        "calendar": {
+                            "name": "Dagatal",
+                            "views": {
+                                "dayGridDay": "Dagur",
+                                "dayGridMonth": "Mánuður"
+                            }
                         },
                         "conditional": {
                             "card": "Spjald",
@@ -1656,7 +1856,14 @@
                             "required": "Skilyrt"
                         },
                         "entities": {
-                            "name": "Einingar"
+                            "entity_row": {
+                                "button": "Hnappur",
+                                "weblink": "Veftengill"
+                            },
+                            "name": "Einingar",
+                            "secondary_info_values": {
+                                "brightness": "Birtustig"
+                            }
                         },
                         "entity-filter": {
                             "name": "Eininga sía"
@@ -1716,6 +1923,9 @@
                         "light": {
                             "name": "Ljós"
                         },
+                        "logbook": {
+                            "name": "Skráningarsaga"
+                        },
                         "map": {
                             "dark_mode": "Dökkur hamur?",
                             "default_zoom": "Sjálfgefinn aðdráttur",
@@ -1752,10 +1962,17 @@
                     },
                     "cardpicker": {
                         "custom_card": "Sérsniðið",
+                        "domain": "Lén",
                         "no_description": "Engin lýsing tiltæk."
+                    },
+                    "common": {
+                        "add": "Bæta við",
+                        "clear": "Hreinsa",
+                        "edit": "Breyta"
                     },
                     "edit_card": {
                         "add": "Bæta við spjaldi",
+                        "clear": "Tæma",
                         "confirm_cancel": "Ertu viss um að þú viljir hætta við?",
                         "delete": "Eyða",
                         "edit": "Breyta",
@@ -1781,6 +1998,9 @@
                         "tab_visibility": "Sýnileiki"
                     },
                     "header": "Breyta notendaviðmóti",
+                    "header-footer": {
+                        "header": "Haus"
+                    },
                     "menu": {
                         "raw_editor": "Ritill fyrir hráar stillingar"
                     },
@@ -1802,6 +2022,9 @@
                         "para": "Home Assistant mun sjálfgefið halda utan um notendaviðmótið og uppfæra það þegar nýjar einingar eða Lovlace íhlutir verða aðgengilegir. Ef þú tekur yfir stjórn á viðmótinu þá mun þetta ekki gerast sjálfkrafa fyrir þig.",
                         "para_sure": "Ertu viss um að þú viljir taka yfir stjórn á notendaviðmótinu þínu?",
                         "save": "Taka stjórnina"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Mælaborð"
                     },
                     "suggest_card": {
                         "add": "Bæta við í Lovelace viðmót",
@@ -2007,15 +2230,23 @@
                 "change_password": {
                     "confirm_new_password": "Staðfesta nýtt lykilorð",
                     "current_password": "Núverandi lykilorð",
+                    "error_new_is_old": "Nýja lykilorðið verður að vera annað en núverandi lykilorð",
                     "error_required": "Skilyrt",
                     "header": "Breyta lykilorði",
                     "new_password": "Nýtt lykilorð",
-                    "submit": "Senda"
+                    "submit": "Senda",
+                    "success": "Lykilorðið breytt"
                 },
                 "current_user": "Þú ert skráð(ur) inn sem {fullName}.",
+                "customize_sidebar": {
+                    "button": "Breyta"
+                },
                 "dashboard": {
                     "dropdown_label": "Mælaborð",
                     "header": "Mælaborð"
+                },
+                "enable_shortcuts": {
+                    "header": "Flýtilyklar"
                 },
                 "force_narrow": {
                     "description": "Þetta mun fela hliðarstikuna með sambærilegum hætti og á snjalltækum.",
@@ -2040,6 +2271,7 @@
                     "header": "Langlífir aðgangstókar",
                     "last_used": "Síðast notaður þann {date} frá {location}",
                     "learn_auth_requests": "Lærðu hvernig á að útbúa auðkenndar beiðnir.",
+                    "name": "Nafn",
                     "not_used": "Hefur aldrei verið notaður",
                     "prompt_copy_token": "Afritaðu aðgangstókann þinn en hann verður ekki birtur aftur.",
                     "prompt_name": "Nafn?"
@@ -2078,15 +2310,22 @@
                     "header": "Loka tengingu sjálfkrafa"
                 },
                 "themes": {
+                    "dark_mode": {
+                        "auto": "Sjálfvirkt"
+                    },
                     "dropdown_label": "Þema",
                     "error_no_theme": "Engar þemu í boði.",
                     "header": "Þema",
-                    "link_promo": "Lærðu um þemu"
+                    "link_promo": "Lærðu um þemu",
+                    "reset": "Endurstilla"
                 },
                 "vibrate": {
                     "description": "Kveikja eða slökkva á titringi í þessu tæki þegar þú stjórnar tækjum.",
                     "header": "Titra"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Hefja samtal"
             },
             "shopping-list": {
                 "add_item": "Bæta við hlut",

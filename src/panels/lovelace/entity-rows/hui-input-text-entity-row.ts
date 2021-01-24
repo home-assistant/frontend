@@ -1,10 +1,12 @@
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -24,7 +26,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
   }
@@ -79,6 +81,14 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     }
 
     ev.target.blur();
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        cursor: pointer;
+      }
+    `;
   }
 }
 

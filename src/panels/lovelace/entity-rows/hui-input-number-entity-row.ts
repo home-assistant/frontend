@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -17,8 +17,8 @@ import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
-import { EntityConfig, LovelaceRow } from "./types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-input-number-entity-row")
 class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
@@ -32,7 +32,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
   }
@@ -94,19 +94,22 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
               </div>
             `
           : html`
-              <paper-input
-                no-label-float
-                auto-validate
-                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                pattern="[0-9]+([\\.][0-9]+)?"
-                .step="${Number(stateObj.attributes.step)}"
-                .min="${Number(stateObj.attributes.min)}"
-                .max="${Number(stateObj.attributes.max)}"
-                .value="${Number(stateObj.state)}"
-                type="number"
-                @change="${this._selectedValueChanged}"
-                id="input"
-              ></paper-input>
+              <div class="flex state">
+                <paper-input
+                  no-label-float
+                  auto-validate
+                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  pattern="[0-9]+([\\.][0-9]+)?"
+                  .step="${Number(stateObj.attributes.step)}"
+                  .min="${Number(stateObj.attributes.min)}"
+                  .max="${Number(stateObj.attributes.max)}"
+                  .value="${Number(stateObj.state)}"
+                  type="number"
+                  @change="${this._selectedValueChanged}"
+                  id="input"
+                ></paper-input>
+                ${stateObj.attributes.unit_of_measurement}
+              </div>
             `}
       </hui-generic-entity-row>
     `;
@@ -130,6 +133,9 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       ha-slider {
         width: 100%;
         max-width: 200px;
+      }
+      :host {
+        cursor: pointer;
       }
     `;
   }

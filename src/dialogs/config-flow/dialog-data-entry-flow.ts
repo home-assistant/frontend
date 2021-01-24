@@ -22,7 +22,10 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
-import type { DataEntryFlowStep } from "../../data/data_entry_flow";
+import type {
+  DataEntryFlowProgressedEvent,
+  DataEntryFlowStep,
+} from "../../data/data_entry_flow";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -36,6 +39,7 @@ import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
 import "./step-flow-pick-handler";
+import "./step-flow-progress";
 
 let instance = 0;
 
@@ -195,6 +199,14 @@ class DataEntryFlowDialog extends LitElement {
                         .hass=${this.hass}
                       ></step-flow-abort>
                     `
+                  : this._step.type === "progress"
+                  ? html`
+                      <step-flow-progress
+                        .flowConfig=${this._params.flowConfig}
+                        .step=${this._step}
+                        .hass=${this.hass}
+                      ></step-flow-progress>
+                    `
                   : this._devices === undefined || this._areas === undefined
                   ? // When it's a create entry result, we will fetch device & area registry
                     html` <step-flow-loading></step-flow-loading> `
@@ -215,6 +227,19 @@ class DataEntryFlowDialog extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this.hass.connection.subscribeEvents<DataEntryFlowProgressedEvent>(
+      async (ev) => {
+        if (ev.data.flow_id !== this._step?.flow_id) {
+          return;
+        }
+        const step = await this._params!.flowConfig.fetchFlow(
+          this.hass,
+          this._step?.flow_id
+        );
+        this._processStep(step);
+      },
+      "data_entry_flow_progressed"
+    );
     this.addEventListener("flow-update", (ev) => {
       const { step, stepPromise } = (ev as any).detail;
       this._processStep(step || stepPromise);

@@ -9,8 +9,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../components/ha-circular-progress";
-import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 
@@ -39,6 +39,7 @@ class HassLoadingScreen extends LitElement {
                 `
               : html`
                   <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
                     @click=${this._handleBack}
                   ></ha-icon-button-arrow-prev>
                 `}
@@ -66,7 +67,7 @@ class HassLoadingScreen extends LitElement {
           display: flex;
           align-items: center;
           font-size: 20px;
-          height: 65px;
+          height: var(--header-height);
           padding: 0 16px;
           pointer-events: none;
           background-color: var(--app-header-background-color);
@@ -80,7 +81,7 @@ class HassLoadingScreen extends LitElement {
           pointer-events: auto;
         }
         .content {
-          height: calc(100% - 64px);
+          height: calc(100% - var(--header-height));
           display: flex;
           align-items: center;
           justify-content: center;

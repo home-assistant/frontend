@@ -1,18 +1,23 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import {
+  customElement,
+  html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
-  html,
-  customElement,
 } from "lit-element";
-import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
-import "@material/mwc-icon-button/mwc-icon-button";
+import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 
 @customElement("ha-icon-button-arrow-next")
 export class HaIconButtonArrowNext extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property({ type: Boolean }) public disabled = false;
+
+  @property() public label?: string;
 
   @internalProperty() private _icon = mdiArrowRight;
 
@@ -29,7 +34,10 @@ export class HaIconButtonArrowNext extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`<mwc-icon-button .disabled=${this.disabled}>
+    return html`<mwc-icon-button
+      .disabled=${this.disabled}
+      .label=${this.label || this.hass?.localize("ui.common.next") || "Next"}
+    >
       <ha-svg-icon .path=${this._icon}></ha-svg-icon>
     </mwc-icon-button> `;
   }

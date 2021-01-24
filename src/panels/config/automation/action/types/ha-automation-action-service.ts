@@ -19,12 +19,12 @@ import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../../../data/script";
 import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
-import { EntityId } from "../../../../lovelace/common/structs/is-entity-id";
+import { EntityIdOrAll } from "../../../../lovelace/common/structs/is-entity-id";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 const actionStruct = object({
   service: optional(string()),
-  entity_id: optional(EntityId),
+  entity_id: optional(EntityIdOrAll),
   data: optional(any()),
 });
 
@@ -34,7 +34,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: ServiceAction;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
   private _actionData?: ServiceAction["data"];
 
