@@ -95,52 +95,55 @@ export interface EditSubElementEvent {
   subElementConfig: SubElementEditorConfig;
 }
 
-export const actionConfigStruct = dynamic((value, context) => {
-  switch (context.branch[0][context.path[0]].action) {
-    case "url":
-      return actionConfigStructUrl;
-
-    case "navigate":
-      return actionConfigStructNavigate;
-
-    case "call-service":
-      return actionConfigStructService;
-
-    case "toggle":
-    case "more-info":
-    case "none":
-    default:
-      return actionConfigStructType;
-  }
+export const actionConfigStruct = dynamic((_value, ctx) => {
+  const test = actionConfigMap[ctx.branch[0][ctx.path[0]].action];
+  return test || actionConfigStructType;
 });
 
-export const actionConfigStructType = object({
-  action: enums([
-    "url",
-    "navigate",
-    "call-service",
-    "more-info",
-    "toggle",
-    "none",
-  ]),
-  confirmation: optional(string()),
+const actionConfigStructUser = object({
+  user: string(),
 });
 
-export const actionConfigStructUrl = object({
+const actionConfigStructConfirmation = object({
+  text: optional(string()),
+  excemptions: optional(array(actionConfigStructUser)),
+});
+
+const actionConfigStructUrl = object({
   action: literal("url"),
   url_path: string(),
-  confirmation: optional(string()),
+  confirmation: optional(union([string(), actionConfigStructConfirmation])),
 });
 
-export const actionConfigStructService = object({
+const actionConfigStructService = object({
   action: literal("call-service"),
   service: string(),
   service_data: optional(object()),
+  confirmation: optional(actionConfigStructConfirmation),
 });
 
-export const actionConfigStructNavigate = object({
+const actionConfigStructNavigate = object({
   action: literal("navigate"),
   navigation_path: string(),
+  confirmation: optional(actionConfigStructConfirmation),
+});
+
+const actionConfigMap = {
+  url: actionConfigStructUrl,
+  navigate: actionConfigStructNavigate,
+  "call-service": actionConfigStructService,
+};
+
+export const actionConfigStructType = object({
+  action: enums([
+    "none",
+    "toggle",
+    "more-info",
+    "call-service",
+    "url",
+    "navigate",
+  ]),
+  confirmation: optional(actionConfigStructConfirmation),
 });
 
 const buttonEntitiesRowConfigStruct = object({
