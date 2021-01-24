@@ -141,7 +141,6 @@ export const actionConfigStructService = object({
 export const actionConfigStructNavigate = object({
   action: literal("navigate"),
   navigation_path: string(),
-  dummy: string(),
 });
 
 const buttonEntitiesRowConfigStruct = object({
