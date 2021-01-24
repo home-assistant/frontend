@@ -200,7 +200,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
                 ></ha-code-editor>
               </div>
             `}
-        ${this._errors
+        ${this._errors && this._errors.length > 0
           ? html`
               <div class="error">
                 Configuration errors detected:
@@ -346,7 +346,8 @@ export abstract class HuiElementEditor<T> extends LitElement {
       .warning {
         color: var(--warning-color);
       }
-      .warning ul {
+      .warning ul,
+      .error ul {
         margin: 4px 0;
       }
       ha-circular-progress {
