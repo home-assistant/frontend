@@ -118,7 +118,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
     fireEvent(this, "config-changed", {
       config: this.value! as any,
-      error: this._errors,
+      error: this._errors?.join(", "),
       guiModeAvailable: !(this.hasWarning || this.hasError),
     });
   }
@@ -203,7 +203,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
         ${this._errors && this._errors.length > 0
           ? html`
               <div class="error">
-                Configuration errors detected:
+                ${this.hass.localize("ui.errors.config.error_detected")}:
                 <br />
                 <ul>
                   ${this._errors.map((error) => html`<li>${error}</li>`)}
@@ -214,12 +214,12 @@ export abstract class HuiElementEditor<T> extends LitElement {
         ${this._warnings && this._warnings.length > 0
           ? html`
               <div class="warning">
-                UI editor is not supported for this config:
+                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
                 <br />
                 <ul>
                   ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
                 </ul>
-                You can still edit your config in YAML.
+                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </div>
             `
           : ""}
@@ -300,7 +300,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
       try {
         this._configElement!.setConfig(this.value);
       } catch (err) {
-        const msgs = handleStructError(err);
+        const msgs = handleStructError(this.hass, err);
         throw new GUISupportError(
           "Config is not supported",
           msgs.warnings,

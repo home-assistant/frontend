@@ -251,7 +251,7 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(ev.detail).warnings;
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }

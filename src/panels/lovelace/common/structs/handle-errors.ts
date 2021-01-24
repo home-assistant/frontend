@@ -1,6 +1,8 @@
 import { StructError } from "superstruct";
+import type { HomeAssistant } from "../../../../types";
 
 export const handleStructError = (
+  hass: HomeAssistant,
   err: Error
 ): { warnings: string[]; errors?: string[] } => {
   if (!(err instanceof StructError)) {
@@ -10,20 +12,32 @@ export const handleStructError = (
   const warnings: string[] = [];
   for (const failure of err.failures()) {
     if (failure.value === undefined) {
-      errors.push(`Required key "${failure.path.join(".")}" is missing.`);
+      errors.push(
+        hass.localize(
+          "ui.errors.config.key_missing",
+          "key",
+          failure.path.join(".")
+        )
+      );
     } else if (failure.type === "never") {
       warnings.push(
-        `Key "${failure.path.join(
-          "."
-        )}" is not expected or not supported by the UI editor.`
+        hass.localize(
+          "ui.errors.config.key_not_expected",
+          "key",
+          failure.path.join(".")
+        )
       );
     } else {
       warnings.push(
-        `The value of "${failure.path.join(
-          "."
-        )}" is not supported by the UI editor, we support "${
-          failure.type
-        }" but received "${JSON.stringify(failure.value)}".`
+        hass.localize(
+          "ui.errors.config.key_wrong_type",
+          "key",
+          failure.path.join("."),
+          "type_correct",
+          failure.type,
+          "type_wrong",
+          JSON.stringify(failure.value)
+        )
       );
     }
   }
