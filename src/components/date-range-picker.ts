@@ -1,11 +1,11 @@
 // @ts-nocheck
-import Vue from "vue";
 import wrap from "@vue/web-component-wrapper";
+import { customElement } from "lit-element/lib/decorators";
+import Vue from "vue";
 import DateRangePicker from "vue2-daterange-picker";
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
 import { Constructor } from "../types";
-import { customElement } from "lit-element/lib/decorators";
 
 const Component = Vue.extend({
   props: {
@@ -210,7 +210,7 @@ class DateRangePickerElement extends WrappedElement {
           }
           .calendar-table {
             padding: 0 !important;
-          }     
+          }
         `;
     const shadowRoot = this.shadowRoot!;
     shadowRoot.appendChild(style);

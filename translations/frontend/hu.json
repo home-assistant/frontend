@@ -2,11 +2,13 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfigurációs bejegyzés",
+            "device": "Eszköz",
             "integration": "Integráció",
             "user": "Felhasználó"
         }
     },
     "groups": {
+        "owner": "Tulajdonos",
         "system-admin": "Adminisztrátorok",
         "system-read-only": "Felhasználók csak olvasási jogosultsággal",
         "system-users": "Felhasználók"
@@ -545,6 +547,8 @@
                 "add_new": "Új terület hozzáadása...",
                 "area": "Terület",
                 "clear": "Törlés",
+                "no_areas": "Nincsenek területei.",
+                "no_match": "Nem található egyező terület",
                 "show_areas": "Területek megjelenítése"
             },
             "blueprint-picker": {
@@ -565,6 +569,8 @@
                 "clear": "Törlés",
                 "device": "Eszköz",
                 "no_area": "Nincs terület",
+                "no_devices": "Nincsenek eszközei",
+                "no_match": "Nem található egyező eszköz",
                 "show_devices": "Eszközök megjelenítése",
                 "toggle": "Váltás"
             },
@@ -576,6 +582,7 @@
                 "entity-picker": {
                     "clear": "Törlés",
                     "entity": "Entitás",
+                    "no_match": "Nem található egyező entitás",
                     "show_entities": "Entitások megjelenítése"
                 }
             },
@@ -709,6 +716,16 @@
             "service-picker": {
                 "service": "Szolgáltatás"
             },
+            "target-picker": {
+                "add_area_id": "Terület kiválasztása",
+                "add_device_id": "Eszköz kiválasztása",
+                "add_entity_id": "Entitás kiválasztása",
+                "expand_area_id": "Bontsd ki ezt a területet a benne található különálló eszközökben és entitásokban. A kibontás után nem fognak frissülni az eszközök és az entitások, amikor a terület megváltozik.",
+                "expand_device_id": "Bontsd ki ezt az eszközt külön entitásokban. A kibontás után nem fognak frissülni az entitások, amikor az eszköz megváltozik.",
+                "remove_area_id": "Terület eltávolítása",
+                "remove_device_id": "Eszköz eltávolítása",
+                "remove_entity_id": "Entitás eltávolítása"
+            },
             "user-picker": {
                 "add_user": "Felhasználó hozzáadása",
                 "no_user": "Nincs felhasználó",
@@ -732,6 +749,7 @@
                 "editor": {
                     "confirm_delete": "Biztosan törölni szeretnéd ezt a bejegyzést?",
                     "delete": "Törlés",
+                    "device_disabled": "Ennek az entitásnak az eszköze le van tiltva.",
                     "enabled_cause": "Letiltva. ({cause})",
                     "enabled_delay_confirm": "Az engedélyezett entitások {delay} másodpercen belül hozzá lesznek adva a Home Assistant-hoz",
                     "enabled_description": "A letiltott entitások nem lesznek hozzáadva a Home Assistant-hoz.",
@@ -742,6 +760,7 @@
                     "icon_error": "Az ikonokat a 'prefix:ikonnév' formátumban kell megadni, pl.: 'mdi:home'",
                     "name": "Név",
                     "note": "Megjegyzés: lehet, hogy ez még nem működik minden integrációval.",
+                    "open_device_settings": "Eszközbeállítások megnyitása",
                     "unavailable": "Ez az entitás jelenleg nem elérhető.",
                     "update": "Frissítés"
                 },
@@ -1029,7 +1048,7 @@
                         "confirmation_text": "Minden ebben a területben lévő eszköz hozzárendelés nélküli lesz.",
                         "confirmation_title": "Biztosan törölni szeretnéd ezt a területet?"
                     },
-                    "description": "Otthoni területek kezelése",
+                    "description": "Eszközök és entitások csoportosítása területekre",
                     "editor": {
                         "area_id": "Terület ID",
                         "create": "Létrehozás",
@@ -1051,7 +1070,7 @@
                 },
                 "automation": {
                     "caption": "Automatizálások",
-                    "description": "Automatizálások kezelése",
+                    "description": "Egyéni viselkedési szabályok létrehozása az otthonodhoz",
                     "dialog_new": {
                         "blueprint": {
                             "use_blueprint": "Tervrajz használata"
@@ -1399,22 +1418,22 @@
                 "blueprint": {
                     "add": {
                         "error_no_url": "Add meg a tervrajz URL címét.",
-                        "file_name": "Helyi tervrajz neve",
-                        "header": "Új tervrajz hozzáadása",
-                        "import_btn": "Tervrajz importálása",
-                        "import_header": "{name} importálása ({domain})",
+                        "file_name": "Tervrajz elérési útja",
+                        "header": "Tervrajz importálása",
+                        "import_btn": "Tervrajz előnézete",
+                        "import_header": "\"{name}\" tervrajz",
                         "import_introduction": "Importálhatod más felhasználók tervrajzait a Githubról és a közösségi fórumról. Írd be alább a terv URL címét.",
-                        "importing": "Tervrajz importálása...",
+                        "importing": "Tervrajz betöltése...",
                         "raw_blueprint": "Tervrajz tartalma",
-                        "save_btn": "Tervrajz mentése",
-                        "saving": "Tervrajz mentése...",
+                        "save_btn": "Tervrajz importálása",
+                        "saving": "Tervrajz importálása...",
                         "unsupported_blueprint": "Ez a tervrajz nem támogatott",
                         "url": "A tervrajz URL-címe"
                     },
                     "caption": "Tervrajzok",
                     "description": "Tervrajzok kezelése",
                     "overview": {
-                        "add_blueprint": "Tervrajz hozzáadása",
+                        "add_blueprint": "Tervrajz importálása",
                         "confirm_delete_header": "Törlöd ezt a tervrajzot?",
                         "confirm_delete_text": "Biztosan törölni szeretnéd ezt a tervrajzot?",
                         "delete_blueprint": "Tervrajz törlése",
@@ -1509,7 +1528,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Felhő",
-                    "description_features": "Távoli vezérlés, Alexa és Google Asszisztens integráció",
+                    "description_features": "Irányítsd az otthonod, amikor távol vagy, és integráld Alexával és a Google Segéddel",
                     "description_login": "Bejelentkezve mint {email}",
                     "description_not_login": "Nincs bejelentkezve",
                     "dialog_certificate": {
@@ -1604,7 +1623,7 @@
                 },
                 "core": {
                     "caption": "Általános",
-                    "description": "Az általános Home Assistant konfiguráció módosítása",
+                    "description": "Egységrendszer, hely, időzóna és egyéb általános paraméterek",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1666,6 +1685,7 @@
                             "unknown_condition": "Ismeretlen feltétel"
                         },
                         "create": "Automatizálás létrehozása eszközzel",
+                        "create_disable": "Nem lehet automatizálást létrehozni a letiltott eszközzel",
                         "no_automations": "Nincsenek automatizálások",
                         "no_device_automations": "Ehhez az eszközhöz nem állnak rendelkezésre automatizálások.",
                         "triggers": {
@@ -1691,9 +1711,18 @@
                         "no_devices": "Nincsenek eszközök"
                     },
                     "delete": "Törlés",
-                    "description": "Csatlakoztatott eszközök kezelése",
+                    "description": "Konfigurált eszközök kezelése",
                     "device_info": "Eszköz információ",
                     "device_not_found": "Eszköz nem található.",
+                    "disabled": "Letiltva",
+                    "disabled_by": {
+                        "config_entry": "Konfigurációs bejegyzés",
+                        "integration": "Integráció",
+                        "user": "Felhasználó"
+                    },
+                    "enabled_cause": "Az eszköz le van tiltva. ({cause})",
+                    "enabled_description": "A letiltott eszközök nem jelennek meg, az eszközhöz tartozó entitások pedig le lesznek tiltva, és nem lesznek hozzáadva a Home Assistant programhoz.",
+                    "enabled_label": "Eszköz engedélyezése",
                     "entities": {
                         "add_entities_lovelace": "Hozzáadás a Lovelace-hez",
                         "disabled_entities": "+{count} {count, plural,\n  one {letiltott entitás}\n  other {letiltott entitás}\n}",
@@ -1703,14 +1732,25 @@
                     },
                     "name": "Név",
                     "no_devices": "Nincsenek eszközök",
+                    "picker": {
+                        "filter": {
+                            "filter": "Szűrő",
+                            "hidden_devices": "{number} rejtett {number, plural,\n  one {eszköz}\n  other {eszköz}\n}",
+                            "show_all": "Az összes megjelenítése",
+                            "show_disabled": "Letiltott eszközök megjelenítése"
+                        },
+                        "search": "Eszközök keresése"
+                    },
                     "scene": {
                         "create": "Jelenet létrehozása eszközzel",
+                        "create_disable": "Nem lehet létrehozni a jelenetet letiltott eszközzel",
                         "no_scenes": "Nincsenek jelenetek",
                         "scenes": "Jelenetek"
                     },
                     "scenes": "Jelenetek",
                     "script": {
                         "create": "Szkript létrehozása eszközzel",
+                        "create_disable": "Nem lehet szkriptet létrehozni letiltott eszközzel",
                         "no_scripts": "Nincsenek szkriptek",
                         "scripts": "Szkriptek"
                     },
@@ -1743,6 +1783,7 @@
                         },
                         "header": "Entitások",
                         "headers": {
+                            "area": "Terület",
                             "entity_id": "Entitás ID",
                             "integration": "Integráció",
                             "name": "Név",
@@ -1775,7 +1816,7 @@
                 "header": "Home Assistant beállítása",
                 "helpers": {
                     "caption": "Segítők",
-                    "description": "Automatizálások létrehozását segítő elemek kezelése",
+                    "description": "Automatizálások létrehozását elősegítő elemek",
                     "dialog": {
                         "add_helper": "Segítő hozzáadása",
                         "add_platform": "{platform} hozzáadása",
@@ -1807,7 +1848,7 @@
                     "copy_github": "A GitHub számára",
                     "copy_raw": "Nyers szöveg",
                     "custom_uis": "Egyéni felhasználói felületek:",
-                    "description": "Telepítési információ megtekintése a Home Assistant-ról",
+                    "description": "Verzió, rendszerállapot és dokumentációra mutató linkek",
                     "developed_by": "Egy csomó fantasztikus ember által kifejlesztve.",
                     "documentation": "Dokumentáció",
                     "frontend": "frontend-ui",
@@ -1913,7 +1954,7 @@
                     },
                     "configure": "Beállítás",
                     "configured": "Konfigurálva",
-                    "description": "Integrációk kezelése",
+                    "description": "Integrációk kezelése (szolgáltatások, eszközök...)",
                     "details": "Integráció részletei",
                     "discovered": "Felfedezett",
                     "home_assistant_website": "Home Assistant weboldal",
@@ -1998,7 +2039,7 @@
                             "open": "Megnyitás"
                         }
                     },
-                    "description": "Lovelace irányítópultok kezelése",
+                    "description": "Hozz létre személyre szabott kártyafelosztásokat az otthonod vezérléséhez",
                     "resources": {
                         "cant_edit_yaml": "A Lovelace-t YAML módban használod, ezért az erőforrásokat nem kezelheted a felhasználói felületről. Kezeld őket a configuration.yaml fájlban.",
                         "caption": "Erőforrások",
@@ -2197,7 +2238,7 @@
                 "scene": {
                     "activated": "Aktivált jelenet: {name}.",
                     "caption": "Jelenetek",
-                    "description": "Jelenetek kezelése",
+                    "description": "Eszköz állapotok rögzítése, hogy később egyszerűen előhívhasd őket",
                     "editor": {
                         "default_name": "Új jelenet",
                         "devices": {
@@ -2241,7 +2282,7 @@
                 },
                 "script": {
                     "caption": "Szkriptek",
-                    "description": "Szkriptek kezelése",
+                    "description": "Műveletsorozat végrehajtása",
                     "editor": {
                         "alias": "Név",
                         "default_name": "Új Szkript",
@@ -2352,7 +2393,7 @@
                     "confirm_remove": "Biztosan el szeretnéd távolítani a(z) {tag} címkét?",
                     "confirm_remove_title": "Eltávolítod a címkét?",
                     "create_automation": "Automatizálás létrehozása címkével",
-                    "description": "Címkék kezelése",
+                    "description": "Automatizálások indítása NFC-címke, QR-kód stb. beolvasásakor",
                     "detail": {
                         "companion_apps": "társalkalmazások",
                         "create": "Létrehozás",
@@ -2387,10 +2428,11 @@
                         "username": "Felhasználónév"
                     },
                     "caption": "Felhasználók",
-                    "description": "Felhasználók kezelése",
+                    "description": "Home Assistant felhasználói fiókok kezelése",
                     "editor": {
                         "activate_user": "Felhasználó aktiválása",
                         "active": "Aktív",
+                        "active_tooltip": "Szabályozza, hogy a felhasználó be tud-e jelentkezni",
                         "admin": "Adminisztrátor",
                         "caption": "Felhasználó megtekintése",
                         "change_password": "Jelszó módosítása",
@@ -2399,7 +2441,7 @@
                         "delete_user": "Felhasználó törlése",
                         "group": "Csoport",
                         "id": "ID",
-                        "name": "Név",
+                        "name": "Megjelenítendő név",
                         "new_password": "Új Jelszó",
                         "owner": "Tulajdonos",
                         "password_changed": "A jelszó módosítása sikeresen megtörtént",
@@ -2407,14 +2449,18 @@
                         "system_generated_users_not_editable": "Nem lehet frissíteni a rendszer által létrehozott felhasználókat.",
                         "system_generated_users_not_removable": "Nem lehet eltávolítani a rendszer által létrehozott felhasználókat.",
                         "unnamed_user": "Névtelen felhasználó",
-                        "update_user": "Frissítés"
+                        "update_user": "Frissítés",
+                        "username": "Felhasználónév"
                     },
                     "picker": {
                         "add_user": "Felhasználó hozzáadása",
                         "headers": {
                             "group": "Csoport",
-                            "name": "Név",
-                            "system": "Rendszer"
+                            "is_active": "Aktív",
+                            "is_owner": "Tulajdonos",
+                            "name": "Megjelenítendő név",
+                            "system": "Rendszer által létrehozott",
+                            "username": "Felhasználónév"
                         }
                     },
                     "users_privileges_note": "A felhasználói csoport funkció jelenleg is fejlesztés alatt áll. A felhasználó nem tudja kezelni a példányt a felhasználói felületen keresztül. Folyamatosan ellenőrizzük az összes felügyeleti API-végpontot annak érdekében, hogy azok helyesen korlátozzák a hozzáférést az adminisztrátorok részére."
@@ -2466,6 +2512,16 @@
                         "value": "Érték"
                     },
                     "description": "Zigbee Home Automation hálózat menedzsment",
+                    "device_pairing_card": {
+                        "CONFIGURED": "A konfigurálás befejeződött",
+                        "CONFIGURED_status_text": "Inicializálás",
+                        "INITIALIZED": "Az inicializálás befejeződött",
+                        "INITIALIZED_status_text": "A készülék használatra kész",
+                        "INTERVIEW_COMPLETE": "Interjú kész",
+                        "INTERVIEW_COMPLETE_status_text": "Konfigurálás",
+                        "PAIRED": "Eszköz megtalálva",
+                        "PAIRED_status_text": "Interjú indítása"
+                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Eszköz"
                     },
@@ -2785,7 +2841,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Az ehhez az irányítópulthoz tartozó Lovelace konfiguráció módosítva lett, szeretnél frissíteni az aktualizáláshoz?",
+                    "message": "Az ehhez az irányítópulthoz tartozó Lovelace konfiguráció módosítva lett. Frissítesz az aktualizáláshoz?",
                     "refresh": "Frissítés"
                 },
                 "editor": {
@@ -3395,10 +3451,13 @@
                 "change_password": {
                     "confirm_new_password": "Új Jelszó Megerősítése",
                     "current_password": "Jelenlegi Jelszó",
+                    "error_new_is_old": "Az új jelszónak különböznie kell az aktuális jelszótól",
+                    "error_new_mismatch": "A megadott új jelszavak nem egyeznek",
                     "error_required": "Szükséges",
                     "header": "Jelszó Módosítása",
                     "new_password": "Új Jelszó",
-                    "submit": "Küldés"
+                    "submit": "Küldés",
+                    "success": "A jelszó sikeresen módosíva lett"
                 },
                 "current_user": "Jelenleg {fullName} felhasználóként vagy bejelentkezve.",
                 "customize_sidebar": {

@@ -20,22 +20,22 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-svg-icon";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
+import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import "./controls/more-info-default";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
-import "./controls/more-info-default";
-import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import "./more-info-content";
+import { replaceDialog } from "../make-dialog-manager";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
@@ -294,6 +294,7 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _gotoSettings() {
+    replaceDialog();
     showEntityEditorDialog(this, {
       entity_id: this._entityId!,
     });

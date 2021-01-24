@@ -6,17 +6,25 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { domainIcon } from "../../../common/entity/domain_icon";
+import "../../../components/ha-area-picker";
+import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-input";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+  updateDeviceRegistryEntry,
+} from "../../../data/device_registry";
 import {
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
@@ -27,18 +35,10 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { domainIcon } from "../../../common/entity/domain_icon";
-import "../../../components/ha-area-picker";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-  updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import "../../../components/ha-expansion-panel";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
 @customElement("entity-registry-settings")

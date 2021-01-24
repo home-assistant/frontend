@@ -3,17 +3,17 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import "../../components/ha-paper-dropdown-menu";
+import "../../components/ha-settings-row";
 import { fetchDashboards, LovelaceDashboard } from "../../data/lovelace";
 import { setDefaultPanel } from "../../data/panel";
 import { HomeAssistant } from "../../types";
-import "../../components/ha-settings-row";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {

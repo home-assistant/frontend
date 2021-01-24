@@ -2,14 +2,14 @@
 // eslint-disable-next-line spaced-comment
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
-import {
-  CacheFirst,
-  StaleWhileRevalidate,
-  NetworkOnly,
-} from "workbox-strategies";
+import { cacheNames } from "workbox-core";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import { cacheNames } from "workbox-core";
+import {
+  CacheFirst,
+  NetworkOnly,
+  StaleWhileRevalidate,
+} from "workbox-strategies";
 
 // Clean up caches from older workboxes and old service workers.
 // Will help with cleaning up Workbox v4 stuff

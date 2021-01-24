@@ -2,8 +2,8 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { getAppKey } from "../data/notify_html5";
-import { EventsMixin } from "../mixins/events-mixin";
 import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
+import { EventsMixin } from "../mixins/events-mixin";
 import "./ha-switch";
 
 export const pushSupported =

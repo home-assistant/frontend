@@ -5,13 +5,15 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
+import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-service-description";
 import {
@@ -23,10 +25,8 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-area-picker";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("zha-device-pairing-status-card")
 class ZHADevicePairingStatusCard extends LitElement {
@@ -49,19 +49,17 @@ class ZHADevicePairingStatusCard extends LitElement {
         class="discovered ${classMap({
           initialized: this.device.pairing_status === INITIALIZED,
         })}"
-        ><div
-          class="header"
-        >
-          <h1>
+        ><div class="header">
+          <h4>
             ${this.hass!.localize(
               `ui.panel.config.zha.device_pairing_card.${this.device.pairing_status}`
             )}
-          </h1>
-          <h4>
+          </h4>
+          <h1>
             ${this.hass!.localize(
               `ui.panel.config.zha.device_pairing_card.${this.device.pairing_status}_status_text`
             )}
-          </h4>
+          </h1>
         </div>
         <div class="card-content">
           ${[INTERVIEW_COMPLETE, CONFIGURED].includes(

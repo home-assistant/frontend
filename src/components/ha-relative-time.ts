@@ -1,19 +1,17 @@
 import {
   customElement,
-  UpdatingElement,
   property,
   PropertyValues,
+  UpdatingElement,
 } from "lit-element";
-
 import relativeTime from "../common/datetime/relative_time";
-
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-relative-time")
 class HaRelativeTime extends UpdatingElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public datetime?: string;
+  @property({ attribute: false }) public datetime?: string | Date;
 
   private _interval?: number;
 

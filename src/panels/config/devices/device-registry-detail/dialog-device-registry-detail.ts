@@ -3,27 +3,25 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-area-picker";
-
 import {
-  CSSResult,
-  LitElement,
-  TemplateResult,
   css,
+  CSSResult,
   customElement,
   html,
   internalProperty,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
-import { HomeAssistant } from "../../../../types";
-import type { HaSwitch } from "../../../../components/ha-switch";
-import { PolymerChangedEvent } from "../../../../polymer-types";
-import { computeDeviceName } from "../../../../data/device_registry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-area-picker";
+import "../../../../components/ha-dialog";
+import type { HaSwitch } from "../../../../components/ha-switch";
+import { computeDeviceName } from "../../../../data/device_registry";
+import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {

@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -7,11 +8,9 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-
+import { formatNumber } from "../common/string/format_number";
 import { CLIMATE_PRESET_NONE } from "../data/climate";
 import type { HomeAssistant } from "../types";
-import { formatNumber } from "../common/string/format_number";
 
 @customElement("ha-climate-state")
 class HaClimateState extends LitElement {

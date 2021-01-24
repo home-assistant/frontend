@@ -43,6 +43,11 @@ import {
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import {
+  getValueInPercentage,
+  roundWithOneDecimal,
+} from "../../../src/util/calculate";
+import "../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import { hassioStyle } from "../resources/hassio-style";
@@ -57,80 +62,105 @@ class HassioHostInfo extends LitElement {
     const primaryIpAddress = this.supervisor.host.features.includes("network")
       ? this._primaryIpAddress(this.supervisor.network!)
       : "";
-    return html`
-      <ha-card header="Host System">
-        <div class="card-content">
-          ${this.supervisor.host.features.includes("hostname")
-            ? html`<ha-settings-row>
-                <span slot="heading">
-                  Hostname
-                </span>
-                <span slot="description">
-                  ${this.supervisor.host.hostname}
-                </span>
-                <mwc-button
-                  title="Change the hostname"
-                  label="Change"
-                  @click=${this._changeHostnameClicked}
-                >
-                </mwc-button>
-              </ha-settings-row>`
-            : ""}
-          ${this.supervisor.host.features.includes("network")
-            ? html` <ha-settings-row>
-                <span slot="heading">
-                  IP Address
-                </span>
-                <span slot="description">
-                  ${primaryIpAddress}
-                </span>
-                <mwc-button
-                  title="Change the network"
-                  label="Change"
-                  @click=${this._changeNetworkClicked}
-                >
-                </mwc-button>
-              </ha-settings-row>`
-            : ""}
 
-          <ha-settings-row>
-            <span slot="heading">
-              Operating System
-            </span>
-            <span slot="description">
-              ${this.supervisor.host.operating_system}
-            </span>
-            ${this.supervisor.os.update_available
-              ? html`
-                  <ha-progress-button
-                    title="Update the host OS"
-                    @click=${this._osUpdate}
+    const metrics = [
+      {
+        description: "Used Space",
+        value: this._getUsedSpace(
+          this.supervisor.host.disk_used,
+          this.supervisor.host.disk_total
+        ),
+        tooltip: `${this.supervisor.host.disk_used} GB/${this.supervisor.host.disk_total} GB`,
+      },
+    ];
+    return html`
+      <ha-card header="Host">
+        <div class="card-content">
+          <div>
+            ${this.supervisor.host.features.includes("hostname")
+              ? html`<ha-settings-row>
+                  <span slot="heading">
+                    Hostname
+                  </span>
+                  <span slot="description">
+                    ${this.supervisor.host.hostname}
+                  </span>
+                  <mwc-button
+                    title="Change the hostname"
+                    label="Change"
+                    @click=${this._changeHostnameClicked}
                   >
-                    Update
-                  </ha-progress-button>
-                `
+                  </mwc-button>
+                </ha-settings-row>`
               : ""}
-          </ha-settings-row>
-          ${!this.supervisor.host.features.includes("hassos")
-            ? html`<ha-settings-row>
-                <span slot="heading">
-                  Docker version
-                </span>
-                <span slot="description">
-                  ${this.supervisor.info.docker}
-                </span>
-              </ha-settings-row>`
-            : ""}
-          ${this.supervisor.host.deployment
-            ? html`<ha-settings-row>
-                <span slot="heading">
-                  Deployment
-                </span>
-                <span slot="description">
-                  ${this.supervisor.host.deployment}
-                </span>
-              </ha-settings-row>`
-            : ""}
+            ${this.supervisor.host.features.includes("network")
+              ? html` <ha-settings-row>
+                  <span slot="heading">
+                    IP Address
+                  </span>
+                  <span slot="description">
+                    ${primaryIpAddress}
+                  </span>
+                  <mwc-button
+                    title="Change the network"
+                    label="Change"
+                    @click=${this._changeNetworkClicked}
+                  >
+                  </mwc-button>
+                </ha-settings-row>`
+              : ""}
+
+            <ha-settings-row>
+              <span slot="heading">
+                Operating System
+              </span>
+              <span slot="description">
+                ${this.supervisor.host.operating_system}
+              </span>
+              ${this.supervisor.os.update_available
+                ? html`
+                    <ha-progress-button
+                      title="Update the host OS"
+                      @click=${this._osUpdate}
+                    >
+                      Update
+                    </ha-progress-button>
+                  `
+                : ""}
+            </ha-settings-row>
+            ${!this.supervisor.host.features.includes("hassos")
+              ? html`<ha-settings-row>
+                  <span slot="heading">
+                    Docker version
+                  </span>
+                  <span slot="description">
+                    ${this.supervisor.info.docker}
+                  </span>
+                </ha-settings-row>`
+              : ""}
+            ${this.supervisor.host.deployment
+              ? html`<ha-settings-row>
+                  <span slot="heading">
+                    Deployment
+                  </span>
+                  <span slot="description">
+                    ${this.supervisor.host.deployment}
+                  </span>
+                </ha-settings-row>`
+              : ""}
+          </div>
+          <div>
+            ${metrics.map(
+              (metric) =>
+                html`
+                  <supervisor-metric
+                    .description=${metric.description}
+                    .value=${metric.value ?? 0}
+                    .tooltip=${metric.tooltip}
+                  ></supervisor-metric>
+                `
+            )}
+          </div>
         </div>
         <div class="card-actions">
           ${this.supervisor.host.features.includes("reboot")
@@ -140,7 +170,7 @@ class HassioHostInfo extends LitElement {
                   class="warning"
                   @click=${this._hostReboot}
                 >
-                  Reboot
+                  Reboot Host
                 </ha-progress-button>
               `
             : ""}
@@ -151,7 +181,7 @@ class HassioHostInfo extends LitElement {
                   class="warning"
                   @click=${this._hostShutdown}
                 >
-                  Shutdown
+                  Shutdown Host
                 </ha-progress-button>
               `
             : ""}
@@ -182,6 +212,10 @@ class HassioHostInfo extends LitElement {
   protected firstUpdated(): void {
     this._loadData();
   }
+
+  private _getUsedSpace = memoizeOne((used: number, total: number) =>
+    roundWithOneDecimal(getValueInPercentage(used, 0, total))
+  );
 
   private _primaryIpAddress = memoizeOne((network_info: NetworkInfo) => {
     if (!network_info || !network_info.interfaces) {
@@ -368,6 +402,12 @@ class HassioHostInfo extends LitElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
+        }
+        .card-content {
+          display: flex;
+          flex-direction: column;
+          height: calc(100% - 124px);
+          justify-content: space-between;
         }
         ha-settings-row {
           padding: 0;

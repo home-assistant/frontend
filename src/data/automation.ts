@@ -157,6 +157,7 @@ export interface StateCondition {
   entity_id: string;
   attribute?: string;
   state: string | number;
+  for?: string | number | ForDict;
 }
 
 export interface NumericStateCondition {

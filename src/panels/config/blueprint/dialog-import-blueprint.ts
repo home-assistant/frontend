@@ -2,27 +2,28 @@ import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "../../../components/ha-circular-progress";
 import {
+  css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
-import "../../../components/ha-dialog";
-import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-dialog";
+import "../../../components/ha-expansion-panel";
 import {
   BlueprintImportResult,
   importBlueprint,
   saveBlueprint,
 } from "../../../data/blueprint";
-import "../../../components/ha-expansion-panel";
+import { haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -73,7 +74,9 @@ class DialogImportBlueprint extends LitElement {
                   this._result.blueprint.metadata.domain
                 )}
                 <br />
-                ${this._result.blueprint.metadata.description}
+                <p class="pre-line">
+                  ${this._result.blueprint.metadata.description}
+                </p>
                 ${this._result.validation_errors
                   ? html`
                       <p class="error">
@@ -104,7 +107,16 @@ class DialogImportBlueprint extends LitElement {
                   <pre>${this._result.raw_data}</pre>
                 </ha-expansion-panel>`
             : html`${this.hass.localize(
-                  "ui.panel.config.blueprint.add.import_introduction"
+                  "ui.panel.config.blueprint.add.import_introduction_link",
+                  "community_link",
+                  html`<a
+                    href="https://www.home-assistant.io/get-blueprints"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    >${this.hass.localize(
+                      "ui.panel.config.blueprint.add.community_forums"
+                    )}</a
+                  >`
                 )}<paper-input
                   id="input"
                   .label=${this.hass.localize(
@@ -199,8 +211,15 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
-    return haStyleDialog;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        .pre-line {
+          white-space: pre-line;
+        }
+      `,
+    ];
   }
 }
 

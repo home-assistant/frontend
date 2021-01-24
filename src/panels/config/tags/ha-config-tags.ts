@@ -1,4 +1,3 @@
-import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import {
   mdiCog,
@@ -18,6 +17,7 @@ import {
 import memoizeOne from "memoize-one";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-relative-time";
 import { showAutomationEditor, TagTrigger } from "../../../data/automation";
 import {
@@ -84,7 +84,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
                 ${tag.last_scanned_datetime
                   ? html`<ha-relative-time
                       .hass=${this.hass}
-                      .datetimeObj=${tag.last_scanned_datetime}
+                      .datetime=${tag.last_scanned_datetime}
                     ></ha-relative-time>`
                   : this.hass.localize("ui.panel.config.tags.never_scanned")}
               </div>`
@@ -103,7 +103,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
             ${last_scanned_datetime
               ? html`<ha-relative-time
                   .hass=${this.hass}
-                  .datetimeObj=${last_scanned_datetime}
+                  .datetime=${last_scanned_datetime}
                 ></ha-relative-time>`
               : this.hass.localize("ui.panel.config.tags.never_scanned")}
           `,

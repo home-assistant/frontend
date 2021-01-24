@@ -75,7 +75,7 @@ class MoreInfoPerson extends LitElement {
         justify-content: space-between;
       }
       .actions {
-        margin: 36px 0 8px 0;
+        margin: 8px 0;
         text-align: right;
       }
       ha-map {

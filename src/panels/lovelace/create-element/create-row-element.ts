@@ -71,7 +71,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   switch: "toggle",
   vacuum: "toggle",
   // Temporary. Once climate is rewritten,
-  // water heater should get it's own row.
+  // water heater should get its own row.
   water_heater: "climate",
   input_datetime: "input-datetime",
   weather: "weather",

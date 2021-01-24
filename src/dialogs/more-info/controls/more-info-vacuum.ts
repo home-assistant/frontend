@@ -1,5 +1,3 @@
-import "../../../components/ha-icon-button";
-import "../../../components/ha-icon";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -13,6 +11,8 @@ import {
 } from "lit-element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-paper-dropdown-menu";
 import {
   VacuumEntity,

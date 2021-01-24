@@ -7,11 +7,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../../src/components/ha-circular-progress";
 import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
-import "../../../../src/components/ha-circular-progress";
 import "./hassio-addon-audio";
 import "./hassio-addon-config";
 import "./hassio-addon-network";
@@ -26,28 +26,41 @@ class HassioAddonConfigDashboard extends LitElement {
     if (!this.addon) {
       return html`<ha-circular-progress active></ha-circular-progress>`;
     }
+    const hasOptions =
+      this.addon.options && Object.keys(this.addon.options).length;
+    const hasSchema =
+      this.addon.schema && Object.keys(this.addon.schema).length;
+
     return html`
       <div class="content">
-        <hassio-addon-config
-          .hass=${this.hass}
-          .addon=${this.addon}
-        ></hassio-addon-config>
-        ${this.addon.network
+        ${hasOptions || hasSchema || this.addon.network || this.addon.audio
           ? html`
-              <hassio-addon-network
-                .hass=${this.hass}
-                .addon=${this.addon}
-              ></hassio-addon-network>
+              ${hasOptions || hasSchema
+                ? html`
+                    <hassio-addon-config
+                      .hass=${this.hass}
+                      .addon=${this.addon}
+                    ></hassio-addon-config>
+                  `
+                : ""}
+              ${this.addon.network
+                ? html`
+                    <hassio-addon-network
+                      .hass=${this.hass}
+                      .addon=${this.addon}
+                    ></hassio-addon-network>
+                  `
+                : ""}
+              ${this.addon.audio
+                ? html`
+                    <hassio-addon-audio
+                      .hass=${this.hass}
+                      .addon=${this.addon}
+                    ></hassio-addon-audio>
+                  `
+                : ""}
             `
-          : ""}
-        ${this.addon.audio
-          ? html`
-              <hassio-addon-audio
-                .hass=${this.hass}
-                .addon=${this.addon}
-              ></hassio-addon-audio>
-            `
-          : ""}
+          : "This add-on does not expose configuration for you to mess with.... 👋"}
       </div>
     `;
   }

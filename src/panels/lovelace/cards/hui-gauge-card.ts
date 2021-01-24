@@ -17,8 +17,8 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
-import type { HomeAssistant } from "../../../types";
 import { UNAVAILABLE } from "../../../data/entity";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -122,12 +122,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
+    // for consistent value display across gauge, entity, entity-row, etc.
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
-          .value=${state}
+          .value=${stateObj.state}
           .language=${this.hass!.language}
           .label=${this._config!.unit ||
           this.hass?.states[this._config!.entity].attributes

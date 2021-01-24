@@ -28,8 +28,8 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { LightEntity } from "../../../data/light";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
@@ -84,9 +84,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: ButtonCardConfig): void {
-    if (!config.entity) {
-      throw new Error("Entity must be specified");
-    }
     if (config.entity && !isValidEntityId(config.entity)) {
       throw new Error("Invalid entity");
     }
