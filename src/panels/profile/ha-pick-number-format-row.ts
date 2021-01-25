@@ -94,14 +94,6 @@ class NumberFormatRow extends LitElement {
       numberFormat: ev.detail.item.format,
     });
   }
-
-  static get styles(): CSSResult {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-    `;
-  }
 }
 
 declare global {
