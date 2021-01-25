@@ -236,7 +236,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       lastDate.toISOString(),
       now.toISOString(),
       this._configEntities!.map((entity) => entity.entity).toString(),
-      true
+      false
     );
 
     const logbookEntries = this._logbookEntries

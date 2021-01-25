@@ -165,15 +165,15 @@ class HaLogbook extends LitElement {
                   : item.context_event_type === "call_service"
                   ? // Service Call
                     ` ${this.hass.localize("ui.components.logbook.by_service")}
-                  ${item.context_domain}.${item.context_service}`
+                    ${item.context_domain}.${item.context_service}`
                   : item.context_entity_id === item.entity_id
                   ? // HomeKit or something that self references
                     ` ${this.hass.localize("ui.components.logbook.by")}
-                  ${
-                    item.context_name
-                      ? item.context_name
-                      : item.context_event_type
-                  }`
+                    ${
+                      item.context_name
+                        ? item.context_name
+                        : item.context_event_type
+                    }`
                   : // Another entity such as an automation or script
                     html` ${this.hass.localize("ui.components.logbook.by")}
                       <a

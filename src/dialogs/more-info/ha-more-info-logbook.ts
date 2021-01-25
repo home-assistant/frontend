@@ -120,7 +120,7 @@ export class MoreInfoLogbook extends LitElement {
       lastDate.toISOString(),
       now.toISOString(),
       this.entityId,
-      true
+      false
     );
     this._logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]
