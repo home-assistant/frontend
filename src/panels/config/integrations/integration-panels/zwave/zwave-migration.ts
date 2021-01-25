@@ -81,12 +81,12 @@ export class ZwaveMigration extends LitElement {
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
-            ${this.hass.localize("ui.panel.config.zwave.migration.header")}
+            ${this.hass.localize("ui.panel.config.zwave.migration.ozw.header")}
           </div>
 
           <div slot="introduction">
             ${this.hass.localize(
-              "ui.panel.config.zwave.migration.introduction"
+              "ui.panel.config.zwave.migration.ozw.introduction"
             )}
           </div>
           ${!this.hass.config.components.includes("mqtt")
@@ -247,7 +247,7 @@ export class ZwaveMigration extends LitElement {
                                   ? html`<h3 class="warning">
                                         Not all entities can be migrated! The
                                         following entities will not be migrated
-                                        and might need manually adjustmens to
+                                        and might need manual adjustments to
                                         your config:
                                       </h3>
                                       <ul>
@@ -372,26 +372,25 @@ export class ZwaveMigration extends LitElement {
 
   private async _setupOzw() {
     const ozwConfigFlow = await startOzwConfigFlow(this.hass);
-    if (!this.hass.config.components.includes("hassio")) {
-      this._checkOzwIsSetup();
+    if (
+      !this.hass.config.components.includes("hassio") &&
+      this.hass.config.components.includes("ozw")
+    ) {
+      this._getMigrationData();
+      this._step = 3;
       return;
     }
     showConfigFlowDialog(this, {
       continueFlowId: ozwConfigFlow.flow_id,
       dialogClosedCallback: () => {
-        this._checkOzwIsSetup();
+        if (this.hass.config.components.includes("ozw")) {
+          this._getMigrationData();
+          this._step = 3;
+        }
       },
       showAdvanced: this.hass.userData?.showAdvanced,
     });
     this.hass.loadBackendTranslation("title", "ozw", true);
-  }
-
-  private _checkOzwIsSetup() {
-    if (!this.hass.config.components.includes("ozw")) {
-      return;
-    }
-    this._getMigrationData();
-    this._step = 3;
   }
 
   private async _getMigrationData() {

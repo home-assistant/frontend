@@ -2309,8 +2309,10 @@
             "wakeup_interval": "Wakeup Interval"
           },
           "migration": {
-            "header": "Migrate to OpenZWave",
-            "introduction": "This wizard will help you migrate from the legacy Z-Wave component to the new OpenZWave."
+            "ozw": {
+              "header": "Migrate to OpenZWave",
+              "introduction": "This wizard will help you migrate from the legacy Z-Wave component to the OpenZWave integration that is currently in beta."
+            }
           },
           "network_management": {
             "header": "Z-Wave Network Management",
