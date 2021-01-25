@@ -80,7 +80,7 @@ export class HaManualAutomationEditor extends LitElement {
                 html`<a
                   href="${documentationUrl(
                     this.hass,
-                    "/integrations/automation/#automation-modes"
+                    "/docs/automation/modes/"
                   )}"
                   target="_blank"
                   rel="noreferrer"
