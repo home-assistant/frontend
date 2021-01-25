@@ -215,6 +215,12 @@ export class HuiPictureEntityCardEditor extends LitElement
             ></ha-formfield>
           </div>
         </div>
+        <hui-theme-select-editor
+          .hass=${this.hass}
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @value-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
         <div class="side-by-side">
           <hui-action-editor
             .label="${this.hass.localize(
@@ -240,12 +246,6 @@ export class HuiPictureEntityCardEditor extends LitElement
             .configValue="${"hold_action"}"
             @value-changed="${this._valueChanged}"
           ></hui-action-editor>
-          <hui-theme-select-editor
-            .hass=${this.hass}
-            .value="${this._theme}"
-            .configValue="${"theme"}"
-            @value-changed="${this._valueChanged}"
-          ></hui-theme-select-editor>
         </div>
       </div>
     `;
