@@ -21,6 +21,8 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
+import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
+import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-config-dashboard")
@@ -137,6 +139,16 @@ class ZWaveJSConfigDashboard extends LitElement {
                         )}
                       </mwc-button>
                     </a>
+                    <mwc-button @click=${this._addNodeClicked}>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.add_node"
+                      )}
+                    </mwc-button>
+                    <mwc-button @click=${this._removeNodeClicked}>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.remove_node"
+                      )}
+                    </mwc-button>
                   </div>
                 </ha-card>
               `
@@ -153,6 +165,18 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (this._status === "connected") {
       this._icon = mdiCheckCircle;
     }
+  }
+
+  private async _addNodeClicked() {
+    showZWaveJSAddNodeDialog(this, {
+      entry_id: this.configEntryId!,
+    });
+  }
+
+  private async _removeNodeClicked() {
+    showZWaveJSRemoveNodeDialog(this, {
+      entry_id: this.configEntryId!,
+    });
   }
 
   static get styles(): CSSResultArray {
