@@ -2387,7 +2387,10 @@
           "common": {
             "network": "Network",
             "node_id": "Node ID",
-            "home_id": "Home ID"
+            "home_id": "Home ID",
+            "close": "Close",
+            "add_node": "Add Node",
+            "remove_node": "Remove Node"
           },
           "dashboard": {
             "header": "Manage your Z-Wave Network",
@@ -2413,6 +2416,30 @@
             "connected": "Connected",
             "connecting": "Connecting",
             "unknown": "Unknown"
+          },
+          "add_node": {
+            "title": "Add a Z-Wave Node",
+            "introduction": "This wizard will guide you through adding a node to your Z-Wave network.",
+            "use_secure_inclusion": "Use secure inclusion",
+            "secure_inclusion_warning": "Secure devices require additional bandwidth; too many secure devices can slow down your Z-Wave network. We recommend only using secure inclusion for devices that require it, like locks or garage door openers.",
+            "start_inclusion": "Start Inclusion",
+            "start_secure_inclusion": "Start Secure Inclusion",
+            "cancel_inclusion": "Cancel Inclusion",
+            "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
+            "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
+            "inclusion_failed": "The node could not be added. Please check the logs for more information.",
+            "inclusion_finished": "The node has been added. It may take a few minutes for all entities to show up as we finish setting up the node in the background.",
+            "view_device": "View Device"
+          },
+          "remove_node": {
+            "title": "Remove a Z-Wave Node",
+            "introduction": "Remove a node from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
+            "start_exclusion": "Start Exclusion",
+            "cancel_exclusion": "Cancel Exclusion",
+            "controller_in_exclusion_mode": "Your Z-Wave controller is now in exclusion mode.",
+            "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
+            "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
+            "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
           }
         }
       },
