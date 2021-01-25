@@ -479,6 +479,10 @@
           "url": "URL",
           "video": "Video"
         }
+      },
+      "calendar": {
+        "my_calendars": "My Calendars",
+        "today": "Today"
       }
     },
     "dialogs": {
@@ -779,10 +783,6 @@
       "done": "Done"
     },
     "panel": {
-      "calendar": {
-        "my_calendars": "My Calendars",
-        "today": "Today"
-      },
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
