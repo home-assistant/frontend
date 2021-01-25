@@ -20,8 +20,6 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @property() public enableMillisec?: boolean = false;
-
   @query("paper-time-input", true) private _input?: HTMLElement;
 
   public focus() {
@@ -38,7 +36,7 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
         .autoValidate=${this.schema.required}
         error-message="Required"
         enable-second
-        .enableMillisecond=${this.enableMillisec}
+        .enableMillisecond=${this.schema.enableMillisec}
         format="24"
         .hour=${this._parseDuration(this._hours)}
         .min=${this._parseDuration(this._minutes)}

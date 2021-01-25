@@ -27,10 +27,10 @@ export class HaDelayAction extends LitElement implements ActionElement {
     if (typeof this.action.delay !== "object") {
       const parts = this.action.delay?.toString().split(":") || [];
       data = {
-        hours: +parts[0],
-        minutes: +parts[1],
-        seconds: +parts[2],
-        milliseconds: +parts[3],
+        hours: Number(parts[0]),
+        minutes: Number(parts[1]),
+        seconds: Number(parts[2]),
+        milliseconds: Number(parts[3]),
       };
     } else {
       const { days, minutes, seconds, milliseconds } = this.action.delay;
@@ -44,16 +44,19 @@ export class HaDelayAction extends LitElement implements ActionElement {
       };
     }
 
-    const schema = {} as HaFormTimeSchema;
+    const schema: HaFormTimeSchema = {
+      type: "positive_time_period_dict",
+      name: "",
+      enableMillisec: true,
+    };
 
     return html`
-      <ha-form-positive_time_period_dict
+      <ha-form
         .data=${data}
         .schema=${schema}
-        .enableMillisec=${true}
         @value-changed=${this._valueChanged}
       >
-      </ha-form-positive_time_period_dict>
+      </ha-form>
     `;
   }
 

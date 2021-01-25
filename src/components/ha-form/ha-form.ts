@@ -71,7 +71,8 @@ export interface HaFormBooleanSchema extends HaFormBaseSchema {
 }
 
 export interface HaFormTimeSchema extends HaFormBaseSchema {
-  type: "time";
+  type: "positive_time_period_dict";
+  enableMillisec?: boolean;
 }
 
 export interface HaFormDataContainer {
