@@ -51,7 +51,7 @@
       @media (prefers-color-scheme: dark) {
         html {
           background-color: #111111;
-          --primary-text-color: #EEEEEE !important;
+          --primary-text-color: #e1e1e1 !important;
         }
         #ha-init-skeleton::before {
           background-color: #1c1c1c;
