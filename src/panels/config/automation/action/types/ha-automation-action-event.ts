@@ -77,7 +77,7 @@ export class HaEventAction extends LitElement implements ActionElement {
   private _eventChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.action, entity_id: ev.detail.value },
+      value: { ...this.action, event: ev.detail.value },
     });
   }
 }
