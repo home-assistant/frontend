@@ -3109,7 +3109,7 @@
         },
         "number_format": {
           "header": "Number Format",
-          "description": "Choose how numbers are formatted:",
+          "description": "Choose how numbers are formatted.",
           "formats": {
             "auto": "Auto (use language setting)",
             "system": "Use system locale",
