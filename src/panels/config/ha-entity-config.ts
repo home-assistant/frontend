@@ -10,7 +10,6 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import "../../components/buttons/ha-progress-button";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-card";
@@ -39,16 +38,15 @@ export class HaEntityConfig extends LitElement {
             .hass=${this.hass}
             .value=${this.selectedEntityId}
             .configValue=${"entity"}
+            @change=${this._selectedEntityChanged}
             allow-custom-entity
             hideClearIcon
           >
           </ha-entity-picker>
 
           <div class="form-container">
-            ${dynamicElement("ha-form-customize", {
-              hass: this.hass,
-              id: "form",
-            })}
+            <ha-form-customize .hass=${this.hass} .id=${"form"}>
+            </ha-form-customize>
           </div>
         </div>
         <div class="card-actions">
@@ -74,7 +72,11 @@ export class HaEntityConfig extends LitElement {
     }
   }
 
-  private _selectEntity(entityId?: string) {
+  private _selectedEntityChanged(ev) {
+    this._selectEntity(ev.target.value);
+  }
+
+  private async _selectEntity(entityId?: string) {
     if (!this._form || !entityId) return;
     const entity = this.hass.states[entityId];
     if (!entity) return;
@@ -82,12 +84,11 @@ export class HaEntityConfig extends LitElement {
     this._formState = "loading";
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const el = this;
-    this._form.loadEntity(entity).then(function () {
-      el._formState = "editing";
-    });
+    await this._form.loadEntity(entity);
+    el._formState = "editing";
   }
 
-  private _saveEntity(ev) {
+  private async _saveEntity(ev) {
     if (this._formState !== "editing") return;
     this._formState = "saving";
     const button = ev.target;
@@ -95,17 +96,15 @@ export class HaEntityConfig extends LitElement {
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const el = this;
-    this._form
-      .saveEntity()
-      .then(function () {
-        el._formState = "editing";
-        button.actionSuccess();
-        button.progress = false;
-      })
-      .catch(() => {
-        button.actionError();
-        button.progress = false;
-      });
+    try {
+      await this._form.saveEntity();
+      el._formState = "editing";
+      button.actionSuccess();
+    } catch {
+      button.actionError();
+    } finally {
+      button.progress = false;
+    }
   }
 
   static get styles(): CSSResult[] {
