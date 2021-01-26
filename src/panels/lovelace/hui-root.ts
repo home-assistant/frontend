@@ -815,7 +815,7 @@ class HUIRoot extends LitElement {
 
         .edit-mode app-header,
         .edit-mode app-toolbar {
-          background-color: var(--dark-color, #455a64);
+          background-color: var(--app-header-edit-background-color, var(--dark-color, #455a64));
           color: var(--text-dark-color);
         }
         .edit-mode div[main-title] {
