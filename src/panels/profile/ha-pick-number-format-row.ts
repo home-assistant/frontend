@@ -1,8 +1,6 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
-  css,
-  CSSResult,
   customElement,
   html,
   LitElement,
