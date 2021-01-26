@@ -44,6 +44,8 @@ export class DialogTryTts extends LitElement {
 
   @LocalStorage("cloudTtsTryMessage") private _message?: string;
 
+  @LocalStorage("cloudTtsTryTarget") private _target?: string;
+
   public showDialog(params: TryTtsDialogParams) {
     this._params = params;
   }
@@ -90,7 +92,7 @@ export class DialogTryTts extends LitElement {
               id="target"
               slot="dropdown-content"
               attr-for-selected="item-value"
-              selected="browser"
+              .selected=${this._target || "browser"}
             >
               <paper-item item-value="browser">
                 ${this.hass.localize(
@@ -128,7 +130,7 @@ export class DialogTryTts extends LitElement {
   }
 
   private async _playExample() {
-    const target = this._targetInput?.selected;
+    const target = String(this._targetInput?.selected);
     const message = this._messageInput?.value;
 
     if (!message || !target) {
@@ -136,6 +138,7 @@ export class DialogTryTts extends LitElement {
     }
 
     this._message = message;
+    this._target = target;
 
     if (target === "browser") {
       this._playBrowser(message);
