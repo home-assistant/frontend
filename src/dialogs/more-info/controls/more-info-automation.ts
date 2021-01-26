@@ -57,7 +57,9 @@ class MoreInfoAutomation extends LitElement {
       }
       .actions {
         margin: 8px 0;
-        text-align: right;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
       }
     `;
   }
