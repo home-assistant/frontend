@@ -117,7 +117,7 @@ export class ZwaveMigration extends LitElement {
                                 >If running Home Assistant Core in Docker or in
                                 Python venv:</i
                               >
-                              Configure and start ozwdaemon
+                              Configure and start OZWDaemon
                             </li>
                             <li>Set up the OpenZWave integration</li>
                             <li>
@@ -171,7 +171,7 @@ export class ZwaveMigration extends LitElement {
                   : ``}
                 ${this._step === 2
                   ? html`
-                      <ha-card class="content" header="Set up ozwdaemon">
+                      <ha-card class="content" header="Set up OZWDaemon">
                         <div class="card-content">
                           <p>
                             Now it's time to set up the OZW integration.
@@ -179,7 +179,7 @@ export class ZwaveMigration extends LitElement {
                           ${this.hass.config.components.includes("hassio")
                             ? html`
                                 <p>
-                                  The OZW daemon runs in a Home Assistant addon
+                                  The OZWDaemon runs in a Home Assistant addon
                                   that will be setup next. Make sure to check
                                   the checkbox for the addon.
                                 </p>
@@ -193,7 +193,7 @@ export class ZwaveMigration extends LitElement {
                                     target="_blank"
                                     rel="noreferrer"
                                   >
-                                    OZW daemon readme
+                                    OZWDaemon readme
                                   </a>
                                   for setup instructions.
                                 </p>
@@ -211,7 +211,7 @@ export class ZwaveMigration extends LitElement {
                                     </blockquote>`
                                   : ``}
                                 <p>
-                                  Once OZW daemon is installed, running, and
+                                  Once OZWDaemon is installed, running, and
                                   connected to the MQTT broker click Continue to
                                   set up the OpenZWave integration and migrate
                                   your devices and entities.
