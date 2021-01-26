@@ -29,6 +29,8 @@ import {
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import { formatDateWeekday } from "../../../common/datetime/format_date";
+import { formatTimeWeekday } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/ha-svg-icon";
 import { getWeatherUnit, getWind } from "../../../data/weather";
@@ -180,14 +182,20 @@ class MoreInfoWeather extends LitElement {
                   ${!this._showValue(item.templow)
                     ? html`
                         <div class="main">
-                          ${this.computeDateTime(item.datetime)}
+                          ${formatTimeWeekday(
+                            new Date(item.datetime),
+                            this.hass.language
+                          )}
                         </div>
                       `
                     : ""}
                   ${this._showValue(item.templow)
                     ? html`
                         <div class="main">
-                          ${this.computeDate(item.datetime)}
+                          ${formatDateWeekday(
+                            new Date(item.datetime),
+                            this.hass.language
+                          )}
                         </div>
                         <div class="templow">
                           ${formatNumber(item.templow, this.hass!.language)}
@@ -251,23 +259,6 @@ class MoreInfoWeather extends LitElement {
         text-align: center;
       }
     `;
-  }
-
-  private computeDate(data) {
-    const date = new Date(data);
-    return date.toLocaleDateString(this.hass.language, {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-    });
-  }
-
-  private computeDateTime(data) {
-    const date = new Date(data);
-    return date.toLocaleDateString(this.hass.language, {
-      weekday: "long",
-      hour: "numeric",
-    });
   }
 
   private _showValue(item: string): boolean {

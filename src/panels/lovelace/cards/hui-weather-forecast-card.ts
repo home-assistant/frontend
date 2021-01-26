@@ -9,6 +9,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { formatTime } from "../../../common/datetime/format_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -284,11 +285,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             `
                           : hourly
                           ? html`
-                              ${new Date(item.datetime).toLocaleTimeString(
-                                this.hass!.language,
-                                {
-                                  hour: "numeric",
-                                }
+                              ${formatTime(
+                                new Date(item.datetime),
+                                this.hass!.language
                               )}
                             `
                           : html`
