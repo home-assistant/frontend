@@ -257,7 +257,10 @@ class ZWaveJSConfigDashboard extends LitElement {
         `/api/zwave_js/dump/${this.configEntryId}`
       );
     } catch (err) {
-      alert(`Error: ${err}`);
+      showAlertDialog(this, {
+        title: "Error",
+        text: err.error || err.body || err,
+      });
       return;
     }
 
