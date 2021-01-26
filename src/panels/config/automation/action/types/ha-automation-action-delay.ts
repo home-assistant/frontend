@@ -52,15 +52,12 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const configValue = "delay";
     const value = ev.detail.value;
-
-    const newValue = { ...this.action };
-    if (value) {
-      newValue[configValue] = ev.detail.value;
-    }
+	if (!value) {
+		return;
+	}
     fireEvent(this, "value-changed", {
-      value: newValue,
+      value: { ...this.action, delay: value },
     });
   }
 }
