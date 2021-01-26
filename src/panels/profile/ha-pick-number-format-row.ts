@@ -9,22 +9,17 @@ import {
 } from "lit-element";
 import "../../components/ha-card";
 import "../../components/ha-paper-dropdown-menu";
-import {
-  CoreFrontendUserData,
-  getOptimisticFrontendUserDataCollection,
-  NumberFormat,
-} from "../../data/frontend";
 import { HomeAssistant } from "../../types";
 import "../../components/ha-settings-row";
 import { formatNumber } from "../../common/string/format_number";
+import { NumberFormat } from "../../data/translation";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-pick-number-format-row")
 class NumberFormatRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
-
-  @property() public coreUserData: CoreFrontendUserData | null | undefined;
 
   protected render(): TemplateResult {
     return html`
@@ -38,11 +33,11 @@ class NumberFormatRow extends LitElement {
         <ha-paper-dropdown-menu
           label="Number Format"
           dynamic-align
-          .disabled=${this.coreUserData === undefined}
+          .disabled=${this.hass.language === undefined}
         >
           <paper-listbox
             slot="dropdown-content"
-            .selected=${this.coreUserData?.numberFormat}
+            .selected=${this.hass.language.number_format}
             @iron-select=${this._handleFormatSelection}
             attr-for-selected="format"
           >
@@ -55,7 +50,7 @@ class NumberFormatRow extends LitElement {
                 </div>
                 <div secondary>
                   ${formatNumber(1234567.89, {
-                    language: this.hass.language,
+                    language: this.hass.language.language,
                     format: NumberFormat.auto,
                   })}
                 </div>
@@ -70,7 +65,7 @@ class NumberFormatRow extends LitElement {
                 </div>
                 <div secondary>
                   ${formatNumber(1234567.89, {
-                    language: this.hass.language,
+                    language: this.hass.language.language,
                     format: NumberFormat.system,
                   })}
                 </div>
@@ -100,7 +95,7 @@ class NumberFormatRow extends LitElement {
                 </div>
                 <div secondary>
                   ${formatNumber(1234567.89, {
-                    language: this.hass.language,
+                    language: this.hass.language.language,
                     format: NumberFormat.none,
                   })}
                 </div>
@@ -113,9 +108,11 @@ class NumberFormatRow extends LitElement {
   }
 
   private async _handleFormatSelection(ev: CustomEvent) {
-    getOptimisticFrontendUserDataCollection(this.hass.connection, "core").save({
-      ...this.coreUserData,
-      numberFormat: ev.detail.item.format,
+    fireEvent(this, "hass-language-select", {
+      language: {
+        ...this.hass.language,
+        number_format: ev.detail.item.format,
+      },
     });
   }
 }

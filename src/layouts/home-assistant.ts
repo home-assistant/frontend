@@ -83,7 +83,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   protected hassConnected() {
     super.hassConnected();
     // @ts-ignore
-    this._loadHassTranslations(this.hass!.language, "state");
+    this._loadHassTranslations(this.hass!.language.language, "state");
 
     document.addEventListener(
       "visibilitychange",

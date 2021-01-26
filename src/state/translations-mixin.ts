@@ -3,6 +3,7 @@ import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
+  FrontendTranslationData,
   getHassTranslations,
   getHassTranslationsPre109,
   saveTranslationPreferences,
@@ -15,8 +16,18 @@ import {
   getTranslation,
   getLocalLanguage,
   getUserLanguage,
+  getUserNumberFormat,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "hass-language-select": {
+      language: FrontendTranslationData;
+    };
+  }
+}
 
 interface LoadedTranslationCategory {
   // individual integrations loaded for this category
@@ -64,10 +75,21 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassConnected() {
       super.hassConnected();
+      getUserNumberFormat(this.hass!).then((format) => {
+        if (format && this.hass!.language.number_format !== format) {
+          this._selectLanguage(
+            { ...this.hass!.language, number_format: format },
+            false
+          );
+        }
+      });
       getUserLanguage(this.hass!).then((language) => {
-        if (language && this.hass!.language !== language) {
+        if (language && this.hass!.language.language !== language) {
           // We just get language from backend, no need to save back
-          this._selectLanguage(language, false);
+          this._selectLanguage(
+            { ...this.hass!.language, language: language },
+            false
+          );
         }
       });
       this.hass!.connection.subscribeEvents(
@@ -89,33 +111,41 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.panelUrlChanged(newPanelUrl);
       // this may be triggered before hassConnected
       this._loadFragmentTranslations(
-        this.hass ? this.hass.language : getLocalLanguage(),
+        this.hass ? this.hass.language.language : getLocalLanguage(),
         newPanelUrl
       );
     }
 
-    private _selectLanguage(language: string, saveToBackend: boolean) {
+    private _selectLanguage(
+      language: FrontendTranslationData,
+      saveToBackend: boolean
+    ) {
       if (!this.hass) {
         // should not happen, do it to avoid use this.hass!
         return;
       }
 
       // update selectedLanguage so that it can be saved to local storage
-      this._updateHass({ language, selectedLanguage: language });
+      this._updateHass({
+        language,
+        selectedLanguage: language.language,
+      });
       storeState(this.hass);
       if (saveToBackend) {
-        saveTranslationPreferences(this.hass, { language });
+        saveTranslationPreferences(this.hass, language);
       }
       this._applyTranslations(this.hass);
       this._refetchCachedHassTranslations(true, true);
     }
 
     private _applyTranslations(hass: HomeAssistant) {
-      document.querySelector("html")!.setAttribute("lang", hass.language);
+      document
+        .querySelector("html")!
+        .setAttribute("lang", hass.language.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
-      this._loadCoreTranslations(hass.language);
+      this._loadCoreTranslations(hass.language.language);
       this.__loadedFragmetTranslations = new Set();
-      this._loadFragmentTranslations(hass.language, hass.panelUrl);
+      this._loadFragmentTranslations(hass.language.language, hass.panelUrl);
     }
 
     /**
@@ -143,7 +173,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         const resources = await getHassTranslationsPre109(this.hass!, language);
 
         // Ignore the repsonse if user switched languages before we got response
-        if (this.hass!.language !== language) {
+        if (this.hass!.language!.language !== language) {
           return this.hass!.localize;
         }
 
@@ -197,7 +227,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
 
       // Ignore the repsonse if user switched languages before we got response
-      if (this.hass!.language !== language) {
+      if (this.hass!.language!.language !== language) {
         return this.hass!.localize;
       }
 
@@ -262,7 +292,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // Allow hass to be updated
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      if (language !== (this.hass ?? this._pendingHass).language) {
+      if (language !== (this.hass ?? this._pendingHass).language!.language) {
         // the language was changed, abort
         return;
       }
@@ -278,7 +308,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         localize: await computeLocalize(this, language, resources),
       };
 
-      if (language === (this.hass ?? this._pendingHass).language) {
+      if (language === (this.hass ?? this._pendingHass).language!.language) {
         this._updateHass(changes);
       }
     }
@@ -295,7 +325,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         }
         if (cache.setup) {
           this._loadHassTranslations(
-            this.hass!.language,
+            this.hass!.language.language,
             category as TranslationCategory,
             undefined,
             includeConfigFlow && cache.configFlow,

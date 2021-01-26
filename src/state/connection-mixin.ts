@@ -13,6 +13,7 @@ import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
+import { NumberFormat } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, ServiceCallResponse } from "../types";
@@ -39,7 +40,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         user: null as any,
         panelUrl: (this as any)._panelUrl,
         defaultPanel: DEFAULT_PANEL,
-        language: getLocalLanguage(),
+        language: {
+          language: getLocalLanguage(),
+          number_format: NumberFormat.auto,
+        },
         selectedLanguage: null,
         resources: null as any,
         localize: () => "",
@@ -129,7 +133,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         loadBackendTranslation: (category, integration?, configFlow?) =>
           // @ts-ignore
           this._loadHassTranslations(
-            this.hass?.language,
+            this.hass?.language.language,
             category,
             integration,
             configFlow

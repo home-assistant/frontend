@@ -54,6 +54,14 @@ export async function getUserLanguage(hass: HomeAssistant) {
 }
 
 /**
+ * Get user selected number_format from backend
+ */
+export async function getUserNumberFormat(hass: HomeAssistant) {
+  const result = await fetchTranslationPreferences(hass);
+  return result?.number_format;
+}
+
+/**
  * Get browser specific language
  */
 export function getLocalLanguage() {

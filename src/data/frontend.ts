@@ -1,18 +1,8 @@
 import { Connection } from "home-assistant-js-websocket";
 import { getOptimisticCollection } from "./collection";
 
-export enum NumberFormat {
-  auto = "auto",
-  system = "system",
-  comma_decimal = "comma_decimal",
-  decimal_comma = "decimal_comma",
-  space_comma = "space_comma",
-  none = "none",
-}
-
 export interface CoreFrontendUserData {
   showAdvanced?: boolean;
-  numberFormat?: NumberFormat;
 }
 
 declare global {

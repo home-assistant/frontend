@@ -9,7 +9,10 @@ import {
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { CoreFrontendUserData } from "./data/frontend";
-import { getHassTranslations } from "./data/translation";
+import {
+  FrontendTranslationData,
+  getHassTranslations,
+} from "./data/translation";
 import { Themes } from "./data/ws-themes";
 import { ExternalMessaging } from "./external_app/external_messaging";
 
@@ -200,7 +203,7 @@ export interface HomeAssistant {
   //   - language in local appstorage
   //   - browser language
   //   - english (en)
-  language: string;
+  language: FrontendTranslationData;
   // local stored language, keep that name for backward compability
   selectedLanguage: string | null;
   resources: Resources;
