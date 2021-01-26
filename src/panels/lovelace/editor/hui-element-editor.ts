@@ -63,7 +63,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
   @internalProperty() private _configElementType?: string;
 
-  @internalProperty() private _GUImode = true;
+  @internalProperty() private _guiMode = true;
 
   // Error: Configuration broken - do not save
   @internalProperty() private _errors?: string[];
@@ -71,7 +71,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
   // Warning: GUI editor can't handle configuration - ok to save
   @internalProperty() private _warnings?: string[];
 
-  @internalProperty() private _typeSupported?: boolean;
+  @internalProperty() private _guiSupported?: boolean;
 
   @internalProperty() private _loading = false;
 
@@ -124,7 +124,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
       guiModeAvailable: !(
         this.hasWarning ||
         this.hasError ||
-        !this._typeSupported
+        !this._guiSupported
       ),
     });
   }
@@ -138,17 +138,17 @@ export abstract class HuiElementEditor<T> extends LitElement {
   }
 
   public get GUImode(): boolean {
-    return this._GUImode;
+    return this._guiMode;
   }
 
   public set GUImode(guiMode: boolean) {
-    this._GUImode = guiMode;
+    this._guiMode = guiMode;
     fireEvent(this as HTMLElement, "GUImode-changed", {
       guiMode,
       guiModeAvailable: !(
         this.hasWarning ||
         this.hasError ||
-        !this._typeSupported
+        !this._guiSupported
       ),
     });
   }
@@ -210,7 +210,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
                 ></ha-code-editor>
               </div>
             `}
-        ${!this._typeSupported && this.configElementType
+        ${!this._guiSupported && this.configElementType
           ? html`
               <div class="info">
                 ${this.hass.localize(
@@ -290,7 +290,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
       if (this._configElementType !== this.configElementType) {
         // If the type has changed, we need to load a new GUI editor
-        this._typeSupported = false;
+        this._guiSupported = false;
         this._configElement = undefined;
 
         if (!this.configElementType) {
@@ -314,7 +314,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
           );
 
           this._configElement = configElement;
-          this._typeSupported = true;
+          this._guiSupported = true;
         }
       }
 
