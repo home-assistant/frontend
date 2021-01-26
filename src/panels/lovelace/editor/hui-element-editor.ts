@@ -22,7 +22,7 @@ import type {
   LovelaceConfig,
 } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
-import { handleStructError } from "../common/structs/handle-errors";
+import { handleStructError } from "../../../common/structs/handle-errors";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceGenericElementEditor } from "../types";
@@ -70,6 +70,8 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
   // Warning: GUI editor can't handle configuration - ok to save
   @internalProperty() private _warnings?: string[];
+
+  @internalProperty() private _typeSupported?: boolean;
 
   @internalProperty() private _loading = false;
 
@@ -119,7 +121,11 @@ export abstract class HuiElementEditor<T> extends LitElement {
     fireEvent(this, "config-changed", {
       config: this.value! as any,
       error: this._errors?.join(", "),
-      guiModeAvailable: !(this.hasWarning || this.hasError),
+      guiModeAvailable: !(
+        this.hasWarning ||
+        this.hasError ||
+        !this._typeSupported
+      ),
     });
   }
 
@@ -139,7 +145,11 @@ export abstract class HuiElementEditor<T> extends LitElement {
     this._GUImode = guiMode;
     fireEvent(this as HTMLElement, "GUImode-changed", {
       guiMode,
-      guiModeAvailable: !(this.hasWarning || this.hasError),
+      guiModeAvailable: !(
+        this.hasWarning ||
+        this.hasError ||
+        !this._typeSupported
+      ),
     });
   }
 
@@ -200,6 +210,17 @@ export abstract class HuiElementEditor<T> extends LitElement {
                 ></ha-code-editor>
               </div>
             `}
+        ${!this._typeSupported && this.configElementType
+          ? html`
+              <div class="info">
+                ${this.hass.localize(
+                  "ui.errors.config.editor_not_available",
+                  "type",
+                  this.configElementType
+                )}
+              </div>
+            `
+          : ""}
         ${this._errors && this._errors.length > 0
           ? html`
               <div class="error">
@@ -269,9 +290,13 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
       if (this._configElementType !== this.configElementType) {
         // If the type has changed, we need to load a new GUI editor
+        this._typeSupported = false;
+        this._configElement = undefined;
 
         if (!this.configElementType) {
-          throw new Error(`No type defined`);
+          throw new Error(
+            this.hass.localize("ui.errors.config.no_type_provided")
+          );
         }
 
         this._configElementType = this.configElementType;
@@ -279,40 +304,41 @@ export abstract class HuiElementEditor<T> extends LitElement {
         this._loading = true;
         configElement = await this.getConfigElement();
 
-        if (!configElement) {
-          throw new Error(
-            `No visual editor available for: ${this.configElementType}`
+        if (configElement) {
+          configElement.hass = this.hass;
+          if ("lovelace" in configElement) {
+            configElement.lovelace = this.lovelace;
+          }
+          configElement.addEventListener("config-changed", (ev) =>
+            this._handleUIConfigChanged(ev as UIConfigChangedEvent)
           );
-        }
 
-        configElement.hass = this.hass;
-        if ("lovelace" in configElement) {
-          configElement.lovelace = this.lovelace;
+          this._configElement = configElement;
+          this._typeSupported = true;
         }
-        configElement.addEventListener("config-changed", (ev) =>
-          this._handleUIConfigChanged(ev as UIConfigChangedEvent)
-        );
-
-        this._configElement = configElement;
       }
 
-      // Setup GUI editor and check that it can handle the current config
-      try {
-        this._configElement!.setConfig(this.value);
-      } catch (err) {
-        const msgs = handleStructError(this.hass, err);
-        throw new GUISupportError(
-          "Config is not supported",
-          msgs.warnings,
-          msgs.errors
-        );
+      if (this._configElement) {
+        // Setup GUI editor and check that it can handle the current config
+        try {
+          this._configElement.setConfig(this.value);
+        } catch (err) {
+          const msgs = handleStructError(this.hass, err);
+          throw new GUISupportError(
+            "Config is not supported",
+            msgs.warnings,
+            msgs.errors
+          );
+        }
+      } else {
+        this.GUImode = false;
       }
     } catch (err) {
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
         this._errors = err.errors || undefined;
       } else {
-        this._errors = err;
+        this._errors = [err.message];
       }
       this.GUImode = false;
     } finally {
@@ -337,8 +363,10 @@ export abstract class HuiElementEditor<T> extends LitElement {
         padding: 8px 0px;
       }
       .error,
-      .warning {
+      .warning,
+      .info {
         word-break: break-word;
+        margin-top: 8px;
       }
       .error {
         color: var(--error-color);

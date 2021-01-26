@@ -27,7 +27,7 @@ import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";

@@ -19,7 +19,7 @@ import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../../../data/script";
 import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
-import { EntityIdOrAll } from "../../../../lovelace/common/structs/is-entity-id";
+import { EntityIdOrAll } from "../../../../../common/structs/is-entity-id";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 const actionStruct = object({

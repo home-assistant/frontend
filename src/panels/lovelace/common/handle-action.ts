@@ -6,6 +6,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { toggleEntity } from "./entity/toggle-entity";
+import scrollToTarget from "../../../common/dom/scroll-to-target";
 
 declare global {
   interface HASSDomEvents {
@@ -87,6 +88,10 @@ export const handleAction = async (
     case "navigate":
       if (actionConfig.navigation_path) {
         navigate(node, actionConfig.navigation_path);
+        scrollToTarget(
+          node,
+          node.shadowRoot!.getElementById("layout").header.scrollTarget
+        );
       } else {
         showToast(node, {
           message: hass.localize(
