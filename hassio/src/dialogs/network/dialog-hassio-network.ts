@@ -137,8 +137,7 @@ export class DialogHassioNetwork extends LitElement
         )}
         ${this._interface?.type === "wireless"
           ? html`
-              <ha-expansion-panel outlined>
-                <span slot="title">Wi-Fi</span>
+              <ha-expansion-panel header="Wi-Fi" outlined>
                 ${this._interface?.wifi?.ssid
                   ? html`<p>Connected to: ${this._interface?.wifi?.ssid}</p>`
                   : ""}
@@ -281,8 +280,10 @@ export class DialogHassioNetwork extends LitElement
 
   private _renderIPConfiguration(version: string) {
     return html`
-      <ha-expansion-panel outlined>
-        <span slot="title">IPv${version.charAt(version.length - 1)}</span>
+      <ha-expansion-panel
+        .header=${`IPv${version.charAt(version.length - 1)}`}
+        outlined
+      >
         <div class="radio-row">
           <ha-formfield label="DHCP">
             <ha-radio
@@ -391,24 +392,29 @@ export class DialogHassioNetwork extends LitElement
           nameservers: this._toArray(this._interface![version]?.nameservers),
         };
       }
-      if (this._wifiConfiguration) {
-        interfaceOptions = {
-          ...interfaceOptions,
-          enabled: true,
-          wifi: {
-            ssid: this._wifiConfiguration.ssid,
-            mode: this._wifiConfiguration.mode,
-            auth: this._wifiConfiguration.auth || "open",
-          },
-        };
-        if (interfaceOptions.wifi!.auth !== "open") {
-          interfaceOptions.wifi = {
-            ...interfaceOptions.wifi,
-            psk: this._wifiConfiguration.psk,
-          };
-        }
-      }
     });
+
+    if (this._wifiConfiguration) {
+      interfaceOptions = {
+        ...interfaceOptions,
+        wifi: {
+          ssid: this._wifiConfiguration.ssid,
+          mode: this._wifiConfiguration.mode,
+          auth: this._wifiConfiguration.auth || "open",
+        },
+      };
+      if (interfaceOptions.wifi!.auth !== "open") {
+        interfaceOptions.wifi = {
+          ...interfaceOptions.wifi,
+          psk: this._wifiConfiguration.psk,
+        };
+      }
+    }
+
+    interfaceOptions.enabled =
+      this._wifiConfiguration !== undefined ||
+      interfaceOptions.ipv4?.method !== "disabled" ||
+      interfaceOptions.ipv6?.method !== "disabled";
 
     try {
       await updateNetworkInterface(
@@ -586,6 +592,7 @@ export class DialogHassioNetwork extends LitElement
         }
 
         ha-expansion-panel {
+          --expansion-panel-summary-padding: 0 16px;
           margin: 4px 0;
         }
         paper-input {

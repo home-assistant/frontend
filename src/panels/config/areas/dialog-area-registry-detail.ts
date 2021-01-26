@@ -5,12 +5,13 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-dialog";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -154,6 +155,8 @@ class DialogAreaDetail extends LitElement {
     } finally {
       this._submitting = false;
     }
+
+    navigate(this, "/config/areas/dashboard");
   }
 
   static get styles(): CSSResult[] {

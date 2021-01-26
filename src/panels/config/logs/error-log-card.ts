@@ -1,14 +1,14 @@
 import "@material/mwc-button";
-import "../../../components/ha-icon-button";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import "../../../components/ha-icon-button";
 import { fetchErrorLog } from "../../../data/error_log";
 import { HomeAssistant } from "../../../types";
 

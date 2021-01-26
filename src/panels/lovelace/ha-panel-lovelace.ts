@@ -2,9 +2,9 @@ import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
 import {
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { domainToName } from "../../data/integration";

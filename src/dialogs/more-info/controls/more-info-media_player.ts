@@ -27,6 +27,7 @@ import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
   computeMediaControls,
   MediaPickedEvent,
+  MediaPlayerEntity,
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_PLAY_MEDIA,
   SUPPORT_SELECT_SOUND_MODE,
@@ -35,13 +36,13 @@ import {
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
 } from "../../../data/media-player";
-import { HomeAssistant, MediaEntity } from "../../../types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: MediaEntity;
+  @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
   @query("#ttsInput") private _ttsInput?: HTMLInputElement;
 

@@ -793,10 +793,6 @@ class HUIRoot extends LitElement {
 
         ha-app-layout {
           min-height: 100%;
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
         }
         ha-tabs {
           width: 100%;
@@ -810,7 +806,10 @@ class HUIRoot extends LitElement {
         }
         ha-tabs,
         paper-tabs {
-          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
+          --paper-tabs-selection-bar-color: var(
+            --app-header-selection-bar-color,
+            var(--app-header-text-color, #fff)
+          );
           text-transform: uppercase;
         }
 
@@ -883,6 +882,12 @@ class HUIRoot extends LitElement {
         }
         .menu-link {
           text-decoration: none;
+        }
+        hui-view {
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
         }
       `,
     ];

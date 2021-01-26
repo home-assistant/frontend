@@ -114,7 +114,7 @@ export class HAFullCalendar extends LitElement {
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
-                          "ui.panel.calendar.today"
+                          "ui.components.calendar.today"
                         )}</mwc-button
                       >
                       <ha-icon-button
@@ -169,7 +169,7 @@ export class HAFullCalendar extends LitElement {
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
-                          "ui.panel.calendar.today"
+                          "ui.components.calendar.today"
                         )}</mwc-button
                       >
                       <ha-button-toggle-group
@@ -296,7 +296,7 @@ export class HAFullCalendar extends LitElement {
         ${unsafeCSS(fullcalendarStyle)}
         ${unsafeCSS(daygridStyle)}
         ${unsafeCSS(listStyle)}
-        
+
         :host {
           display: flex;
           flex-direction: column;
@@ -368,7 +368,7 @@ export class HAFullCalendar extends LitElement {
         }
 
         a {
-            color: inherit !important; 
+            color: inherit !important;
         }
 
         .fc-theme-standard .fc-scrollgrid {

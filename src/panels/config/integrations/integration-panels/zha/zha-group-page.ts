@@ -1,28 +1,28 @@
 import "@material/mwc-button";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
 } from "lit-element";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-icon-button";
 import {
   addMembersToGroup,
   fetchGroup,
   fetchGroupableDevices,
   removeGroups,
   removeMembersFromGroup,
-  ZHAGroup,
   ZHADeviceEndpoint,
+  ZHAGroup,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";

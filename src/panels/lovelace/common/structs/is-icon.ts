@@ -1,4 +1,4 @@
-import { StructContext, StructResult, struct } from "superstruct";
+import { struct, StructContext, StructResult } from "superstruct";
 
 const isIcon = (value: unknown, context: StructContext): StructResult => {
   if (typeof value !== "string") {

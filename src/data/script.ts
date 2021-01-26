@@ -7,13 +7,13 @@ import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
 
-export const MODES = ["single", "restart", "queued", "parallel"];
+export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"];
 
 export interface ScriptEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     last_triggered: string;
-    mode: "single" | "restart" | "queued" | "parallel";
+    mode: typeof MODES[number];
     current?: number;
     max?: number;
   };
@@ -23,20 +23,20 @@ export interface ScriptConfig {
   alias: string;
   sequence: Action[];
   icon?: string;
-  mode?: "single" | "restart" | "queued" | "parallel";
+  mode?: typeof MODES[number];
   max?: number;
 }
 
 export interface EventAction {
   event: string;
-  event_data?: { [key: string]: any };
-  event_data_template?: { [key: string]: any };
+  event_data?: Record<string, any>;
+  event_data_template?: Record<string, any>;
 }
 
 export interface ServiceAction {
   service: string;
   entity_id?: string;
-  data?: { [key: string]: any };
+  data?: Record<string, any>;
 }
 
 export interface DeviceAction {

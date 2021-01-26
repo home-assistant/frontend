@@ -1,5 +1,3 @@
-const path = require("path");
-
 module.exports = function (userOptions = {}) {
   // Files need to be absolute paths.
   // This only works if the file has no exports

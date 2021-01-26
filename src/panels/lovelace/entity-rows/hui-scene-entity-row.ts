@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -69,6 +69,9 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     return css`
       mwc-button {
         margin-right: -0.57em;
+      }
+      :host {
+        cursor: pointer;
       }
     `;
   }

@@ -1,30 +1,30 @@
 import "@material/mwc-button";
-import "@material/mwc-fab";
-import "../../../../../components/ha-icon-button";
-import memoizeOne from "memoize-one";
+import { mdiPlus } from "@mdi/js";
 import {
+  css,
+  CSSResultArray,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResultArray,
-  css,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
-import { fetchGroups, ZHAGroup, ZHADevice } from "../../../../../data/zha";
+import "../../../../../components/ha-fab";
+import "../../../../../components/ha-icon-button";
+import { fetchGroups, ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
-import { HomeAssistant, Route } from "../../../../../types";
-import { sortZHAGroups, formatAsPaddedHex } from "./functions";
-import { zhaTabs } from "./zha-config-dashboard";
-import { mdiPlus } from "@mdi/js";
 import { haStyle } from "../../../../../resources/styles";
+import { HomeAssistant, Route } from "../../../../../types";
+import { formatAsPaddedHex, sortZHAGroups } from "./functions";
+import { zhaTabs } from "./zha-config-dashboard";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;
@@ -127,14 +127,14 @@ export class ZHAGroupsDashboard extends LitElement {
         clickable
       >
         <a href="/config/zha/group-add" slot="fab">
-          <mwc-fab
+          <ha-fab
             .label=${this.hass!.localize(
               "ui.panel.config.zha.groups.add_group"
             )}
             extended
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </mwc-fab>
+          </ha-fab>
         </a>
       </hass-tabs-subpage-data-table>
     `;

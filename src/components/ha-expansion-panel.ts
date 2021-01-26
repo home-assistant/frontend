@@ -1,3 +1,4 @@
+import { mdiChevronDown } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -8,10 +9,9 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
-import { mdiChevronDown } from "@mdi/js";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-expansion-panel")
 class HaExpansionPanel extends LitElement {
@@ -19,12 +19,14 @@ class HaExpansionPanel extends LitElement {
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
+  @property() header?: string;
+
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
       <div class="summary" @click=${this._toggleContainer}>
-        <slot name="title"></slot>
+        <slot name="header">${this.header}</slot>
         <ha-svg-icon
           .path=${mdiChevronDown}
           class="summary-icon ${classMap({ expanded: this.expanded })}"
@@ -76,7 +78,7 @@ class HaExpansionPanel extends LitElement {
 
       .summary {
         display: flex;
-        padding: 0px 16px;
+        padding: var(--expansion-panel-summary-padding, 0);
         min-height: 48px;
         align-items: center;
         cursor: pointer;

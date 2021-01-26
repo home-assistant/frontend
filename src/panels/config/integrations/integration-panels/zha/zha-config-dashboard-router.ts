@@ -1,10 +1,10 @@
 import { customElement, property } from "lit-element";
+import { navigate } from "../../../../../common/navigate";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../../../types";
-import { navigate } from "../../../../../common/navigate";
 
 @customElement("zha-config-dashboard-router")
 class ZHAConfigDashboardRouter extends HassRouterPage {
@@ -41,6 +41,10 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
       "group-add": {
         tag: "zha-add-group-page",
         load: () => import("./zha-add-group-page"),
+      },
+      visualization: {
+        tag: "zha-network-visualization-page",
+        load: () => import("./zha-network-visualization-page"),
       },
     },
   };

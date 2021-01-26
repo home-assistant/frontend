@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -17,10 +18,9 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import { formatAttributeName } from "../../util/hass-attributes-util";
 import "../ha-svg-icon";
 import "./state-badge";
-import { formatAttributeName } from "../../util/hass-attributes-util";
-import "@material/mwc-icon-button/mwc-icon-button";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 

@@ -2,21 +2,25 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
 } from "lit-element";
+import punycode from "punycode";
+import { extractSearchParamsObject } from "../common/url/search-params";
 import {
   AuthProvider,
-  fetchAuthProviders,
   AuthUrlSearchParams,
+  fetchAuthProviders,
 } from "../data/auth";
+import {
+  DiscoveryInformation,
+  fetchDiscoveryInformation,
+} from "../data/discovery";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
-import { extractSearchParamsObject } from "../common/url/search-params";
-import punycode from "punycode";
 
 import("./ha-pick-auth-provider");
 
@@ -30,6 +34,8 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   @internalProperty() private _authProvider?: AuthProvider;
 
   @internalProperty() private _authProviders?: AuthProvider[];
+
+  @internalProperty() private _discovery?: DiscoveryInformation;
 
   constructor() {
     super();
@@ -58,14 +64,17 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     // the name with a bold tag.
     const loggingInWith = document.createElement("div");
     loggingInWith.innerText = this.localize(
-      "ui.panel.page-authorize.logging_in_with",
+      this._discovery?.location_name
+        ? "ui.panel.page-authorize.logging_in_to_with"
+        : "ui.panel.page-authorize.logging_in_with",
+      "locationName",
+      "LOCATION",
       "authProviderName",
       "NAME"
     );
-    loggingInWith.innerHTML = loggingInWith.innerHTML.replace(
-      "**NAME**",
-      `<b>${this._authProvider!.name}</b>`
-    );
+    loggingInWith.innerHTML = loggingInWith.innerHTML
+      .replace("**LOCATION**", `<b>${this._discovery?.location_name}</b>`)
+      .replace("**NAME**", `<b>${this._authProvider!.name}</b>`);
 
     const inactiveProviders = this._authProviders.filter(
       (prv) => prv !== this._authProvider
@@ -105,6 +114,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchAuthProviders();
+    this._fetchDiscoveryInfo();
 
     if (!this.redirectUri) {
       return;
@@ -124,6 +134,10 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     if (changedProps.has("language")) {
       document.querySelector("html")!.setAttribute("lang", this.language!);
     }
+  }
+
+  private async _fetchDiscoveryInfo() {
+    this._discovery = await fetchDiscoveryInformation();
   }
 
   private async _fetchAuthProviders() {

@@ -1,20 +1,21 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
+  internalProperty,
   LitElement,
   property,
-  CSSResult,
-  css,
-  internalProperty,
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { GroupEntity } from "../../../data/group";
 import "../../../state-summary/state-card-content";
-import { GroupEntity, HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import {
-  importMoreInfoControl,
   domainMoreInfoType,
+  importMoreInfoControl,
 } from "../state_more_info_control";
 
 class MoreInfoGroup extends LitElement {

@@ -1,3 +1,4 @@
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   customElement,
   html,
@@ -5,13 +6,12 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import "../entity/ha-entity-picker";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { EntitySelector } from "../../data/selector";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { HomeAssistant } from "../../types";
+import "../entity/ha-entity-picker";
 
 @customElement("ha-selector-entity")
 export class HaEntitySelector extends SubscribeMixin(LitElement) {
@@ -19,7 +19,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
 
   @property() public selector!: EntitySelector;
 
-  @internalProperty() private _entities?: Record<string, string>;
+  @internalProperty() private _entityPlaformLookup?: Record<string, string>;
 
   @property() public value?: any;
 
@@ -45,7 +45,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
           }
           entityLookup[confEnt.entity_id] = confEnt.platform;
         }
-        this._entities = entityLookup;
+        this._entityPlaformLookup = entityLookup;
       }),
     ];
   }
@@ -56,10 +56,19 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         return false;
       }
     }
+    if (this.selector.entity.device_class) {
+      if (
+        !entity.attributes.device_class ||
+        entity.attributes.device_class !== this.selector.entity.device_class
+      ) {
+        return false;
+      }
+    }
     if (this.selector.entity.integration) {
       if (
-        !this._entities ||
-        this._entities[entity.entity_id] !== this.selector.entity.integration
+        !this._entityPlaformLookup ||
+        this._entityPlaformLookup[entity.entity_id] !==
+          this.selector.entity.integration
       ) {
         return false;
       }

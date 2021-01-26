@@ -215,6 +215,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
           card: {
             type: "glance",
             show_state: false,
+            columns: 4,
           },
           state_filter: ["on"],
         },
@@ -808,67 +809,6 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
           ],
           type: "vertical-stack",
         },
-        // {
-        //   cards: [
-        //     {
-        //       entities: [
-        //         {
-        //           hide_when_off: true,
-        //           toggle: true,
-        //           type: "custom:slider-entity-row",
-        //           name: "Bedside",
-        //           entity: "light.bedside_lamp",
-        //         },
-        //         {
-        //           hide_when_off: true,
-        //           toggle: true,
-        //           type: "custom:slider-entity-row",
-        //           name: "Bedroom",
-        //           entity: "light.bedroom_ceiling_light",
-        //         },
-        //         {
-        //           hide_when_off: true,
-        //           toggle: true,
-        //           type: "custom:slider-entity-row",
-        //           name: "Isa",
-        //           entity: "light.isa_ceiling_light",
-        //         },
-        //         {
-        //           hide_when_off: true,
-        //           toggle: true,
-        //           type: "custom:slider-entity-row",
-        //           name: "Upstairs hallway",
-        //           entity: "light.upstairs_hallway_ceiling_light_level",
-        //         },
-        //         {
-        //           hide_when_off: true,
-        //           toggle: true,
-        //           type: "custom:slider-entity-row",
-        //           name: "Nightlight",
-        //           entity: "light.gateway_light_34ce008bfc4b",
-        //         },
-        //         {
-        //           hide_when_off: true,
-        //           toggle: true,
-        //           type: "custom:slider-entity-row",
-        //           name: "Walk in closet",
-        //           entity: "light.walk_in_closet_lights",
-        //         },
-        //         {
-        //           hide_when_off: true,
-        //           toggle: false,
-        //           type: "custom:slider-entity-row",
-        //           name: "Stefan",
-        //           entity: "light.stefan_lightstrip",
-        //         },
-        //       ],
-        //       show_header_toggle: false,
-        //       type: "entities",
-        //       title: "Upstairs",
-        //     },
-        //   ],
-        //   type: "vertical-stack",
-        // },
       ],
       path: "lights",
       title: "Lights",
@@ -919,10 +859,6 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
                   icon: "mdi:webcam",
                 },
                 {
-                  name: "IR Hallway",
-                  entity: "sensor.system_ir_blaster",
-                },
-                {
                   name: "IR Bedroom",
                   entity: "sensor.system_ir_blaster_bedroom",
                 },
@@ -940,7 +876,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
                 "sensor.system_ring_chime",
               ],
               type: "glance",
-              columns: 5,
+              columns: 4,
               show_state: false,
             },
             {

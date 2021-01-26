@@ -131,81 +131,81 @@ export class HaCodeEditor extends UpdatingElement {
       .cm-s-default .CodeMirror-cursor {
         border-left: 1px solid var(--secondary-text-color);
       }
-      
+
       .cm-s-default div.CodeMirror-selected, .cm-s-default.CodeMirror-focused div.CodeMirror-selected {
         background: rgba(var(--rgb-primary-color), 0.2);
       }
-      
+
       .cm-s-default .CodeMirror-line::selection,
       .cm-s-default .CodeMirror-line>span::selection,
       .cm-s-default .CodeMirror-line>span>span::selection {
         background: rgba(var(--rgb-primary-color), 0.2);
       }
-      
+
       .cm-s-default .cm-keyword {
         color: var(--codemirror-keyword, #6262FF);
       }
-      
+
       .cm-s-default .cm-operator {
         color: var(--codemirror-operator, #cda869);
       }
-      
+
       .cm-s-default .cm-variable-2 {
         color: var(--codemirror-variable-2, #690);
       }
-      
+
       .cm-s-default .cm-builtin {
         color: var(--codemirror-builtin, #9B7536);
       }
-      
+
       .cm-s-default .cm-atom {
         color: var(--codemirror-atom, #F90);
       }
-      
+
       .cm-s-default .cm-number {
         color: var(--codemirror-number, #ca7841);
       }
-      
+
       .cm-s-default .cm-def {
         color: var(--codemirror-def, #8DA6CE);
       }
-      
+
       .cm-s-default .cm-string {
         color: var(--codemirror-string, #07a);
       }
-      
+
       .cm-s-default .cm-string-2 {
         color: var(--codemirror-string-2, #bd6b18);
       }
-      
+
       .cm-s-default .cm-comment {
         color: var(--codemirror-comment, #777);
       }
-      
+
       .cm-s-default .cm-variable {
         color: var(--codemirror-variable, #07a);
       }
-      
+
       .cm-s-default .cm-tag {
         color: var(--codemirror-tag, #997643);
       }
-      
+
       .cm-s-default .cm-meta {
         color: var(--codemirror-meta, var(--primary-text-color));
       }
-      
+
       .cm-s-default .cm-attribute {
         color: var(--codemirror-attribute, #d6bb6d);
       }
-      
+
       .cm-s-default .cm-property {
         color: var(--codemirror-property, #905);
       }
-      
+
       .cm-s-default .cm-qualifier {
         color: var(--codemirror-qualifier, #690);
       }
-      
+
       .cm-s-default .cm-variable-3  {
         color: var(--codemirror-variable-3, #07a);
       }

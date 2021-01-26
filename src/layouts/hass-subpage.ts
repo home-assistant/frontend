@@ -2,16 +2,16 @@ import {
   css,
   CSSResult,
   customElement,
+  eventOptions,
   html,
   LitElement,
   property,
   TemplateResult,
-  eventOptions,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import "../components/ha-menu-button";
-import "../components/ha-icon-button-arrow-prev";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
 import { HomeAssistant } from "../types";
 
 @customElement("hass-subpage")

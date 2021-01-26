@@ -2,9 +2,9 @@ import { safeDump, safeLoad } from "js-yaml";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";

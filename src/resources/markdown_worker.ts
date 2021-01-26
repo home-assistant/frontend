@@ -1,7 +1,7 @@
 // To use comlink under ES5
-import "proxy-polyfill";
 import { expose } from "comlink";
 import marked from "marked";
+import "proxy-polyfill";
 import { filterXSS, getDefaultWhiteList } from "xss";
 
 interface WhiteList {

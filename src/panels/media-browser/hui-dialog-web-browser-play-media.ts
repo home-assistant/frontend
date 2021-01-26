@@ -10,8 +10,8 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-hls-player";
-import type { HomeAssistant } from "../../types";
 import { haStyleDialog } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 import { WebBrowserPlayMediaDialogParams } from "./show-media-player-dialog";
 
 @customElement("hui-dialog-web-browser-play-media")

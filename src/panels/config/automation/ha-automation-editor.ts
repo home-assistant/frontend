@@ -1,4 +1,5 @@
-import "@material/mwc-fab";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
   mdiContentDuplicate,
@@ -10,8 +11,6 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
-import "@material/mwc-list/mwc-list-item";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   css,
   CSSResult,
@@ -20,17 +19,18 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { navigate } from "../../../common/navigate";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import { showToast } from "../../../util/toast";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
@@ -49,15 +49,16 @@ import "../../../layouts/hass-tabs-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./action/ha-automation-action";
 import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
+import "./blueprint-automation-editor";
 import "./condition/ha-automation-condition";
+import "./manual-automation-editor";
 import "./trigger/ha-automation-trigger";
 import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
-import "./manual-automation-editor";
-import "./blueprint-automation-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -205,12 +206,16 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                       ${"use_blueprint" in this._config
                         ? html`<blueprint-automation-editor
                             .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .isWide=${this.isWide}
                             .stateObj=${stateObj}
                             .config=${this._config}
                             @value-changed=${this._valueChanged}
                           ></blueprint-automation-editor>`
                         : html`<manual-automation-editor
                             .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .isWide=${this.isWide}
                             .stateObj=${stateObj}
                             .config=${this._config}
                             @value-changed=${this._valueChanged}
@@ -269,7 +274,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               </div>
             `
           : ""}
-        <mwc-fab
+        <ha-fab
           slot="fab"
           class=${classMap({ dirty: this._dirty })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
@@ -277,7 +282,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           @click=${this._saveAutomation}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -350,6 +355,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ...baseConfig,
         ...initData,
       } as AutomationConfig;
+      this._entityId = undefined;
     }
 
     if (
@@ -390,9 +396,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return cleanConfig;
   }
 
-  private async _copyYaml() {
+  private async _copyYaml(): Promise<void> {
     if (this._editor?.yaml) {
-      navigator.clipboard.writeText(this._editor.yaml);
+      await copyToClipboard(this._editor.yaml);
+      showToast(this, {
+        message: this.hass.localize("ui.common.copied_clipboard"),
+      });
     }
   }
 
@@ -494,9 +503,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
       },
       (errors) => {
-        this._errors = errors.body.message;
+        this._errors = errors.body.message || errors.error || errors.body;
         showToast(this, {
-          message: errors.body.message,
+          message: errors.body.message || errors.error || errors.body,
         });
         throw errors;
       }
@@ -522,21 +531,18 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         .content {
           padding-bottom: 20px;
         }
-        span[slot="introduction"] a {
-          color: var(--primary-color);
-        }
         p {
           margin-bottom: 0;
         }
         ha-entity-toggle {
           margin-right: 8px;
         }
-        mwc-fab {
+        ha-fab {
           position: relative;
           bottom: calc(-80px - env(safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
-        mwc-fab.dirty {
+        ha-fab.dirty {
           bottom: 0;
         }
         .selected_menu_item {

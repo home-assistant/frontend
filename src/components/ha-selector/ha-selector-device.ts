@@ -5,11 +5,11 @@ import {
   LitElement,
   property,
 } from "lit-element";
+import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
+import { DeviceRegistryEntry } from "../../data/device_registry";
+import { DeviceSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../device/ha-device-picker";
-import { DeviceRegistryEntry } from "../../data/device_registry";
-import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
-import { DeviceSelector } from "../../data/selector";
 
 @customElement("ha-selector-device")
 export class HaDeviceSelector extends LitElement {
@@ -38,6 +38,12 @@ export class HaDeviceSelector extends LitElement {
       .value=${this.value}
       .label=${this.label}
       .deviceFilter=${(device) => this._filterDevices(device)}
+      .includeDeviceClasses=${this.selector.device.entity?.device_class
+        ? [this.selector.device.entity.device_class]
+        : undefined}
+      .includeDomains=${this.selector.device.entity?.domain
+        ? [this.selector.device.entity.domain]
+        : undefined}
       allow-custom-entity
     ></ha-device-picker>`;
   }
@@ -57,7 +63,8 @@ export class HaDeviceSelector extends LitElement {
     }
     if (this.selector.device.integration) {
       if (
-        !this._configEntries?.some((entry) =>
+        this._configEntries &&
+        !this._configEntries.some((entry) =>
           device.config_entries.includes(entry.entry_id)
         )
       ) {

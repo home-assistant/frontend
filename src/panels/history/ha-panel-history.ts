@@ -1,24 +1,24 @@
-import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { computeRTL } from "../../common/util/compute_rtl";
-import "../../components/ha-menu-button";
-import "../../components/state-history-charts";
 import {
-  LitElement,
   css,
-  property,
   internalProperty,
+  LitElement,
+  property,
   PropertyValues,
 } from "lit-element";
 import { html } from "lit-html";
+import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/entity/ha-entity-picker";
+import "../../components/ha-circular-progress";
+import "../../components/ha-date-range-picker";
+import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-menu-button";
+import "../../components/state-history-charts";
+import { computeHistory, fetchDate } from "../../data/history";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
-import "../../components/ha-date-range-picker";
-import "../../components/entity/ha-entity-picker";
-import { fetchDate, computeHistory } from "../../data/history";
-import "../../components/ha-circular-progress";
 
 class HaPanelHistory extends LitElement {
   @property() hass!: HomeAssistant;
@@ -119,27 +119,21 @@ class HaPanelHistory extends LitElement {
     todayEnd.setDate(todayEnd.getDate() + 1);
     todayEnd.setMilliseconds(todayEnd.getMilliseconds() - 1);
 
-    const todayCopy = new Date(today);
-
-    const yesterday = new Date(todayCopy.setDate(today.getDate() - 1));
-    const yesterdayEnd = new Date(yesterday);
-    yesterdayEnd.setDate(yesterdayEnd.getDate() + 1);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayEnd = new Date(today);
     yesterdayEnd.setMilliseconds(yesterdayEnd.getMilliseconds() - 1);
 
-    const thisWeekStart = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay())
-    );
-    const thisWeekEnd = new Date(
-      todayCopy.setDate(thisWeekStart.getDate() + 7)
-    );
+    const thisWeekStart = new Date(today);
+    thisWeekStart.setDate(today.getDate() - today.getDay());
+    const thisWeekEnd = new Date(thisWeekStart);
+    thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
     thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
 
-    const lastWeekStart = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay() - 7)
-    );
-    const lastWeekEnd = new Date(
-      todayCopy.setDate(lastWeekStart.getDate() + 7)
-    );
+    const lastWeekStart = new Date(today);
+    lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
+    const lastWeekEnd = new Date(lastWeekStart);
+    lastWeekEnd.setDate(lastWeekStart.getDate() + 7);
     lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
 
     this._ranges = {

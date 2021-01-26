@@ -3,8 +3,8 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../../components/ha-date-input";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
+import "../../../components/ha-date-input";
 import "../../../components/ha-relative-time";
 import "../../../components/paper-time-input";
 
