@@ -25,8 +25,8 @@ export class HaEntityConfig extends LitElement {
 
   @property() public selectedEntityId!: string;
 
-  @property() private _formState: "initial" | "loading" | "saving" | "editing" =
-    "initial";
+  // False if no entity is selected or currently saving or loading
+  @property() private _formEditState = false;
 
   @query("#form") private _form!: HaFormCustomize;
 
@@ -52,7 +52,7 @@ export class HaEntityConfig extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             @click=${this._saveEntity}
-            .disabled=${this._formState !== "editing"}
+            .disabled=${!this._formEditState}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-progress-button>
@@ -81,16 +81,16 @@ export class HaEntityConfig extends LitElement {
     const entity = this.hass.states[entityId];
     if (!entity) return;
 
-    this._formState = "loading";
+    this._formEditState = false;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const el = this;
     await this._form.loadEntity(entity);
-    el._formState = "editing";
+    el._formEditState = true;
   }
 
   private async _saveEntity(ev) {
-    if (this._formState !== "editing") return;
-    this._formState = "saving";
+    if (!this._formEditState) return;
+    this._formEditState = false;
     const button = ev.target;
     button.progress = true;
 
@@ -98,7 +98,7 @@ export class HaEntityConfig extends LitElement {
     const el = this;
     try {
       await this._form.saveEntity();
-      el._formState = "editing";
+      el._formEditState = true;
       button.actionSuccess();
     } catch {
       button.actionError();
