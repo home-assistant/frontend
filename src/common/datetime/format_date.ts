@@ -9,3 +9,12 @@ export const formatDate = toLocaleDateStringSupportsOptions
         day: "numeric",
       })
   : (dateObj: Date) => format(dateObj, "longDate");
+
+export const formatDateWeekday = toLocaleDateStringSupportsOptions
+  ? (dateObj: Date, locales: string) =>
+      dateObj.toLocaleDateString(locales, {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+      })
+  : (dateObj: Date) => format(dateObj, "dddd, MMM D");
