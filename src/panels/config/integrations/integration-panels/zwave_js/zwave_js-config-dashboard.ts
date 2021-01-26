@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import { mdiCheckCircle, mdiCircle } from "@mdi/js";
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiCheckCircle, mdiCircle, mdiRefresh } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -12,11 +13,20 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
+import { getSignedPath } from "../../../../../data/auth";
 import {
   fetchNetworkStatus,
+  fetchNodeStatus,
+  NodeStatus,
   ZWaveJSNetwork,
+  ZWaveJSNode,
 } from "../../../../../data/zwave_js";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
@@ -39,6 +49,8 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @internalProperty() private _network?: ZWaveJSNetwork;
 
+  @internalProperty() private _nodes?: ZWaveJSNode[];
+
   @internalProperty() private _status = "unknown";
 
   @internalProperty() private _icon = mdiCircle;
@@ -57,6 +69,9 @@ class ZWaveJSConfigDashboard extends LitElement {
         .route=${this.route}
         .tabs=${configTabs}
       >
+        <mwc-icon-button slot="toolbar-icon" @click=${this._fetchData}>
+          <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
+        </mwc-icon-button>
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.zwave_js.dashboard.header")}
@@ -117,9 +132,10 @@ class ZWaveJSConfigDashboard extends LitElement {
                       )}:
                       ${this._network.controller.home_id}<br />
                       ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.node_count"
+                        "ui.panel.config.zwave_js.dashboard.nodes_ready"
                       )}:
-                      ${this._network.controller.node_count}
+                      ${this._nodes?.filter((node) => node.ready).length ?? 0} /
+                      ${this._network.controller.nodes.length}
                     </div>
                   </div>
                   <div class="card-actions">
@@ -153,18 +169,36 @@ class ZWaveJSConfigDashboard extends LitElement {
                 </ha-card>
               `
             : ``}
+          <button class="link dump" @click=${this._dumpDebugClicked}>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.dashboard.dump_debug"
+            )}
+          </button>
         </ha-config-section>
       </hass-tabs-subpage>
     `;
   }
 
   private async _fetchData() {
-    if (!this.configEntryId) return;
+    if (!this.configEntryId) {
+      return;
+    }
     this._network = await fetchNetworkStatus(this.hass!, this.configEntryId);
     this._status = this._network.client.state;
     if (this._status === "connected") {
       this._icon = mdiCheckCircle;
     }
+    this._fetchNodeStatus();
+  }
+
+  private async _fetchNodeStatus() {
+    if (!this._network) {
+      return;
+    }
+    const nodeStatePromisses = this._network.controller.nodes.map((nodeId) =>
+      fetchNodeStatus(this.hass, this.configEntryId!, nodeId)
+    );
+    this._nodes = await Promise.all(nodeStatePromisses);
   }
 
   private async _addNodeClicked() {
@@ -177,6 +211,65 @@ class ZWaveJSConfigDashboard extends LitElement {
     showZWaveJSRemoveNodeDialog(this, {
       entry_id: this.configEntryId!,
     });
+  }
+
+  private async _dumpDebugClicked() {
+    await this._fetchNodeStatus();
+
+    const notReadyNodes = this._nodes?.filter((node) => !node.ready);
+    const deadNodes = this._nodes?.filter(
+      (node) => node.status === NodeStatus.Dead
+    );
+
+    if (deadNodes?.length) {
+      await showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.dump_dead_nodes_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.dump_dead_nodes_text"
+        ),
+      });
+    }
+
+    if (
+      notReadyNodes?.length &&
+      notReadyNodes.length !== deadNodes?.length &&
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.dump_not_ready_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.dump_not_ready_text"
+        ),
+        confirmText: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.dump_not_ready_confirm"
+        ),
+      }))
+    ) {
+      return;
+    }
+
+    let signedPath: { path: string };
+    try {
+      signedPath = await getSignedPath(
+        this.hass,
+        `/api/zwave_js/dump/${this.configEntryId}`
+      );
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Error",
+        text: err.error || err.body || err,
+      });
+      return;
+    }
+
+    const a = document.createElement("a");
+    a.href = signedPath.path;
+    a.download = `zwave_js_dump.jsonl`;
+    this.shadowRoot!.appendChild(a);
+    a.click();
+    this.shadowRoot!.removeChild(a);
   }
 
   static get styles(): CSSResultArray {
@@ -207,13 +300,8 @@ class ZWaveJSConfigDashboard extends LitElement {
 
         .network-status div.heading {
           display: flex;
-          justify-content: center;
           align-items: center;
           margin-bottom: 16px;
-        }
-
-        .network-status {
-          text-align: center;
         }
 
         .network-status div.heading .icon {
@@ -236,6 +324,12 @@ class ZWaveJSConfigDashboard extends LitElement {
         ha-card {
           margin: 0 auto;
           max-width: 600px;
+        }
+
+        button.dump {
+          width: 100%;
+          text-align: center;
+          color: var(--secondary-text-color);
         }
 
         [hidden] {

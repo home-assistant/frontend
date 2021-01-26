@@ -19,13 +19,21 @@ export interface ZWaveJSClient {
 
 export interface ZWaveJSController {
   home_id: string;
-  node_count: number;
+  nodes: number[];
 }
 
 export interface ZWaveJSNode {
   node_id: number;
   ready: boolean;
   status: number;
+}
+
+export enum NodeStatus {
+  Unknown,
+  Asleep,
+  Awake,
+  Dead,
+  Alive,
 }
 
 export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
