@@ -115,7 +115,7 @@ export class ZwaveMigration extends LitElement {
                             <li>
                               <i
                                 >If running Home Assistant Core in Docker or in
-                                Python VenV:</i
+                                Python venv:</i
                               >
                               Configure and start ozwdaemon
                             </li>

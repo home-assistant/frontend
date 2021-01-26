@@ -2311,7 +2311,7 @@
           "migration": {
             "ozw": {
               "header": "Migrate to OpenZWave",
-              "introduction": "This wizard will help you migrate from the legacy Z-Wave component to the OpenZWave integration that is currently in beta."
+              "introduction": "This wizard will help you migrate from the legacy Z-Wave integration to the OpenZWave integration that is currently in beta."
             }
           },
           "network_management": {
