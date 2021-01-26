@@ -17,4 +17,4 @@ export const formatDateWeekday = toLocaleDateStringSupportsOptions
         month: "short",
         day: "numeric",
       })
-  : (dateObj: Date) => format(dateObj, "dddd, D MMM");
+  : (dateObj: Date) => format(dateObj, "dddd, MMM D");
