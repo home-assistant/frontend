@@ -24,9 +24,9 @@ class HaTimeInput extends LitElement {
 
   @property() public suffix?: string;
 
-  @property() public required?: boolean;
+  @property({ type: Boolean }) public required?: boolean;
 
-  @property() public enableMillisec?: boolean;
+  @property({ type: Boolean }) public enableMillisecond?: boolean;
 
   @query("paper-time-input", true) private _input?: HTMLElement;
 
@@ -44,7 +44,7 @@ class HaTimeInput extends LitElement {
         .autoValidate=${this.required}
         error-message="Required"
         enable-second
-        .enableMillisecond=${this.enableMillisec}
+        .enableMillisecond=${this.enableMillisecond}
         format="24"
         .hour=${this._parseDuration(this._hours)}
         .min=${this._parseDuration(this._minutes)}

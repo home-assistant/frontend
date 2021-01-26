@@ -44,7 +44,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
     return html`
       <ha-time-input
         .data=${data}
-        enableMillisec
+        enableMillisecond
         @value-changed=${this._valueChanged}
       ></ha-time-input>
     `;
@@ -53,9 +53,9 @@ export class HaDelayAction extends LitElement implements ActionElement {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = ev.detail.value;
-	if (!value) {
-		return;
-	}
+    if (!value) {
+      return;
+    }
     fireEvent(this, "value-changed", {
       value: { ...this.action, delay: value },
     });
