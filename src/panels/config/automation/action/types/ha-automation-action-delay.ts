@@ -1,15 +1,12 @@
 import "@polymer/paper-input/paper-input";
 import { customElement, html, LitElement, property } from "lit-element";
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-service-picker";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/entity/ha-entity-picker";
+import { HaFormTimeData } from "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-service-picker";
 import { DelayAction } from "../../../../../data/script";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
-import {
-  HaFormTimeData,
-  HaFormTimeSchema,
-} from "../../../../../components/ha-form/ha-form";
 
 @customElement("ha-automation-action-delay")
 export class HaDelayAction extends LitElement implements ActionElement {
@@ -44,19 +41,12 @@ export class HaDelayAction extends LitElement implements ActionElement {
       };
     }
 
-    const schema: HaFormTimeSchema = {
-      type: "positive_time_period_dict",
-      name: "",
-      enableMillisec: true,
-    };
-
     return html`
-      <ha-form
+      <ha-time-input
         .data=${data}
-        .schema=${schema}
+        enableMillisec
         @value-changed=${this._valueChanged}
-      >
-      </ha-form>
+      ></ha-time-input>
     `;
   }
 

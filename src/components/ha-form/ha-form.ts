@@ -8,6 +8,7 @@ import {
 } from "lit-element";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
+import { HaTimeData } from "../ha-time-input";
 import "./ha-form-boolean";
 import "./ha-form-constant";
 import "./ha-form-float";
@@ -72,7 +73,6 @@ export interface HaFormBooleanSchema extends HaFormBaseSchema {
 
 export interface HaFormTimeSchema extends HaFormBaseSchema {
   type: "positive_time_period_dict";
-  enableMillisec?: boolean;
 }
 
 export interface HaFormDataContainer {
@@ -94,12 +94,7 @@ export type HaFormFloatData = number;
 export type HaFormBooleanData = boolean;
 export type HaFormSelectData = string;
 export type HaFormMultiSelectData = string[];
-export interface HaFormTimeData {
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-  milliseconds?: number;
-}
+export type HaFormTimeData = HaTimeData;
 
 export interface HaFormElement extends LitElement {
   schema: HaFormSchema | HaFormSchema[];
