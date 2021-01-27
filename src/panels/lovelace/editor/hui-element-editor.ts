@@ -124,17 +124,17 @@ export abstract class HuiElementEditor<T> extends LitElement {
       guiModeAvailable: !(
         this.hasWarning ||
         this.hasError ||
-        !this._guiSupported
+        this._guiSupported === false
       ),
     });
   }
 
   public get hasWarning(): boolean {
-    return this._warnings !== undefined;
+    return this._warnings !== undefined && this._warnings.length > 0;
   }
 
   public get hasError(): boolean {
-    return this._errors !== undefined;
+    return this._errors !== undefined && this._errors.length > 0;
   }
 
   public get GUImode(): boolean {
@@ -148,7 +148,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
       guiModeAvailable: !(
         this.hasWarning ||
         this.hasError ||
-        !this._guiSupported
+        this._guiSupported === false
       ),
     });
   }
@@ -210,7 +210,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
                 ></ha-code-editor>
               </div>
             `}
-        ${!this._guiSupported && this.configElementType
+        ${this._guiSupported === false && this.configElementType
           ? html`
               <div class="info">
                 ${this.hass.localize(
@@ -221,24 +221,24 @@ export abstract class HuiElementEditor<T> extends LitElement {
               </div>
             `
           : ""}
-        ${this._errors && this._errors.length > 0
+        ${this.hasError
           ? html`
               <div class="error">
                 ${this.hass.localize("ui.errors.config.error_detected")}:
                 <br />
                 <ul>
-                  ${this._errors.map((error) => html`<li>${error}</li>`)}
+                  ${this._errors!.map((error) => html`<li>${error}</li>`)}
                 </ul>
               </div>
             `
           : ""}
-        ${this._warnings && this._warnings.length > 0
+        ${this.hasWarning
           ? html`
               <div class="warning">
                 ${this.hass.localize("ui.errors.config.editor_not_supported")}:
                 <br />
                 <ul>
-                  ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
+                  ${this._warnings!.map((warning) => html`<li>${warning}</li>`)}
                 </ul>
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </div>
