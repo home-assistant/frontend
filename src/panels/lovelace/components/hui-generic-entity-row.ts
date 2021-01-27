@@ -173,6 +173,9 @@ class HuiGenericEntityRow extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      .info::first-letter {
+        text-transform: uppercase;
+      }
       .flex ::slotted(*) {
         margin-left: 8px;
         min-width: 0;
