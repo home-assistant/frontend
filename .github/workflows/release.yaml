@@ -33,6 +33,7 @@ jobs:
 
       - name: Build and release package
         run: |
+          python3 -m pip install twine
           export TWINE_USERNAME="__token__"
           export TWINE_PASSWORD="${{ secrets.TWINE_TOKEN }}"
 
