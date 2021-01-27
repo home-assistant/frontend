@@ -164,7 +164,7 @@ export class DialogTryTts extends LitElement {
         language,
         options: { gender },
       });
-      url = result.url;
+      url = result.path;
     } catch (err) {
       this._loadingExample = false;
       showAlertDialog(this, {
