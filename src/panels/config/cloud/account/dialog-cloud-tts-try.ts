@@ -167,8 +167,6 @@ export class DialogTryTts extends LitElement {
       url = result.url;
     } catch (err) {
       this._loadingExample = false;
-      // eslint-disable-next-line no-console
-      console.error(err);
       showAlertDialog(this, {
         text: `Unable to load example. ${err.error || err.body || err}`,
         warning: true,
@@ -176,7 +174,9 @@ export class DialogTryTts extends LitElement {
       return;
     }
     const audio = new Audio(url);
-    audio.play();
+    audio.addEventListener("canplaythrough", () => {
+      audio.play();
+    });
     audio.addEventListener("playing", () => {
       this._loadingExample = false;
     });
