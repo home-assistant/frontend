@@ -22,7 +22,7 @@ import type {
   LovelaceConfig,
 } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
-import { handleStructError } from "../common/structs/handle-errors";
+import { handleStructError } from "../../../common/structs/handle-errors";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceGenericElementEditor } from "../types";
@@ -63,13 +63,15 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
   @internalProperty() private _configElementType?: string;
 
-  @internalProperty() private _GUImode = true;
+  @internalProperty() private _guiMode = true;
 
   // Error: Configuration broken - do not save
-  @internalProperty() private _error?: string;
+  @internalProperty() private _errors?: string[];
 
   // Warning: GUI editor can't handle configuration - ok to save
   @internalProperty() private _warnings?: string[];
+
+  @internalProperty() private _guiSupported?: boolean;
 
   @internalProperty() private _loading = false;
 
@@ -86,9 +88,9 @@ export abstract class HuiElementEditor<T> extends LitElement {
     this._yaml = _yaml;
     try {
       this._config = safeLoad(this.yaml);
-      this._error = undefined;
+      this._errors = undefined;
     } catch (err) {
-      this._error = err.message;
+      this._errors = [err.message];
     }
     this._setConfig();
   }
@@ -103,44 +105,51 @@ export abstract class HuiElementEditor<T> extends LitElement {
     }
     this._config = config;
     this._yaml = undefined;
-    this._error = undefined;
+    this._errors = undefined;
     this._setConfig();
   }
 
   private _setConfig(): void {
-    if (!this._error) {
+    if (!this._errors) {
       try {
         this._updateConfigElement();
-        this._error = undefined;
       } catch (err) {
-        this._error = err.message;
+        this._errors = [err.message];
       }
     }
 
     fireEvent(this, "config-changed", {
       config: this.value! as any,
-      error: this._error,
-      guiModeAvailable: !(this.hasWarning || this.hasError),
+      error: this._errors?.join(", "),
+      guiModeAvailable: !(
+        this.hasWarning ||
+        this.hasError ||
+        this._guiSupported === false
+      ),
     });
   }
 
   public get hasWarning(): boolean {
-    return this._warnings !== undefined;
+    return this._warnings !== undefined && this._warnings.length > 0;
   }
 
   public get hasError(): boolean {
-    return this._error !== undefined;
+    return this._errors !== undefined && this._errors.length > 0;
   }
 
   public get GUImode(): boolean {
-    return this._GUImode;
+    return this._guiMode;
   }
 
   public set GUImode(guiMode: boolean) {
-    this._GUImode = guiMode;
+    this._guiMode = guiMode;
     fireEvent(this as HTMLElement, "GUImode-changed", {
       guiMode,
-      guiModeAvailable: !(this.hasWarning || this.hasError),
+      guiModeAvailable: !(
+        this.hasWarning ||
+        this.hasError ||
+        this._guiSupported === false
+      ),
     });
   }
 
@@ -194,29 +203,44 @@ export abstract class HuiElementEditor<T> extends LitElement {
                   mode="yaml"
                   autofocus
                   .value=${this.yaml}
-                  .error=${Boolean(this._error)}
+                  .error=${Boolean(this._errors)}
                   .rtl=${computeRTL(this.hass)}
                   @value-changed=${this._handleYAMLChanged}
                   @keydown=${this._ignoreKeydown}
                 ></ha-code-editor>
               </div>
             `}
-        ${this._error
+        ${this._guiSupported === false && this.configElementType
           ? html`
-              <div class="error">
-                ${this._error}
+              <div class="info">
+                ${this.hass.localize(
+                  "ui.errors.config.editor_not_available",
+                  "type",
+                  this.configElementType
+                )}
               </div>
             `
           : ""}
-        ${this._warnings
+        ${this.hasError
           ? html`
-              <div class="warning">
-                UI editor is not supported for this config:
+              <div class="error">
+                ${this.hass.localize("ui.errors.config.error_detected")}:
                 <br />
                 <ul>
-                  ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
+                  ${this._errors!.map((error) => html`<li>${error}</li>`)}
                 </ul>
-                You can still edit your config in YAML.
+              </div>
+            `
+          : ""}
+        ${this.hasWarning
+          ? html`
+              <div class="warning">
+                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
+                <br />
+                <ul>
+                  ${this._warnings!.map((warning) => html`<li>${warning}</li>`)}
+                </ul>
+                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </div>
             `
           : ""}
@@ -261,14 +285,18 @@ export abstract class HuiElementEditor<T> extends LitElement {
     let configElement: LovelaceGenericElementEditor | undefined;
 
     try {
-      this._error = undefined;
+      this._errors = undefined;
       this._warnings = undefined;
 
       if (this._configElementType !== this.configElementType) {
         // If the type has changed, we need to load a new GUI editor
+        this._guiSupported = false;
+        this._configElement = undefined;
 
         if (!this.configElementType) {
-          throw new Error(`No type defined`);
+          throw new Error(
+            this.hass.localize("ui.errors.config.no_type_provided")
+          );
         }
 
         this._configElementType = this.configElementType;
@@ -276,37 +304,41 @@ export abstract class HuiElementEditor<T> extends LitElement {
         this._loading = true;
         configElement = await this.getConfigElement();
 
-        if (!configElement) {
-          throw new Error(
-            `No visual editor available for: ${this.configElementType}`
+        if (configElement) {
+          configElement.hass = this.hass;
+          if ("lovelace" in configElement) {
+            configElement.lovelace = this.lovelace;
+          }
+          configElement.addEventListener("config-changed", (ev) =>
+            this._handleUIConfigChanged(ev as UIConfigChangedEvent)
           );
-        }
 
-        configElement.hass = this.hass;
-        if ("lovelace" in configElement) {
-          configElement.lovelace = this.lovelace;
+          this._configElement = configElement;
+          this._guiSupported = true;
         }
-        configElement.addEventListener("config-changed", (ev) =>
-          this._handleUIConfigChanged(ev as UIConfigChangedEvent)
-        );
-
-        this._configElement = configElement;
       }
 
-      // Setup GUI editor and check that it can handle the current config
-      try {
-        this._configElement!.setConfig(this.value);
-      } catch (err) {
-        throw new GUISupportError(
-          "Config is not supported",
-          handleStructError(err)
-        );
+      if (this._configElement) {
+        // Setup GUI editor and check that it can handle the current config
+        try {
+          this._configElement.setConfig(this.value);
+        } catch (err) {
+          const msgs = handleStructError(this.hass, err);
+          throw new GUISupportError(
+            "Config is not supported",
+            msgs.warnings,
+            msgs.errors
+          );
+        }
+      } else {
+        this.GUImode = false;
       }
     } catch (err) {
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
+        this._errors = err.errors || undefined;
       } else {
-        this._error = err;
+        this._errors = [err.message];
       }
       this.GUImode = false;
     } finally {
@@ -331,8 +363,10 @@ export abstract class HuiElementEditor<T> extends LitElement {
         padding: 8px 0px;
       }
       .error,
-      .warning {
+      .warning,
+      .info {
         word-break: break-word;
+        margin-top: 8px;
       }
       .error {
         color: var(--error-color);
@@ -340,8 +374,13 @@ export abstract class HuiElementEditor<T> extends LitElement {
       .warning {
         color: var(--warning-color);
       }
-      .warning ul {
+      .warning ul,
+      .error ul {
         margin: 4px 0;
+      }
+      .warning li,
+      .error li {
+        white-space: pre-wrap;
       }
       ha-circular-progress {
         display: block;
