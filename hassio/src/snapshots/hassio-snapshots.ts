@@ -264,7 +264,7 @@ class HassioSnapshots extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("supervisorInfo")) {
+    if (changedProps.has("supervisor")) {
       this._addonList = this.supervisor.supervisor.addons
         .map((addon) => ({
           slug: addon.slug,

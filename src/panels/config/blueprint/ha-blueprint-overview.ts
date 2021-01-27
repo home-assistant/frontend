@@ -1,6 +1,5 @@
-import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
-import { mdiHelpCircle, mdiDelete, mdiRobot, mdiDownload } from "@mdi/js";
+import { mdiDelete, mdiDownload, mdiHelpCircle, mdiRobot } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -11,26 +10,27 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
 import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
-import "../../../layouts/hass-tabs-subpage-data-table";
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
-import { documentationUrl } from "../../../util/documentation-url";
+import { showAutomationEditor } from "../../../data/automation";
 import {
   BlueprintMetaData,
   Blueprints,
   deleteBlueprint,
 } from "../../../data/blueprint";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
+import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
-import { showAutomationEditor } from "../../../data/automation";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 interface BlueprintMetaDataPath extends BlueprintMetaData {
   path: string;

@@ -512,6 +512,7 @@
             "close": "关闭",
             "continue": "继续",
             "copied": "已复制",
+            "copied_clipboard": "已复制到剪贴板",
             "delete": "删除",
             "disable": "禁用",
             "enable": "启用",
@@ -929,7 +930,7 @@
                         "filter": "重载 filter 实体",
                         "generic": "重载通用 IP 摄像机实体",
                         "generic_thermostat": "重载通用恒温器实体",
-                        "group": "重载分组、分组实体及通知服务",
+                        "group": "重载分组、分组实体及其通知服务",
                         "history_stats": "重载历史记录统计实体",
                         "homekit": "重载 HomeKit",
                         "input_boolean": "重载二元选择器",
@@ -942,7 +943,7 @@
                         "person": "重载人员",
                         "ping": "重载 ping 二元传感器实体",
                         "reload": "重载{domain}",
-                        "rest": "重载 REST 实体及通知服务",
+                        "rest": "重载 REST 实体及其通知服务",
                         "rpi_gpio": "重载树莓派 GPIO 实体",
                         "scene": "重载场景",
                         "script": "重载脚本",
@@ -985,7 +986,7 @@
                 "last_seen": "上次发现",
                 "manuf": "制造商：{manufacturer}",
                 "no_area": "没有区域",
-                "power_source": "电源",
+                "power_source": "供电方式",
                 "quirk": "Quirk",
                 "services": {
                     "reconfigure": "这将重新配置 ZHA 设备（复原设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是由电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
@@ -1418,13 +1419,13 @@
                 "blueprint": {
                     "add": {
                         "community_forums": "社区论坛",
-                        "error_no_url": "请输入 Blueprint 的网址。",
+                        "error_no_url": "请输入 Blueprint 的 URL。",
                         "file_name": "Blueprint 路径",
                         "header": "导入 Blueprint",
                         "import_btn": "预览 Blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "您可以从 Github 和社区论坛导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
-                        "import_introduction_link": "您可以从 Github 和{community_link}导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
+                        "import_introduction_link": "您可以从 Github 和{community_link}导入其他用户的 Blueprint。请在下方输入 Blueprint 的 URL。",
                         "importing": "正在导入 Blueprint...",
                         "raw_blueprint": "Blueprint 内容",
                         "save_btn": "保存 Blueprint",
@@ -1553,10 +1554,10 @@
                         "webhook_for": "{name}的Webhook"
                     },
                     "forgot_password": {
-                        "check_your_email": "检查您的电子邮件以获取有关如何重设密码的说明。",
+                        "check_your_email": "请查收电子邮件以获取重设密码的说明。",
                         "email": "电子邮件",
-                        "email_error_msg": "无效电子邮件",
-                        "instructions": "输入您的电子邮件地址，我们将向您发送一个链接以重置密码。",
+                        "email_error_msg": "电子邮件无效",
+                        "instructions": "请输入您的电子邮件地址，用于发送重置密码链接。",
                         "send_reset_email": "发送重置邮件",
                         "subtitle": "忘记密码",
                         "title": "忘记密码"
@@ -1581,7 +1582,7 @@
                         "alert_password_change_required": "您需要在登录前更改密码。",
                         "dismiss": "忽略",
                         "email": "电子邮箱",
-                        "email_error_msg": "无效电子邮件",
+                        "email_error_msg": "电子邮件无效",
                         "forgot_password": "忘记密码？",
                         "introduction": "当您不在家时，Home Assistant Cloud 供您安全地远程连接到您的实例。它还允许您连接仅限云端的服务：Amazon Alexa 和 Google Assistant。",
                         "introduction2": "此服务由我们的合作伙伴运行",
@@ -1592,14 +1593,14 @@
                         "password_error_msg": "密码至少为 8 个字符",
                         "sign_in": "登录",
                         "start_trial": "开始 1 个月免费试用",
-                        "title": "云登录",
+                        "title": "Cloud 登录",
                         "trial_info": "无需付款信息"
                     },
                     "register": {
                         "account_created": "已创建帐户！有关如何激活帐户的说明，请查看您的电子邮件。",
                         "create_account": "创建帐户",
                         "email_address": "电子邮件地址",
-                        "email_error_msg": "无效电子邮件",
+                        "email_error_msg": "电子邮件无效",
                         "feature_amazon_alexa": "接入 Amazon Alexa",
                         "feature_google_home": "接入 Google Assistant",
                         "feature_remote_control": "出门在外也可控制 Home Assistant",
@@ -2026,7 +2027,7 @@
                             "title": "标题",
                             "title_required": "标题为必填项。",
                             "update": "更新",
-                            "url": "网址",
+                            "url": "URL",
                             "url_error_msg": "网址应包含“-”，且不可包含除“-”和“_”以外的特殊字符及空格"
                         },
                         "picker": {
@@ -2054,8 +2055,8 @@
                             "new_resource": "添加新资源",
                             "type": "资源类型",
                             "update": "更新",
-                            "url": "网址",
-                            "url_error_msg": "网址为必填项",
+                            "url": "URL",
+                            "url_error_msg": "URL 为必填项",
                             "warning_header": "注意！",
                             "warning_text": "添加资源可能带来危险。请确保您知道资源的来源并信任它们。恶意资源会严重损害您的系统。"
                         },
@@ -2063,7 +2064,7 @@
                             "add_resource": "添加资源",
                             "headers": {
                                 "type": "类型",
-                                "url": "网址"
+                                "url": "URL"
                             },
                             "no_resources": "没有资源"
                         },
@@ -2079,17 +2080,17 @@
                 },
                 "mqtt": {
                     "button": "配置",
-                    "description_listen": "监听一个主题(Topic)",
-                    "description_publish": "发送一个数据包",
+                    "description_listen": "监听主题",
+                    "description_publish": "发送数据包",
                     "listening_to": "监听",
                     "message_received": "{time} 收到关于 {topic} 的消息[ {id} ]",
                     "payload": "负载参数（可使用模板）",
                     "publish": "发送",
                     "start_listening": "开始监听",
                     "stop_listening": "停止监听",
-                    "subscribe_to": "订阅主题(Topic)",
+                    "subscribe_to": "订阅主题",
                     "title": "MQTT",
-                    "topic": "主题(Topic)"
+                    "topic": "主题 (Topic)"
                 },
                 "ozw": {
                     "button": "配置",
@@ -2227,7 +2228,7 @@
                         "linked_user": "关联用户",
                         "name": "名字",
                         "name_error_msg": "名称为必填项",
-                        "new_person": "新的人员",
+                        "new_person": "新建人员",
                         "no_device_tracker_available_intro": "当您拥有检测人体存在的设备时，可以在此处将其分配给某人。您可以通过从集成页面添加存在检测集成来添加第一台设备。",
                         "update": "更新"
                     },
@@ -2345,7 +2346,7 @@
                             "filter": "重载 filter 实体",
                             "generic": "重载通用 IP 摄像机实体",
                             "generic_thermostat": "重载通用恒温器实体",
-                            "group": "重载分组、分组实体及通知服务",
+                            "group": "重载分组、分组实体及其通知服务",
                             "heading": "配置重载",
                             "history_stats": "重载历史记录统计实体",
                             "homekit": "重载 HomeKit",
@@ -2360,7 +2361,7 @@
                             "person": "重载人员",
                             "ping": "重载 ping 二元传感器实体",
                             "reload": "重载{domain}",
-                            "rest": "重载 REST 实体及通知服务",
+                            "rest": "重载 REST 实体及其通知服务",
                             "rpi_gpio": "重载树莓派 GPIO 实体",
                             "scene": "重载场景",
                             "script": "重载脚本",
@@ -2505,7 +2506,7 @@
                     "clusters": {
                         "header": "簇",
                         "help_cluster_dropdown": "选择簇以查看其属性和命令。",
-                        "introduction": "“簇”是 Zigbee 功能的构建基础，它们将功能分成逻辑单元。 有客户端和服务器类型，由属性和命令组成。"
+                        "introduction": "“簇”是 Zigbee 功能的构建基础，它们将功能分成逻辑单元。有客户端和服务器类型，由属性和命令组成。"
                     },
                     "common": {
                         "add_devices": "添加设备",
@@ -2586,7 +2587,9 @@
                     "title": "Zigbee 家庭自动化",
                     "visualization": {
                         "caption": "可视化",
-                        "header": "网络可视化"
+                        "header": "网络可视化",
+                        "highlight_label": "高亮显示设备",
+                        "zoom_label": "缩放到设备"
                     }
                 },
                 "zone": {
@@ -2718,7 +2721,7 @@
                         "alert_event_type": "事件类型是必填字段",
                         "available_events": "可用事件",
                         "count_listeners": " ({count} 个监听器)",
-                        "data": "事件数据（格式为YAML，选填）",
+                        "data": "事件数据（格式为 YAML，选填）",
                         "description": "将事件发送到事件总线。",
                         "documentation": "事件文档",
                         "event_fired": "事件 {name} 已触发",
@@ -2738,7 +2741,7 @@
                         "column_description": "描述",
                         "column_example": "示例",
                         "column_parameter": "参数",
-                        "data": "服务数据（格式为YAML，选填）",
+                        "data": "服务数据（格式为 YAML，选填）",
                         "description": "服务开发工具可让您调用 Home Assistant 中任何可用的服务。",
                         "fill_example_data": "填写示例数据",
                         "no_description": "没有描述",
@@ -2762,7 +2765,7 @@
                         "no_entities": "没有可用实体",
                         "set_state": "设置状态",
                         "state": "状态",
-                        "state_attributes": "状态属性（格式为YAML，选填）",
+                        "state_attributes": "状态属性（格式为 YAML，选填）",
                         "title": "状态"
                     },
                     "templates": {
@@ -2811,6 +2814,7 @@
                     "yaml_unsupported": "在 YAML 模式下使用 Lovelace 时不能使用此功能。"
                 },
                 "cards": {
+                    "action_confirmation": "您确定要执行动作“{action}”吗？",
                     "confirm_delete": "您确定要删除此卡片吗？",
                     "empty_state": {
                         "go_to_integrations_page": "前往集成页面。",
@@ -2836,7 +2840,9 @@
                     "shopping-list": {
                         "add_item": "新增项目",
                         "checked_items": "已完成项目",
-                        "clear_items": "清除已完成项目"
+                        "clear_items": "清除已完成项目",
+                        "drag_and_drop": "拖放",
+                        "reorder_items": "重新排序项目"
                     },
                     "starting": {
                         "description": "Home Assistant 正在启动，请稍候。",
@@ -2846,6 +2852,12 @@
                 "changed_toast": {
                     "message": "此仪表盘的 Lovelace 配置已更新。刷新页面以查看更改？",
                     "refresh": "刷新"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "时间戳无效",
+                        "invalid_format": "显示格式无效"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2866,7 +2878,7 @@
                         "alarm-panel": {
                             "available_states": "可用状态",
                             "description": "“警报面板”卡片用于对警报控制集成进行“警戒”和“解除警戒”操作。",
-                            "name": "报警面板"
+                            "name": "警报面板"
                         },
                         "button": {
                             "default_action_help": "默认动作取决于实体的功能，可能会切换状态或显示更多信息。",
@@ -2956,7 +2968,7 @@
                             "entities": "实体",
                             "entity": "实体",
                             "hold_action": "长按动作",
-                            "hours_to_show": "显示时间",
+                            "hours_to_show": "要显示的小时数",
                             "icon": "图标",
                             "icon_height": "图标高度",
                             "image": "图像路径",
@@ -2978,7 +2990,7 @@
                             "theme": "主题",
                             "title": "标题",
                             "unit": "单位",
-                            "url": "网址"
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "列",
@@ -3126,8 +3138,8 @@
                         "add": "添加视图",
                         "delete": "删除视图",
                         "edit": "编辑视图",
-                        "header": "查看配置",
-                        "header_name": "{name}查看配置",
+                        "header": "配置视图",
+                        "header_name": "{name}视图配置",
                         "move_left": "向左移动视图",
                         "move_right": "向右移动视图",
                         "tab_badges": "徽章",
@@ -3275,7 +3287,7 @@
                                 "login_expired": "会话已过期，请重新登录。"
                             },
                             "error": {
-                                "invalid_auth": "无效的用户名或密码",
+                                "invalid_auth": "用户名或密码无效",
                                 "invalid_code": "无效口令"
                             },
                             "step": {
@@ -3298,7 +3310,7 @@
                                 "login_expired": "会话已过期，请重新登录。"
                             },
                             "error": {
-                                "invalid_auth": "无效的用户名或密码",
+                                "invalid_auth": "用户名或密码无效",
                                 "invalid_code": "无效口令"
                             },
                             "step": {
@@ -3322,7 +3334,7 @@
                                 "no_api_password_set": "您还没有配置 API 密码。"
                             },
                             "error": {
-                                "invalid_auth": "无效的 API 密码",
+                                "invalid_auth": "API 密码无效",
                                 "invalid_code": "无效口令"
                             },
                             "step": {

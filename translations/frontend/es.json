@@ -512,6 +512,7 @@
             "close": "Cerrar",
             "continue": "Continuar",
             "copied": "Copiado",
+            "copied_clipboard": "Copiado al portapapeles",
             "delete": "Eliminar",
             "disable": "Deshabilitar",
             "enable": "Habilitar",
@@ -603,9 +604,9 @@
                     "set": "se puso",
                     "turned_off": "apagado",
                     "turned_on": "encendido",
-                    "was_at_home": "estaba en casa",
-                    "was_at_state": "estaba en {state}",
-                    "was_away": "estaba ausente",
+                    "was_at_home": "se detectó en casa",
+                    "was_at_state": "se detectó en {state}",
+                    "was_away": "se detectó como ausente",
                     "was_closed": "fue cerrado",
                     "was_connected": "fue conectado",
                     "was_disconnected": "fue desconectado",
@@ -1116,7 +1117,9 @@
                                 "device_id": {
                                     "action": "Acción",
                                     "extra_fields": {
-                                        "code": "Código"
+                                        "code": "Código",
+                                        "message": "Mensaje",
+                                        "title": "Título"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1292,7 +1295,8 @@
                                     "extra_fields": {
                                         "above": "Por encima de",
                                         "below": "Por debajo de",
-                                        "for": "Duración"
+                                        "for": "Duración",
+                                        "zone": "Zona"
                                     },
                                     "label": "Dispositivo",
                                     "trigger": "Desencadenante"
@@ -1463,7 +1467,7 @@
                             "info_state_reporting": "Si activas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Amazon. Esto te permite ver siempre los estados más recientes en la aplicación Alexa y usar los cambios de estado para crear rutinas.",
                             "manage_entities": "Administrar entidades",
                             "state_reporting_error": "No se puede {enable_disable} informar el estado.",
-                            "sync_entities": "Sincronizar entidades",
+                            "sync_entities": "Sincronizar entidades con Amazon",
                             "sync_entities_error": "Error al sincronizar entidades:",
                             "title": "Alexa"
                         },
@@ -1504,6 +1508,13 @@
                         },
                         "sign_out": "Cerrar sesión",
                         "thank_you_note": "Gracias por ser parte de Home Assistant Cloud. Gracias a personas como tú, podemos hacer una gran experiencia domótica para todos. ¡Gracias!",
+                        "tts": {
+                            "default_language": "Idioma predeterminado para usar",
+                            "female": "Femenino",
+                            "info": "Aporta personalidad a tu hogar haciendo que te hable mediante el uso de nuestros servicios de Texto a voz. Puedes usar esto en automatizaciones y scripts usando el servicio {service} .",
+                            "male": "Masculino",
+                            "title": "Texto a voz"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "No se pudo deshabilitar el webhook:",
                             "info": "Cualquier cosa que esté configurada para ser activada por un webhook puede recibir una URL de acceso público para permitirte enviar datos a Home Assistant desde cualquier lugar, sin exponer tu instancia a Internet.",
@@ -1535,11 +1546,11 @@
                     "description_login": "Has iniciado sesión como {email}",
                     "description_not_login": "No has iniciado sesión",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Fecha de vencimiento del certificado",
+                        "certificate_expiration_date": "Fecha de vencimiento del certificado:",
                         "certificate_information": "Información del certificado",
                         "close": "Cerrar",
                         "fingerprint": "Huella digital del certificado:",
-                        "will_be_auto_renewed": "Se renovará automáticamente"
+                        "will_be_auto_renewed": "se renovará automáticamente"
                     },
                     "dialog_cloudhook": {
                         "available_at": "El webhook está disponible en la siguiente URL:",
@@ -1582,7 +1593,7 @@
                         "dismiss": "Descartar",
                         "email": "Correo electrónico",
                         "email_error_msg": "Correo electrónico no válido",
-                        "forgot_password": "¿Se te olvidó tu contraseña?",
+                        "forgot_password": "¿Olvidaste la contraseña?",
                         "introduction": "Home Assistant Cloud te proporciona una conexión remota segura a tu instancia mientras estás fuera de casa. También te permite conectarte con servicios solo en la nube: Amazon Alexa y Google Assistant.",
                         "introduction2": "Este servicio está a cargo de nuestro socio.",
                         "introduction2a": ", una compañía fundada por los fundadores de Home Assistant y Hass.io.",
@@ -2586,7 +2597,9 @@
                     "title": "Domótica Zigbee",
                     "visualization": {
                         "caption": "Visualización",
-                        "header": "Visualización de la red"
+                        "header": "Visualización de la red",
+                        "highlight_label": "Resaltar dispositivos",
+                        "zoom_label": "Zoom al dispositivo"
                     }
                 },
                 "zone": {
@@ -2617,6 +2630,69 @@
                     "home_zone_core_config": "La ubicación de la zona de tu casa se puede editar desde la página de configuración general. El radio de la zona de tu casa aún no se puede editar desde la interfaz. ¿Quieres ir a la configuración general?",
                     "introduction": "Las zonas permiten especificar determinadas regiones de la tierra. Cuando una persona está dentro de una zona, su estado tomará el nombre de la zona. Las zonas también se pueden utilizar como desencadenante o condición dentro de las configuraciones de automatización.",
                     "no_zones_created_yet": "Parece que aún no has creado ninguna zona."
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Cancelar inclusión",
+                        "controller_in_inclusion_mode": "Tu controlador Z-Wave ahora está en modo de inclusión.",
+                        "follow_device_instructions": "Sigue las instrucciones que vienen con el dispositivo para activar el emparejamiento en el dispositivo.",
+                        "inclusion_failed": "No se pudo agregar el nodo. Por favor, consulta los registros para obtener más información.",
+                        "inclusion_finished": "Se ha agregado el nodo. Pueden tardar unos minutos en aparecer todas las entidades mientras terminamos de configurar el nodo en segundo plano.",
+                        "introduction": "Este asistente te guiará para añadir un nodo a tu red Z-Wave.",
+                        "secure_inclusion_warning": "Los dispositivos seguros requieren ancho de banda adicional; demasiados dispositivos seguros pueden ralentizar tu red Z-Wave. Recomendamos usar solo la inclusión segura para dispositivos que lo requieran, como cerraduras o abre-puertas de garaje.",
+                        "start_inclusion": "Iniciar inclusión",
+                        "start_secure_inclusion": "Iniciar inclusión segura",
+                        "title": "Añadir un nodo Z-Wave",
+                        "use_secure_inclusion": "Usar inclusión segura",
+                        "view_device": "Ver dispositivo"
+                    },
+                    "button": "Configurar",
+                    "common": {
+                        "add_node": "Añadir Nodo",
+                        "close": "Cerrar",
+                        "home_id": "ID de casa",
+                        "network": "Red",
+                        "node_id": "ID del Nodo",
+                        "remove_node": "Eliminar Nodo"
+                    },
+                    "dashboard": {
+                        "driver_version": "Versión del controlador",
+                        "header": "Administra tu red Z-Wave",
+                        "home_id": "ID de casa",
+                        "introduction": "Administra tu red Z-Wave y los nodos Z-Wave",
+                        "node_count": "Recuento de nodos",
+                        "server_version": "Versión del servidor"
+                    },
+                    "device_info": {
+                        "node_ready": "Nodo listo",
+                        "node_status": "Estado del Nodo",
+                        "zwave_info": "Información de Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Red"
+                    },
+                    "network_status": {
+                        "connected": "Conectado",
+                        "connecting": "Conectando",
+                        "unknown": "Desconocido"
+                    },
+                    "node_status": {
+                        "alive": "Vivo",
+                        "asleep": "Dormido",
+                        "awake": "Despierto",
+                        "dead": "No responde",
+                        "unknown": "Desconocido"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Cancelar exclusión",
+                        "controller_in_exclusion_mode": "Tu controlador Z-Wave ahora está en modo de exclusión.",
+                        "exclusion_failed": "No se pudo eliminar el nodo. Por favor, consulta los registros para obtener más información.",
+                        "exclusion_finished": "El nodo {id} se ha eliminado de tu red Z-Wave.",
+                        "follow_device_instructions": "Sigue las instrucciones que vienen con el dispositivo para activar la exclusión en el dispositivo.",
+                        "introduction": "Elimina un nodo de tu red Z-Wave y elimina el dispositivo y las entidades asociadas de Home Assistant.",
+                        "start_exclusion": "Iniciar exclusión",
+                        "title": "Eliminar un nodo Z-Wave"
+                    }
                 },
                 "zwave": {
                     "button": "Configurar",
@@ -2811,6 +2887,15 @@
                     "yaml_unsupported": "No puedes usar esta función cuando usas la IU Lovelace en modo YAML."
                 },
                 "cards": {
+                    "action_confirmation": "¿Estás seguro de que deseas ejecutar la acción \"{action}\"?",
+                    "actions": {
+                        "action_confirmation": "¿Estás seguro de que deseas ejecutar la acción \"{action}\"?",
+                        "no_entity_more_info": "No se proporcionó ninguna entidad para el diálogo de más información",
+                        "no_entity_toggle": "No se proporcionó entidad para alternar",
+                        "no_navigation_path": "No se ha especificado ninguna ruta de navegación",
+                        "no_service": "No se ha especificado ningún servicio para ejecutar",
+                        "no_url": "No se ha especificado ninguna URL para abrir"
+                    },
                     "confirm_delete": "¿Seguro que quieres eliminar esta tarjeta?",
                     "empty_state": {
                         "go_to_integrations_page": "Ir a la página de integraciones.",
@@ -2836,7 +2921,9 @@
                     "shopping-list": {
                         "add_item": "Añadir artículo",
                         "checked_items": "Elementos marcados",
-                        "clear_items": "Borrar elementos marcados"
+                        "clear_items": "Borrar elementos marcados",
+                        "drag_and_drop": "Arrastrar y soltar",
+                        "reorder_items": "Reordenar artículos"
                     },
                     "starting": {
                         "description": "Home Assistant está iniciando, espera por favor...",
@@ -2846,6 +2933,12 @@
                 "changed_toast": {
                     "message": "La configuración de la IU Lovelace para este panel de control se ha actualizado. ¿Quieres recargar para ver los cambios?",
                     "refresh": "Actualizar"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Marca de tiempo no válida",
+                        "invalid_format": "Formato de visualización no válido"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2869,7 +2962,7 @@
                             "name": "Panel de alarma"
                         },
                         "button": {
-                            "default_action_help": "La acción predeterminada depende de las capacidades de la entidad, se alternará o se mostrará más información.",
+                            "default_action_help": "La acción predeterminada depende de las capacidades de la entidad, se alternará o se mostrará el diálogo de más información.",
                             "description": "La tarjeta Botón te permite agregar botones para realizar tareas.",
                             "name": "Botón"
                         },
@@ -2986,8 +3079,10 @@
                             "name": "Vistazo"
                         },
                         "grid": {
+                            "columns": "Columnas",
                             "description": "La tarjeta Cuadrícula te permite mostrar varias tarjetas en una cuadrícula.",
-                            "name": "Cuadrícula"
+                            "name": "Cuadrícula",
+                            "square": "Renderizar tarjetas como cuadrados"
                         },
                         "history-graph": {
                             "description": "La tarjeta Historial Gráfico te permite mostrar un gráfico para cada una de las entidades enumeradas.",
@@ -3360,6 +3455,7 @@
                     "working": "Por favor, espere"
                 },
                 "initializing": "Inicializando",
+                "logging_in_to_with": "Iniciando sesión en **{locationName}** mediante **{authProviderName}**.",
                 "logging_in_with": "Iniciando sesión con **{authProviderName}**.",
                 "pick_auth_provider": "O inicia sesión con"
             },
@@ -3494,7 +3590,7 @@
                     "confirm_delete": "¿Estás seguro de que quieres eliminar el token de acceso para {name}?",
                     "create": "Crear Token",
                     "create_failed": "No se ha podido crear el token de acceso.",
-                    "created": "Creado en {date}",
+                    "created": "Creado {date}",
                     "created_at": "Creado el {date}",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "description": "Crea tokens de acceso de larga duración para permitir que tus scripts interactúen con tu instancia de Home Assistant. Cada token será válido por 10 años desde la creación. Los siguientes tokens de acceso de larga duración están actualmente activos.",

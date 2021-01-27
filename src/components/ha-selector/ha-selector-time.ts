@@ -1,7 +1,7 @@
 import { customElement, html, LitElement, property } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { TimeSelector } from "../../data/selector";
 import { fireEvent } from "../../common/dom/fire_event";
+import { TimeSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 import "../paper-time-input";
 
 const test = new Date().toLocaleString();

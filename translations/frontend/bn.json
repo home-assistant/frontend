@@ -1,0 +1,497 @@
+{
+    "config_entry": {
+        "disabled_by": {
+            "device": "ডিভাইস"
+        }
+    },
+    "groups": {
+        "owner": "মালিক"
+    },
+    "panel": {
+        "config": "কনফিগারেশন",
+        "history": "ইতিহাস",
+        "logbook": "লগবুক",
+        "mailbox": "ডাকবাক্স",
+        "map": "মানচিত্র",
+        "shopping_list": "কেনাকাটার তালিকা",
+        "states": "ওভারভিউ"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "বন্ধ",
+                "on": "চালু"
+            }
+        }
+    },
+    "state": {
+        "alarm_control_panel": {
+            "armed": "সশস্ত্র",
+            "armed_away": "সশস্ত্র দূরে",
+            "armed_home": "সশস্ত্র বাড়ি",
+            "armed_night": "সশস্ত্র রাত",
+            "arming": "অস্ত্রশস্ত্র নেয়া হচ্ছে",
+            "disarmed": "নিরস্ত্র",
+            "disarming": "নিরস্ত্র করা হচ্ছে",
+            "pending": "পেন্ডিং",
+            "triggered": "ট্রিগারড"
+        },
+        "automation": {
+            "off": "বন্ধ",
+            "on": "চালু"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "বন্ধ",
+                "on": "চালু"
+            },
+            "gas": {
+                "off": "ক্লিয়ার",
+                "on": "ডিটেক্টেড"
+            },
+            "moisture": {
+                "off": "শুকনো",
+                "on": "ভেজা"
+            },
+            "motion": {
+                "off": "ক্লিয়ার",
+                "on": "ডিটেক্টেড"
+            },
+            "occupancy": {
+                "off": "ক্লিয়ার",
+                "on": "ডিটেক্টেড"
+            },
+            "opening": {
+                "off": "বন্ধ",
+                "on": "খোলা"
+            },
+            "safety": {
+                "off": "সুরক্ষিত",
+                "on": "অসুরক্ষিত"
+            },
+            "smoke": {
+                "off": "ক্লিয়ার",
+                "on": "ডিটেক্টেড"
+            },
+            "sound": {
+                "off": "ক্লিয়ার",
+                "on": "ডিটেক্টেড"
+            },
+            "vibration": {
+                "off": "ক্লিয়ার",
+                "on": "ডিটেক্টেড"
+            }
+        },
+        "calendar": {
+            "off": "বন্ধ"
+        },
+        "default": {
+            "unavailable": "পাওয়া যাচ্ছে না",
+            "unknown": "অজানা"
+        }
+    },
+    "ui": {
+        "common": {
+            "copied_clipboard": "ক্লিপবোর্ডে অনুলিপি করা হয়েছে"
+        },
+        "components": {
+            "area-picker": {
+                "no_areas": "আপনার কোন এলাকা নেই",
+                "no_match": "কোন সমন্বয় এলাকা খুঁজে পাওয়া যায়নি"
+            },
+            "blueprint-picker": {
+                "add_user": "ব্যবহারকারী যুক্ত করুন",
+                "remove_user": "ব্যবহারকারীকে সরান",
+                "select_blueprint": "একটি ব্লুপ্রিন্ট নির্বাচন করুন"
+            },
+            "device-picker": {
+                "no_devices": "আপনার কোনও ডিভাইস নেই",
+                "no_match": "কোনো সমন্বয় ডিভাইস খুঁজে পাওয়া যায়নি"
+            },
+            "entity": {
+                "entity-picker": {
+                    "no_match": "কোনো সমন্বয় সত্তা খুঁজে পাওয়া যায়নি"
+                }
+            },
+            "media-browser": {
+                "class": {
+                    "url": "URL"
+                }
+            },
+            "target-picker": {
+                "add_area_id": "এলাকা বাছাই করুন",
+                "add_device_id": "ডিভাইস বাছাই করুন",
+                "add_entity_id": "সত্তা বাছাই করুন",
+                "expand_area_id": "এই এলাকাটি কে পৃথক ডিভাইস এবং সত্তাতে প্রসারিত করুন যা এটি ধারণ করে। সম্প্রসারণের পর যখন এলাকা পরিবর্তিত হবে তখন এটি ডিভাইস এবং সত্তাগুলি আপডেট করবে না।",
+                "expand_device_id": "পৃথক সত্তায় এই ডিভাইসটি প্রসারিত করুন। প্রসারণের পরে ডিভাইস পরিবর্তিত হলে সত্তা আপডেট হবে না।",
+                "remove_area_id": "এলাকা অপসারণ করুন",
+                "remove_device_id": "ডিভাইস অপসারণ করুন",
+                "remove_entity_id": "সত্তা অপসারণ করুন"
+            }
+        },
+        "dialogs": {
+            "entity_registry": {
+                "editor": {
+                    "device_disabled": "এই সত্তার ডিভাইস নিষ্ক্রিয় করা আছে।",
+                    "enabled_delay_confirm": "সক্ষম সত্তাগুলি {delay} সেকেন্ডের মধ্যে Home Assistant এ যুক্ত হবে",
+                    "enabled_description": "নিষ্ক্রিয় সত্তাগুলি Home Assistant এ যুক্ত করা হবে না।",
+                    "enabled_restart_confirm": "সত্তাগুলি সক্ষম করা শেষ করতে Home Assistant পুনরায় চালু করুন",
+                    "open_device_settings": "ডিভাইস সেটিংস খুলুন"
+                }
+            },
+            "helper_settings": {
+                "counter": {
+                    "restore": "Home Assistant শুরু হওয়ার পরে সর্বশেষ জ্ঞাত মানটি পুনরুদ্ধার করুন"
+                }
+            },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "blueprint": "ব্লুপ্রিন্টস"
+                    }
+                }
+            },
+            "voice_command": {
+                "did_not_hear": "Home Assistant কিছুই শোনেননি"
+            }
+        },
+        "notification_toast": {
+            "started": "Home Assistant শুরু হয়েছে!",
+            "starting": "Home Assistant শুরু হচ্ছে, শেষ না হওয়া পর্যন্ত সবকিছু পাওয়া যাবে না।"
+        },
+        "panel": {
+            "config": {
+                "areas": {
+                    "picker": {
+                        "introduction": "ডিভাইসগুলি কোথায় আছে তা সংগঠিত করতে এলাকা ব্যবহার করা হয়। এই তথ্য অন্যান্য সিস্টেমের সাথে আপনার ইন্টারফেস, অনুমতি এবং ইন্টিগ্রেশন সংগঠিত করতে সহায়তা করতে Home Assistant জুড়ে ব্যবহার করা হবে।"
+                    }
+                },
+                "automation": {
+                    "dialog_new": {
+                        "blueprint": {
+                            "use_blueprint": "একটি ব্লুপ্রিন্ট ব্যবহার করুন"
+                        },
+                        "start_empty": "একটি খালি অটোমেশন দিয়ে শুরু করুন",
+                        "thingtalk": {
+                            "create": "তৈরি",
+                            "input_label": "এই অটোমেশনটি কী করবে?"
+                        }
+                    },
+                    "editor": {
+                        "blueprint": {
+                            "blueprint_to_use": "ব্যবহারের জন্য ব্লুপ্রিন্ট",
+                            "header": "ব্লুপ্রিন্ট",
+                            "inputs": "ইনপুটস",
+                            "manage_blueprints": "ব্লুপ্রিন্টগুলি পরিচালনা করুন",
+                            "no_blueprints": "আপনার কোনও ব্লুপ্রিন্ট নেই",
+                            "no_inputs": "এই ব্লুপ্রিন্টের কোনও ইনপুট নেই।"
+                        },
+                        "triggers": {
+                            "introduction": "ট্রিগারগুলি যা অটোমেশন নিয়মের প্রক্রিয়া শুরু করে। একই নিয়মের জন্য একাধিক ট্রিগার নির্দিষ্ট করা সম্ভব। ট্রিগার শুরু হয়ে গেলে, Home Assistant এর শর্তগুলি যথাযথভাবে প্রযোজ্য হবে, যদি থাকে তবে এবং অ্যাকশন কল করবে।",
+                            "type": {
+                                "homeassistant": {
+                                    "label": "Home Assistant"
+                                }
+                            }
+                        }
+                    },
+                    "picker": {
+                        "introduction": "অটোমেশন সম্পাদক আপনাকে অটোমেশন তৈরি এবং সম্পাদনা করার অনুমতি দেয়। আপনি Home Assistant সঠিকভাবে কনফিগার করেছেন তা নিশ্চিত করতে দয়া করে নীচের লিঙ্কটি অনুসরণ করুন।"
+                    },
+                    "thingtalk": {
+                        "task_selection": {
+                            "introduction": "এই অটোমেশনটি কী করবে তা নীচে টাইপ করুন এবং আমরা এটিকে একটি Home Assistant এর অটোমেশনে রূপান্তর করার চেষ্টা করব।"
+                        }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "community_forums": "কমিউনিটি ফোরাম",
+                        "error_no_url": "দয়া করে ব্লুপ্রিন্টের URL লিখুন।",
+                        "file_name": "ব্লুপ্রিন্টের পথ",
+                        "header": "একটি ব্লুপ্রিন্ট আমদানি করুন",
+                        "import_btn": "পূর্বরূপ ব্লুপ্রিন্ট",
+                        "import_header": "ব্লুপ্রিন্ট \"{name}\"",
+                        "import_introduction": "আপনি Github এবং কমিউনিটি ফোরাম থেকে অন্যান্য ব্যবহারকারীদের ব্লুপ্রিন্টস আমদানি করতে পারেন। নিচের ব্লুপ্রিন্টের URL প্রবেশ করান।",
+                        "import_introduction_link": "আপনি গিটহাব এবং {community_link} থেকে অন্যান্য ব্যবহারকারীদের ব্লুপ্রিন্টস আমদানি করতে পারেন। নিচের ব্লুপ্রিন্টের URL লিখুন।",
+                        "importing": "ব্লুপ্রিন্ট লোড হচ্ছে ...",
+                        "raw_blueprint": "ব্লুপ্রিন্ট সামগ্রী",
+                        "save_btn": "ব্লুপ্রিন্ট আমদানি করুন",
+                        "saving": "ব্লুপ্রিন্ট আমদানি করা হচ্ছে ...",
+                        "unsupported_blueprint": "এই ব্লুপ্রিন্ট সমর্থিত নয়",
+                        "url": "ব্লুপ্রিন্টের URL"
+                    },
+                    "caption": "ব্লুপ্রিন্টস",
+                    "description": "ব্লুপ্রিন্টগুলি পরিচালনা করুন",
+                    "overview": {
+                        "add_blueprint": "ব্লুপ্রিন্ট আমদানি করুন",
+                        "confirm_delete_header": "এই ব্লুপ্রিন্ট মুছবেন?",
+                        "confirm_delete_text": "আপনি কি নিশ্চিত যে আপনি এই ব্লুপ্রিন্টটি মুছে ফেলতে চান?",
+                        "delete_blueprint": "ব্লুপ্রিন্ট মুছুন",
+                        "discover_more": "আরও ব্লুপ্রিন্টস আবিষ্কার করুন",
+                        "header": "ব্লুপ্রিন্ট সম্পাদক",
+                        "headers": {
+                            "domain": "ডোমেইন",
+                            "file_name": "ফাইলের নাম",
+                            "name": "নাম"
+                        },
+                        "introduction": "ব্লুপ্রিন্ট কনফিগারেশন আপনাকে আপনার ব্লুপ্রিন্টগুলি আমদানি ও পরিচালনা করতে দেয়।",
+                        "learn_more": "ব্লুপ্রিন্ট ব্যবহার সম্পর্কে আরও জানুন",
+                        "use_blueprint": "অটোমেশন তৈরি করুন"
+                    }
+                },
+                "cloud": {
+                    "account": {
+                        "google": {
+                            "info_state_reporting": "আপনি যদি রাষ্ট্রীয় প্রতিবেদন সক্রিয় করেন, Home Assistant উন্মোচিত সত্তার সকল রাষ্ট্রীয় পরিবর্তন Google-এ প্রেরণ করবে৷ এর ফলে আপনি Google অ্যাপের সর্বশেষ অবস্থাগুলো সবসময় দেখতে পারবেন৷"
+                        },
+                        "remote": {
+                            "info": "বাড়ি থেকে দূরে থাকাকালীন সময়ে Home Assistant ক্লাউড আপনার ইনস্ট্যান্স এর সাথে একটি নিরাপদ দূরবর্তী সংযোগ প্রদান করে।"
+                        },
+                        "webhooks": {
+                            "info": "ওয়েবহুক দ্বারা ট্রিগার হওয়ার জন্য যা কিছু কনফিগার করা হয়েছে সেটিকে ইন্টারনেটে উন্মুক্ত না করে, যে কোনো জায়গা থেকে Home Assistant এর কাছে ডেটা ফেরত পাঠানোর অনুমতি দেওয়ার জন্য একটি সর্বজনীনভাবে অ্যাক্সেসযোগ্য URL দেওয়া যেতে পারে।"
+                        }
+                    },
+                    "caption": "Home Assistant ক্লাউড",
+                    "dialog_cloudhook": {
+                        "available_at": "ওয়েবহুকটি নিম্নলিখিত URL-এ উপলব্ধ:"
+                    },
+                    "register": {
+                        "feature_remote_control": "বাড়ি থেকে দূরে Home Assistant এর নিয়ন্ত্রণ"
+                    }
+                },
+                "core": {
+                    "section": {
+                        "core": {
+                            "core_config": {
+                                "external_url": "বহিঃস্থ URL",
+                                "internal_url": "অভ্যন্তরীণ URL"
+                            }
+                        }
+                    }
+                },
+                "devices": {
+                    "automation": {
+                        "create_disable": "নিষ্ক্রিয় ডিভাইস দিয়ে অটোমেশন তৈরি করা যাচ্ছে না"
+                    },
+                    "disabled": "নিষ্ক্রিয়",
+                    "disabled_by": {
+                        "config_entry": "কনফিগ এন্ট্রি",
+                        "integration": "ইন্টিগ্রেশন",
+                        "user": "ব্যবহারকারী"
+                    },
+                    "enabled_cause": "ডিভাইসটি {cause} দ্বারা নিষ্ক্রিয় করা হয়েছে।",
+                    "enabled_description": "নিষ্ক্রিয় ডিভাইসগুলি প্রদর্শিত হবে না এবং ডিভাইসের অন্তর্ভুক্ত সত্তাগুলি অক্ষম করা হবে এবং Home Assistant এ যুক্ত হবে না।",
+                    "enabled_label": "ডিভাইস সক্রিয় করুন",
+                    "picker": {
+                        "filter": {
+                            "filter": "ফিল্টার",
+                            "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+                            "show_all": "সব দেখাও",
+                            "show_disabled": "নিষ্ক্রিয় ডিভাইসগুলি দেখান"
+                        },
+                        "search": "ডিভাইস অনুসন্ধান করুন"
+                    },
+                    "scene": {
+                        "create_disable": "নিষ্ক্রিয় ডিভাইস দিয়ে দৃশ্য তৈরি করা যাচ্ছে না"
+                    },
+                    "script": {
+                        "create_disable": "নিষ্ক্রিয় ডিভাইস দিয়ে স্ক্রিপ্ট তৈরি করা যাচ্ছে না"
+                    }
+                },
+                "entities": {
+                    "picker": {
+                        "disable_selected": {
+                            "confirm_text": "নিষ্ক্রিয় সত্তাগুলি Home Assistant এ যুক্ত করা হবে না।"
+                        },
+                        "enable_selected": {
+                            "confirm_text": "এটি তাদের Home Assistant এ আবার উপলব্ধ করবে যদি তারা এখন নিষ্ক্রিয় থাকে।"
+                        },
+                        "headers": {
+                            "area": "এলাকা"
+                        },
+                        "introduction": "Home Assistant প্রতিটি সত্তার একটি রেজিস্ট্রি রাখে যা অনন্যভাবে চিহ্নিত করা যেতে পারে। এই সত্তার প্রতিটিতে একটি সত্তা আইডি বরাদ্দ করা হবে যা শুধুমাত্র এই সত্তার জন্য সংরক্ষিত হবে।",
+                        "remove_selected": {
+                            "confirm_partly_text": "আপনি শুধুমাত্র নির্বাচিত {removable} সত্তার {selected} অপসারণ করতে পারেন. যখন ইন্টিগ্রেশন আর সত্তাসরবরাহ করছে না তখন সত্তাগুলি অপসারণ করা যেতে পারে। কখনও কখনও একটি অপসারিত ইন্টিগ্রেশনের সত্তা অপসারণ করার আগে Home Assistant আবার চালু করতে হয়। আপনি কি নিশ্চিত যে আপনি অপসারণযোগ্য সত্তাগুলি অপসারণ করতে চান?"
+                        }
+                    }
+                },
+                "header": "Home Assistant কনফিগার করুন",
+                "info": {
+                    "copy_github": "গিটহাবের জন্য",
+                    "system_health": {
+                        "checks": {
+                            "cloud": {
+                                "can_reach_cloud": "Home Assistant ক্লাউডে পৌঁছান"
+                            }
+                        }
+                    }
+                },
+                "integrations": {
+                    "config_entry": {
+                        "reload_restart_confirm": "এই ইন্টিগ্রেশন পুনরায় লোড করা শেষ করতে Home Assistant পুনরায় চালু করুন",
+                        "restart_confirm": "এই ইন্টিগ্রেশন অপসারণ শেষ করতে Home Assistant পুনর্সূচনা করুন"
+                    }
+                },
+                "introduction": "এই দৃশ্যে আপনার উপাদানগুলি এবং Home Assistant কনফিগার করা সম্ভব। UI থেকে সব কিছু এখনও কনফিগার করা সম্ভব নয়, তবে আমরা এটিতে কাজ করছি।",
+                "logs": {
+                    "description": "Home Assistant এর লগগুলি দেখুন"
+                },
+                "lovelace": {
+                    "dashboards": {
+                        "detail": {
+                            "url": "URL",
+                            "url_error_msg": "URL-এ একটি - থাকতে হবে, স্পেস বা বিশেষ অক্ষর থাকতে পারে না, শুধুমাত্র _ এবং - ব্যতীত"
+                        }
+                    },
+                    "resources": {
+                        "detail": {
+                            "url": "URL",
+                            "url_error_msg": "URL একটি প্রয়োজনীয় ক্ষেত্র"
+                        },
+                        "picker": {
+                            "headers": {
+                                "url": "URL"
+                            }
+                        }
+                    }
+                },
+                "ozw": {
+                    "select_instance": {
+                        "none_found": "আমরা কোন OpenZWave দৃষ্টান্ত খুঁজে পাইনি। আপনি যদি বিশ্বাস করেন যে এটি ভুল, আপনার OpenZWave এবং MQTT সেটআপ পরীক্ষা করুন এবং Home Assistant আপনার MQTT ব্রোকারের সাথে যোগাযোগ করতে পারেন তা নিশ্চিত করুন।"
+                    }
+                },
+                "person": {
+                    "description": "Home Assistant এর দ্বারা ট্র্যাক করে এমন লোকদের পরিচালনা করুন"
+                },
+                "scene": {
+                    "picker": {
+                        "introduction": "দৃশ্য সম্পাদক আপনাকে দৃশ্য তৈরি এবং সম্পাদনা করার অনুমতি দেয়। আপনি Home Assistant সঠিকভাবে কনফিগার করেছেন তা নিশ্চিত করতে দয়া করে নীচের লিঙ্কটি অনুসরণ করুন।"
+                    }
+                },
+                "users": {
+                    "description": "Home Assistant ব্যবহারকারীর অ্যাকাউন্টগুলি পরিচালনা করুন",
+                    "editor": {
+                        "active_tooltip": "ব্যবহারকারী লগইন করতে পারে কিনা নিয়ন্ত্রণ করে",
+                        "username": "ব্যবহারকারীর নাম"
+                    },
+                    "picker": {
+                        "headers": {
+                            "is_active": "সক্রিয়",
+                            "is_owner": "মালিক",
+                            "username": "ব্যবহারকারীর নাম"
+                        }
+                    }
+                },
+                "zha": {
+                    "add_device": "ডিভাইস যুক্ত করুন",
+                    "device_pairing_card": {
+                        "CONFIGURED": "কনফিগারেশন সম্পন্ন",
+                        "CONFIGURED_status_text": "শুরু হচ্ছে",
+                        "INITIALIZED": "আরম্ভকরণ সম্পন্ন",
+                        "INITIALIZED_status_text": "ডিভাইসটি ব্যবহারের জন্য প্রস্তুত",
+                        "INTERVIEW_COMPLETE": "ইন্টারভিউ সম্পন্ন",
+                        "INTERVIEW_COMPLETE_status_text": "কনফিগার করা হচ্ছে",
+                        "PAIRED": "ডিভাইস পাওয়া গেছে",
+                        "PAIRED_status_text": "ইন্টারভিউ শুরু করা হচ্ছে"
+                    },
+                    "groups": {
+                        "add_group": "গ্রুপ যুক্ত করুন"
+                    },
+                    "visualization": {
+                        "caption": "ভিজ্যুয়ালাইজেশন",
+                        "header": "নেটওয়ার্ক ভিজ্যুয়ালাইজেশন",
+                        "zoom_label": "ডিভাইসে জুম করুন"
+                    }
+                },
+                "zwave": {
+                    "node_management": {
+                        "exclude_entity": "Home Assistant থেকে এই সত্তাটি বাদ দিন"
+                    }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "এটি Home Assistant এর সকল ডেটা অ্যাক্সেস পাবে।"
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "states": {
+                        "description1": "Home Assistant এর মধ্যে একটি ডিভাইসের প্রতিনিধিত্ব নির্ধারণ করুন।"
+                    },
+                    "templates": {
+                        "description": "কিছু Home Assistant এর নির্দিষ্ট এক্সটেনশনগুলির সাথে Jinja2 টেম্পলেট ইঞ্জিন ব্যবহার করে টেমপ্লেটগুলি রেন্ডার করা হয়।",
+                        "template_extensions": "Home Assistant টেমপ্লেট এক্সটেনশন"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "picture-elements": {
+                        "url": "{url_path} উইন্ডো খুলুন"
+                    },
+                    "safe-mode": {
+                        "description": "আপনার কনফিগারেশনটি লোড করার সময় Home Assistant সমস্যায় পড়ে এবং এখন নিরাপদ মোডে চলছে। কী ভুল হয়েছে তা দেখতে ত্রুটি লগটি একবার দেখুন।"
+                    },
+                    "starting": {
+                        "description": "Home Assistant শুরু হচ্ছে, দয়া করে অপেক্ষা করুন...",
+                        "header": "Home Assistant শুরু হচ্ছে..."
+                    }
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "অবৈধ টাইমস্ট্যাম্প",
+                        "invalid_format": "অবৈধ ডিস্প্লে ফরম্যাট"
+                    }
+                },
+                "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "url": "URL"
+                        },
+                        "url_path": "URL এর পথ"
+                    },
+                    "card": {
+                        "generic": {
+                            "url": "URL"
+                        },
+                        "iframe": {
+                            "description": "ওয়েবপেজ কার্ড আপনাকে আপনার প্রিয় ওয়েবপৃষ্ঠাটিকে Home Assistant এ এম্বেড করতে সম্মতি দেয়।"
+                        },
+                        "picture-entity": {
+                            "description": "চিত্র সত্তা কার্ড একটি ছবির আকারে একটি সত্তা প্রদর্শন করে। URL থেকে ছবির পরিবর্তে, এটি ক্যামেরা সত্তার ছবি ও দেখাতে পারে।"
+                        }
+                    },
+                    "migrate": {
+                        "para_migrate": "'মাইগ্রেট কনফিগারেশন' বোতামটি টিপে Home Assistant স্বয়ংক্রিয়ভাবে আপনার সমস্ত কার্ডে এবং ভিউতে আইডি যুক্ত করতে পারে।"
+                    },
+                    "save_config": {
+                        "para": "এই ড্যাশবোর্ডটি বর্তমানে Home Assistant দ্বারা রক্ষণাবেক্ষণ করা হচ্ছে। যখন নতুন সত্তা বা লাভলেস UI উপাদানগুলি উপলভ্য হয় তখন এটি স্বয়ংক্রিয়ভাবে হালনাগাদ করা হয়। আপনি যদি নিয়ন্ত্রণ নেন, এই ড্যাশবোর্ডটি আর স্বয়ংক্রিয়ভাবে হালনাগাদ করা হবে না। আপনি সবসময় কনফিগারেশনে একটি নতুন ড্যাশবোর্ড তৈরি করতে পারেন চারপাশে খেলতে।"
+                    }
+                },
+                "warning": {
+                    "starting": "Home Assistant শুরু হচ্ছে, সবকিছু এখনো পাওয়া যাবে না"
+                }
+            },
+            "page-authorize": {
+                "authorizing_client": "আপনি আপনার Home Assistant দৃষ্টান্তে {clientId} অ্যাক্সেস দিতে যাচ্ছেন।"
+            },
+            "page-onboarding": {
+                "core-config": {
+                    "location_name": "আপনার Home Assistant ইনস্টলেশনের নাম"
+                }
+            },
+            "profile": {
+                "change_password": {
+                    "error_new_is_old": "নতুন পাসওয়ার্ড বর্তমান পাসওয়ার্ডের চেয়ে আলাদা হতে হবে",
+                    "error_new_mismatch": "প্রবেশ করা নতুন পাসওয়ার্ডের মান মেলে না",
+                    "success": "পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে"
+                },
+                "long_lived_access_tokens": {
+                    "description": "আপনার স্ক্রিপ্টগুলি আপনার Home Assistance ইন্সটেন্স এর সাথে ইন্টারঅ্যাক্ট করার অনুমতি দেওয়ার জন্য দীর্ঘকালীন অ্যাক্সেস টোকেন তৈরি করুন। প্রতিটি টোকেন তৈরি থেকে 10 বছরের জন্য বৈধ হবে। নিম্নলিখিত দীর্ঘস্থায়ী অ্যাক্সেস টোকেনগুলি বর্তমানে সক্রিয়।"
+                }
+            }
+        }
+    }
+}

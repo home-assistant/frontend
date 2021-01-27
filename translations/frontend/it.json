@@ -512,6 +512,7 @@
             "close": "Chiudi",
             "continue": "Continua",
             "copied": "Copiato",
+            "copied_clipboard": "Copiato negli appunti",
             "delete": "Elimina",
             "disable": "Disattivare",
             "enable": "Attivare",
@@ -603,9 +604,9 @@
                     "set": "tramontato",
                     "turned_off": "spento",
                     "turned_on": "acceso",
-                    "was_at_home": "era a casa",
-                    "was_at_state": "era a {state}",
-                    "was_away": "era fuori casa",
+                    "was_at_home": "è stato rilevato a casa",
+                    "was_at_state": "è stato rilevato in {state}",
+                    "was_away": "è stato rilevato fuori casa",
                     "was_closed": "era chiuso",
                     "was_connected": "era connesso",
                     "was_disconnected": "era disconnesso",
@@ -737,7 +738,7 @@
                 "enable_new_entities_description": "Se disabilitato, le entità appena rilevate per {integration} non verranno automaticamente aggiunte a Home Assistant.",
                 "enable_new_entities_label": "Abilita nuove entità aggiunte.",
                 "title": "Opzioni di sistema per {integration}",
-                "update": "Aggiornamento"
+                "update": "Aggiorna"
             },
             "domain_toggler": {
                 "reset_entities": "Reimpostare le Entità",
@@ -942,7 +943,7 @@
                         "person": "Ricarica le persone",
                         "ping": "Ricarica le entità del sensore binario Ping",
                         "reload": "Ricarica {domain}",
-                        "rest": "Ricarica le entità di rest e i servizi di notifica",
+                        "rest": "Ricarica le entità REST e i servizi di notifica REST",
                         "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi",
                         "scene": "Ricarica le Scene",
                         "script": "Ricarica gli Script",
@@ -1116,7 +1117,9 @@
                                 "device_id": {
                                     "action": "Azione",
                                     "extra_fields": {
-                                        "code": "Codice"
+                                        "code": "Codice",
+                                        "message": "Messaggio",
+                                        "title": "Titolo"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1292,7 +1295,8 @@
                                     "extra_fields": {
                                         "above": "Maggiore di",
                                         "below": "Minore di",
-                                        "for": "Durata"
+                                        "for": "Durata",
+                                        "zone": "Zona"
                                     },
                                     "label": "Dispositivo",
                                     "trigger": "Attivazione"
@@ -1463,7 +1467,7 @@
                             "info_state_reporting": "Se si abilita la segnalazione dello stato, Home Assistant invierà ad Amazon tutte le modifiche di stato delle entità esposte. Questo permette di vedere sempre gli ultimi stati nell'app Alexa e di utilizzare i cambiamenti di stato per creare routine.",
                             "manage_entities": "Gestire le entità",
                             "state_reporting_error": "Impossibile a {enable_disable} segnalare lo stato.",
-                            "sync_entities": "Sincronizza entità",
+                            "sync_entities": "Sincronizza entità con Amazon",
                             "sync_entities_error": "Impossibile sincronizzare le entità:",
                             "title": "Alexa"
                         },
@@ -1504,6 +1508,13 @@
                         },
                         "sign_out": "Esci",
                         "thank_you_note": "Grazie per far parte di Home Assistant Cloud. È grazie a persone come te che siamo in grado di creare un'ottima esperienza domotica per tutti. Grazie!",
+                        "tts": {
+                            "default_language": "Lingua predefinita da utilizzare",
+                            "female": "Donna",
+                            "info": "Porta un po' di personalità a casa tua facendola parlare con te utilizzando i nostri servizi di sintesi vocale. Puoi usarlo nelle automazioni e negli script usando il servizio {service}.",
+                            "male": "Uomo",
+                            "title": "Sintesi vocale"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Impossibile disabilitare webhook:",
                             "info": "Tutto ciò che è configurato per essere attivato da un webhook può essere dotato di un URL accessibile pubblicamente per consentire d'inviare i dati ad Home Assistant da qualsiasi luogo, senza esporre la vostra istanza a Internet.",
@@ -1535,11 +1546,11 @@
                     "description_login": "Connesso come {email}",
                     "description_not_login": "Accesso non effettuato",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Data di scadenza del certificato",
+                        "certificate_expiration_date": "Data di scadenza del certificato:",
                         "certificate_information": "Informazioni sul certificato",
                         "close": "Chiudi",
                         "fingerprint": "Impronta digitale del certificato:",
-                        "will_be_auto_renewed": "Sarà rinnovato automaticamente"
+                        "will_be_auto_renewed": "sarà rinnovato automaticamente"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Il webhook è disponibile al seguente URL:",
@@ -1582,7 +1593,7 @@
                         "dismiss": "Respingere",
                         "email": "E-mail",
                         "email_error_msg": "E-mail non valida",
-                        "forgot_password": "Hai dimenticato la password?",
+                        "forgot_password": "Password dimenticata?",
                         "introduction": "Home Assistant Cloud fornisce una connessione remota sicura alla tua istanza quando sei lontano da casa. Consente inoltre di connettersi con i servizi solo su cloud: Amazon Alexa e Google Assistant.",
                         "introduction2": "Questo servizio è gestito dal nostro partner",
                         "introduction2a": ", una società fondata dai fondatori di Home Assistant e Hass.io.",
@@ -2241,7 +2252,7 @@
                 "scene": {
                     "activated": "Scena attivata {name}.",
                     "caption": "Scene",
-                    "description": "Cattura gli stati del dispositivo e richiamarli facilmente in seguito",
+                    "description": "Cattura gli stati del dispositivo e richiamali facilmente in futuro",
                     "editor": {
                         "default_name": "Nuova scena",
                         "devices": {
@@ -2360,7 +2371,7 @@
                             "person": "Ricarica le persone",
                             "ping": "Ricarica le entità del sensore binario Ping",
                             "reload": "Ricarica {domain}",
-                            "rest": "Ricarica le entità di rest e i servizi di notifica",
+                            "rest": "Ricarica le entità REST e i servizi di notifica REST",
                             "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
@@ -2405,7 +2416,7 @@
                         "description": "Descrizione",
                         "name": "Nome",
                         "new_tag": "Nuova etichetta",
-                        "tag_id": "Id etichetta",
+                        "tag_id": "ID etichetta",
                         "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
                         "update": "Aggiorna",
                         "usage": "Una etichetta può attivare un'automazione quando viene scansionata, puoi utilizzare etichette NFC, codici QR o qualsiasi altro tipo di tag. Utilizza il nostro {companion_link} per scrivere questa etichetta su un tag NFC programmabile o crea un codice QR di seguito."
@@ -2586,7 +2597,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualizzazione",
-                        "header": "Visualizzazione di rete"
+                        "header": "Visualizzazione di rete",
+                        "highlight_label": "Evidenzia dispositivi",
+                        "zoom_label": "Ingrandisci al dispositivo"
                     }
                 },
                 "zone": {
@@ -2617,6 +2630,69 @@
                     "home_zone_core_config": "La posizione della zona Casa è modificabile dalla pagina di configurazione generale. Il raggio della zona iniziale non può ancora essere modificato dal frontend. Vuoi andare alla configurazione generale?",
                     "introduction": "Le Zone consentono di specificare determinate regioni sulla Terra. Quando una persona si trova all'interno di una Zona, nel suo Stato ci sarà il nome dalla Zona. Le Zone possono anche essere utilizzate come Attivazioni (o Triggers) o Condizioni all'interno delle impostazioni di Automazione.",
                     "no_zones_created_yet": "Sembra che tu non abbia ancora creato nessuna zona."
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Annulla inclusione",
+                        "controller_in_inclusion_mode": "Il tuo controller Z-Wave è ora in modalità inclusione.",
+                        "follow_device_instructions": "Segui le indicazioni fornite con il tuo dispositivo per attivare l'associazione sul dispositivo.",
+                        "inclusion_failed": "Impossibile aggiungere il nodo. Si prega di controllare i registri per ulteriori informazioni.",
+                        "inclusion_finished": "Il nodo è stato aggiunto. Potrebbero essere necessari alcuni minuti prima che tutte le entità vengano visualizzate mentre finiamo di configurare il nodo in background.",
+                        "introduction": "Questa procedura ti guiderà nell'aggiunta di un nodo alla tua rete Z-Wave.",
+                        "secure_inclusion_warning": "I dispositivi protetti richiedono una larghezza di banda aggiuntiva; troppi dispositivi sicuri possono rallentare la tua rete Z-Wave. Si consiglia di utilizzare l'inclusione sicura solo per i dispositivi che lo richiedono, come serrature o apriporta da garage.",
+                        "start_inclusion": "Avvia inclusione",
+                        "start_secure_inclusion": "Avvia inclusione sicura",
+                        "title": "Aggiungi un Nodo Z-Wave",
+                        "use_secure_inclusion": "Usa l'inclusione sicura",
+                        "view_device": "Visualizza dispositivo"
+                    },
+                    "button": "Configura",
+                    "common": {
+                        "add_node": "Aggiungi Nodo",
+                        "close": "Chiudi",
+                        "home_id": "ID Home",
+                        "network": "Rete",
+                        "node_id": "ID Nodo",
+                        "remove_node": "Rimuovi Nodo"
+                    },
+                    "dashboard": {
+                        "driver_version": "Versione del driver",
+                        "header": "Gestisci la tua rete Z-Wave",
+                        "home_id": "ID Home",
+                        "introduction": "Gestisci la tua rete Z-Wave e i nodi Z-Wave",
+                        "node_count": "Numero Nodi",
+                        "server_version": "Versione del server"
+                    },
+                    "device_info": {
+                        "node_ready": "Nodo pronto",
+                        "node_status": "Stato del Nodo",
+                        "zwave_info": "Informazioni Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Rete"
+                    },
+                    "network_status": {
+                        "connected": "Connesso",
+                        "connecting": "In collegamento",
+                        "unknown": "Sconosciuto"
+                    },
+                    "node_status": {
+                        "alive": "Attivo",
+                        "asleep": "Addormentato",
+                        "awake": "Sveglio",
+                        "dead": "Disattivo",
+                        "unknown": "Sconosciuto"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Annulla esclusione",
+                        "controller_in_exclusion_mode": "Il tuo controller Z-Wave è ora in modalità di esclusione.",
+                        "exclusion_failed": "Impossibile rimuovere il nodo. Si prega di controllare i registri per ulteriori informazioni.",
+                        "exclusion_finished": "Il nodo {id} è stato rimosso dalla tua rete Z-Wave.",
+                        "follow_device_instructions": "Segui le indicazioni fornite con il tuo dispositivo per attivare l'esclusione sul dispositivo.",
+                        "introduction": "Rimuovi un nodo dalla tua rete Z-Wave e rimuovi il dispositivo e le entità associati da Home Assistant.",
+                        "start_exclusion": "Avvia esclusione",
+                        "title": "Rimuovi un nodo Z-Wave"
+                    }
                 },
                 "zwave": {
                     "button": "Configura",
@@ -2811,6 +2887,15 @@
                     "yaml_unsupported": "Non è possibile utilizzare questa funzione quando si utilizza l'Interfaccia Utente di Lovelace in modalità YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Sei sicuro di voler eseguire l'azione \"{action}\"?",
+                    "actions": {
+                        "action_confirmation": "Sei sicuro di voler eseguire l'azione \"{action}\"?",
+                        "no_entity_more_info": "Nessuna entità fornita per la finestra di dialogo con ulteriori informazioni",
+                        "no_entity_toggle": "Nessuna entità fornita per attivare / disattivare",
+                        "no_navigation_path": "Nessun percorso di navigazione specificato",
+                        "no_service": "Nessun servizio per l'esecuzione specificato",
+                        "no_url": "Nessun URL da aprire specificato"
+                    },
                     "confirm_delete": "Sei sicuro di voler cancellare questa scheda?",
                     "empty_state": {
                         "go_to_integrations_page": "Vai alla pagina delle integrazioni.",
@@ -2823,7 +2908,7 @@
                     "picture-elements": {
                         "call_service": "Chiama il servizio {name}",
                         "hold": "Tenere premuto:",
-                        "more_info": "Mostra più informazioni: {name}",
+                        "more_info": "Mostra ulteriori informazioni: {name}",
                         "navigate_to": "Vai a {location}",
                         "tap": "Tocca:",
                         "toggle": "Commuta {name}",
@@ -2836,7 +2921,9 @@
                     "shopping-list": {
                         "add_item": "Aggiungi elemento",
                         "checked_items": "Elementi selezionati",
-                        "clear_items": "Cancella gli elementi selezionati"
+                        "clear_items": "Cancella gli elementi selezionati",
+                        "drag_and_drop": "Trascina e rilascia",
+                        "reorder_items": "Riordina elementi"
                     },
                     "starting": {
                         "description": "Home Assistant sta per avviarsi, attendere prego...",
@@ -2846,6 +2933,12 @@
                 "changed_toast": {
                     "message": "La configurazione dell'Interfaccia Utente di Lovelace per questa plancia è stata aggiornata, ricaricare per vedere le modifiche?",
                     "refresh": "Aggiorna"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Marca temporale non valida",
+                        "invalid_format": "Formato di visualizzazione non valido"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2869,7 +2962,7 @@
                             "name": "Pannello di Allarme"
                         },
                         "button": {
-                            "default_action_help": "L'azione predefinita dipende dalle capacità dell'entità, verrà attivata o disattivata o verranno mostrate più informazioni.",
+                            "default_action_help": "L'azione predefinita dipende dalle capacità dell'entità, verrà attivata o disattivata o verrà visualizzata la finestra di dialogo con ulteriori informazioni.",
                             "description": "La scheda Pulsante consente di aggiungere pulsanti per eseguire attività.",
                             "name": "Pulsante"
                         },
@@ -2986,8 +3079,10 @@
                             "name": "Vista"
                         },
                         "grid": {
+                            "columns": "Colonne",
                             "description": "La scheda Griglia consente di mostrare più schede in una griglia.",
-                            "name": "Griglia"
+                            "name": "Griglia",
+                            "square": "Visualizza le schede come quadrati"
                         },
                         "history-graph": {
                             "description": "La scheda Grafico Storico consente di visualizzare un grafico per ciascuna delle entità elencate.",
@@ -3040,7 +3135,7 @@
                             "name": "Entità immagine"
                         },
                         "picture-glance": {
-                            "description": "La scheda Occhiata Immagine mostra un'immagine e gli stati dell'entità corrispondenti come una icona. Le entità sul lato destro consentono azioni di commutazione, altre mostrano più informazioni di dialogo.",
+                            "description": "La scheda Sguardo d'Immagine mostra un'immagine e gli stati di entità corrispondenti come icona. Le entità sul lato destro consentono di attivare o disattivare le azioni, altre mostrano la finestra di dialogo con più informazioni.",
                             "name": "Sguardo d'Immagine",
                             "state_entity": "Stato Entità"
                         },
@@ -3220,7 +3315,7 @@
                 },
                 "menu": {
                     "close": "Chiudi",
-                    "configure_ui": "Modifica la Plancia",
+                    "configure_ui": "Modifica Plancia",
                     "exit_edit_mode": "Esci dalla modalità di modifica dell'Interfaccia Utente",
                     "help": "Aiuto",
                     "refresh": "Aggiorna",
@@ -3360,6 +3455,7 @@
                     "working": "Attendere prego"
                 },
                 "initializing": "Inizializzazione",
+                "logging_in_to_with": "Accesso a **{locationName}** con **{authProviderName}**.",
                 "logging_in_with": "Accesso con **{authProviderName}**.",
                 "pick_auth_provider": "Oppure accedi con"
             },

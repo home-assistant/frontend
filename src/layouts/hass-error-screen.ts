@@ -8,8 +8,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "./hass-subpage";
 import { HomeAssistant } from "../types";
+import "./hass-subpage";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {

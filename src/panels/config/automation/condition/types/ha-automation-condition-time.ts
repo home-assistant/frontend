@@ -1,25 +1,25 @@
 import { Radio } from "@material/mwc-radio";
 import "@polymer/paper-input/paper-input";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   internalProperty,
   LitElement,
   property,
-  CSSResult,
-  css,
 } from "lit-element";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-radio";
+import { HaSwitch } from "../../../../../components/ha-switch";
 import { TimeCondition } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import {
   ConditionElement,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
-import { HaSwitch } from "../../../../../components/ha-switch";
-import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const includeDomains = ["input_datetime"];
 

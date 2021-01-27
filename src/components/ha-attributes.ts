@@ -12,6 +12,7 @@ import { until } from "lit-html/directives/until";
 import hassAttributeUtil, {
   formatAttributeName,
 } from "../util/hass-attributes-util";
+import { haStyle } from "../resources/styles";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
@@ -55,30 +56,36 @@ class HaAttributes extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .data-entry {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      .data-entry .value {
-        max-width: 50%;
-        overflow-wrap: break-word;
-        text-align: right;
-      }
-      .key {
-        flex-grow: 1;
-      }
-      .attribution {
-        color: var(--secondary-text-color);
-        text-align: center;
-      }
-      pre {
-        font-family: inherit;
-        font-size: inherit;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .data-entry {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+        }
+        .data-entry .value {
+          max-width: 60%;
+          overflow-wrap: break-word;
+          text-align: right;
+        }
+        .key {
+          flex-grow: 1;
+        }
+        .attribution {
+          color: var(--secondary-text-color);
+          text-align: center;
+        }
+        pre {
+          font-family: inherit;
+          font-size: inherit;
+          margin: 0px;
+          overflow-wrap: break-word;
+          white-space: pre-line;
+        }
+      `,
+    ];
   }
 
   private computeDisplayAttributes(filtersArray: string[]): string[] {
@@ -102,6 +109,7 @@ class HaAttributes extends LitElement {
     if (value === null) {
       return "-";
     }
+    // YAML handling
     if (
       (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
       (!Array.isArray(value) && value instanceof Object)
@@ -111,6 +119,19 @@ class HaAttributes extends LitElement {
       }
       const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
       return html` <pre>${until(yaml, "")}</pre> `;
+    }
+    // URL handling
+    if (typeof value === "string" && value.startsWith("http")) {
+      try {
+        // If invalid URL, exception will be raised
+        const url = new URL(value);
+        if (url.protocol === "http:" || url.protocol === "https:")
+          return html`<a target="_blank" rel="noreferrer" href="${value}"
+            >${value}</a
+          >`;
+      } catch (_) {
+        // Nothing to do here
+      }
     }
     return Array.isArray(value) ? value.join(", ") : value;
   }

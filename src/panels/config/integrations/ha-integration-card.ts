@@ -1,37 +1,37 @@
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import {
+  css,
+  CSSResult,
   customElement,
+  html,
   LitElement,
   property,
-  html,
-  CSSResult,
-  css,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-import { ConfigEntryExtended } from "./ha-config-integrations";
-import { domainToName, IntegrationManifest } from "../../../data/integration";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import "../../../components/ha-icon-next";
 import {
   ConfigEntry,
-  updateConfigEntry,
   deleteConfigEntry,
   reloadConfigEntry,
+  updateConfigEntry,
 } from "../../../data/config_entries";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DeviceRegistryEntry } from "../../../data/device_registry";
-import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
+import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
-  showPromptDialog,
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import "../../../components/ha-icon-next";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { ConfigEntryExtended } from "./ha-config-integrations";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -65,6 +65,10 @@ const integrationsWithPanel = {
   zwave: {
     buttonLocalizeKey: "ui.panel.config.zwave.button",
     path: "/config/zwave",
+  },
+  zwave_js: {
+    buttonLocalizeKey: "ui.panel.config.zwave_js.button",
+    path: "/config/zwave_js/dashboard",
   },
 };
 

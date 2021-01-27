@@ -1,3 +1,4 @@
+import { mdiChevronDown } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -8,10 +9,9 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
-import { mdiChevronDown } from "@mdi/js";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-expansion-panel")
 class HaExpansionPanel extends LitElement {
@@ -74,6 +74,7 @@ class HaExpansionPanel extends LitElement {
           var(--divider-color, #e0e0e0)
         );
         border-radius: var(--ha-card-border-radius, 4px);
+        padding: 0 8px;
       }
 
       .summary {
@@ -83,6 +84,7 @@ class HaExpansionPanel extends LitElement {
         align-items: center;
         cursor: pointer;
         overflow: hidden;
+        font-weight: 500;
       }
 
       .summary-icon {

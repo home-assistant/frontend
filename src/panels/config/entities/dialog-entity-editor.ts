@@ -27,11 +27,12 @@ import {
   getExtendedEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
-import { documentationUrl } from "../../../util/documentation-url";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
 import type { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
+import { replaceDialog } from "../../../dialogs/make-dialog-manager";
 
 interface Tabs {
   [key: string]: Tab;
@@ -183,6 +184,21 @@ export class DialogEntityEditor extends LitElement {
                 >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
               >`
             )}
+            ${this.hass.userData?.showAdvanced
+              ? html`<br /><br />
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.info_customize",
+                    "customize_link",
+                    html`<a
+                      href="${"/config/customize/edit/" +
+                      this._params!.entity_id}"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.dialogs.entity_registry.customize_link"
+                      )}</a
+                    >`
+                  )}`
+              : ""}
           </div>
         `;
       case "tab-related":
@@ -235,6 +251,7 @@ export class DialogEntityEditor extends LitElement {
   }
 
   private _openMoreInfo(): void {
+    replaceDialog();
     fireEvent(this, "hass-more-info", {
       entityId: this._params!.entity_id,
     });

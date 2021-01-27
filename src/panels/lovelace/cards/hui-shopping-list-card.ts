@@ -1,3 +1,4 @@
+import { mdiDrag, mdiNotificationClearAll, mdiPlus, mdiSort } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -10,9 +11,11 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { guard } from "lit-html/directives/guard";
 import { repeat } from "lit-html/directives/repeat";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
@@ -21,6 +24,7 @@ import {
   addItem,
   clearItems,
   fetchItems,
+  reorderItems,
   ShoppingListItem,
   updateItem,
 } from "../../../data/shopping-list";
@@ -28,6 +32,8 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
+
+let Sortable;
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends SubscribeMixin(LitElement)
@@ -48,6 +54,14 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
   @internalProperty() private _uncheckedItems?: ShoppingListItem[];
 
   @internalProperty() private _checkedItems?: ShoppingListItem[];
+
+  @internalProperty() private _reordering = false;
+
+  @internalProperty() private _renderEmptySortable = false;
+
+  private _sortable?;
+
+  @query("#sortable") private _sortableEl?: HTMLElement;
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 2 : 0) : 0) + 3;
@@ -101,15 +115,15 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
         })}
       >
         <div class="addRow">
-          <ha-icon
+          <ha-svg-icon
             class="addButton"
-            icon="hass:plus"
+            .path=${mdiPlus}
             .title=${this.hass!.localize(
               "ui.panel.lovelace.cards.shopping-list.add_item"
             )}
             @click=${this._addItem}
           >
-          </ha-icon>
+          </ha-svg-icon>
           <paper-input
             no-label-float
             class="addBox"
@@ -118,28 +132,27 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
             )}
             @keydown=${this._addKeyPress}
           ></paper-input>
+          <ha-svg-icon
+            class="reorderButton"
+            .path=${mdiSort}
+            .title=${this.hass!.localize(
+              "ui.panel.lovelace.cards.shopping-list.reorder_items"
+            )}
+            @click=${this._toggleReorder}
+          >
+          </ha-svg-icon>
         </div>
-        ${repeat(
-          this._uncheckedItems!,
-          (item) => item.id,
-          (item) =>
-            html`
-              <div class="editRow">
-                <paper-checkbox
-                  tabindex="0"
-                  ?checked=${item.complete}
-                  .itemId=${item.id}
-                  @click=${this._completeItem}
-                ></paper-checkbox>
-                <paper-input
-                  no-label-float
-                  .value=${item.name}
-                  .itemId=${item.id}
-                  @change=${this._saveEdit}
-                ></paper-input>
+        ${this._reordering
+          ? html`
+              <div id="sortable">
+                ${guard([this._uncheckedItems, this._renderEmptySortable], () =>
+                  this._renderEmptySortable
+                    ? ""
+                    : this._renderItems(this._uncheckedItems!)
+                )}
               </div>
             `
-        )}
+          : this._renderItems(this._uncheckedItems!)}
         ${this._checkedItems!.length > 0
           ? html`
               <div class="divider"></div>
@@ -149,16 +162,16 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                     "ui.panel.lovelace.cards.shopping-list.checked_items"
                   )}
                 </span>
-                <ha-icon
+                <ha-svg-icon
                   class="clearall"
                   tabindex="0"
-                  icon="hass:notification-clear-all"
+                  .path=${mdiNotificationClearAll}
                   .title=${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.clear_items"
                   )}
                   @click=${this._clearItems}
                 >
-                </ha-icon>
+                </ha-svg-icon>
               </div>
               ${repeat(
                 this._checkedItems!,
@@ -184,6 +197,44 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
             `
           : ""}
       </ha-card>
+    `;
+  }
+
+  private _renderItems(items: ShoppingListItem[]) {
+    return html`
+      ${repeat(
+        items,
+        (item) => item.id,
+        (item) =>
+          html`
+            <div class="editRow" item-id=${item.id}>
+              <paper-checkbox
+                tabindex="0"
+                ?checked=${item.complete}
+                .itemId=${item.id}
+                @click=${this._completeItem}
+              ></paper-checkbox>
+              <paper-input
+                no-label-float
+                .value=${item.name}
+                .itemId=${item.id}
+                @change=${this._saveEdit}
+              ></paper-input>
+              ${this._reordering
+                ? html`
+                    <ha-svg-icon
+                      .title=${this.hass!.localize(
+                        "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
+                      )}
+                      class="reorderButton"
+                      .path=${mdiDrag}
+                    >
+                    </ha-svg-icon>
+                  `
+                : ""}
+            </div>
+          `
+      )}
     `;
   }
 
@@ -248,6 +299,54 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     }
   }
 
+  private async _toggleReorder() {
+    if (!Sortable) {
+      const sortableImport = await import(
+        "sortablejs/modular/sortable.core.esm"
+      );
+      Sortable = sortableImport.Sortable;
+    }
+    this._reordering = !this._reordering;
+    await this.updateComplete;
+    if (this._reordering) {
+      this._createSortable();
+    } else {
+      this._sortable?.destroy();
+      this._sortable = undefined;
+    }
+  }
+
+  private _createSortable() {
+    const sortableEl = this._sortableEl;
+    this._sortable = new Sortable(sortableEl, {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      dataIdAttr: "item-id",
+      handle: "ha-svg-icon",
+      onEnd: async (evt) => {
+        // Since this is `onEnd` event, it's possible that
+        // an item wa dragged away and was put back to its original position.
+        if (evt.oldIndex !== evt.newIndex) {
+          reorderItems(this.hass!, this._sortable.toArray()).catch(() =>
+            this._fetchData()
+          );
+          // Move the shopping list item in memory.
+          this._uncheckedItems!.splice(
+            evt.newIndex,
+            0,
+            this._uncheckedItems!.splice(evt.oldIndex, 1)[0]
+          );
+        }
+        this._renderEmptySortable = true;
+        await this.updateComplete;
+        while (sortableEl?.lastElementChild) {
+          sortableEl.removeChild(sortableEl.lastElementChild);
+        }
+        this._renderEmptySortable = false;
+      },
+    });
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-card {
@@ -278,6 +377,11 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
         cursor: pointer;
       }
 
+      .reorderButton {
+        padding-left: 16px;
+        cursor: pointer;
+      }
+
       paper-checkbox {
         padding-left: 4px;
         padding-right: 20px;
@@ -294,7 +398,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
       }
 
       .checked span {
-        color: var(--primary-color);
+        color: var(--primary-text-color);
+        font-weight: 500;
       }
 
       .divider {

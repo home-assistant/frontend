@@ -512,6 +512,7 @@
             "close": "Schließen",
             "continue": "Weiter",
             "copied": "Kopiert",
+            "copied_clipboard": "In die Zwischenablage kopiert",
             "delete": "Löschen",
             "disable": "Deaktivieren",
             "enable": "Aktivieren",
@@ -706,11 +707,11 @@
                 "never": "Noch nie",
                 "past": "Vor {time}",
                 "past_duration": {
-                    "day": "vor {count} {count, plural,\n  one {Tag}\n  other {Tagen}\n}",
-                    "hour": "vor {count} {count, plural,\n  one {Stunde}\n  other {Stunden}\n}",
-                    "minute": "vor {count} {count, plural,\n  one {Minute}\n  other {Minuten}\n}",
-                    "second": "vor {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
-                    "week": "vor {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
+                    "day": "Vor {count} {count, plural,\n  one {Tag}\n  other {Tagen}\n}",
+                    "hour": "Vor {count} {count, plural,\n  one {Stunde}\n  other {Stunden}\n}",
+                    "minute": "Vor {count} {count, plural,\n  one {Minute}\n  other {Minuten}\n}",
+                    "second": "Vor {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
+                    "week": "Vor {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
                 }
             },
             "service-picker": {
@@ -922,7 +923,7 @@
                         "zone": "Zonen"
                     },
                     "reload": {
-                        "automation": "Automationen neu laden",
+                        "automation": "Automatisierungen neu laden",
                         "command_line": "Komandozeilenentätien neu laden",
                         "core": "Positionsdaten und Anpassungen neu laden",
                         "filesize": "Dateigröße-Entitäten neu laden",
@@ -1385,7 +1386,7 @@
                         "delete_automation": "Automatisierung löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
                         "duplicate": "Duplizieren",
-                        "duplicate_automation": "Automatisierung kopieren",
+                        "duplicate_automation": "Automatisierung duplizieren",
                         "edit_automation": "Automatisierung bearbeiten",
                         "header": "Automatisierungseditor",
                         "headers": {
@@ -2139,7 +2140,7 @@
                     },
                     "network": {
                         "header": "Netzwerkverwaltung",
-                        "introduction": "Verwalten netzwerkweiter Funktionen.",
+                        "introduction": "Verwalten der Netzwerk-Funktionen.",
                         "node_count": "{count} Knoten"
                     },
                     "node_config": {
@@ -2358,9 +2359,9 @@
                             "min_max": "Min/Max-Entitäten neu laden",
                             "mqtt": "Lade manuell konfigurierte MQTT-Entitäten neu",
                             "person": "Personen neu laden",
-                            "ping": "Binäre Ping Sensorentitäten neu laden",
+                            "ping": "Binäre Ping-Sensorentitäten neu laden",
                             "reload": "{domain} neu laden",
-                            "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
+                            "rest": "Rest-Entitäten und Benachrichtigungsdienste neu laden",
                             "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",
@@ -2431,7 +2432,7 @@
                         "username": "Benutzername"
                     },
                     "caption": "Benutzer",
-                    "description": "Home Assistant Benutzerkonten verwalten",
+                    "description": "Home Assistant-Benutzerkonten verwalten",
                     "editor": {
                         "activate_user": "Benutzer aktivieren",
                         "active": "Aktiv",
@@ -2811,6 +2812,7 @@
                     "yaml_unsupported": "Du kannst diese Funktion nicht verwenden, wenn du Lovelace im YAML-Modus verwendest."
                 },
                 "cards": {
+                    "action_confirmation": "Bist du sicher, dass du die Aktion \"{action}\" ausführen möchtest?",
                     "confirm_delete": "Möchten Sie diese Karte wirklich löschen?",
                     "empty_state": {
                         "go_to_integrations_page": "Gehe zur Integrationsseite.",
@@ -2836,7 +2838,9 @@
                     "shopping-list": {
                         "add_item": "Artikel hinzufügen",
                         "checked_items": "Markierte Artikel",
-                        "clear_items": "Markierte Elemente löschen"
+                        "clear_items": "Markierte Elemente löschen",
+                        "drag_and_drop": "Drag & Drop",
+                        "reorder_items": "Elemente neu anordnen"
                     },
                     "starting": {
                         "description": "Home Assistant startet, bitte warten…",
@@ -2846,6 +2850,12 @@
                 "changed_toast": {
                     "message": "Die Lovelace-Konfiguration wurde aktualisiert, möchten Sie sie aktualisieren?",
                     "refresh": "Aktualisieren"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Ungültiger Zeitstempel",
+                        "invalid_format": "Ungültiges Anzeigeformat"
+                    }
                 },
                 "editor": {
                     "action-editor": {

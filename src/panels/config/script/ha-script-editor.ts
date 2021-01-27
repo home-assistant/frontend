@@ -1,16 +1,15 @@
-import "../../../components/ha-fab";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
+  mdiContentDuplicate,
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
-  mdiContentDuplicate,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@material/mwc-list/mwc-list-item";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
@@ -20,22 +19,23 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-input";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import {
   Action,
   deleteScript,
@@ -544,9 +544,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     return this._config;
   }
 
-  private async _copyYaml() {
+  private async _copyYaml(): Promise<void> {
     if (this._editor?.yaml) {
-      copyToClipboard(this._editor.yaml);
+      await copyToClipboard(this._editor.yaml);
+      showToast(this, {
+        message: this.hass.localize("ui.common.copied_clipboard"),
+      });
     }
   }
 
@@ -657,9 +660,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
       },
       (errors) => {
-        this._errors = errors.body.message;
+        this._errors = errors.body.message || errors.error || errors.body;
         showToast(this, {
-          message: errors.body.message,
+          message: errors.body.message || errors.error || errors.body,
         });
         throw errors;
       }

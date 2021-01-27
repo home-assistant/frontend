@@ -1,11 +1,11 @@
-import { html, PropertyValues, customElement, property } from "lit-element";
-import "./hassio-router";
-import { HomeAssistant, Route } from "../../src/types";
-import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
+import { customElement, html, property, PropertyValues } from "lit-element";
+import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
+import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
-import { atLeastVersion } from "../../src/common/config/version";
+import { HomeAssistant, Route } from "../../src/types";
+import "./hassio-router";
 import { SupervisorBaseElement } from "./supervisor-base-element";
 
 @customElement("hassio-main")

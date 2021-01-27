@@ -1,5 +1,5 @@
-import "../ha-svg-icon";
 import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -38,7 +38,7 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import { mdiClose, mdiMenuUp, mdiMenuDown } from "@mdi/js";
+import "../ha-svg-icon";
 
 interface Device {
   name: string;

@@ -1,16 +1,17 @@
 import { customElement, html, LitElement, property } from "lit-element";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { HomeAssistant } from "../../types";
-
-import "./ha-selector-entity";
-import "./ha-selector-device";
-import "./ha-selector-area";
-import "./ha-selector-target";
-import "./ha-selector-number";
-import "./ha-selector-boolean";
-import "./ha-selector-time";
-import "./ha-selector-action";
 import { Selector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
+import "./ha-selector-action";
+import "./ha-selector-area";
+import "./ha-selector-boolean";
+import "./ha-selector-device";
+import "./ha-selector-entity";
+import "./ha-selector-number";
+import "./ha-selector-target";
+import "./ha-selector-time";
+import "./ha-selector-object";
+import "./ha-selector-text";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {

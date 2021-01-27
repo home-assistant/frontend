@@ -15,6 +15,7 @@ import {
 } from "lit-element";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -179,7 +180,7 @@ class SystemHealthCard extends LitElement {
 
     this.hass!.loadBackendTranslation("system_health");
 
-    if (!this.hass!.config.components.includes("system_health")) {
+    if (!isComponentLoaded(this.hass!, "system_health")) {
       this._info = {
         system_health: {
           info: {
@@ -197,7 +198,7 @@ class SystemHealthCard extends LitElement {
     });
   }
 
-  private _copyInfo(ev: CustomEvent<ActionDetail>): void {
+  private async _copyInfo(ev: CustomEvent<ActionDetail>): Promise<void> {
     const github = ev.detail.index === 1;
     let haContent: string | undefined;
     const domainParts: string[] = [];
@@ -250,13 +251,15 @@ class SystemHealthCard extends LitElement {
       }
     }
 
-    copyToClipboard(
+    await copyToClipboard(
       `${github ? "## " : ""}System Health\n${haContent}\n\n${domainParts.join(
         "\n\n"
       )}`
     );
 
-    showToast(this, { message: this.hass.localize("ui.common.copied") });
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   static get styles(): CSSResult {

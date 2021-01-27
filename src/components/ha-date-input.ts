@@ -11,6 +11,10 @@ documentContainer.innerHTML = `
       [part="input-field"] {
         top: 2px;
         height: 30px;
+        color: var(--primary-text-color);
+      }
+      [part="value"] {
+        text-align: center;
       }
       </style>
     </template>

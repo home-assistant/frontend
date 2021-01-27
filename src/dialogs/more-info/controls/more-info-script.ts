@@ -1,5 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -21,10 +23,12 @@ class MoreInfoScript extends LitElement {
     }
 
     return html`
-      <div>
-        ${this.hass.localize(
-          "ui.dialogs.more_info_control.script.last_triggered"
-        )}:
+      <div class="flex">
+        <div>
+          ${this.hass.localize(
+            "ui.dialogs.more_info_control.script.last_triggered"
+          )}:
+        </div>
         ${this.stateObj.attributes.last_triggered
           ? html`
               <ha-relative-time
@@ -34,6 +38,15 @@ class MoreInfoScript extends LitElement {
             `
           : this.hass.localize("ui.components.relative_time.never")}
       </div>
+    `;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .flex {
+        display: flex;
+        justify-content: space-between;
+      }
     `;
   }
 }

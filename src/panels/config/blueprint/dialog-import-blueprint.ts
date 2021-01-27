@@ -1,29 +1,29 @@
+import "../../../components/ha-markdown";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "../../../components/ha-circular-progress";
 import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
-  css,
 } from "lit-element";
-import "../../../components/ha-dialog";
-import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-dialog";
+import "../../../components/ha-expansion-panel";
 import {
   BlueprintImportResult,
   importBlueprint,
   saveBlueprint,
 } from "../../../data/blueprint";
-import "../../../components/ha-expansion-panel";
+import { haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -74,9 +74,10 @@ class DialogImportBlueprint extends LitElement {
                   this._result.blueprint.metadata.domain
                 )}
                 <br />
-                <p class="pre-line">
-                  ${this._result.blueprint.metadata.description}
-                </p>
+                <ha-markdown
+                  breaks
+                  .content=${this._result.blueprint.metadata.description}
+                ></ha-markdown>
                 ${this._result.validation_errors
                   ? html`
                       <p class="error">
@@ -211,15 +212,8 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      haStyleDialog,
-      css`
-        .pre-line {
-          white-space: pre-line;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return haStyleDialog;
   }
 }
 

@@ -1819,7 +1819,7 @@
                 "header": "Konfiguriraj Home Assistant",
                 "helpers": {
                     "caption": "Pomočniki",
-                    "description": "Upravljanje elementov, s katerimi si lahko pomagate pri gradnji  avtomatizacij.",
+                    "description": "Upravljanje elementov, s katerimi si lahko pomagate pri gradnji avtomatizacij.",
                     "dialog": {
                         "add_helper": "Dodajte pomočnika",
                         "add_platform": "Dodaj {platform}",

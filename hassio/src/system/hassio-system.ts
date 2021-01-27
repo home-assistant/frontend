@@ -13,10 +13,10 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
+import "./hassio-core-info";
 import "./hassio-host-info";
 import "./hassio-supervisor-info";
 import "./hassio-supervisor-log";
-import "./hassio-system-metrics";
 
 @customElement("hassio-system")
 class HassioSystem extends LitElement {
@@ -41,6 +41,10 @@ class HassioSystem extends LitElement {
         <span slot="header">System</span>
         <div class="content">
           <div class="card-group">
+            <hassio-core-info
+              .hass=${this.hass}
+              .supervisor=${this.supervisor}
+            ></hassio-core-info>
             <hassio-supervisor-info
               .hass=${this.hass}
               .supervisor=${this.supervisor}
@@ -49,10 +53,6 @@ class HassioSystem extends LitElement {
               .hass=${this.hass}
               .supervisor=${this.supervisor}
             ></hassio-host-info>
-            <hassio-system-metrics
-              .hass=${this.hass}
-              .supervisor=${this.supervisor}
-            ></hassio-system-metrics>
           </div>
           <hassio-supervisor-log .hass=${this.hass}></hassio-supervisor-log>
         </div>

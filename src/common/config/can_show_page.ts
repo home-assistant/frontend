@@ -1,6 +1,6 @@
-import { isComponentLoaded } from "./is_component_loaded";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { HomeAssistant } from "../../types";
+import { isComponentLoaded } from "./is_component_loaded";
 
 export const canShowPage = (hass: HomeAssistant, page: PageNavigation) => {
   return (

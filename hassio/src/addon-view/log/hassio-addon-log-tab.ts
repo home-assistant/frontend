@@ -7,8 +7,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import "../../../../src/components/ha-circular-progress";
+import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";

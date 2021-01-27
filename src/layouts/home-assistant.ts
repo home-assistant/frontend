@@ -1,23 +1,23 @@
 import "@polymer/app-route/app-location";
 import {
+  customElement,
   html,
   internalProperty,
   PropertyValues,
-  customElement,
 } from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
+import QuickBarMixin from "../state/quick-bar-mixin";
 import { HomeAssistant, Route } from "../types";
+import { storeState } from "../util/ha-pref-storage";
 import {
   registerServiceWorker,
   supportsServiceWorker,
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
-import { storeState } from "../util/ha-pref-storage";
-import QuickBarMixin from "../state/quick-bar-mixin";
 
 @customElement("home-assistant")
 export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {

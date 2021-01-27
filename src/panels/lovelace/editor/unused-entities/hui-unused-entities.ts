@@ -1,32 +1,29 @@
-import "../../../../components/ha-fab";
+import { mdiPlus } from "@mdi/js";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { mdiPlus } from "@mdi/js";
 import { classMap } from "lit-html/directives/class-map";
-
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../../common/util/compute_rtl";
-import { computeUnusedEntities } from "../../common/compute-unused-entities";
-import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
-import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
-
 import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-fab";
+import "../../../../components/ha-svg-icon";
 import type { LovelaceConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
+import { computeUnusedEntities } from "../../common/compute-unused-entities";
 import type { Lovelace } from "../../types";
-
 import "../card-editor/hui-entity-picker-table";
-import "../../../../components/ha-svg-icon";
+import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
+import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {

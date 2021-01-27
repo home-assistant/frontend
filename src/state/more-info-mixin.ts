@@ -1,9 +1,9 @@
-import { showDialog } from "../dialogs/make-dialog-manager";
-import type { Constructor } from "../types";
-import type { HassBaseEl } from "./hass-base-mixin";
-import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";
 import type { PropertyValues } from "lit-element";
 import type { HASSDomEvent } from "../common/dom/fire_event";
+import { showDialog } from "../dialogs/make-dialog-manager";
+import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";
+import type { Constructor } from "../types";
+import type { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
   // for fire event

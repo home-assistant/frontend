@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -10,14 +11,11 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import type { HassEntity } from "home-assistant-js-websocket";
-
-import type { HomeAssistant } from "../types";
-import { UNAVAILABLE } from "../data/entity";
-import CoverEntity from "../util/cover-model";
-
-import "./ha-icon-button";
 import { computeCloseIcon, computeOpenIcon } from "../common/entity/cover_icon";
+import { UNAVAILABLE } from "../data/entity";
+import type { HomeAssistant } from "../types";
+import CoverEntity from "../util/cover-model";
+import "./ha-icon-button";
 
 @customElement("ha-cover-controls")
 class HaCoverControls extends LitElement {

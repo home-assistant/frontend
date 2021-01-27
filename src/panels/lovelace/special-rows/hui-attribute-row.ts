@@ -3,17 +3,19 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import checkValidDate from "../../../common/datetime/check_valid_date";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
-import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
+import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {
@@ -44,7 +46,6 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     }
 
     const stateObj = this.hass.states[this._config.entity];
-    const attribute = stateObj.attributes[this._config.attribute];
 
     if (!stateObj) {
       return html`
@@ -54,10 +55,23 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const attribute = stateObj.attributes[this._config.attribute];
+    let date: Date | undefined;
+    if (this._config.format) {
+      date = new Date(attribute);
+    }
+
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div>
-          ${this._config.prefix} ${attribute ?? "-"}
+          ${this._config.prefix}
+          ${this._config.format && checkValidDate(date)
+            ? html` <hui-timestamp-display
+                .hass=${this.hass}
+                .ts=${date}
+                .format=${this._config.format}
+              ></hui-timestamp-display>`
+            : attribute ?? "-"}
           ${this._config.suffix}
         </div>
       </hui-generic-entity-row>

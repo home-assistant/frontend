@@ -76,8 +76,7 @@ class MoreInfoTimer extends LitElement {
   static get styles(): CSSResult {
     return css`
       .actions {
-        margin: 0;
-        padding-top: 20px;
+        margin: 8px 0;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
