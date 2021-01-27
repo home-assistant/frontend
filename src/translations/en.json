@@ -1682,7 +1682,15 @@
               "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
               "default_language": "Default language to use",
               "male": "Male",
-              "female": "Female"
+              "female": "Female",
+              "try": "Try",
+              "dialog": {
+                "header": "Try Text to Speech",
+                "example_message": "Hello {name}, you can play any text on any supported media player!",
+                "target": "Target",
+                "target_browser": "Browser",
+                "play": "Play"
+              }
             },
             "remote": {
               "title": "Remote Control",
