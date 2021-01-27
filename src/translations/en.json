@@ -2335,6 +2335,12 @@
             "unknown": "unknown",
             "wakeup_interval": "Wakeup Interval"
           },
+          "migration": {
+            "ozw": {
+              "header": "Migrate to OpenZWave",
+              "introduction": "This wizard will help you migrate from the legacy Z-Wave integration to the OpenZWave integration that is currently in beta."
+            }
+          },
           "network_management": {
             "header": "Z-Wave Network Management",
             "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
