@@ -554,7 +554,7 @@
             "blueprint-picker": {
                 "add_user": "Lisää käyttäjä",
                 "remove_user": "Poista käyttäjä",
-                "select_blueprint": "Valitse pohjapiirros"
+                "select_blueprint": "Valitse piirustus"
             },
             "data-table": {
                 "no-data": "Ei dataa",
@@ -891,12 +891,12 @@
                     "navigation": {
                         "areas": "Alueet",
                         "automation": "Automaatiot",
-                        "blueprint": "Pohjapiirrokset",
+                        "blueprint": "Piirustukset",
                         "core": "Yleinen",
                         "customize": "Kustomointi",
                         "devices": "Laitteet",
                         "entities": "Kohteet",
-                        "helpers": "Apurit",
+                        "helpers": "Auttajat",
                         "info": "Tiedot",
                         "integrations": "Integraatiot",
                         "logs": "Lokit",
@@ -1044,7 +1044,7 @@
                     "description": "Luo ja muokkaa automaatioita",
                     "dialog_new": {
                         "blueprint": {
-                            "use_blueprint": "Käytä pohjapiirrosta"
+                            "use_blueprint": "Käytä piirustusta"
                         },
                         "header": "Luo uusi automaatio",
                         "how": "Miten haluat luoda uuden automaation?",
@@ -1134,7 +1134,12 @@
                         },
                         "alias": "Nimi",
                         "blueprint": {
-                            "inputs": "Tulot"
+                            "blueprint_to_use": "Käytettävä piirustus",
+                            "header": "Piirustus",
+                            "inputs": "Syötteet",
+                            "manage_blueprints": "Hallitse piirustuksia",
+                            "no_blueprints": "Sinulla ei ole yhtään piirustusta",
+                            "no_inputs": "Tällä piirustuksella ei ole syötteitä."
                         },
                         "conditions": {
                             "add": "Lisää ehto",
@@ -1380,19 +1385,35 @@
                 "blueprint": {
                     "add": {
                         "community_forums": "yhteisön keskustelualueet",
-                        "file_name": "Blueprint polku",
+                        "error_no_url": "Ole hyvä ja kirjoita piirustuksen URL",
+                        "file_name": "Piirustuksen polku",
+                        "header": "Tuo piirustus",
+                        "import_btn": "Piirustuksen esikatselu",
+                        "import_header": "Piirustus \"{name}\"",
+                        "import_introduction": "Voit tuoda muiden käyttäjien piirustuksia Githubista ja yhteisön foorumeista. Kirjoita alle piirustuksen URL-osoite.",
                         "import_introduction_link": "Voit tuoda muiden käyttäjien piirustuksia Githubista ja {community_link}. Kirjoita piirustuksen URL-osoite alle.",
+                        "importing": "Lataan piirustusta...",
                         "raw_blueprint": "Piirustuksen sisältö",
-                        "save_btn": "Tuo pohjapiirros"
+                        "save_btn": "Tuo piirustus",
+                        "saving": "Tuon piirustusta...",
+                        "unsupported_blueprint": "Tämä piirustus ei ole tuettu",
+                        "url": "Piirustuksen URL"
                     },
+                    "caption": "Piirustukset",
+                    "description": "Hallitse piirustuksia",
                     "overview": {
-                        "delete_blueprint": "Poista pohjapiirros",
+                        "add_blueprint": "Tuo piirustus",
+                        "confirm_delete_header": "Poistetaanko tämä piirustus?",
+                        "confirm_delete_text": "Haluatko varmasti poistaa tämän piirustuksen?",
+                        "delete_blueprint": "Poista piirustus",
                         "discover_more": "Löydä lisää piirustuksia",
+                        "header": "Piirustusten muokkain",
                         "headers": {
                             "domain": "Toimialue",
                             "file_name": "Tiedoston nimi",
                             "name": "Nimi"
                         },
+                        "learn_more": "Lisätietoja piirustusten käytöstä",
                         "use_blueprint": "Luo automaatio"
                     }
                 },
@@ -1769,7 +1790,7 @@
                         "create": "Luo"
                     },
                     "picker": {
-                        "add_helper": "Lisää apustin",
+                        "add_helper": "Lisää auttaja",
                         "headers": {
                             "editable": "Muokattavissa",
                             "entity_id": "Kohde ID",

@@ -1,0 +1,37 @@
+{
+    "ui": {
+        "card": {
+            "light": {
+                "color_temperature": "Colour temperature"
+            }
+        },
+        "panel": {
+            "config": {
+                "integrations": {
+                    "caption": "Integrations",
+                    "configure": "Configure",
+                    "configured": "Configured",
+                    "description": "Manage and set up integrations",
+                    "discovered": "Discovered",
+                    "new": "Set up a new integration",
+                    "no_integrations": "It seems like you don't have any integrations configured yet. Click on the button below to add your first integration!"
+                }
+            },
+            "lovelace": {
+                "editor": {
+                    "card": {
+                        "iframe": {
+                            "description": "The Webpage card allows you to embed your favourite webpage right into Home Assistant."
+                        }
+                    }
+                }
+            },
+            "profile": {
+                "themes": {
+                    "accent_color": "Accent colour",
+                    "primary_color": "Primary colour"
+                }
+            }
+        }
+    }
+}

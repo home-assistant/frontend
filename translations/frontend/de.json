@@ -512,6 +512,7 @@
             "close": "Schließen",
             "continue": "Weiter",
             "copied": "Kopiert",
+            "copied_clipboard": "In die Zwischenablage kopiert",
             "delete": "Löschen",
             "disable": "Deaktivieren",
             "enable": "Aktivieren",
@@ -922,7 +923,7 @@
                         "zone": "Zonen"
                     },
                     "reload": {
-                        "automation": "Automationen neu laden",
+                        "automation": "Automatisierungen neu laden",
                         "command_line": "Komandozeilenentätien neu laden",
                         "core": "Positionsdaten und Anpassungen neu laden",
                         "filesize": "Dateigröße-Entitäten neu laden",
@@ -1385,7 +1386,7 @@
                         "delete_automation": "Automatisierung löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
                         "duplicate": "Duplizieren",
-                        "duplicate_automation": "Automatisierung kopieren",
+                        "duplicate_automation": "Automatisierung duplizieren",
                         "edit_automation": "Automatisierung bearbeiten",
                         "header": "Automatisierungseditor",
                         "headers": {
@@ -2811,6 +2812,7 @@
                     "yaml_unsupported": "Du kannst diese Funktion nicht verwenden, wenn du Lovelace im YAML-Modus verwendest."
                 },
                 "cards": {
+                    "action_confirmation": "Bist du sicher, dass du die Aktion \"{action}\" ausführen möchtest?",
                     "confirm_delete": "Möchten Sie diese Karte wirklich löschen?",
                     "empty_state": {
                         "go_to_integrations_page": "Gehe zur Integrationsseite.",
@@ -2836,7 +2838,9 @@
                     "shopping-list": {
                         "add_item": "Artikel hinzufügen",
                         "checked_items": "Markierte Artikel",
-                        "clear_items": "Markierte Elemente löschen"
+                        "clear_items": "Markierte Elemente löschen",
+                        "drag_and_drop": "Drag & Drop",
+                        "reorder_items": "Elemente neu anordnen"
                     },
                     "starting": {
                         "description": "Home Assistant startet, bitte warten…",
@@ -2846,6 +2850,12 @@
                 "changed_toast": {
                     "message": "Die Lovelace-Konfiguration wurde aktualisiert, möchten Sie sie aktualisieren?",
                     "refresh": "Aktualisieren"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Ungültiger Zeitstempel",
+                        "invalid_format": "Ungültiges Anzeigeformat"
+                    }
                 },
                 "editor": {
                     "action-editor": {

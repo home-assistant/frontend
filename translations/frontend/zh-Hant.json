@@ -512,6 +512,7 @@
             "close": "關閉",
             "continue": "繼續",
             "copied": "已複製",
+            "copied_clipboard": "複製至剪貼簿",
             "delete": "刪除",
             "disable": "關閉",
             "enable": "開啟",
@@ -2259,7 +2260,7 @@
                             "without_device": "無裝置實體"
                         },
                         "icon": "圖示",
-                        "introduction": "使用場景來讓你的智慧型家居更有魅力吧。",
+                        "introduction": "運用場景、讓智能家居更具魅力吧。",
                         "load_error_not_editable": "僅有於 scenes.yaml 檔案內的場景、方能進行編輯。",
                         "load_error_unknown": "載入場景錯誤（{err_no}）。",
                         "name": "名稱",
@@ -2586,7 +2587,9 @@
                     "title": "Zigbee 家庭自動化",
                     "visualization": {
                         "caption": "形象化",
-                        "header": "網路形象化"
+                        "header": "網路形象化",
+                        "highlight_label": "高亮顯示裝置",
+                        "zoom_label": "縮放到裝置"
                     }
                 },
                 "zone": {
@@ -2811,6 +2814,7 @@
                     "yaml_unsupported": "當使用 Lovelace UI 的 YAML 模式時，無法使用此功能。"
                 },
                 "cards": {
+                    "action_confirmation": "確定要執行動作 \"{action}\"？",
                     "confirm_delete": "確定要刪除此面板？",
                     "empty_state": {
                         "go_to_integrations_page": "轉至整合頁面。",
@@ -2836,7 +2840,9 @@
                     "shopping-list": {
                         "add_item": "新增項目",
                         "checked_items": "已選取項目",
-                        "clear_items": "清除已選取項目"
+                        "clear_items": "清除已選取項目",
+                        "drag_and_drop": "拖拉",
+                        "reorder_items": "重新排列項目"
                     },
                     "starting": {
                         "description": "Home Assistant 正在啟動，請稍候...",
@@ -2846,6 +2852,12 @@
                 "changed_toast": {
                     "message": "此主面板 Lovelace UI 設定已更新，更新頁面檢視變更？",
                     "refresh": "更新"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "無效的時間戳記",
+                        "invalid_format": "無效的顯示格式"
+                    }
                 },
                 "editor": {
                     "action-editor": {
