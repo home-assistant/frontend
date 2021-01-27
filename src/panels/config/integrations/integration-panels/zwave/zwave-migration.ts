@@ -77,7 +77,7 @@ export class ZwaveMigration extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        back-path="/config/integrations"
+        back-path="/config/zwave"
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
