@@ -2567,7 +2567,9 @@
           "header": "Edit UI",
           "menu": {
             "open": "Open Lovelace UI menu",
-            "raw_editor": "Raw configuration editor"
+            "raw_editor": "Raw configuration editor",
+            "manage_dashboards": "Manage dashboards",
+            "manage_resources": "Manage resources"
           },
           "common": {
             "edit": "Edit",
