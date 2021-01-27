@@ -517,7 +517,7 @@ class HassioAddonInfo extends LitElement {
                         Hostname
                       </span>
                       <code slot="description">
-                        ${this.addon.hostname}.local.hass.io
+                        ${this.addon.hostname}
                       </code>
                     </ha-settings-row>
                     ${metrics.map(
