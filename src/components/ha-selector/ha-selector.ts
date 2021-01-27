@@ -10,6 +10,8 @@ import "./ha-selector-entity";
 import "./ha-selector-number";
 import "./ha-selector-target";
 import "./ha-selector-time";
+import "./ha-selector-object";
+import "./ha-selector-text";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
