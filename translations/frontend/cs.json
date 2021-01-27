@@ -388,9 +388,9 @@
             },
             "counter": {
                 "actions": {
-                    "decrement": "úbytek",
-                    "increment": "přírůstek",
-                    "reset": "reset"
+                    "decrement": "Snížit",
+                    "increment": "Navýšit",
+                    "reset": "Obnovit"
                 }
             },
             "cover": {
@@ -512,6 +512,7 @@
             "close": "Zavřít",
             "continue": "Pokračovat",
             "copied": "Zkopírováno",
+            "copied_clipboard": "Zkopírováno do schránky",
             "delete": "Smazat",
             "disable": "Zakázat",
             "enable": "Povolit",
@@ -2586,7 +2587,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Vizualizace",
-                        "header": "Vizualizace sítě"
+                        "header": "Vizualizace sítě",
+                        "highlight_label": "Zvýraznit zařízení",
+                        "zoom_label": "Přiblížit na zařízení"
                     }
                 },
                 "zone": {
@@ -2811,6 +2814,7 @@
                     "yaml_unsupported": "Tuto funkci nemůžete použít, když používáte Lovelace v režimu YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Opravdu chcete provést akci \"{action}\"?",
                     "confirm_delete": "Opravdu chcete tuto kartu smazat?",
                     "empty_state": {
                         "go_to_integrations_page": "Přejděte na stránku integrace.",
@@ -2836,7 +2840,9 @@
                     "shopping-list": {
                         "add_item": "Přidat položku",
                         "checked_items": "Označené položky",
-                        "clear_items": "Vymazat označené položky"
+                        "clear_items": "Vymazat označené položky",
+                        "drag_and_drop": "Přetáhnout",
+                        "reorder_items": "Změnit pořadí položek"
                     },
                     "starting": {
                         "description": "Home Assistant se spouští, čekejte prosím...",
@@ -2846,6 +2852,12 @@
                 "changed_toast": {
                     "message": "Nastavení Lovelace pro tento ovládací panel bylo aktualizováno. Chcete obnovit stránku?",
                     "refresh": "Obnovit"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Neplatný čas",
+                        "invalid_format": "Neplatný formát zobrazení"
+                    }
                 },
                 "editor": {
                     "action-editor": {

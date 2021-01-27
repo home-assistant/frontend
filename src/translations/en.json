@@ -291,7 +291,8 @@
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "error_required": "Required",
-      "copied": "Copied"
+      "copied": "Copied",
+      "copied_clipboard": "Copied to clipboard"
     },
     "components": {
       "logbook": {
@@ -299,8 +300,8 @@
         "by": "by",
         "by_service": "by service",
         "messages": {
-          "was_away": "was away",
-          "was_at_state": "was at {state}",
+          "was_away": "was detected away",
+          "was_at_state": "was detected at {state}",
           "rose": "rose",
           "set": "set",
           "was_low": "was low",
@@ -313,7 +314,7 @@
           "was_locked": "was locked",
           "was_plugged_in": "was plugged in",
           "was_unplugged": "was unplugged",
-          "was_at_home": "was at home",
+          "was_at_home": "was detected at home",
           "was_unsafe": "was unsafe",
           "was_safe": "was safe",
           "detected_device_class": "detected {device_class}",
@@ -415,6 +416,7 @@
         }
       },
       "history_charts": {
+        "history_disabled": "History integration disabled",
         "loading_history": "Loading state history...",
         "no_history_found": "No state history found."
       },
@@ -478,6 +480,10 @@
           "url": "URL",
           "video": "Video"
         }
+      },
+      "calendar": {
+        "my_calendars": "My Calendars",
+        "today": "Today"
       }
     },
     "dialogs": {
@@ -620,6 +626,8 @@
         "dismiss": "Dismiss",
         "no_unique_id": "This entity (\"{entity_id}\") does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
+        "info_customize": "You can overwrite some attributes in the {customize_link} section.",
+        "customize_link": "entity customizations",
         "editor": {
           "name": "Name",
           "icon": "Icon",
@@ -636,7 +644,12 @@
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entry?",
           "update": "Update",
-          "note": "Note: This might not work yet with all integrations."
+          "note": "Note: This might not work yet with all integrations.",
+          "advanced": "Advanced settings",
+          "area": "Set entity area only",
+          "area_note": "By default the entities of a device are in the same area as the device. If you change the area of this entity, it will no longer follow the area of the device.",
+          "follow_device_area": "Follow device area",
+          "change_device_area": "Change device area"
         }
       },
       "helper_settings": {
@@ -752,6 +765,18 @@
       "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
       "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
     },
+    "errors": {
+      "config": {
+        "no_type_provided": "No type provided.",
+        "error_detected": "Configuration errors detected",
+        "editor_not_available": "No visual editor available for type \"{type}\".",
+        "editor_not_supported": "Visual editor is not supported for this configuration",
+        "edit_in_yaml_supported": "You can still edit your config in YAML.",
+        "key_missing": "Required key \"{key}\" is missing.",
+        "key_not_expected": "Key \"{key}\" is not expected or not supported by the visual editor.",
+        "key_wrong_type": "The provided value for \"{key}\" is not supported by the visual editor editor. We support ({type_correct}) but received ({type_wrong})."
+      }
+    },
     "login-form": {
       "password": "Password",
       "remember": "Remember",
@@ -778,10 +803,6 @@
       "done": "Done"
     },
     "panel": {
-      "calendar": {
-        "my_calendars": "My Calendars",
-        "today": "Today"
-      },
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
@@ -1095,8 +1116,7 @@
           "picker": {
             "header": "Customizations",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated.",
-            "documentation": "Customization documentation",
-            "entity": "Entity"
+            "documentation": "Customization documentation"
           },
           "warning": {
             "include_sentence": "It seems that your configuration.yaml doesn't properly",
@@ -1201,7 +1221,8 @@
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
-                    "for": "Duration"
+                    "for": "Duration",
+                    "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
                   }
                 },
                 "event": {
@@ -1403,7 +1424,9 @@
                   "label": "Device",
                   "action": "Action",
                   "extra_fields": {
-                    "code": "Code"
+                    "code": "Code",
+                    "message": "Message",
+                    "title": "Title"
                   }
                 },
                 "scene": {
@@ -1603,7 +1626,7 @@
             "email_error_msg": "Invalid email",
             "password": "Password",
             "password_error_msg": "Passwords are at least 8 characters",
-            "forgot_password": "forgot password?",
+            "forgot_password": "Forgot password?",
             "start_trial": "Start your free 1 month trial",
             "trial_info": "No payment information necessary",
             "alert_password_change_required": "You need to change your password before logging in.",
@@ -1654,6 +1677,21 @@
             "connected": "Connected",
             "not_connected": "Not Connected",
             "fetching_subscription": "Fetching subscription…",
+            "tts": {
+              "title": "Text to Speech",
+              "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
+              "default_language": "Default language to use",
+              "male": "Male",
+              "female": "Female",
+              "try": "Try",
+              "dialog": {
+                "header": "Try Text to Speech",
+                "example_message": "Hello {name}, you can play any text on any supported media player!",
+                "target": "Target",
+                "target_browser": "Browser",
+                "play": "Play"
+              }
+            },
             "remote": {
               "title": "Remote Control",
               "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
@@ -1670,7 +1708,7 @@
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
-              "sync_entities": "Sync Entities",
+              "sync_entities": "Sync Entities to Amazon",
               "manage_entities": "Manage Entities",
               "sync_entities_error": "Failed to sync entities:",
               "state_reporting_error": "Unable to {enable_disable} report state.",
@@ -1721,8 +1759,8 @@
           },
           "dialog_certificate": {
             "certificate_information": "Certificate Information",
-            "certificate_expiration_date": "Certificate expiration date",
-            "will_be_auto_renewed": "Will be automatically renewed",
+            "certificate_expiration_date": "Certificate expiration date:",
+            "will_be_auto_renewed": "will be automatically renewed",
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
           },
@@ -2270,7 +2308,9 @@
           },
           "visualization": {
             "header": "Network Visualization",
-            "caption": "Visualization"
+            "caption": "Visualization",
+            "highlight_label": "Highlight Devices",
+            "zoom_label": "Zoom To Device"
           },
           "group_binding": {
             "header": "Group Binding",
@@ -2294,6 +2334,12 @@
             "index": "Index",
             "unknown": "unknown",
             "wakeup_interval": "Wakeup Interval"
+          },
+          "migration": {
+            "ozw": {
+              "header": "Migrate to OpenZWave",
+              "introduction": "This wizard will help you migrate from the legacy Z-Wave integration to the OpenZWave integration that is currently in beta."
+            }
           },
           "network_management": {
             "header": "Z-Wave Network Management",
@@ -2368,6 +2414,75 @@
             "node_info": "Node Information",
             "refresh_entity": "Refresh Entity"
           }
+        },
+        "zwave_js": {
+          "button": "Configure",
+          "navigation": {
+            "network": "Network"
+          },
+          "common": {
+            "network": "Network",
+            "node_id": "Node ID",
+            "home_id": "Home ID",
+            "close": "Close",
+            "add_node": "Add Node",
+            "remove_node": "Remove Node"
+          },
+          "dashboard": {
+            "header": "Manage your Z-Wave Network",
+            "introduction": "Manage your Z-Wave network and Z-Wave nodes",
+            "driver_version": "Driver Version",
+            "server_version": "Server Version",
+            "home_id": "Home ID",
+            "nodes_ready": "Nodes ready",
+            "dump_debug": "Download a dump of your network to help diagnose issues",
+            "dump_dead_nodes_title": "Some of your nodes are dead",
+            "dump_dead_nodes_text": "Some of your nodes didn't respond and are assumed dead. These will not be fully exported.",
+            "dump_not_ready_title": "Not all nodes are ready yet",
+            "dump_not_ready_text": "If you create an export while not all nodes are ready, you could miss needed data. Give your network some time to query all nodes. Do you want to continue with the dump?",
+            "dump_not_ready_confirm": "Download"
+          },
+          "device_info": {
+            "zwave_info": "Z-Wave Info",
+            "node_status": "Node Status",
+            "node_ready": "Node Ready"
+          },
+          "node_status": {
+            "unknown": "Unknown",
+            "asleep": "Asleep",
+            "awake": "Awake",
+            "dead": "Dead",
+            "alive": "Alive"
+          },
+          "network_status": {
+            "connected": "Connected",
+            "connecting": "Connecting",
+            "unknown": "Unknown"
+          },
+          "add_node": {
+            "title": "Add a Z-Wave Node",
+            "introduction": "This wizard will guide you through adding a node to your Z-Wave network.",
+            "use_secure_inclusion": "Use secure inclusion",
+            "secure_inclusion_warning": "Secure devices require additional bandwidth; too many secure devices can slow down your Z-Wave network. We recommend only using secure inclusion for devices that require it, like locks or garage door openers.",
+            "start_inclusion": "Start Inclusion",
+            "start_secure_inclusion": "Start Secure Inclusion",
+            "cancel_inclusion": "Cancel Inclusion",
+            "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
+            "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
+            "inclusion_failed": "The node could not be added. Please check the logs for more information.",
+            "inclusion_finished": "The node has been added. It may take a few minutes for all entities to show up as we finish setting up the node in the background.",
+            "view_device": "View Device"
+          },
+          "remove_node": {
+            "title": "Remove a Z-Wave Node",
+            "introduction": "Remove a node from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
+            "start_exclusion": "Start Exclusion",
+            "cancel_exclusion": "Cancel Exclusion",
+            "controller_in_exclusion_mode": "Your Z-Wave controller is now in exclusion mode.",
+            "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
+            "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
+            "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
+          }
         }
       },
       "history": {
@@ -2389,6 +2504,14 @@
       "lovelace": {
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
+          "actions": {
+            "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+            "no_entity_more_info": "No entity provided for more info dialog",
+            "no_entity_toggle": "No entity provided to toggle",
+            "no_navigation_path": "No navigation path specified",
+            "no_url": "No URL to open specified",
+            "no_service": "No service for execution specified"
+          },
           "empty_state": {
             "title": "Welcome Home",
             "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
@@ -2400,7 +2523,9 @@
           "shopping-list": {
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
-            "add_item": "Add item"
+            "add_item": "Add item",
+            "reorder_items": "Reorder items",
+            "drag_and_drop": "Drag and drop"
           },
           "picture-elements": {
             "hold": "Hold:",
@@ -2409,7 +2534,7 @@
             "url": "Open window to {url_path}",
             "toggle": "Toggle {name}",
             "call_service": "Call service {name}",
-            "more_info": "Show more-info: {name}"
+            "more_info": "Show more info: {name}"
           },
           "safe-mode": {
             "header": "Safe Mode Activated",
@@ -2457,7 +2582,9 @@
           "header": "Edit UI",
           "menu": {
             "open": "Open Lovelace UI menu",
-            "raw_editor": "Raw configuration editor"
+            "raw_editor": "Raw configuration editor",
+            "manage_dashboards": "Manage dashboards",
+            "manage_resources": "Manage resources"
           },
           "common": {
             "edit": "Edit",
@@ -2638,7 +2765,7 @@
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
-              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown."
+              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
             },
             "entity-filter": {
               "name": "Entity Filter",
@@ -2661,7 +2788,9 @@
             },
             "grid": {
               "name": "Grid",
-              "description": "The Grid card allows you to show multiple cards in a grid."
+              "description": "The Grid card allows you to show multiple cards in a grid.",
+              "columns": "Columns",
+              "square": "Render cards as squares"
             },
             "logbook": {
               "name": "Logbook",
@@ -2752,7 +2881,7 @@
             },
             "picture-glance": {
               "name": "Picture Glance",
-              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog.",
+              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more info dialog.",
               "state_entity": "State Entity"
             },
             "plant-status": {
@@ -2832,6 +2961,12 @@
         },
         "changed_toast": {
           "message": "The Lovelace UI configuration for this dashboard was updated. Refresh to see changes?"
+        },
+        "components": {
+          "timestamp-display": {
+            "invalid": "Invalid timestamp",
+            "invalid_format": "Invalid display format"
+          }
         },
         "reload_lovelace": "Reload UI"
       },
@@ -2965,6 +3100,7 @@
       "page-authorize": {
         "initializing": "Initializing",
         "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
+        "logging_in_to_with": "Logging in to **{locationName}** with **{authProviderName}**.",
         "logging_in_with": "Logging in with **{authProviderName}**.",
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",

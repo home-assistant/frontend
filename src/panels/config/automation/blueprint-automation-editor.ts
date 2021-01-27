@@ -1,3 +1,7 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-input/paper-textarea";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -7,29 +11,26 @@ import {
   property,
 } from "lit-element";
 import { html } from "lit-html";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-blueprint-picker";
+import "../../../components/ha-card";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-markdown";
+import "../../../components/ha-selector/ha-selector";
+import "../../../components/ha-settings-row";
 import {
   BlueprintAutomationConfig,
   triggerAutomation,
 } from "../../../data/automation";
-import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
-import "../../../components/ha-card";
-import "@polymer/paper-input/paper-textarea";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "../../../components/entity/ha-entity-toggle";
-import "@material/mwc-button/mwc-button";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { haStyle } from "../../../resources/styles";
-import { HassEntity } from "home-assistant-js-websocket";
 import {
   BlueprintOrError,
   Blueprints,
   fetchBlueprints,
 } from "../../../data/blueprint";
-import "../../../components/ha-blueprint-picker";
-import "../../../components/ha-circular-progress";
-import "../../../components/ha-selector/ha-selector";
-import "../../../components/ha-settings-row";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 
 @customElement("blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends LitElement {
@@ -148,9 +149,11 @@ export class HaBlueprintAutomationEditor extends LitElement {
                   There is an error in this Blueprint: ${blueprint.error}
                 </p>`
               : html`${blueprint?.metadata.description
-                  ? html`<p class="card-content pre-line">
-                      ${blueprint.metadata.description}
-                    </p>`
+                  ? html`<ha-markdown
+                      class="card-content"
+                      breaks
+                      .content=${blueprint.metadata.description}
+                    ></ha-markdown>`
                   : ""}
                 ${blueprint?.metadata?.input &&
                 Object.keys(blueprint.metadata.input).length
@@ -165,15 +168,16 @@ export class HaBlueprintAutomationEditor extends LitElement {
                                 .selector=${value.selector}
                                 .key=${key}
                                 .value=${(this.config.use_blueprint.input &&
-                                  this.config.use_blueprint.input[key]) ||
+                                  this.config.use_blueprint.input[key]) ??
                                 value?.default}
                                 @value-changed=${this._inputChanged}
                               ></ha-selector>`
                             : html`<paper-input
                                 .key=${key}
                                 required
-                                .value=${this.config.use_blueprint.input &&
-                                this.config.use_blueprint.input[key]}
+                                .value=${(this.config.use_blueprint.input &&
+                                  this.config.use_blueprint.input[key]) ??
+                                value?.default}
                                 @value-changed=${this._inputChanged}
                                 no-label-float
                               ></paper-input>`}
@@ -266,9 +270,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
       css`
         .padding {
           padding: 16px;
-        }
-        .pre-line {
-          white-space: pre-line;
         }
         .blueprint-picker-container {
           padding: 16px;

@@ -34,6 +34,7 @@ export const FIXED_DOMAIN_ICONS = {
   light: "hass:lightbulb",
   mailbox: "hass:mailbox",
   notify: "hass:comment-alert",
+  number: "hass:ray-vertex",
   persistent_notification: "hass:bell",
   person: "hass:account",
   plant: "hass:flower",
@@ -77,6 +78,7 @@ export const DOMAINS_WITH_CARD = [
   "input_text",
   "lock",
   "media_player",
+  "number",
   "scene",
   "script",
   "timer",
@@ -114,6 +116,7 @@ export const DOMAINS_HIDE_MORE_INFO = [
   "input_number",
   "input_select",
   "input_text",
+  "number",
   "scene",
 ];
 
@@ -137,6 +140,9 @@ export const DOMAINS_TOGGLE = new Set([
   "automation",
   "humidifier",
 ]);
+
+/** Domains that have a dynamic entity image / picture. */
+export const DOMAINS_WITH_DYNAMIC_PICTURE = new Set(["camera", "media_player"]);
 
 /** Temperature units. */
 export const UNIT_C = "°C";

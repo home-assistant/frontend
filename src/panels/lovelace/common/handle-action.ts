@@ -2,7 +2,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { ActionConfig } from "../../../data/lovelace";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import { toggleEntity } from "./entity/toggle-entity";
 
 declare global {
@@ -11,7 +13,7 @@ declare global {
   }
 }
 
-export const handleAction = (
+export const handleAction = async (
   node: HTMLElement,
   hass: HomeAssistant,
   config: {
@@ -22,7 +24,7 @@ export const handleAction = (
     double_tap_action?: ActionConfig;
   },
   action: string
-): void => {
+): Promise<void> => {
   let actionConfig: ActionConfig | undefined;
 
   if (action === "double_tap" && config.double_tap_action) {
@@ -49,10 +51,18 @@ export const handleAction = (
     forwardHaptic("warning");
 
     if (
-      !confirm(
-        actionConfig.confirmation.text ||
-          `Are you sure you want to ${actionConfig.action}?`
-      )
+      !(await showConfirmationDialog(node, {
+        text:
+          actionConfig.confirmation.text ||
+          hass.localize(
+            "ui.panel.lovelace.cards.actions.action_confirmation",
+            "action",
+            hass.localize(
+              "ui.panel.lovelace.editor.action-editor.actions." +
+                actionConfig.action
+            ) || actionConfig.action
+          ),
+      }))
     ) {
       return;
     }
@@ -64,17 +74,36 @@ export const handleAction = (
         fireEvent(node, "hass-more-info", {
           entityId: config.entity ? config.entity : config.camera_image!,
         });
+      } else {
+        showToast(node, {
+          message: hass.localize(
+            "ui.panel.lovelace.cards.actions.no_entity_more_info"
+          ),
+        });
+        forwardHaptic("failure");
       }
       break;
     }
     case "navigate":
       if (actionConfig.navigation_path) {
         navigate(node, actionConfig.navigation_path);
+      } else {
+        showToast(node, {
+          message: hass.localize(
+            "ui.panel.lovelace.cards.actions.no_navigation_path"
+          ),
+        });
+        forwardHaptic("failure");
       }
       break;
     case "url": {
       if (actionConfig.url_path) {
         window.open(actionConfig.url_path);
+      } else {
+        showToast(node, {
+          message: hass.localize("ui.panel.lovelace.cards.actions.no_url"),
+        });
+        forwardHaptic("failure");
       }
       break;
     }
@@ -82,11 +111,21 @@ export const handleAction = (
       if (config.entity) {
         toggleEntity(hass, config.entity!);
         forwardHaptic("light");
+      } else {
+        showToast(node, {
+          message: hass.localize(
+            "ui.panel.lovelace.cards.actions.no_entity_toggle"
+          ),
+        });
+        forwardHaptic("failure");
       }
       break;
     }
     case "call-service": {
       if (!actionConfig.service) {
+        showToast(node, {
+          message: hass.localize("ui.panel.lovelace.cards.actions.no_service"),
+        });
         forwardHaptic("failure");
         return;
       }

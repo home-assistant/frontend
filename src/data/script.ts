@@ -45,8 +45,15 @@ export interface DeviceAction {
   entity_id: string;
 }
 
+export interface DelayActionParts {
+  milliseconds?: number;
+  seconds?: number;
+  minutes?: number;
+  hours?: number;
+  days?: number;
+}
 export interface DelayAction {
-  delay: number;
+  delay: number | Partial<DelayActionParts>;
 }
 
 export interface SceneAction {

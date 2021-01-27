@@ -1,27 +1,27 @@
 import "@material/mwc-button";
-import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../../components/ha-dialog";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-blueprint-picker";
+import "../../../components/ha-card";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-dialog";
 import {
   AutomationConfig,
   showAutomationEditor,
 } from "../../../data/automation";
+import { haStyle, haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 import { showThingtalkDialog } from "./thingtalk/show-dialog-thingtalk";
-import "../../../components/ha-card";
-import "../../../components/ha-blueprint-picker";
 
 @customElement("ha-dialog-new-automation")
 class DialogNewAutomation extends LitElement {

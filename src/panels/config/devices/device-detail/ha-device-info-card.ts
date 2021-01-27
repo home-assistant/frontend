@@ -12,8 +12,8 @@ import {
   computeDeviceName,
   DeviceRegistryEntry,
 } from "../../../../data/device_registry";
-import { loadDeviceRegistryDetailDialog } from "../device-registry-detail/show-dialog-device-registry-detail";
 import { HomeAssistant } from "../../../../types";
+import { loadDeviceRegistryDetailDialog } from "../device-registry-detail/show-dialog-device-registry-detail";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {

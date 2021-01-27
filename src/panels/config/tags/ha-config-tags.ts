@@ -1,4 +1,3 @@
-import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import {
   mdiCog,
@@ -18,6 +17,7 @@ import {
 import memoizeOne from "memoize-one";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-relative-time";
 import { showAutomationEditor, TagTrigger } from "../../../data/automation";
 import {

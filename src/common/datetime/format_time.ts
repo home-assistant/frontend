@@ -17,3 +17,12 @@ export const formatTimeWithSeconds = toLocaleTimeStringSupportsOptions
         second: "2-digit",
       })
   : (dateObj: Date) => format(dateObj, "mediumTime");
+
+export const formatTimeWeekday = toLocaleTimeStringSupportsOptions
+  ? (dateObj: Date, locales: string) =>
+      dateObj.toLocaleTimeString(locales, {
+        weekday: "long",
+        hour: "numeric",
+        minute: "2-digit",
+      })
+  : (dateObj: Date) => format(dateObj, "dddd, HH:mm");

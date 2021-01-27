@@ -8,13 +8,13 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
-import { configSections } from "../ha-panel-config";
-import "../../../layouts/hass-tabs-subpage";
 
 @customElement("ha-config-logs")
 export class HaConfigLogs extends LitElement {

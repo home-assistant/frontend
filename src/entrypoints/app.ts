@@ -1,7 +1,7 @@
 import { setPassiveTouchGestures } from "@polymer/polymer/lib/utils/settings";
-import "../resources/roboto";
-import "../resources/ha-style";
 import "../layouts/home-assistant";
+import "../resources/ha-style";
+import "../resources/roboto";
 import "../util/legacy-support";
 
 setPassiveTouchGestures(true);

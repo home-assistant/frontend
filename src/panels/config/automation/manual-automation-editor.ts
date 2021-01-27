@@ -1,3 +1,8 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-input/paper-textarea";
+import { PaperListboxElement } from "@polymer/paper-listbox";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -6,6 +11,9 @@ import {
   property,
 } from "lit-element";
 import { html } from "lit-html";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-card";
 import {
   Condition,
   ManualAutomationConfig,
@@ -13,21 +21,13 @@ import {
   triggerAutomation,
 } from "../../../data/automation";
 import { Action, MODES, MODES_MAX } from "../../../data/script";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
-import "../../../components/ha-card";
-import "@polymer/paper-input/paper-textarea";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "../../../components/entity/ha-entity-toggle";
-import "@material/mwc-button/mwc-button";
-import "./trigger/ha-automation-trigger";
-import "./condition/ha-automation-condition";
 import "./action/ha-automation-action";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { PaperListboxElement } from "@polymer/paper-listbox";
-import { haStyle } from "../../../resources/styles";
-import { HassEntity } from "home-assistant-js-websocket";
+import "./condition/ha-automation-condition";
+import "./trigger/ha-automation-trigger";
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {
@@ -80,7 +80,7 @@ export class HaManualAutomationEditor extends LitElement {
                 html`<a
                   href="${documentationUrl(
                     this.hass,
-                    "/integrations/automation/#automation-modes"
+                    "/docs/automation/modes/"
                   )}"
                   target="_blank"
                   rel="noreferrer"

@@ -1,21 +1,21 @@
-import "../ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { UNAVAILABLE_STATES, UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "../ha-switch";
 
 const isOn = (stateObj?: HassEntity) =>

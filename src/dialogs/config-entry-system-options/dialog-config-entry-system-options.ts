@@ -4,16 +4,17 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../components/ha-dialog";
-import "../../components/ha-circular-progress";
-import "../../components/ha-switch";
-import "../../components/ha-formfield";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
+import "../../components/ha-circular-progress";
+import "../../components/ha-dialog";
+import "../../components/ha-formfield";
+import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import {
   getConfigEntrySystemOptions,
@@ -22,7 +23,6 @@ import {
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("dialog-config-entry-system-options")
 class DialogConfigEntrySystemOptions extends LitElement {

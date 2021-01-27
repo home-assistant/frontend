@@ -7,7 +7,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
 import "./ha-markdown-element";
 
 @customElement("ha-markdown")

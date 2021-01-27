@@ -512,6 +512,7 @@
             "close": "Закрыть",
             "continue": "Продолжить",
             "copied": "Скопировано",
+            "copied_clipboard": "Скопировано в буфер обмена",
             "delete": "Удалить",
             "disable": "Отключить",
             "enable": "Включить",
@@ -2586,7 +2587,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Визуализация",
-                        "header": "Визуализация сети"
+                        "header": "Визуализация сети",
+                        "highlight_label": "Выделить устройства",
+                        "zoom_label": "Показать устройство"
                     }
                 },
                 "zone": {
@@ -2811,6 +2814,7 @@
                     "yaml_unsupported": "Вы не можете использовать эту функцию, если пользовательский интерфейс Lovelace работает в режиме YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Вы действительно хотите выполнить действие \"{action}\"?",
                     "confirm_delete": "Вы уверены, что хотите удалить эту карточку?",
                     "empty_state": {
                         "go_to_integrations_page": "Перейти на страницу интеграций",
@@ -2836,7 +2840,9 @@
                     "shopping-list": {
                         "add_item": "Добавить элемент",
                         "checked_items": "Отмеченные элементы",
-                        "clear_items": "Очистить отмеченные элементы"
+                        "clear_items": "Очистить отмеченные элементы",
+                        "drag_and_drop": "Перетаскивание",
+                        "reorder_items": "Изменить порядок"
                     },
                     "starting": {
                         "description": "Home Assistant запускается, пожалуйста, подождите...",
@@ -2846,6 +2852,12 @@
                 "changed_toast": {
                     "message": "Конфигурация этой панели Lovelace была изменена, обновить страницу?",
                     "refresh": "Обновить"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Неверная временная метка",
+                        "invalid_format": "Неверный формат отображения"
+                    }
                 },
                 "editor": {
                     "action-editor": {

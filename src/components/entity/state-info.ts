@@ -1,4 +1,5 @@
 import "@polymer/paper-tooltip/paper-tooltip";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -8,12 +9,9 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import type { HassEntity } from "home-assistant-js-websocket";
-
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { HomeAssistant } from "../../types";
-
 import "../ha-relative-time";
 import "./state-badge";
 
@@ -25,7 +23,7 @@ class StateInfo extends LitElement {
 
   @property({ type: Boolean }) public inDialog = false;
 
-  // property used only in css
+  // property used only in CSS
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
   protected render(): TemplateResult {

@@ -3,9 +3,9 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -92,7 +92,10 @@ export class CloudAlexaPref extends LitElement {
             : ""}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._handleSync} .disabled=${this._syncing}>
+          <mwc-button
+            @click=${this._handleSync}
+            .disabled=${!alexa_enabled || this._syncing}
+          >
             ${this.hass!.localize(
               "ui.panel.config.cloud.account.alexa.sync_entities"
             )}

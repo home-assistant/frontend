@@ -1,12 +1,12 @@
-import tinykeys from "tinykeys";
 import type { Constructor, PropertyValues } from "lit-element";
-import { HassElement } from "./hass-element";
+import tinykeys from "tinykeys";
 import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
+import { HassElement } from "./hass-element";
 
 declare global {
   interface HASSDomEvents {

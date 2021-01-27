@@ -1,9 +1,9 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -12,6 +12,7 @@ import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
 import relativeTime from "../../../common/datetime/relative_time";
 import { HomeAssistant } from "../../../types";
+import { TimestampRenderingFormats } from "./types";
 
 const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
   date: formatDate,
@@ -26,12 +27,7 @@ class HuiTimestampDisplay extends LitElement {
 
   @property() public ts?: Date;
 
-  @property() public format?:
-    | "relative"
-    | "total"
-    | "date"
-    | "datetime"
-    | "time";
+  @property() public format?: TimestampRenderingFormats;
 
   @internalProperty() private _relative?: string;
 
@@ -57,7 +53,9 @@ class HuiTimestampDisplay extends LitElement {
     }
 
     if (isNaN(this.ts.getTime())) {
-      return html` Invalid date `;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.components.timestamp-display.invalid"
+      )}`;
     }
 
     const format = this._format;
@@ -68,7 +66,9 @@ class HuiTimestampDisplay extends LitElement {
     if (format in FORMATS) {
       return html` ${FORMATS[format](this.ts, this.hass.language)} `;
     }
-    return html` Invalid format `;
+    return html`${this.hass.localize(
+      "ui.panel.lovelace.components.timestamp-display.invalid_format"
+    )}`;
   }
 
   protected updated(changedProperties: PropertyValues): void {

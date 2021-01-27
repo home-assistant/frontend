@@ -512,6 +512,7 @@
             "close": "Fermer",
             "continue": "Continuer",
             "copied": "Copié",
+            "copied_clipboard": "Copié dans le presse-papier",
             "delete": "Supprimer",
             "disable": "Désactiver",
             "enable": "Activer",
@@ -554,7 +555,7 @@
             "blueprint-picker": {
                 "add_user": "Ajouter un utilisateur",
                 "remove_user": "Supprimer l'utilisateur",
-                "select_blueprint": "Sélectionnez un plan"
+                "select_blueprint": "Sélectionnez un Blueprint"
             },
             "data-table": {
                 "no-data": "Pas de données",
@@ -901,7 +902,7 @@
                     "navigation": {
                         "areas": "Zones",
                         "automation": "Automatisations",
-                        "blueprint": "Plans",
+                        "blueprint": "Blueprints",
                         "core": "Général",
                         "customize": "Customisations",
                         "devices": "Appareils",
@@ -1073,7 +1074,7 @@
                     "description": "Créez des règles de comportement personnalisées pour votre maison",
                     "dialog_new": {
                         "blueprint": {
-                            "use_blueprint": "Utiliser un plan"
+                            "use_blueprint": "Utiliser un Blueprint"
                         },
                         "header": "Créer une nouvelle automatisation",
                         "how": "Comment souhaitez-vous créer votre nouvelle automatisation?",
@@ -1166,12 +1167,12 @@
                         },
                         "alias": "Nom",
                         "blueprint": {
-                            "blueprint_to_use": "Plan à utiliser",
-                            "header": "Plan",
+                            "blueprint_to_use": "Blueprint à utiliser",
+                            "header": "Blueprint",
                             "inputs": "Entrées",
-                            "manage_blueprints": "Gérer les plans",
-                            "no_blueprints": "Vous n'avez pas de plans",
-                            "no_inputs": "Ce plan n'a aucune entrée."
+                            "manage_blueprints": "Gérer les Blueprints",
+                            "no_blueprints": "Vous n'avez pas de Blueprint",
+                            "no_inputs": "Ce Blueprint n'a aucune entrée."
                         },
                         "conditions": {
                             "add": "Ajouter une condition",
@@ -1417,37 +1418,37 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "Forums communautaires",
-                        "error_no_url": "Veuillez entrer l'URL du plan",
-                        "file_name": "Chemin du fichier de plan local",
-                        "header": "Importer un plan",
-                        "import_btn": "Aperçu du plan",
-                        "import_header": "Importer \" {name} \" (type: {domain} )",
-                        "import_introduction": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'URL du plan ci-dessous.",
-                        "import_introduction_link": "Vous pouvez importer les plans d'autres utilisateurs de Github et des forums de la communauté. Entrez l'URL du plan ci-dessous.",
-                        "importing": "Chargement du plan ...",
-                        "raw_blueprint": "Contenu du plan",
-                        "save_btn": "Importer un plan",
-                        "saving": "Importation du plan ...",
-                        "unsupported_blueprint": "Ce plan n'est pas pris en charge",
-                        "url": "URL du plan"
+                        "community_forums": "Forum de la communauté",
+                        "error_no_url": "Veuillez entrer l'URL du Blueprint",
+                        "file_name": "Chemin du Blueprint",
+                        "header": "Importer un Blueprint",
+                        "import_btn": "Aperçu du Blueprint",
+                        "import_header": "Blueprint \"{name}\"",
+                        "import_introduction": "Vous pouvez importer les Blueprints d'autres utilisateurs à partir de GitHub et du forum de la communauté. Entrez l'URL du Blueprint ci-dessous.",
+                        "import_introduction_link": "Vous pouvez importer les Blueprints d'autres utilisateurs à partir de GitHub et du {community_link}. Entrez l'URL du Blueprint ci-dessous.",
+                        "importing": "Chargement du Blueprint ...",
+                        "raw_blueprint": "Contenu du Blueprint",
+                        "save_btn": "Importer un Blueprint",
+                        "saving": "Importation du Blueprint ...",
+                        "unsupported_blueprint": "Ce Blueprint n'est pas pris en charge",
+                        "url": "URL du Blueprint"
                     },
-                    "caption": "Plans",
-                    "description": "Gérer les plans",
+                    "caption": "Blueprints",
+                    "description": "Créez des automatisations facilement à l'aide de modèles configurables",
                     "overview": {
-                        "add_blueprint": "Importer un plan",
-                        "confirm_delete_header": "Supprimer ce plan ?",
-                        "confirm_delete_text": "Êtes-vous sûr de vouloir supprimer ce plan ?",
-                        "delete_blueprint": "Supprimer le plan",
-                        "discover_more": "Découvrez plus de plans",
-                        "header": "Éditeur de plans",
+                        "add_blueprint": "Importer un Blueprint",
+                        "confirm_delete_header": "Supprimer ce Blueprint ?",
+                        "confirm_delete_text": "Êtes-vous sûr de vouloir supprimer ce Blueprint ?",
+                        "delete_blueprint": "Supprimer le Blueprint",
+                        "discover_more": "Découvrez plus de Blueprints",
+                        "header": "Éditeur de Blueprints",
                         "headers": {
                             "domain": "Domaine",
                             "file_name": "Nom de fichier",
                             "name": "Nom"
                         },
-                        "introduction": "L’éditeur de plans vous permet de créer et de modifier des plans.",
-                        "learn_more": "En savoir plus sur les plans",
+                        "introduction": "L’éditeur de Blueprint vous permet de créer et de modifier les Blueprints qui permettent de créer des automatisations facilement à l'aide de modèles configurables.",
+                        "learn_more": "En savoir plus sur les Blueprints",
                         "use_blueprint": "Créer une automatisation"
                     }
                 },
@@ -1848,7 +1849,7 @@
                 "info": {
                     "built_using": "Construit en utilisant",
                     "caption": "Info",
-                    "copy_github": "Pour Github",
+                    "copy_github": "Pour GitHub",
                     "copy_raw": "Texte brut",
                     "custom_uis": "Interfaces utilisateur personnalisées :",
                     "description": "Version, état du système et liens vers la documentation",
@@ -2586,7 +2587,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualisation",
-                        "header": "Visualisation du réseau"
+                        "header": "Visualisation du réseau",
+                        "highlight_label": "Mettre en évidence les appareils",
+                        "zoom_label": "Se connecter à l'appareil"
                     }
                 },
                 "zone": {
@@ -2811,6 +2814,10 @@
                     "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisé Lovelace UI en mode YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Voulez-vous vraiment exécuter l'action \" {action} \"?",
+                    "actions": {
+                        "no_service": "Aucun service d'exécution spécifié"
+                    },
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette carte?",
                     "empty_state": {
                         "go_to_integrations_page": "Aller à la page des intégrations.",
@@ -2836,7 +2843,9 @@
                     "shopping-list": {
                         "add_item": "Ajouter un élément",
                         "checked_items": "Éléments cochés",
-                        "clear_items": "Effacer les éléments cochés"
+                        "clear_items": "Effacer les éléments cochés",
+                        "drag_and_drop": "Glisser-déposer",
+                        "reorder_items": "Réorganiser les articles"
                     },
                     "starting": {
                         "description": "Home Assistant démarre, veuillez patienter.",
@@ -2846,6 +2855,12 @@
                 "changed_toast": {
                     "message": "La configuration de l'interface utilisateur de Lovelace a été mise à jour. Voulez-vous actualiser pour voir les changements ?",
                     "refresh": "Rafraîchir"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Horodatage non valide",
+                        "invalid_format": "Format d'affichage non valide"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2986,8 +3001,10 @@
                             "name": "Coup d'œil"
                         },
                         "grid": {
+                            "columns": "Colonnes",
                             "description": "La carte Grille vous permet d’afficher plusieurs cartes dans une grille.",
-                            "name": "Grille"
+                            "name": "Grille",
+                            "square": "Rendre les cartes sous forme de carrés"
                         },
                         "history-graph": {
                             "description": "La carte Graphique historique vous permet d'afficher un graphique pour chacune des entités répertoriées.",
@@ -3360,6 +3377,7 @@
                     "working": "Veuillez patienter"
                 },
                 "initializing": "Initialisation",
+                "logging_in_to_with": "Connexion à ** {locationName} ** avec ** {authProviderName} **.",
                 "logging_in_with": "Se connecter avec **{authProviderName}**.",
                 "pick_auth_provider": "Ou connectez-vous avec"
             },

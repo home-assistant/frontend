@@ -11,6 +11,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { scroll } from "lit-virtualizer";
+import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
@@ -18,8 +19,8 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
+import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
-import "../../components/ha-icon";
 import "../../components/ha-relative-time";
 import { LogbookEntry } from "../../data/logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
@@ -111,9 +112,12 @@ class HaLogbook extends LitElement {
     }
 
     const previous = this.entries[index - 1];
-    const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
+    const stateObj = item.entity_id
+      ? this.hass.states[item.entity_id]
+      : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
+    const domain = item.entity_id ? computeDomain(item.entity_id) : item.domain;
 
     return html`
       <div class="entry-container">
@@ -132,17 +136,18 @@ class HaLogbook extends LitElement {
         <div class="entry ${classMap({ "no-entity": !item.entity_id })}">
           <div class="icon-message">
             ${!this.noIcon
-              ? html`
-                  <ha-icon
-                    .icon=${item.icon ??
-                    domainIcon(
-                      item.entity_id
-                        ? computeDomain(item.entity_id)
-                        : item.domain,
-                      state,
-                      item.state
-                    )}
-                  ></ha-icon>
+              ? // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
+                // as they would present a false state in the log (played media right now vs actual historic data).
+                html`
+                  <state-badge
+                    .hass=${this.hass}
+                    .overrideIcon=${item.icon ??
+                    domainIcon(domain, stateObj, item.state)}
+                    .overrideImage=${DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
+                      ? ""
+                      : stateObj?.attributes.entity_picture_local ||
+                        stateObj?.attributes.entity_picture}
+                  ></state-badge>
                 `
               : ""}
             <div class="message-relative_time">
@@ -295,7 +300,7 @@ class HaLogbook extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-icon {
+        state-badge {
           margin-right: 16px;
           flex-shrink: 0;
           color: var(--state-icon-color);
@@ -330,7 +335,7 @@ class HaLogbook extends LitElement {
           padding: 8px;
         }
 
-        .narrow .icon-message ha-icon {
+        .narrow .icon-message state-badge {
           margin-left: 0;
         }
       `,

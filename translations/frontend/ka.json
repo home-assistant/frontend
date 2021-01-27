@@ -1,0 +1,64 @@
+{
+    "groups": {
+        "owner": "მფლობელი"
+    },
+    "ui": {
+        "panel": {
+            "config": {
+                "blueprint": {
+                    "add": {
+                        "file_name": "ლოკალური გეგმა-ფაილის სახელი",
+                        "raw_blueprint": "გეგმის შინაარსი"
+                    },
+                    "overview": {
+                        "delete_blueprint": "გეგმის წაშლა",
+                        "headers": {
+                            "domain": "დომენი",
+                            "file_name": "Ფაილის სახელი"
+                        },
+                        "use_blueprint": "ავტომატიზაციის შექმნა"
+                    }
+                },
+                "entities": {
+                    "picker": {
+                        "headers": {
+                            "area": "მდებარეობა"
+                        }
+                    }
+                },
+                "users": {
+                    "editor": {
+                        "username": "მომხმარებლის სახელი"
+                    },
+                    "picker": {
+                        "headers": {
+                            "is_active": "აქტიური",
+                            "is_owner": "მფლობელი",
+                            "username": "მომხმარებლის სახელი"
+                        }
+                    }
+                },
+                "zha": {
+                    "add_device": "მოწყობილობის დამატება",
+                    "device_pairing_card": {
+                        "CONFIGURED": "კონფიგურაცია დასრულებულია",
+                        "CONFIGURED_status_text": "ინიციალიზაცია",
+                        "INITIALIZED": "ინიციალიზაცია დასრულებულია",
+                        "INITIALIZED_status_text": "მოწყობილობა მზადაა გამოსაყენებლად",
+                        "INTERVIEW_COMPLETE": "ინტერვიუ დასრულებულია",
+                        "INTERVIEW_COMPLETE_status_text": "კონფიგურირება",
+                        "PAIRED": "მოწყობილობა ნაპოვნია",
+                        "PAIRED_status_text": "ინტერვიუს დაწყება"
+                    },
+                    "groups": {
+                        "add_group": "ჯგუფის დამატება"
+                    },
+                    "visualization": {
+                        "caption": "ვიზუალიზაცია",
+                        "header": "ქსელის ვიზუალიზაცია"
+                    }
+                }
+            }
+        }
+    }
+}

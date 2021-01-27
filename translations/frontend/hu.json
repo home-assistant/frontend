@@ -512,6 +512,7 @@
             "close": "Bezárás",
             "continue": "Tovább",
             "copied": "Másolva",
+            "copied_clipboard": "Vágólapra másolva",
             "delete": "Törlés",
             "disable": "Letiltás",
             "enable": "Engedélyezés",
@@ -1417,12 +1418,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "közösségi fórumok",
                         "error_no_url": "Add meg a tervrajz URL címét.",
                         "file_name": "Tervrajz elérési útja",
                         "header": "Tervrajz importálása",
                         "import_btn": "Tervrajz előnézete",
                         "import_header": "\"{name}\" tervrajz",
                         "import_introduction": "Importálhatod más felhasználók tervrajzait a Githubról és a közösségi fórumról. Írd be alább a terv URL címét.",
+                        "import_introduction_link": "Importálhat más felhasználók tervrajzait a Githubból és a {community_link} webhelyről. Írja be alább a terv URL-jét.",
                         "importing": "Tervrajz betöltése...",
                         "raw_blueprint": "Tervrajz tartalma",
                         "save_btn": "Tervrajz importálása",
@@ -1437,6 +1440,7 @@
                         "confirm_delete_header": "Törlöd ezt a tervrajzot?",
                         "confirm_delete_text": "Biztosan törölni szeretnéd ezt a tervrajzot?",
                         "delete_blueprint": "Tervrajz törlése",
+                        "discover_more": "Fedezzen fel további tervrajzokat",
                         "header": "Tervrajz szerkesztő",
                         "headers": {
                             "domain": "Tartomány",
@@ -2583,7 +2587,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Megjelenítés",
-                        "header": "Hálózati megjelenítés"
+                        "header": "Hálózati megjelenítés",
+                        "highlight_label": "Kiemelt ezközök",
+                        "zoom_label": "Ráközelítés az ezközre"
                     }
                 },
                 "zone": {
@@ -2808,6 +2814,7 @@
                     "yaml_unsupported": "Ez a funkció nem elérhető, ha a Lovelace felhasználói felületet YAML módban használod."
                 },
                 "cards": {
+                    "action_confirmation": "Biztosan végrehajtja a (z) \" {action} \" műveletet?",
                     "confirm_delete": "Biztosan törölni szeretnéd ezt a kártyát?",
                     "empty_state": {
                         "go_to_integrations_page": "Ugrás az 'integrációk' oldalra.",
@@ -2833,7 +2840,9 @@
                     "shopping-list": {
                         "add_item": "Tétel hozzáadása",
                         "checked_items": "Bejelölt tételek",
-                        "clear_items": "Bejelölt tételek törlése"
+                        "clear_items": "Bejelölt tételek törlése",
+                        "drag_and_drop": "Húzás",
+                        "reorder_items": "Tételek átrendezése"
                     },
                     "starting": {
                         "description": "A Home Assistant indítása folyamatban van, kérlek várj...",
@@ -2843,6 +2852,12 @@
                 "changed_toast": {
                     "message": "Az ehhez az irányítópulthoz tartozó Lovelace konfiguráció módosítva lett. Frissítesz az aktualizáláshoz?",
                     "refresh": "Frissítés"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Érvénytelen időbélyeg",
+                        "invalid_format": "Érvénytelen megjelenítési formátum"
+                    }
                 },
                 "editor": {
                     "action-editor": {
