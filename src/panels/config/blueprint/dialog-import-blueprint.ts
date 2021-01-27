@@ -212,8 +212,8 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
-    return [haStyleDialog];
+  static get styles(): CSSResult {
+    return haStyleDialog;
   }
 }
 
