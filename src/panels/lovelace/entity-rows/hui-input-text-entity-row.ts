@@ -10,7 +10,6 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -54,7 +53,6 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <paper-input
           no-label-float
-          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
           .value="${stateObj.state}"
           .minlength="${stateObj.attributes.min}"
           .maxlength="${stateObj.attributes.max}"
