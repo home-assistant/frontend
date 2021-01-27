@@ -41,7 +41,11 @@ export const handleAction = async (
   }
 
   const actionConfigs =
-    actionConfig.action === "multiple" ? actionConfig.actions : [actionConfig];
+    actionConfig.action === "multiple"
+      ? Array.isArray(actionConfig.actions)
+        ? actionConfig.actions
+        : [actionConfig.actions]
+      : [actionConfig];
 
   for await (actionConfig of actionConfigs) {
     if (
