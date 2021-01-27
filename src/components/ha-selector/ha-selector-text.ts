@@ -31,6 +31,7 @@ export class HaTextSelector extends LitElement {
       .value=${this.value}
       @value-changed=${this._handleChange}
       no-label-float
+      .label=${this.label}
     ></paper-input>`;
   }
 
