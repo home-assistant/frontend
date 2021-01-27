@@ -82,10 +82,8 @@ export class HaEntityConfig extends LitElement {
     if (!entity) return;
 
     this._formEditState = false;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const el = this;
     await this._form.loadEntity(entity);
-    el._formEditState = true;
+    this._formEditState = true;
   }
 
   private async _saveEntity(ev) {
@@ -94,11 +92,9 @@ export class HaEntityConfig extends LitElement {
     const button = ev.target;
     button.progress = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const el = this;
     try {
       await this._form.saveEntity();
-      el._formEditState = true;
+      this._formEditState = true;
       button.actionSuccess();
     } catch {
       button.actionError();
