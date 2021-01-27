@@ -513,25 +513,23 @@ class HassioAddonInfo extends LitElement {
             <div>
               ${this.addon.state === "started"
                 ? html`<ha-settings-row ?three-line=${this.narrow}>
-                    <span slot="heading">
-                      Hostname
-                    </span>
-                    <code slot="description">
-                      ${this.addon.hostname}.local.hass.io
-                    </code>
-                  </ha-settings-row>`
-                : ""}
-              ${this.addon.state === "started"
-                ? metrics.map(
-                    (metric) =>
-                      html`
-                        <supervisor-metric
-                          .description=${metric.description}
-                          .value=${metric.value ?? 0}
-                          .tooltip=${metric.tooltip}
-                        ></supervisor-metric>
-                      `
-                  )
+                      <span slot="heading">
+                        Hostname
+                      </span>
+                      <code slot="description">
+                        ${this.addon.hostname}.local.hass.io
+                      </code>
+                    </ha-settings-row>
+                    ${metrics.map(
+                      (metric) =>
+                        html`
+                          <supervisor-metric
+                            .description=${metric.description}
+                            .value=${metric.value ?? 0}
+                            .tooltip=${metric.tooltip}
+                          ></supervisor-metric>
+                        `
+                    )}`
                 : ""}
             </div>
           </div>
