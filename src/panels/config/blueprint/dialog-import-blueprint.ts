@@ -4,7 +4,6 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -211,6 +210,10 @@ class DialogImportBlueprint extends LitElement {
     } finally {
       this._saving = false;
     }
+  }
+
+  static get styles(): CSSResult[] {
+    return [haStyleDialog];
   }
 }
 
