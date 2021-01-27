@@ -14,6 +14,7 @@ import { styleMap } from "lit-html/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
@@ -139,8 +140,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             "--gauge-color": this._computeSeverity(state),
           })}
         ></ha-gauge>
-        <div class="name">
-          ${this._config.name || computeStateName(stateObj)}
+        <div class="row">
+          <ha-icon .icon=${this._config.icon || stateIcon(stateObj)}></ha-icon>
+          <div class="name">
+            ${this._config.name || computeStateName(stateObj)}
+          </div>
         </div>
       </ha-card>
     `;
@@ -232,13 +236,25 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         max-width: 250px;
       }
 
+      .row {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 4px;
+        align-items: center;
+      }
+
       .name {
         text-align: center;
         line-height: initial;
-        color: var(--primary-text-color);
+        color: var(--secondary-text-color);
         width: 100%;
-        font-size: 15px;
-        margin-top: 8px;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      ha-icon {
+        color: var(--state-icon-color, #44739e);
+        margin-right: 4px;
       }
     `;
   }

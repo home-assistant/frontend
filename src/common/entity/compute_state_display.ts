@@ -63,7 +63,7 @@ export const computeStateDisplay = (
 
   if (domain === "humidifier") {
     if (compareState === "on" && stateObj.attributes.humidity) {
-      return `${stateObj.attributes.humidity}%`;
+      return `${stateObj.attributes.humidity} %`;
     }
   }
 
