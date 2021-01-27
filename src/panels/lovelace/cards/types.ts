@@ -315,4 +315,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   show_forecast?: boolean;
   secondary_info_attribute?: string;
   theme?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
