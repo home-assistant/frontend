@@ -6,7 +6,9 @@ export type Selector =
   | NumberSelector
   | BooleanSelector
   | TimeSelector
-  | ActionSelector;
+  | ActionSelector
+  | StringSelector
+  | ObjectSelector;
 
 export interface EntitySelector {
   entity: {
@@ -81,4 +83,15 @@ export interface TimeSelector {
 export interface ActionSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   action: {};
+}
+
+export interface StringSelector {
+  text: {
+    multiline: boolean;
+  };
+}
+
+export interface ObjectSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  object: {};
 }
