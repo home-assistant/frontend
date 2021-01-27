@@ -2,6 +2,8 @@ import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
 import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-input/paper-input";
+import { StringSelector } from "../../data/selector";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
@@ -11,15 +13,25 @@ export class HaTextSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public selector!: StringSelector;
+
   protected render() {
-    return html`<paper-textarea
-      .label=${this.label}
-      .value="${this.value}"
-      @value-changed="${this._handleChange}"
-      autocapitalize="none"
-      autocomplete="off"
-      spellcheck="false"
-    ></paper-textarea>`;
+    if (this.selector.text?.multiline) {
+      return html`<paper-textarea
+        .label=${this.label}
+        .value="${this.value}"
+        @value-changed="${this._handleChange}"
+        autocapitalize="none"
+        autocomplete="off"
+        spellcheck="false"
+      ></paper-textarea>`;
+    }
+    return html`<paper-input
+      required
+      .value=${this.value}
+      @value-changed=${this._handleChange}
+      no-label-float
+    ></paper-input>`;
   }
 
   private _handleChange(ev) {
