@@ -416,6 +416,7 @@
         }
       },
       "history_charts": {
+        "history_disabled": "History integration disabled",
         "loading_history": "Loading state history...",
         "no_history_found": "No state history found."
       },
