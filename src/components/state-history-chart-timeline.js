@@ -2,12 +2,27 @@ import "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED } from "../common/const";
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeRTL } from "../common/util/compute_rtl";
 import LocalizeMixin from "../mixins/localize-mixin";
 import "./entity/ha-chart-base";
+
+/** Binary sensor device classes for which the static colors for on/off need to be inverted.
+ *  List the ones were "off" = good or normal state = should be rendered "green".
+ */
+const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
+  "battery",
+  "door",
+  "garage_door",
+  "gas",
+  "lock",
+  "opening",
+  "problem",
+  "safety",
+  "smoke",
+  "window",
+]);
 
 class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
   static get template() {

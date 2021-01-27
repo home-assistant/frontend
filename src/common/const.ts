@@ -127,24 +127,6 @@ export const STATES_OFF = ["closed", "locked", "off"];
 export const BINARY_STATE_ON = "on";
 export const BINARY_STATE_OFF = "off";
 
-/** Binary sensor device classes for which the static colors for on/off need to be inverted.
- *  List the ones were "off" = good or normal state = should be rendered "green".
- */
-export const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
-  "battery",
-  "cold",
-  "door",
-  "garage_door",
-  "gas",
-  "heat",
-  "lock",
-  "opening",
-  "problem",
-  "safety",
-  "smoke",
-  "window",
-]);
-
 /** Domains where we allow toggle in Lovelace. */
 export const DOMAINS_TOGGLE = new Set([
   "fan",
