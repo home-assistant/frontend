@@ -784,8 +784,6 @@ class HUIRoot extends LitElement {
       haStyle,
       css`
         :host {
-          --dark-color: #455a64;
-          --text-dark-color: #fff;
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
