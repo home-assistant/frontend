@@ -11,7 +11,7 @@ import {
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
 
-import type { HomeAssistant, WeatherEntity } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
 
