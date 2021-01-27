@@ -96,8 +96,14 @@ export interface EditSubElementEvent {
 }
 
 export const actionConfigStruct = dynamic((_value, ctx) => {
-  const test = actionConfigMap[ctx.branch[0][ctx.path[0]].action];
-  return test || actionConfigStructType;
+  if (ctx.branch[0][ctx.path[0]]) {
+    return (
+      actionConfigMap[ctx.branch[0][ctx.path[0]].action] ||
+      actionConfigStructType
+    );
+  }
+
+  return actionConfigStructType;
 });
 
 const actionConfigStructUser = object({
