@@ -41,6 +41,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   gpio: boolean;
   hassio_api: boolean;
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
+  hostname: string;
   homeassistant_api: boolean;
   homeassistant: string;
   host_dbus: boolean;
