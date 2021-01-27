@@ -184,6 +184,21 @@ export class DialogEntityEditor extends LitElement {
                 >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
               >`
             )}
+            ${this.hass.userData?.showAdvanced
+              ? html`<br /><br />
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.info_customize",
+                    "customize_link",
+                    html`<a
+                      href="${"/config/customize/edit/" +
+                      this._params!.entity_id}"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.dialogs.entity_registry.customize_link"
+                      )}</a
+                    >`
+                  )}`
+              : ""}
           </div>
         `;
       case "tab-related":
