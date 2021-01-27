@@ -346,7 +346,7 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Vil du fortstatt være logget inn?",
+            "ask": "Vil du forbli innlogget på denne enheten?",
             "confirm": "Ja",
             "decline": "Nei"
         },
@@ -512,6 +512,7 @@
             "close": "Lukk",
             "continue": "Fortsette",
             "copied": "Kopiert",
+            "copied_clipboard": "Kopiert til utklippstavle",
             "delete": "Slett",
             "disable": "Deaktiver",
             "enable": "Aktivér",
@@ -929,7 +930,7 @@
                         "filter": "Last inn filter entiteter på nytt",
                         "generic": "Last inn generisk IP kamera entiteter på nytt",
                         "generic_thermostat": "Last inn generisk termostat entiteter på nytt",
-                        "group": "Laste inn grupper, gruppeentiteter og varslingstjenester på nytt",
+                        "group": "Last inn grupper, gruppeentiteter og varslingstjenester på nytt",
                         "history_stats": "Last inn historisk tilstand entiteter på nytt",
                         "homekit": "Last inn HomeKit på nytt",
                         "input_boolean": "Last inn innputt boolske på nytt",
@@ -1439,7 +1440,7 @@
                         "confirm_delete_header": "Slette denne Blueprinten?",
                         "confirm_delete_text": "Er du sikker på at du vil slette denne Blueprinten",
                         "delete_blueprint": "Slett Blueprint",
-                        "discover_more": "Oppdag flere Blueprinter",
+                        "discover_more": "Oppdag flere blueprinter",
                         "header": "Blueprint-redigering",
                         "headers": {
                             "domain": "Domene",
@@ -2345,7 +2346,7 @@
                             "filter": "Last inn filter entiteter på nytt",
                             "generic": "Last inn generisk IP kamera entiteter på nytt",
                             "generic_thermostat": "Last inn generisk termostat entiteter på nytt",
-                            "group": "Laste inn grupper, gruppeentiteter og varslingstjenester på nytt",
+                            "group": "Last inn grupper, gruppeentiteter og varslingstjenester på nytt",
                             "heading": "YAML konfigurasjon lastes på nytt",
                             "history_stats": "Last inn historisk tilstand entiteter på nytt",
                             "homekit": "Last inn HomeKit på nytt",
@@ -2405,7 +2406,7 @@
                         "description": "Beskrivelse",
                         "name": "Navn",
                         "new_tag": "Ny tag",
-                        "tag_id": "Tag ID",
+                        "tag_id": "Tag-ID",
                         "tag_id_placeholder": "Automatisk generert når den er tom",
                         "update": "Oppdater",
                         "usage": "En tag kan utløse en automasjon når den skannes, du kan bruke NFC-koder, QR-koder eller hvilken som helst annen type tag. Bruk {companion_link} til å skrive denne taggen til en programmerbar NFC-tag eller opprette en QR-kode nedenfor."
@@ -2586,7 +2587,9 @@
                     "title": "ZigBee Hjemmeautomasjon",
                     "visualization": {
                         "caption": "Visualisering",
-                        "header": "Nettverksvisualisering"
+                        "header": "Nettverksvisualisering",
+                        "highlight_label": "Fremhev enheter",
+                        "zoom_label": "Zoom til enhet"
                     }
                 },
                 "zone": {
@@ -2811,6 +2814,7 @@
                     "yaml_unsupported": "Du kan ikke bruke denne funksjonen når du bruker Lovelace i YAML-modus."
                 },
                 "cards": {
+                    "action_confirmation": "Er du sikker på at du vil utføre handlingen \"{action}\"?",
                     "confirm_delete": "Er du sikker på at du vil slette dette kortet?",
                     "empty_state": {
                         "go_to_integrations_page": "Gå til integrasjonssiden.",
@@ -2836,7 +2840,9 @@
                     "shopping-list": {
                         "add_item": "Legg til",
                         "checked_items": "Merkede elementer",
-                        "clear_items": "Fjern merkede elementer"
+                        "clear_items": "Fjern merkede elementer",
+                        "drag_and_drop": "Dra og slipp",
+                        "reorder_items": "Bestill varer på nytt"
                     },
                     "starting": {
                         "description": "Home Assistant starter, vennligst vent...",
@@ -2846,6 +2852,12 @@
                 "changed_toast": {
                     "message": "Lovelace UI-konfigurasjonen for dette dashbordet ble oppdatert. Oppdater for å se endringer?",
                     "refresh": "Oppdater"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Ugyldig tidsstempel",
+                        "invalid_format": "Ugyldig visningsformat"
+                    }
                 },
                 "editor": {
                     "action-editor": {

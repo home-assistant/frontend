@@ -512,6 +512,7 @@
             "close": "Sluiten",
             "continue": "Ga verder",
             "copied": "Gekopieerd",
+            "copied_clipboard": "Gekopieerd naar het klembord",
             "delete": "Verwijderen",
             "disable": "Uitschakelen",
             "enable": "Inschakelen",
@@ -2360,11 +2361,11 @@
                             "person": "Herlaad personen",
                             "ping": "Herlaad ping binaire sensor entiteiten",
                             "reload": "Herlaad {domain}",
-                            "rest": "Herlaad rest entiteiten en notify services",
+                            "rest": "Herlaad rest-entiteiten en notify-services",
                             "rpi_gpio": "Herlaad Raspberry Pi GPIO-entiteiten",
                             "scene": "Herlaad scenes",
                             "script": "Herlaad scripts",
-                            "smtp": "Laad de SMTP-meldingsservices opnieuw",
+                            "smtp": "Herlaad de SMTP notify services",
                             "statistics": "Herlaad statistische entiteiten",
                             "telegram": "Herlaad telegram notify services",
                             "template": "Herlaad template entiteiten",
@@ -2586,7 +2587,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualisatie",
-                        "header": "Netwerkvisualisatie"
+                        "header": "Netwerkvisualisatie",
+                        "highlight_label": "Markeer Apparaten",
+                        "zoom_label": "Zoom naar apparaat"
                     }
                 },
                 "zone": {
@@ -2776,7 +2779,7 @@
                         "no_listeners": "Deze template luistert niet naar gebeurtenissen met statuswijziging en wordt niet automatisch bijgewerkt.",
                         "reset": "Resetten naar demosjabloon",
                         "result_type": "Resultaattype",
-                        "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
+                        "template_extensions": "Home Assistant sjabloon extensies",
                         "time": "Deze template wordt elke 60 seconden bijgewerkt na de laatste statuswijziging.",
                         "title": "Sjablonen",
                         "unknown_error_template": "Onbekende fout bij weergave sjabloon"
@@ -2811,6 +2814,7 @@
                     "yaml_unsupported": "Je kunt deze functie niet gebruiken wanneer je de Lovelace gebruikersinterface gebruikt in YAML modus."
                 },
                 "cards": {
+                    "action_confirmation": "Weet u zeker dat u actie \" {action} \" wilt uitvoeren?",
                     "confirm_delete": "Weet je zeker dat je deze kaart wilt verwijderen?",
                     "empty_state": {
                         "go_to_integrations_page": "Ga naar de integraties pagina.",
@@ -2836,7 +2840,9 @@
                     "shopping-list": {
                         "add_item": "Item toevoegen",
                         "checked_items": "Geselecteerde items",
-                        "clear_items": "Geselecteerde items wissen"
+                        "clear_items": "Geselecteerde items wissen",
+                        "drag_and_drop": "Slepen en neerzetten",
+                        "reorder_items": "Artikelen opnieuw ordenen"
                     },
                     "starting": {
                         "description": "Home Assistant is aan het opstarten, even geduld...",
@@ -2846,6 +2852,12 @@
                 "changed_toast": {
                     "message": "De Lovelace UI-configuratie voor dit dashboard is bijgewerkt. Vernieuwen om wijzigingen te zien?",
                     "refresh": "Vernieuwen"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Ongeldige tijdstempel",
+                        "invalid_format": "Ongeldige weergave formaat"
+                    }
                 },
                 "editor": {
                     "action-editor": {

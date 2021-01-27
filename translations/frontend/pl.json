@@ -388,9 +388,9 @@
             },
             "counter": {
                 "actions": {
-                    "decrement": "ubytek",
-                    "increment": "przyrost",
-                    "reset": "reset"
+                    "decrement": "zmniejsz",
+                    "increment": "zwiększ",
+                    "reset": "zresetuj"
                 }
             },
             "cover": {
@@ -512,6 +512,7 @@
             "close": "Zamknij",
             "continue": "Kontynuuj",
             "copied": "Skopiowano",
+            "copied_clipboard": "Skopiowano do schowka",
             "delete": "Usuń",
             "disable": "Wyłącz",
             "enable": "Włącz",
@@ -720,6 +721,8 @@
                 "add_area_id": "Wybierz obszar",
                 "add_device_id": "Wybierz urządzenie",
                 "add_entity_id": "Wybierz encję",
+                "expand_area_id": "Rozwiń ten obszar do listy urządzeń i encji, które on zawiera. Po rozwinięciu lista urządzeń i encji i nie będzie aktualizowana, gdy zmieni się obszar.",
+                "expand_device_id": "Rozwiń to urządzenie do listy encji, które ono zawiera. Po rozwinięciu lista encji i nie będzie aktualizowana, gdy zmieni się urządzenie.",
                 "remove_area_id": "Usuń obszar",
                 "remove_device_id": "Usuń urządzenie",
                 "remove_entity_id": "Usuń encję"
@@ -927,7 +930,7 @@
                         "filter": "Wczytaj ponownie encje komponentu filtr",
                         "generic": "Wczytaj ponownie encje komponentu kamera IP generic",
                         "generic_thermostat": "Wczytaj ponownie encje komponentu termostatu generic",
-                        "group": "Wczytaj ponownie grupy, ich encje oraz usługi powiadomień",
+                        "group": "Wczytaj ponownie grupy, ich encje oraz ich usługi powiadomień",
                         "history_stats": "Wczytaj ponownie encje komponentu historia stanów",
                         "homekit": "Wczytaj ponownie HomeKit",
                         "input_boolean": "Wczytaj ponownie pomocników typu przełącznik",
@@ -940,7 +943,7 @@
                         "person": "Wczytaj ponownie osoby",
                         "ping": "Wczytaj ponownie encje komponentu ping",
                         "reload": "Wczytaj ponownie domenę {domain}",
-                        "rest": "Wczytaj ponownie encje komponentu rest i usługi powiadomień",
+                        "rest": "Wczytaj ponownie encje komponentu rest i ich usługi powiadomień",
                         "rpi_gpio": "Wczytaj ponownie encje komponentu Raspberry Pi GPIO",
                         "scene": "Wczytaj ponownie sceny",
                         "script": "Wczytaj ponownie skrypty",
@@ -2343,7 +2346,7 @@
                             "filter": "Wczytaj ponownie encje komponentu filtr",
                             "generic": "Wczytaj ponownie encje komponentu kamera IP generic",
                             "generic_thermostat": "Wczytaj ponownie encje komponentu termostatu generic",
-                            "group": "Wczytaj ponownie grupy, ich encje oraz usługi powiadomień",
+                            "group": "Wczytaj ponownie grupy, ich encje oraz ich usługi powiadomień",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
                             "history_stats": "Wczytaj ponownie encje komponentu historia stanów",
                             "homekit": "Wczytaj ponownie HomeKit",
@@ -2358,7 +2361,7 @@
                             "person": "Wczytaj ponownie osoby",
                             "ping": "Wczytaj ponownie encje komponentu ping",
                             "reload": "Wczytaj ponownie domenę {domain}",
-                            "rest": "Wczytaj ponownie encje komponentu rest i usługi powiadomień",
+                            "rest": "Wczytaj ponownie encje komponentu rest i ich usługi powiadomień",
                             "rpi_gpio": "Wczytaj ponownie encje komponentu Raspberry Pi GPIO",
                             "scene": "Wczytaj ponownie sceny",
                             "script": "Wczytaj ponownie skrypty",
@@ -2584,7 +2587,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Wizualizacja",
-                        "header": "Wizualizacja sieci"
+                        "header": "Wizualizacja sieci",
+                        "highlight_label": "Zaznacz urządzenia",
+                        "zoom_label": "Powiększ do urządzenia"
                     }
                 },
                 "zone": {
@@ -2809,6 +2814,12 @@
                     "yaml_unsupported": "Nie możesz używać tej funkcji, gdy używasz interfejsu użytkownika Lovelace w trybie YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Czy na pewno chcesz wykonać akcję \"{action}\"?",
+                    "actions": {
+                        "action_confirmation": "Czy na pewno chcesz wykonać akcję \"{action}\"?",
+                        "no_service": "Nie określono usługi do wykonania",
+                        "no_url": "Nie określono adresu URL do otwarcia"
+                    },
                     "confirm_delete": "Czy na pewno chcesz usunąć tę kartę?",
                     "empty_state": {
                         "go_to_integrations_page": "Przejdź do strony integracji.",
@@ -2834,7 +2845,9 @@
                     "shopping-list": {
                         "add_item": "Dodaj pozycję",
                         "checked_items": "Pozycje zaznaczone",
-                        "clear_items": "Wyczyść zaznaczone pozycje"
+                        "clear_items": "Wyczyść zaznaczone pozycje",
+                        "drag_and_drop": "Przeciągnij i upuść",
+                        "reorder_items": "Zmień kolejność elementów"
                     },
                     "starting": {
                         "description": "Home Assistant uruchamia się, proszę czekać.",
@@ -2844,6 +2857,12 @@
                 "changed_toast": {
                     "message": "Zaktualizowano konfigurację interfejsu Lovelace. Odświeżyć teraz?",
                     "refresh": "Wczytaj ponownie"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Nieprawidłowy znacznik czasu",
+                        "invalid_format": "Nieprawidłowy format czasu"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2984,6 +3003,7 @@
                             "name": "Glance"
                         },
                         "grid": {
+                            "columns": "Kolumny",
                             "description": "Karta siatka umożliwia wyświetlanie wielu kart w siatce.",
                             "name": "Siatka"
                         },
@@ -3251,7 +3271,7 @@
                     "attribute_not_found": "Atrybut {attribute} jest niedostępny dla: {entity}",
                     "entity_non_numeric": "Encja nie jest numeryczna: {entity}",
                     "entity_not_found": "Encja niedostępna: {entity}",
-                    "entity_unavailable": "{entity} jest obecnie niedostępna",
+                    "entity_unavailable": "Encja obecnie niedostępna: {entity}",
                     "starting": "Home Assistant uruchamia się, jeszcze nie wszystko będzie dostępne"
                 }
             },
@@ -3358,6 +3378,7 @@
                     "working": "Proszę czekać"
                 },
                 "initializing": "inicjalizacja",
+                "logging_in_to_with": "Logowanie do ** {locationName} ** przy użyciu ** {authProviderName} **.",
                 "logging_in_with": "Logowanie za pomocą **{authProviderName}**.",
                 "pick_auth_provider": "Lub zaloguj się za pomocą"
             },

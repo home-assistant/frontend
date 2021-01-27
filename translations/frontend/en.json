@@ -512,6 +512,7 @@
             "close": "Close",
             "continue": "Continue",
             "copied": "Copied",
+            "copied_clipboard": "Copied to clipboard",
             "delete": "Delete",
             "disable": "Disable",
             "enable": "Enable",
@@ -555,6 +556,10 @@
                 "add_user": "Add user",
                 "remove_user": "Remove user",
                 "select_blueprint": "Select a Blueprint"
+            },
+            "calendar": {
+                "my_calendars": "My Calendars",
+                "today": "Today"
             },
             "data-table": {
                 "no-data": "No data",
@@ -603,9 +608,9 @@
                     "set": "set",
                     "turned_off": "turned off",
                     "turned_on": "turned on",
-                    "was_at_home": "was at home",
-                    "was_at_state": "was at {state}",
-                    "was_away": "was away",
+                    "was_at_home": "was detected at home",
+                    "was_at_state": "was detected at {state}",
+                    "was_away": "was detected away",
                     "was_closed": "was closed",
                     "was_connected": "was connected",
                     "was_disconnected": "was disconnected",
@@ -1116,7 +1121,9 @@
                                 "device_id": {
                                     "action": "Action",
                                     "extra_fields": {
-                                        "code": "Code"
+                                        "code": "Code",
+                                        "message": "Message",
+                                        "title": "Title"
                                     },
                                     "label": "Device"
                                 },
@@ -1292,7 +1299,8 @@
                                     "extra_fields": {
                                         "above": "Above",
                                         "below": "Below",
-                                        "for": "Duration"
+                                        "for": "Duration",
+                                        "zone": "Zone"
                                     },
                                     "label": "Device",
                                     "trigger": "Trigger"
@@ -1463,7 +1471,7 @@
                             "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
                             "manage_entities": "Manage Entities",
                             "state_reporting_error": "Unable to {enable_disable} report state.",
-                            "sync_entities": "Sync Entities",
+                            "sync_entities": "Sync Entities to Amazon",
                             "sync_entities_error": "Failed to sync entities:",
                             "title": "Alexa"
                         },
@@ -1504,6 +1512,13 @@
                         },
                         "sign_out": "Sign out",
                         "thank_you_note": "Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!",
+                        "tts": {
+                            "default_language": "Default language to use",
+                            "female": "Female",
+                            "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
+                            "male": "Male",
+                            "title": "Text to Speech"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Failed to disable webhook:",
                             "info": "Anything that is configured to be triggered by a webhook can be given a publicly accessible URL to allow you to send data back to Home Assistant from anywhere, without exposing your instance to the internet.",
@@ -1535,11 +1550,11 @@
                     "description_login": "Logged in as {email}",
                     "description_not_login": "Not logged in",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Certificate expiration date",
+                        "certificate_expiration_date": "Certificate expiration date:",
                         "certificate_information": "Certificate Information",
                         "close": "Close",
                         "fingerprint": "Certificate fingerprint:",
-                        "will_be_auto_renewed": "Will be automatically renewed"
+                        "will_be_auto_renewed": "will be automatically renewed"
                     },
                     "dialog_cloudhook": {
                         "available_at": "The webhook is available at the following URL:",
@@ -1582,7 +1597,7 @@
                         "dismiss": "Dismiss",
                         "email": "Email",
                         "email_error_msg": "Invalid email",
-                        "forgot_password": "forgot password?",
+                        "forgot_password": "Forgot password?",
                         "introduction": "Home Assistant Cloud provides you with a secure remote connection to your instance while away from home. It also allows you to connect with cloud-only services: Amazon Alexa and Google Assistant.",
                         "introduction2": "This service is run by our partner ",
                         "introduction2a": ", a company founded by the founders of Home Assistant and Hass.io.",
@@ -2586,7 +2601,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualization",
-                        "header": "Network Visualization"
+                        "header": "Network Visualization",
+                        "highlight_label": "Highlight Devices",
+                        "zoom_label": "Zoom To Device"
                     }
                 },
                 "zone": {
@@ -2617,6 +2634,76 @@
                     "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
                     "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
                     "no_zones_created_yet": "Looks like you have not created any zones yet."
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Cancel Inclusion",
+                        "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
+                        "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
+                        "inclusion_failed": "The node could not be added. Please check the logs for more information.",
+                        "inclusion_finished": "The node has been added. It may take a few minutes for all entities to show up as we finish setting up the node in the background.",
+                        "introduction": "This wizard will guide you through adding a node to your Z-Wave network.",
+                        "secure_inclusion_warning": "Secure devices require additional bandwidth; too many secure devices can slow down your Z-Wave network. We recommend only using secure inclusion for devices that require it, like locks or garage door openers.",
+                        "start_inclusion": "Start Inclusion",
+                        "start_secure_inclusion": "Start Secure Inclusion",
+                        "title": "Add a Z-Wave Node",
+                        "use_secure_inclusion": "Use secure inclusion",
+                        "view_device": "View Device"
+                    },
+                    "button": "Configure",
+                    "common": {
+                        "add_node": "Add Node",
+                        "close": "Close",
+                        "home_id": "Home ID",
+                        "network": "Network",
+                        "node_id": "Node ID",
+                        "remove_node": "Remove Node"
+                    },
+                    "dashboard": {
+                        "driver_version": "Driver Version",
+                        "dump_dead_nodes_text": "Some of your nodes didn't respond and are assumed dead. These will not be fully exported.",
+                        "dump_dead_nodes_title": "Some of your nodes are dead",
+                        "dump_debug": "Download a dump of your network to help diagnose issues",
+                        "dump_not_ready_confirm": "Download",
+                        "dump_not_ready_text": "If you create an export while not all nodes are ready, you could miss needed data. Give your network some time to query all nodes. Do you want to continue with the dump?",
+                        "dump_not_ready_title": "Not all nodes are ready yet",
+                        "header": "Manage your Z-Wave Network",
+                        "home_id": "Home ID",
+                        "introduction": "Manage your Z-Wave network and Z-Wave nodes",
+                        "node_count": "Node Count",
+                        "nodes_ready": "Nodes ready",
+                        "server_version": "Server Version"
+                    },
+                    "device_info": {
+                        "node_ready": "Node Ready",
+                        "node_status": "Node Status",
+                        "zwave_info": "Z-Wave Info"
+                    },
+                    "navigation": {
+                        "network": "Network"
+                    },
+                    "network_status": {
+                        "connected": "Connected",
+                        "connecting": "Connecting",
+                        "unknown": "Unknown"
+                    },
+                    "node_status": {
+                        "alive": "Alive",
+                        "asleep": "Asleep",
+                        "awake": "Awake",
+                        "dead": "Dead",
+                        "unknown": "Unknown"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Cancel Exclusion",
+                        "controller_in_exclusion_mode": "Your Z-Wave controller is now in exclusion mode.",
+                        "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
+                        "exclusion_finished": "Node {id} has been removed from your Z-Wave network.",
+                        "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
+                        "introduction": "Remove a node from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
+                        "start_exclusion": "Start Exclusion",
+                        "title": "Remove a Z-Wave Node"
+                    }
                 },
                 "zwave": {
                     "button": "Configure",
@@ -2811,6 +2898,15 @@
                     "yaml_unsupported": "You cannot use this function when using Lovelace UI in YAML mode."
                 },
                 "cards": {
+                    "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+                    "actions": {
+                        "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+                        "no_entity_more_info": "No entity provided for more info dialog",
+                        "no_entity_toggle": "No entity provided to toggle",
+                        "no_navigation_path": "No navigation path specified",
+                        "no_service": "No service for execution specified",
+                        "no_url": "No URL to open specified"
+                    },
                     "confirm_delete": "Are you sure you want to delete this card?",
                     "empty_state": {
                         "go_to_integrations_page": "Go to the integrations page.",
@@ -2823,7 +2919,7 @@
                     "picture-elements": {
                         "call_service": "Call service {name}",
                         "hold": "Hold:",
-                        "more_info": "Show more-info: {name}",
+                        "more_info": "Show more info: {name}",
                         "navigate_to": "Navigate to {location}",
                         "tap": "Tap:",
                         "toggle": "Toggle {name}",
@@ -2836,7 +2932,9 @@
                     "shopping-list": {
                         "add_item": "Add item",
                         "checked_items": "Checked items",
-                        "clear_items": "Clear checked items"
+                        "clear_items": "Clear checked items",
+                        "drag_and_drop": "Drag and drop",
+                        "reorder_items": "Reorder items"
                     },
                     "starting": {
                         "description": "Home Assistant is starting, please wait...",
@@ -2846,6 +2944,12 @@
                 "changed_toast": {
                     "message": "The Lovelace UI configuration for this dashboard was updated. Refresh to see changes?",
                     "refresh": "Refresh"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Invalid timestamp",
+                        "invalid_format": "Invalid display format"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2869,7 +2973,7 @@
                             "name": "Alarm Panel"
                         },
                         "button": {
-                            "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown.",
+                            "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown.",
                             "description": "The Button card allows you to add buttons to perform tasks.",
                             "name": "Button"
                         },
@@ -2986,8 +3090,10 @@
                             "name": "Glance"
                         },
                         "grid": {
+                            "columns": "Columns",
                             "description": "The Grid card allows you to show multiple cards in a grid.",
-                            "name": "Grid"
+                            "name": "Grid",
+                            "square": "Render cards as squares"
                         },
                         "history-graph": {
                             "description": "The History Graph card allows you to display a graph for each of the entities listed.",
@@ -3040,7 +3146,7 @@
                             "name": "Picture Entity"
                         },
                         "picture-glance": {
-                            "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog.",
+                            "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more info dialog.",
                             "name": "Picture Glance",
                             "state_entity": "State Entity"
                         },
@@ -3360,6 +3466,7 @@
                     "working": "Please wait"
                 },
                 "initializing": "Initializing",
+                "logging_in_to_with": "Logging in to **{locationName}** with **{authProviderName}**.",
                 "logging_in_with": "Logging in with **{authProviderName}**.",
                 "pick_auth_provider": "Or log in with"
             },

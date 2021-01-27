@@ -512,6 +512,7 @@
             "close": "Fermer",
             "continue": "Continuer",
             "copied": "Copié",
+            "copied_clipboard": "Copié dans le presse-papier",
             "delete": "Supprimer",
             "disable": "Désactiver",
             "enable": "Activer",
@@ -2586,7 +2587,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualisation",
-                        "header": "Visualisation du réseau"
+                        "header": "Visualisation du réseau",
+                        "highlight_label": "Mettre en évidence les appareils",
+                        "zoom_label": "Se connecter à l'appareil"
                     }
                 },
                 "zone": {
@@ -2811,6 +2814,10 @@
                     "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisé Lovelace UI en mode YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Voulez-vous vraiment exécuter l'action \" {action} \"?",
+                    "actions": {
+                        "no_service": "Aucun service d'exécution spécifié"
+                    },
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette carte?",
                     "empty_state": {
                         "go_to_integrations_page": "Aller à la page des intégrations.",
@@ -2836,7 +2843,9 @@
                     "shopping-list": {
                         "add_item": "Ajouter un élément",
                         "checked_items": "Éléments cochés",
-                        "clear_items": "Effacer les éléments cochés"
+                        "clear_items": "Effacer les éléments cochés",
+                        "drag_and_drop": "Glisser-déposer",
+                        "reorder_items": "Réorganiser les articles"
                     },
                     "starting": {
                         "description": "Home Assistant démarre, veuillez patienter.",
@@ -2846,6 +2855,12 @@
                 "changed_toast": {
                     "message": "La configuration de l'interface utilisateur de Lovelace a été mise à jour. Voulez-vous actualiser pour voir les changements ?",
                     "refresh": "Rafraîchir"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Horodatage non valide",
+                        "invalid_format": "Format d'affichage non valide"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2986,8 +3001,10 @@
                             "name": "Coup d'œil"
                         },
                         "grid": {
+                            "columns": "Colonnes",
                             "description": "La carte Grille vous permet d’afficher plusieurs cartes dans une grille.",
-                            "name": "Grille"
+                            "name": "Grille",
+                            "square": "Rendre les cartes sous forme de carrés"
                         },
                         "history-graph": {
                             "description": "La carte Graphique historique vous permet d'afficher un graphique pour chacune des entités répertoriées.",
@@ -3360,6 +3377,7 @@
                     "working": "Veuillez patienter"
                 },
                 "initializing": "Initialisation",
+                "logging_in_to_with": "Connexion à ** {locationName} ** avec ** {authProviderName} **.",
                 "logging_in_with": "Se connecter avec **{authProviderName}**.",
                 "pick_auth_provider": "Ou connectez-vous avec"
             },

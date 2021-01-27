@@ -133,8 +133,8 @@
                 "on": "高温"
             },
             "lock": {
-                "off": "ロックされました",
-                "on": "ロックされていません"
+                "off": "施錠中",
+                "on": "無施錠"
             },
             "moisture": {
                 "off": "ドライ",
@@ -204,9 +204,9 @@
         },
         "cover": {
             "closed": "閉鎖",
-            "closing": "終了",
+            "closing": "閉じています",
             "open": "開く",
-            "opening": "扉",
+            "opening": "開いています",
             "stopped": "停止"
         },
         "default": {
@@ -224,18 +224,18 @@
         },
         "group": {
             "closed": "閉鎖",
-            "closing": "終了",
+            "closing": "閉じています",
             "home": "在宅",
-            "locked": "ロックされました",
+            "locked": "施錠中",
             "not_home": "外出",
             "off": "オフ",
             "ok": "OK",
             "on": "オン",
             "open": "開く",
-            "opening": "扉",
+            "opening": "開いています",
             "problem": "問題",
             "stopped": "停止",
-            "unlocked": "ロック 解除"
+            "unlocked": "無施錠"
         },
         "input_boolean": {
             "off": "オフ",
@@ -246,8 +246,8 @@
             "on": "オン"
         },
         "lock": {
-            "locked": "ロック",
-            "unlocked": "ロック 解除"
+            "locked": "施錠中",
+            "unlocked": "無施錠"
         },
         "media_player": {
             "idle": "アイドル",
@@ -364,13 +364,13 @@
                 "high": "高",
                 "low": "低",
                 "on_off": "オン／オフ",
-                "operation": "運転切替",
+                "operation": "運転モード",
                 "preset_mode": "プリセット",
                 "swing_mode": "スイングモード",
                 "target_humidity": "目標湿度",
-                "target_temperature": "目標温度",
-                "target_temperature_entity": "{name}目標温度",
-                "target_temperature_mode": "{name}目標温度{mode}"
+                "target_temperature": "設定温度",
+                "target_temperature_entity": "{name}設定温度",
+                "target_temperature_mode": "{name}設定温度{mode}"
             },
             "counter": {
                 "actions": {
@@ -404,8 +404,8 @@
             },
             "lock": {
                 "code": "コード",
-                "lock": "ロック",
-                "unlock": "ロック解除"
+                "lock": "施錠",
+                "unlock": "解錠"
             },
             "media_player": {
                 "browse_media": "メディアを参照する",
@@ -416,7 +416,7 @@
                 "sound_mode": "サウンドモード",
                 "source": "ソース：",
                 "text_to_speak": "音声合成",
-                "turn_off": "終了する",
+                "turn_off": "オフにする",
                 "turn_on": "オンにする"
             },
             "persistent_notification": {
@@ -446,8 +446,8 @@
                     "resume_cleaning": "クリーニングを再開する",
                     "return_to_base": "ドックに戻る",
                     "start_cleaning": "クリーニングを開始",
-                    "turn_off": "終了する",
-                    "turn_on": "終了する"
+                    "turn_off": "オフにする",
+                    "turn_on": "オンにする"
                 }
             },
             "water_heater": {
@@ -455,7 +455,7 @@
                 "currently": "現在",
                 "on_off": "オン／オフ",
                 "operation": "操作",
-                "target_temperature": "目標温度"
+                "target_temperature": "設定温度"
             },
             "weather": {
                 "attributes": {
@@ -492,17 +492,18 @@
             }
         },
         "common": {
-            "and": "そして",
+            "and": "と",
             "back": "戻る",
             "cancel": "キャンセル",
             "close": "閉じる",
             "continue": "続行",
             "copied": "コピー",
+            "copied_clipboard": "クリップボードにコピー",
             "delete": "削除",
             "disable": "無効",
             "enable": "有効",
             "error_required": "必須",
-            "leave": "離れる",
+            "leave": "去る",
             "loading": "読込中",
             "menu": "メニュー",
             "next": "次",
@@ -515,7 +516,7 @@
             "rename": "リネーム",
             "save": "保存",
             "skip": "スキップ",
-            "stay": "滞在",
+            "stay": "留まる",
             "successfully_deleted": "正常に削除されました",
             "successfully_saved": "正常に保存されました",
             "undo": "元に戻す",
@@ -578,16 +579,16 @@
             },
             "logbook": {
                 "by": "by",
-                "by_service": "サービス別",
+                "by_service": "サービス: ",
                 "entries_not_found": "ログブックのエントリが見つかりません。",
                 "messages": {
                     "became_unavailable": "利用できなくなりました",
                     "changed_to_state": "{state}に変更されました",
-                    "cleared_device_class": "クリアされました（ {device_class}検出されませんでした）",
+                    "cleared_device_class": "クリアされました ({device_class} 未検出)",
                     "detected_device_class": "{device_class} が検出されました",
                     "rose": "ローズ",
                     "set": "セット",
-                    "turned_off": "終了しました",
+                    "turned_off": "オフになりました",
                     "turned_on": "オンになりました",
                     "was_at_home": "家にいた",
                     "was_at_state": "{state}でした",
@@ -595,13 +596,13 @@
                     "was_closed": "閉鎖されました",
                     "was_connected": "接続されました",
                     "was_disconnected": "切断されました",
-                    "was_locked": "ロックされました",
+                    "was_locked": "施錠されました",
                     "was_low": "低かった",
                     "was_normal": "正常でした",
                     "was_opened": "開かれました",
                     "was_plugged_in": "接続されました",
                     "was_safe": "安全でした",
-                    "was_unlocked": "ロックが解除されました",
+                    "was_unlocked": "解錠されました",
                     "was_unplugged": "プラグが抜かれました",
                     "was_unsafe": "安全ではなかった"
                 }
@@ -1007,7 +1008,7 @@
             "title": "通知"
         },
         "notification_toast": {
-            "connection_lost": "切断されました。再接続中...",
+            "connection_lost": "接続が切れました。再接続中...",
             "dismiss": "閉じる",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
             "started": "ホームアシスタントが開始されました！",
@@ -1102,7 +1103,9 @@
                                 "device_id": {
                                     "action": "アクション",
                                     "extra_fields": {
-                                        "code": "コード"
+                                        "code": "コード",
+                                        "message": "メッセージ",
+                                        "title": "タイトル"
                                     },
                                     "label": "デバイス"
                                 },
@@ -1171,7 +1174,7 @@
                             "type_select": "条件の種類",
                             "type": {
                                 "and": {
-                                    "label": "そして"
+                                    "label": "の"
                                 },
                                 "device": {
                                     "condition": "条件",
@@ -1278,7 +1281,8 @@
                                     "extra_fields": {
                                         "above": "上",
                                         "below": "以下に",
-                                        "for": "期間"
+                                        "for": "期間",
+                                        "zone": "ゾーン"
                                     },
                                     "label": "デバイス",
                                     "trigger": "トリガー"
@@ -1490,6 +1494,13 @@
                         },
                         "sign_out": "サインアウト",
                         "thank_you_note": "Home Assistant Cloudにご参加いただきありがとうございます。私たちは皆のために優れたホームオートメーション体験を作ることができるのはあなたのような人々のおかげです。ありがとうございました！",
+                        "tts": {
+                            "default_language": "使用するデフォルト言語",
+                            "female": "女性",
+                            "info": "私たちのテキスト読み上げサービスを使用してあなたに話をさせることによって、あなたの家に人格をもたらします。これは、{service} サービスを使用して、自動化およびスクリプトで使用できます。",
+                            "male": "男性",
+                            "title": "テキスト読み上げ"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "ウェブホックを無効にできませんでした：",
                             "info": "webhook によってトリガーされるように構成された URL を公開可能な URL を与えることができ、インスタンスをインターネットに公開することなく、どこからでもホームアシスタントにデータを送信できます。",
@@ -1612,7 +1623,7 @@
                 },
                 "core": {
                     "caption": "一般",
-                    "description": "設定ファイルの検証とサーバーの操作",
+                    "description": "ホームの場所、タイムゾーン、単位など一般的な設定",
                     "section": {
                         "core": {
                             "core_config": {
@@ -2219,7 +2230,7 @@
                     },
                     "introduction": "ここでは、Home Assistantで関心のある各人を定義できます。",
                     "learn_more": "ユーザーの詳細",
-                    "no_persons_created_yet": "まだ人を作成していませんですね。",
+                    "no_persons_created_yet": "まだ人を作成していないようです。",
                     "note_about_persons_configured_in_yaml": "注：configuration.yaml で設定された人は、UI で編集できません。",
                     "person_not_found": "編集しようとしている人が見つかりませんでした。",
                     "person_not_found_title": "人が見つかりません"
@@ -2572,7 +2583,9 @@
                     "title": "Zigbeeホームオートメーション",
                     "visualization": {
                         "caption": "可視化",
-                        "header": "ネットワークの視覚化"
+                        "header": "ネットワークの視覚化",
+                        "highlight_label": "デバイスを強調表示",
+                        "zoom_label": "デバイスにズーム"
                     }
                 },
                 "zone": {
@@ -2603,6 +2616,69 @@
                     "home_zone_core_config": "ホームゾーンの場所は、一般構成ページから編集できます。ホームゾーンの半径は、フロントエンドからはまだ編集できません。一般構成に移動しますか？",
                     "introduction": "ゾーンを使用すると、地球上の特定の地域を指定できます。人がゾーン内にいるとき、州はゾーンから名前を取ります。ゾーンは、オートメーション設定内のトリガーまたは条件として使用することもできます。",
                     "no_zones_created_yet": "まだゾーンを作成していないようです。"
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "インクルージョンをキャンセルする",
+                        "controller_in_inclusion_mode": "これで、Z-Waveコントローラーはインクルージョンモードになります。",
+                        "follow_device_instructions": "デバイスに付属の指示に従って、デバイスでペアリングを開始します。",
+                        "inclusion_failed": "ノードを追加できませんでした。詳細については、ログを確認してください。",
+                        "inclusion_finished": "ノードが追加されました。ノードのバックグラウンドでの設定が完了すると、すべてのエンティティが表示されるまで数分かかる場合があります。",
+                        "introduction": "このウィザードでは、Z-Wave ネットワークにノードを追加する手順を説明します。",
+                        "secure_inclusion_warning": "セキュアなデバイスには、追加の帯域幅が必要です。安全なデバイスが多すぎると、Z-Waveネットワークが遅くなる可能性があります。ロックやガレージドアオープナーなど、必要なデバイスにのみ安全な組み込みを使用することをお勧めします。",
+                        "start_inclusion": "インクルージョンを開始",
+                        "start_secure_inclusion": "セキュアインクルージョンの開始",
+                        "title": "Z-Waveノードを追加",
+                        "use_secure_inclusion": "安全なインクルージョンを使用する",
+                        "view_device": "デバイスを表示"
+                    },
+                    "button": "設定",
+                    "common": {
+                        "add_node": "ノードの追加",
+                        "close": "閉じる",
+                        "home_id": "ホームID",
+                        "network": "ネットワーク",
+                        "node_id": "ノードID",
+                        "remove_node": "ノードの削除"
+                    },
+                    "dashboard": {
+                        "driver_version": "ドライバーバージョン",
+                        "header": "Z-Wave ネットワークの管理",
+                        "home_id": "ホームID",
+                        "introduction": "Z-WaveネットワークとZ-Waveノードを管理する",
+                        "node_count": "ノード数",
+                        "server_version": "サーバーバージョン"
+                    },
+                    "device_info": {
+                        "node_ready": "ノードの準備完了",
+                        "node_status": "ノードの状態",
+                        "zwave_info": "Z-Wave情報"
+                    },
+                    "navigation": {
+                        "network": "ネットワーク"
+                    },
+                    "network_status": {
+                        "connected": "接続済み",
+                        "connecting": "接続",
+                        "unknown": "不明"
+                    },
+                    "node_status": {
+                        "alive": "作動中",
+                        "asleep": "スリープ",
+                        "awake": "起きている",
+                        "dead": "停止中",
+                        "unknown": "不明"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "除外をキャンセルする",
+                        "controller_in_exclusion_mode": "Z-Wave コントローラが除外モードになりました。",
+                        "exclusion_failed": "ノードを削除できませんでした。詳細については、ログを確認してください。",
+                        "exclusion_finished": "ノード{id}がZ-Waveネットワークから削除されました。",
+                        "follow_device_instructions": "デバイスに付属の指示に従って、デバイスの除外をトリガーします。",
+                        "introduction": "Z-Waveネットワークからノードを削除し、関連するデバイスとエンティティをHomeAssistantから削除します。",
+                        "start_exclusion": "除外を開始する",
+                        "title": "Z-Waveノードを削除します"
+                    }
                 },
                 "zwave": {
                     "button": "設定",
@@ -2797,6 +2873,15 @@
                     "yaml_unsupported": "YAMLモードでLovelace UIを使用している場合、この関数は使用できません。"
                 },
                 "cards": {
+                    "action_confirmation": "アクション「{action}」を実行してもよろしいですか？",
+                    "actions": {
+                        "action_confirmation": "アクション \"{action}\" を実行しますか?",
+                        "no_entity_more_info": "詳細情報ダイアログにエンティティが提供されていません",
+                        "no_entity_toggle": "切り替えるエンティティが提供されていません",
+                        "no_navigation_path": "ナビゲーションパスが指定されていません",
+                        "no_service": "実行サービスが指定されていません",
+                        "no_url": "開くURLが指定されていません"
+                    },
                     "confirm_delete": "このカードを削除しますか?",
                     "empty_state": {
                         "go_to_integrations_page": "インテグレーションページに移動します。",
@@ -2822,7 +2907,9 @@
                     "shopping-list": {
                         "add_item": "アイテムを追加",
                         "checked_items": "チェックアイテム",
-                        "clear_items": "チェックされたアイテムを削除"
+                        "clear_items": "チェックされたアイテムを削除",
+                        "drag_and_drop": "ドラッグ&ドロップ",
+                        "reorder_items": "再オーダーアイテム"
                     },
                     "starting": {
                         "description": "ホームアシスタントを開始しています。お待ちください...",
@@ -2832,6 +2919,12 @@
                 "changed_toast": {
                     "message": "このダッシュボードのLovelace UI設定が更新されました。更新して変更を確認しますか？",
                     "refresh": "更新"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "無効なタイムスタンプ",
+                        "invalid_format": "無効な表示フォーマット"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2972,8 +3065,10 @@
                             "name": "一覧"
                         },
                         "grid": {
+                            "columns": "列",
                             "description": "グリッド カードを使用すると、グリッドに複数のカードを表示できます。",
-                            "name": "グリッド"
+                            "name": "グリッド",
+                            "square": "カードを正方形としてレンダリングする"
                         },
                         "history-graph": {
                             "description": "履歴グラフ カードを使用すると、一覧表示された各エンティティのグラフを表示できます。",
@@ -3346,6 +3441,7 @@
                     "working": "お待ちください"
                 },
                 "initializing": "初期化中",
+                "logging_in_to_with": "**{authProviderName}** で **{locationName}** にログインします。",
                 "logging_in_with": "**{authProviderName}**でログインします。",
                 "pick_auth_provider": "またはログイン"
             },
