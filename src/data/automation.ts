@@ -208,6 +208,7 @@ export type Condition =
 export const triggerAutomation = (hass: HomeAssistant, entityId: string) => {
   hass.callService("automation", "trigger", {
     entity_id: entityId,
+    skip_condition: false,
   });
 };
 
