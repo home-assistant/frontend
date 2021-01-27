@@ -139,11 +139,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           })}
         ></ha-gauge>
         <div class="row">
-          <div class="icon">
-            <ha-icon
-              .icon=${this._config.icon || stateIcon(stateObj)}
-            ></ha-icon>
-          </div>
+          <ha-icon .icon=${this._config.icon || stateIcon(stateObj)}></ha-icon>
           <div class="name">
             ${this._config.name || computeStateName(stateObj)}
           </div>
@@ -241,7 +237,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       .row {
         display: flex;
         justify-content: space-around;
-        padding-top: 4px;
+        margin-top: 4px;
+        align-items: center;
       }
 
       .name {
@@ -251,12 +248,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         width: 100%;
         font-size: 16px;
         font-weight: 500;
-        margin-top: 8px;
       }
 
-      .icon {
+      ha-icon {
         color: var(--state-icon-color, #44739e);
-        margin-top: 4px;
         margin-right: 4px;
       }
     `;
