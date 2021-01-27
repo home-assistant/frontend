@@ -1,3 +1,4 @@
+import "../../../components/ha-markdown";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
@@ -74,9 +75,10 @@ class DialogImportBlueprint extends LitElement {
                   this._result.blueprint.metadata.domain
                 )}
                 <br />
-                <p class="pre-line">
-                  ${this._result.blueprint.metadata.description}
-                </p>
+                <ha-markdown
+                  breaks
+                  .content=${this._result.blueprint.metadata.description}
+                ></ha-markdown>
                 ${this._result.validation_errors
                   ? html`
                       <p class="error">
@@ -209,17 +211,6 @@ class DialogImportBlueprint extends LitElement {
     } finally {
       this._saving = false;
     }
-  }
-
-  static get styles(): CSSResult[] {
-    return [
-      haStyleDialog,
-      css`
-        .pre-line {
-          white-space: pre-line;
-        }
-      `,
-    ];
   }
 }
 
