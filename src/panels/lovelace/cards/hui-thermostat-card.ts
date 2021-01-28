@@ -19,10 +19,7 @@ import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import {
-  formatNumber,
-  FormatNumberParams,
-} from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -101,11 +98,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
 
-    const formatParams: FormatNumberParams = {
-      language: this.hass.language,
-      format: this.hass.userData?.numberFormat,
-    };
-
     if (!stateObj) {
       return html`
         <hui-warning>
@@ -154,7 +146,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               !isNaN(stateObj.attributes.current_temperature)
                 ? svg`${formatNumber(
                     stateObj.attributes.current_temperature,
-                    formatParams
+                    this.hass.language
                   )}
             <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
               ${this.hass.config.unit_system.temperature}
@@ -177,51 +169,33 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
                   ? svg`
-                      ${formatNumber(this._setTemp[0], {
-                        ...formatParams,
-                        options: {
-                          maximumFractionDigits: 0,
-                        },
+                      ${formatNumber(this._setTemp[0], this.hass.language, {
+                        maximumFractionDigits: 0,
                       })} -
-                      ${formatNumber(this._setTemp[1], {
-                        ...formatParams,
-                        options: {
-                          maximumFractionDigits: 0,
-                        },
+                      ${formatNumber(this._setTemp[1], this.hass.language, {
+                        maximumFractionDigits: 0,
                       })}
                       `
                   : svg`
-                      ${formatNumber(this._setTemp[0], {
-                        ...formatParams,
-                        options: {
-                          minimumFractionDigits: 1,
-                          maximumFractionDigits: 1,
-                        },
+                      ${formatNumber(this._setTemp[0], this.hass.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
                       })} -
-                      ${formatNumber(this._setTemp[1], {
-                        ...formatParams,
-                        options: {
-                          minimumFractionDigits: 1,
-                          maximumFractionDigits: 1,
-                        },
+                      ${formatNumber(this._setTemp[1], this.hass.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
                       })}
                       `
                 : this._stepSize === 1
                 ? svg`
-                      ${formatNumber(this._setTemp, {
-                        ...formatParams,
-                        options: {
-                          maximumFractionDigits: 0,
-                        },
+                      ${formatNumber(this._setTemp, this.hass.language, {
+                        maximumFractionDigits: 0,
                       })}
                       `
                 : svg`
-                      ${formatNumber(this._setTemp, {
-                        ...formatParams,
-                        options: {
-                          minimumFractionDigits: 1,
-                          maximumFractionDigits: 1,
-                        },
+                      ${formatNumber(this._setTemp, this.hass.language, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
                       })}
                       `
             }

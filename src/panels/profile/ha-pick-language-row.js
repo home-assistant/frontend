@@ -104,7 +104,7 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
-    if (this.hass && this.hass.language) {
+    if (this.hass && this.hass.language && this.hass.language.language) {
       this.setLanguageSelection(this.hass.language.language);
     }
   }

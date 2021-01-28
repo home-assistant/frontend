@@ -29,7 +29,10 @@ export class HuiBadgePreview extends HTMLElement {
   }
 
   set hass(hass: HomeAssistant) {
-    if (!this._hass || this._hass.language !== hass.language) {
+    if (
+      !this._hass ||
+      this._hass.language.language !== hass.language.language
+    ) {
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
     }
 

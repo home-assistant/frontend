@@ -112,14 +112,13 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
             ? computeStateDisplay(
                 this.hass.localize,
                 stateObj,
-                this.hass.language,
-                this.hass.userData
+                this.hass.language
               )
             : html`
-                ${formatNumber(stateObj.attributes.temperature, {
-                  language: this.hass!.language,
-                  format: this.hass!.userData?.numberFormat,
-                })}
+                ${formatNumber(
+                  stateObj.attributes.temperature,
+                  this.hass.language
+                )}
                 ${getWeatherUnit(this.hass, "temperature")}
               `}
         </div>

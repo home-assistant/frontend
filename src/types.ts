@@ -198,7 +198,7 @@ export interface HomeAssistant {
   panelUrl: string;
 
   // i18n
-  // current effective language, in that order:
+  // current effective language and number_format, in that order:
   //   - backend saved user selected lanugage
   //   - language in local appstorage
   //   - browser language

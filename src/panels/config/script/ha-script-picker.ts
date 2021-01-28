@@ -135,7 +135,7 @@ class HaScriptPicker extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
-        .columns=${this._columns(this.hass.language)}
+        .columns=${this._columns(this.hass.language.language)}
         .data=${this._scripts(this.scripts)}
         id="entity_id"
         .noDataText=${this.hass.localize(

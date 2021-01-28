@@ -57,27 +57,23 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
     if (!hass || !stateObj) return null;
     // We're using "!= null" on purpose so that we match both null and undefined.
 
-    const formatParams = {
-      language: this.hass.language,
-      format: this.hass.userData?.numberFormat,
-    };
-
     if (
       stateObj.attributes.target_temp_low != null &&
       stateObj.attributes.target_temp_high != null
     ) {
       return `${formatNumber(
         stateObj.attributes.target_temp_low,
-        formatParams
+        this.hass.language
       )} - ${formatNumber(
         stateObj.attributes.target_temp_high,
-        formatParams
+        this.hass.language
       )} ${hass.config.unit_system.temperature}`;
     }
     if (stateObj.attributes.temperature != null) {
-      return `${formatNumber(stateObj.attributes.temperature, formatParams)} ${
-        hass.config.unit_system.temperature
-      }`;
+      return `${formatNumber(
+        stateObj.attributes.temperature,
+        this.hass.language
+      )} ${hass.config.unit_system.temperature}`;
     }
 
     return "";
@@ -87,8 +83,7 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
     return computeStateDisplay(
       this.hass.localize,
       stateObj,
-      this.hass.language,
-      this.hass.userData
+      this.hass.language
     );
   }
 }

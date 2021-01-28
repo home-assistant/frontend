@@ -42,8 +42,7 @@ export class HuiConfiguratorNotificationItem extends LitElement {
           >${computeStateDisplay(
             this.hass.localize,
             this.notification,
-            this.hass.language,
-            this.hass.userData
+            this.hass.language
           )}</mwc-button
         >
       </notification-item-template>

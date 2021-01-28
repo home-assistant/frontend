@@ -69,7 +69,10 @@ export class HuiCardPreview extends UpdatingElement {
       const oldHass = changedProperties.get("hass") as
         | HomeAssistant
         | undefined;
-      if (!oldHass || oldHass.language !== this.hass!.language) {
+      if (
+        !oldHass ||
+        oldHass.language.language !== this.hass!.language.language
+      ) {
         this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
       }
 

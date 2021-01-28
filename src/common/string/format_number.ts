@@ -1,33 +1,20 @@
-import { NumberFormat } from "../../data/frontend";
-
-export interface FormatNumberParams {
-  /**
-   * The user-selected language, usually from hass.language
-   */
-  language?: string;
-  /**
-   * The user-selected number format, usually from hass.userData.numberFormat
-   */
-  format?: NumberFormat;
-  /**
-   * Intl.NumberFormatOptions to use when formatting the number
-   */
-  options?: Intl.NumberFormatOptions;
-}
+import { FrontendTranslationData, NumberFormat } from "../../data/translation";
 
 /**
  * Formats a number based on the specified language with thousands separator(s) and decimal character for better legibility.
  *
  * @param num The number to format
- * @param params Specify the user-selected language, user-selected number format, and Intl.NumberFormatOptions to use
+ * @param params The user-selected language and number format, from `hass.language`
+ * @param options Intl.NumberFormatOptions to use
  */
 export const formatNumber = (
   num: string | number,
-  params: FormatNumberParams
+  language?: FrontendTranslationData,
+  options?: Intl.NumberFormatOptions
 ): string => {
   let format: string | string[] | undefined;
 
-  switch (params.format) {
+  switch (language?.number_format) {
     case NumberFormat.comma_decimal:
       format = ["en-US", "en"]; // Use United States with fallback to English formatting 1,234,567.89
       break;
@@ -41,7 +28,7 @@ export const formatNumber = (
       format = undefined;
       break;
     default:
-      format = params.language;
+      format = language?.language;
   }
 
   // Polyfill for Number.isNaN, which is more reliable than the global isNaN()
@@ -54,12 +41,12 @@ export const formatNumber = (
   if (
     !Number.isNaN(Number(num)) &&
     Intl &&
-    params.format !== NumberFormat.none
+    language?.number_format !== NumberFormat.none
   ) {
     try {
       return new Intl.NumberFormat(
         format,
-        getDefaultFormatOptions(num, params.options)
+        getDefaultFormatOptions(num, options)
       ).format(Number(num));
     } catch (error) {
       // Don't fail when using "TEST" language
@@ -67,7 +54,7 @@ export const formatNumber = (
       console.error(error);
       return new Intl.NumberFormat(
         undefined,
-        getDefaultFormatOptions(num, params.options)
+        getDefaultFormatOptions(num, options)
       ).format(Number(num));
     }
   }

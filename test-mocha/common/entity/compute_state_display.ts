@@ -1,10 +1,14 @@
 import { assert } from "chai";
 import { computeStateDisplay } from "../../../src/common/entity/compute_state_display";
 import { UNKNOWN } from "../../../src/data/entity";
-import { CoreFrontendUserData, NumberFormat } from "../../../src/data/frontend";
+import {
+  FrontendTranslationData,
+  NumberFormat,
+} from "../../../src/data/translation";
 
-const userData: CoreFrontendUserData = {
-  numberFormat: NumberFormat.comma_decimal,
+const languageData: FrontendTranslationData = {
+  language: "en",
+  number_format: NumberFormat.comma_decimal,
 };
 
 describe("computeStateDisplay", () => {
@@ -19,7 +23,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en", userData),
+      computeStateDisplay(localize, stateObj, languageData),
       "component.binary_sensor.state._.off"
     );
   });
@@ -33,7 +37,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en", userData),
+      computeStateDisplay(localize, stateObj, languageData),
       "component.binary_sensor.state.moisture.off"
     );
   });
@@ -53,7 +57,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en", userData),
+      computeStateDisplay(altLocalize, stateObj, languageData),
       "component.binary_sensor.state.invalid_device_class.off"
     );
   });
@@ -67,7 +71,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en", userData),
+      computeStateDisplay(localize, stateObj, languageData),
       "123 m"
     );
   });
@@ -81,7 +85,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en", userData),
+      computeStateDisplay(localize, stateObj, languageData),
       "1,234.5 m"
     );
   });
@@ -101,7 +105,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en", userData),
+      computeStateDisplay(altLocalize, stateObj, languageData),
       "state.default.unknown"
     );
   });
@@ -121,7 +125,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en", userData),
+      computeStateDisplay(altLocalize, stateObj, languageData),
       "state.default.unavailable"
     );
   });
@@ -139,7 +143,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en", userData),
+      computeStateDisplay(altLocalize, stateObj, languageData),
       "component.sensor.state._.custom_state"
     );
   });
@@ -160,7 +164,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en", userData),
+      computeStateDisplay(localize, stateObj, languageData),
       "November 18, 2017, 11:12 AM"
     );
   });
@@ -181,7 +185,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en", userData),
+      computeStateDisplay(localize, stateObj, languageData),
       "November 18, 2017"
     );
   });
@@ -202,7 +206,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en", userData),
+      computeStateDisplay(localize, stateObj, languageData),
       "11:12 AM"
     );
   });
@@ -220,7 +224,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en", userData),
+      computeStateDisplay(altLocalize, stateObj, languageData),
       "state.default.unavailable"
     );
   });
@@ -236,7 +240,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en", userData),
+      computeStateDisplay(altLocalize, stateObj, languageData),
       "My Custom State"
     );
   });

@@ -33,7 +33,7 @@ class HaDemo extends HomeAssistantAppEl {
     const hass = (this.hass = provideHass(this, initial));
     const localizePromise =
       // @ts-ignore
-      this._loadFragmentTranslations(hass.language, "page-demo").then(
+      this._loadFragmentTranslations(hass.language.language, "page-demo").then(
         () => this.hass!.localize
       );
 

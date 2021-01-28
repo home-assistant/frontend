@@ -43,7 +43,10 @@ export class HaDateRangePicker extends LitElement {
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.language !== this.hass.language) {
+      if (
+        !oldHass ||
+        oldHass.language.language !== this.hass.language.language
+      ) {
         this._hour24format = this._compute24hourFormat();
         this._rtlDirection = computeRTLDirection(this.hass);
       }
@@ -111,7 +114,7 @@ export class HaDateRangePicker extends LitElement {
 
   private _compute24hourFormat() {
     return (
-      new Intl.DateTimeFormat(this.hass.language, {
+      new Intl.DateTimeFormat(this.hass.language.language, {
         hour: "numeric",
       })
         .formatToParts(new Date(2020, 0, 1, 13))

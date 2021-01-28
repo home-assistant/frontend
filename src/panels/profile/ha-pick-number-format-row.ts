@@ -51,7 +51,7 @@ class NumberFormatRow extends LitElement {
                 <div secondary>
                   ${formatNumber(1234567.89, {
                     language: this.hass.language.language,
-                    format: NumberFormat.auto,
+                    number_format: NumberFormat.auto,
                   })}
                 </div>
               </paper-item-body>
@@ -66,7 +66,7 @@ class NumberFormatRow extends LitElement {
                 <div secondary>
                   ${formatNumber(1234567.89, {
                     language: this.hass.language.language,
-                    format: NumberFormat.system,
+                    number_format: NumberFormat.system,
                   })}
                 </div>
               </paper-item-body>
@@ -96,7 +96,7 @@ class NumberFormatRow extends LitElement {
                 <div secondary>
                   ${formatNumber(1234567.89, {
                     language: this.hass.language.language,
-                    format: NumberFormat.none,
+                    number_format: NumberFormat.none,
                   })}
                 </div>
               </paper-item-body>

@@ -132,7 +132,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.language.language !== this.hass!.language.language
     ) {
       return true;
     }

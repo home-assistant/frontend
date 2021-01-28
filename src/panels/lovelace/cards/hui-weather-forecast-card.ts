@@ -21,10 +21,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import {
-  formatNumber,
-  FormatNumberParams,
-} from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/string/format_number";
 import { debounce } from "../../../common/util/debounce";
 import { UNAVAILABLE } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -148,11 +145,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
 
-    const formatParams: FormatNumberParams = {
-      language: this.hass.language,
-      format: this.hass.userData?.numberFormat,
-    };
-
     if (!stateObj) {
       return html`
         <hui-warning>
@@ -227,8 +219,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 ${computeStateDisplay(
                   this.hass.localize,
                   stateObj,
-                  this.hass.language,
-                  this.hass.userData
+                  this.hass.language
                 )}
               </div>
               <div class="name">
@@ -239,7 +230,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
               <div class="temp">
                 ${formatNumber(
                   stateObj.attributes.temperature,
-                  formatParams
+                  this.hass.language
                 )}&nbsp;<span>${getWeatherUnit(this.hass, "temperature")}</span>
               </div>
               <div class="attribute">
@@ -269,7 +260,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               stateObj.attributes[
                                 this._config.secondary_info_attribute
                               ],
-                              formatParams
+                              this.hass.language
                             )}
                             ${getWeatherUnit(
                               this.hass,
@@ -292,7 +283,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                         ${dayNight
                           ? html`
                               ${new Date(item.datetime).toLocaleDateString(
-                                this.hass!.language,
+                                this.hass!.language.language,
                                 { weekday: "short" }
                               )}
                               <div class="daynight">
@@ -312,7 +303,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             `
                           : html`
                               ${new Date(item.datetime).toLocaleDateString(
-                                this.hass!.language,
+                                this.hass!.language.language,
                                 { weekday: "short" }
                               )}
                             `}
@@ -332,14 +323,20 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       item.temperature !== null
                         ? html`
                             <div class="temp">
-                              ${formatNumber(item.temperature, formatParams)}°
+                              ${formatNumber(
+                                item.temperature,
+                                this.hass!.language
+                              )}°
                             </div>
                           `
                         : ""}
                       ${item.templow !== undefined && item.templow !== null
                         ? html`
                             <div class="templow">
-                              ${formatNumber(item.templow, formatParams)}°
+                              ${formatNumber(
+                                item.templow,
+                                this.hass!.language
+                              )}°
                             </div>
                           `
                         : ""}

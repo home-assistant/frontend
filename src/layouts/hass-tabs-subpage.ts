@@ -121,7 +121,10 @@ class HassTabsSubpage extends LitElement {
       const oldHass = changedProperties.get("hass") as
         | HomeAssistant
         | undefined;
-      if (!oldHass || oldHass.language !== this.hass.language) {
+      if (
+        !oldHass ||
+        oldHass.language.language !== this.hass.language.language
+      ) {
         this.rtl = computeRTL(this.hass);
       }
     }
@@ -133,7 +136,7 @@ class HassTabsSubpage extends LitElement {
       this._activeTab,
       this.hass.userData?.showAdvanced,
       this.hass.config.components,
-      this.hass.language,
+      this.hass.language.language,
       this.narrow,
       this.localizeFunc || this.hass.localize
     );

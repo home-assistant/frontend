@@ -84,7 +84,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         }
       });
       getUserLanguage(this.hass!).then((language) => {
-        if (language && this.hass!.language.language !== language) {
+        if (language && this.hass!.language?.language !== language) {
           // We just get language from backend, no need to save back
           this._selectLanguage(
             { ...this.hass!.language, language: language },
@@ -173,7 +173,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         const resources = await getHassTranslationsPre109(this.hass!, language);
 
         // Ignore the repsonse if user switched languages before we got response
-        if (this.hass!.language!.language !== language) {
+        if (this.hass!.language?.language !== language) {
           return this.hass!.localize;
         }
 
@@ -227,7 +227,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
 
       // Ignore the repsonse if user switched languages before we got response
-      if (this.hass!.language!.language !== language) {
+      if (this.hass!.language?.language !== language) {
         return this.hass!.localize;
       }
 
@@ -292,7 +292,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // Allow hass to be updated
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      if (language !== (this.hass ?? this._pendingHass).language!.language) {
+      if (language !== (this.hass ?? this._pendingHass).language?.language) {
         // the language was changed, abort
         return;
       }
@@ -308,7 +308,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         localize: await computeLocalize(this, language, resources),
       };
 
-      if (language === (this.hass ?? this._pendingHass).language!.language) {
+      if (language === (this.hass ?? this._pendingHass).language?.language) {
         this._updateHass(changes);
       }
     }

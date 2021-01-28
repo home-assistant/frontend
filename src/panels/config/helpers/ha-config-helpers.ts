@@ -149,7 +149,7 @@ export class HaConfigHelpers extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.helpers}
-        .columns=${this._columns(this.narrow, this.hass.language)}
+        .columns=${this._columns(this.narrow, this.hass.language.language)}
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
         hasFab

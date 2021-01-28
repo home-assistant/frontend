@@ -92,7 +92,7 @@ export class HuiPersistentNotificationItem extends LitElement {
     }
 
     const d = new Date(notification.created_at!);
-    return d.toLocaleDateString(hass.language, {
+    return d.toLocaleDateString(hass.language.language, {
       year: "numeric",
       month: "short",
       day: "numeric",

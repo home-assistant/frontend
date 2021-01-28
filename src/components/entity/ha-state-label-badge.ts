@@ -116,15 +116,11 @@ export class HaStateLabelBadge extends LitElement {
           : state.state === UNKNOWN
           ? "-"
           : state.attributes.unit_of_measurement
-          ? formatNumber(state.state, {
-              language: this.hass!.language,
-              format: this.hass!.userData?.numberFormat,
-            })
+          ? formatNumber(state.state, this.hass!.language)
           : computeStateDisplay(
               this.hass!.localize,
               state,
-              this.hass!.language,
-              this.hass!.userData
+              this.hass!.language
             );
     }
   }

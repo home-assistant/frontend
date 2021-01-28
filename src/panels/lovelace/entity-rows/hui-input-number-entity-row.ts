@@ -10,6 +10,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { formatNumber } from "../../../common/string/format_number";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-slider";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -88,7 +89,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   id="input"
                 ></ha-slider>
                 <span class="state">
-                  ${Number(stateObj.state)}
+                  ${formatNumber(Number(stateObj.state), this.hass.language)}
                   ${stateObj.attributes.unit_of_measurement}
                 </span>
               </div>

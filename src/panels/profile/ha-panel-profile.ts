@@ -104,7 +104,6 @@ class HaPanelProfile extends LitElement {
             <ha-pick-number-format-row
               .narrow=${this.narrow}
               .hass=${this.hass}
-              .coreUserData=${this._coreUserData}
             ></ha-pick-number-format-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}

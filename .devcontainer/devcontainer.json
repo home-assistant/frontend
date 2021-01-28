@@ -30,5 +30,8 @@
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "files.trimTrailingWhitespace": true
-  }
+  },
+  "mounts": [
+    "source=/Users/joshua/projects/homeassistant-frontend,target=/workspaces/frontend,type=bind,consistency=cached"
+  ]
 }
