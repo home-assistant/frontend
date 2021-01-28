@@ -122,6 +122,7 @@ class HassioAddonConfig extends LitElement {
           name: entry.name,
           options: entry.options || [],
           required: entry.required || false,
+          optional: entry.optional || true,
           type: entry.type,
         };
       });
