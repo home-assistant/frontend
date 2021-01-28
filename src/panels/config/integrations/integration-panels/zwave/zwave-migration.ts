@@ -38,7 +38,7 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import {
   computeDeviceName,
   DeviceRegistryEntry,
-  fetchDeviceRegistry,
+  subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
 
 @customElement("zwave-migration")
@@ -53,8 +53,6 @@ export class ZwaveMigration extends LitElement {
 
   @internalProperty() private _networkStatus?: ZWaveNetworkStatus;
 
-  @internalProperty() private _unsub?: Promise<UnsubscribeFunc>;
-
   @internalProperty() private _step = 0;
 
   @internalProperty() private _stoppingNetwork = false;
@@ -65,10 +63,18 @@ export class ZwaveMigration extends LitElement {
 
   @internalProperty() private _migratedZwaveEntities?: string[];
 
-  @internalProperty() private _deviceRegistry?: DeviceRegistryEntry[];
+  @internalProperty() private _deviceNameLookup: { [id: string]: string } = {};
+
+  private _unsub?: Promise<UnsubscribeFunc>;
+
+  private _unsubDevices?: UnsubscribeFunc;
 
   public disconnectedCallback(): void {
     this._unsubscribe();
+    if (this._unsubDevices) {
+      this._unsubDevices();
+      this._unsubDevices = undefined;
+    }
   }
 
   protected render(): TemplateResult {
@@ -278,9 +284,9 @@ export class ZwaveMigration extends LitElement {
                                         ).map(
                                           (device_id) =>
                                             html`<li>
-                                              ${this._computeDeviceName(
+                                              ${this._deviceNameLookup[
                                                 device_id
-                                              )}
+                                              ] || device_id}
                                             </li>`
                                         )}
                                       </ul>`
@@ -392,24 +398,34 @@ export class ZwaveMigration extends LitElement {
   }
 
   private async _getMigrationData() {
-    const promisses = [
-      fetchDeviceRegistry(this.hass),
-      migrateZwave(this.hass, true),
-    ];
-    [this._deviceRegistry, this._migrationData] = await Promise.all(promisses);
+    this._migrationData = await migrateZwave(this.hass, true);
     this._migratedZwaveEntities = Object.keys(
-      this._migrationData!.migration_entity_map
+      this._migrationData.migration_entity_map
     );
+    if (Object.keys(this._migrationData.migration_device_map).length) {
+      this._fetchDevices();
+    }
   }
 
-  private _computeDeviceName(deviceId) {
-    const device = this._deviceRegistry?.find(
-      (devReg) => devReg.id === deviceId
+  private _fetchDevices() {
+    this._unsubDevices = subscribeDeviceRegistry(
+      this.hass.connection,
+      (devices) => {
+        if (!this._migrationData) {
+          return;
+        }
+        const migrationDevices = Object.keys(
+          this._migrationData.migration_device_map
+        );
+        const deviceNameLookup = {};
+        devices.forEach((device) => {
+          if (migrationDevices.includes(device.id)) {
+            deviceNameLookup[device.id] = computeDeviceName(device, this.hass);
+          }
+        });
+        this._deviceNameLookup = deviceNameLookup;
+      }
     );
-    if (!device) {
-      return deviceId;
-    }
-    return computeDeviceName(device, this.hass);
   }
 
   private async _doMigrate() {
