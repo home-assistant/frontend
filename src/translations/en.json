@@ -968,7 +968,7 @@
         "logs": {
           "caption": "Logs",
           "description": "View the Home Assistant logs",
-          "details": "Log Details ({level})",
+          "details": "Log Details",
           "load_full_log": "Load Full Home Assistant Log",
           "loading_log": "Loading error log…",
           "no_errors": "No errors have been reported.",
