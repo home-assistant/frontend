@@ -89,7 +89,8 @@ export class ZwaveMigration extends LitElement {
               "ui.panel.config.zwave.migration.ozw.introduction"
             )}
           </div>
-          ${!this.hass.config.components.includes("mqtt")
+          ${!this.hass.config.components.includes("hassio") &&
+          !this.hass.config.components.includes("mqtt")
             ? html`
                 <ha-card class="content" header="MQTT Required">
                   <div class="card-content">
@@ -372,10 +373,7 @@ export class ZwaveMigration extends LitElement {
 
   private async _setupOzw() {
     const ozwConfigFlow = await startOzwConfigFlow(this.hass);
-    if (
-      !this.hass.config.components.includes("hassio") &&
-      this.hass.config.components.includes("ozw")
-    ) {
+    if (this.hass.config.components.includes("ozw")) {
       this._getMigrationData();
       this._step = 3;
       return;
