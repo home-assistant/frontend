@@ -83,7 +83,7 @@ class HassioAddonConfig extends LitElement {
         <div class="card-content">
           ${!this._yamlMode && this._canShowSchema && this._schema
             ? html`<ha-form
-                .data=${this.addon.options}
+                .data=${{ ...this.addon.options }}
                 @value-changed=${this._configChanged}
                 .schema=${this._schema}
                 .error=${this._error}
@@ -147,6 +147,7 @@ class HassioAddonConfig extends LitElement {
 
   private _configChanged(ev): void {
     if (this._schema && this._canShowSchema) {
+      this.addon.options = ev.detail.value;
       this._valid = true;
       this._configHasChanged = true;
     } else {
