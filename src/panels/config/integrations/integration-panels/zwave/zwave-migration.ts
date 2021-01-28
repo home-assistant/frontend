@@ -394,13 +394,14 @@ export class ZwaveMigration extends LitElement {
   }
 
   private async _getMigrationData() {
-    this._migrationData = await migrateZwave(this.hass, true);
+    const promisses = [
+      fetchDeviceRegistry(this.hass),
+      migrateZwave(this.hass, true),
+    ];
+    [this._deviceRegistry, this._migrationData] = await Promise.all(promisses);
     this._migratedZwaveEntities = Object.keys(
-      this._migrationData.migration_entity_map
+      this._migrationData!.migration_entity_map
     );
-    if (Object.keys(this._migrationData.migration_device_map).length) {
-      this._deviceRegistry = await fetchDeviceRegistry(this.hass);
-    }
   }
 
   private _computeDeviceName(deviceId) {
