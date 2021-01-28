@@ -189,6 +189,18 @@ class HUIRoot extends LitElement {
                             )}
                           </mwc-list-item>
                         `}
+                    <mwc-list-item
+                      graphic="icon"
+                      @request-selected="${this._handleRawEditor}"
+                    >
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiCodeBraces}
+                      ></ha-svg-icon>
+                      ${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.raw_editor"
+                      )}
+                    </mwc-list-item>
                     ${__DEMO__ /* No config available in the demo */
                       ? ""
                       : html`<mwc-list-item
@@ -218,18 +230,6 @@ class HUIRoot extends LitElement {
                                 )}
                               </mwc-list-item>`
                             : ""} `}
-                    <mwc-list-item
-                      graphic="icon"
-                      @request-selected="${this._handleRawEditor}"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiCodeBraces}
-                      ></ha-svg-icon>
-                      ${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.raw_editor"
-                      )}
-                    </mwc-list-item>
                   </ha-button-menu>
                 </app-toolbar>
               `
