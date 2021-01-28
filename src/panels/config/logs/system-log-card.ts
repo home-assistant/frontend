@@ -71,15 +71,15 @@ export class SystemLogCard extends LitElement {
                                 this.hass!.language
                               )}
                               –
+                              ${html`(<span class="${item.level.toLowerCase()}"
+                                  >${item.level}</span
+                                >) `}
                               ${integrations[idx]
                                 ? domainToName(
                                     this.hass!.localize,
                                     integrations[idx]!
                                   )
                                 : item.source[0]}
-                              ${html`(<span class="${item.level.toLowerCase()}"
-                                  >${item.level}</span
-                                >)`}
                               ${item.count > 1
                                 ? html`
                                     -
