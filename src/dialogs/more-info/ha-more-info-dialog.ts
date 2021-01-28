@@ -78,6 +78,9 @@ export class MoreInfoDialog extends LitElement {
   }
 
   protected shouldShowEditIcon(domain, stateObj): boolean {
+    if (__DEMO__) {
+      return false;
+    }
     if (EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) {
       return true;
     }
