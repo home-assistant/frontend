@@ -557,6 +557,10 @@
                 "remove_user": "删除用户",
                 "select_blueprint": "选择 Blueprint"
             },
+            "calendar": {
+                "my_calendars": "我的日历",
+                "today": "今天"
+            },
             "data-table": {
                 "no-data": "没有数据",
                 "search": "搜索"
@@ -605,7 +609,7 @@
                     "turned_off": "已关闭",
                     "turned_on": "已开启",
                     "was_at_home": "在家",
-                    "was_at_state": "处于 {state}",
+                    "was_at_state": "位于 {state}",
                     "was_away": "离开",
                     "was_closed": "已关闭",
                     "was_connected": "已连接",
@@ -1117,7 +1121,9 @@
                                 "device_id": {
                                     "action": "动作",
                                     "extra_fields": {
-                                        "code": "代码"
+                                        "code": "代码",
+                                        "message": "消息",
+                                        "title": "标题"
                                     },
                                     "label": "设备"
                                 },
@@ -1293,7 +1299,8 @@
                                     "extra_fields": {
                                         "above": "大于",
                                         "below": "小于",
-                                        "for": "持续时间"
+                                        "for": "持续时间",
+                                        "zone": "地点"
                                     },
                                     "label": "设备",
                                     "trigger": "触发条件"
@@ -1464,7 +1471,7 @@
                             "info_state_reporting": "如果启用状态报告，Home Assistant将向 Amazon 发送所有公开实体的状态更改。这允许您始终查看 Alexa 应用中的最新状态，并使用状态更改创建例程。",
                             "manage_entities": "管理实体：",
                             "state_reporting_error": "无法{enable_disable}状态报告。",
-                            "sync_entities": "同步实体",
+                            "sync_entities": "同步实体到 Amazon",
                             "sync_entities_error": "无法同步实体：",
                             "title": "Alexa"
                         },
@@ -1505,6 +1512,13 @@
                         },
                         "sign_out": "退出",
                         "thank_you_note": "感谢您加入 Home Assistant Cloud。正是因为像您这样的人，我们才得以为每个人带来出色的智能家居体验。谢谢！",
+                        "tts": {
+                            "default_language": "默认使用语言",
+                            "female": "女声",
+                            "info": "用我们的 TTS 服务，让您的家能开口说话，把智能家居变得更有人情味吧。可以在自动化和脚本中调用 {service} 服务来使用它。",
+                            "male": "男声",
+                            "title": "TTS"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "无法禁用 Webhook：",
                             "info": "由webhook触发的任何配置可以提供公开访问的URL,它允许您将数据发送回家庭助理从任何地方,并且不会暴露您的实例。",
@@ -1536,7 +1550,7 @@
                     "description_login": "登录为 {email}",
                     "description_not_login": "未登录",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "证书到期日期",
+                        "certificate_expiration_date": "证书到期日期:",
                         "certificate_information": "证书信息",
                         "close": "关闭",
                         "fingerprint": "证书指纹：",
@@ -2621,6 +2635,76 @@
                     "introduction": "地点用于定义世界的某个地方。若某人位于一个地点，则其状态的名称就取自该地点。地点也可用作自动化配置中的触发条件和环境条件。",
                     "no_zones_created_yet": "您还没有建立地点。"
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "取消 inclusion",
+                        "controller_in_inclusion_mode": "您的 Z-Wave 控制器现在处于 inclusion 模式。",
+                        "follow_device_instructions": "请按照设备说明书，触发设备配对。",
+                        "inclusion_failed": "无法添加该节点。请查看日志以了解更多信息。",
+                        "inclusion_finished": "节点已添加。需要花费几分钟在后台完成节点设置，然后才能显示出所有实体。",
+                        "introduction": "此向导将指导您向 Z-Wave 网络添加节点。",
+                        "secure_inclusion_warning": "安全设备需要额外的带宽；安全设备过多可能会降低 Z-Wave 网络的速度。建议仅当设备需要时才使用 secure inclusion，例如门锁和车库开门器。",
+                        "start_inclusion": "开始 inclusion",
+                        "start_secure_inclusion": "开始 secure inclusion",
+                        "title": "添加 Z-Wave 节点",
+                        "use_secure_inclusion": "使用 secure inclusion",
+                        "view_device": "查看设备"
+                    },
+                    "button": "配置",
+                    "common": {
+                        "add_node": "添加节点",
+                        "close": "关闭",
+                        "home_id": "家庭 ID",
+                        "network": "网络",
+                        "node_id": "节点 ID",
+                        "remove_node": "删除节点"
+                    },
+                    "dashboard": {
+                        "driver_version": "驱动程序版本",
+                        "dump_dead_nodes_text": "有些节点没有响应。这些节点被认为离线，不会完全导出。",
+                        "dump_dead_nodes_title": "有些节点已断线",
+                        "dump_debug": "下载网络转储以便诊断问题",
+                        "dump_not_ready_confirm": "下载",
+                        "dump_not_ready_text": "如果在节点尚未全部就绪的情况下就导出，可能会丢失所需的数据。请等待一段时间以便网络查询所有节点。仍要继续创建转储吗？",
+                        "dump_not_ready_title": "仍有节点未准备就绪",
+                        "header": "管理 Z-Wave 网络",
+                        "home_id": "家庭 ID",
+                        "introduction": "管理 Z-Wave 网络和节点",
+                        "node_count": "节点数量",
+                        "nodes_ready": "节点就绪",
+                        "server_version": "服务器版本"
+                    },
+                    "device_info": {
+                        "node_ready": "节点就绪",
+                        "node_status": "节点状态",
+                        "zwave_info": "Z-Wave 信息"
+                    },
+                    "navigation": {
+                        "network": "网络"
+                    },
+                    "network_status": {
+                        "connected": "已连接",
+                        "connecting": "正在连接",
+                        "unknown": "未知"
+                    },
+                    "node_status": {
+                        "alive": "在线",
+                        "asleep": "睡眠",
+                        "awake": "唤醒",
+                        "dead": "断线",
+                        "unknown": "未知"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "取消 exclusion",
+                        "controller_in_exclusion_mode": "您的 Z-Wave 控制器现在处于 exclusion 模式。",
+                        "exclusion_failed": "无法删除该节点。请查看日志以了解更多信息。",
+                        "exclusion_finished": "节点 {id} 已从 Z-Wave 网络中删除。",
+                        "follow_device_instructions": "请按照设备说明书，触发设备的 exclusion。",
+                        "introduction": "从 Z-Wave 网络中删除节点，并从 Home Assistant 中删除关联的设备和实体。",
+                        "start_exclusion": "开始 exclusion",
+                        "title": "删除 Z-Wave 节点"
+                    }
+                },
                 "zwave": {
                     "button": "配置",
                     "caption": "Z-Wave",
@@ -2815,6 +2899,14 @@
                 },
                 "cards": {
                     "action_confirmation": "您确定要执行动作“{action}”吗？",
+                    "actions": {
+                        "action_confirmation": "您确定要执行动作“{action}”吗？",
+                        "no_entity_more_info": "未指定要显示更多信息的实体",
+                        "no_entity_toggle": "未指定要切换的实体",
+                        "no_navigation_path": "未指定要前往的路径",
+                        "no_service": "未指定要执行的服务",
+                        "no_url": "未指定要打开的 URL"
+                    },
                     "confirm_delete": "您确定要删除此卡片吗？",
                     "empty_state": {
                         "go_to_integrations_page": "前往集成页面。",
@@ -2827,7 +2919,7 @@
                     "picture-elements": {
                         "call_service": "调用服务{name}",
                         "hold": "按住：",
-                        "more_info": "显示更多信息： {name}",
+                        "more_info": "显示更多信息：{name}",
                         "navigate_to": "转到 {location}",
                         "tap": "点击：",
                         "toggle": "切换{name}",
@@ -2998,8 +3090,10 @@
                             "name": "概览"
                         },
                         "grid": {
+                            "columns": "列数",
                             "description": "“网格”卡片用于将多个卡片显示在一个网格。",
-                            "name": "网格"
+                            "name": "网格",
+                            "square": "将卡片显示为正方形"
                         },
                         "history-graph": {
                             "description": "“历史图表”卡片用于为每一个列出的实体显示图表。",
@@ -3372,6 +3466,7 @@
                     "working": "请稍候"
                 },
                 "initializing": "正在初始化",
+                "logging_in_to_with": "正在通过 **{authProviderName}** 登录 **{locationName}**。",
                 "logging_in_with": "正在通过 **{authProviderName}** 登录。",
                 "pick_auth_provider": "或者用以下方式登录"
             },

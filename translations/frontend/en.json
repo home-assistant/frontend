@@ -592,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "History integration disabled",
                 "loading_history": "Loading state history...",
                 "no_history_found": "No state history found."
             },
@@ -750,8 +751,13 @@
             },
             "entity_registry": {
                 "control": "Control",
+                "customize_link": "entity customizations",
                 "dismiss": "Dismiss",
                 "editor": {
+                    "advanced": "Advanced settings",
+                    "area": "Set entity area only",
+                    "area_note": "By default the entities of a device are in the same area as the device. If you change the area of this entity, it will no longer follow the area of the device.",
+                    "change_device_area": "Change device area",
                     "confirm_delete": "Are you sure you want to delete this entry?",
                     "delete": "Delete",
                     "device_disabled": "The device of this entity is disabled.",
@@ -761,6 +767,7 @@
                     "enabled_label": "Enable entity",
                     "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
                     "entity_id": "Entity ID",
+                    "follow_device_area": "Follow device area",
                     "icon": "Icon",
                     "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
                     "name": "Name",
@@ -770,6 +777,7 @@
                     "update": "Update"
                 },
                 "faq": "documentation",
+                "info_customize": "You can overwrite some attributes in the {customize_link} section.",
                 "no_unique_id": "This entity (\"{entity_id}\") does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
                 "related": "Related",
                 "settings": "Settings"
@@ -1012,6 +1020,18 @@
             "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
             "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
             "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "You can still edit your config in YAML.",
+                "editor_not_available": "No visual editor available for type \"{type}\".",
+                "editor_not_supported": "Visual editor is not supported for this configuration",
+                "error_detected": "Configuration errors detected",
+                "key_missing": "Required key \"{key}\" is missing.",
+                "key_not_expected": "Key \"{key}\" is not expected or not supported by the visual editor.",
+                "key_wrong_type": "The provided value for \"{key}\" is not supported by the visual editor editor. We support ({type_correct}) but received ({type_wrong}).",
+                "no_type_provided": "No type provided."
+            }
         },
         "login-form": {
             "log_in": "Log in",
@@ -1514,10 +1534,18 @@
                         "thank_you_note": "Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!",
                         "tts": {
                             "default_language": "Default language to use",
+                            "dialog": {
+                                "example_message": "Hello {name}, you can play any text on any supported media player!",
+                                "header": "Try Text to Speech",
+                                "play": "Play",
+                                "target": "Target",
+                                "target_browser": "Browser"
+                            },
                             "female": "Female",
                             "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
                             "male": "Male",
-                            "title": "Text to Speech"
+                            "title": "Text to Speech",
+                            "try": "Try"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Failed to disable webhook:",
@@ -2717,6 +2745,12 @@
                     },
                     "description": "Manage your Z-Wave network",
                     "learn_more": "Learn more about Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrate to OpenZWave",
+                            "introduction": "This wizard will help you migrate from the legacy Z-Wave integration to the OpenZWave integration that is currently in beta."
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave Network Management",
                         "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
@@ -3261,6 +3295,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Manage dashboards",
+                        "manage_resources": "Manage resources",
                         "open": "Open Lovelace UI menu",
                         "raw_editor": "Raw configuration editor"
                     },

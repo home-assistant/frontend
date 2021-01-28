@@ -557,6 +557,10 @@
                 "remove_user": "Elimina usuari",
                 "select_blueprint": "Selecciona un blueprint"
             },
+            "calendar": {
+                "my_calendars": "Calendaris",
+                "today": "Avui"
+            },
             "data-table": {
                 "no-data": "No hi ha dades",
                 "search": "Cerca"
@@ -2657,14 +2661,21 @@
                     },
                     "dashboard": {
                         "driver_version": "Versió del controlador",
+                        "dump_dead_nodes_text": "Alguns dels nodes no han respost i s'han donat com a morts. Aquests no s'exportaran completament.",
+                        "dump_dead_nodes_title": "Alguns dels teus nodes estan morts",
+                        "dump_debug": "Baixa un fitxer de buidatge de la xarxa per ajudar-te a diagnosticar problemes",
+                        "dump_not_ready_confirm": "Baixa",
+                        "dump_not_ready_text": "Si fas una exportació mentre tots els nodes no estan preparats, pots perdre dades útils. Deixa més temps perque la xarxa consulti tots els nodes. Vols seguir amb el procés?",
+                        "dump_not_ready_title": "Encara no tots els nodes estan preparats",
                         "header": "Gestiona la teva xarxa Z-Wave",
                         "home_id": "ID principal",
                         "introduction": "Gestiona la teva xarxa i nodes Z-Wave",
                         "node_count": "Recompte de nodes",
+                        "nodes_ready": "Nodes preparats",
                         "server_version": "Versió del servidor"
                     },
                     "device_info": {
-                        "node_ready": "Node llest",
+                        "node_ready": "Node preparat",
                         "node_status": "Estat del node",
                         "zwave_info": "Informació Z-Wave"
                     },

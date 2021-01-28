@@ -557,6 +557,10 @@
                 "remove_user": "Fjern bruker",
                 "select_blueprint": "Velg en Blueprint"
             },
+            "calendar": {
+                "my_calendars": "Mine kalendere",
+                "today": "I dag"
+            },
             "data-table": {
                 "no-data": "Ingen data",
                 "search": "Søk"
@@ -604,9 +608,9 @@
                     "set": "solnedgang",
                     "turned_off": "slått av",
                     "turned_on": "slått på",
-                    "was_at_home": "var hjemme",
-                    "was_at_state": "var {state}",
-                    "was_away": "var borte",
+                    "was_at_home": "ble oppdaget hjemme",
+                    "was_at_state": "ble oppdaget på {state}",
+                    "was_away": "ble oppdaget borte",
                     "was_closed": "ble lukket",
                     "was_connected": "var tilkoblet",
                     "was_disconnected": "ble frakoblet",
@@ -1117,7 +1121,9 @@
                                 "device_id": {
                                     "action": "Handling",
                                     "extra_fields": {
-                                        "code": "Kode"
+                                        "code": "Kode",
+                                        "message": "Melding",
+                                        "title": "Tittel"
                                     },
                                     "label": "Enhet"
                                 },
@@ -1293,7 +1299,8 @@
                                     "extra_fields": {
                                         "above": "Over",
                                         "below": "Under",
-                                        "for": "Varighet"
+                                        "for": "Varighet",
+                                        "zone": "Sone"
                                     },
                                     "label": "Enhet",
                                     "trigger": "Utløser"
@@ -1464,7 +1471,7 @@
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av eksponerte entiteter til Amazon. Dette lar deg alltid se de siste tilstandene i Alexa-appen og bruke tilstandsendringene til å lage rutiner.",
                             "manage_entities": "Håndtér entiteter",
                             "state_reporting_error": "Kan ikke {enable_disable} rapportere status.",
-                            "sync_entities": "Synkronisér entiteter",
+                            "sync_entities": "Synkroniser enheter til Amazon",
                             "sync_entities_error": "Kunne ikke synkronisere entiteter:",
                             "title": ""
                         },
@@ -1505,6 +1512,13 @@
                         },
                         "sign_out": "Logg ut",
                         "thank_you_note": "Takk for at du er en del av Home Assistant Cloud. Det er på grunn av personer som deg at vi er i stand til å lage en flott hjemmeautomasjon opplevelse for alle. Tusen takk!",
+                        "tts": {
+                            "default_language": "Standardspråk som skal brukes",
+                            "female": "Kvinne",
+                            "info": "Ta med personlighet hjem ved å få den til å snakke med deg ved å bruke våre tekst-til-tale-tjenester. Du kan bruke dette i automatiseringer og skript ved hjelp av tjenesten {service}.",
+                            "male": "Mann",
+                            "title": "Tekst til tale"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Kan ikke deaktivere webhook:",
                             "info": "Alt som er konfigurert til å utløses av en webhook, kan gis en offentlig tilgjengelig URL-adresse for å tillate deg å sende data tilbake til Home Assistent fra hvor som helst, uten å utsette forekomsten din for Internett.",
@@ -1536,11 +1550,11 @@
                     "description_login": "Logget inn som {email}",
                     "description_not_login": "Ikke pålogget",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Utløpsdato for sertifikat",
+                        "certificate_expiration_date": "Utløpsdato for sertifikat:",
                         "certificate_information": "Sertifikatinformasjon",
                         "close": "Lukk",
                         "fingerprint": "Fingeravtrykk for sertifikat:",
-                        "will_be_auto_renewed": "Vil automatisk bli fornyet"
+                        "will_be_auto_renewed": "vil automatisk bli fornyet"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Webhooken er tilgjengelig på følgende URL:",
@@ -1583,7 +1597,7 @@
                         "dismiss": "Avvis",
                         "email": "E-post",
                         "email_error_msg": "Ugyldig e-postadresse",
-                        "forgot_password": "glemt passord?",
+                        "forgot_password": "Glemt passord?",
                         "introduction": "Home Assistant Cloud gir deg en sikker ekstern tilkobling til din forekomst mens du er borte fra hjemmet. Du kan også koble til med skytjenester: Amazon Alexa og Google Assistant.",
                         "introduction2": "Denne tjenesten drives av vår partner",
                         "introduction2a": ", et selskap av grunnleggerne av Home Assistant og Hass.io.",
@@ -2621,6 +2635,76 @@
                     "introduction": "Med soner kan du angi bestemte områder på jorden. Når en person er innenfor en sone, vil tilstanden til enheten ta navnet fra sonen. Soner kan også brukes som en utløser eller betingelse i automasjoner.",
                     "no_zones_created_yet": "Det ser ikke ut som du har opprettet noen soner enda"
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Avbryt inkludering",
+                        "controller_in_inclusion_mode": "Z-Wave-kontrolleren er nå i inkluderingsmodus.",
+                        "follow_device_instructions": "Følg instruksjonene som fulgte med enheten, for å utløse paring på enheten.",
+                        "inclusion_failed": "Noden kunne ikke legges til. Vennligst sjekk loggene for mer informasjon.",
+                        "inclusion_finished": "Noden er lagt til. Det kan ta noen minutter før alle enheter dukker opp når vi er ferdig med å sette opp noden i bakgrunnen.",
+                        "introduction": "Denne veiviseren vil guide deg gjennom å legge til en node i Z-Wave-nettverket.",
+                        "secure_inclusion_warning": "Sikre enheter krever ekstra båndbredde; for mange sikre enheter kan redusere Z-Wave-nettverket. Vi anbefaler bare å bruke sikker inkludering for enheter som krever det, for eksempel låser eller garasjeportåpnere.",
+                        "start_inclusion": "Start inkludering",
+                        "start_secure_inclusion": "Start sikker inkludering",
+                        "title": "Legg til en Z-Wave-node",
+                        "use_secure_inclusion": "Bruk sikker inkludering",
+                        "view_device": "Vis enhet"
+                    },
+                    "button": "Konfigurer",
+                    "common": {
+                        "add_node": "Legg til node",
+                        "close": "Lukk",
+                        "home_id": "Hjem-ID",
+                        "network": "Nettverk",
+                        "node_id": "Node-ID",
+                        "remove_node": "Fjern node"
+                    },
+                    "dashboard": {
+                        "driver_version": "Driverversjon",
+                        "dump_dead_nodes_text": "Noen av nodene dine svarte ikke og antas døde. Disse vil ikke bli fullstendig eksportert.",
+                        "dump_dead_nodes_title": "Noen av nodene dine er døde",
+                        "dump_debug": "Last ned en dump av nettverket ditt for å diagnostisere problemer",
+                        "dump_not_ready_confirm": "Laste ned",
+                        "dump_not_ready_text": "Hvis du oppretter en eksport mens ikke alle noder er klare, kan du gå glipp av nødvendige data. Gi nettverket litt tid til å spørre alle noder. Vil du fortsette med dumpen?",
+                        "dump_not_ready_title": "Ikke alle noder er klare ennå",
+                        "header": "Administrere Z-Wave-nettverket",
+                        "home_id": "Hjem-ID",
+                        "introduction": "Administrer Z-Wave-nettverket og Z-Wave-nodene dine",
+                        "node_count": "Antall noder",
+                        "nodes_ready": "Noder klare",
+                        "server_version": "Serverversjon"
+                    },
+                    "device_info": {
+                        "node_ready": "Node klar",
+                        "node_status": "Node-status",
+                        "zwave_info": "Z-Wave Info"
+                    },
+                    "navigation": {
+                        "network": "Nettverk"
+                    },
+                    "network_status": {
+                        "connected": "Tilkoblet",
+                        "connecting": "Kobler til",
+                        "unknown": "Ukjent"
+                    },
+                    "node_status": {
+                        "alive": "I live",
+                        "asleep": "Sover",
+                        "awake": "Våken",
+                        "dead": "Død",
+                        "unknown": "Ukjent"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Avbryt ekskludering",
+                        "controller_in_exclusion_mode": "Z-Wave-kontrolleren er nå i ekskluderingsmodus.",
+                        "exclusion_failed": "Noden kunne ikke fjernes. Vennligst sjekk loggene for mer informasjon.",
+                        "exclusion_finished": "Node {id} er fjernet fra Z-Wave-nettverket.",
+                        "follow_device_instructions": "Følg instruksjonene som fulgte med enheten for å utløse ekskludering på enheten.",
+                        "introduction": "Fjern en node fra Z-Wave-nettverket, og fjern den tilknyttede enheten og enhetene fra Home Assistant.",
+                        "start_exclusion": "Start ekskludering",
+                        "title": "Fjern en Z-Wave-node"
+                    }
+                },
                 "zwave": {
                     "button": "Konfigurer",
                     "caption": "Z-Wave",
@@ -2815,6 +2899,14 @@
                 },
                 "cards": {
                     "action_confirmation": "Er du sikker på at du vil utføre handlingen \"{action}\"?",
+                    "actions": {
+                        "action_confirmation": "Er du sikker på at du vil utføre handlingen \"{action}\"?",
+                        "no_entity_more_info": "Ingen enhet angitt for mer informasjon dialog",
+                        "no_entity_toggle": "Ingen enhet gitt for å veksle",
+                        "no_navigation_path": "Ingen navigasjonssti spesifisert",
+                        "no_service": "Ingen tjeneste for utførelse spesifisert",
+                        "no_url": "Ingen URL-adresse å åpne angitt"
+                    },
                     "confirm_delete": "Er du sikker på at du vil slette dette kortet?",
                     "empty_state": {
                         "go_to_integrations_page": "Gå til integrasjonssiden.",
@@ -2827,7 +2919,7 @@
                     "picture-elements": {
                         "call_service": "Tilkall tjeneste {name}",
                         "hold": "",
-                        "more_info": "Vis mer info: {name}",
+                        "more_info": "Vis mer informasjon: {name}",
                         "navigate_to": "Naviger til {location}",
                         "tap": "Trykk:",
                         "toggle": "Veksle {name}",
@@ -2881,7 +2973,7 @@
                             "name": "Alarmpanel"
                         },
                         "button": {
-                            "default_action_help": "Standardhandlingen avhenger av enhetens funksjoner, den vil enten bli vekslet eller mer informasjon vises.",
+                            "default_action_help": "Standardhandlingen avhenger av enhetens funksjoner, den vil enten bli vekslet eller mer informasjonsdialogboksen vises.",
                             "description": "The Button card lar deg legge til knapper for å utføre oppgaver.",
                             "name": "Knapp"
                         },
@@ -2998,8 +3090,10 @@
                             "name": "Blikk"
                         },
                         "grid": {
+                            "columns": "Kolonner",
                             "description": "Med Rutenett-kortet kan du vise flere kort i et rutenett",
-                            "name": "Rutenett"
+                            "name": "Rutenett",
+                            "square": "Gjengi kort som firkanter"
                         },
                         "history-graph": {
                             "description": "Med Historikkgraf-kortet kan du vise en graf for hver av enhetene som er oppført.",
@@ -3052,7 +3146,7 @@
                             "name": "Bilde entitet"
                         },
                         "picture-glance": {
-                            "description": "Bilde blikk-kortet viser et bilde og tilhørende entitetstilstander som et ikon. Entitetene på høyre side tillater veksling av handlinger, andre viser dialogboksen mer informasjon.",
+                            "description": "Bildetikk-kortet viser et bilde og tilsvarende enhetsstatuser som et ikon. Enhetene på høyre side tillater vekslehandlinger, andre viser dialogboksen mer informasjon.",
                             "name": "Bilde blikk",
                             "state_entity": "Statusentitet"
                         },
@@ -3372,6 +3466,7 @@
                     "working": "Vennligst vent"
                 },
                 "initializing": "Initialiserer",
+                "logging_in_to_with": "Logger på **{locationName}** med **{authProviderName}**.",
                 "logging_in_with": "Logg inn med **{authProviderName}**.",
                 "pick_auth_provider": "Eller logg inn med"
             },

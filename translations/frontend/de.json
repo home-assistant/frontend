@@ -557,6 +557,10 @@
                 "remove_user": "Benutzer entfernen",
                 "select_blueprint": "Wähle eine Vorlage aus"
             },
+            "calendar": {
+                "my_calendars": "Meine Kalender",
+                "today": "Heute"
+            },
             "data-table": {
                 "no-data": "Keine Daten",
                 "search": "Suche"
@@ -604,9 +608,9 @@
                     "set": "einstellen",
                     "turned_off": "ausgeschaltet",
                     "turned_on": "eingeschaltet",
-                    "was_at_home": "war zu Hause",
-                    "was_at_state": "war bei {state}",
-                    "was_away": "war abwesend",
+                    "was_at_home": "wurde zu Hause erkannt",
+                    "was_at_state": "wurde bei {state} erkannt",
+                    "was_away": "wurde als abwesend erkannt",
                     "was_closed": "wurde geschlossen",
                     "was_connected": "wurde verbunden",
                     "was_disconnected": "wurde getrennt",
@@ -1117,7 +1121,9 @@
                                 "device_id": {
                                     "action": "Aktion",
                                     "extra_fields": {
-                                        "code": "Code"
+                                        "code": "Code",
+                                        "message": "Nachricht",
+                                        "title": "Titel"
                                     },
                                     "label": "Gerät"
                                 },
@@ -1464,7 +1470,7 @@
                             "info_state_reporting": "Wenn die Statusberichterstellung aktiviert wird, sendet Home Assistant alle Statusänderungen exponierter Entitäten an Amazon. So wird in der Alexa-App immer der neueste Status angezeigt.",
                             "manage_entities": "Entitäten verwalten",
                             "state_reporting_error": "Der Berichtsstatus kann nicht {enable_disable} werden.",
-                            "sync_entities": "Entitäten synchronisieren",
+                            "sync_entities": "Entitäten zu Amazon synchronisieren",
                             "sync_entities_error": "Fehler beim Synchronisieren von Entitäten:",
                             "title": "Alexa"
                         },
@@ -1505,6 +1511,11 @@
                         },
                         "sign_out": "Abmelden",
                         "thank_you_note": "Vielen Dank, dass du Teil der Home Assistant Cloud bist. Es ist wegen Menschen wie dir, dass wir in der Lage sind, eine großartige Home Automation Erfahrung für alle zu machen. Danke!",
+                        "tts": {
+                            "default_language": "Zu verwendende Standardsprache",
+                            "female": "Weiblich",
+                            "male": "Männlich"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Fehler beim Deaktivieren des Webhooks:",
                             "info": "Alles, was so konfiguriert ist, dass es durch einen Webhook ausgelöst wird, kann mit einer öffentlich zugänglichen URL versehen werden, damit Daten von überall an Home Assistant gesendet werden können, ohne deine Installation dem Internet zu öffnen.",
@@ -1536,11 +1547,11 @@
                     "description_login": "Angemeldet als {email}",
                     "description_not_login": "Nicht angemeldet",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Ablaufdatum des Zertifikats",
+                        "certificate_expiration_date": "Ablaufdatum des Zertifikats:",
                         "certificate_information": "Zertifikatsinformationen",
                         "close": "Schließen",
                         "fingerprint": "Zertifikat Fingerabdruck:",
-                        "will_be_auto_renewed": "Wird automatisch erneuert"
+                        "will_be_auto_renewed": "wird automatisch erneuert"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Der Webhook ist unter der folgenden URL verfügbar:",
@@ -2587,7 +2598,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualisierung",
-                        "header": "Netzwerkvisualisierung"
+                        "header": "Netzwerkvisualisierung",
+                        "highlight_label": "Geräte hervorheben",
+                        "zoom_label": "Auf Gerät zoomen"
                     }
                 },
                 "zone": {
@@ -2618,6 +2631,35 @@
                     "home_zone_core_config": "Der Standort deiner Homezone kann auf der allgemeinen Konfigurationsseite bearbeitet werden. Der Radius der Homezone kann vom Frontend aus noch nicht bearbeitet werden. Möchtest du zur allgemeinen Konfiguration gehen?",
                     "introduction": "Mit Zonen kannst du bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
                     "no_zones_created_yet": "Es sieht so aus, als hättest du noch keine Zonen erstellt."
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Gerät anzeigen"
+                    },
+                    "button": "Konfigurieren",
+                    "common": {
+                        "close": "Schließen",
+                        "network": "Netzwerk"
+                    },
+                    "dashboard": {
+                        "driver_version": "Treiberversion",
+                        "dump_not_ready_confirm": "Herunterladen",
+                        "header": "Verwalte dein Z-Wave-Netzwerk",
+                        "server_version": "Serverversion"
+                    },
+                    "navigation": {
+                        "network": "Netzwerk"
+                    },
+                    "network_status": {
+                        "unknown": "Unbekannt"
+                    },
+                    "node_status": {
+                        "alive": "Lebendig",
+                        "asleep": "Schläft",
+                        "awake": "Wach",
+                        "dead": "Tot",
+                        "unknown": "Unbekannt"
+                    }
                 },
                 "zwave": {
                     "button": "Konfigurieren",
@@ -2813,6 +2855,11 @@
                 },
                 "cards": {
                     "action_confirmation": "Bist du sicher, dass du die Aktion \"{action}\" ausführen möchtest?",
+                    "actions": {
+                        "action_confirmation": "Bist du sicher, dass du die Aktion \"{action}\" ausführen möchtest?",
+                        "no_navigation_path": "Kein Navigationspfad angegeben",
+                        "no_service": "Kein Dienst zur Ausführung angegeben"
+                    },
                     "confirm_delete": "Möchten Sie diese Karte wirklich löschen?",
                     "empty_state": {
                         "go_to_integrations_page": "Gehe zur Integrationsseite.",
@@ -2879,7 +2926,7 @@
                             "name": "Alarmpanel"
                         },
                         "button": {
-                            "default_action_help": "Die Standardaktion hängt von den Funktionen der Entität ab: sie wird entweder umgeschaltet oder die weiteren Informationen werden angezeigt.",
+                            "default_action_help": "Die Standardaktion hängt von den Funktionen der Entität ab. Sie wird entweder umgeschaltet oder die weiteren Informationen werden angezeigt.",
                             "description": "Mit der Schaltflächen-Karte kannst du Schaltflächen hinzufügen, um Aufgaben auszuführen.",
                             "name": "Schaltfläche"
                         },
@@ -2996,8 +3043,10 @@
                             "name": "Glance"
                         },
                         "grid": {
+                            "columns": "Spalten",
                             "description": "Mit der Grid-Karte können Sie mehrere Karten in einem Raster anzeigen.",
-                            "name": "Raster"
+                            "name": "Raster",
+                            "square": "Karten als Quadrate rendern"
                         },
                         "history-graph": {
                             "description": "Mit der Verlaufsdiagramm-Karte kannst du für jedes der aufgelisteten Objekte ein Diagramm anzeigen.",

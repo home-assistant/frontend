@@ -557,6 +557,10 @@
                 "remove_user": "Eliminar usuario",
                 "select_blueprint": "Selecciona un plano"
             },
+            "calendar": {
+                "my_calendars": "Mis calendarios",
+                "today": "Hoy"
+            },
             "data-table": {
                 "no-data": "Sin datos",
                 "search": "Buscar"
@@ -2657,10 +2661,17 @@
                     },
                     "dashboard": {
                         "driver_version": "Versión del controlador",
+                        "dump_dead_nodes_text": "Algunos de tus nodos no respondieron y se supone que están muertos. Estos no se exportarán por completo.",
+                        "dump_dead_nodes_title": "Algunos de tus nodos están muertos",
+                        "dump_debug": "Descarga un volcado de tu red para ayudar a diagnosticar problemas",
+                        "dump_not_ready_confirm": "Descargar",
+                        "dump_not_ready_text": "Si creas una exportación cuando no todos los nodos están listos, puedes perder datos necesarios. Dale a tu red algo de tiempo para consultar todos los nodos. ¿Quieres continuar con el volcado?",
+                        "dump_not_ready_title": "Aún no están listos todos los nodos",
                         "header": "Administra tu red Z-Wave",
                         "home_id": "ID de casa",
                         "introduction": "Administra tu red Z-Wave y los nodos Z-Wave",
                         "node_count": "Recuento de nodos",
+                        "nodes_ready": "Nodos listos",
                         "server_version": "Versión del servidor"
                     },
                     "device_info": {
