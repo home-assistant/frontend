@@ -841,8 +841,6 @@ class HUIRoot extends LitElement {
       haStyle,
       css`
         :host {
-          --dark-color: #455a64;
-          --text-dark-color: #fff;
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
@@ -872,8 +870,8 @@ class HUIRoot extends LitElement {
 
         .edit-mode app-header,
         .edit-mode app-toolbar {
-          background-color: var(--dark-color, #455a64);
-          color: var(--text-dark-color);
+          background-color: var(--app-header-edit-background-color, #455a64);
+          color: var(--app-header-edit-text-color, #fff);
         }
         .edit-mode div[main-title] {
           pointer-events: auto;
