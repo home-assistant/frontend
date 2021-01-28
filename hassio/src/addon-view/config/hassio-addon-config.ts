@@ -20,7 +20,6 @@ import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
 import {
@@ -48,8 +47,6 @@ class HassioAddonConfig extends LitElement {
   @internalProperty() private _canShowSchema = false;
 
   @internalProperty() private _yamlMode = false;
-
-  @internalProperty() private _schema: HaFormSchema[] = [];
 
   @property({ type: Boolean }) private _configHasChanged = false;
 
@@ -81,11 +78,11 @@ class HassioAddonConfig extends LitElement {
         </div>
 
         <div class="card-content">
-          ${!this._yamlMode && this._canShowSchema && this._schema
+          ${!this._yamlMode && this._canShowSchema && this.addon.schema
             ? html`<ha-form
                 .data=${this.addon.options}
                 @value-changed=${this._configChanged}
-                .schema=${this._schema}
+                .schema=${this.addon.schema}
                 .error=${this._error}
               ></ha-form>`
             : html` <ha-yaml-editor
@@ -93,7 +90,7 @@ class HassioAddonConfig extends LitElement {
               ></ha-yaml-editor>`}
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
           ${!this._yamlMode ||
-          (this._canShowSchema && this._schema) ||
+          (this._canShowSchema && this.addon.schema) ||
           this._valid
             ? ""
             : html` <div class="errors">Invalid YAML</div> `}
@@ -116,16 +113,6 @@ class HassioAddonConfig extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has("addon") || changedProperties.has("_yamlMode")) {
-      this._schema = this.addon.schema.map((entry) => {
-        return {
-          default: entry.default || "",
-          name: entry.name,
-          options: entry.options || [],
-          required: entry.required || false,
-          optional: entry.optional || true,
-          type: entry.type,
-        };
-      });
       this._canShowSchema = !this.addon.schema.find(
         (entry) => !SUPPORTED_UI_TYPES.includes(entry.type)
       );
@@ -146,7 +133,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   private _configChanged(ev): void {
-    if (this._schema && this._canShowSchema) {
+    if (this.addon.schema && this._canShowSchema) {
       this.addon.options = ev.detail.value;
       this._valid = true;
       this._configHasChanged = true;
