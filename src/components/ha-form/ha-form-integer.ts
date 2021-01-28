@@ -56,7 +56,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
               <ha-slider
                 pin
                 editable
-                .value=${this._value}
+                .value=${this._value || 0}
                 .min=${this.schema.valueMin}
                 .max=${this.schema.valueMax}
                 .disabled=${this.data === undefined &&
@@ -71,7 +71,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
           <paper-input
             type="number"
             .label=${this.label}
-            .value=${this._value}
+            .value=${this._value || 0}
             .required=${this.schema.required}
             .autoValidate=${this.schema.required}
             @value-changed=${this._valueChanged}
@@ -84,7 +84,10 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       this.data ||
       this.schema.description?.suggested_value ||
       this.schema.default ||
-      0
+      // Set to "undefined" where as the default value for the input in render() is set to "0"
+      // which enforces that also for "0" the "value-changed" event gets triggered once.
+      // Without it, a "0" would never be set into the form data and never saved.
+      undefined
     );
   }
 

@@ -1427,7 +1427,8 @@
                   "extra_fields": {
                     "code": "Code",
                     "message": "Message",
-                    "title": "Title"
+                    "title": "Title",
+                    "position": "[%key:ui::card::cover::position%]"
                   }
                 },
                 "scene": {
