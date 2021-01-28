@@ -116,19 +116,15 @@ class HassioAddonConfig extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has("addon") || changedProperties.has("_yamlMode")) {
-      this._schema = this.addon.schema
-        .filter((entry) =>
-          !this.hass.userData?.showAdvanced ? !entry.advanced : true
-        )
-        .map((entry) => {
-          return {
-            default: entry.default || "",
-            name: entry.name,
-            options: entry.options || [],
-            required: entry.required || false,
-            type: entry.type,
-          };
-        });
+      this._schema = this.addon.schema.map((entry) => {
+        return {
+          default: entry.default || "",
+          name: entry.name,
+          options: entry.options || [],
+          required: entry.required || false,
+          type: entry.type,
+        };
+      });
       this._canShowSchema = !this.addon.schema.find(
         (entry) => !SUPPORTED_UI_TYPES.includes(entry.type)
       );
