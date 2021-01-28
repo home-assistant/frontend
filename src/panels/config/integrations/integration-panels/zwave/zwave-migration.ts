@@ -37,7 +37,6 @@ import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box"
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import {
   computeDeviceName,
-  DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
 
