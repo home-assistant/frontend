@@ -157,6 +157,7 @@
       },
       "fan": {
         "speed": "Speed",
+        "preset_mode": "Preset Mode",
         "oscillate": "Oscillate",
         "direction": "Direction",
         "forward": "Forward",
