@@ -557,6 +557,10 @@
                 "remove_user": "移除使用者",
                 "select_blueprint": "選擇 Blueprint"
             },
+            "calendar": {
+                "my_calendars": "我的行事曆",
+                "today": "今天"
+            },
             "data-table": {
                 "no-data": "沒有資料",
                 "search": "搜尋"
@@ -604,9 +608,9 @@
                     "set": "設定",
                     "turned_off": "關閉",
                     "turned_on": "開啟",
-                    "was_at_home": "狀態為在家",
-                    "was_at_state": "狀態為{state}",
-                    "was_away": "狀態為離家",
+                    "was_at_home": "偵測為在家",
+                    "was_at_state": "偵測為{state}",
+                    "was_away": "偵測為離家",
                     "was_closed": "狀態為關閉",
                     "was_connected": "狀態為連線",
                     "was_disconnected": "狀態為斷線",
@@ -1117,7 +1121,9 @@
                                 "device_id": {
                                     "action": "動作",
                                     "extra_fields": {
-                                        "code": "碼"
+                                        "code": "碼",
+                                        "message": "訊息",
+                                        "title": "標題"
                                     },
                                     "label": "裝置"
                                 },
@@ -1293,7 +1299,8 @@
                                     "extra_fields": {
                                         "above": "在...之上",
                                         "below": "在...之下",
-                                        "for": "持續時間"
+                                        "for": "持續時間",
+                                        "zone": "區域"
                                     },
                                     "label": "裝置",
                                     "trigger": "觸發自動化"
@@ -1464,7 +1471,7 @@
                             "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Amazon。以確保於 Alexa app 中裝置永遠保持最新狀態、並藉以創建例行自動化。",
                             "manage_entities": "管理實體",
                             "state_reporting_error": "無法 {enable_disable} 回報狀態。",
-                            "sync_entities": "同步實體",
+                            "sync_entities": "同步實體至 Amazon",
                             "sync_entities_error": "同步實體失敗：",
                             "title": "Alexa"
                         },
@@ -1505,6 +1512,13 @@
                         },
                         "sign_out": "登出",
                         "thank_you_note": "感謝您參與支持 Home Assistant Cloud 雲服務。由於有你們的支持，我們才能持續為每個人帶來絕佳的家庭自動化體驗，謝謝！",
+                        "tts": {
+                            "default_language": "預設使用語言",
+                            "female": "女性",
+                            "info": "運用「文字轉語音」服務讓您的智能家庭更具個性與個人化，可以藉由 {service} 服務於腳本與自動化中使用此相功能。",
+                            "male": "男性",
+                            "title": "所要閱讀的文字"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "關閉 Webhook 失敗：",
                             "info": "任何設定透過 Webhook 觸發內容，都可以取得公開可存取的 URL、以供傳送資料回 Home Assistant，而不需將 Home Assistant 暴露至網路網路上。",
@@ -1536,7 +1550,7 @@
                     "description_login": "登入帳號：{email}",
                     "description_not_login": "未登入",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "認證過期日期",
+                        "certificate_expiration_date": "認證過期日：",
                         "certificate_information": "認證資訊",
                         "close": "關閉",
                         "fingerprint": "認證歷程：",
@@ -2621,6 +2635,76 @@
                     "introduction": "區域允許您指定地球上的特定區域，當人員進入到此區域時、狀態會顯示為該區域名字。區域同時也能夠作為自動化的觸發器或條件設定。",
                     "no_zones_created_yet": "看起來您還沒有新增任何區域。"
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "取消登記",
+                        "controller_in_inclusion_mode": "Z-Wave 控制器目前處於登記模式。",
+                        "follow_device_instructions": "跟隨裝置隨附的說明書以觸發裝置上的配對功能。",
+                        "inclusion_failed": "節點無法新增，請參閱日誌以獲得更詳細資訊。",
+                        "inclusion_finished": "節點已經新增。由於於後台完成設定、可能需要一點時間以讓所有節點進行顯示。",
+                        "introduction": "導引將帶領你於 Z-Wave 網路中新增節點。",
+                        "secure_inclusion_warning": "加密裝置需要額外的頻寬，過多的加密裝置可能拖慢您的 Z-Wave 網路。建議您僅於需要時才使用加密裝置登記、例如門鎖或車庫開門裝置。",
+                        "start_inclusion": "開始登記",
+                        "start_secure_inclusion": "開始加密登記",
+                        "title": "新增 Z-Wave 節點",
+                        "use_secure_inclusion": "使用加密登記",
+                        "view_device": "檢視裝置"
+                    },
+                    "button": "設定",
+                    "common": {
+                        "add_node": "新增節點",
+                        "close": "關閉",
+                        "home_id": "家庭 ID",
+                        "network": "網路",
+                        "node_id": "節點 ID",
+                        "remove_node": "移除節點"
+                    },
+                    "dashboard": {
+                        "driver_version": "驅動程式版本",
+                        "dump_dead_nodes_text": "部分節點沒有回應、可能為失效狀態。將不會完全進行匯出。",
+                        "dump_dead_nodes_title": "部分節點已經失效",
+                        "dump_debug": "下載網路匯出資料以協助診斷問題",
+                        "dump_not_ready_confirm": "下載",
+                        "dump_not_ready_text": "假如您於所有節點尚未就緒時執行匯出，將會遺失所需要的資料。建驗讓網路擁有足夠的時間查詢所有節點。是否要繼續匯出動作？",
+                        "dump_not_ready_title": "尚未準備好所有節點",
+                        "header": "管理 Z-Wave 網路",
+                        "home_id": "家庭 ID",
+                        "introduction": "管理 Z-Wave 網路與節點",
+                        "node_count": "節點計數",
+                        "nodes_ready": "就緒節點",
+                        "server_version": "伺服器版本"
+                    },
+                    "device_info": {
+                        "node_ready": "就緒節點",
+                        "node_status": "節點狀態",
+                        "zwave_info": "Z-Wave 資訊"
+                    },
+                    "navigation": {
+                        "network": "網路"
+                    },
+                    "network_status": {
+                        "connected": "已連線",
+                        "connecting": "連線中",
+                        "unknown": "未知"
+                    },
+                    "node_status": {
+                        "alive": "線上",
+                        "asleep": "睡眠",
+                        "awake": "喚醒",
+                        "dead": "失效",
+                        "unknown": "未知"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "取消排除",
+                        "controller_in_exclusion_mode": "Z-Wave 控制器目前處於排除模式。",
+                        "exclusion_failed": "節點無法移除，請參閱以日誌以獲得更詳細資訊。",
+                        "exclusion_finished": "已經自 Z-Wave 網路中移除節點 {id}。",
+                        "follow_device_instructions": "跟隨裝置隨附的說明書以觸發裝置上的排除功能。",
+                        "introduction": "Remove a node from 自 Z-Wave 網路移除節點、並自 Home Assistant 移除相關裝置與實體。",
+                        "start_exclusion": "開始排除",
+                        "title": "移除 Z-Wave 節點"
+                    }
+                },
                 "zwave": {
                     "button": "設定",
                     "caption": "Z-Wave",
@@ -2815,6 +2899,14 @@
                 },
                 "cards": {
                     "action_confirmation": "確定要執行動作 \"{action}\"？",
+                    "actions": {
+                        "action_confirmation": "確定要執行動作 \"{action}\"？",
+                        "no_entity_more_info": "未提供獲得更詳細資料對話實體",
+                        "no_entity_toggle": "未提供實體進行切換",
+                        "no_navigation_path": "未提供指定導航路徑",
+                        "no_service": "未提供指定執行服務",
+                        "no_url": "未提供指定開啟 URL"
+                    },
                     "confirm_delete": "確定要刪除此面板？",
                     "empty_state": {
                         "go_to_integrations_page": "轉至整合頁面。",
@@ -2998,8 +3090,10 @@
                             "name": "簡略式面板"
                         },
                         "grid": {
+                            "columns": "列",
                             "description": "方格排列面板可於方格內顯示多個面板。",
-                            "name": "方格排列面板"
+                            "name": "方格排列面板",
+                            "square": "以方形繪製卡片"
                         },
                         "history-graph": {
                             "description": "歷史圖表式面板可供顯示每個列表實體圖表。",
@@ -3372,6 +3466,7 @@
                     "working": "請稍候"
                 },
                 "initializing": "初始化中",
+                "logging_in_to_with": "使用 **{authProviderName}** 登入 **{locationName}**。",
                 "logging_in_with": "使用 **{authProviderName}** 登入。",
                 "pick_auth_provider": "或以其他方式登入"
             },

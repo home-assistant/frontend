@@ -504,6 +504,8 @@
             "copied": "מועתק",
             "copied_clipboard": "הועתק ללוח",
             "delete": "מחיקה",
+            "disable": "השבת",
+            "enable": "אפשר",
             "error_required": "חובה",
             "loading": "טוען",
             "menu": "תפריט",
@@ -512,7 +514,9 @@
             "overflow_menu": "תפריט גולש",
             "previous": "הקודם",
             "refresh": "רענן",
+            "remove": "הסר",
             "save": "שמור",
+            "skip": "דלג",
             "successfully_deleted": "נמחק בהצלחה",
             "successfully_saved": "נשמר בהצלחה",
             "undo": "בטל",
@@ -533,6 +537,10 @@
                 "no_areas": "אין לך אזורים",
                 "no_match": "לא נמצאו אזורים תואמים",
                 "show_areas": "הצג אזורים"
+            },
+            "calendar": {
+                "my_calendars": "היומנים שלי",
+                "today": "היום"
             },
             "data-table": {
                 "no-data": "אין נתונים",
@@ -645,6 +653,10 @@
                 "remove_area_id": "הסר אזור",
                 "remove_device_id": "הסר מכשיר",
                 "remove_entity_id": "הסר ישות"
+            },
+            "user-picker": {
+                "add_user": "הוסף משתמש",
+                "no_user": "אין משתמש"
             }
         },
         "dialogs": {
@@ -861,6 +873,7 @@
         },
         "notification_toast": {
             "connection_lost": "החיבור אבד. מתחבר מחדש...",
+            "dismiss": "בטל",
             "service_call_failed": "נכשלה הקריאה לשירות {service} .",
             "started": "Home Assistant עלה!",
             "starting": "Home Assistant בעלייה, ייתכן שלא הכל יהיה זמין עד שהעליה תסתיים",
@@ -1106,6 +1119,7 @@
                                     "trigger": "טריגר"
                                 },
                                 "event": {
+                                    "context_user_pick": "בחר משתמש",
                                     "event_data": "נתוני אירוע",
                                     "event_type": "סוג אירוע",
                                     "label": "אירוע"
@@ -1197,6 +1211,15 @@
                         "only_editable": "רק אוטומציות שהוגדרו ב automations.yaml ניתנות לעריכה.",
                         "pick_automation": "בחר אוטומציה לעריכה",
                         "show_info_automation": "הצג מידע על אוטומציה"
+                    },
+                    "thingtalk": {
+                        "create": "צור אוטומציה",
+                        "link_devices": {
+                            "unknown_placeholder": "לא ידוע"
+                        },
+                        "task_selection": {
+                            "for_example": "לדוגמה:"
+                        }
                     }
                 },
                 "blueprint": {
@@ -1845,6 +1868,9 @@
                     },
                     "select_instance": {
                         "none_found": "לא הצלחנו למצוא שרת OpenZWave. אם אתה סבור שזה לא נכון, בדוק את הגדרות OpenZWave ו- MQTT וודא ש Home Assistant יכול לתקשר עם ה MQTT broker."
+                    },
+                    "services": {
+                        "cancel_command": "בטל פקודה"
                     }
                 },
                 "person": {
@@ -2231,6 +2257,17 @@
                     "introduction": "אזורים מאפשרים לך לציין אזורים מסוימים בכדור הארץ. כאשר אדם נמצא באזור, הסטטוס יקח את השם מהאזור. אזורים יכולים לשמש גם כטריגר או תנאי בתוך הגדרות אוטומציה.",
                     "no_zones_created_yet": "נראה שעדיין לא יצרת אזורים."
                 },
+                "zwave_js": {
+                    "dashboard": {
+                        "dump_dead_nodes_text": "חלק מהצמתים שלך לא הגיבו ונחשבים מתים. אלה לא ייוצאו לחלוטין.",
+                        "dump_dead_nodes_title": "חלק מהצמתים שלך מתים",
+                        "dump_debug": "הורד תמונת מצב של הרשת שלך כדי לעזור באבחון בעיות",
+                        "dump_not_ready_confirm": "הורדה",
+                        "dump_not_ready_text": "אם אתה יוצר ייצוא בזמן שלא כל הצמתים מוכנים, אתה עלול לפספס את הנתונים הדרושים. תן לרשת שלך זמן לשאילת כל הצמתים. האם אתה רוצה להמשיך?",
+                        "dump_not_ready_title": "עדיין לא כל הצמתים מוכנים",
+                        "nodes_ready": "צמתים מוכנים"
+                    }
+                },
                 "zwave": {
                     "button": "הגדר",
                     "caption": "Z-Wave",
@@ -2415,6 +2452,10 @@
                 },
                 "cards": {
                     "action_confirmation": "האם אתה בטוח שברצונך לבצע פעולה \" {action} \"?",
+                    "actions": {
+                        "no_service": "לא צוין שום שירות לביצוע",
+                        "no_url": "לא צוין כתובת אתר לפתיחה"
+                    },
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק את הכרטיס הזה?",
                     "empty_state": {
                         "go_to_integrations_page": "עבור אל דף האינטגרציות.",
@@ -2522,6 +2563,7 @@
                                 "entity-id": "מזהה ישות",
                                 "last-changed": "שונה לאחרונה",
                                 "last-triggered": "הופעל לאחרונה",
+                                "last-updated": "עודכן לאחרונה",
                                 "none": "אין מידע משני",
                                 "position": "מיקום",
                                 "tilt-position": "הטה מיקום"
@@ -2585,7 +2627,9 @@
                             "name": "Glance"
                         },
                         "grid": {
-                            "name": "רשת"
+                            "columns": "עמודות",
+                            "name": "רשת",
+                            "square": "הצג כרטיסים כריבועים"
                         },
                         "history-graph": {
                             "description": "הכרטיס History Graph מאפשר לך להציג גרף עבור כל אחת מהישויות המפורטות.",
@@ -2917,6 +2961,7 @@
                     "working": "אנא המתן"
                 },
                 "initializing": "מאתחל",
+                "logging_in_to_with": "כניסה ל- ** {locationName} ** באמצעות ** {authProviderName} **.",
                 "logging_in_with": "מתחבר עם **{authProviderName}**.",
                 "pick_auth_provider": "או התחבר עם"
             },
@@ -3024,6 +3069,9 @@
                     "dropdown_label": "לוח בקרה",
                     "header": "לוח בקרה"
                 },
+                "enable_shortcuts": {
+                    "header": "קיצורי מקשים"
+                },
                 "force_narrow": {
                     "description": "פעולה זו תסתיר את הסרגל הצדדי כברירת מחדל, בדומה לחוויה בנייד.",
                     "header": "הסתר תמיד את הסרגל הצידי"
@@ -3110,6 +3158,9 @@
                     "description": "הפעל או בטל את הרטט במכשיר זה בעת שליטה בהתקנים.",
                     "header": "רטט"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "התחל שיחה"
             },
             "shopping-list": {
                 "add_item": "הוסף פריט",

@@ -557,6 +557,10 @@
                 "remove_user": "Gebruiker verwijderen",
                 "select_blueprint": "Selecteer een blauwdruk"
             },
+            "calendar": {
+                "my_calendars": "Mijn agenda's",
+                "today": "Vandaag"
+            },
             "data-table": {
                 "no-data": "Geen gegevens",
                 "search": "Zoek"
@@ -1117,7 +1121,9 @@
                                 "device_id": {
                                     "action": "Actie",
                                     "extra_fields": {
-                                        "code": "Code"
+                                        "code": "Code",
+                                        "message": "Bericht",
+                                        "title": "Titel"
                                     },
                                     "label": "Apparaat"
                                 },
@@ -1293,7 +1299,8 @@
                                     "extra_fields": {
                                         "above": "Boven",
                                         "below": "Onder",
-                                        "for": "Duur"
+                                        "for": "Duur",
+                                        "zone": "Zone"
                                     },
                                     "label": "Apparaat",
                                     "trigger": "Trigger"
@@ -1505,6 +1512,12 @@
                         },
                         "sign_out": "Afmelden",
                         "thank_you_note": "Bedankt voor uw deelname aan Home Assistant Cloud. Het is vanwege mensen zoals u dat we een geweldige domotica-ervaring voor iedereen kunnen maken. Dank je!",
+                        "tts": {
+                            "default_language": "Standaardtaal om te gebruiken",
+                            "female": "Vrouw",
+                            "male": "Man",
+                            "title": "Tekst naar spraak"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Kan webhook niet uitschakelen:",
                             "info": "Alles wat is geconfigureerd om door een webhook te worden geactiveerd, kan een openbaar toegankelijke URL krijgen zodat u gegevens overal naar Home Assistant kunt terugsturen, zonder uw exemplaar aan internet bloot te stellen.",
@@ -2621,6 +2634,38 @@
                     "introduction": "Met zones kan je bepaalde regio's op aarde opgeven. Wanneer een persoon zich in een zone bevindt, dan wordt de staat de naam uit de zone. Zones kunnen ook worden gebruikt als trigger of voorwaarde in automatiseringen.",
                     "no_zones_created_yet": "Het lijkt erop dat je nog geen zones hebt aangemaakt."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Bekijk apparaat"
+                    },
+                    "button": "Configureer",
+                    "common": {
+                        "close": "Sluiten",
+                        "network": "Netwerk"
+                    },
+                    "dashboard": {
+                        "driver_version": "Driver Versie",
+                        "dump_dead_nodes_text": "Sommige van uw knooppunten reageerden niet en worden verondersteld onbereikbaar te zijn. Deze worden niet volledig geëxporteerd.",
+                        "dump_dead_nodes_title": "Sommige van uw knooppunten zijn onbereikbaar",
+                        "dump_not_ready_confirm": "Downloaden",
+                        "dump_not_ready_title": "Nog niet alle knooppunten zijn gereed",
+                        "nodes_ready": "Knooppunten gereed",
+                        "server_version": "Server Versie"
+                    },
+                    "navigation": {
+                        "network": "Netwerk"
+                    },
+                    "network_status": {
+                        "connected": "Verbonden",
+                        "unknown": "Onbekend"
+                    },
+                    "node_status": {
+                        "alive": "Levend",
+                        "asleep": "In slaap",
+                        "awake": "Wakker",
+                        "dead": "Onbereikbaar"
+                    }
+                },
                 "zwave": {
                     "button": "Configureer",
                     "caption": "Z-Wave",
@@ -2998,6 +3043,7 @@
                             "name": "Oogopslag"
                         },
                         "grid": {
+                            "columns": "Kolommen",
                             "description": "Met de rasterkaart kun je meerdere kaarten in een raster tonen.",
                             "name": "Raster"
                         },

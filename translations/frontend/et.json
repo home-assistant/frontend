@@ -557,6 +557,10 @@
                 "remove_user": "Kustuta kasutaja",
                 "select_blueprint": "Kavandi valimine"
             },
+            "calendar": {
+                "my_calendars": "Minu kalendrid",
+                "today": "Täna"
+            },
             "data-table": {
                 "no-data": "Andmeid pole",
                 "search": "Otsing"
@@ -2657,10 +2661,17 @@
                     },
                     "dashboard": {
                         "driver_version": "Ajuri versioon",
+                        "dump_dead_nodes_text": "Mõni sõlm ei vastanud ja eeldatakse, et see on surnud. Neid ei ekspordita täielikult.",
+                        "dump_dead_nodes_title": "Mõned sõlmed on surnud",
+                        "dump_debug": "Probleemide diagnoosimiseks lae alla oma võrgutõmmis",
+                        "dump_not_ready_confirm": "Lae alla",
+                        "dump_not_ready_text": "Kui lood ekspordi kui kõik sõlmed pole veel valmis, võid vajaminevad andmed vahele jätta. Anna oma võrgule aega kõigi sõlmede päringuteks. Kas soovid elspordiga jätkata?",
+                        "dump_not_ready_title": "Kõik sõlmed pole veel valmis",
                         "header": "Halda oma Z-Wave'i võrku",
                         "home_id": "Kodu ID",
                         "introduction": "Halda oma Z-Wave'i võrgustikku ja Z-Wave'i sõlmi",
                         "node_count": "Sõlmede arv",
+                        "nodes_ready": "Valmisolevad sõlmed",
                         "server_version": "Serveri versioon"
                     },
                     "device_info": {

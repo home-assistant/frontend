@@ -1117,7 +1117,9 @@
                                 "device_id": {
                                     "action": "Akce",
                                     "extra_fields": {
-                                        "code": "Kód"
+                                        "code": "Kód",
+                                        "message": "Zpráva",
+                                        "title": "Název"
                                     },
                                     "label": "Zařízení"
                                 },
@@ -1293,7 +1295,8 @@
                                     "extra_fields": {
                                         "above": "Větší než",
                                         "below": "Menší než",
-                                        "for": "Doba trvání"
+                                        "for": "Doba trvání",
+                                        "zone": "Zóna"
                                     },
                                     "label": "Zařízení",
                                     "trigger": "Spouštěč"
@@ -1464,7 +1467,7 @@
                             "info_state_reporting": "Pokud povolíte hlášení stavu, Home Assistant bude posílat veškeré změny stavů všech exponovaných entit do Amazonu. Toto vám umožní sledovat aktuální stavy entity v aplikaci Alexa a použít tyto stavy k vytvoření rutin.",
                             "manage_entities": "Správa entit",
                             "state_reporting_error": "Nelze {enable_disable} hlášení stavu.",
-                            "sync_entities": "Synchronizovat entity",
+                            "sync_entities": "Synchronizovat entity do Amazonu",
                             "sync_entities_error": "Chyba při synchronizaci entit:",
                             "title": "Alexa"
                         },
@@ -1505,6 +1508,11 @@
                         },
                         "sign_out": "Odhlásit se",
                         "thank_you_note": "Děkujeme, že jste se stali součástí Home Assistant Cloud. Díky lidem, jako jste vy, jsme schopni udělat skvělý zážitek z domácí automatizace pro každého. Díky!",
+                        "tts": {
+                            "female": "Žena",
+                            "male": "Muž",
+                            "title": "Převod textu do řeč"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Nepodařilo se deaktivovat webhook:",
                             "info": "Všechno, co je nastaveno tak, aby bylo spouštěno webhookem, může mít veřejně přístupnou adresu URL, která vám umožní posílat data zpět Home Assistant odkudkoli, aniž by byla vaše instance vystavena internetu.",
@@ -1536,11 +1544,11 @@
                     "description_login": "Přihlášen jako {email}",
                     "description_not_login": "Nepřihlášen",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Datum vypršení platnosti certifikátu",
+                        "certificate_expiration_date": "Datum vypršení platnosti certifikátu:",
                         "certificate_information": "Informace o certifikátu",
                         "close": "Zavřít",
                         "fingerprint": "Otisk certifikátu:",
-                        "will_be_auto_renewed": "Bude automaticky obnoveno"
+                        "will_be_auto_renewed": "bude automaticky obnoveno"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Webhook je k dispozici na následující URL adrese:",
@@ -1583,7 +1591,7 @@
                         "dismiss": "Zavřít",
                         "email": "E-mail",
                         "email_error_msg": "Neplatný e-mail",
-                        "forgot_password": "zapomenuté heslo?",
+                        "forgot_password": "Zapomněl jste heslo?",
                         "introduction": "Home Assistant Cloud poskytuje zabezpečené vzdálené připojení k vaší instanci zatímco jste mimo domov. Umožňuje také připojení ke cloudovým službám: Amazon Alexa a Google Assistant.",
                         "introduction2": "Tuto službu provozuje náš partner ",
                         "introduction2a": ", společnost založená zakladateli Home Assistant a Hass.io.",
@@ -2621,6 +2629,22 @@
                     "introduction": "Zóny umožňují určit určité oblasti na zemi. Když je osoba v zóně, stav převezme název ze zóny. Zóny lze také použít jako aktivační událost nebo podmínku v nastavení automatizace.",
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
+                "zwave_js": {
+                    "button": "Nastavit",
+                    "common": {
+                        "add_node": "Přidat uzel",
+                        "close": "Zavřít",
+                        "home_id": "ID domácnosti",
+                        "network": "Síť",
+                        "node_id": "ID uzlu",
+                        "remove_node": "Odebrat uzel"
+                    },
+                    "dashboard": {
+                        "dump_not_ready_confirm": "Stáhnout",
+                        "home_id": "ID domácnosti",
+                        "server_version": "Verze serveru"
+                    }
+                },
                 "zwave": {
                     "button": "Nastavit",
                     "caption": "Z-Wave",
@@ -2998,6 +3022,7 @@
                             "name": "Rychlý náhled"
                         },
                         "grid": {
+                            "columns": "Sloupce",
                             "description": "Karta Mřížka umožňuje zobrazit více karet v mřížce.",
                             "name": "Mřížka"
                         },
