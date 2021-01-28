@@ -203,18 +203,21 @@ class HUIRoot extends LitElement {
                               "ui.panel.lovelace.editor.menu.manage_dashboards"
                             )}
                           </mwc-list-item>
-                          <mwc-list-item
-                            graphic="icon"
-                            @request-selected="${this._handleManageResources}"
-                          >
-                            <ha-svg-icon
-                              slot="graphic"
-                              .path=${mdiFileMultiple}
-                            ></ha-svg-icon>
-                            ${this.hass!.localize(
-                              "ui.panel.lovelace.editor.menu.manage_resources"
-                            )}
-                          </mwc-list-item>`}
+                          ${this.hass.userData?.showAdvanced
+                            ? html`<mwc-list-item
+                                graphic="icon"
+                                @request-selected="${this
+                                  ._handleManageResources}"
+                              >
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiFileMultiple}
+                                ></ha-svg-icon>
+                                ${this.hass!.localize(
+                                  "ui.panel.lovelace.editor.menu.manage_resources"
+                                )}
+                              </mwc-list-item>`
+                            : ""} `}
                     <mwc-list-item
                       graphic="icon"
                       @request-selected="${this._handleRawEditor}"
