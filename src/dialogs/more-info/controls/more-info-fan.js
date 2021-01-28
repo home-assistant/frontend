@@ -13,6 +13,7 @@ import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { SUPPORT_SET_SPEED } from "../../../data/fan";
 
 /*
  * @appliesMixin EventsMixin
@@ -156,7 +157,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computeClassNames(stateObj) {
     return (
       "more-info-fan " +
-      (supportsFeature(stateObj, 1) ? "has-percentage " : "") +
+      (supportsFeature(stateObj, SUPPORT_SET_SPEED) ? "has-percentage " : "") +
       (stateObj.attributes.preset_modes &&
       stateObj.attributes.preset_modes.length
         ? "has-preset_modes "
