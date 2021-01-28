@@ -130,8 +130,9 @@ class HassioAddonConfig extends LitElement {
         (entry) => !SUPPORTED_UI_TYPES.includes(entry.type)
       );
 
-      if (this._editor) {
-        this._editor.setValue(this.addon.options);
+      const editor = this._editor;
+      if (editor) {
+        editor.setValue(this.addon.options);
       }
     }
   }
@@ -197,19 +198,14 @@ class HassioAddonConfig extends LitElement {
 
     let data: HassioAddonSetOptionParams;
     this._error = undefined;
-    try {
-      if (!this._yamlMode) {
-        data = {
-          options: this.addon.options,
-        };
-      } else {
-        data = {
-          options: this._editor?.value,
-        };
-      }
-    } catch (err) {
-      this._error = err;
-      return;
+    if (!this._yamlMode) {
+      data = {
+        options: this.addon.options,
+      };
+    } else {
+      data = {
+        options: this._editor?.value,
+      };
     }
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
