@@ -2505,7 +2505,7 @@
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
           "actions": {
-            "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+            "action_confirmation": "Are you sure you want to execute action \"{action}\"?",
             "no_entity_more_info": "No entity provided for more info dialog",
             "no_entity_toggle": "No entity provided to toggle",
             "no_navigation_path": "No navigation path specified",
