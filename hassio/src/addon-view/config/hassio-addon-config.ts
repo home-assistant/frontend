@@ -83,7 +83,6 @@ class HassioAddonConfig extends LitElement {
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .schema=${this.addon.schema}
-                .error=${this._error}
               ></ha-form>`
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}
@@ -124,7 +123,7 @@ class HassioAddonConfig extends LitElement {
       changedProperties.has("_yamlMode") ||
       changedProperties.has("_options")
     ) {
-      if (changedProperties.get("_yamlMode") || this._yamlMode) {
+      if (this._yamlMode) {
         const editor = this._editor;
         if (editor) {
           editor.setValue(this._options!);
