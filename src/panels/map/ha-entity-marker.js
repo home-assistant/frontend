@@ -23,8 +23,8 @@ class HaEntityMarker extends EventsMixin(PolymerElement) {
           font-size: 1.5em;
           border-radius: 50%;
           border: 0.1em solid var(--ha-marker-color, var(--primary-color));
-          color: rgb(76, 76, 76);
-          background-color: var(--light-primary-color);
+          color: var(--primary-text-color);
+          background-color: var(--card-background-color);
         }
         iron-image {
           border-radius: 50%;
