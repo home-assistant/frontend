@@ -96,37 +96,37 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return html`
       <div class="card-config">
         <paper-input
-          .label=${this.hass.localize(
+          .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.title"
           )}
           (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
-          )})
+          )})"
           .value=${this._title}
           .configValue=${"title"}
           @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
           <paper-input
-            .label=${this.hass.localize(
+            .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.aspect_ratio"
             )}
             (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
-            )})
+            )})"
             .value=${this._aspect_ratio}
             .configValue=${"aspect_ratio"}
             @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
-            .label=${this.hass.localize(
+            .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.default_zoom"
             )}
             (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
-            )})
+            )})"
             type="number"
-            .value="${this._default_zoom}"
+            .value=${this._default_zoom}
             .configValue=${"default_zoom"}
             @value-changed=${this._valueChanged}
           ></paper-input>
@@ -145,14 +145,14 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             ></ha-switch
           ></ha-formfield>
           <paper-input
-            .label=${this.hass.localize(
+            .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.hours_to_show"
             )}
             (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
-            )})
+            )})"
             type="number"
-            .value="${this._hours_to_show}"
+            .value=${this._hours_to_show}
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>
@@ -169,7 +169,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         </h3>
         <div class="geo_location_sources">
           <hui-input-list-editor
-            inputLabel=${this.hass.localize(
+            .inputLabel=${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.source"
             )}
             .hass=${this.hass}
