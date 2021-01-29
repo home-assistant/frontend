@@ -4,4 +4,4 @@ import { HomeAssistant } from "../../types";
 export const isComponentLoaded = (
   hass: HomeAssistant,
   component: string
-): boolean => hass && hass.config.components.indexOf(component) !== -1;
+): boolean => hass && hass.config.components.includes(component);
