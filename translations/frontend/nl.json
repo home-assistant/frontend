@@ -610,7 +610,7 @@
                     "turned_on": "is ingeschakeld",
                     "was_at_home": "was thuis",
                     "was_at_state": "was bij {state}",
-                    "was_away": "was weg",
+                    "was_away": "was afwezig",
                     "was_closed": "gesloten",
                     "was_connected": "verbonden",
                     "was_disconnected": "verbroken",
@@ -752,6 +752,8 @@
                 "control": "Bediening",
                 "dismiss": "Sluiten",
                 "editor": {
+                    "advanced": "Geavanceerde instellingen",
+                    "change_device_area": "Verander het apparaatgebied",
                     "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
                     "delete": "Verwijderen",
                     "device_disabled": "Het apparaat van deze entiteit is uitgeschakeld.",
@@ -1012,6 +1014,13 @@
             "minute": "{count} {count, plural,\none {minuut}\nother {minuten}\n}",
             "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
             "week": "{count} {count, plural,\none {week}\nother {weken}\n}"
+        },
+        "errors": {
+            "config": {
+                "editor_not_supported": "Visuele editor wordt niet ondersteund voor deze configuratie",
+                "error_detected": "Configuratiefouten ontdekt",
+                "no_type_provided": "Geen type opgegeven."
+            }
         },
         "login-form": {
             "log_in": "Aanmelden",
@@ -1471,7 +1480,7 @@
                             "info_state_reporting": "Als u statusrapportage inschakelt, stuurt Home Assistant alle statuswijzigingen van opengestelde entiteiten naar Amazon. Hiermee kunt u altijd de laatste status zien in de Alexa app en kunt u de statuswijzigingen gebruiken om routines te maken.",
                             "manage_entities": "Entiteiten beheren",
                             "state_reporting_error": "Kan de rapportstatus niet {aanzetten_uitzetten}",
-                            "sync_entities": "Synchronisatie-entiteiten",
+                            "sync_entities": "Entiteiten synchroniseren naar Amazon",
                             "sync_entities_error": "Kan entiteiten niet synchroniseren:",
                             "title": "Alexa"
                         },
@@ -1514,9 +1523,17 @@
                         "thank_you_note": "Bedankt voor uw deelname aan Home Assistant Cloud. Het is vanwege mensen zoals u dat we een geweldige domotica-ervaring voor iedereen kunnen maken. Dank je!",
                         "tts": {
                             "default_language": "Standaardtaal om te gebruiken",
+                            "dialog": {
+                                "example_message": "Hallo {naam}, je kunt elke tekst afspelen op elke ondersteunde mediaspeler!",
+                                "header": "Probeer Tekst naar Spraak",
+                                "play": "Speel",
+                                "target": "Doel",
+                                "target_browser": "Browser"
+                            },
                             "female": "Vrouw",
                             "male": "Man",
-                            "title": "Tekst naar spraak"
+                            "title": "Tekst naar spraak",
+                            "try": "Probeer"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Kan webhook niet uitschakelen:",
@@ -1549,11 +1566,11 @@
                     "description_login": "Ingelogd als {email}",
                     "description_not_login": "Niet ingelogd",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Vervaldatum certificaat",
+                        "certificate_expiration_date": "Vervaldatum certificaat:",
                         "certificate_information": "Certificaatinfo",
                         "close": "Sluiten",
                         "fingerprint": "Certificaat vingerafdruk:",
-                        "will_be_auto_renewed": "Wordt automatisch vernieuwd"
+                        "will_be_auto_renewed": "wordt automatisch vernieuwd"
                     },
                     "dialog_cloudhook": {
                         "available_at": "De webhook is beschikbaar op de volgende URL:",
@@ -2678,6 +2695,12 @@
                     },
                     "description": "Beheer je Z-Wave-netwerk",
                     "learn_more": "Meer informatie over Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migreren naar OpenZWave",
+                            "introduction": "Deze wizard helpt u te migreren van de oude Z-Wave integratie naar de OpenZWave integratie die momenteel in beta is."
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave netwerkbeheer",
                         "introduction": "Voer opdrachten uit die van invloed zijn op het Z-Wave-netwerk. Je krijgt geen terugkoppeling of de meeste commando's gelukt zijn, maar je kunt wel het OZW Logboek raadplegen om te proberen uit te vinden of het gelukt is."
@@ -2926,7 +2949,7 @@
                             "name": "Alarm paneel"
                         },
                         "button": {
-                            "default_action_help": "De standaard actie is afhankelijk van de mogelijkheden van de entiteit, deze zal ofwel worden omgeschakeld of meer informatie zal worden getoond.",
+                            "default_action_help": "De standaard actie is afhankelijk van de mogelijkheden van de entiteit. Deze kan worden omgeschakeld of meer informatie kan worden getoond.",
                             "description": "Met de Button-kaart kun je knoppen toevoegen om taken uit te voeren.",
                             "name": "Knop"
                         },
@@ -3098,7 +3121,7 @@
                             "name": "Afbeelding-entiteit"
                         },
                         "picture-glance": {
-                            "description": "De Picture Glance-kaart toont een afbeelding en de bijbehorende entiteitstoestanden als een pictogram. De entiteiten aan de rechterkant staan schakelacties toe, andere tonen het dialoogvenster met meer informatie.",
+                            "description": "De Afbeelding oogopslag-kaart toont een afbeelding en de bijbehorende entiteitstoestanden als een pictogram. De entiteiten aan de rechterkant staan schakelacties toe, andere tonen het dialoogvenster met meer informatie.",
                             "name": "Afbeelding oogopslag",
                             "state_entity": "Status entiteit"
                         },
@@ -3213,6 +3236,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Beheer dashboards",
+                        "manage_resources": "Beheer bronnen",
                         "open": "Open het Lovelace-menu",
                         "raw_editor": "Ruwe configuratie-editor"
                     },

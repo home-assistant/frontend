@@ -401,6 +401,7 @@
                 "direction": "Direction",
                 "forward": "Forward",
                 "oscillate": "Oscillate",
+                "preset_mode": "Preset Mode",
                 "reverse": "Reverse",
                 "speed": "Speed"
             },
@@ -1029,7 +1030,7 @@
                 "error_detected": "Configuration errors detected",
                 "key_missing": "Required key \"{key}\" is missing.",
                 "key_not_expected": "Key \"{key}\" is not expected or not supported by the visual editor.",
-                "key_wrong_type": "The provided value for \"{key}\" is not supported by the visual editor editor. We support ({type_correct}) but received ({type_wrong}).",
+                "key_wrong_type": "The provided value for \"{key}\" is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
                 "no_type_provided": "No type provided."
             }
         },
@@ -1143,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Code",
                                         "message": "Message",
+                                        "position": "Position",
                                         "title": "Title"
                                     },
                                     "label": "Device"
@@ -2934,7 +2936,7 @@
                 "cards": {
                     "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
                     "actions": {
-                        "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
+                        "action_confirmation": "Are you sure you want to execute action \"{action}\"?",
                         "no_entity_more_info": "No entity provided for more info dialog",
                         "no_entity_toggle": "No entity provided to toggle",
                         "no_navigation_path": "No navigation path specified",

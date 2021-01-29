@@ -557,6 +557,10 @@
                 "remove_user": "Supprimer l'utilisateur",
                 "select_blueprint": "Sélectionnez un Blueprint"
             },
+            "calendar": {
+                "my_calendars": "Mes calendriers",
+                "today": "Aujourd'hui"
+            },
             "data-table": {
                 "no-data": "Pas de données",
                 "search": "Chercher"
@@ -588,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Intégration historique désactivée",
                 "loading_history": "Chargement de l'historique des valeurs ...",
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
@@ -746,8 +751,12 @@
             },
             "entity_registry": {
                 "control": "Contrôle",
+                "customize_link": "personnalisations d'entité",
                 "dismiss": "Ignorer",
                 "editor": {
+                    "advanced": "Paramètres avancés",
+                    "area_note": "Par défaut, les entités d'un appareil se trouvent dans la même zone que l'appareil. Si vous modifiez la zone de cette entité, elle ne suivra plus la zone de l'appareil.",
+                    "change_device_area": "Modifier la zone de l'appareil",
                     "confirm_delete": "Voulez-vous vraiment supprimer cette entrée ?",
                     "delete": "Supprimer",
                     "device_disabled": "L'appareil de cette entité est désactivé.",
@@ -757,6 +766,7 @@
                     "enabled_label": "Activer l'entité",
                     "enabled_restart_confirm": "Redémarrez Home Assistant pour terminer l'activation des entités",
                     "entity_id": "ID d'entité",
+                    "follow_device_area": "Suivre la zone de l'appareil",
                     "icon": "Icône",
                     "icon_error": "Les icônes doivent être au format «préfixe: iconname», par exemple «mdi: home»",
                     "name": "Nom",
@@ -766,6 +776,7 @@
                     "update": "Mise à jour"
                 },
                 "faq": "documentation",
+                "info_customize": "Vous pouvez remplacer certains attributs dans la section {customize_link} .",
                 "no_unique_id": "Cette entité (\"{entity_id}\") n'a pas d'ID unique, par conséquent ses paramètres ne peuvent pas être gérés à partir de l'interface utilisateur. Consultez le {faq_link} pour plus de détails.",
                 "related": "Liées",
                 "settings": "Réglages"
@@ -1009,6 +1020,18 @@
             "second": "{count} {count, plural,\nzero {seconde}\none {seconde}\nother {secondes}\n}",
             "week": "{count} {count, plural,\nzero {semaine}\none {semaine}\nother {semaines}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Vous pouvez toujours modifier votre configuration dans YAML.",
+                "editor_not_available": "Aucun éditeur visuel disponible pour le type \" {type} \".",
+                "editor_not_supported": "L'éditeur visuel n'est pas pris en charge pour cette configuration",
+                "error_detected": "Erreurs de configuration détectées",
+                "key_missing": "La clé requise « {key} » est manquante.",
+                "key_not_expected": "La clé « {key} » n’est pas attendue ou non prise en charge par l’éditeur visuel.",
+                "key_wrong_type": "La valeur fournie pour \"{key}\" n'est pas prise en charge par l'éditeur visuel. Nous supportons ({type_correct}) mais avons reçu ({type_wrong}).",
+                "no_type_provided": "Aucun type fourni."
+            }
+        },
         "login-form": {
             "log_in": "Connexion",
             "password": "Mot de passe",
@@ -1117,7 +1140,9 @@
                                 "device_id": {
                                     "action": "Action",
                                     "extra_fields": {
-                                        "code": "Code"
+                                        "code": "Code",
+                                        "message": "Message",
+                                        "title": "Titre"
                                     },
                                     "label": "Appareil"
                                 },
@@ -1293,7 +1318,8 @@
                                     "extra_fields": {
                                         "above": "Au-dessus de",
                                         "below": "En dessous de",
-                                        "for": "Durée"
+                                        "for": "Durée",
+                                        "zone": "Zone"
                                     },
                                     "label": "Équipements",
                                     "trigger": "Déclencheur"
@@ -1505,6 +1531,19 @@
                         },
                         "sign_out": "Déconnexion",
                         "thank_you_note": "Merci de faire partie de Home Assistant Cloud. C’est grâce à des personnes comme vous que nous sommes en mesure de proposer une expérience domotique exceptionnelle à tout le monde. Je vous remercie!",
+                        "tts": {
+                            "default_language": "Langue par défaut à utiliser",
+                            "dialog": {
+                                "example_message": "Bonjour {name}, vous pouvez lire n’importe quel texte sur n’importe quel lecteur multimédia pris en charge !",
+                                "header": "Essayez la synthèse vocale",
+                                "play": "Lecture"
+                            },
+                            "female": "Femme",
+                            "info": "Donnez de la personnalité à votre maison en lui faisant parler en utilisant nos services de synthèse vocale. Vous pouvez l'utiliser dans des automatismes et des scripts en utilisant le service {service}.",
+                            "male": "Homme",
+                            "title": "Synthèse vocale",
+                            "try": "Essayer"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Impossible de désactiver le Webhook:",
                             "info": "Tout ce qui est configuré pour être déclenché par un Webhook peut recevoir une URL accessible publiquement pour vous permettre de renvoyer des données à Home Assistant de n’importe où, sans exposer votre instance à Internet.",
@@ -2621,6 +2660,71 @@
                     "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automatisation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Annuler l'inclusion",
+                        "controller_in_inclusion_mode": "Votre contrôleur Z-Wave est maintenant en mode inclusion.",
+                        "inclusion_failed": "Le nœud n'a pas pu être ajouté. Veuillez consulter les journaux pour plus d'informations.",
+                        "inclusion_finished": "Le nœud a été ajouté. Quelques minutes peuvent s'écouler avant que toutes les entités n'apparaissent, alors que nous terminons la mise en place du nœud en arrière-plan.",
+                        "introduction": "Cet assistant vous guidera dans l'ajout d'un nœud à votre réseau Z-Wave.",
+                        "secure_inclusion_warning": "Les dispositifs sécurisés nécessitent une bande passante supplémentaire ; un trop grand nombre de dispositifs sécurisés peut ralentir votre réseau Z-Wave. Nous recommandons de n'utiliser l'inclusion sécurisée que pour les dispositifs qui en ont besoin, comme les serrures ou les ouvre-portes de garage.",
+                        "start_inclusion": "Commencer l'inclusion",
+                        "start_secure_inclusion": "Commencer l'inclusion sécurisée",
+                        "title": "Ajouter un nœud Z-Wave",
+                        "use_secure_inclusion": "Utiliser l'inclusion sécurisée",
+                        "view_device": "Afficher l'appareil"
+                    },
+                    "button": "Configurer",
+                    "common": {
+                        "add_node": "Ajouter un nœud",
+                        "close": "Fermer",
+                        "home_id": "ID de la maison",
+                        "network": "Réseau",
+                        "node_id": "ID du nœud",
+                        "remove_node": "Supprimer le nœud"
+                    },
+                    "dashboard": {
+                        "driver_version": "Version du pilote",
+                        "dump_dead_nodes_text": "Certains de vos nœuds n'ont pas répondu et sont supposés morts. Ils ne seront pas entièrement exportés.",
+                        "dump_dead_nodes_title": "Certains de vos nœuds sont morts",
+                        "dump_not_ready_confirm": "Télécharger",
+                        "dump_not_ready_title": "Tous les nœuds ne sont pas encore prêts",
+                        "header": "Gérez votre réseau Z-Wave",
+                        "home_id": "ID de la maison",
+                        "introduction": "Gérez votre réseau Z-Wave et vos nœuds Z-Wave",
+                        "node_count": "Nombre de nœuds",
+                        "nodes_ready": "Les nœuds sont prêts",
+                        "server_version": "Version du serveur"
+                    },
+                    "device_info": {
+                        "node_ready": "Nœud prêt",
+                        "node_status": "État du nœud",
+                        "zwave_info": "Informations Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Réseau"
+                    },
+                    "network_status": {
+                        "connected": "Connecté",
+                        "connecting": "Connexion",
+                        "unknown": "Inconnu"
+                    },
+                    "node_status": {
+                        "alive": "Actif",
+                        "asleep": "Endormi",
+                        "awake": "Éveillé",
+                        "dead": "Mort",
+                        "unknown": "Inconnu"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Annuler l'exclusion",
+                        "controller_in_exclusion_mode": "Votre contrôleur Z-Wave est maintenant en mode exclusion.",
+                        "exclusion_finished": "Le nœud {id} a été supprimé de votre réseau Z-Wave.",
+                        "introduction": "Supprimez un nœud de votre réseau Z-Wave et supprimez l’appareil et les entités associés de Home Assistant.",
+                        "start_exclusion": "Commencer l'exclusion",
+                        "title": "Supprimer un nœud Z-Wave"
+                    }
+                },
                 "zwave": {
                     "button": "Configurer",
                     "caption": "Z-Wave",
@@ -2633,6 +2737,12 @@
                     },
                     "description": "Gérer votre réseau Z-Wave",
                     "learn_more": "En savoir plus sur Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrer vers OpenZWave",
+                            "introduction": "Cet assistant vous aidera à migrer de l'ancienne intégration Z-Wave vers l'intégration OpenZWave qui est actuellement en bêta."
+                        }
+                    },
                     "network_management": {
                         "header": "Gestion de réseau Z-Wave",
                         "introduction": "Exécutez les commandes qui affectent le réseau Z-Wave. Vous ne saurez pas si la plupart des commandes ont réussi, mais vous pouvez consulter le journal OZW pour essayer de le savoir."
@@ -2816,7 +2926,10 @@
                 "cards": {
                     "action_confirmation": "Voulez-vous vraiment exécuter l'action \" {action} \"?",
                     "actions": {
-                        "no_service": "Aucun service d'exécution spécifié"
+                        "action_confirmation": "Voulez-vous vraiment exécuter l'action \" {action} \"?",
+                        "no_navigation_path": "Aucun chemin de navigation spécifié",
+                        "no_service": "Aucun service d'exécution spécifié",
+                        "no_url": "Aucune URL à ouvrir spécifiée"
                     },
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette carte?",
                     "empty_state": {
@@ -3172,6 +3285,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Gérer les tableaux de bord",
+                        "manage_resources": "Gérer les ressources",
                         "open": "Ouvrir le menu Lovelace UI",
                         "raw_editor": "Éditeur de configuration"
                     },

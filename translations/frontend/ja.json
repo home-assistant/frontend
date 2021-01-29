@@ -2356,7 +2356,7 @@
                             "mqtt": "mqtt エンティティの再読み込み",
                             "person": "人の再読込",
                             "ping": "ping バイナリ センサー エンティティの再読み込み",
-                            "reload": "{ドメイン} の再読み込み",
+                            "reload": "{domain} の再読み込み",
                             "rest": "残りのエンティティの再読み込み",
                             "rpi_gpio": "Raspberry PiGPIOエンティティの再読み込み",
                             "scene": "シーンの再読込",
@@ -2875,7 +2875,7 @@
                 "cards": {
                     "action_confirmation": "アクション「{action}」を実行してもよろしいですか？",
                     "actions": {
-                        "action_confirmation": "アクション \"{action}\" を実行しますか?",
+                        "action_confirmation": "指定したアクション \"{action}\" を実行しますか？",
                         "no_entity_more_info": "詳細情報ダイアログにエンティティが提供されていません",
                         "no_entity_toggle": "切り替えるエンティティが提供されていません",
                         "no_navigation_path": "ナビゲーションパスが指定されていません",

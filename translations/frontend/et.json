@@ -592,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Ajalookirjete sidumine on keelatud",
                 "loading_history": "Laadin ajalugu...",
                 "no_history_found": "Oleku ajalugu ei leitud"
             },
@@ -750,8 +751,13 @@
             },
             "entity_registry": {
                 "control": "Juhtimine",
+                "customize_link": "olemite kohandused",
                 "dismiss": "Loobu",
                 "editor": {
+                    "advanced": "Täpsemad sätted",
+                    "area": "Määra ainult olemi ala",
+                    "area_note": "Vaikimisi asuvad seadme olemid seadmega samas alas. Kui muudad selle üksuse ala, ei järgi see enam seadme ala.",
+                    "change_device_area": "Muuda seadme ala",
                     "confirm_delete": "Oled kindel, et soovid selle kirje kustutada?",
                     "delete": "Kustuta",
                     "device_disabled": "Selle olemi seade on keelatud.",
@@ -761,6 +767,7 @@
                     "enabled_label": "Luba olem",
                     "enabled_restart_confirm": "Olemite sidumise lubamiseks taaskäivita Home Assistant",
                     "entity_id": "Olemi ID",
+                    "follow_device_area": "Seadme ala järgimine",
                     "icon": "Ikooni muutmine",
                     "icon_error": "Ikoonid peaksid olema vormingus 'prefix: iconname', nt 'mdi: home'",
                     "name": "Nime muutmine",
@@ -770,6 +777,7 @@
                     "update": "Uuenda"
                 },
                 "faq": "dokumentatsioon",
+                "info_customize": "Mõned atribuudid saab jaotises {customize_link} üle kirjutada.",
                 "no_unique_id": "Olemil (\"{entity_id}\") puudub unikaalne ID-d. Seetõttu ei saa selle seadeid kasutajaliidesest hallata. Lisainfot vaata {faq_link}.",
                 "related": "Seotud",
                 "settings": "Seaded"
@@ -1012,6 +1020,18 @@
             "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n}",
             "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
             "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "YAML-is saad endiselt muuta oma konfiguratsiooni.",
+                "editor_not_available": "Tüübi \" {type} \" jaoks pole saadaval visuaalne redaktor.",
+                "editor_not_supported": "Selle konfiguratsiooni korral ei toetata visuaalset redaktorit",
+                "error_detected": "Tuvastati konfiguratsioonitõrked",
+                "key_missing": "Nõutav võti \" {key} \" puudub.",
+                "key_not_expected": "Võti \"{key}\" pole visuaalses redaktoris eeldatud või toetatatud.",
+                "key_wrong_type": "Visuaalne redaktor ei toeta \"{key}\" jaoks esitatud väärtust. Toetatud on ({type_correct}) kuid saadi ({type_wrong}).",
+                "no_type_provided": "Tüüpi pole esitatud."
+            }
         },
         "login-form": {
             "log_in": "Logi sisse",
@@ -1514,10 +1534,18 @@
                         "thank_you_note": "Täname, et liitusite Home Assistanti pilvega. Just teiesuguste inimeste tõttu suudame  me pakkuda kõigile suurepärase Home Assistanti kogemuse. Aitäh!",
                         "tts": {
                             "default_language": "Vaikimisi kasutatav keel",
+                            "dialog": {
+                                "example_message": "Tere {name}, saad esitada mis tahes teksti mis tahes toetatud meediaesitajas!",
+                                "header": "Proovi teksti kõneks toimimist",
+                                "play": "Esita",
+                                "target": "Meediaesitaja",
+                                "target_browser": "Veebilehitseja"
+                            },
                             "female": "Naissoost",
                             "info": "Too isikupära oma koju kasutades meie kõnesünteesiteenuseid. Saad seda kasutada automaatiseeringutes ja skriptides kasutades {service} .",
                             "male": "Meessoost",
-                            "title": "Tekst kõneks"
+                            "title": "Tekst kõneks",
+                            "try": "Proovi"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Veebihaagi keelamine ebaõnnestus:",
@@ -2717,6 +2745,12 @@
                     },
                     "description": "Halda oma Z-Wave võrku",
                     "learn_more": "Lisateave Z-Wave'i kohta",
+                    "migration": {
+                        "ozw": {
+                            "header": "Mine üle OpenZWave'ile",
+                            "introduction": "See viisard aitab vanalt Z-Wave'i sidumiselt üle minna praegu beetaversioonis olevale OpenZWave'i sidumisele."
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave võrgu haldamine",
                         "introduction": "Käivita käske, mis mõjutavad Z-Wave võrku. Sa ei saa tagasisidet selle kohta, kas enamik käske õnnestus, kuid selle kontrollimiseks võid uurida OZW-logi."
@@ -3261,6 +3295,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Vaadete haldamine",
+                        "manage_resources": "Halda ressursikirjeid",
                         "open": "Ava Lovelace'i kasutajaliidese menüü",
                         "raw_editor": "Konfiguratsiooni muutmine YAMLis"
                     },

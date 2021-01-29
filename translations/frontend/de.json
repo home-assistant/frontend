@@ -752,6 +752,7 @@
                 "control": "Steuerung",
                 "dismiss": "Ausblenden",
                 "editor": {
+                    "advanced": "Erweiterte Einstellungen",
                     "confirm_delete": "Möchtest du diesen Eintrag wirklich löschen?",
                     "delete": "Löschen",
                     "device_disabled": "Das Gerät dieser Entität ist deaktiviert.",
@@ -1513,8 +1514,14 @@
                         "thank_you_note": "Vielen Dank, dass du Teil der Home Assistant Cloud bist. Es ist wegen Menschen wie dir, dass wir in der Lage sind, eine großartige Home Automation Erfahrung für alle zu machen. Danke!",
                         "tts": {
                             "default_language": "Zu verwendende Standardsprache",
+                            "dialog": {
+                                "play": "Play",
+                                "target": "Ziel",
+                                "target_browser": "Browser"
+                            },
                             "female": "Weiblich",
-                            "male": "Männlich"
+                            "male": "Männlich",
+                            "try": "Versuchen"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Fehler beim Deaktivieren des Webhooks:",
@@ -2639,18 +2646,26 @@
                     "button": "Konfigurieren",
                     "common": {
                         "close": "Schließen",
-                        "network": "Netzwerk"
+                        "network": "Netzwerk",
+                        "remove_node": "Node entfernen"
                     },
                     "dashboard": {
                         "driver_version": "Treiberversion",
                         "dump_not_ready_confirm": "Herunterladen",
                         "header": "Verwalte dein Z-Wave-Netzwerk",
+                        "node_count": "Anzahl an Nodes",
                         "server_version": "Serverversion"
+                    },
+                    "device_info": {
+                        "node_ready": "Node Bereit",
+                        "node_status": "Node Status"
                     },
                     "navigation": {
                         "network": "Netzwerk"
                     },
                     "network_status": {
+                        "connected": "Verbunden",
+                        "connecting": "Verbinden",
                         "unknown": "Unbekannt"
                     },
                     "node_status": {
@@ -2659,6 +2674,9 @@
                         "awake": "Wach",
                         "dead": "Tot",
                         "unknown": "Unbekannt"
+                    },
+                    "remove_node": {
+                        "exclusion_failed": "Die Node konnte nicht entfernt werden. Bitte schaue für mehr Informationen in die Logs."
                     }
                 },
                 "zwave": {
@@ -3214,6 +3232,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Dashboards verwalten",
+                        "manage_resources": "Ressourcen verwalten",
                         "open": "Lovelace-Menü öffnen",
                         "raw_editor": "Raw-Konfigurationseditor"
                     },

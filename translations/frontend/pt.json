@@ -557,6 +557,10 @@
                 "remove_user": "Remover utilizador",
                 "select_blueprint": "Escolhe um projeto"
             },
+            "calendar": {
+                "my_calendars": "Os meus Calendários",
+                "today": "Hoje"
+            },
             "data-table": {
                 "no-data": "Dados do evento",
                 "search": "Procurar"
@@ -588,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integração de histórico desativada",
                 "loading_history": "A carregar histórico de estados...",
                 "no_history_found": "Nenhum histórico de estado encontrado."
             },
@@ -746,8 +751,11 @@
             },
             "entity_registry": {
                 "control": "Controle",
+                "customize_link": "personalizações de entidade",
                 "dismiss": "Fechar",
                 "editor": {
+                    "advanced": "Configurações avançadas",
+                    "change_device_area": "Alterar área do dispositivo",
                     "confirm_delete": "Tem certeza de que deseja apagar esta entrada?",
                     "delete": "Apagar",
                     "device_disabled": "O dispositivo desta entidade está desativado.",
@@ -757,6 +765,7 @@
                     "enabled_label": "Ativar entidade",
                     "enabled_restart_confirm": "Reinicie o Home Assistant para ativar as entidades",
                     "entity_id": "Identificação da entidade",
+                    "follow_device_area": "Siga a área do dispositivo",
                     "icon": "Ícone",
                     "icon_error": "Os ícones devem estar no formato 'prefixo:nome do ícone', por exemplo 'mdi:home'.",
                     "name": "Nome",
@@ -1009,6 +1018,15 @@
             "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
             "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Você ainda pode editar sua configuração no YAML.",
+                "editor_not_available": "Nenhum editor visual disponível para o tipo \" {type} \".",
+                "editor_not_supported": "O editor visual não é suportado para esta configuração",
+                "error_detected": "Erros de configuração detectados",
+                "no_type_provided": "Nenhum tipo fornecido."
+            }
+        },
         "login-form": {
             "log_in": "Entrar",
             "password": "Palavra-passe",
@@ -1117,7 +1135,9 @@
                                 "device_id": {
                                     "action": "Ação",
                                     "extra_fields": {
-                                        "code": "Código"
+                                        "code": "Código",
+                                        "message": "Mensagem",
+                                        "title": "Título"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1293,7 +1313,8 @@
                                     "extra_fields": {
                                         "above": "Acima",
                                         "below": "Abaixo",
-                                        "for": "Duração"
+                                        "for": "Duração",
+                                        "zone": "Zona"
                                     },
                                     "label": "Dispositivo",
                                     "trigger": "Acionador"
@@ -1505,6 +1526,19 @@
                         },
                         "sign_out": "Terminar sessão",
                         "thank_you_note": "Obrigado por fazer parte do Home Assistant Cloud. É por causa de pessoas como você que somos capazes de fazer uma ótima experiência de automação residencial para todos. Muito obrigado!",
+                        "tts": {
+                            "default_language": "Linguagem predefinida a utilizar",
+                            "dialog": {
+                                "header": "Tentar Texto para Fala",
+                                "play": "Reproduzir",
+                                "target": "Alvo",
+                                "target_browser": "Navegador"
+                            },
+                            "female": "Mulher",
+                            "male": "Homem",
+                            "title": "Texto para Fala",
+                            "try": "Tentar"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Falha ao desativar o webhook:",
                             "info": "Qualquer coisa que esteja configurada para ser acionada por um webhook pode receber um URL público para permitir que você envie dados de volta para o Home Assistant de qualquer lugar, sem expor a sua instância à Internet.",
@@ -2588,7 +2622,8 @@
                     "visualization": {
                         "caption": "Visualização",
                         "header": "Visualização de rede",
-                        "highlight_label": "Destacar Dispositivos"
+                        "highlight_label": "Destacar Dispositivos",
+                        "zoom_label": "Zoom para dispositivo"
                     }
                 },
                 "zone": {
@@ -2620,6 +2655,63 @@
                     "introduction": "As zonas permitem especificar determinadas regiões da Terra. Quando uma pessoa está dentro de uma zona, o estado assume o nome da zona. As zonas também podem ser usadas como gatilho ou condição nas configurações de automação.",
                     "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Cancelar Inclusão",
+                        "controller_in_inclusion_mode": "O seu controlador Z-Wave está agora em modo de inclusão.",
+                        "introduction": "Este assistente irá guiá-lo para adicionar um nó à sua rede Z-Wave.",
+                        "start_inclusion": "Iniciar Inclusão",
+                        "start_secure_inclusion": "Iniciar a Inclusão Segura",
+                        "title": "Adicionar um nó Z-Wave",
+                        "use_secure_inclusion": "Utilizar inclusão segura",
+                        "view_device": "Exibir dispositivo"
+                    },
+                    "button": "Configurar",
+                    "common": {
+                        "add_node": "Adicionar nó",
+                        "close": "Fechar",
+                        "home_id": "ID de Casa",
+                        "network": "Rede",
+                        "node_id": "ID de nó",
+                        "remove_node": "Remover nó"
+                    },
+                    "dashboard": {
+                        "driver_version": "Versão do driver",
+                        "dump_dead_nodes_title": "Alguns de seus nós estão desativados",
+                        "dump_not_ready_confirm": "Download",
+                        "dump_not_ready_title": "Nem todos os nós estão prontos",
+                        "header": "Gerir a sua rede Z-Wave",
+                        "home_id": "ID de Casa",
+                        "introduction": "Gerir a sua rede Z-Wave e respetivos nós",
+                        "node_count": "Nº de nós",
+                        "nodes_ready": "Nós prontos",
+                        "server_version": "Versão do servidor"
+                    },
+                    "device_info": {
+                        "node_ready": "Nó Pronto",
+                        "node_status": "Estado do Nó",
+                        "zwave_info": "Informações sobre Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Rede"
+                    },
+                    "network_status": {
+                        "connected": "Conectado",
+                        "connecting": "A conectar",
+                        "unknown": "Desconhecido"
+                    },
+                    "node_status": {
+                        "alive": "Ativo",
+                        "asleep": "Adormecido",
+                        "awake": "Acordado",
+                        "dead": "Inativo",
+                        "unknown": "Desconhecido"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Cancelar Exclusão",
+                        "start_exclusion": "Iniciar Exclusão"
+                    }
+                },
                 "zwave": {
                     "button": "Configurar UI",
                     "caption": "Z-Wave",
@@ -2632,6 +2724,11 @@
                     },
                     "description": "Gerir a sua rede Z-Wave",
                     "learn_more": "Saiba mais sobre o Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrar para OpenZWave"
+                        }
+                    },
                     "network_management": {
                         "header": "Gestão da rede Z-Wave",
                         "introduction": "Executar comando que afeta a rede Z-Wave. Não obterá feedback se grande parte dos comandos concluírem com sucesso, mas pode verificar o registo OZW para tentar descobrir."
@@ -2814,6 +2911,11 @@
                 },
                 "cards": {
                     "action_confirmation": "Tem a certeza que quer executar a acção \"{action}\"?",
+                    "actions": {
+                        "no_entity_toggle": "Nenhuma entidade fornecida para alternar",
+                        "no_navigation_path": "Nenhum caminho de navegação especificado",
+                        "no_url": "Nenhuma URL para abrir especificada"
+                    },
                     "confirm_delete": "Tem a certeza que quer apagar este cartão?",
                     "empty_state": {
                         "go_to_integrations_page": "Ir para a página de integrações.",
@@ -2854,6 +2956,7 @@
                 },
                 "components": {
                     "timestamp-display": {
+                        "invalid": "Data / hora inválido",
                         "invalid_format": "Formato inválido"
                     }
                 },
@@ -2996,8 +3099,10 @@
                             "name": "Relance"
                         },
                         "grid": {
+                            "columns": "Colunas",
                             "description": "O cartão em Grelha permite mostrar vários cartões numa grelha.",
-                            "name": "Grelha"
+                            "name": "Grelha",
+                            "square": "Apresentar cartões quadrados"
                         },
                         "history-graph": {
                             "description": "O cartão Gráfico de histórico permite exibir um gráfico para cada uma das entidades listadas.",
@@ -3165,6 +3270,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Gerir Dashboards",
+                        "manage_resources": "Gerir recursos",
                         "open": "Abrir menu Lovelace IU",
                         "raw_editor": "Editor de configuração do código-fonte"
                     },

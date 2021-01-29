@@ -588,6 +588,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integrace Historie je zákázána",
                 "loading_history": "Historie stavu se načítá...",
                 "no_history_found": "Historie stavu chybí."
             },
@@ -604,9 +605,9 @@
                     "set": "zapadlo",
                     "turned_off": "vypnuto",
                     "turned_on": "zapnuto",
-                    "was_at_home": "byl doma",
-                    "was_at_state": "bylo v {state}",
-                    "was_away": "bylo pryč",
+                    "was_at_home": "byl zjištěn doma",
+                    "was_at_state": "byl zjištěn v {state}",
+                    "was_away": "byl zjištěn pryč",
                     "was_closed": "bylo zavřeno",
                     "was_connected": "bylo připojeno",
                     "was_disconnected": "bylo odpojeno",
@@ -746,8 +747,11 @@
             },
             "entity_registry": {
                 "control": "Řízení",
+                "customize_link": "přizpůsobení entit",
                 "dismiss": "Zavrhnout",
                 "editor": {
+                    "advanced": "Pokročilá nastavení",
+                    "change_device_area": "Změna oblasti zařízení",
                     "confirm_delete": "Opravdu chcete tuto položku smazat?",
                     "delete": "Odstranit",
                     "device_disabled": "Zařízení této entity je zakázáno.",
@@ -766,6 +770,7 @@
                     "update": "Aktualizovat"
                 },
                 "faq": "dokumentace",
+                "info_customize": "Některé atributy můžete přepsat v sekci {customize_link}.",
                 "no_unique_id": "Tato entita (\"{entity_id}\") nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní. Další podrobnosti naleznete na stránce {faq_link}.",
                 "related": "Související",
                 "settings": "Nastavení"
@@ -1008,6 +1013,18 @@
             "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minut}\n}",
             "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekund}\n}",
             "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Své nastavení můžete stále upravovat v YAML.",
+                "editor_not_available": "Pro typ \"{type}\" není k dispozici žádný vizuální editor.",
+                "editor_not_supported": "Vizuální editor není pro toto nastavení podporován",
+                "error_detected": "Zjištěny chyby nastavení",
+                "key_missing": "Chybí požadovaný klíč \"{key}\".",
+                "key_not_expected": "Klíč \"{key}\" není vizuálním editorem očekáván nebo podporován.",
+                "key_wrong_type": "Zadávanou hodnotu \"{key}\" nepodporuje vizuální editor. Podporuje ({type_correct}), ale obdržel ({type_wrong}).",
+                "no_type_provided": "Není k dispozici žádný typ."
+            }
         },
         "login-form": {
             "log_in": "Přihlásit se",
@@ -1509,9 +1526,15 @@
                         "sign_out": "Odhlásit se",
                         "thank_you_note": "Děkujeme, že jste se stali součástí Home Assistant Cloud. Díky lidem, jako jste vy, jsme schopni udělat skvělý zážitek z domácí automatizace pro každého. Díky!",
                         "tts": {
+                            "dialog": {
+                                "header": "Zkuste převod textu na řeč",
+                                "play": "Přehrát",
+                                "target_browser": "Prohlížeč"
+                            },
                             "female": "Žena",
                             "male": "Muž",
-                            "title": "Převod textu do řeč"
+                            "title": "Převod textu do řeč",
+                            "try": "Zkusit"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Nepodařilo se deaktivovat webhook:",
@@ -2839,6 +2862,13 @@
                 },
                 "cards": {
                     "action_confirmation": "Opravdu chcete provést akci \"{action}\"?",
+                    "actions": {
+                        "no_entity_more_info": "Pro dialog s dalšími informacemi není poskytnuta žádná entita",
+                        "no_entity_toggle": "K přepnutí není poskytnuta žádná entita",
+                        "no_navigation_path": "Není zadána žádná navigační cesta",
+                        "no_service": "Není zadána žádná služba pro spuštění",
+                        "no_url": "Není zadána žádná adresa URL k otevření"
+                    },
                     "confirm_delete": "Opravdu chcete tuto kartu smazat?",
                     "empty_state": {
                         "go_to_integrations_page": "Přejděte na stránku integrace.",
@@ -3192,6 +3222,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Správa ovládacích panelů",
+                        "manage_resources": "Správa zdrojů",
                         "open": "Otevřít Lovelace menu",
                         "raw_editor": "Editor kódu nastavení"
                     },
