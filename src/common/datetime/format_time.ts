@@ -20,8 +20,8 @@ export const formatTimeWithSeconds = toLocaleTimeStringSupportsOptions
   : (dateObj: Date) => format(dateObj, "mediumTime");
 
 export const formatTimeWeekday = toLocaleTimeStringSupportsOptions
-  ? (dateObj: Date, locales: string) =>
-      dateObj.toLocaleTimeString(locales, {
+  ? (dateObj: Date, locales: FrontendTranslationData) =>
+      dateObj.toLocaleTimeString(locales.language, {
         weekday: "long",
         hour: "numeric",
         minute: "2-digit",
