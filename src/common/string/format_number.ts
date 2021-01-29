@@ -4,7 +4,7 @@ import { FrontendTranslationData, NumberFormat } from "../../data/translation";
  * Formats a number based on the specified language with thousands separator(s) and decimal character for better legibility.
  *
  * @param num The number to format
- * @param params The user-selected language and number format, from `hass.language`
+ * @param language The user-selected language and number format, from `hass.language`
  * @param options Intl.NumberFormatOptions to use
  */
 export const formatNumber = (
