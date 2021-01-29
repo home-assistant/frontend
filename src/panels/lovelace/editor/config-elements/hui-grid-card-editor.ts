@@ -29,6 +29,14 @@ export class HuiGridCardEditor extends HuiStackCardEditor {
     this._config = config;
   }
 
+  get _columns(): number {
+    return this._config!.columns || 3;
+  }
+
+  get _square(): boolean {
+    return this._config!.square ?? true;
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -44,7 +52,7 @@ export class HuiGridCardEditor extends HuiStackCardEditor {
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
-            .value=${(this._config as GridCardConfig).columns}
+            .value=${this._columns}
             .configValue=${"columns"}
             @value-changed=${this._handleColumnsChanged}
           ></paper-input>
@@ -55,7 +63,7 @@ export class HuiGridCardEditor extends HuiStackCardEditor {
             .dir=${computeRTLDirection(this.hass)}
           >
             <ha-switch
-              .checked=${(this._config as GridCardConfig).square}
+              .checked=${this._square}
               .configValue=${"square"}
               @change=${this._handleSquareChanged}
             ></ha-switch>
@@ -70,24 +78,30 @@ export class HuiGridCardEditor extends HuiStackCardEditor {
     if (!this._config) {
       return;
     }
-
-    this._config = {
-      ...this._config,
-      columns: Number(ev.target.value),
-    };
+    const value = Number(ev.target.value);
+    if (this._columns === value) {
+      return;
+    }
+    if (!ev.target.value) {
+      this._config = { ...this._config };
+      delete this._config.columns;
+    } else {
+      this._config = {
+        ...this._config,
+        columns: value,
+      };
+    }
     fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _handleSquareChanged(ev): void {
-    if (!this._config) {
+    if (!this._config || this._square === ev.target.checked) {
       return;
     }
 
-    this._config = {
-      ...this._config,
-      square: ev.target.checked,
-    };
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", {
+      config: { ...this._config, square: ev.target.checked },
+    });
   }
 }
 
