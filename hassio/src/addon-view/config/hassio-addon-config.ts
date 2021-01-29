@@ -134,12 +134,14 @@ class HassioAddonConfig extends LitElement {
 
   private _configChanged(ev): void {
     if (this.addon.schema && this._canShowSchema) {
-      this.addon.options = ev.detail.value;
       this._valid = true;
       this._configHasChanged = true;
     } else {
       this._configHasChanged = true;
       this._valid = ev.detail.isValid;
+    }
+    if (this._valid && this._configHasChanged) {
+      this.addon.options = ev.detail.value;
     }
   }
 
@@ -184,19 +186,12 @@ class HassioAddonConfig extends LitElement {
     const button = ev.currentTarget as any;
     button.progress = true;
 
-    let data: HassioAddonSetOptionParams;
     this._error = undefined;
-    if (!this._yamlMode) {
-      data = {
-        options: this.addon.options,
-      };
-    } else {
-      data = {
-        options: this._editor?.value,
-      };
-    }
+
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      await setHassioAddonOption(this.hass, this.addon.slug, {
+        options: this.addon.options,
+      });
       this._configHasChanged = false;
       const eventdata = {
         success: true,
