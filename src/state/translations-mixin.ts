@@ -4,6 +4,7 @@ import { computeRTL } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
   FrontendTranslationData,
+  fetchTranslationPreferences,
   getHassTranslations,
   getHassTranslationsPre109,
   saveTranslationPreferences,
@@ -16,7 +17,6 @@ import {
   getTranslation,
   getLocalLanguage,
   getUserLanguage,
-  getUserNumberFormat,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -75,23 +75,24 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassConnected() {
       super.hassConnected();
-      getUserNumberFormat(this.hass!).then((format) => {
-        if (format && this.hass!.language.number_format !== format) {
-          this._selectLanguage(
-            { ...this.hass!.language, number_format: format },
-            false
-          );
-        }
-      });
-      getUserLanguage(this.hass!).then((language) => {
-        if (language && this.hass!.language?.language !== language) {
-          // We just get language from backend, no need to save back
-          this._selectLanguage(
-            { ...this.hass!.language, language: language },
-            false
-          );
-        }
-      });
+      const result = await fetchTranslationPreferences(this.hass!);
+      const userNumberFormat = result?.number_format;
+      const userLanguage = getUserLanguage(result);
+
+      const prefs: FrontendTranslationData = {
+        language: userLanguage || this.hass!.language?.language,
+        number_format: userNumberFormat || this.hass!.language?.number_format,
+      };
+
+      if (
+        result &&
+        (this.hass!.language?.number_format !== userNumberFormat ||
+          this.hass!.language?.language !== userLanguage)
+      ) {
+        // We just get language and number_format from backend, no need to save back
+        this._selectLanguage(prefs, false);
+      }
+
       this.hass!.connection.subscribeEvents(
         debounce(() => {
           this._refetchCachedHassTranslations(false, false);

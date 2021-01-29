@@ -1,6 +1,5 @@
-import { fetchTranslationPreferences } from "../data/translation";
+import { FrontendTranslationData } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import { HomeAssistant } from "../types";
 import { getTranslation as commonGetTranslation } from "./common-translation";
 
 const STORAGE = window.localStorage || {};
@@ -41,9 +40,8 @@ function findAvailableLanguage(language: string) {
 /**
  * Get user selected language from backend
  */
-export async function getUserLanguage(hass: HomeAssistant) {
-  const result = await fetchTranslationPreferences(hass);
-  const language = result ? result.language : null;
+export function getUserLanguage(lang: FrontendTranslationData | null) {
+  const language = lang ? lang.language : null;
   if (language) {
     const availableLanguage = findAvailableLanguage(language);
     if (availableLanguage) {
@@ -51,14 +49,6 @@ export async function getUserLanguage(hass: HomeAssistant) {
     }
   }
   return null;
-}
-
-/**
- * Get user selected number_format from backend
- */
-export async function getUserNumberFormat(hass: HomeAssistant) {
-  const result = await fetchTranslationPreferences(hass);
-  return result?.number_format;
 }
 
 /**
