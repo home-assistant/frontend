@@ -39,6 +39,7 @@ import {
   computeDeviceName,
   subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 
 @customElement("zwave-migration")
 export class ZwaveMigration extends LitElement {
@@ -94,8 +95,8 @@ export class ZwaveMigration extends LitElement {
               "ui.panel.config.zwave.migration.ozw.introduction"
             )}
           </div>
-          ${!this.hass.config.components.includes("hassio") &&
-          !this.hass.config.components.includes("mqtt")
+          ${!isComponentLoaded(this.hass, "hassio") &&
+          !isComponentLoaded(this.hass, "mqtt")
             ? html`
                 <ha-card class="content" header="MQTT Required">
                   <div class="card-content">
@@ -182,7 +183,7 @@ export class ZwaveMigration extends LitElement {
                           <p>
                             Now it's time to set up the OZW integration.
                           </p>
-                          ${this.hass.config.components.includes("hassio")
+                          ${isComponentLoaded(this.hass, "hassio")
                             ? html`
                                 <p>
                                   The OZWDaemon runs in a Home Assistant addon
@@ -378,7 +379,7 @@ export class ZwaveMigration extends LitElement {
 
   private async _setupOzw() {
     const ozwConfigFlow = await startOzwConfigFlow(this.hass);
-    if (this.hass.config.components.includes("ozw")) {
+    if (isComponentLoaded(this.hass, "ozw")) {
       this._getMigrationData();
       this._step = 3;
       return;
@@ -386,7 +387,7 @@ export class ZwaveMigration extends LitElement {
     showConfigFlowDialog(this, {
       continueFlowId: ozwConfigFlow.flow_id,
       dialogClosedCallback: () => {
-        if (this.hass.config.components.includes("ozw")) {
+        if (isComponentLoaded(this.hass, "ozw")) {
           this._getMigrationData();
           this._step = 3;
         }
@@ -397,7 +398,18 @@ export class ZwaveMigration extends LitElement {
   }
 
   private async _getMigrationData() {
-    this._migrationData = await migrateZwave(this.hass, true);
+    try {
+      this._migrationData = await migrateZwave(this.hass, true);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to get migration data!",
+        text:
+          err.code === "unknown_command"
+            ? "Restart Home Assistant and try again."
+            : err.message,
+      });
+      return;
+    }
     this._migratedZwaveEntities = Object.keys(
       this._migrationData.migration_entity_map
     );
