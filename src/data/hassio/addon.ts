@@ -1,3 +1,4 @@
+import { HaFormSchema } from "../../components/ha-form/ha-form";
 import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
@@ -62,7 +63,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   privileged: any;
   protected: boolean;
   rating: "1-6";
-  schema: Record<string, any>;
+  schema: HaFormSchema[];
   services_role: string[];
   slug: string;
   startup: "initialize" | "system" | "services" | "application" | "once";
