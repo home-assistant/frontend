@@ -68,8 +68,14 @@ export class ExternalAuth extends Auth {
 
   public async refreshAccessToken(force?: boolean) {
     if (this._tokenCallbackPromise && !force) {
-      await this._tokenCallbackPromise;
-      return;
+      try {
+        await this._tokenCallbackPromise;
+        return;
+      } catch (e) {
+        //_tokenCallbackPromise is in a rejected state
+        // Clear the tokenCallbackPromise and go on refreshing access token
+        this._tokenCallbackPromise = undefined;
+      }
     }
     const payload: GetExternalAuthPayload = {
       callback: CALLBACK_SET_TOKEN,
@@ -81,7 +87,9 @@ export class ExternalAuth extends Auth {
     this._tokenCallbackPromise = new Promise<RefreshTokenResponse>(
       (resolve, reject) => {
         window[CALLBACK_SET_TOKEN] = (success, data) =>
-          success ? resolve(data) : reject(data);
+          success
+            ? resolve(data)
+            : reject(new Error("Refresh token unsuccessful; "));
       }
     );
 
