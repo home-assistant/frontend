@@ -87,9 +87,7 @@ export class ExternalAuth extends Auth {
     this._tokenCallbackPromise = new Promise<RefreshTokenResponse>(
       (resolve, reject) => {
         window[CALLBACK_SET_TOKEN] = (success, data) =>
-          success
-            ? resolve(data)
-            : reject(new Error("Refresh token unsuccessful; "));
+          success ? resolve(data) : reject(data);
       }
     );
 
