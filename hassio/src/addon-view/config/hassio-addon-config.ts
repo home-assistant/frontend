@@ -38,19 +38,21 @@ const SUPPORTED_UI_TYPES = ["string", "select", "boolean", "integer", "float"];
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @internalProperty() private _error?: string;
-
-  @internalProperty() private _canShowSchema = false;
-
-  @internalProperty() private _yamlMode = false;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) private _configHasChanged = false;
 
   @property({ type: Boolean }) private _valid = true;
+
+  @internalProperty() private _canShowSchema = false;
+
+  @internalProperty() private _error?: string;
+
+  @internalProperty() private _options?: Record<string, unknown>;
+
+  @internalProperty() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
@@ -60,27 +62,25 @@ class HassioAddonConfig extends LitElement {
       <ha-card>
         <div class="header">
           <h2>Configuration</h2>
-          ${this._canShowSchema
-            ? html`<div class="card-menu">
-                <ha-button-menu
-                  corner="BOTTOM_START"
-                  @action=${this._handleAction}
-                >
-                  <mwc-icon-button slot="trigger">
-                    <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                  </mwc-icon-button>
-                  <mwc-list-item>
-                    ${this._yamlMode ? "Edit in UI" : "Edit in YAML"}
-                  </mwc-list-item>
-                </ha-button-menu>
-              </div>`
-            : ""}
+          <div class="card-menu">
+            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+              <mwc-icon-button slot="trigger">
+                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+              </mwc-icon-button>
+              <mwc-list-item .disabled=${!this._canShowSchema}>
+                ${this._yamlMode ? "Edit in UI" : "Edit in YAML"}
+              </mwc-list-item>
+              <mwc-list-item class="warning">
+                Reset to defaults
+              </mwc-list-item>
+            </ha-button-menu>
+          </div>
         </div>
 
         <div class="card-content">
           ${!this._yamlMode && this._canShowSchema && this.addon.schema
             ? html`<ha-form
-                .data=${this.addon.options}
+                .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .schema=${this.addon.schema}
                 .error=${this._error}
@@ -96,9 +96,6 @@ class HassioAddonConfig extends LitElement {
             : html` <div class="errors">Invalid YAML</div> `}
         </div>
         <div class="card-actions">
-          <ha-progress-button class="warning" @click=${this._resetTapped}>
-            Reset to defaults
-          </ha-progress-button>
           <ha-progress-button
             @click=${this._saveTapped}
             .disabled=${!this._configHasChanged || !this._valid}
@@ -110,16 +107,28 @@ class HassioAddonConfig extends LitElement {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-    if (changedProperties.has("addon") || changedProperties.has("_yamlMode")) {
-      this._canShowSchema = !this.addon.schema.find(
-        (entry) => !SUPPORTED_UI_TYPES.includes(entry.type)
-      );
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._canShowSchema = !this.addon.schema.find(
+      (entry) => !SUPPORTED_UI_TYPES.includes(entry.type)
+    );
+    this._yamlMode = !this._canShowSchema;
+  }
 
-      const editor = this._editor;
-      if (editor) {
-        editor.setValue(this.addon.options);
+  protected updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has("addon")) {
+      this._options = { ...this.addon.options };
+    }
+    super.updated(changedProperties);
+    if (
+      changedProperties.has("_yamlMode") ||
+      changedProperties.has("_options")
+    ) {
+      if (changedProperties.get("_yamlMode") || this._yamlMode) {
+        const editor = this._editor;
+        if (editor) {
+          editor.setValue(this._options!);
+        }
       }
     }
   }
@@ -129,19 +138,22 @@ class HassioAddonConfig extends LitElement {
       case 0:
         this._yamlMode = !this._yamlMode;
         break;
+      case 1:
+        this._resetTapped(ev);
+        break;
     }
   }
 
   private _configChanged(ev): void {
-    if (this.addon.schema && this._canShowSchema) {
+    if (this.addon.schema && this._canShowSchema && !this._yamlMode) {
       this._valid = true;
       this._configHasChanged = true;
     } else {
       this._configHasChanged = true;
       this._valid = ev.detail.isValid;
     }
-    if (this._valid && this._configHasChanged) {
-      this.addon.options = ev.detail.value;
+    if (this._valid) {
+      this._options! = ev.detail.value;
     }
   }
 
@@ -190,7 +202,7 @@ class HassioAddonConfig extends LitElement {
 
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, {
-        options: this.addon.options,
+        options: this._options!,
       });
       this._configHasChanged = false;
       const eventdata = {
