@@ -73,7 +73,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   get _default_zoom(): number {
-    return this._config!.default_zoom || NaN;
+    return this._config!.default_zoom || 0;
   }
 
   get _geo_location_sources(): string[] {
@@ -199,22 +199,25 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       return;
     }
     const target = ev.target! as EditorTarget;
-    let value = ev.detail.value;
-
-    if (target.configValue && this[`_${target.configValue}`] === value) {
+    if (!target.configValue) {
       return;
     }
-    if (target.type === "number") {
+
+    let value = target.checked ?? ev.detail.value;
+
+    if (value && target.type === "number") {
       value = Number(value);
     }
-    if (value === "" || (target.type === "number" && isNaN(value))) {
+    if (this[`_${target.configValue}`] === value) {
+      return;
+    }
+    if (value === "") {
       this._config = { ...this._config };
       delete this._config[target.configValue!];
     } else if (target.configValue) {
       this._config = {
         ...this._config,
-        [target.configValue]:
-          target.checked !== undefined ? target.checked : value,
+        [target.configValue]: value,
       };
     }
     fireEvent(this, "config-changed", { config: this._config });
