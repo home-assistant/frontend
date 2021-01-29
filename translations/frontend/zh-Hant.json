@@ -592,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "歷史整合已關閉",
                 "loading_history": "正在載入狀態歷史...",
                 "no_history_found": "找不到狀態歷史。"
             },
@@ -750,8 +751,13 @@
             },
             "entity_registry": {
                 "control": "控制",
+                "customize_link": "實體自訂化",
                 "dismiss": "關閉",
                 "editor": {
+                    "advanced": "進階設定",
+                    "area": "僅設定實體分區",
+                    "area_note": "預設的裝置實體將與裝置處於相同分區。假如變更此實體分區，將不再跟隨裝置所設定的分區。",
+                    "change_device_area": "變更裝置分區",
                     "confirm_delete": "確定要刪除此實體？",
                     "delete": "刪除",
                     "device_disabled": "該實體目前不可用。",
@@ -761,6 +767,7 @@
                     "enabled_label": "啟用實體",
                     "enabled_restart_confirm": "重新啟動 Home Assistant 以完成實體啟用",
                     "entity_id": "實體 ID",
+                    "follow_device_area": "跟隨裝置分區",
                     "icon": "圖示",
                     "icon_error": "圖示必須按照格式「prefix:iconname」設定，例如「mdi:home」",
                     "name": "名稱",
@@ -770,6 +777,7 @@
                     "update": "更新"
                 },
                 "faq": "相關文件",
+                "info_customize": "可以於 {customize_link} 部分中覆蓋部分屬性。",
                 "no_unique_id": "此實體（\"{entity_id}\"）不包含唯一 ID、因此無法由 UI 進行管理設定。請參閱{faq_link}以獲得更詳細資訊。",
                 "related": "相關",
                 "settings": "設定"
@@ -1012,6 +1020,18 @@
             "minute": "{count} {count, plural,\n  one {分鐘}\n  other {分鐘}\n}",
             "second": "{count} {count, plural,\none {秒}\nother {秒}\n}",
             "week": "{count} {count, plural,\none {週}\nother {週}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "依舊可以於 YAML 中編輯設定。",
+                "editor_not_available": "類型 \"{type}\" 沒有可供使用的視覺化編輯器。",
+                "editor_not_supported": "此設定不支援視覺化編輯器",
+                "error_detected": "發現設定錯誤",
+                "key_missing": "缺少所需的密鑰 \"{key}\"。",
+                "key_not_expected": "視覺化編輯器不支援密鑰 \"{key}\"。",
+                "key_wrong_type": "視覺化編輯器不支援所提供的 \"{key}\" 數值。支援 ({type_correct}) 但卻收到 ({type_wrong})。",
+                "no_type_provided": "未提供類型。"
+            }
         },
         "login-form": {
             "log_in": "登入",
@@ -1514,10 +1534,18 @@
                         "thank_you_note": "感謝您參與支持 Home Assistant Cloud 雲服務。由於有你們的支持，我們才能持續為每個人帶來絕佳的家庭自動化體驗，謝謝！",
                         "tts": {
                             "default_language": "預設使用語言",
+                            "dialog": {
+                                "example_message": "哈囉 {name}、您可以於任何支援的媒體播放器上閱讀文字！",
+                                "header": "測試閱讀文字",
+                                "play": "播放",
+                                "target": "目標",
+                                "target_browser": "瀏覽器"
+                            },
                             "female": "女性",
                             "info": "運用「文字轉語音」服務讓您的智能家庭更具個性與個人化，可以藉由 {service} 服務於腳本與自動化中使用此相功能。",
                             "male": "男性",
-                            "title": "所要閱讀的文字"
+                            "title": "所要閱讀的文字",
+                            "try": "測試"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "關閉 Webhook 失敗：",
@@ -2717,6 +2745,12 @@
                     },
                     "description": "管理 Z-Wave 網絡",
                     "learn_more": "詳細了解 Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "遷移至 OpenZWave",
+                            "introduction": "導引將會協助你將舊版 Z-Wave 整合遷移至目前仍處於測試版本的  OpenZWave 整合。"
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave 網路管理",
                         "introduction": "執行令命將會影響 Z-Wave 網路。將無法獲得回饋或指令是否成功執行，但可透過 OZW 日誌進行查詢。"
@@ -3261,6 +3295,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "管理主面板",
+                        "manage_resources": "管理資源",
                         "open": "開啟 Lovelace UI 選單",
                         "raw_editor": "文字模式編輯器"
                     },

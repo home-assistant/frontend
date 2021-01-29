@@ -592,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integración de historial deshabilitada",
                 "loading_history": "Cargando historial de estado...",
                 "no_history_found": "No se encontró historial de estado."
             },
@@ -750,8 +751,13 @@
             },
             "entity_registry": {
                 "control": "Control",
+                "customize_link": "personalizaciones de entidades",
                 "dismiss": "Descartar",
                 "editor": {
+                    "advanced": "Configuración avanzada",
+                    "area": "Establecer solo el área de la entidad",
+                    "area_note": "Por defecto, las entidades de un dispositivo están en la misma área que el dispositivo. Si cambias el área de esta entidad, ya no seguirá el área del dispositivo.",
+                    "change_device_area": "Cambiar el área del dispositivo",
                     "confirm_delete": "¿Estás seguro de que quieres eliminar este elemento?",
                     "delete": "Eliminar",
                     "device_disabled": "El dispositivo de esta entidad está deshabilitado.",
@@ -761,6 +767,7 @@
                     "enabled_label": "Activar entidad",
                     "enabled_restart_confirm": "Reinicia Home Assistant para terminar de habilitar las entidades",
                     "entity_id": "ID de la entidad",
+                    "follow_device_area": "Seguir el área del dispositivo",
                     "icon": "Icono",
                     "icon_error": "Los iconos deben tener el formato 'prefijo:nombreicono', por ejemplo, 'mdi:home'",
                     "name": "Nombre",
@@ -770,6 +777,7 @@
                     "update": "Actualizar"
                 },
                 "faq": "documentación",
+                "info_customize": "Puedes sobrescribir algunos atributos en la sección {customize_link}.",
                 "no_unique_id": "Esta entidad (\"{entity_id}\") no tiene un ID único, por lo tanto, su configuración no se puede administrar desde la IU. Consulta el {faq_link} para obtener más detalles.",
                 "related": "Relacionado",
                 "settings": "Configuración"
@@ -1012,6 +1020,18 @@
             "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
             "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}",
             "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Aún puedes editar tu configuración en YAML.",
+                "editor_not_available": "No hay ningún editor visual disponible para el tipo \"{type}\".",
+                "editor_not_supported": "El editor visual no es compatible con esta configuración",
+                "error_detected": "Errores de configuración detectados",
+                "key_missing": "Falta la clave obligatoria \"{key}\".",
+                "key_not_expected": "El editor visual no espera o no admite la clave \"{key}\".",
+                "key_wrong_type": "El valor proporcionado para \"{key}\" no es compatible con el editor visual. Aceptamos ({type_correct}) pero recibimos ({type_wrong}).",
+                "no_type_provided": "No se proporciona ningún tipo."
+            }
         },
         "login-form": {
             "log_in": "Iniciar sesión",
@@ -1514,10 +1534,18 @@
                         "thank_you_note": "Gracias por ser parte de Home Assistant Cloud. Gracias a personas como tú, podemos hacer una gran experiencia domótica para todos. ¡Gracias!",
                         "tts": {
                             "default_language": "Idioma predeterminado para usar",
+                            "dialog": {
+                                "example_message": "¡Hola {name}, puedes reproducir cualquier texto en cualquier reproductor multimedia compatible!",
+                                "header": "Probar texto a voz",
+                                "play": "Reproducir",
+                                "target": "Objetivo",
+                                "target_browser": "Navegador"
+                            },
                             "female": "Femenino",
                             "info": "Aporta personalidad a tu hogar haciendo que te hable mediante el uso de nuestros servicios de Texto a voz. Puedes usar esto en automatizaciones y scripts usando el servicio {service} .",
                             "male": "Masculino",
-                            "title": "Texto a voz"
+                            "title": "Texto a voz",
+                            "try": "Probar"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "No se pudo deshabilitar el webhook:",
@@ -2717,6 +2745,12 @@
                     },
                     "description": "Administra tu red Z-Wave",
                     "learn_more": "Aprende más sobre Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrar a OpenZWave",
+                            "introduction": "Este asistente te ayudará a migrar de la antigua integración de Z-Wave a la integración de OpenZWave que se encuentra actualmente en versión beta."
+                        }
+                    },
                     "network_management": {
                         "header": "Administración de red Z-Wave",
                         "introduction": "Ejecutar comandos que afectan a la red Z-Wave. No recibirás comentarios sobre si la mayoría de los comandos tuvieron éxito, pero puedes consultar el Registro OZW para intentar averiguarlo."
@@ -3261,6 +3295,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Administrar paneles de control",
+                        "manage_resources": "Administrar recursos",
                         "open": "Abrir el menú de la IU Lovelace",
                         "raw_editor": "Editor de configuración en bruto"
                     },

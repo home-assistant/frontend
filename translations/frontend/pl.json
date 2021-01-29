@@ -557,6 +557,10 @@
                 "remove_user": "Usuń użytkownika",
                 "select_blueprint": "Wybierz schemat"
             },
+            "calendar": {
+                "my_calendars": "Moje kalendarze",
+                "today": "Dzisiaj"
+            },
             "data-table": {
                 "no-data": "Brak danych",
                 "search": "Szukaj"
@@ -588,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integracja historia wyłączona",
                 "loading_history": "Ładowanie historii...",
                 "no_history_found": "Nie znaleziono historii."
             },
@@ -1117,7 +1122,9 @@
                                 "device_id": {
                                     "action": "Akcja",
                                     "extra_fields": {
-                                        "code": "Kod"
+                                        "code": "Kod",
+                                        "message": "Wiadomość",
+                                        "title": "Tytuł"
                                     },
                                     "label": "Urządzenie"
                                 },
@@ -1293,7 +1300,8 @@
                                     "extra_fields": {
                                         "above": "Powyżej",
                                         "below": "Poniżej",
-                                        "for": "Czas trwania"
+                                        "for": "Czas trwania",
+                                        "zone": "Strefa"
                                     },
                                     "label": "Urządzenie",
                                     "trigger": "Wyzwalacz"
@@ -1505,6 +1513,21 @@
                         },
                         "sign_out": "Wyloguj",
                         "thank_you_note": "Dziękujemy, że jesteś częścią Chmury Home Assistant. To dzięki ludziom takim jak Ty jesteśmy w stanie zapewnić wszystkim wspaniałe doświadczenia z automatyzacją domu. Dziękuję Ci!",
+                        "tts": {
+                            "default_language": "Używany język domyślny",
+                            "dialog": {
+                                "example_message": "Witaj {name} , możesz odtwarzać dowolny tekst na dowolnym obsługiwanym odtwarzaczu multimedialnym!",
+                                "header": "Wypróbuj zamiany tekstu na mowę",
+                                "play": "Odtwarzaj",
+                                "target": "Cel",
+                                "target_browser": "Przeglądarka"
+                            },
+                            "female": "Kobieta",
+                            "info": "Podaruj swemu domu osobowość dając mu możliwość mówienia do Ciebie za pomocą naszych usług zamiany tekstu na mowę. Możesz ich użyć w automatyzacjach i skryptach, korzystając z usługi {service} .",
+                            "male": "Mężczyzna",
+                            "title": "Zamiana tekstu na mowę",
+                            "try": "Wypróbuj"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Nie udało się wyłączyć webhook:",
                             "info": "Wszystko, co jest skonfigurowane do działania poprzez webhook, może otrzymać publicznie dostępny adres URL, aby umożliwić wysyłanie danych do Home Assistanta z dowolnego miejsca, bez narażania instancji na publiczny dostęp z Internetu.",
@@ -2621,6 +2644,55 @@
                     "introduction": "Strefy pozwalają określić regiony na ziemi. Gdy dana osoba znajduje się w strefie, jej encja pobierze stan z nazwy strefy. Strefy mogą być również używane jako wyzwalacz lub warunek w automatyzacjach.",
                     "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "title": "Dodaj węzeł Z-Wave"
+                    },
+                    "button": "Konfiguruj",
+                    "common": {
+                        "add_node": "Dodaj węzeł",
+                        "close": "Zamknij",
+                        "home_id": "Identyfikator domu",
+                        "network": "Sieć",
+                        "node_id": "Identyfikator węzła",
+                        "remove_node": "Usuń węzeł"
+                    },
+                    "dashboard": {
+                        "driver_version": "Wersja sterownika",
+                        "dump_dead_nodes_text": "Niektóre z Twoich węzłów nie odpowiedziały i są uznawane za martwe. Nie zostaną one w pełni wyeksportowane.",
+                        "dump_dead_nodes_title": "Niektóre z twoich węzłów są martwe",
+                        "dump_debug": "Pobierz zrzut swojej sieci, aby zdiagnozować problemy",
+                        "dump_not_ready_confirm": "Pobierz",
+                        "dump_not_ready_text": "Jeśli utworzysz zrzut, gdy nie wszystkie węzły są gotowe, może w nim brakować ważnych danych. Daj swojej sieci trochę czasu na odpytanie wszystkich węzłów. Czy chcesz kontynuować zrzut?",
+                        "dump_not_ready_title": "Jeszcze nie wszystkie węzły są gotowe",
+                        "header": "Zarządzaj siecią Z-Wave",
+                        "home_id": "Identyfikator domu",
+                        "introduction": "Zarządzaj siecią i węzłami Z-Wave",
+                        "node_count": "Liczba węzłów",
+                        "nodes_ready": "Węzły gotowe",
+                        "server_version": "Wersja serwera"
+                    },
+                    "device_info": {
+                        "node_ready": "gotowy",
+                        "node_status": "Stan węzła",
+                        "zwave_info": "Informacje Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Sieć"
+                    },
+                    "network_status": {
+                        "connected": "połączono",
+                        "connecting": "łączenie",
+                        "unknown": "nieznany"
+                    },
+                    "node_status": {
+                        "alive": "żywy",
+                        "asleep": "uśpiony",
+                        "awake": "wybudzony",
+                        "dead": "martwy",
+                        "unknown": "nieznany"
+                    }
+                },
                 "zwave": {
                     "button": "Konfiguracja",
                     "caption": "Z-Wave",
@@ -2633,6 +2705,12 @@
                     },
                     "description": "Zarządzaj siecią Z-Wave",
                     "learn_more": "Dowiedz się więcej o Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migruj do OpenZWave",
+                            "introduction": "Ten kreator pomoże Ci w migracji ze starszej integracji Z-Wave do integracji OpenZWave, która jest obecnie w wersji beta."
+                        }
+                    },
                     "network_management": {
                         "header": "Zarządzanie siecią Z-Wave",
                         "introduction": "Uruchom polecenia sterujące siecią Z-Wave. Nie otrzymasz informacji o tym, czy wykonanie poleceń się powiodło, ale możesz szukać informacji na ten temat w logu OZW."
@@ -3173,6 +3251,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Zarządzaj dashboardami",
+                        "manage_resources": "Zarządzaj zasobami",
                         "open": "Otwórz menu interfejsu użytkownika Lovelace",
                         "raw_editor": "Edytor konfiguracji YAML"
                     },
@@ -3378,7 +3458,7 @@
                     "working": "Proszę czekać"
                 },
                 "initializing": "inicjalizacja",
-                "logging_in_to_with": "Logowanie do ** {locationName} ** przy użyciu ** {authProviderName} **.",
+                "logging_in_to_with": "Logowanie do **{locationName}** przy użyciu **{authProviderName}**.",
                 "logging_in_with": "Logowanie za pomocą **{authProviderName}**.",
                 "pick_auth_provider": "Lub zaloguj się za pomocą"
             },
