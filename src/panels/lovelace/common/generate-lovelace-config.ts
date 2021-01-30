@@ -219,7 +219,7 @@ const adjustName = (name: string): string => {
   // leave as-is, otherwise capitalize the first word.
   return hasUpperCase(name.split(" ")[0])
     ? name
-    : name.charAt(0).toUpperCase() + name.slice(1);
+    : name[0].toUpperCase() + name.slice(1);
 };
 
 const computeDefaultViewStates = (
