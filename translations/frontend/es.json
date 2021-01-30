@@ -401,6 +401,7 @@
                 "direction": "Dirección",
                 "forward": "Adelante",
                 "oscillate": "Oscilar",
+                "preset_mode": "Modo preestablecido",
                 "reverse": "Inverso",
                 "speed": "Velocidad"
             },
@@ -1143,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Código",
                                         "message": "Mensaje",
+                                        "position": "Posición",
                                         "title": "Título"
                                     },
                                     "label": "Dispositivo"

@@ -401,6 +401,7 @@
                 "direction": "Direcció",
                 "forward": "Endavant",
                 "oscillate": "Oscil·lació",
+                "preset_mode": "Mode predefinit",
                 "reverse": "Invers",
                 "speed": "Velocitat"
             },
@@ -1143,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Codi",
                                         "message": "Missatge",
+                                        "position": "Posició",
                                         "title": "Títol"
                                     },
                                     "label": "Dispositiu"
