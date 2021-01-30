@@ -401,6 +401,7 @@
                 "direction": "方向",
                 "forward": "正向",
                 "oscillate": "擺動",
+                "preset_mode": "預置模式",
                 "reverse": "反向",
                 "speed": "風速"
             },
@@ -1143,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "碼",
                                         "message": "訊息",
+                                        "position": "位置",
                                         "title": "標題"
                                     },
                                     "label": "裝置"

@@ -401,6 +401,7 @@
                 "direction": "Suund",
                 "forward": "Edaspidi",
                 "oscillate": "Võnkumine",
+                "preset_mode": "Eelseadistatud režiim",
                 "reverse": "Tagurpidi",
                 "speed": "Kiirus"
             },
@@ -1029,7 +1030,7 @@
                 "error_detected": "Tuvastati konfiguratsioonitõrked",
                 "key_missing": "Nõutav võti \" {key} \" puudub.",
                 "key_not_expected": "Võti \"{key}\" pole visuaalses redaktoris eeldatud või toetatatud.",
-                "key_wrong_type": "Visuaalne redaktor ei toeta \"{key}\" jaoks esitatud väärtust. Toetatud on ({type_correct}) kuid saadi ({type_wrong}).",
+                "key_wrong_type": "Visuaalne redaktor ei toeta \"{key}\" jaoks sisestatud väärtust. Toetatud on ({type_correct}) kuid saadi ({type_wrong}).",
                 "no_type_provided": "Tüüpi pole esitatud."
             }
         },
@@ -1143,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Kood",
                                         "message": "Sõnum",
+                                        "position": "Asukoht",
                                         "title": "Nimetus"
                                     },
                                     "label": "Seade"

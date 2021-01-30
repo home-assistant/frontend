@@ -401,6 +401,7 @@
                 "direction": "Retning",
                 "forward": "Framover",
                 "oscillate": "Vandring",
+                "preset_mode": "Forhåndsinnstilt modus",
                 "reverse": "Omvendt",
                 "speed": "Hastighet"
             },
@@ -1029,7 +1030,7 @@
                 "error_detected": "Konfigurasjonsfeil oppdaget",
                 "key_missing": "Nødvendig nøkkel \"{key}\" mangler.",
                 "key_not_expected": "Nøkkelen \"{key}\" forventes ikke eller støttes ikke av det visuelle redigeringsprogrammet.",
-                "key_wrong_type": "Den angitte verdien for \"{key}\" støttes ikke av redigeringsprogrammet for visuell redigering. Vi støtter ({type_correct}) men mottok ({type_wrong}).",
+                "key_wrong_type": "Den angitte verdien for \"{key}\" støttes ikke av det visuelle redigeringsprogrammet. Vi støtter ({type_correct}), men mottatt ({type_wrong}).",
                 "no_type_provided": "Ingen type oppgitt."
             }
         },
@@ -1143,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Kode",
                                         "message": "Melding",
+                                        "position": "Posisjon",
                                         "title": "Tittel"
                                     },
                                     "label": "Enhet"
