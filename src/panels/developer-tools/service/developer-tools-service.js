@@ -1,3 +1,4 @@
+import { mdiHelpCircle } from "@mdi/js";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -13,6 +14,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import "../../../util/app-localstorage-document";
+import { documentationUrl } from "../../../util/documentation-url";
 
 const ERROR_SENTINEL = {};
 /*
@@ -43,6 +45,12 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           margin-top: 12px;
         }
 
+        .card-header {
+          justify-content: space-between;
+          display: flex;
+          align-items: center;
+        }
+        
         .description {
           margin-top: 12px;
           white-space: pre-wrap;
@@ -157,6 +165,19 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
               </template>
               <template is="dom-if" if="[[_description]]">
                 [[_description]]
+                <a
+                    slot="actionItems"
+                    class="header_button"
+                    href="[[_documentationUrl]]"
+                    title="[[localize('ui.panel.developer-tools.tabs.services.help')]]"
+                    target="_blank"
+                    rel="noreferrer"
+                    dir="[[rtl]]"
+                  >
+                    <mwc-icon-button>
+                      <ha-svg-icon path="[[helpIcon()]]"></ha-svg-icon>
+                    </mwc-icon-button>
+                  </a>
               </template>
             </template>
           </div>
@@ -248,11 +269,24 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
         computed: "_computeDescription(hass, _domain, _service)",
       },
 
+      _documentationUrl: {
+        type: String,
+        computed: "_computeDocumentationUrl(hass, _domain)",
+      },
+
       rtl: {
         reflectToAttribute: true,
         computed: "_computeRTL(hass)",
       },
     };
+  }
+
+  helpIcon() {
+    return mdiHelpCircle;
+  }
+
+  _computeDocumentationUrl() {
+    return documentationUrl(this.hass, "/integrations/" + this._domain);
   }
 
   _domainServiceChanged() {

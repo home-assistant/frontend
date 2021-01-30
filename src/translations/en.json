@@ -3275,7 +3275,8 @@
             "column_description": "Description",
             "column_example": "Example",
             "fill_example_data": "Fill Example Data",
-            "alert_parsing_yaml": "Error parsing YAML: {data}"
+            "alert_parsing_yaml": "Error parsing YAML: {data}",
+            "help": "Integration help"
           },
           "states": {
             "title": "States",
