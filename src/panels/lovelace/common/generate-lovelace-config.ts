@@ -43,7 +43,6 @@ import {
   PictureEntityCardConfig,
   ThermostatCardConfig,
 } from "../cards/types";
-import { processEditorEntities } from "../editor/process-editor-entities";
 import { LovelaceRowConfig } from "../entity-rows/types";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
@@ -247,13 +246,11 @@ const generateViewConfig = (
     const state = splitted.ungrouped[entityId];
     const domain = computeStateDomain(state);
 
-    const coll = ungroupedEntitites;
-
-    if (!(domain in coll)) {
-      coll[domain] = [];
+    if (!(domain in ungroupedEntitites)) {
+      ungroupedEntitites[domain] = [];
     }
 
-    coll[domain].push(state.entity_id);
+    ungroupedEntitites[domain].push(state.entity_id);
   });
 
   let cards: LovelaceCardConfig[] = [];
