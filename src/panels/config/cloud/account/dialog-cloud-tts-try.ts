@@ -46,15 +46,12 @@ export class DialogTryTts extends LitElement {
 
   @LocalStorage("cloudTtsTryTarget") private _target?: string;
 
-  private _audio?: HTMLAudioElement;
-
   public showDialog(params: TryTtsDialogParams) {
     this._params = params;
   }
 
   public closeDialog() {
     this._params = undefined;
-    this._audio = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -144,9 +141,9 @@ export class DialogTryTts extends LitElement {
     this._target = target;
 
     if (target === "browser") {
-      this._audio = new Audio();
-      this._audio.play();
-      this._playBrowser(message);
+      const audio = new Audio();
+      audio.play();
+      this._playBrowser(message, audio);
     } else {
       this.hass.callService("tts", "cloud_say", {
         entity_id: target,
@@ -155,7 +152,7 @@ export class DialogTryTts extends LitElement {
     }
   }
 
-  private async _playBrowser(message: string) {
+  private async _playBrowser(message: string, audio: HTMLAudioElement) {
     this._loadingExample = true;
 
     const language = this._params!.defaultVoice[0];
@@ -178,14 +175,11 @@ export class DialogTryTts extends LitElement {
       });
       return;
     }
-    if (!this._audio) {
-      this._audio = new Audio();
-    }
-    this._audio.src = url;
-    this._audio.addEventListener("canplaythrough", () => {
-      this._audio!.play();
+    audio.src = url;
+    audio.addEventListener("canplaythrough", () => {
+      audio!.play();
     });
-    this._audio.addEventListener("playing", () => {
+    audio.addEventListener("playing", () => {
       this._loadingExample = false;
     });
   }
