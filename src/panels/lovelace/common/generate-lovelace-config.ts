@@ -184,7 +184,7 @@ export const computeCards = (
         (name = computeStateName(stateObj)).startsWith(titlePrefix)
           ? {
               entity: entityId,
-              name: name.substr(titlePrefix.length),
+              name: adjustName(name.substr(titlePrefix.length)),
             }
           : entityId;
 
@@ -201,6 +201,18 @@ export const computeCards = (
   }
 
   return cards;
+};
+
+const hasUpperCase = (str: string): boolean => {
+  return str.toLowerCase() !== str;
+};
+
+const adjustName = (name: string): string => {
+  // If first word already has an upper case letter (e.g. from brand name)
+  // leave as-is, otherwise capitalize the first word.
+  return hasUpperCase(name.substr(0, name.indexOf(" ")))
+    ? name
+    : name[0].toUpperCase() + name.slice(1);
 };
 
 const computeDefaultViewStates = (
