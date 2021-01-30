@@ -141,6 +141,7 @@ export class DialogTryTts extends LitElement {
     this._target = target;
 
     if (target === "browser") {
+      // We create the audio element here + do a play, because iOS requires it to be done by user action
       const audio = new Audio();
       audio.play();
       this._playBrowser(message, audio);
