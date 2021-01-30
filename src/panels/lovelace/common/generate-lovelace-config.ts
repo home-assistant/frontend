@@ -217,7 +217,7 @@ const hasUpperCase = (str: string): boolean => {
 const adjustName = (name: string): string => {
   // If first word already has an upper case letter (e.g. from brand name)
   // leave as-is, otherwise capitalize the first word.
-  return hasUpperCase(name.split(" ")[0])
+  return hasUpperCase(name.substr(0, name.indexOf(" ")))
     ? name
     : name[0].toUpperCase() + name.slice(1);
 };
