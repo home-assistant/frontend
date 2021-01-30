@@ -178,9 +178,13 @@ export class DialogTryTts extends LitElement {
     }
     audio.src = url;
     audio.addEventListener("canplaythrough", () => {
-      audio!.play();
+      audio.play();
     });
     audio.addEventListener("playing", () => {
+      this._loadingExample = false;
+    });
+    audio.addEventListener("error", () => {
+      showAlertDialog(this, { title: "Error playing audio." });
       this._loadingExample = false;
     });
   }
