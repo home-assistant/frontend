@@ -141,7 +141,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           })}
         ></ha-gauge>
         <div class="row">
-          <ha-icon .icon=${this._config.icon || stateIcon(stateObj)}></ha-icon>
+          ${this._config.icon
+            ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
+            : ``}
           <div class="name">
             ${this._config.name || computeStateName(stateObj)}
           </div>
