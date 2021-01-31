@@ -8,8 +8,8 @@ export type Selector =
   | TimeSelector
   | ActionSelector
   | StringSelector
-  | ObjectSelector;
-
+  | ObjectSelector
+  | SelectSelector;
 export interface EntitySelector {
   entity: {
     integration?: string;
@@ -94,4 +94,10 @@ export interface StringSelector {
 export interface ObjectSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   object: {};
+}
+
+export interface SelectSelector {
+  select: {
+    options: string[];
+  };
 }
