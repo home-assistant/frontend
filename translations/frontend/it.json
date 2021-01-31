@@ -401,6 +401,7 @@
                 "direction": "Direzione",
                 "forward": "Avanti",
                 "oscillate": "Oscillazione",
+                "preset_mode": "Modalità Predefinita",
                 "reverse": "Indietro",
                 "speed": "Velocità"
             },
@@ -556,6 +557,10 @@
                 "add_user": "Aggiungi utente",
                 "remove_user": "Rimuovi utente",
                 "select_blueprint": "Seleziona un progetto"
+            },
+            "calendar": {
+                "my_calendars": "Calendari personali",
+                "today": "Oggi"
             },
             "data-table": {
                 "no-data": "Nessun dato",
@@ -1119,6 +1124,7 @@
                                     "extra_fields": {
                                         "code": "Codice",
                                         "message": "Messaggio",
+                                        "position": "Posizione",
                                         "title": "Titolo"
                                     },
                                     "label": "Dispositivo"
@@ -1510,6 +1516,11 @@
                         "thank_you_note": "Grazie per far parte di Home Assistant Cloud. È grazie a persone come te che siamo in grado di creare un'ottima esperienza domotica per tutti. Grazie!",
                         "tts": {
                             "default_language": "Lingua predefinita da utilizzare",
+                            "dialog": {
+                                "play": "Riproduci",
+                                "target": "Bersaglio",
+                                "target_browser": "Browser"
+                            },
                             "female": "Donna",
                             "info": "Porta un po' di personalità a casa tua facendola parlare con te utilizzando i nostri servizi di sintesi vocale. Puoi usarlo nelle automazioni e negli script usando il servizio {service}.",
                             "male": "Uomo",
@@ -2657,10 +2668,13 @@
                     },
                     "dashboard": {
                         "driver_version": "Versione del driver",
+                        "dump_dead_nodes_title": "Alcuni dei tuoi nodi sono morti",
+                        "dump_not_ready_title": "Non tutti i nodi sono ancora pronti",
                         "header": "Gestisci la tua rete Z-Wave",
                         "home_id": "ID Home",
                         "introduction": "Gestisci la tua rete Z-Wave e i nodi Z-Wave",
                         "node_count": "Numero Nodi",
+                        "nodes_ready": "Nodi pronti",
                         "server_version": "Versione del server"
                     },
                     "device_info": {
@@ -2706,6 +2720,11 @@
                     },
                     "description": "Gestisci la tua rete Z-Wave",
                     "learn_more": "Ulteriori informazioni su Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrare a OpenZWave"
+                        }
+                    },
                     "network_management": {
                         "header": "Gestione della rete Z-Wave",
                         "introduction": "Eseguire comandi che interessano la rete Z-Wave. Non otterrete un feedback sul successo della maggior parte dei comandi, ma potete controllare il Log OZW per cercare di scoprirlo."
@@ -3250,6 +3269,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Gestisci le tue plance di Lovelace",
+                        "manage_resources": "Gestisci le risorse",
                         "open": "Apri il menu dell'interfaccia utente di Lovelace",
                         "raw_editor": "Editor di Configurazione testuale"
                     },
