@@ -177,7 +177,7 @@
                 "on": "Unsicher"
             },
             "smoke": {
-                "off": "OK",
+                "off": "Normal",
                 "on": "Rauch erkannt"
             },
             "sound": {
@@ -592,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integration \"Historie\" deaktiviert",
                 "loading_history": "Lade Zustandsverlauf...",
                 "no_history_found": "Kein Zustandsverlauf gefunden."
             },
@@ -750,9 +751,13 @@
             },
             "entity_registry": {
                 "control": "Steuerung",
+                "customize_link": "Entitätsanpassungen",
                 "dismiss": "Ausblenden",
                 "editor": {
                     "advanced": "Erweiterte Einstellungen",
+                    "area": "Nur Entitätsbereich festlegen",
+                    "area_note": "Standardmäßig befinden sich die Entitäten eines Geräts in demselben Bereich wie das Gerät. Wenn du den Bereich dieser Entität änderst, folgt sie nicht mehr dem Bereich des Geräts.",
+                    "change_device_area": "Gerätebereich ändern",
                     "confirm_delete": "Möchtest du diesen Eintrag wirklich löschen?",
                     "delete": "Löschen",
                     "device_disabled": "Das Gerät dieser Entität ist deaktiviert.",
@@ -762,6 +767,7 @@
                     "enabled_label": "Entität aktivieren",
                     "enabled_restart_confirm": "Starte Home Assistant neu, um die Aktivierung der Entitäten abzuschließen",
                     "entity_id": "Entitäts-ID",
+                    "follow_device_area": "Gerätebereich übernehmen",
                     "icon": "Symbol",
                     "icon_error": "Symbole sollten das Format 'Präfix:iconname' haben, z. B. 'mdi:home'",
                     "name": "Namen",
@@ -771,6 +777,7 @@
                     "update": "Aktualisieren"
                 },
                 "faq": "Dokumentation",
+                "info_customize": "Du kannst einige Attribute im Abschnitt {customize_link} überschreiben.",
                 "no_unique_id": "Diese Entität (\"{entity_id}\") hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden. Schaue in der {faq_link} nach für mehr Details.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
@@ -1014,6 +1021,18 @@
             "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
             "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Du kannst deine Konfiguration weiterhin in YAML bearbeiten.",
+                "editor_not_available": "Kein visueller Editor für Typ \"{type}\" verfügbar.",
+                "editor_not_supported": "Visueller Editor wird für diese Konfiguration nicht unterstützt.",
+                "error_detected": "Konfigurationsfehler erkannt",
+                "key_missing": "Erforderlicher Schlüssel \"{key}\" fehlt.",
+                "key_not_expected": "Der Schlüssel \"{key}\" wird vom visuellen Editor nicht erwartet oder nicht unterstützt.",
+                "key_wrong_type": "Der angegebene Wert für \"{key}\" wird vom visuellen Editor nicht unterstützt. Wir unterstützen ({type_correct}), haben aber ({type_wrong}) erhalten.",
+                "no_type_provided": "Kein Typ angegeben."
+            }
+        },
         "login-form": {
             "log_in": "Anmelden",
             "password": "Passwort",
@@ -1124,6 +1143,7 @@
                                     "extra_fields": {
                                         "code": "Code",
                                         "message": "Nachricht",
+                                        "position": "Position",
                                         "title": "Titel"
                                     },
                                     "label": "Gerät"
@@ -1300,7 +1320,8 @@
                                     "extra_fields": {
                                         "above": "Über",
                                         "below": "Unter",
-                                        "for": "Dauer"
+                                        "for": "Dauer",
+                                        "zone": "Zone"
                                     },
                                     "label": "Gerät",
                                     "trigger": "Auslöser"
@@ -1515,13 +1536,17 @@
                         "tts": {
                             "default_language": "Zu verwendende Standardsprache",
                             "dialog": {
-                                "play": "Play",
+                                "example_message": "Hallo {name} , du kannst beliebigen Text auf jedem unterstützten Media Player abspielen!",
+                                "header": "Text-zu-Sprache ausprobieren",
+                                "play": "Abspielen",
                                 "target": "Ziel",
                                 "target_browser": "Browser"
                             },
                             "female": "Weiblich",
+                            "info": "Bringe Flair in dein Haus, indem du es mit unseren Text-zu-Sprache-Diensten zu dir sprechen lässt. Du kannst dies in Automatisierungen und Skripten verwenden, indem du den Dienst {service} nutzst.",
                             "male": "Männlich",
-                            "try": "Versuchen"
+                            "title": "Text-zu-Sprache",
+                            "try": "Probieren"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Fehler beim Deaktivieren des Webhooks:",
@@ -2676,7 +2701,8 @@
                         "unknown": "Unbekannt"
                     },
                     "remove_node": {
-                        "exclusion_failed": "Die Node konnte nicht entfernt werden. Bitte schaue für mehr Informationen in die Logs."
+                        "exclusion_failed": "Die Knoten konnte nicht entfernt werden. Bitte schaue für mehr Informationen in die Logs.",
+                        "exclusion_finished": "Der Knoten {id} wurde aus deinem Z-Wave-Netzwerk entfernt."
                     }
                 },
                 "zwave": {
@@ -2691,6 +2717,11 @@
                     },
                     "description": "Z-Wave-Netzwerk verwalten",
                     "learn_more": "Erfahre mehr über Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migration zu OpenZWave"
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave Netzwerkverwaltung",
                         "introduction": "Führt Befehle aus, die das Z-Wave Netzwerk betreffen. Es wird keine Rückmeldung darüber geben, ob die meisten Befehle erfolgreich waren, aber das OZW-Protokoll kann Hinweise darauf enthalten."
@@ -2875,8 +2906,11 @@
                     "action_confirmation": "Bist du sicher, dass du die Aktion \"{action}\" ausführen möchtest?",
                     "actions": {
                         "action_confirmation": "Bist du sicher, dass du die Aktion \"{action}\" ausführen möchtest?",
+                        "no_entity_more_info": "Keine Entität für Mehr-Info Dialog angegeben",
+                        "no_entity_toggle": "Keine Entität zum Umschalten angegeben",
                         "no_navigation_path": "Kein Navigationspfad angegeben",
-                        "no_service": "Kein Dienst zur Ausführung angegeben"
+                        "no_service": "Kein Dienst zur Ausführung angegeben",
+                        "no_url": "Keine URL zum Öffnen angegeben"
                     },
                     "confirm_delete": "Möchten Sie diese Karte wirklich löschen?",
                     "empty_state": {
@@ -3439,6 +3473,7 @@
                     "working": "Bitte warten"
                 },
                 "initializing": "Initialisieren",
+                "logging_in_to_with": "Anmelden bei **{locationName}** mit **{authProviderName}**.",
                 "logging_in_with": "Anmeldung mit **{authProviderName}**.",
                 "pick_auth_provider": "Oder melde dich an mit"
             },

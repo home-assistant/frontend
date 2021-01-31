@@ -292,8 +292,8 @@
             "on": "wł."
         },
         "sun": {
-            "above_horizon": "powyżej horyzontu",
-            "below_horizon": "poniżej horyzontu"
+            "above_horizon": "Nad horyzontem",
+            "below_horizon": "Poniżej horyzontu"
         },
         "switch": {
             "off": "wył.",
@@ -321,12 +321,12 @@
             "fog": "mgła",
             "hail": "grad",
             "lightning": "błyskawice",
-            "lightning-rainy": "burza",
+            "lightning-rainy": "Burza",
             "partlycloudy": "częściowe zachmurzenie",
             "pouring": "ulewa",
             "rainy": "deszczowo",
-            "snowy": "opady śniegu",
-            "snowy-rainy": "śnieg z deszczem",
+            "snowy": "Opady śniegu",
+            "snowy-rainy": "Śnieg z deszczem",
             "sunny": "słonecznie",
             "windy": "wietrznie",
             "windy-variant": "wietrznie"
@@ -379,7 +379,7 @@
                 "low": "niska",
                 "on_off": "wł. / wył.",
                 "operation": "Tryb pracy",
-                "preset_mode": "Ustawienia",
+                "preset_mode": "Ustawienie predefiniowane",
                 "swing_mode": "Tryb ruchu łopatek",
                 "target_humidity": "Wilgotność docelowa",
                 "target_temperature": "Temperatura docelowa",
@@ -401,6 +401,7 @@
                 "direction": "Kierunek",
                 "forward": "Naprzód",
                 "oscillate": "Oscylacja",
+                "preset_mode": "Ustawienie predefiniowane",
                 "reverse": "Wstecz",
                 "speed": "Prędkość"
             },
@@ -751,8 +752,13 @@
             },
             "entity_registry": {
                 "control": "Kontrola",
+                "customize_link": "dostosowywania encji",
                 "dismiss": "Odrzuć",
                 "editor": {
+                    "advanced": "Zaawansowane ustawienia",
+                    "area": "Ustaw obszar encji",
+                    "area_note": "Domyślnie encje urządzenia znajdują się w tym samym obszarze co urządzenie. Jeśli zmienisz obszar tej encji, nie będzie ona już występować w obszarze urządzenia.",
+                    "change_device_area": "Zmień obszar urządzenia",
                     "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
                     "delete": "Usuń",
                     "device_disabled": "Urządzenie tej encji jest wyłączone",
@@ -762,6 +768,7 @@
                     "enabled_label": "Włącz encję",
                     "enabled_restart_confirm": "Uruchom ponownie Home Assistanta, aby zakończyć włączanie encji",
                     "entity_id": "Identyfikator encji",
+                    "follow_device_area": "Użyj obszaru urządzenia",
                     "icon": "Ikona",
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nazwa",
@@ -771,6 +778,7 @@
                     "update": "Aktualizuj"
                 },
                 "faq": "dokumentacja",
+                "info_customize": "Możesz nadpisać niektóre atrybuty w sekcji {customize_link}.",
                 "no_unique_id": "Encja \"{entity_id}\" nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami. Więcej szczegółów znajdziesz w {faq_link}.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
@@ -1014,6 +1022,18 @@
             "second": "{count} {count, plural,\n  one {sekunda}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n}",
             "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Nadal możesz edytować konfigurację w YAML.",
+                "editor_not_available": "Brak edytora wizualnego dla typu \"{type}\".",
+                "editor_not_supported": "Edytor wizualny nie jest obsługiwany dla tej konfiguracji",
+                "error_detected": "Wykryto błędy konfiguracji",
+                "key_missing": "Brak wymaganego klucza \"{key}\".",
+                "key_not_expected": "Klucz \"{key}\" nie jest oczekiwany lub nie jest obsługiwany przez edytor wizualny.",
+                "key_wrong_type": "Wprowadzona wartość dla \"{key}\" nie jest obsługiwana przez edytor wizualny. Obsługujemy ({type_correct}), a otrzymaliśmy ({type_wrong}).",
+                "no_type_provided": "Nie wprowadzono typu."
+            }
+        },
         "login-form": {
             "log_in": "Zaloguj",
             "password": "Hasło",
@@ -1124,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Kod",
                                         "message": "Wiadomość",
+                                        "position": "Pozycja",
                                         "title": "Tytuł"
                                     },
                                     "label": "Urządzenie"
@@ -2646,7 +2667,18 @@
                 },
                 "zwave_js": {
                     "add_node": {
-                        "title": "Dodaj węzeł Z-Wave"
+                        "cancel_inclusion": "Anuluj dodawanie węzła",
+                        "controller_in_inclusion_mode": "Kontroler Z-Wave jest teraz w trybie dodawania węzła.",
+                        "follow_device_instructions": "Postępuj zgodnie ze wskazówkami dołączonymi do urządzenia, aby wywołać dodawanie do sieci.",
+                        "inclusion_failed": "Nie można dodać węzła. Sprawdź logi, aby uzyskać więcej informacji.",
+                        "inclusion_finished": "Węzeł został dodany. Trwa kończenie konfiguracji węzła w tle, dodawanie encji urządzenia może zająć kilka minut.",
+                        "introduction": "Ten kreator poprowadzi Cię przez proces dodawania węzła do sieci Z-Wave.",
+                        "secure_inclusion_warning": "Bezpieczne węzły wymagają dodatkowej przepustowości; zbyt wiele bezpiecznych węzłów może spowolnić twoją sieć Z-Wave. Zalecamy używanie bezpiecznego włączenia tylko w przypadku urządzeń, które tego wymagają, takich jak zamki lub urządzenia sterujące bramami garażowymi.",
+                        "start_inclusion": "Rozpocznij dodawanie węzła",
+                        "start_secure_inclusion": "Rozpocznij dodawanie bezpiecznego węzła",
+                        "title": "Dodaj węzeł Z-Wave",
+                        "use_secure_inclusion": "Użyj bezpiecznego dodawania",
+                        "view_device": "Wyświetl urządzenie"
                     },
                     "button": "Konfiguruj",
                     "common": {
@@ -2691,6 +2723,16 @@
                         "awake": "wybudzony",
                         "dead": "martwy",
                         "unknown": "nieznany"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Anuluj usuwanie węzła",
+                        "controller_in_exclusion_mode": "Kontroler Z-Wave jest teraz w trybie usuwania węzła.",
+                        "exclusion_failed": "Nie można usunąć węzła. Sprawdź logi, aby uzyskać więcej informacji.",
+                        "exclusion_finished": "Węzeł {id} został usunięty z sieci Z-Wave.",
+                        "follow_device_instructions": "Postępuj zgodnie ze wskazówkami dołączonymi do urządzenia, aby wywołać usuwanie z sieci.",
+                        "introduction": "Usuń węzeł ze swojej sieci Z-Wave i usuń powiązane urządzenie i encje z Home Assistanta.",
+                        "start_exclusion": "Rozpocznij usuwanie węzła",
+                        "title": "Usuń węzeł Z-Wave"
                     }
                 },
                 "zwave": {
@@ -2895,6 +2937,9 @@
                     "action_confirmation": "Czy na pewno chcesz wykonać akcję \"{action}\"?",
                     "actions": {
                         "action_confirmation": "Czy na pewno chcesz wykonać akcję \"{action}\"?",
+                        "no_entity_more_info": "Nie wybrano encji dla okna dialogowego \"więcej informacji\"",
+                        "no_entity_toggle": "Nie wybrano encji do przełączenia",
+                        "no_navigation_path": "Nie określono ścieżki nawigacji",
                         "no_service": "Nie określono usługi do wykonania",
                         "no_url": "Nie określono adresu URL do otwarcia"
                     },
@@ -3083,7 +3128,8 @@
                         "grid": {
                             "columns": "Kolumny",
                             "description": "Karta siatka umożliwia wyświetlanie wielu kart w siatce.",
-                            "name": "Siatka"
+                            "name": "Siatka",
+                            "square": "Renderuj karty jako kwadraty"
                         },
                         "history-graph": {
                             "description": "Karta wykres historii umożliwia wyświetlenie wykresu dla każdej z wymienionych encji.",

@@ -401,6 +401,7 @@
                 "direction": "Yön",
                 "forward": "Ileri",
                 "oscillate": "Salınım",
+                "preset_mode": "Ön Ayar Modu",
                 "reverse": "Ters",
                 "speed": "Hız"
             },
@@ -556,6 +557,10 @@
                 "remove_user": "Kullanıcıyı kaldır",
                 "select_blueprint": "Bir Taslak Seçin"
             },
+            "calendar": {
+                "my_calendars": "Takvimlerim",
+                "today": "Bugün"
+            },
             "data-table": {
                 "no-data": "Veri yok",
                 "search": "Ara"
@@ -603,9 +608,9 @@
                     "set": "Ayarlamak",
                     "turned_off": "Kapatıldı",
                     "turned_on": "Açıldı",
-                    "was_at_home": "evdeydi",
-                    "was_at_state": "{state}",
-                    "was_away": "uzaktaydı",
+                    "was_at_home": "evde tespit edildi",
+                    "was_at_state": "{state} tespit edildi",
+                    "was_away": "uzakta tespit edildi",
                     "was_closed": "kapatıldı",
                     "was_connected": "bağlandı",
                     "was_disconnected": "bağlantısı kesildi",
@@ -747,6 +752,8 @@
                 "control": "Kontrol",
                 "dismiss": "Kapat",
                 "editor": {
+                    "advanced": "Gelişmiş Ayarlar",
+                    "change_device_area": "Cihaz alanını değiştir",
                     "confirm_delete": "Bu girişi silmek istediğinizden emin misiniz?",
                     "delete": "Sil",
                     "device_disabled": "Bu varlığın ait olduğu cihaz devre dışı.",
@@ -756,6 +763,7 @@
                     "enabled_label": "Varlığı etkinleştir",
                     "enabled_restart_confirm": "Varlıkları etkinleştirmeyi tamamlamak için Home Assistant'ı yeniden başlatın",
                     "entity_id": "Varlık kimliği",
+                    "follow_device_area": "Cihaz alanını takip edin",
                     "icon": "Simge",
                     "icon_error": "Simgeler 'önek: simge adı' biçiminde olmalıdır, örneğin 'mdi: home'",
                     "name": "Ad",
@@ -1007,6 +1015,17 @@
             "minute": "{count}{count, plural,\n  one { dakika }\n  other { dakika }\n}",
             "second": "{count}{count, plural,\n  one {saniye}\n  other {saniyeler}\n}",
             "week": "{count}{count, plural,\n  one { hafta }\n  other { hafta }\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Yapılandırmanızı YAML'de hala düzenleyebilirsiniz.",
+                "editor_not_available": "\"{type}\" türü için görsel düzenleyici yok.",
+                "editor_not_supported": "Görsel düzenleyici bu yapılandırma için desteklenmez",
+                "error_detected": "Yapılandırma hataları algılandı",
+                "key_missing": "Gerekli anahtar \" {key} \" eksik.",
+                "key_wrong_type": "\" {key} \" için sağlanan değer görsel düzenleyici tarafından desteklenmiyor. Destekliyoruz ( {type_correct} ) ancak {type_wrong} ( {type_wrong} ).",
+                "no_type_provided": "Tür sağlanmadı."
+            }
         },
         "login-form": {
             "log_in": "Oturum aç",
@@ -1463,7 +1482,7 @@
                             "info_state_reporting": "Durum raporlamayı etkinleştirirseniz, Home Assistant sergilenmis varlıkların tüm durum değişikliklerini Amazon'a gönderir. Bu, Alexa uygulamasında her zaman en son durumları görmenizi ve rutin oluşturmak için durum değişikliklerini kullanmanızı sağlar.",
                             "manage_entities": "Varlıkları Yönetin",
                             "state_reporting_error": "Durum {enable_disable} rapor edilemidi.",
-                            "sync_entities": "Varlıkları Senkronize Et",
+                            "sync_entities": "Varlıkları Amazon ile Senkronize Etme",
                             "sync_entities_error": "Varlıklar senkronize edilemedi:",
                             "title": "Alexa"
                         },
@@ -1504,6 +1523,15 @@
                         },
                         "sign_out": "oturumu Kapat",
                         "thank_you_note": "Home Assistant Cloud'un bir parçası olduğunuz için teşekkür ederiz. Sizin gibi insanlar sayesinde herkes için harika bir ev otomasyonu deneyimi yaşayabiliyoruz. Teşekkür ederim!",
+                        "tts": {
+                            "dialog": {
+                                "example_message": "Merhaba {name} , desteklenen herhangi bir medya oynatıcıda herhangi bir metni seslendirebilirsiniz!",
+                                "header": "Metinden Konuşmaya Deneyin",
+                                "target": "Hedef",
+                                "target_browser": "Tarayıcı"
+                            },
+                            "try": "Deneyin"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Webhook devre dışı bırakılamadı:",
                             "info": "Bir webhook tarafından tetiklenecek şekilde yapılandırılan her şeye, örneğinizi internete maruz bırakmadan herhangi bir yerden Home Assistant'a geri göndermenize izin vermek için herkese açık bir URL verilebilir.",
@@ -2618,6 +2646,14 @@
                     "introduction": "Bölgeler, dünyadaki belirli bölgeleri belirtmenize izin verir. Bir kişi bir bölge içindeyse, durumunu bölgenin isminden alır. Bölgeler, otomasyon kurulumlarında tetikleyici veya koşul olarak da kullanılabilir.",
                     "no_zones_created_yet": "Görünüşe göre henüz herhangi bir bölge oluşturmadınız."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Cihazı Görüntüle"
+                    },
+                    "dashboard": {
+                        "server_version": "Sunucu Sürümü"
+                    }
+                },
                 "zwave": {
                     "button": "Yapılandır",
                     "caption": "Z-Wave",
@@ -2811,6 +2847,9 @@
                     "yaml_unsupported": "YAML modunda Lovelace kullanıcı arayüzünü kullanırken bu işlevi kullanamazsınız."
                 },
                 "cards": {
+                    "actions": {
+                        "action_confirmation": "\"{action}\" eylemini yürütmek istediğinizden emin misiniz?"
+                    },
                     "confirm_delete": "Bu kartı silmek istediğinizden emin misiniz?",
                     "empty_state": {
                         "go_to_integrations_page": "Entegrasyonlar sayfasına gidin.",
@@ -2869,7 +2908,7 @@
                             "name": "Alarm Paneli"
                         },
                         "button": {
-                            "default_action_help": "Varsayılan eylem varlığın yeteneklerine bağlıdır, ya değiştirilecek ya da daha fazla bilgi gösterilecektir.",
+                            "default_action_help": "Varsayılan eylem varlığın yeteneklerine bağlıdır, ya değiştirilecek ya da daha fazla bilgi iletişim kutusu gösterilecektir.",
                             "description": "Düğme kartı görevleri gerçekleştirmek için düğme eklemenizi sağlar.",
                             "name": "Düğme"
                         },
@@ -2986,6 +3025,7 @@
                             "name": "Glance"
                         },
                         "grid": {
+                            "columns": "Sütunlar",
                             "description": "Izgara kartı, ızgarada birden çok kart göstermenizi sağlar.",
                             "name": "Izgara"
                         },
@@ -3155,6 +3195,7 @@
                         }
                     },
                     "menu": {
+                        "manage_resources": "Kaynakları yönetin",
                         "open": "Lovelace UI menüsünü aç",
                         "raw_editor": "Ham config editörü"
                     },
