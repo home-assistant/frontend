@@ -593,6 +593,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integrazione della cronologia disabilitata",
                 "loading_history": "Caricamento storico...",
                 "no_history_found": "Nessuno storico trovato."
             },
@@ -751,8 +752,13 @@
             },
             "entity_registry": {
                 "control": "Controllo",
+                "customize_link": "personalizzazioni delle entità",
                 "dismiss": "Annullare",
                 "editor": {
+                    "advanced": "Impostazioni avanzate",
+                    "area": "Imposta solo l'area dell'entità",
+                    "area_note": "Per impostazione predefinita, le entità di un dispositivo si trovano nella stessa area del dispositivo. Se si modifica l'area di questa entità, essa non seguirà più l'area del dispositivo.",
+                    "change_device_area": "Cambia l'area del dispositivo",
                     "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
                     "delete": "Elimina",
                     "device_disabled": "Il dispositivo di questa entità è disabilitato.",
@@ -762,6 +768,7 @@
                     "enabled_label": "Abilita entità",
                     "enabled_restart_confirm": "Riavviare Home Assistant per completare l'abilitazione delle entità",
                     "entity_id": "ID entità",
+                    "follow_device_area": "Segui l'area del dispositivo",
                     "icon": "Icona",
                     "icon_error": "Le icone dovrebbero essere nel formato 'prefisso:nome_icona', ad esempio 'mdi:home'.",
                     "name": "Nome",
@@ -771,6 +778,7 @@
                     "update": "Aggiorna"
                 },
                 "faq": "documentazione",
+                "info_customize": "Puoi sovrascrivere alcuni attributi nella sezione {customize_link}.",
                 "no_unique_id": "Questa entità (\"{entity_id}\") non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente. Vedere {faq_link} per maggiori dettagli.",
                 "related": "Relazionato",
                 "settings": "Impostazioni"
@@ -1014,6 +1022,18 @@
             "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",
             "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Puoi ancora modificare la tua configurazione in YAML.",
+                "editor_not_available": "Nessun editor visivo disponibile per il tipo \"{type}\".",
+                "editor_not_supported": "L'editor visivo non è supportato per questa configurazione",
+                "error_detected": "Rilevati errori di configurazione",
+                "key_missing": "Chiave obbligatoria \"{key}\" mancante.",
+                "key_not_expected": "La chiave \"{key}\" non è prevista o non è supportata dall'editor visivo.",
+                "key_wrong_type": "Il valore fornito per \"{key}\" non è supportato dall'editor visivo. Supportiamo ({type_correct}) ma ricevuto ({type_wrong}).",
+                "no_type_provided": "Nessun tipo fornito."
+            }
+        },
         "login-form": {
             "log_in": "Accedi",
             "password": "Password",
@@ -1124,7 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Codice",
                                         "message": "Messaggio",
-                                        "position": "Posizione",
+                                        "position": "Apertura",
                                         "title": "Titolo"
                                     },
                                     "label": "Dispositivo"
@@ -1517,6 +1537,8 @@
                         "tts": {
                             "default_language": "Lingua predefinita da utilizzare",
                             "dialog": {
+                                "example_message": "Ciao {name}, puoi riprodurre qualsiasi testo su qualsiasi lettore multimediale supportato!",
+                                "header": "Prova la sintesi vocale",
                                 "play": "Riproduci",
                                 "target": "Bersaglio",
                                 "target_browser": "Browser"
@@ -1524,7 +1546,8 @@
                             "female": "Donna",
                             "info": "Porta un po' di personalità a casa tua facendola parlare con te utilizzando i nostri servizi di sintesi vocale. Puoi usarlo nelle automazioni e negli script usando il servizio {service}.",
                             "male": "Uomo",
-                            "title": "Sintesi vocale"
+                            "title": "Sintesi vocale",
+                            "try": "Prova"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Impossibile disabilitare webhook:",
@@ -2142,7 +2165,7 @@
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Tutti i nodi sono stati interrogati.",
-                            "driverallnodesqueriedsomedead": "Tutti i nodi sono stati interrogati. Alcuni nodi sono stati trovati morti",
+                            "driverallnodesqueriedsomedead": "Tutti i nodi sono stati interrogati. Alcuni nodi sono stati trovati disattivi",
                             "driverawakenodesqueries": "Tutti i nodi svegli sono stati interrogati",
                             "driverfailed": "Impossibile connettersi al controller Z-Wave",
                             "driverready": "Inizializzazione del controller Z-Wave",
@@ -2668,7 +2691,11 @@
                     },
                     "dashboard": {
                         "driver_version": "Versione del driver",
-                        "dump_dead_nodes_title": "Alcuni dei tuoi nodi sono morti",
+                        "dump_dead_nodes_text": "Alcuni dei tuoi nodi non hanno risposto e si presume che siano disattivi. Questi non verranno esportati completamente.",
+                        "dump_dead_nodes_title": "Alcuni dei tuoi nodi sono disattivi",
+                        "dump_debug": "Scarica una struttura della tua rete per diagnosticare i problemi",
+                        "dump_not_ready_confirm": "Scarica",
+                        "dump_not_ready_text": "Se crei un'esportazione mentre i nodi non sono tutti pronti, potresti perdere dati necessari. Dai alla tua rete un po' di tempo per interrogare tutti i nodi. Vuoi continuare con questa struttura di rete?",
                         "dump_not_ready_title": "Non tutti i nodi sono ancora pronti",
                         "header": "Gestisci la tua rete Z-Wave",
                         "home_id": "ID Home",
@@ -2722,7 +2749,8 @@
                     "learn_more": "Ulteriori informazioni su Z-Wave",
                     "migration": {
                         "ozw": {
-                            "header": "Migrare a OpenZWave"
+                            "header": "Migrare a OpenZWave",
+                            "introduction": "Questa procedura guidata consente di eseguire la migrazione dall'integrazione Z-Wave legacy all'integrazione OpenZWave attualmente in versione beta."
                         }
                     },
                     "network_management": {
@@ -3269,7 +3297,7 @@
                         }
                     },
                     "menu": {
-                        "manage_dashboards": "Gestisci le tue plance di Lovelace",
+                        "manage_dashboards": "Gestisci le plance",
                         "manage_resources": "Gestisci le risorse",
                         "open": "Apri il menu dell'interfaccia utente di Lovelace",
                         "raw_editor": "Editor di Configurazione testuale"

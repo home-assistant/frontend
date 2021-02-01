@@ -557,6 +557,9 @@
                 "remove_user": "Odebrat uživatele",
                 "select_blueprint": "Vyberte šablonu"
             },
+            "calendar": {
+                "my_calendars": "Moje kalendáře"
+            },
             "data-table": {
                 "no-data": "Žádná data",
                 "search": "Hledat"
@@ -1136,6 +1139,7 @@
                                     "extra_fields": {
                                         "code": "Kód",
                                         "message": "Zpráva",
+                                        "position": "Pozice",
                                         "title": "Název"
                                     },
                                     "label": "Zařízení"
@@ -2863,6 +2867,7 @@
                 "cards": {
                     "action_confirmation": "Opravdu chcete provést akci \"{action}\"?",
                     "actions": {
+                        "action_confirmation": "Opravdu chcete provést akci \"{action}\"?",
                         "no_entity_more_info": "Pro dialog s dalšími informacemi není poskytnuta žádná entita",
                         "no_entity_toggle": "K přepnutí není poskytnuta žádná entita",
                         "no_navigation_path": "Není zadána žádná navigační cesta",
@@ -3054,7 +3059,8 @@
                         "grid": {
                             "columns": "Sloupce",
                             "description": "Karta Mřížka umožňuje zobrazit více karet v mřížce.",
-                            "name": "Mřížka"
+                            "name": "Mřížka",
+                            "square": "Vykreslit karty jako čtverce"
                         },
                         "history-graph": {
                             "description": "Karta Graf historie umožňuje zobrazit graf pro každou z uvedených entit.",

@@ -1135,7 +1135,8 @@
                                 "device_id": {
                                     "action": "Aksiyon",
                                     "extra_fields": {
-                                        "code": "Kod"
+                                        "code": "Kod",
+                                        "position": "Konum"
                                     },
                                     "label": "Cihaz"
                                 },
@@ -1527,6 +1528,7 @@
                             "dialog": {
                                 "example_message": "Merhaba {name} , desteklenen herhangi bir medya oynatıcıda herhangi bir metni seslendirebilirsiniz!",
                                 "header": "Metinden Konuşmaya Deneyin",
+                                "play": "Oynat",
                                 "target": "Hedef",
                                 "target_browser": "Tarayıcı"
                             },
@@ -2666,6 +2668,11 @@
                     },
                     "description": "Z-Wave ağınızı yönetin",
                     "learn_more": "Z-Wave hakkında daha fazla bilgi edinin",
+                    "migration": {
+                        "ozw": {
+                            "header": "OpenZWave'e geçiş yapın"
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave Ağ Yönetimi",
                         "introduction": "Z-Dalga ağını etkileyen komutları çalıştırın. Çoğu komutun başarılı olup olmadığı hakkında geri bildirim almazsınız, ancak öğrenmek için OZW Günlüğü'ne göz atabilirsiniz."
@@ -3195,6 +3202,7 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Gösterge panelini yönet",
                         "manage_resources": "Kaynakları yönetin",
                         "open": "Lovelace UI menüsünü aç",
                         "raw_editor": "Ham config editörü"
