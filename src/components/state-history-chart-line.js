@@ -139,6 +139,15 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
           return;
         }
         data.forEach((d, i) => {
+          if (datavalues[i] === null && prevValues && prevValues[i] !== null) {
+            // null data values show up as gaps in the chart.
+            // If the current value for the dataset is null and the previous
+            // value of the data set is not null, then add an 'end' point
+            // to the chart for the previous value. Otherwise the gap will
+            // be too big. It will go from the start of the previous data
+            // value until the start of the next data value.
+            d.data.push({ x: timestamp, y: prevValues[i] });
+          }
           d.data.push({ x: timestamp, y: datavalues[i] });
         });
         prevValues = datavalues;
