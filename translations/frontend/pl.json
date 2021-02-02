@@ -1493,7 +1493,7 @@
                             "info_state_reporting": "Jeśli włączysz raportowanie stanów, Home Assistant wyśle wszystkie zmiany stanu udostępnionych encji na serwery Amazona. Dzięki temu zawsze możesz zobaczyć najnowsze stany w aplikacji Alexa i używać zmian stanów do tworzenia rutyn.",
                             "manage_entities": "Zarządzanie encjami",
                             "state_reporting_error": "Nie można przesłać stanu {enable_disable}",
-                            "sync_entities": "Synchronizuj encje",
+                            "sync_entities": "Synchronizuj encje z Amazon",
                             "sync_entities_error": "Nie udało się zsynchronizować encji:",
                             "title": "Alexa"
                         },
@@ -1544,7 +1544,7 @@
                                 "target_browser": "Przeglądarka"
                             },
                             "female": "Kobieta",
-                            "info": "Podaruj swemu domu osobowość dając mu możliwość mówienia do Ciebie za pomocą naszych usług zamiany tekstu na mowę. Możesz ich użyć w automatyzacjach i skryptach, korzystając z usługi {service} .",
+                            "info": "Podaruj swemu domu osobowość dając mu możliwość mówienia do Ciebie za pomocą naszych usług zamiany tekstu na mowę. Możesz ich użyć w automatyzacjach i skryptach, korzystając z usługi {service}.",
                             "male": "Mężczyzna",
                             "title": "Zamiana tekstu na mowę",
                             "try": "Wypróbuj"
@@ -1580,11 +1580,11 @@
                     "description_login": "Zalogowany jako {email}",
                     "description_not_login": "Nie zalogowany",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Data ważności certyfikatu",
+                        "certificate_expiration_date": "Data ważności certyfikatu:",
                         "certificate_information": "Informacja o certyfikacie",
                         "close": "Zamknij",
                         "fingerprint": "Odcisk palca certyfikatu:",
-                        "will_be_auto_renewed": "Będzie automatycznie odnawiany"
+                        "will_be_auto_renewed": "będzie automatycznie odnawiany"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Webhook jest dostępny pod następującym adresem URL:",
@@ -2561,7 +2561,7 @@
                     },
                     "description": "Zarządzanie siecią Zigbee Home Automation",
                     "device_pairing_card": {
-                        "CONFIGURED": "Konfigurowanie zakończona",
+                        "CONFIGURED": "Konfigurowanie zakończone",
                         "CONFIGURED_status_text": "Inicjalizacja",
                         "INITIALIZED": "Inicjalizacja zakończona",
                         "INITIALIZED_status_text": "Urządzenie jest gotowe do użycia",
@@ -2673,7 +2673,7 @@
                         "inclusion_failed": "Nie można dodać węzła. Sprawdź logi, aby uzyskać więcej informacji.",
                         "inclusion_finished": "Węzeł został dodany. Trwa kończenie konfiguracji węzła w tle, dodawanie encji urządzenia może zająć kilka minut.",
                         "introduction": "Ten kreator poprowadzi Cię przez proces dodawania węzła do sieci Z-Wave.",
-                        "secure_inclusion_warning": "Bezpieczne węzły wymagają dodatkowej przepustowości; zbyt wiele bezpiecznych węzłów może spowolnić twoją sieć Z-Wave. Zalecamy używanie bezpiecznego włączenia tylko w przypadku urządzeń, które tego wymagają, takich jak zamki lub urządzenia sterujące bramami garażowymi.",
+                        "secure_inclusion_warning": "Bezpieczne węzły wymagają dodatkowej przepustowości; zbyt wiele bezpiecznych węzłów może spowolnić twoją sieć Z-Wave. Zalecamy używanie bezpiecznego dodawania tylko w przypadku urządzeń, które tego wymagają, takich jak zamki lub urządzenia sterujące bramami garażowymi.",
                         "start_inclusion": "Rozpocznij dodawanie węzła",
                         "start_secure_inclusion": "Rozpocznij dodawanie bezpiecznego węzła",
                         "title": "Dodaj węzeł Z-Wave",
@@ -3009,7 +3009,7 @@
                             "name": "Panel alarmu"
                         },
                         "button": {
-                            "default_action_help": "Domyślna akcja zależy od możliwości encji, encja zostanie przełączona lub zostanie wyświetlone okno więcej informacji.",
+                            "default_action_help": "Domyślna akcja zależy od możliwości encji, encja zostanie przełączona lub zostanie wyświetlone okno \"Więcej informacji\".",
                             "description": "Karta przycisku umożliwia dodawanie przycisków do wykonywania zadań.",
                             "name": "Przycisk"
                         },

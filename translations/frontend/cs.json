@@ -401,6 +401,7 @@
                 "direction": "Směr",
                 "forward": "Vpřed",
                 "oscillate": "Oscilovat",
+                "preset_mode": "Předvolba",
                 "reverse": "Vzad",
                 "speed": "Rychlost"
             },

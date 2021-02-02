@@ -513,6 +513,7 @@
             "close": "Kapat",
             "continue": "Devam et",
             "copied": "Kopyalandı",
+            "copied_clipboard": "Panoya kopyalandı",
             "delete": "Sil",
             "disable": "Devre dışı bırak",
             "enable": "Etkinleştir",
@@ -592,6 +593,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Geçmiş entegrasyonu devre dışı bırakıldı",
                 "loading_history": "Durum geçmişi yükleniyor...",
                 "no_history_found": "Durum geçmişi bulunamadı."
             },
@@ -750,9 +752,12 @@
             },
             "entity_registry": {
                 "control": "Kontrol",
+                "customize_link": "varlık özelleştirmeleri",
                 "dismiss": "Kapat",
                 "editor": {
                     "advanced": "Gelişmiş Ayarlar",
+                    "area": "Yalnızca varlık alanını ayarla",
+                    "area_note": "Varsayılan olarak, bir aygıtın varlıkları aygıtla aynı alandadır. Bu varlığın alanını değiştirirseniz, artık aygıtın alanını takip etmeyecektir.",
                     "change_device_area": "Cihaz alanını değiştir",
                     "confirm_delete": "Bu girişi silmek istediğinizden emin misiniz?",
                     "delete": "Sil",
@@ -773,6 +778,7 @@
                     "update": "Güncelle"
                 },
                 "faq": "dokümantasyon",
+                "info_customize": "{customize_link} bölümünde bazı özniteliklerin üzerine yazabilirsiniz.",
                 "no_unique_id": "Bu varlığın (\" {entity_id} \") benzersiz bir kimliği yok, bu nedenle ayarları kullanıcı arayüzünden yönetilemez. Daha fazla ayrıntı için {faq_link} bakın.",
                 "related": "İlgili",
                 "settings": "Ayarlar"
@@ -820,7 +826,7 @@
                     "max": "Maksimum uzunluk",
                     "min": "Minimum uzunluk",
                     "mode": "Görüntü modu",
-                    "password": "Şifre",
+                    "password": "Parola",
                     "pattern": "İstemci tarafı doğrulaması için normal ifade kalıbı",
                     "text": "Metin"
                 },
@@ -949,7 +955,7 @@
                         "mqtt": "Manuel olarak yapılandırılmış MQTT varlıklarını yeniden yükleyin",
                         "person": "Kişileri yeniden yükle",
                         "ping": "Ping ikili sensör varlıklarını yeniden yükle",
-                        "reload": "{domain} alanını yeniden yükleyin",
+                        "reload": "{domain} yükleyin",
                         "rest": "Rest varlıklarını yeniden yükleyin ve hizmetleri bilgilendirin",
                         "rpi_gpio": "Raspberry Pi GPIO varlıklarını yeniden yükleyin",
                         "scene": "Sahneleri yeniden yükle",
@@ -1023,13 +1029,14 @@
                 "editor_not_supported": "Görsel düzenleyici bu yapılandırma için desteklenmez",
                 "error_detected": "Yapılandırma hataları algılandı",
                 "key_missing": "Gerekli anahtar \" {key} \" eksik.",
-                "key_wrong_type": "\" {key} \" için sağlanan değer görsel düzenleyici tarafından desteklenmiyor. Destekliyoruz ( {type_correct} ) ancak {type_wrong} ( {type_wrong} ).",
+                "key_not_expected": "Anahtar \"{key}\" beklenmiyor veya görsel düzenleyici tarafından desteklenmiyor.",
+                "key_wrong_type": "\"{key}\" için sağlanan değer görsel düzenleyici tarafından desteklenmez. Biz destek ({type_correct}) ama alınan ({type_wrong}).",
                 "no_type_provided": "Tür sağlanmadı."
             }
         },
         "login-form": {
             "log_in": "Oturum aç",
-            "password": "Şifre",
+            "password": "Parola",
             "remember": "Hatırla"
         },
         "notification_drawer": {
@@ -1136,7 +1143,9 @@
                                     "action": "Aksiyon",
                                     "extra_fields": {
                                         "code": "Kod",
-                                        "position": "Konum"
+                                        "message": "İleti",
+                                        "position": "Konum",
+                                        "title": "Başlık"
                                     },
                                     "label": "Cihaz"
                                 },
@@ -1312,7 +1321,8 @@
                                     "extra_fields": {
                                         "above": "Üzerinde",
                                         "below": "Altında",
-                                        "for": "Süre"
+                                        "for": "Süre",
+                                        "zone": "Bölge"
                                     },
                                     "label": "Cihaz",
                                     "trigger": "tetik"
@@ -1525,6 +1535,7 @@
                         "sign_out": "oturumu Kapat",
                         "thank_you_note": "Home Assistant Cloud'un bir parçası olduğunuz için teşekkür ederiz. Sizin gibi insanlar sayesinde herkes için harika bir ev otomasyonu deneyimi yaşayabiliyoruz. Teşekkür ederim!",
                         "tts": {
+                            "default_language": "Kullanılacak varsayılan dil",
                             "dialog": {
                                 "example_message": "Merhaba {name} , desteklenen herhangi bir medya oynatıcıda herhangi bir metni seslendirebilirsiniz!",
                                 "header": "Metinden Konuşmaya Deneyin",
@@ -1532,6 +1543,10 @@
                                 "target": "Hedef",
                                 "target_browser": "Tarayıcı"
                             },
+                            "female": "Kadın",
+                            "info": "Metinden Konuşmaya hizmetlerimizi kullanarak sizinle konuşmasını sağlayarak evinize kişilik katın. Bunu, {service} hizmetini kullanarak otomasyonlarda ve komut dosyalarında kullanabilirsiniz.",
+                            "male": "Erkek",
+                            "title": "Metinden Konuşmaya",
                             "try": "Deneyin"
                         },
                         "webhooks": {
@@ -1569,7 +1584,7 @@
                         "certificate_information": "Sertifika bilgileri",
                         "close": "Kapat",
                         "fingerprint": "Sertifika parmak izi:",
-                        "will_be_auto_renewed": "Olacak otomatik olarak yenilenecektir"
+                        "will_be_auto_renewed": "otomatik olarak yenilenecektir"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Webhook aşağıdaki URL'de kullanılabilir:",
@@ -1583,7 +1598,7 @@
                         "webhook_for": "{name} için Webhook"
                     },
                     "forgot_password": {
-                        "check_your_email": "Şifrenizi nasıl sıfırlayacağınıza ilişkin talimatlar için e-postanızı kontrol edin.",
+                        "check_your_email": "Parolanızı nasıl sıfırlayacağınıza ilişkin talimatlar için e-postanızı kontrol edin.",
                         "email": "E-posta",
                         "email_error_msg": "Geçersiz e-posta",
                         "instructions": "E-posta adresinizi girin, size şifrenizi sıfırlamanız için bir bağlantı gönderelim.",
@@ -1608,13 +1623,13 @@
                     },
                     "login": {
                         "alert_email_confirm_necessary": "Giriş yapmadan önce e-postanızı onaylamanız gerekiyor.",
-                        "alert_password_change_required": "Giriş yapmadan önce şifrenizi değiştirmeniz gerekiyor.",
+                        "alert_password_change_required": "Giriş yapmadan önce parolanızı değiştirmeniz gerekiyor.",
                         "dismiss": "Kapat",
                         "email": "E-posta",
                         "email_error_msg": "Geçersiz e-posta",
                         "forgot_password": "Parolanızı mı unuttunuz?",
                         "introduction": "Home Assistant Cloud, evden uzaktayken örneğinize güvenli bir uzaktan bağlantı sağlar. Ayrıca diğer bulut hizmetlerine bağlanmanıza olanak tanır: Amazon Alexa ve Google Assistant.",
-                        "introduction2": "Bu hizmet ortağımız ",
+                        "introduction2": "Bu hizmet ortağımız tarafından yürütülmektedir ",
                         "introduction2a": "tarafından verilmektedir, Home Assistant ve Hass.io kurucuları tarafından kurulan bir şirket.",
                         "introduction3": "Home Assistant Cloud, bir aylık ücretsiz deneme sürümüne sahip bir abonelik hizmetidir. Ödeme bilgisi gerekmez.",
                         "learn_more_link": "Home Assistant Cloud hakkında daha fazla bilgi edin",
@@ -1758,7 +1773,7 @@
                     "enabled_label": "Cihazı etkinleştir",
                     "entities": {
                         "add_entities_lovelace": "Tüm cihaz varlıklarını Lovelace kullanıcı arayüzüne ekle",
-                        "disabled_entities": "+{count} {count, plural,\n  one {engelli varlık}\n  other {engelli varlıklar}\n}",
+                        "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
                         "entities": "Varlıkları",
                         "hide_disabled": "Devre dışı olanları gizle",
                         "none": "Bu cihazın varlığı yok"
@@ -1799,12 +1814,12 @@
                         "disable_selected": {
                             "button": "Seçilenleri devre dışı bırak",
                             "confirm_text": "Devre dışı bırakılan varlıklar Home Assistant'a eklenmeyecek.",
-                            "confirm_title": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} varlığı devre dışı bırakmak istiyor musunuz?"
+                            "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?"
                         },
                         "enable_selected": {
                             "button": "Seçilenleri etkinleştir",
                             "confirm_text": "Bu, artık devre dışı bırakılırsa, onları Home Assistant 'nda yeniden kullanılabilir hale getirecektir.",
-                            "confirm_title": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} varlığı etkinleştirmek istiyor musunuz?"
+                            "confirm_title": "Do you want to enable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?"
                         },
                         "filter": {
                             "filter": "filtre",
@@ -1827,9 +1842,9 @@
                         "remove_selected": {
                             "button": "Seçilenleri kaldır",
                             "confirm_partly_text": "Yalnızca seçili {selected} varlıkları {removable} kaldırabilirsiniz. Varlıklar yalnızca entegrasyon özelliklerini sağlamadığında kaldırılabilir. Bazen, kaldırılan bir entegrasyondaki varlıkları kaldırabilmeniz için önce Home Assistant'ı yeniden başlatmanız gerekir. Çıkarılabilir varlıkları kaldırmak istediğinizden emin misiniz?",
-                            "confirm_partly_title": "Sadece {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} kaldırlabilir.",
+                            "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be removed.",
                             "confirm_text": "Bu varlıkları içeriyorsa, bunları Lovelace yapılandırmanız ve otomasyonlarınızdan kaldırmalısınız.",
-                            "confirm_title": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} varlığı kaldırmak istiyor musunuz ?"
+                            "confirm_title": "Do you want to remove {number} {number, plural,\n  one {entity}\n  other {entities}\n}?"
                         },
                         "search": "Varlıkları ara",
                         "selected": "{number} seçildi",
@@ -1943,14 +1958,14 @@
                     "attention": "Bu alan gereklidir",
                     "caption": "Entegrasyonlar",
                     "config_entry": {
-                        "area": "{alan} içinde",
+                        "area": "{area} içinde",
                         "delete": "Sil",
-                        "delete_button": "{Entegrasyon} sil",
+                        "delete_button": "{integration} silin",
                         "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
                         "device_unavailable": "Cihaz kullanılamıyor",
-                        "devices": "{count} {count, plural,\n  one {cihaz}\n  other {cihazlar}\n}",
+                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
                         "documentation": "Dökümanlar",
-                        "entities": "{count} {count, plural,\n  one {varlık}\n  other {varlıklar}\n}",
+                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "Varlık kullanılamıyor",
                         "firmware": "Aygıt yazılımı: {version}",
                         "hub": "Şununla bağlı:",
@@ -2375,7 +2390,7 @@
                             "filter": "Filtre varlıklarını yeniden yükleyin",
                             "generic": "Genel IP kamera varlıklarını yeniden yükleyin",
                             "generic_thermostat": "Genel termostat varlıklarını yeniden yükleyin",
-                            "group": "Grupları, grup varlıklarını yeniden yükleyin ve hizmetleri bildirin",
+                            "group": "Grupları, grup varlıklarını ve grup bildirim hizmetlerini yeniden yükleyin",
                             "heading": "YAML yapılandırması yeniden yükleniyor",
                             "history_stats": "Geçmiş istatistik varlıklarını yeniden yükle",
                             "homekit": "HomeKit'i yeniden yükle",
@@ -2389,7 +2404,7 @@
                             "mqtt": "Mqtt varlıklarını yeniden yükleme",
                             "person": "Kişileri yeniden yükleme",
                             "ping": "Ping ikili sensör varlıklarını yeniden yükle",
-                            "reload": "{etki alanı} yeniden yükleme",
+                            "reload": "{domain} yükleyin",
                             "rest": "Rest varlıklarını yeniden yükleyin ve hizmetleri bilgilendirin",
                             "rpi_gpio": "Raspberry Pi GPIO varlıklarını yeniden yükleyin",
                             "scene": "Sahneleri yeniden yükle",
@@ -2616,7 +2631,9 @@
                     "title": "Zigbee Ev Otomasyonu",
                     "visualization": {
                         "caption": "Görselleştirme",
-                        "header": "Ağ Görselleştirme"
+                        "header": "Ağ Görselleştirme",
+                        "highlight_label": "Cihazları Vurgula",
+                        "zoom_label": "Cihaza Yakınlaştır"
                     }
                 },
                 "zone": {
@@ -2650,10 +2667,72 @@
                 },
                 "zwave_js": {
                     "add_node": {
+                        "cancel_inclusion": "Dahil Etmeyi İptal Et",
+                        "controller_in_inclusion_mode": "Z-Wave kontrol cihazınız artık dahil etme modunda.",
+                        "follow_device_instructions": "Cihazda eşleştirmeyi tetiklemek için cihazınızla birlikte gelen talimatları izleyin.",
+                        "inclusion_failed": "Düğüm eklenemedi. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
+                        "inclusion_finished": "Düğüm eklendi. Düğümün arka planda kurulumunu tamamladığımızda tüm varlıkların görünmesi birkaç dakika sürebilir.",
+                        "introduction": "Bu sihirbaz, Z-Wave ağınıza bir düğüm eklerken size yol gösterecektir.",
+                        "secure_inclusion_warning": "Güvenli cihazlar ek bant genişliği gerektirir; çok fazla güvenli cihaz Z-Wave ağınızı yavaşlatabilir. Yalnızca kilitler veya garaj kapısı açıcılar gibi bunu gerektiren cihazlar için güvenli dahil etme kullanmanızı öneririz.",
+                        "start_inclusion": "Dahil Etmeye Başlayın",
+                        "start_secure_inclusion": "Güvenli Dahil Etmeyi Başlatın",
+                        "title": "Bir Z-Wave Düğümü Ekleyin",
+                        "use_secure_inclusion": "Güvenli dahil etme kullanın",
                         "view_device": "Cihazı Görüntüle"
                     },
+                    "button": "Yapılandır",
+                    "common": {
+                        "add_node": "Düğüm Ekle",
+                        "close": "Kapat",
+                        "home_id": "Ev kimliği",
+                        "network": "Ağ",
+                        "node_id": "Düğüm Kimliği",
+                        "remove_node": "Düğümü Kaldır"
+                    },
                     "dashboard": {
+                        "driver_version": "Sürücü Sürümü",
+                        "dump_dead_nodes_text": "Düğümlerinizden bazıları yanıt vermedi ve öldüğü varsayılıyor. Bunlar tamamen ihraç edilmeyecek.",
+                        "dump_dead_nodes_title": "Düğümlerinizden bazıları öldü",
+                        "dump_debug": "Sorunları tanılamaya yardımcı olmak için ağınızın dökümünün karşıdan yükle",
+                        "dump_not_ready_confirm": "İndir",
+                        "dump_not_ready_text": "Tüm düğümler hazır değilken bir dışa aktarma oluşturursanız, gerekli verileri kaçırabilirsiniz. Ağınıza tüm düğümleri sorgulaması için biraz zaman tanıyın. Çöplükle devam etmek istiyor musun?",
+                        "dump_not_ready_title": "Henüz tüm düğümler hazır değil",
+                        "header": "Z-Wave Ağınızı Yönetin",
+                        "home_id": "Ev kimliği",
+                        "introduction": "Z-Wave ağınızı ve Z-Wave düğümlerinizi yönetin",
+                        "node_count": "Düğüm Sayısı",
+                        "nodes_ready": "Düğümler hazır",
                         "server_version": "Sunucu Sürümü"
+                    },
+                    "device_info": {
+                        "node_ready": "Düğüm Hazır",
+                        "node_status": "Düğüm Durumu",
+                        "zwave_info": "Z-Wave Bilgisi"
+                    },
+                    "navigation": {
+                        "network": "Ağ"
+                    },
+                    "network_status": {
+                        "connected": "Bağlı",
+                        "connecting": "Bağlanıyor",
+                        "unknown": "Bilinmeyen"
+                    },
+                    "node_status": {
+                        "alive": "Canlı",
+                        "asleep": "Uykuda",
+                        "awake": "Uyanık",
+                        "dead": "Ölü",
+                        "unknown": "Bilinmeyen"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Hariç Tutmayı İptal Et",
+                        "controller_in_exclusion_mode": "Z-Wave denetleyiciniz artık dışlama modunda.",
+                        "exclusion_failed": "Düğüm kaldırılamadı. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
+                        "exclusion_finished": "{id} düğümü, Z-Wave ağınızdan kaldırıldı.",
+                        "follow_device_instructions": "Cihazda hariç tutmayı tetiklemek için cihazınızla birlikte gelen talimatları izleyin.",
+                        "introduction": "Z-Wave ağınızdan bir düğümü kaldırın ve ilişkili cihazı ve varlıkları Home Assistant'tan kaldırın.",
+                        "start_exclusion": "Hariç Tutmayı Başlat",
+                        "title": "Bir Z-Wave Düğümünü Kaldırma"
                     }
                 },
                 "zwave": {
@@ -2670,7 +2749,8 @@
                     "learn_more": "Z-Wave hakkında daha fazla bilgi edinin",
                     "migration": {
                         "ozw": {
-                            "header": "OpenZWave'e geçiş yapın"
+                            "header": "OpenZWave'e geçiş yapın",
+                            "introduction": "Bu sihirbaz, eski Z-Wave entegrasyonundan şu anda beta sürümünde olan OpenZWave entegrasyonuna geçmenize yardımcı olacaktır."
                         }
                     },
                     "network_management": {
@@ -2854,8 +2934,14 @@
                     "yaml_unsupported": "YAML modunda Lovelace kullanıcı arayüzünü kullanırken bu işlevi kullanamazsınız."
                 },
                 "cards": {
+                    "action_confirmation": "\" {action} \" işlemini yürütmek istediğinizden emin misiniz?",
                     "actions": {
-                        "action_confirmation": "\"{action}\" eylemini yürütmek istediğinizden emin misiniz?"
+                        "action_confirmation": "\"{action}\" eylemini yürütmek istediğinizden emin misiniz?",
+                        "no_entity_more_info": "Daha fazla bilgi iletişim kutusu için varlık sağlanmadı",
+                        "no_entity_toggle": "Geçiş yapmak için varlık sağlanmadı",
+                        "no_navigation_path": "Gezinme yolu belirtilmedi",
+                        "no_service": "Yürütme için hizmet belirtilmedi",
+                        "no_url": "Açılacak URL belirtilmedi"
                     },
                     "confirm_delete": "Bu kartı silmek istediğinizden emin misiniz?",
                     "empty_state": {
@@ -2882,7 +2968,9 @@
                     "shopping-list": {
                         "add_item": "Öge Ekle",
                         "checked_items": "Seçili öğeler",
-                        "clear_items": "Seçili ögeleri temizle"
+                        "clear_items": "Seçili ögeleri temizle",
+                        "drag_and_drop": "Sürükle ve bırak",
+                        "reorder_items": "Öğeleri yeniden sıralayın"
                     },
                     "starting": {
                         "description": "Home Assistant başlıyor, lütfen bekleyin ...",
@@ -2892,6 +2980,12 @@
                 "changed_toast": {
                     "message": "Bu kontrol paneli için Lovelace UI yapılandırması güncellendi. Değişiklikleri görmek için yenilensin mi?",
                     "refresh": "Yenile"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Geçersiz zaman damgası",
+                        "invalid_format": "Geçersiz görüntü biçimi"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -3034,7 +3128,8 @@
                         "grid": {
                             "columns": "Sütunlar",
                             "description": "Izgara kartı, ızgarada birden çok kart göstermenizi sağlar.",
-                            "name": "Izgara"
+                            "name": "Izgara",
+                            "square": "Kartları kareler halinde işleyin"
                         },
                         "history-graph": {
                             "description": "Geçmiş Grafiği kartı, listelenen varlıkların her biri için bir grafik görüntülemenizi sağlar.",
@@ -3087,7 +3182,7 @@
                             "name": "Varlık resim"
                         },
                         "picture-glance": {
-                            "description": "Picture Glance kartı bir resmi ve karşılık gelen varlık durumlarını bir simge olarak gösterir. Sağ taraftaki varlıklar durum değiştirme işlemlerine izin verir, diğerleri daha fazla bilgi iletişim kutusunu gösterir.",
+                            "description": "Picture Glance kartı bir görüntüyü ve ilgili varlık durumlarını bir simge olarak gösterir. Sağ taraftaki varlıklar geçiş işlemlerine izin verir, diğerleri daha fazla bilgi iletişim kutusunu gösterir.",
                             "name": "Resimli Bakış",
                             "state_entity": "Varlık Durumu"
                         },
@@ -3409,6 +3504,7 @@
                     "working": "Lütfen bekleyin"
                 },
                 "initializing": "Başlatılıyor",
+                "logging_in_to_with": "Logging in to **{locationName}** with **{authProviderName}**.",
                 "logging_in_with": "**{authProviderName} ile giriş.",
                 "pick_auth_provider": "Veya oturum aç"
             },
