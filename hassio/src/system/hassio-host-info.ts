@@ -150,6 +150,17 @@ class HassioHostInfo extends LitElement {
               : ""}
           </div>
           <div>
+            ${this.supervisor.host.disk_life_time
+              ? html` <ha-settings-row>
+                  <span slot="heading">
+                    eMMC Lifetime Used
+                  </span>
+                  <span slot="description">
+                    ${this.supervisor.host.disk_life_time - 10}% -
+                    ${this.supervisor.host.disk_life_time}%
+                  </span>
+                </ha-settings-row>`
+              : ""}
             ${metrics.map(
               (metric) =>
                 html`
