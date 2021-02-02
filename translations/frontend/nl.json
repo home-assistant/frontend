@@ -592,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Geschiedenis integratie uitgeschakeld",
                 "loading_history": "Geschiedenis laden ...",
                 "no_history_found": "Geen geschiedenis gevonden"
             },
@@ -753,6 +754,8 @@
                 "dismiss": "Sluiten",
                 "editor": {
                     "advanced": "Geavanceerde instellingen",
+                    "area": "Alleen entiteitsgebied instellen",
+                    "area_note": "Standaard liggen de entiteiten van een apparaat in hetzelfde gebied als het apparaat. Als u het gebied van deze entiteit wijzigt, zal het niet langer het gebied van het apparaat volgen.",
                     "change_device_area": "Verander het apparaatgebied",
                     "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
                     "delete": "Verwijderen",
@@ -1017,8 +1020,12 @@
         },
         "errors": {
             "config": {
+                "edit_in_yaml_supported": "Je kan nog steeds de configuratie in YAML bewerken.",
+                "editor_not_available": "Geen visuele editor beschikbaar voor type \"{type}\".",
                 "editor_not_supported": "Visuele editor wordt niet ondersteund voor deze configuratie",
                 "error_detected": "Configuratiefouten ontdekt",
+                "key_missing": "Verplichte sleutel \"{key}\" ontbreekt.",
+                "key_wrong_type": "De opgegeven waarde voor \" {key} \" wordt niet ondersteund door de visuele editor. We ondersteunen ( {type_correct} ) maar hebben ( {type_wrong} ) ontvangen.",
                 "no_type_provided": "Geen type opgegeven."
             }
         },
@@ -2681,6 +2688,9 @@
                         "asleep": "In slaap",
                         "awake": "Wakker",
                         "dead": "Onbereikbaar"
+                    },
+                    "remove_node": {
+                        "title": "Een Z-Wave Node verwijderen"
                     }
                 },
                 "zwave": {
@@ -2883,6 +2893,9 @@
                 },
                 "cards": {
                     "action_confirmation": "Weet u zeker dat u actie \" {action} \" wilt uitvoeren?",
+                    "actions": {
+                        "action_confirmation": "Weet je zeker dat je actie \"{action}\" wilt uitvoeren?"
+                    },
                     "confirm_delete": "Weet je zeker dat je deze kaart wilt verwijderen?",
                     "empty_state": {
                         "go_to_integrations_page": "Ga naar de integraties pagina.",

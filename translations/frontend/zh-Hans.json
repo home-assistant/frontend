@@ -401,6 +401,7 @@
                 "direction": "方向",
                 "forward": "正向",
                 "oscillate": "摇头",
+                "preset_mode": "预设模式",
                 "reverse": "反向",
                 "speed": "风速"
             },
@@ -592,6 +593,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "已禁用“历史”集成",
                 "loading_history": "正在加载历史状态...",
                 "no_history_found": "没有找到历史状态。"
             },
@@ -750,8 +752,13 @@
             },
             "entity_registry": {
                 "control": "控制",
+                "customize_link": "自定义实体",
                 "dismiss": "忽略",
                 "editor": {
+                    "advanced": "高级设置",
+                    "area": "只设置实体区域",
+                    "area_note": "默认情况下，实体的区域与对应设备相同。如果您更改了实体的区域，它将不再跟随设备的区域。",
+                    "change_device_area": "更改设备区域",
                     "confirm_delete": "您确定要删除此条目吗？",
                     "delete": "删除",
                     "device_disabled": "该实体的设备已禁用。",
@@ -761,6 +768,7 @@
                     "enabled_label": "启用实体",
                     "enabled_restart_confirm": "重启 Home Assistant 以完成实体的启用",
                     "entity_id": "实体 ID",
+                    "follow_device_area": "跟随设备区域",
                     "icon": "图标",
                     "icon_error": "图标的格式应为 prefix:iconname，例如：mdi:home",
                     "name": "名称",
@@ -770,6 +778,7 @@
                     "update": "更新"
                 },
                 "faq": "文档",
+                "info_customize": "您可以在{customize_link}部分中覆盖一些属性。",
                 "no_unique_id": "该实体 (\"{entity_id}\") 没有唯一的 ID，因此无法由 UI 管理其设置。请参阅 {faq_link} 以详细了解。",
                 "related": "关联",
                 "settings": "设置"
@@ -1013,6 +1022,18 @@
             "second": "{count} {count, plural,\none {秒}\nother {秒}\n}",
             "week": "{count} {count, plural,\none {周}\nother {周}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "您仍然可以以 YAML 编辑配置。",
+                "editor_not_available": "“{type}”类型没有可视化编辑器。",
+                "editor_not_supported": "此配置不支持可视编辑器",
+                "error_detected": "检测到配置错误",
+                "key_missing": "缺少必需的键“{key}”。",
+                "key_not_expected": "“{key}”选项不可用，或不被可视化编辑器支持。",
+                "key_wrong_type": "“{key}”的值不受可视化编辑器支持。支持 ({type_correct}) 但得到 ({type_wrong})。",
+                "no_type_provided": "未提供类型。"
+            }
+        },
         "login-form": {
             "log_in": "登录",
             "password": "密码",
@@ -1123,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "代码",
                                         "message": "消息",
+                                        "position": "位置",
                                         "title": "标题"
                                     },
                                     "label": "设备"
@@ -1514,10 +1536,18 @@
                         "thank_you_note": "感谢您加入 Home Assistant Cloud。正是因为像您这样的人，我们才得以为每个人带来出色的智能家居体验。谢谢！",
                         "tts": {
                             "default_language": "默认使用语言",
+                            "dialog": {
+                                "example_message": "{name}，您好，现在可以支持的媒体播放器上播报任意文本了！",
+                                "header": "尝试 TTS",
+                                "play": "播放",
+                                "target": "目标",
+                                "target_browser": "浏览器"
+                            },
                             "female": "女声",
                             "info": "用我们的 TTS 服务，让您的家能开口说话，把智能家居变得更有人情味吧。可以在自动化和脚本中调用 {service} 服务来使用它。",
                             "male": "男声",
-                            "title": "TTS"
+                            "title": "TTS",
+                            "try": "尝试"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "无法禁用 Webhook：",
@@ -2717,6 +2747,12 @@
                     },
                     "description": "管理 Z-Wave 网络",
                     "learn_more": "详细了解 Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "迁移到 OpenZWave",
+                            "introduction": "此向导将帮助您从传统的 Z-Wave 集成迁移到测试中的 OpenZWave 集成。"
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave 网络管理",
                         "introduction": "运行影响 Z-Wave 网络的命令。大多数命令无法反馈是否执行成功，但您可以尝试检查 OZW 日志来确认。"
@@ -3261,6 +3297,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "管理仪表盘",
+                        "manage_resources": "管理资源",
                         "open": "打开 Lovelace UI 菜单",
                         "raw_editor": "原始配置编辑器"
                     },

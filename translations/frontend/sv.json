@@ -1008,6 +1008,11 @@
             "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
             "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Du kan fortfarande redigera din konfiguration i YAML."
+            }
+        },
         "login-form": {
             "log_in": "Logga in",
             "password": "Lösenord",
@@ -1116,7 +1121,8 @@
                                 "device_id": {
                                     "action": "Åtgärd",
                                     "extra_fields": {
-                                        "code": "Kod"
+                                        "code": "Kod",
+                                        "position": "Position"
                                     },
                                     "label": "Enhet"
                                 },
@@ -1298,7 +1304,7 @@
                                     "trigger": "Utlösare"
                                 },
                                 "event": {
-                                    "context_user_pick": "Lägg till användare",
+                                    "context_user_pick": "Välj användare",
                                     "context_user_picked": "Användaravfyrning",
                                     "context_users": "Begränsa till händelser som utlöses av",
                                     "event_data": "Händelsedata",
@@ -1501,6 +1507,13 @@
                         },
                         "sign_out": "Logga ut",
                         "thank_you_note": "Tack för att du är en del av Home Assistant Cloud. Det är tack vare människor som dig vi kan göra en fantastisk hemautomationsupplevelse för alla. Tack!",
+                        "tts": {
+                            "dialog": {
+                                "header": "Prova Text till tal",
+                                "target_browser": "Webbläsare"
+                            },
+                            "try": "Prova"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Det gick inte att inaktivera webhook:",
                             "info": "Allt som är konfigurerat för att utlösas av en webhook kan ges en offentligt tillgänglig URL för att låta dig skicka tillbaka data till Home Assistant var som helst, utan att exponera din instans för internet.",
@@ -3152,6 +3165,7 @@
                         }
                     },
                     "menu": {
+                        "manage_resources": "Hantera resurser",
                         "open": "Öppna Lovelace-menyn",
                         "raw_editor": "Rå konfigurationsredigerare"
                     },
