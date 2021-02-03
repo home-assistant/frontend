@@ -71,7 +71,7 @@
     },
     "state": {
         "alarm_control_panel": {
-            "armed": "مسلح",
+            "armed": "مفعّل",
             "armed_away": "مفعّل في الخارج",
             "armed_custom_bypass": "تجاوز التفعيل",
             "armed_home": "مفعّل في المنزل",
@@ -145,7 +145,7 @@
             },
             "problem": {
                 "off": "موافق",
-                "on": "عطل"
+                "on": "مشكلة"
             },
             "safety": {
                 "off": "أمن",
@@ -346,6 +346,7 @@
             },
             "fan": {
                 "direction": "Richting",
+                "preset_mode": "وضع الضبط المسبق",
                 "speed": "Snelheid"
             },
             "humidifier": {
@@ -440,6 +441,10 @@
                 "no_match": "لم يتم العثور على مناطق مطابقة",
                 "show_areas": "إظهار المناطق"
             },
+            "calendar": {
+                "my_calendars": "التقويمات الخاصة بي",
+                "today": "اليوم"
+            },
             "data-table": {
                 "no-data": "لايوجد بيانات",
                 "search": "بحث"
@@ -459,6 +464,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "تم تعطيل سجل التكامل",
                 "loading_history": "جارٍ تحميل سجل الحالات ...",
                 "no_history_found": "لم يتم العثور على سجل الحالات."
             },
@@ -484,9 +490,14 @@
                 "update": "تحديث"
             },
             "entity_registry": {
+                "customize_link": "تخصيصات العنصر",
                 "editor": {
+                    "advanced": "إعدادات متقدمة",
+                    "area": "حدد منطقة العنصر فقط",
+                    "change_device_area": "تغيير منطقة الجهاز",
                     "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الإدخال؟",
                     "delete": "حذف",
+                    "follow_device_area": "اتبع منطقة الجهاز",
                     "note": "ملاحظة: قد لا يعمل مع كافة التكاملات بعد.",
                     "update": "تحديث"
                 },
@@ -566,6 +577,17 @@
             "second": "{count} {count, plural,\none {ثانية}\nother {ثواني}\n}",
             "week": "{count} {count, plural,\none {أسبوع}\nother {أسابيع}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "لا يزال بإمكانك تعديل التكوين الخاص بك في YAML.",
+                "editor_not_available": "لا يتوفر محرر مرئي للنوع \" {type} \".",
+                "editor_not_supported": "المحرر المرئي غير معتمد لهذا التكوين",
+                "error_detected": "تم الكشف عن أخطاء التكوين",
+                "key_missing": "المفتاح المطلوب \" {key} \" مفقود.",
+                "key_not_expected": "المفتاح \" {key} \" غير متوقع أو غير مدعوم بواسطة المحرر المرئي.",
+                "no_type_provided": "لم يتم تقديم أي نوع."
+            }
+        },
         "login-form": {
             "log_in": "تسجيل الدخول",
             "password": "كلمة السر",
@@ -630,7 +652,10 @@
                                     "label": "التأخير"
                                 },
                                 "device_id": {
-                                    "action": "أضف إجراء"
+                                    "action": "أضف إجراء",
+                                    "extra_fields": {
+                                        "position": "مكان"
+                                    }
                                 },
                                 "event": {
                                     "event": "الحدث",
@@ -810,7 +835,17 @@
                     "account": {
                         "integrations": "تكاملات",
                         "integrations_introduction2": "تحقق من الموقع ل",
-                        "integrations_link_all_features": " جميع الميزات المتوفرة"
+                        "integrations_link_all_features": " جميع الميزات المتوفرة",
+                        "tts": {
+                            "dialog": {
+                                "example_message": "مرحبًا {name} ، يمكنك تشغيل أي نص على أي مشغل وسائط مدعوم!",
+                                "header": "جرب تحويل النص إلى كلام",
+                                "play": "تشغيل",
+                                "target": "الهدف",
+                                "target_browser": "تصفح"
+                            },
+                            "try": "حاول"
+                        }
                     },
                     "caption": "سحابة Home Assistant",
                     "description_login": "تم تسجيل الدخول كـ {email}",
@@ -1187,10 +1222,30 @@
                     },
                     "introduction": "تسمح لك المناطق بتحديد مناطق معينة على وجه الأرض. عندما يكون الشخص داخل منطقة ما ، ستأخذ الحالة الاسم من المنطقة. يمكن أيضًا استخدام المناطق كمشغل أو حالة داخل إعدادات الأتمتة."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "إلغاء التضمين",
+                        "controller_in_inclusion_mode": "أصبحت وحدة التحكم Z-Wave الآن في وضع التضمين.",
+                        "follow_device_instructions": "اتبع الإرشادات المرفقة مع جهازك لبدء الاقتران على الجهاز.",
+                        "view_device": "عرض الجهاز"
+                    },
+                    "dashboard": {
+                        "dump_not_ready_confirm": "تحميل"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "إلغاء الاستبعاد",
+                        "start_exclusion": "بدء الاستبعاد"
+                    }
+                },
                 "zwave": {
                     "button": "كوِن",
                     "caption": "Z-Wave",
                     "description": "إدارة شبكة Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "الانتقال الى OpenZWave"
+                        }
+                    },
                     "node_config": {
                         "seconds": "ثواني",
                         "set_config_parameter": "تعيين معلمة التكوين"
@@ -1274,6 +1329,9 @@
             },
             "lovelace": {
                 "cards": {
+                    "actions": {
+                        "no_url": "لم يتم تحديد عنوان URL لفتحه"
+                    },
                     "empty_state": {
                         "go_to_integrations_page": "انتقل إلى صفحة التكاملات.",
                         "no_devices": "تسمح لك هذه الصفحة بالتحكم في أجهزتك ، ولكن يبدو أنك لم تعد أي أجهزة حتى الآن. توجه إلى صفحة التكاملات للبدء."
@@ -1332,6 +1390,9 @@
                         },
                         "glance": {
                             "description": "بطاقة اللمحة مفيدة لتجميع أجهزة استشعار متعددة في نظرة عامة مدمجة."
+                        },
+                        "grid": {
+                            "columns": "الأعمدة"
                         },
                         "history-graph": {
                             "description": "تسمح لك بطاقة الرسم البياني التاريخي بعرض رسم بياني لكل من الكيانات المذكورة."
@@ -1414,6 +1475,10 @@
                         "visibility": {
                             "select_users": "تحديد المستخدمين الذين يجب أن يروا طريقة العرض هذه في التنقل"
                         }
+                    },
+                    "menu": {
+                        "manage_dashboards": "ادارة لوحة المعلومات",
+                        "manage_resources": "ادارة الموارد"
                     },
                     "raw_editor": {
                         "header": "تعديل",

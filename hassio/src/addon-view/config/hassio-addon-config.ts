@@ -94,7 +94,7 @@ class HassioAddonConfig extends LitElement {
             ? ""
             : html` <div class="errors">Invalid YAML</div> `}
         </div>
-        <div class="card-actions">
+        <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
             .disabled=${!this._configHasChanged || !this._valid}
@@ -270,6 +270,9 @@ class HassioAddonConfig extends LitElement {
           display: block;
           margin-block: 0px;
           font-weight: normal;
+        }
+        .card-actions.right {
+          justify-content: flex-end;
         }
       `,
     ];

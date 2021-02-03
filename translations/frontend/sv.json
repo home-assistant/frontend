@@ -512,6 +512,7 @@
             "close": "Stäng",
             "continue": "Fortsätt",
             "copied": "Kopierad",
+            "copied_clipboard": "Kopierat till urklipp",
             "delete": "Radera",
             "disable": "Inaktivera",
             "enable": "Aktivera",
@@ -556,6 +557,10 @@
                 "remove_user": "Ta bort användare",
                 "select_blueprint": "Ta bort blueprint"
             },
+            "calendar": {
+                "my_calendars": "Mina Kalendrar",
+                "today": "Idag"
+            },
             "data-table": {
                 "no-data": "Ingen data",
                 "search": "Sök"
@@ -587,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integrationen Historik är inaktiverad",
                 "loading_history": "Laddar historik...",
                 "no_history_found": "Ingen historik hittad."
             },
@@ -747,6 +753,9 @@
                 "control": "Kontrollera",
                 "dismiss": "Avfärda",
                 "editor": {
+                    "advanced": "Avancerade inställningar",
+                    "area_note": "Som standard har entiteterna som tillhör en enhet samma område som enheten. Om du ändrar området för denna entitet kommer den inte längre att använda enhetens område.",
+                    "change_device_area": "Ändra område för entitet",
                     "confirm_delete": "Är du säker på att du vill ta bort den här posten?",
                     "delete": "Radera",
                     "device_disabled": "Enheten för den här entiteten är inaktiverad.",
@@ -1010,7 +1019,9 @@
         },
         "errors": {
             "config": {
-                "edit_in_yaml_supported": "Du kan fortfarande redigera din konfiguration i YAML."
+                "edit_in_yaml_supported": "Du kan fortfarande redigera din konfiguration i YAML.",
+                "error_detected": "Konfigurationsfel upptäcktes",
+                "key_missing": "Nödvändig nyckel \"{key}\" saknas."
             }
         },
         "login-form": {
@@ -1122,7 +1133,9 @@
                                     "action": "Åtgärd",
                                     "extra_fields": {
                                         "code": "Kod",
-                                        "position": "Position"
+                                        "message": "Meddelande",
+                                        "position": "Position",
+                                        "title": "Titel"
                                     },
                                     "label": "Enhet"
                                 },
@@ -1298,7 +1311,8 @@
                                     "extra_fields": {
                                         "above": "Över",
                                         "below": "Under",
-                                        "for": "Varaktighet"
+                                        "for": "Varaktighet",
+                                        "zone": "Zon"
                                     },
                                     "label": "Enhet",
                                     "trigger": "Utlösare"
@@ -1423,12 +1437,14 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "forum",
                         "error_no_url": "Ange webbadressen till blueprint:et",
                         "file_name": "Blueprintsökväg",
-                        "header": "Importera en blueprint",
+                        "header": "Importera blueprint",
                         "import_btn": "Förhandsgranska blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "Du kan importera blueprints av andra användare från Github och communityforum. Ange webbadressen till ritningen nedan.",
+                        "import_introduction_link": "Du kan importera blueprints från andra användare och {community_link}. Ange URL för blueprint nedan.",
                         "importing": "Laddar blueprint...",
                         "raw_blueprint": "Innehåll i blueprint",
                         "save_btn": "Importera blueprint",
@@ -1443,6 +1459,7 @@
                         "confirm_delete_header": "Ta bort detta blueprint?",
                         "confirm_delete_text": "Är du säker på att du vill ta bort det här blueprint:et",
                         "delete_blueprint": "Ta bort blueprint",
+                        "discover_more": "Upptäck fler blueprints",
                         "header": "Blueprint Editor",
                         "headers": {
                             "domain": "Domän",
@@ -1508,10 +1525,13 @@
                         "sign_out": "Logga ut",
                         "thank_you_note": "Tack för att du är en del av Home Assistant Cloud. Det är tack vare människor som dig vi kan göra en fantastisk hemautomationsupplevelse för alla. Tack!",
                         "tts": {
+                            "default_language": "Standardspråk att använda",
                             "dialog": {
                                 "header": "Prova Text till tal",
+                                "play": "Spela",
                                 "target_browser": "Webbläsare"
                             },
+                            "title": "Text till tal",
                             "try": "Prova"
                         },
                         "webhooks": {
@@ -1963,7 +1983,7 @@
                         "finish": "Slutför",
                         "loading_first_time": "Vänligen vänta medan integrationen installeras",
                         "not_all_required_fields": "Alla obligatoriska fält har inte fyllts i.",
-                        "submit": "Skicka"
+                        "submit": "Spara"
                     },
                     "configure": "Konfigurera",
                     "configured": "Konfigurerad",
@@ -2628,6 +2648,26 @@
                     "introduction": "Med zoner kan du ange vissa regioner på jorden. När en person befinner sig i en zon tar tillståndet namnet från zonen. Zoner kan också användas som utlösare eller villkor i automatiseringsinställningar.",
                     "no_zones_created_yet": "Det verkar som om du inte har skapat några zoner ännu."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Avbryt inkludering",
+                        "start_inclusion": "Påbörja inkludering",
+                        "start_secure_inclusion": "Påbörja säker inkludering",
+                        "use_secure_inclusion": "Använd säker inkludering"
+                    },
+                    "button": "Konfigurera",
+                    "common": {
+                        "close": "Stäng"
+                    },
+                    "network_status": {
+                        "connected": "Ansluten",
+                        "connecting": "Ansluter"
+                    },
+                    "node_status": {
+                        "dead": "Död",
+                        "unknown": "Okänd"
+                    }
+                },
                 "zwave": {
                     "button": "Konfigurera",
                     "caption": "Z-Wave",
@@ -2821,6 +2861,7 @@
                     "yaml_unsupported": "Du kan inte använda den här funktionen när du använder Lovelace användargränssnitt i YAML-läge."
                 },
                 "cards": {
+                    "action_confirmation": "Är du säker på att du vill utföra händelsen \"{action}\"?",
                     "confirm_delete": "Är du säker på att du vill ta bort det här kortet?",
                     "empty_state": {
                         "go_to_integrations_page": "Gå till integrationssidan.",
@@ -2846,7 +2887,9 @@
                     "shopping-list": {
                         "add_item": "Lägg till objekt",
                         "checked_items": "Markerade objekt",
-                        "clear_items": "Rensa markerade objekt"
+                        "clear_items": "Rensa markerade objekt",
+                        "drag_and_drop": "Dra och släpp",
+                        "reorder_items": "Ändra ordning på objekt"
                     },
                     "starting": {
                         "description": "Home Assistant startar, var god vänta...",
@@ -2856,6 +2899,12 @@
                 "changed_toast": {
                     "message": "Lovelace-konfigurationen uppdaterades, vill du ladda om?",
                     "refresh": "Uppdatera"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Ogiltig tidsstämpel",
+                        "invalid_format": "Ogiltigt visningsformat"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2996,6 +3045,7 @@
                             "name": "Blick"
                         },
                         "grid": {
+                            "columns": "Kolumner",
                             "description": "Med Grid-kortet kan du visa flera kort i ett rutnät.",
                             "name": "Rutnät"
                         },
@@ -3165,6 +3215,7 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Hantera kontrollpaneler",
                         "manage_resources": "Hantera resurser",
                         "open": "Öppna Lovelace-menyn",
                         "raw_editor": "Rå konfigurationsredigerare"

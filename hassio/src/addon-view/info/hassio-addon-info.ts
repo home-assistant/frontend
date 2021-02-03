@@ -554,97 +554,88 @@ class HassioAddonInfo extends LitElement {
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         </div>
         <div class="card-actions">
-          ${this.addon.version
-            ? html`
-                ${this._computeIsRunning
-                  ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/stop"
-                      >
-                        Stop
-                      </ha-call-api-button>
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/restart"
-                      >
-                        Restart
-                      </ha-call-api-button>
-                    `
-                  : html`
-                      <ha-progress-button @click=${this._startClicked}>
-                        Start
-                      </ha-progress-button>
-                    `}
-                ${this._computeShowWebUI
-                  ? html`
-                      <a
-                        href=${this._pathWebui!}
-                        tabindex="-1"
-                        target="_blank"
-                        class="right"
-                        rel="noopener"
-                      >
-                        <mwc-button>
+          <div>
+            ${this.addon.version
+              ? this._computeIsRunning
+                ? html`
+                    <ha-call-api-button
+                      class="warning"
+                      .hass=${this.hass}
+                      .path="hassio/addons/${this.addon.slug}/stop"
+                    >
+                      Stop
+                    </ha-call-api-button>
+                    <ha-call-api-button
+                      class="warning"
+                      .hass=${this.hass}
+                      .path="hassio/addons/${this.addon.slug}/restart"
+                    >
+                      Restart
+                    </ha-call-api-button>
+                  `
+                : html`
+                    <ha-progress-button @click=${this._startClicked}>
+                      Start
+                    </ha-progress-button>
+                  `
+              : html`
+                  ${!this.addon.available
+                    ? html`
+                        <p class="warning">
+                          This add-on is not available on your system.
+                        </p>
+                      `
+                    : ""}
+                  <ha-progress-button
+                    .disabled=${!this.addon.available}
+                    @click=${this._installClicked}
+                  >
+                    Install
+                  </ha-progress-button>
+                `}
+          </div>
+          <div>
+            ${this.addon.version
+              ? html` ${this._computeShowWebUI
+                    ? html`
+                        <a
+                          href=${this._pathWebui!}
+                          tabindex="-1"
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          <mwc-button>
+                            Open web UI
+                          </mwc-button>
+                        </a>
+                      `
+                    : ""}
+                  ${this._computeShowIngressUI
+                    ? html`
+                        <mwc-button @click=${this._openIngress}>
                           Open web UI
                         </mwc-button>
-                      </a>
-                    `
-                  : ""}
-                ${this._computeShowIngressUI
-                  ? html`
-                      <mwc-button class="right" @click=${this._openIngress}>
-                        Open web UI
-                      </mwc-button>
-                    `
-                  : ""}
-                <ha-progress-button
-                  class=" right warning"
-                  @click=${this._uninstallClicked}
-                >
-                  Uninstall
-                </ha-progress-button>
-                ${this.addon.build
-                  ? html`
-                      <ha-call-api-button
-                        class="warning right"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/rebuild"
-                      >
-                        Rebuild
-                      </ha-call-api-button>
-                    `
-                  : ""}
-              `
-            : !this.addon.available
-            ? !addonArchIsSupported(
-                this.supervisor.info.supported_arch,
-                this.addon.arch
-              )
-              ? html`
-                  <p class="warning">
-                    This add-on is not compatible with the processor of your
-                    device or the operating system you have installed on your
-                    device.
-                  </p>
-                `
-              : html`
-                  <p class="warning">
-                    You are running Home Assistant
-                    ${this.supervisor.core.version}, to install this add-on you
-                    need at least version ${this.addon.homeassistant} of Home
-                    Assistant
-                  </p>
-                `
-            : ""}
-          <ha-progress-button
-            .disabled=${!this.addon.available}
-            @click=${this._installClicked}
-          >
-            Install
-          </ha-progress-button>
+                      `
+                    : ""}
+                  <ha-progress-button
+                    class="warning"
+                    @click=${this._uninstallClicked}
+                  >
+                    Uninstall
+                  </ha-progress-button>
+                  ${this.addon.build
+                    ? html`
+                        <ha-call-api-button
+                          class="warning"
+                          .hass=${this.hass}
+                          .path="hassio/addons/${this.addon.slug}/rebuild"
+                        >
+                          Rebuild
+                        </ha-call-api-button>
+                      `
+                    : ""}`
+              : ""}
+          </div>
         </div>
       </ha-card>
 
@@ -1024,9 +1015,6 @@ class HassioAddonInfo extends LitElement {
           font-weight: 500;
           color: var(--primary-color);
         }
-        .right {
-          float: right;
-        }
         protection-enable mwc-button {
           --mdc-theme-primary: white;
         }
@@ -1049,7 +1037,8 @@ class HassioAddonInfo extends LitElement {
           margin-bottom: 16px;
         }
         .card-actions {
-          display: flow-root;
+          justify-content: space-between;
+          display: flex;
         }
         .security h3 {
           margin-bottom: 8px;
@@ -1085,18 +1074,16 @@ class HassioAddonInfo extends LitElement {
         }
 
         .addon-options {
-          max-width: 50%;
-        }
-        .addon-options.started {
           max-width: 90%;
         }
 
         .addon-container {
           display: grid;
           grid-auto-flow: column;
-          grid-template-columns: 1fr auto;
+          grid-template-columns: 60% 40%;
         }
-        .addon-container div:last-of-type {
+
+        .addon-container > div:last-of-type {
           align-self: end;
         }
 

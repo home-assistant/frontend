@@ -115,7 +115,6 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   max?: number;
   severity?: SeverityConfig;
   theme?: string;
-  icon?: string;
 }
 
 export interface ConfigEntity extends EntityConfig {
