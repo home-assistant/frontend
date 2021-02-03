@@ -178,10 +178,9 @@ class HassioAddonInfo extends LitElement {
                     )
                     ? html`
                         <p>
-                          The architecture on your system
-                          (${this.supervisor.supervisor.arch}) is no longer
-                          compatible with this add-on. You need one of these
-                          ${this.addon.arch.join(", ")}
+                          This add-on is not compatible with the processor of
+                          your device or the operating system you have installed
+                          on your device.
                         </p>
                       `
                     : html`
@@ -623,10 +622,9 @@ class HassioAddonInfo extends LitElement {
               )
               ? html`
                   <p class="warning">
-                    The architecture on your system
-                    (${this.supervisor.supervisor.arch}) is not compatible with
-                    this add-on. You need one of these
-                    ${this.addon.arch.join(", ")}
+                    This add-on is not compatible with the processor of your
+                    device or the operating system you have installed on your
+                    device.
                   </p>
                 `
               : html`
