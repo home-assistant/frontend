@@ -552,6 +552,27 @@ class HassioAddonInfo extends LitElement {
             </div>
           </div>
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${!this.addon.available
+            ? !addonArchIsSupported(
+                this.supervisor.info.supported_arch,
+                this.addon.arch
+              )
+              ? html`
+                  <p class="warning">
+                    This add-on is not compatible with the processor of your
+                    device or the operating system you have installed on your
+                    device.
+                  </p>
+                `
+              : html`
+                  <p class="warning">
+                    You are running Home Assistant
+                    ${this.supervisor.core.version}, to install this add-on you
+                    need at least version ${this.addon.homeassistant} of Home
+                    Assistant
+                  </p>
+                `
+            : ""}
         </div>
         <div class="card-actions">
           <div>
@@ -579,13 +600,6 @@ class HassioAddonInfo extends LitElement {
                     </ha-progress-button>
                   `
               : html`
-                  ${!this.addon.available
-                    ? html`
-                        <p class="warning">
-                          This add-on is not available on your system.
-                        </p>
-                      `
-                    : ""}
                   <ha-progress-button
                     .disabled=${!this.addon.available}
                     @click=${this._installClicked}
