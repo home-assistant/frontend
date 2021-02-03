@@ -51,7 +51,7 @@ export type HassioInfo = {
   operating_system: string;
   supervisor: string;
   supported: boolean;
-  supported_arch: string[];
+  supported_arch: ["armhf" | "armv7" | "aarch64" | "i386" | "amd64"];
   timezone: string;
 };
 

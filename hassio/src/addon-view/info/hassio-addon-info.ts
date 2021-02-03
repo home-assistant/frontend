@@ -66,6 +66,7 @@ import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
+import { addonArchIsSupported } from "../../util/addon";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -173,8 +174,9 @@ class HassioAddonInfo extends LitElement {
                   iconClass="update"
                 ></hassio-card-content>
                 ${!this.addon.available
-                  ? !this.addon.arch.find((arch) =>
-                      this.supervisor.info.supported_arch.includes(arch)
+                  ? !addonArchIsSupported(
+                      this.supervisor.info.supported_arch,
+                      this.addon.arch
                     )
                     ? html`
                         <p>
@@ -617,8 +619,9 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               `
             : !this.addon.available
-            ? !this.addon.arch.find((arch) =>
-                this.supervisor.info.supported_arch.includes(arch)
+            ? !addonArchIsSupported(
+                this.supervisor.info.supported_arch,
+                this.addon.arch
               )
               ? html`
                   <p class="warning">
