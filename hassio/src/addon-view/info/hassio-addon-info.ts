@@ -1055,18 +1055,16 @@ class HassioAddonInfo extends LitElement {
         }
 
         .addon-options {
-          max-width: 50%;
-        }
-        .addon-options.started {
           max-width: 90%;
         }
 
         .addon-container {
           display: grid;
           grid-auto-flow: column;
-          grid-template-columns: 1fr auto;
+          grid-template-columns: 60% 40%;
         }
-        .addon-container div:last-of-type {
+
+        .addon-container > div:last-of-type {
           align-self: end;
         }
 
