@@ -543,6 +543,10 @@
                 "remove_user": "ユーザーの削除",
                 "select_blueprint": "設計図の選択"
             },
+            "calendar": {
+                "my_calendars": "マイカレンダー",
+                "today": "今日"
+            },
             "data-table": {
                 "no-data": "データなし",
                 "search": "検索"
@@ -574,6 +578,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "インテグレーションの履歴が無効",
                 "loading_history": "状態履歴を読込中...",
                 "no_history_found": "状態履歴がありません。"
             },
@@ -732,8 +737,13 @@
             },
             "entity_registry": {
                 "control": "コントロール",
+                "customize_link": "エンティティのカスタマイズ",
                 "dismiss": "消去",
                 "editor": {
+                    "advanced": "詳細設定",
+                    "area": "エンティティ領域のみを設定する",
+                    "area_note": "デフォルトでは、デバイスのエンティティはデバイスと同じエリアにあります。このエンティティの領域を変更すると、デバイスの領域に追従しなくなります。",
+                    "change_device_area": "デバイスエリアの変更",
                     "confirm_delete": "このエントリを削除してもよろしいですか？",
                     "delete": "削除",
                     "device_disabled": "このエンティティのデバイスは無効になっています。",
@@ -743,6 +753,7 @@
                     "enabled_label": "エンティティを有効化",
                     "enabled_restart_confirm": "ホーム アシスタントを再起動してエンティティの有効化を完了",
                     "entity_id": "エンティティ ID",
+                    "follow_device_area": "デバイスエリアをフォローする",
                     "icon": "アイコンの上書き",
                     "icon_error": "アイコンは「prefix：iconname」の形式にする必要があります（例：「mdi：home」）。",
                     "name": "名前の上書き",
@@ -994,6 +1005,15 @@
             "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}",
             "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
             "week": "{count} {count, plural,\n  one {週間}\n  other {週間}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "YAMLで設定を編集することはできます。",
+                "error_detected": "構成エラーが検出されました",
+                "key_missing": "必要なキー \"{key}\" がありません。",
+                "key_wrong_type": "\"{key}\" に指定された値は、ビジュアル エディターではサポートされていません。({type_correct}) をサポートしていますが、受信しました ({type_wrong})。",
+                "no_type_provided": "タイプは提供されていません。"
+            }
         },
         "login-form": {
             "log_in": "ログイン",
@@ -1496,10 +1516,17 @@
                         "thank_you_note": "Home Assistant Cloudにご参加いただきありがとうございます。私たちは皆のために優れたホームオートメーション体験を作ることができるのはあなたのような人々のおかげです。ありがとうございました！",
                         "tts": {
                             "default_language": "使用するデフォルト言語",
+                            "dialog": {
+                                "example_message": "こんにちは{name} 、サポートされているメディアプレーヤーで任意のテキストを再生できます！",
+                                "play": "再生",
+                                "target": "ターゲット",
+                                "target_browser": "ブラウザ"
+                            },
                             "female": "女性",
                             "info": "私たちのテキスト読み上げサービスを使用してあなたに話をさせることによって、あなたの家に人格をもたらします。これは、{service} サービスを使用して、自動化およびスクリプトで使用できます。",
                             "male": "男性",
-                            "title": "テキスト読み上げ"
+                            "title": "テキスト読み上げ",
+                            "try": "試す"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "ウェブホックを無効にできませんでした：",
@@ -2643,10 +2670,17 @@
                     },
                     "dashboard": {
                         "driver_version": "ドライバーバージョン",
+                        "dump_dead_nodes_text": "一部のノードが応答せず、停止していると見なされます。これらは完全にはエクスポートされません。",
+                        "dump_dead_nodes_title": "一部のノードが停止しています",
+                        "dump_debug": "ネットワークのダンプをダウンロードして、問題の診断に役立ててください",
+                        "dump_not_ready_confirm": "ダウンロード",
+                        "dump_not_ready_text": "すべてのノードの準備が整っていない状態でエクスポートを作成すると、必要なデータが見逃される可能性があります。ネットワークにすべてのノードを照会する時間を与えます。ダンプを続行しますか?",
+                        "dump_not_ready_title": "すべてのノードが照会されました。",
                         "header": "Z-Wave ネットワークの管理",
                         "home_id": "ホームID",
                         "introduction": "Z-WaveネットワークとZ-Waveノードを管理する",
                         "node_count": "ノード数",
+                        "nodes_ready": "ノードの準備完了",
                         "server_version": "サーバーバージョン"
                     },
                     "device_info": {
@@ -2692,6 +2726,12 @@
                     },
                     "description": "Z-waveネットワークを管理します",
                     "learn_more": "Z-Wave の詳細",
+                    "migration": {
+                        "ozw": {
+                            "header": "OpenZWaveに移行",
+                            "introduction": "このウィザードは、従来の Z-Wave 統合から、現在ベータ版の OpenZWave 統合に移行するのに役立ちます。"
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Waveネットワーク管理",
                         "introduction": "Z-Wave ネットワークに影響するコマンドを実行します。ほとんどのコマンドが成功したかどうかについてのフィードバックは得られませんが、OZWログをチェックして調べることもできます。"
@@ -3236,6 +3276,7 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "ダッシュボードの管理",
                         "open": "Lovelace メニューを開く",
                         "raw_editor": "詳細設定エディター"
                     },

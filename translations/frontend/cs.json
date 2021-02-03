@@ -559,7 +559,8 @@
                 "select_blueprint": "Vyberte šablonu"
             },
             "calendar": {
-                "my_calendars": "Moje kalendáře"
+                "my_calendars": "Moje kalendáře",
+                "today": "Dnes"
             },
             "data-table": {
                 "no-data": "Žádná data",
@@ -755,6 +756,8 @@
                 "dismiss": "Zavrhnout",
                 "editor": {
                     "advanced": "Pokročilá nastavení",
+                    "area": "Nastavit pouze oblast entity",
+                    "area_note": "Ve výchozím nastavení jsou entity zařízení ve stejné oblasti jako zařízení. Pokud změníte oblast této entity, nebude již sledovat oblast zařízení.",
                     "change_device_area": "Změna oblasti zařízení",
                     "confirm_delete": "Opravdu chcete tuto položku smazat?",
                     "delete": "Odstranit",
@@ -765,6 +768,7 @@
                     "enabled_label": "Povolit entitu",
                     "enabled_restart_confirm": "Restartujte Home Assistant a dokončete povolení entit",
                     "entity_id": "Entity ID",
+                    "follow_device_area": "Sledovat oblast zařízení",
                     "icon": "Ikona",
                     "icon_error": "Ikony by měly být ve formátu 'prefix:nazevikony', např. 'mdi:home'",
                     "name": "Jméno",
@@ -1531,12 +1535,16 @@
                         "sign_out": "Odhlásit se",
                         "thank_you_note": "Děkujeme, že jste se stali součástí Home Assistant Cloud. Díky lidem, jako jste vy, jsme schopni udělat skvělý zážitek z domácí automatizace pro každého. Díky!",
                         "tts": {
+                            "default_language": "Výchozí jazyk, který se má použít",
                             "dialog": {
+                                "example_message": "Dobrý den, {name} , můžete přehrávat libovolný text na libovolném podporovaném přehrávači médií!",
                                 "header": "Zkuste převod textu na řeč",
                                 "play": "Přehrát",
+                                "target": "Cíl",
                                 "target_browser": "Prohlížeč"
                             },
                             "female": "Žena",
+                            "info": "Přineste osobnost do svého domova tím, že s vámi mluví pomocí našich služeb pro převod textu na řeč. Tuto možnost můžete použít v automatizaci a skriptech pomocí služby {service}.",
                             "male": "Muž",
                             "title": "Převod textu do řeč",
                             "try": "Zkusit"
@@ -2658,6 +2666,20 @@
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
                 "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Zrušit začlenění",
+                        "controller_in_inclusion_mode": "Váš ovladač Z-Wave je nyní v režimu začlenění.",
+                        "follow_device_instructions": "Podle pokynů dodaných se zařízením aktivujte párování na zařízení.",
+                        "inclusion_failed": "Uzel nelze přidat. Další informace najdete v protokolech.",
+                        "inclusion_finished": "Uzel byl přidán. Může trvat několik minut, než se všechny entity zobrazí, když dokončíme nastavení uzlu na pozadí.",
+                        "introduction": "Tento průvodce vás provede přidáním uzlu do vaší sítě Z-Wave.",
+                        "secure_inclusion_warning": "Zabezpečená zařízení vyžadují větší šířku pásma; příliš mnoho zabezpečených zařízení může zpomalit vaši síť Z-Wave. Bezpečné začlenění doporučujeme používat pouze u zařízení, která to vyžadují, jako jsou zámky nebo otvírače garážových vrat.",
+                        "start_inclusion": "Zahájit začlenění",
+                        "start_secure_inclusion": "Spusťte zabezpečené začlenění",
+                        "title": "Přidejte uzel Z-Wave",
+                        "use_secure_inclusion": "Použijte zabezpečené začlenění",
+                        "view_device": "Zobrazit zařízení"
+                    },
                     "button": "Nastavit",
                     "common": {
                         "add_node": "Přidat uzel",
@@ -2668,9 +2690,49 @@
                         "remove_node": "Odebrat uzel"
                     },
                     "dashboard": {
+                        "driver_version": "Verze ovladače",
+                        "dump_dead_nodes_text": "Některé uzly neodpověděly a předpokládá se, že jsou mrtvé. Ty nebudou plně exportovány.",
+                        "dump_dead_nodes_title": "Některé uzly jsou mrtvé.",
+                        "dump_debug": "Stáhněte si výpis své sítě a pomozte diagnostikovat problémy",
                         "dump_not_ready_confirm": "Stáhnout",
+                        "dump_not_ready_text": "Pokud vytvoříte export, zatímco ne všechny uzly jsou připraveny, mohla by vám chybět potřebná data. Dejte své síti nějaký čas na dotazování všech uzlů. Chcete pokračovat s výpisem?",
+                        "dump_not_ready_title": "Ne všechny uzly jsou ještě připraveny",
+                        "header": "Spravujte svoji síť Z-Wave",
                         "home_id": "ID domácnosti",
+                        "introduction": "Správa sítě Z-Wave a uzlů Z-Wave",
+                        "node_count": "Počet uzlů",
+                        "nodes_ready": "Uzly připraveny",
                         "server_version": "Verze serveru"
+                    },
+                    "device_info": {
+                        "node_ready": "Uzel připraven",
+                        "node_status": "Stav uzlu",
+                        "zwave_info": "Z-Wave Info"
+                    },
+                    "navigation": {
+                        "network": "Síť"
+                    },
+                    "network_status": {
+                        "connected": "Připojeno",
+                        "connecting": "Připojování",
+                        "unknown": "Nezjištěno"
+                    },
+                    "node_status": {
+                        "alive": "Naživu",
+                        "asleep": "Spící",
+                        "awake": "Probuzený",
+                        "dead": "Mrtvý",
+                        "unknown": "Nezjištěno"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Zrušit vyloučení",
+                        "controller_in_exclusion_mode": "Kontroler Z-Wave je nyní v režimu vyloučení.",
+                        "exclusion_failed": "Uzel nelze odstranit. Další informace najdete v protokolech.",
+                        "exclusion_finished": "Uzel {id} byl odebrán z vaší sítě Z-Wave.",
+                        "follow_device_instructions": "Postupujte podle pokynů dodanéch se zařízením a aktivujte vyloučení na zařízení.",
+                        "introduction": "Odeberte uzel ze sítě Z-Wave a odeberte přidružené zařízení a entity z Home Assistant.",
+                        "start_exclusion": "Zahájit vyloučení",
+                        "title": "Odebrání uzlu Z-Wave"
                     }
                 },
                 "zwave": {
@@ -2685,6 +2747,12 @@
                     },
                     "description": "Správa síťě Z-Wave",
                     "learn_more": "Další informace o Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrovat na OpenZWave",
+                            "introduction": "Tento průvodce vám pomůže migrovat ze starší integrace Z-Wave do integrace OpenZWave, která je aktuálně v beta verzi."
+                        }
+                    },
                     "network_management": {
                         "header": "Správa sítě Z-Wave",
                         "introduction": "Spouštějte příkazy, které ovlivňují síť Z-Wave. Nebudete mít žádnou zpětnou vazbu o tom, zda příkazy uspěly, ale můžete se podívat do OZW protokolu, kde to můžete zjistit."
@@ -3436,6 +3504,7 @@
                     "working": "Počkejte prosím"
                 },
                 "initializing": "Inicializuji",
+                "logging_in_to_with": "Přihlášení k **{locationName}** pomocí **{authProviderName}**.",
                 "logging_in_with": "Přihlásit se pomocí **{authProviderName}**.",
                 "pick_auth_provider": "Nebo se přihlaste s"
             },
