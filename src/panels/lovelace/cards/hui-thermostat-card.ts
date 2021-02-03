@@ -132,27 +132,30 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ></round-slider>
           `;
 
-    const currentTemperature = !isNaN(stateObj.attributes.current_temperature)
-      ? svg`
-          <svg viewBox="0 0 40 20">
-            <text
-              x="50%"
-              dx="1"
-              y="60%"
-              text-anchor="middle"
-              style="font-size: 13px;"
-            >
-              ${formatNumber(
-                stateObj.attributes.current_temperature,
-                this.hass!.language
-              )}
-              <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-                ${this.hass.config.unit_system.temperature}
-              </tspan>
-            </text>
-          </svg>
-        `
-      : "";
+    const currentTemperature = svg`
+        <svg viewBox="0 0 40 20">
+          <text
+            x="50%"
+            dx="1"
+            y="60%"
+            text-anchor="middle"
+            style="font-size: 13px;"
+          >
+            ${
+              stateObj.attributes.current_temperature !== null &&
+              !isNaN(stateObj.attributes.current_temperature)
+                ? svg`${formatNumber(
+                    stateObj.attributes.current_temperature,
+                    this.hass!.language
+                  )}
+            <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+              ${this.hass.config.unit_system.temperature}
+            </tspan>`
+                : ""
+            }
+          </text>
+        </svg>
+      `;
 
     const setValues = svg`
       <svg id="set-values">
