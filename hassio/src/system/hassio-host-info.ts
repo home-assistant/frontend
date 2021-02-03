@@ -150,7 +150,8 @@ class HassioHostInfo extends LitElement {
               : ""}
           </div>
           <div>
-            ${this.supervisor.host.disk_life_time
+            ${this.supervisor.host.disk_life_time !== "" &&
+            this.supervisor.host.disk_life_time >= 10
               ? html` <ha-settings-row>
                   <span slot="heading">
                     eMMC Lifetime Used
