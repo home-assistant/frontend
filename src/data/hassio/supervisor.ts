@@ -1,4 +1,5 @@
 import { HomeAssistant, PanelInfo } from "../../types";
+import { SupervisorArchs } from "../supervisor/supervisor";
 import { HassioAddonInfo, HassioAddonRepository } from "./addon";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
@@ -51,7 +52,7 @@ export type HassioInfo = {
   operating_system: string;
   supervisor: string;
   supported: boolean;
-  supported_arch: ["armhf" | "armv7" | "aarch64" | "i386" | "amd64"];
+  supported_arch: SupervisorArchs[];
   timezone: string;
 };
 
