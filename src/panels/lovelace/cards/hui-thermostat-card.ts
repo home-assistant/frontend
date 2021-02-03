@@ -149,7 +149,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                     this.hass!.language
                   )}
             <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-              ${this.hass.config.unit_system.temperature}</tspan>`
+              ${this.hass.config.unit_system.temperature}
+            </tspan>`
                 : ""
             }
           </text>
