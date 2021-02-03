@@ -22,7 +22,7 @@ export type HassioHomeAssistantInfo = {
 export type HassioSupervisorInfo = {
   addons: HassioAddonInfo[];
   addons_repositories: HassioAddonRepository[];
-  arch: string;
+  arch: "armhf" | "armv7" | "aarch64" | "i386" | "amd64";
   channel: string;
   debug: boolean;
   debug_block: boolean;

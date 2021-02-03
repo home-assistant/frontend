@@ -24,7 +24,7 @@ export interface HassioAddonInfo {
 
 export interface HassioAddonDetails extends HassioAddonInfo {
   apparmor: "disable" | "default" | "profile";
-  arch: "armhf" | "aarch64" | "i386" | "amd64";
+  arch: ["armhf" | "armv7" | "aarch64" | "i386" | "amd64"];
   audio_input: null | string;
   audio_output: null | string;
   audio: boolean;

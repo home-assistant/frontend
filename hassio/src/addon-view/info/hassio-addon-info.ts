@@ -54,6 +54,7 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../../src/data/hassio/common";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -137,6 +138,8 @@ class HassioAddonInfo extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @internalProperty() private _metrics?: HassioStats;
 
   @internalProperty() private _error?: string;
@@ -170,11 +173,25 @@ class HassioAddonInfo extends LitElement {
                   iconClass="update"
                 ></hassio-card-content>
                 ${!this.addon.available
-                  ? html`
-                      <p>
-                        This update is no longer compatible with your system.
-                      </p>
-                    `
+                  ? !this.addon.arch.find((arch) =>
+                      this.supervisor.info.supported_arch.includes(arch)
+                    )
+                    ? html`
+                        <p>
+                          The architecture on your system
+                          (${this.supervisor.supervisor.arch}) is no longer
+                          compatible with this add-on. You need one of these
+                          ${this.addon.arch.join(", ")}
+                        </p>
+                      `
+                    : html`
+                        <p>
+                          You are running Home Assistant
+                          ${this.supervisor.core.version}, to update to this
+                          version of the add-on you need at least version
+                          ${this.addon.homeassistant} of Home Assistant
+                        </p>
+                      `
                   : ""}
               </div>
               <div class="card-actions">
@@ -600,21 +617,33 @@ class HassioAddonInfo extends LitElement {
                     `
                   : ""}
               `
-            : html`
-                ${!this.addon.available
-                  ? html`
-                      <p class="warning">
-                        This add-on is not available on your system.
-                      </p>
-                    `
-                  : ""}
-                <ha-progress-button
-                  .disabled=${!this.addon.available}
-                  @click=${this._installClicked}
-                >
-                  Install
-                </ha-progress-button>
-              `}
+            : !this.addon.available
+            ? !this.addon.arch.find((arch) =>
+                this.supervisor.info.supported_arch.includes(arch)
+              )
+              ? html`
+                  <p class="warning">
+                    The architecture on your system
+                    (${this.supervisor.supervisor.arch}) is not compatible with
+                    this add-on. You need one of these
+                    ${this.addon.arch.join(", ")}
+                  </p>
+                `
+              : html`
+                  <p class="warning">
+                    You are running Home Assistant
+                    ${this.supervisor.core.version}, to install this add-on you
+                    need at least version ${this.addon.homeassistant} of Home
+                    Assistant
+                  </p>
+                `
+            : ""}
+          <ha-progress-button
+            .disabled=${!this.addon.available}
+            @click=${this._installClicked}
+          >
+            Install
+          </ha-progress-button>
         </div>
       </ha-card>
 
