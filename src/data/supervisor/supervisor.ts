@@ -7,7 +7,7 @@ import {
   HassioSupervisorInfo,
 } from "../hassio/supervisor";
 
-export type SupervisorArchs = "armhf" | "armv7" | "aarch64" | "i386" | "amd64";
+export type SupervisorArch = "armhf" | "armv7" | "aarch64" | "i386" | "amd64";
 
 export interface Supervisor {
   host: HassioHostInfo;
