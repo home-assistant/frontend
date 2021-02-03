@@ -292,8 +292,8 @@
             "on": "wł."
         },
         "sun": {
-            "above_horizon": "Nad horyzontem",
-            "below_horizon": "Poniżej horyzontu"
+            "above_horizon": "nad horyzontem",
+            "below_horizon": "poniżej horyzontu"
         },
         "switch": {
             "off": "wył.",
@@ -321,12 +321,12 @@
             "fog": "mgła",
             "hail": "grad",
             "lightning": "błyskawice",
-            "lightning-rainy": "Burza",
+            "lightning-rainy": "burza",
             "partlycloudy": "częściowe zachmurzenie",
             "pouring": "ulewa",
             "rainy": "deszczowo",
-            "snowy": "Opady śniegu",
-            "snowy-rainy": "Śnieg z deszczem",
+            "snowy": "opady śniegu",
+            "snowy-rainy": "śnieg z deszczem",
             "sunny": "słonecznie",
             "windy": "wietrznie",
             "windy-variant": "wietrznie"

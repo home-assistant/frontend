@@ -2711,7 +2711,9 @@
                     },
                     "remove_node": {
                         "cancel_exclusion": "Cancelar Exclusão",
-                        "start_exclusion": "Iniciar Exclusão"
+                        "controller_in_exclusion_mode": "O seu controlador Z-Wave está agora em modo de exclusão.",
+                        "start_exclusion": "Iniciar Exclusão",
+                        "title": "Remover um nó Z-Wave"
                     }
                 },
                 "zwave": {
@@ -2912,7 +2914,7 @@
                     "yaml_unsupported": "Você não pode usar esta função ao usar o Lovelace IU no modo YAML."
                 },
                 "cards": {
-                    "action_confirmation": "Tem a certeza que quer executar a acção \"{action}\"?",
+                    "action_confirmation": "Tem a certeza que quer executar a ação \"{action}\"?",
                     "actions": {
                         "no_entity_toggle": "Nenhuma entidade fornecida para alternar",
                         "no_navigation_path": "Nenhum caminho de navegação especificado",
