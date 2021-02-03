@@ -96,6 +96,7 @@ class HassioAddonConfig extends LitElement {
         </div>
         <div class="card-actions">
           <ha-progress-button
+            class="right"
             @click=${this._saveTapped}
             .disabled=${!this._configHasChanged || !this._valid}
           >
@@ -270,6 +271,12 @@ class HassioAddonConfig extends LitElement {
           display: block;
           margin-block: 0px;
           font-weight: normal;
+        }
+        .card-actions {
+          display: flow-root;
+        }
+        .right {
+          float: right;
         }
       `,
     ];
