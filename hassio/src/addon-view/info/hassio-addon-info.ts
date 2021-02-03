@@ -54,6 +54,7 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../../src/data/hassio/common";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -65,6 +66,7 @@ import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
+import { addonArchIsSupported } from "../../util/addon";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -137,6 +139,8 @@ class HassioAddonInfo extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @internalProperty() private _metrics?: HassioStats;
 
   @internalProperty() private _error?: string;
@@ -170,11 +174,25 @@ class HassioAddonInfo extends LitElement {
                   iconClass="update"
                 ></hassio-card-content>
                 ${!this.addon.available
-                  ? html`
-                      <p>
-                        This update is no longer compatible with your system.
-                      </p>
-                    `
+                  ? !addonArchIsSupported(
+                      this.supervisor.info.supported_arch,
+                      this.addon.arch
+                    )
+                    ? html`
+                        <p>
+                          This add-on is not compatible with the processor of
+                          your device or the operating system you have installed
+                          on your device.
+                        </p>
+                      `
+                    : html`
+                        <p>
+                          You are running Home Assistant
+                          ${this.supervisor.core.version}, to update to this
+                          version of the add-on you need at least version
+                          ${this.addon.homeassistant} of Home Assistant
+                        </p>
+                      `
                   : ""}
               </div>
               <div class="card-actions">
@@ -534,6 +552,27 @@ class HassioAddonInfo extends LitElement {
             </div>
           </div>
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${!this.addon.available
+            ? !addonArchIsSupported(
+                this.supervisor.info.supported_arch,
+                this.addon.arch
+              )
+              ? html`
+                  <p class="warning">
+                    This add-on is not compatible with the processor of your
+                    device or the operating system you have installed on your
+                    device.
+                  </p>
+                `
+              : html`
+                  <p class="warning">
+                    You are running Home Assistant
+                    ${this.supervisor.core.version}, to install this add-on you
+                    need at least version ${this.addon.homeassistant} of Home
+                    Assistant
+                  </p>
+                `
+            : ""}
         </div>
         <div class="card-actions">
           <div>
@@ -561,13 +600,6 @@ class HassioAddonInfo extends LitElement {
                     </ha-progress-button>
                   `
               : html`
-                  ${!this.addon.available
-                    ? html`
-                        <p class="warning">
-                          This add-on is not available on your system.
-                        </p>
-                      `
-                    : ""}
                   <ha-progress-button
                     .disabled=${!this.addon.available}
                     @click=${this._installClicked}

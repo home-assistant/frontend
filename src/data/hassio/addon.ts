@@ -1,5 +1,6 @@
 import { HaFormSchema } from "../../components/ha-form/ha-form";
 import { HomeAssistant } from "../../types";
+import { SupervisorArch } from "../supervisor/supervisor";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export interface HassioAddonInfo {
@@ -24,7 +25,7 @@ export interface HassioAddonInfo {
 
 export interface HassioAddonDetails extends HassioAddonInfo {
   apparmor: "disable" | "default" | "profile";
-  arch: "armhf" | "aarch64" | "i386" | "amd64";
+  arch: SupervisorArch[];
   audio_input: null | string;
   audio_output: null | string;
   audio: boolean;
