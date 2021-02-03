@@ -997,9 +997,6 @@ class HassioAddonInfo extends LitElement {
           font-weight: 500;
           color: var(--primary-color);
         }
-        .right {
-          float: right;
-        }
         protection-enable mwc-button {
           --mdc-theme-primary: white;
         }
