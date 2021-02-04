@@ -10,6 +10,7 @@ export const callAlarmAction = (
     | "arm_away"
     | "arm_home"
     | "arm_night"
+    | "arm_vacation"
     | "arm_custom_bypass"
     | "disarm",
   code?: string

@@ -65,7 +65,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
       return html``;
     }
 
-    const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
+    const states = ["arm_home", "arm_away", "arm_night", "arm_vacation", "arm_custom_bypass"];
 
     return html`
       <div class="card-config">
