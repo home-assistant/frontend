@@ -1492,14 +1492,14 @@
                             "info": "Home Assistant Cloud için Alexa entegrasyonu ile, tüm Home Assistant cihazlarınızı herhangi bir Alexa özellikli cihaz üzerinden kontrol edebilirsiniz.",
                             "info_state_reporting": "Durum raporlamayı etkinleştirirseniz, Home Assistant sergilenmis varlıkların tüm durum değişikliklerini Amazon'a gönderir. Bu, Alexa uygulamasında her zaman en son durumları görmenizi ve rutin oluşturmak için durum değişikliklerini kullanmanızı sağlar.",
                             "manage_entities": "Varlıkları Yönetin",
-                            "state_reporting_error": "Durum {enable_disable} rapor edilemidi.",
+                            "state_reporting_error": "Durum {enable_disable} rapor edilemiyor.",
                             "sync_entities": "Varlıkları Amazon ile Senkronize Etme",
                             "sync_entities_error": "Varlıklar senkronize edilemedi:",
                             "title": "Alexa"
                         },
                         "connected": "Bağlı",
                         "connection_status": "Cloud bağlantı durumu",
-                        "fetching_subscription": "Abonelik alinyor...",
+                        "fetching_subscription": "Abonelik alınıyor…",
                         "google": {
                             "config_documentation": "Yapılandırma belgeleri",
                             "devices_pin": "Güvenlik Cihazları Pın",
@@ -1630,13 +1630,13 @@
                         "forgot_password": "Parolanızı mı unuttunuz?",
                         "introduction": "Home Assistant Cloud, evden uzaktayken örneğinize güvenli bir uzaktan bağlantı sağlar. Ayrıca diğer bulut hizmetlerine bağlanmanıza olanak tanır: Amazon Alexa ve Google Assistant.",
                         "introduction2": "Bu hizmet ortağımız tarafından yürütülmektedir ",
-                        "introduction2a": "tarafından verilmektedir, Home Assistant ve Hass.io kurucuları tarafından kurulan bir şirket.",
+                        "introduction2a": " tarafından verilmektedir, Home Assistant ve Hass.io kurucuları tarafından kurulan bir şirket.",
                         "introduction3": "Home Assistant Cloud, bir aylık ücretsiz deneme sürümüne sahip bir abonelik hizmetidir. Ödeme bilgisi gerekmez.",
                         "learn_more_link": "Home Assistant Cloud hakkında daha fazla bilgi edin",
                         "password": "Parola",
                         "password_error_msg": "Parolalar en az 8 karakterdir",
                         "sign_in": "Oturum Aç",
-                        "start_trial": "1 aylık ücretsiz deneme sürümünüzü başlatın",
+                        "start_trial": "1 aylık ücretsiz deneme sürümünüzü başlatın.",
                         "title": "Cloud girişi",
                         "trial_info": "Ödeme bilgisi gerekmez"
                     },
@@ -1653,7 +1653,7 @@
                         "information": "Home Assistant Cloud ile bir aylık ücretsiz denemenizi başlatmak için bir hesap oluşturun. Ödeme bilgisi gerekmez.",
                         "information2": "Deneme, aşağıdakiler de dahil olmak üzere Home Assistant Cloud'un tüm avantajlarına erişmenizi sağlayacaktır:",
                         "information3": "Bu hizmet ortağımız ",
-                        "information3a": "tarafından verilmektedir, Home Assistant ve Hass.io kurucuları tarafından kurulan bir şirket.",
+                        "information3a": " tarafından verilmektedir, Home Assistant ve Hass.io kurucuları tarafından kurulan bir şirket.",
                         "information4": "Bir hesap kaydederek aşağıdaki şartlar ve koşulları kabul etmiş olursunuz.",
                         "link_privacy_policy": "Gizlilik Politikası",
                         "link_terms_conditions": "Şartlar ve koşullar",
@@ -2380,7 +2380,7 @@
                 },
                 "server_control": {
                     "caption": "Sunucu Kontrolleri",
-                    "description": "Home Assistant sunucusunu yeniden başlatın veya durdurun",
+                    "description": "Home Assistant sunucusunu yeniden başlatın veya durdurun.",
                     "section": {
                         "reloading": {
                             "automation": "Otomasyonları yeniden yükle",

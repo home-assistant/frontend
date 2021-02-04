@@ -603,10 +603,10 @@
                 "messages": {
                     "became_unavailable": "nicht mehr verfügbar",
                     "changed_to_state": "wechselte zu {state}",
-                    "cleared_device_class": "gelöscht (keine {device_class} erkannt)",
-                    "detected_device_class": "erkannt {device_class}",
+                    "cleared_device_class": "zurückgesetzt (kein(e) {device_class} erkannt)",
+                    "detected_device_class": "{device_class} erkannt",
                     "rose": "aufgegangen",
-                    "set": "einstellen",
+                    "set": "untergegangen",
                     "turned_off": "ausgeschaltet",
                     "turned_on": "eingeschaltet",
                     "was_at_home": "wurde zu Hause erkannt",

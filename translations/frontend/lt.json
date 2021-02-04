@@ -261,7 +261,8 @@
     "ui": {
         "card": {
             "alarm_control_panel": {
-                "arm_custom_bypass": "Individualizuotas apėjimas"
+                "arm_custom_bypass": "Individualizuotas apėjimas",
+                "arm_night": "Naktinė apsauga"
             },
             "camera": {
                 "not_available": "Vaizdas negalimas"
@@ -983,6 +984,7 @@
             },
             "lovelace": {
                 "cards": {
+                    "action_confirmation": "Ar tikrai norite atlikti veiksmą  \"{action}\" ?",
                     "empty_state": {
                         "go_to_integrations_page": "Į integracijų puslapį",
                         "title": "Sveiki sugrįžę namo"
