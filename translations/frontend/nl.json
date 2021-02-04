@@ -2666,36 +2666,58 @@
                 },
                 "zwave_js": {
                     "add_node": {
+                        "follow_device_instructions": "Volg de aanwijzingen die bij het apparaat zijn geleverd om de koppeling van het apparaat te activeren.",
+                        "inclusion_failed": "Het knooppunt kon niet worden toegevoegd. Controleer de logs voor meer informatie.",
+                        "inclusion_finished": "Het knooppunt is toegevoegd. Het kan een paar minuten duren voordat alle entiteiten zichtbaar zijn, omdat we het opzetten van het knooppunt op de achtergrond afwerken.",
+                        "introduction": "Deze wizard begeleidt u bij het toevoegen van een knooppunt aan uw Z-Wave netwerk.",
+                        "title": "Voeg een Z-Wave knooppunt toe",
                         "view_device": "Bekijk apparaat"
                     },
                     "button": "Configureer",
                     "common": {
+                        "add_node": "Knooppunt toevoegen",
                         "close": "Sluiten",
-                        "network": "Netwerk"
+                        "network": "Netwerk",
+                        "node_id": "Knooppunt-ID",
+                        "remove_node": "Knooppunt verwijderen"
                     },
                     "dashboard": {
                         "driver_version": "Driver Versie",
                         "dump_dead_nodes_text": "Sommige van uw knooppunten reageerden niet en worden verondersteld onbereikbaar te zijn. Deze worden niet volledig geëxporteerd.",
                         "dump_dead_nodes_title": "Sommige van uw knooppunten zijn onbereikbaar",
                         "dump_not_ready_confirm": "Downloaden",
+                        "dump_not_ready_text": "Als u een export maakt terwijl niet alle knooppunten gereed zijn, mist u mogelijk de benodigde gegevens. Geef uw netwerk wat tijd om alle knooppunten te doorzoeken. Wilt u doorgaan met de dump?",
                         "dump_not_ready_title": "Nog niet alle knooppunten zijn gereed",
+                        "header": "Beheer je Z-Wave netwerk",
+                        "introduction": "Beheer uw Z-Wave netwerk en Z-Wave knooppunten",
+                        "node_count": "Aantal knooppunten",
                         "nodes_ready": "Knooppunten gereed",
                         "server_version": "Server Versie"
+                    },
+                    "device_info": {
+                        "node_ready": "Knooppunt gereed",
+                        "node_status": "Knooppuntstatus",
+                        "zwave_info": "Z-Wave info"
                     },
                     "navigation": {
                         "network": "Netwerk"
                     },
                     "network_status": {
                         "connected": "Verbonden",
+                        "connecting": "Verbinden",
                         "unknown": "Onbekend"
                     },
                     "node_status": {
                         "alive": "Levend",
                         "asleep": "In slaap",
                         "awake": "Wakker",
-                        "dead": "Onbereikbaar"
+                        "dead": "Onbereikbaar",
+                        "unknown": "Onbekend"
                     },
                     "remove_node": {
+                        "exclusion_failed": "Het knooppunt kon niet worden verwijderd. Controleer de logboeken voor meer informatie.",
+                        "exclusion_finished": "Knooppunt {id} is verwijderd uit het Z-Wave-netwerk.",
+                        "introduction": "Verwijder een knooppunt uit uw Z-Wave-netwerk en verwijder het gekoppelde apparaat met bijbehorende entiteiten uit Home Assistant.",
                         "title": "Een Z-Wave Node verwijderen"
                     }
                 },
