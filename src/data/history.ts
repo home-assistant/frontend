@@ -200,6 +200,15 @@ const processLineChartEntities = (
   };
 };
 
+const isNumberValued = (states: HassEntity[]): boolean => {
+  for (const state of states) {
+    if (isNaN(parseFloat(state.state))) {
+      return false;
+    }
+  }
+  return true;
+};
+
 export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HassEntity[][],
@@ -231,6 +240,8 @@ export const computeHistory = (
       unit = hass.config.unit_system.temperature;
     } else if (computeStateDomain(stateInfo[0]) === "humidifier") {
       unit = "%";
+    } else if (isNumberValued(stateInfo)) {
+      unit = " ";
     }
 
     if (!unit) {
