@@ -4,6 +4,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
+import { UNAVAILABLE_STATES } from "./entity";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const LINE_ATTRIBUTES_TO_KEEP = [
@@ -201,10 +202,18 @@ const processLineChartEntities = (
 };
 
 const isNumberValued = (states: HassEntity[]): boolean => {
-  for (const state of states) {
-    if (isNaN(parseFloat(state.state))) {
-      return false;
-    }
+  if (states.every((state) => UNAVAILABLE_STATES.includes(state.state))) {
+    return false;
+  }
+
+  if (
+    states.some(
+      (state) =>
+        isNaN(parseFloat(state.state)) &&
+        !UNAVAILABLE_STATES.includes(state.state)
+    )
+  ) {
+    return false;
   }
   return true;
 };
