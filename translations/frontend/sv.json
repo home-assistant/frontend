@@ -755,7 +755,7 @@
                 "editor": {
                     "advanced": "Avancerade inställningar",
                     "area_note": "Som standard har entiteterna som tillhör en enhet samma område som enheten. Om du ändrar området för denna entitet kommer den inte längre att använda enhetens område.",
-                    "change_device_area": "Ändra område för entitet",
+                    "change_device_area": "Ändra område för enhet",
                     "confirm_delete": "Är du säker på att du vill ta bort den här posten?",
                     "delete": "Radera",
                     "device_disabled": "Enheten för den här entiteten är inaktiverad.",
@@ -775,6 +775,7 @@
                     "update": "Uppdatera"
                 },
                 "faq": "dokumentation",
+                "info_customize": "Du kan skriva över vissa attribut i avsnittet {customize_link}.",
                 "no_unique_id": "Den här entiteten (\"{entity_id}\") har inget unikt ID, därför kan den inte hanteras från användargränssnittet.\nKlicka här {faq_link} för mer detaljer.",
                 "related": "Relaterade",
                 "settings": "Inställningar"
@@ -2666,6 +2667,7 @@
                         "inclusion_failed": "Noden kunde inte läggas till. Kontrollera loggarna för mer information.",
                         "inclusion_finished": "Noden har lagts till. Det kan ta några minuter för alla entiteter att dyka upp när vi avslutar inställningen av noden i bakgrunden.",
                         "introduction": "Denna guide guidar dig genom att lägga till en nod i ditt Z-Wave-nätverk.",
+                        "secure_inclusion_warning": "Säkra enheter kräver ytterligare bandbredd, för många säkra enheter kan göra ditt Z-Wave-nätverk långsammare. Vi rekommenderar att endast använda säker inkludering för enheter som kräver det, som lås eller dörröppnare för garage.",
                         "start_inclusion": "Påbörja inkludering",
                         "start_secure_inclusion": "Påbörja säker inkludering",
                         "title": "Lägg till Z-Wave nod",
@@ -2683,6 +2685,7 @@
                     },
                     "dashboard": {
                         "driver_version": "Drivrutinsversion",
+                        "dump_dead_nodes_text": "Några av dina noder svarade inte och antas vara döda. Dessa kommer inte att exporteras fullt ut.",
                         "dump_dead_nodes_title": "Några av dina noder är döda",
                         "dump_debug": "Ladda ner en rapport från ditt nätverk för att diagnostisera problem",
                         "dump_not_ready_confirm": "Ladda ner",
@@ -2739,7 +2742,8 @@
                     "learn_more": "Läs mer om Z-Wave",
                     "migration": {
                         "ozw": {
-                            "header": "Migrera till OpenZWave"
+                            "header": "Migrera till OpenZWave",
+                            "introduction": "Den här guiden hjälper dig att migrera från den äldre Z-Wave-integrationen till OpenZWave-integrationen som för närvarande finns i beta."
                         }
                     },
                     "network_management": {
@@ -3492,6 +3496,7 @@
                     "working": "Vänligen vänta"
                 },
                 "initializing": "Initierar",
+                "logging_in_to_with": "Loggar in på ** {locationName} ** med ** {authProviderName} **.",
                 "logging_in_with": "Loggar in med **{authProviderName}**.",
                 "pick_auth_provider": "Eller logga in med"
             },
