@@ -1812,12 +1812,12 @@
                     "description": "Administra las entidades conocidas.",
                     "picker": {
                         "disable_selected": {
-                            "button": "Desactivar seleccionadas",
+                            "button": "Deshabilitar seleccionadas",
                             "confirm_text": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
                             "confirm_title": "¿Deseas deshabilitar {number} {number, plural,\n one {entidad}\n other {entidades}\n }?"
                         },
                         "enable_selected": {
-                            "button": "Activar seleccionadas",
+                            "button": "Habilitar seleccionadas",
                             "confirm_text": "Esto las hará disponibles en Home Assistant de nuevo si ahora están deshabilitadas.",
                             "confirm_title": "¿Deseas activar {number} {number, plural,\n one {entidad}\n other {entidades}\n }?"
                         },
@@ -2421,7 +2421,7 @@
                             "confirm_restart": "¿Seguro que quieres reiniciar Home Assistant?",
                             "confirm_stop": "¿Seguro que quieres detener Home Assistant?",
                             "heading": "Administración del servidor",
-                            "introduction": "Controla tu servidor de Home Assistant... desde Home Assistant.",
+                            "introduction": "Controla tu servidor Home Assistant... desde Home Assistant.",
                             "restart": "Reiniciar",
                             "stop": "Detener"
                         },

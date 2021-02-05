@@ -1719,7 +1719,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Bu aygıt kullanılarak henüz {ad} eklenmedi. Yukarıdaki + butonuna tıklayarak bir tane ekleyebilirsiniz.",
+                    "add_prompt": "Bu aygıt kullanılarak henüz {name} eklenmedi. Yukarıdaki + butonuna tıklayarak bir tane ekleyebilirsiniz.",
                     "automation": {
                         "actions": {
                             "caption": "Bir şey tetiklendiğinde...",
@@ -2517,7 +2517,7 @@
                     "add_device": "Cihaz Ekle",
                     "add_device_page": {
                         "discovered_text": "Cihazlar keşfedildikten sonra burada görünecektir.",
-                        "discovery_text": "Keşfedilen cihazlar burada görünecektir. Cihaz (lar) ınız için talimatları izleyin ve cihazları eşleştirme moduna getirin.",
+                        "discovery_text": "Keşfedilen aygıtlar burada gösterilecek. Cihazınızın(lar) yönergelerini izleyin ve aygıtı(lar) eşleştirme moduna yerleştirin.",
                         "header": "Zigbee Ev Otomasyonu - Cihaz Ekle",
                         "no_devices_found": "Hiçbir cihaz bulunamadı, eşleştirme modunda olduklarından emin olun ve keşfetme sırasında cihazı açık tutun.",
                         "pairing_mode": "Cihazlarınızın eşleme modunda olduğundan emin olun. Bunun nasıl yapılacağı konusunda cihazınızın talimatlarını kontrol edin.",
