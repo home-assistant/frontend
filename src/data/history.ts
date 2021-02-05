@@ -201,7 +201,7 @@ const processLineChartEntities = (
   };
 };
 
-const isNumberValued = (states: HassEntity[]): boolean => {
+const isNumerical = (states: HassEntity[]): boolean => {
   if (states.every((state) => UNAVAILABLE_STATES.includes(state.state))) {
     return false;
   }
@@ -249,7 +249,7 @@ export const computeHistory = (
       unit = hass.config.unit_system.temperature;
     } else if (computeStateDomain(stateInfo[0]) === "humidifier") {
       unit = "%";
-    } else if (isNumberValued(stateInfo)) {
+    } else if (isNumerical(stateInfo)) {
       unit = " ";
     }
 
