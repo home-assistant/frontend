@@ -98,6 +98,7 @@ class HcLayout extends LitElement {
         line-height: 32px;
         padding: 24px 16px 16px;
         display: block;
+        margin: 0;
       }
 
       .subtitle {
