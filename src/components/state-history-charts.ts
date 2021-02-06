@@ -13,7 +13,7 @@ import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import type { HomeAssistant } from "../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { hasConfigOrEntityChanged } from "../panels/lovelace/common/has-changed";
 import { HistoryResult } from "../data/history";
 
 @customElement("state-history-charts")
