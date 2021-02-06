@@ -1,26 +1,42 @@
+import {
+  internalProperty,
+  property,
+  PropertyValues,
+  UpdatingElement,
+} from "lit-element";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
+import { computeCardSize } from "../common/compute-card-size";
 import { evaluateFilter } from "../common/evaluate-filter";
+import { findEntities } from "../common/find-entites";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { EntityFilterCardConfig } from "./types";
-import {
-  property,
-  internalProperty,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
-import { computeCardSize } from "../common/compute-card-size";
 
 class EntityFilterCard extends UpdatingElement implements LovelaceCard {
-  public static getStubConfig(): EntityFilterCardConfig {
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): EntityFilterCardConfig {
+    const maxEntities = 3;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFallback,
+      ["light", "switch", "sensor"]
+    );
+
     return {
       type: "entity-filter",
-      entities: [{ entity: "sun.sun" }],
-      state_filter: ["above_horizon"],
-      card: { type: "entities", title: "Sun up" },
+      entities: foundEntities,
+      state_filter: [
+        foundEntities[0] ? hass.states[foundEntities[0]].state : "",
+      ],
+      card: { type: "entities" },
     };
   }
 
