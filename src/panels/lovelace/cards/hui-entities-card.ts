@@ -14,7 +14,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-entities-toggle";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
