@@ -1026,7 +1026,7 @@
             "config": {
                 "edit_in_yaml_supported": "您仍然可以以 YAML 编辑配置。",
                 "editor_not_available": "“{type}”类型没有可视化编辑器。",
-                "editor_not_supported": "此配置不支持可视编辑器",
+                "editor_not_supported": "此配置不支持可视化编辑器",
                 "error_detected": "检测到配置错误",
                 "key_missing": "缺少必需的键“{key}”。",
                 "key_not_expected": "“{key}”选项不可用，或不被可视化编辑器支持。",
@@ -1537,7 +1537,7 @@
                         "tts": {
                             "default_language": "默认使用语言",
                             "dialog": {
-                                "example_message": "{name}，您好，现在可以支持的媒体播放器上播报任意文本了！",
+                                "example_message": "{name}，您好，现在可以在支持的媒体播放器上播报任意文本了！",
                                 "header": "尝试 TTS",
                                 "play": "播放",
                                 "target": "目标",
