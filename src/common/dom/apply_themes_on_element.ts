@@ -36,7 +36,7 @@ export const applyThemesOnElement = (
   let themeRules: Partial<ThemeVars> = {};
 
   if (themeOptions) {
-    if (themeOptions.dark) {
+    if (themeOptions.darkMode) {
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
       if (themeOptions.primaryColor) {
@@ -79,7 +79,7 @@ export const applyThemesOnElement = (
     // If dark is requested, check if the theme actually provides "dark_styles" to use
     if (
       themeOptions &&
-      themeOptions.dark &&
+      themeOptions.darkMode &&
       themes.themes[selectedTheme].dark_styles
     )
       themeRules = {

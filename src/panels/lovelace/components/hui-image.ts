@@ -101,7 +101,7 @@ export class HuiImage extends LitElement {
         imageSrc = this.image;
         imageFallback = true;
       }
-    } else if (this.darkModeImage && this.hass.themes.darkMode) {
+    } else if (this.darkModeImage && this.hass.selectedTheme.darkMode) {
       imageSrc = this.darkModeImage;
     } else {
       imageSrc = this.image;
@@ -114,7 +114,7 @@ export class HuiImage extends LitElement {
     // Figure out filter to use
     let filter = this.filter || "";
 
-    if (this.hass.themes.darkMode && this.darkModeFilter) {
+    if (this.hass.selectedTheme.darkMode && this.darkModeFilter) {
       filter += this.darkModeFilter;
     }
 

@@ -17,7 +17,6 @@ export interface Themes {
   default_theme: string;
   default_dark_theme: string | null;
   themes: Record<string, Theme>;
-  darkMode: boolean;
 }
 
 const fetchThemes = (conn) =>

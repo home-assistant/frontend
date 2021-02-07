@@ -84,7 +84,11 @@ export interface CurrentUser {
 // Currently selected theme and its settings
 export interface ThemeSettings {
   theme: string;
-  dark?: boolean;
+  // Currently effective dark mode. Can be used in cards for rendering.
+  darkMode: boolean;
+  // Radio box selection for theme picker. Do not use in cards as
+  // it can be undefined == auto. Property darkMode carries effective current mode.
+  darkRadio?: boolean;
   primaryColor?: string;
   accentColor?: string;
 }

@@ -87,7 +87,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="auto"
-                ?checked=${this.hass.selectedTheme?.dark === undefined}
+                ?checked=${this.hass.selectedTheme?.darkRadio === undefined}
               ></ha-radio>
             </ha-formfield>
             <ha-formfield
@@ -99,7 +99,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="light"
-                ?checked=${this.hass.selectedTheme?.dark === false}
+                ?checked=${this.hass.selectedTheme?.darkRadio === false}
               >
               </ha-radio>
             </ha-formfield>
@@ -112,7 +112,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="dark"
-                ?checked=${this.hass.selectedTheme?.dark === true}
+                ?checked=${this.hass.selectedTheme?.darkRadio === true}
               >
               </ha-radio>
             </ha-formfield>
@@ -210,7 +210,7 @@ export class HaPickThemeRow extends LitElement {
         dark = true;
         break;
     }
-    fireEvent(this, "settheme", { dark });
+    fireEvent(this, "settheme", { darkMode: dark });
   }
 
   private _handleThemeSelection(ev: CustomEvent) {

@@ -226,7 +226,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
-    if (oldHass.themes.darkMode !== this.hass.themes.darkMode) {
+    if (oldHass.selectedTheme.darkMode !== this.hass.selectedTheme.darkMode) {
       return true;
     }
 
@@ -273,7 +273,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (oldHass && oldHass.themes.darkMode !== this.hass.themes.darkMode) {
+      if (
+        oldHass &&
+        oldHass.selectedTheme.darkMode !== this.hass.selectedTheme.darkMode
+      ) {
         this._replaceTileLayer();
       }
     }
@@ -301,7 +304,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private async loadMap(): Promise<void> {
     [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this._mapEl,
-      this._config!.dark_mode ?? this.hass.themes.darkMode
+      this._config!.dark_mode ?? this.hass.selectedTheme.darkMode
     );
     this._drawEntities();
     this._leafletMap.invalidateSize();
@@ -319,7 +322,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       Leaflet,
       map,
       this._tileLayer,
-      this._config!.dark_mode ?? this.hass.themes.darkMode
+      this._config!.dark_mode ?? this.hass.selectedTheme.darkMode
     );
   }
 

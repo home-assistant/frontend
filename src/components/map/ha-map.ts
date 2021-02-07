@@ -127,7 +127,10 @@ class HaMap extends LitElement {
       this._fitMap();
 
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.themes.darkMode === this.hass.themes.darkMode) {
+      if (
+        !oldHass ||
+        oldHass.selectedTheme.darkMode === this.hass.selectedTheme.darkMode
+      ) {
         return;
       }
       if (!this.Leaflet || !this._leafletMap || !this._tileLayer) {
@@ -137,7 +140,7 @@ class HaMap extends LitElement {
         this.Leaflet,
         this._leafletMap,
         this._tileLayer,
-        this.hass.themes.darkMode
+        this.hass.selectedTheme.darkMode
       );
     }
   }
@@ -149,7 +152,7 @@ class HaMap extends LitElement {
   private async loadMap(): Promise<void> {
     [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this._mapEl,
-      this.darkMode ?? this.hass.themes.darkMode
+      this.darkMode ?? this.hass.selectedTheme.darkMode
     );
     this._drawEntities();
     this._leafletMap.invalidateSize();
@@ -247,7 +250,9 @@ class HaMap extends LitElement {
               html: iconHTML,
               iconSize: [24, 24],
               className:
-                this.darkMode ?? this.hass.themes.darkMode ? "dark" : "light",
+                this.darkMode ?? this.hass.selectedTheme.darkMode
+                  ? "dark"
+                  : "light",
             }),
             interactive: false,
             title,

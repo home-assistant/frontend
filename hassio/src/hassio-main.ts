@@ -91,7 +91,7 @@ export class HassioMain extends SupervisorBaseElement {
     if (atLeastVersion(this.hass.config.version, 0, 114)) {
       themeName =
         this.hass.selectedTheme?.theme ||
-        (this.hass.themes.darkMode && this.hass.themes.default_dark_theme
+        (this.hass.selectedTheme.darkMode && this.hass.themes.default_dark_theme
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
@@ -99,7 +99,7 @@ export class HassioMain extends SupervisorBaseElement {
       if (themeName === "default" && options?.dark === undefined) {
         options = {
           ...this.hass.selectedTheme,
-          dark: this.hass.themes.darkMode,
+          dark: this.hass.selectedTheme.darkMode,
         };
       }
     } else {

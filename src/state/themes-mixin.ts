@@ -60,18 +60,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const selectedTheme = this.hass.themes.themes[
         this.hass.selectedTheme!.theme
       ];
-      const darkMode = darkPreferred;
 
-      if (selectedTheme.styles && !selectedTheme.dark_styles) darkMode = false;
-      else if (!selectedTheme.styles && selectedTheme.dark_styles)
+      let darkMode =
+        options?.darkMode === undefined ? darkPreferred : options?.darkMode;
+
+      // Override dark mode selection depending on what the theme actually provides.
+      // Leave the selection as-is if the theme can provide the requested style.
+      if (darkMode && !selectedTheme.dark_styles) darkMode = false;
+      else if (!darkMode && !selectedTheme.styles && selectedTheme.dark_styles)
         darkMode = true;
 
-      if (options?.dark === undefined) {
-        options = {
-          ...this.hass.selectedTheme!,
-          dark: darkPreferred,
-        };
-      }
+      options = {
+        ...this.hass.selectedTheme!,
+        darkMode,
+      };
 
       applyThemesOnElement(
         document.documentElement,
@@ -80,13 +82,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         options
       );
 
-      const darkMode =
-        !!options?.dark ||
+      darkMode =
+        !!options?.darkMode ||
         !!(darkPreferred && this.hass.themes.default_dark_theme);
 
-      if (darkMode !== this.hass.themes.darkMode) {
+      if (darkMode !== this.hass.selectedTheme!.darkMode) {
         this._updateHass({
-          themes: { ...this.hass.themes, darkMode },
+          selectedTheme: { ...this.hass.selectedTheme!, darkMode },
         });
 
         const schemeMeta = document.querySelector("meta[name=color-scheme]");
