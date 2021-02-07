@@ -34,7 +34,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         states: null as any,
         config: null as any,
         themes: null as any,
-        selectedThemeSettings: null as any,
         panels: null as any,
         services: null as any,
         user: null as any,

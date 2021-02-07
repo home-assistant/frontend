@@ -119,7 +119,7 @@ class LocationEditor extends LitElement {
         this.Leaflet,
         this._leafletMap,
         this._tileLayer,
-        !!this.hass.themes.darkMode
+        this.hass.themes.darkMode
       );
     }
   }
