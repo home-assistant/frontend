@@ -321,15 +321,15 @@
             "fog": "Nebbia",
             "hail": "Grandine",
             "lightning": "Temporale",
-            "lightning-rainy": "Temporale, piovoso",
+            "lightning-rainy": "Temporale, pioggia",
             "partlycloudy": "Parzialmente nuvoloso",
             "pouring": "Piogge intense",
-            "rainy": "Piovoso",
-            "snowy": "Nevoso",
-            "snowy-rainy": "Nevoso, piovoso",
+            "rainy": "Pioggia",
+            "snowy": "Neve",
+            "snowy-rainy": "Neve, pioggia",
             "sunny": "Soleggiato",
-            "windy": "Ventoso",
-            "windy-variant": "Ventoso"
+            "windy": "Vento",
+            "windy-variant": "Vento"
         },
         "zwave": {
             "default": {
@@ -1262,7 +1262,7 @@
                                     "type_value": "Tempo fisso",
                                     "weekdays": {
                                         "fri": "Venerdì",
-                                        "mon": "Lunedi",
+                                        "mon": "Lunedì",
                                         "sat": "Sabato",
                                         "sun": "Domenica",
                                         "thu": "Giovedì",
@@ -1979,7 +1979,7 @@
                         "reload_restart_confirm": "Riavvia Home Assistant per completare il ricaricamento di questa integrazione",
                         "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
-                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+                        "services": "{count} {count, plural,\n  one {servizio}\n  other {servizi}\n}",
                         "settings_button": "Modificare le impostazioni per {integration}.",
                         "system_options": "Opzioni di sistema",
                         "system_options_button": "Opzioni di sistema per {integration}",
@@ -2213,7 +2213,7 @@
                         "session": "Recupero di valori che cambiano di rado dal nodo",
                         "static": "Recupero di valori statici dal dispositivo",
                         "versions": "Recupero di informazioni sulle versioni del firmware e della classe di comando",
-                        "wakeup": "Configurazione del supporto per code di riattivazione e messaggi "
+                        "wakeup": "Configurazione del supporto per code di riattivazione e messaggi"
                     },
                     "node": {
                         "button": "Dettagli del nodo",
@@ -2231,7 +2231,7 @@
                         "battery_note": "Se il nodo è alimentato a batteria, assicurarsi di riattivarlo prima di procedere",
                         "button": "Aggiorna nodo",
                         "complete": "Aggiornamento del nodo completato",
-                        "description": "In questo modo si dirà a OpenZWave di re-interrogare un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
+                        "description": "In questo modo si dirà a OpenZWave di re interrogare un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
                         "node_status": "Stato del nodo",
                         "refreshing_description": "Aggiornamento delle informazioni sul nodo in corso ...",
                         "start_refresh_button": "Avvia aggiornamento",
@@ -2673,7 +2673,7 @@
                         "inclusion_failed": "Impossibile aggiungere il nodo. Si prega di controllare i registri per ulteriori informazioni.",
                         "inclusion_finished": "Il nodo è stato aggiunto. Potrebbero essere necessari alcuni minuti prima che tutte le entità vengano visualizzate mentre finiamo di configurare il nodo in background.",
                         "introduction": "Questa procedura ti guiderà nell'aggiunta di un nodo alla tua rete Z-Wave.",
-                        "secure_inclusion_warning": "I dispositivi protetti richiedono una larghezza di banda aggiuntiva; troppi dispositivi sicuri possono rallentare la tua rete Z-Wave. Si consiglia di utilizzare l'inclusione sicura solo per i dispositivi che lo richiedono, come serrature o apriporta da garage.",
+                        "secure_inclusion_warning": "I dispositivi protetti richiedono una larghezza di banda aggiuntiva; troppi dispositivi sicuri possono rallentare la tua rete Z-Wave. Si consiglia di utilizzare l'inclusione sicura solo per i dispositivi che lo richiedono, come serrature o apri porta da garage.",
                         "start_inclusion": "Avvia inclusione",
                         "start_secure_inclusion": "Avvia inclusione sicura",
                         "title": "Aggiungi un Nodo Z-Wave",
@@ -2750,7 +2750,7 @@
                     "migration": {
                         "ozw": {
                             "header": "Migrare a OpenZWave",
-                            "introduction": "Questa procedura guidata consente di eseguire la migrazione dall'integrazione Z-Wave legacy all'integrazione OpenZWave attualmente in versione beta."
+                            "introduction": "Questa procedura guidata consente di eseguire la migrazione dalla vecchia integrazione Z-Wave  all'integrazione OpenZWave attualmente in versione beta."
                         }
                     },
                     "network_management": {
@@ -3371,7 +3371,7 @@
                     "reload_resources": "Ricarica le risorse",
                     "start_conversation": "Inizia la conversazione"
                 },
-                "reload_lovelace": "Ricaricare l'Interfaccia Utente",
+                "reload_lovelace": "Ricarica l'Interfaccia Utente",
                 "reload_resources": {
                     "refresh_body": "È necessario aggiornare la pagina per completare il ricaricamento, si desidera aggiornare ora?",
                     "refresh_header": "Vuoi aggiornare?"
