@@ -73,7 +73,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
   }
 
   async loadMap() {
-    this._darkMode = this.hass.selectedTheme.darkMode;
+    this._darkMode = this.hass.selectedThemeSettings.darkMode;
     [this._map, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this.$.map,
       this._darkMode
@@ -121,13 +121,13 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     const map = this._map;
     if (!map) return;
 
-    if (this._darkMode !== this.hass.selectedTheme.darkMode) {
-      this._darkMode = this.hass.selectedTheme.darkMode;
+    if (this._darkMode !== this.hass.selectedThemeSettings.darkMode) {
+      this._darkMode = this.hass.selectedThemeSettings.darkMode;
       this._tileLayer = replaceTileLayer(
         this.Leaflet,
         map,
         this._tileLayer,
-        this.hass.selectedTheme.darkMode
+        this.hass.selectedThemeSettings.darkMode
       );
     }
 

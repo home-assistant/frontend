@@ -109,10 +109,7 @@ class LocationEditor extends LitElement {
 
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        !oldHass ||
-        oldHass.selectedTheme?.darkMode === this.hass.selectedTheme?.darkMode
-      ) {
+      if (!oldHass || oldHass.themes.darkMode === this.hass.themes.darkMode) {
         return;
       }
       if (!this._leafletMap || !this._tileLayer) {
@@ -122,7 +119,7 @@ class LocationEditor extends LitElement {
         this.Leaflet,
         this._leafletMap,
         this._tileLayer,
-        this.hass.selectedTheme?.darkMode
+        !!this.hass.themes.darkMode
       );
     }
   }
@@ -134,7 +131,7 @@ class LocationEditor extends LitElement {
   private async _initMap(): Promise<void> {
     [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this._mapEl,
-      this.darkMode ?? this.hass.selectedTheme?.darkMode,
+      this.darkMode ?? this.hass.themes.darkMode,
       Boolean(this.radius)
     );
     this._leafletMap.addEventListener(

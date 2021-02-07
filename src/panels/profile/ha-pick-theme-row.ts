@@ -38,7 +38,9 @@ export class HaPickThemeRow extends LitElement {
     const hasThemes =
       this.hass.themes?.themes && Object.keys(this.hass.themes.themes).length;
     const curTheme =
-      this.hass!.selectedTheme?.theme || this.hass!.themes.default_theme;
+      this.hass!.selectedThemeSettings?.theme ||
+      this.hass!.themes.default_theme;
+
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading"
@@ -87,7 +89,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="auto"
-                ?checked=${this.hass.selectedTheme?.darkRadio === undefined}
+                ?checked=${this.hass.selectedThemeSettings?.dark === undefined}
               ></ha-radio>
             </ha-formfield>
             <ha-formfield
@@ -99,7 +101,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="light"
-                ?checked=${this.hass.selectedTheme?.darkRadio === false}
+                ?checked=${this.hass.selectedThemeSettings?.dark === false}
               >
               </ha-radio>
             </ha-formfield>
@@ -112,14 +114,14 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="dark"
-                ?checked=${this.hass.selectedTheme?.darkRadio === true}
+                ?checked=${this.hass.selectedThemeSettings?.dark === true}
               >
               </ha-radio>
             </ha-formfield>
             ${curTheme === "default"
               ? html` <div class="color-pickers">
                   <paper-input
-                    .value=${this.hass!.selectedTheme?.primaryColor ||
+                    .value=${this.hass!.selectedThemeSettings?.primaryColor ||
                     "#03a9f4"}
                     type="color"
                     .label=${this.hass!.localize(
@@ -129,7 +131,8 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></paper-input>
                   <paper-input
-                    .value=${this.hass!.selectedTheme?.accentColor || "#ff9800"}
+                    .value=${this.hass!.selectedThemeSettings?.accentColor ||
+                    "#ff9800"}
                     type="color"
                     .label=${this.hass!.localize(
                       "ui.panel.profile.themes.accent_color"
@@ -137,8 +140,8 @@ export class HaPickThemeRow extends LitElement {
                     .name=${"accentColor"}
                     @change=${this._handleColorChange}
                   ></paper-input>
-                  ${this.hass!.selectedTheme?.primaryColor ||
-                  this.hass!.selectedTheme?.accentColor
+                  ${this.hass!.selectedThemeSettings?.primaryColor ||
+                  this.hass!.selectedThemeSettings?.accentColor
                     ? html` <mwc-button @click=${this._resetColors}>
                         ${this.hass!.localize("ui.panel.profile.themes.reset")}
                       </mwc-button>`
@@ -157,7 +160,8 @@ export class HaPickThemeRow extends LitElement {
       (!oldHass || oldHass.themes?.themes !== this.hass.themes?.themes);
     const selectedThemeChanged =
       changedProperties.has("hass") &&
-      (!oldHass || oldHass.selectedTheme !== this.hass.selectedTheme);
+      (!oldHass ||
+        oldHass.selectedThemeSettings !== this.hass.selectedThemeSettings);
 
     if (themesChanged) {
       this._themeNames = ["Backend-selected", "default"].concat(
@@ -167,16 +171,16 @@ export class HaPickThemeRow extends LitElement {
 
     if (selectedThemeChanged) {
       if (
-        this.hass.selectedTheme &&
-        this._themeNames.indexOf(this.hass.selectedTheme.theme) > 0
+        this.hass.selectedThemeSettings &&
+        this._themeNames.indexOf(this.hass.selectedThemeSettings.theme) > 0
       ) {
         this._selectedThemeIndex = this._themeNames.indexOf(
-          this.hass.selectedTheme.theme
+          this.hass.selectedThemeSettings.theme
         );
         this._selectedTheme = this.hass.themes.themes[
-          this.hass.selectedTheme.theme
+          this.hass.selectedThemeSettings.theme
         ];
-      } else if (!this.hass.selectedTheme) {
+      } else if (!this.hass.selectedThemeSettings) {
         this._selectedThemeIndex = 0;
       }
     }
@@ -210,13 +214,13 @@ export class HaPickThemeRow extends LitElement {
         dark = true;
         break;
     }
-    fireEvent(this, "settheme", { darkMode: dark });
+    fireEvent(this, "settheme", { dark });
   }
 
   private _handleThemeSelection(ev: CustomEvent) {
     const theme = ev.detail.item.theme;
     if (theme === "Backend-selected") {
-      if (this.hass.selectedTheme?.theme) {
+      if (this.hass.selectedThemeSettings?.theme) {
         fireEvent(this, "settheme", { theme: "" });
       }
       return;

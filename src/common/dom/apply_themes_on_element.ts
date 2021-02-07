@@ -23,25 +23,26 @@ let PROCESSED_THEMES: Record<string, ProcessedTheme> = {};
  * Apply a theme to an element by setting the CSS variables on it.
  *
  * element: Element to apply theme on.
- * themes: HASS Theme information
- * selectedTheme: selected theme.
+ * themes: HASS theme information.
+ * selectedTheme: Selected theme.
+ * themeSettings: Settings such as selected dark mode and colors.
  */
 export const applyThemesOnElement = (
   element,
   themes: HomeAssistant["themes"],
   selectedTheme?: string,
-  themeOptions?: Partial<HomeAssistant["selectedTheme"]>
+  themeSettings?: Partial<HomeAssistant["selectedThemeSettings"]>
 ) => {
   let cacheKey = selectedTheme;
   let themeRules: Partial<ThemeVars> = {};
 
-  if (themeOptions) {
-    if (themeOptions.darkMode) {
+  if (themeSettings) {
+    if (themeSettings.dark) {
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
-      if (themeOptions.primaryColor) {
+      if (themeSettings.primaryColor) {
         themeRules["app-header-background-color"] = hexBlend(
-          themeOptions.primaryColor,
+          themeSettings.primaryColor,
           "#121212",
           8
         );
@@ -49,11 +50,11 @@ export const applyThemesOnElement = (
     }
 
     if (selectedTheme === "default") {
-      if (themeOptions.primaryColor) {
-        cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
-        const rgbPrimaryColor = hex2rgb(themeOptions.primaryColor);
+      if (themeSettings.primaryColor) {
+        cacheKey = `${cacheKey}__primary_${themeSettings.primaryColor}`;
+        const rgbPrimaryColor = hex2rgb(themeSettings.primaryColor);
         const labPrimaryColor = rgb2lab(rgbPrimaryColor);
-        themeRules["primary-color"] = themeOptions.primaryColor;
+        themeRules["primary-color"] = themeSettings.primaryColor;
         const rgbLigthPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
         themeRules["light-primary-color"] = rgb2hex(rgbLigthPrimaryColor);
         themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
@@ -65,10 +66,10 @@ export const applyThemesOnElement = (
             : "#212121";
         themeRules["state-icon-color"] = themeRules["dark-primary-color"];
       }
-      if (themeOptions.accentColor) {
-        cacheKey = `${cacheKey}__accent_${themeOptions.accentColor}`;
-        themeRules["accent-color"] = themeOptions.accentColor;
-        const rgbAccentColor = hex2rgb(themeOptions.accentColor);
+      if (themeSettings.accentColor) {
+        cacheKey = `${cacheKey}__accent_${themeSettings.accentColor}`;
+        themeRules["accent-color"] = themeSettings.accentColor;
+        const rgbAccentColor = hex2rgb(themeSettings.accentColor);
         themeRules["text-accent-color"] =
           rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
       }
@@ -78,8 +79,8 @@ export const applyThemesOnElement = (
   if (selectedTheme && themes.themes[selectedTheme]) {
     // If dark is requested, check if the theme actually provides "dark_styles" to use
     if (
-      themeOptions &&
-      themeOptions.darkMode &&
+      themeSettings &&
+      themeSettings.dark &&
       themes.themes[selectedTheme].dark_styles
     )
       themeRules = {
