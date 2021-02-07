@@ -2833,7 +2833,7 @@
               "image": "Image Path",
               "maximum": "Maximum",
               "manual": "Manual",
-              "manual_description": "Need to add a custom card or just want to manually write the yaml?",
+              "manual_description": "Need to add a custom card or just want to manually write the YAML?",
               "minimum": "Minimum",
               "name": "Name",
               "refresh_interval": "Refresh Interval",
