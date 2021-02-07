@@ -1,4 +1,4 @@
-import { Theme } from "../../data/ws-themes";
+import { ThemeVars } from "../../data/ws-themes";
 import { darkStyles, derivedStyles } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import {
@@ -33,7 +33,7 @@ export const applyThemesOnElement = (
   themeOptions?: Partial<HomeAssistant["selectedTheme"]>
 ) => {
   let cacheKey = selectedTheme;
-  let themeRules: Partial<Theme> = {};
+  let themeRules: Partial<ThemeVars> = {};
 
   if (themeOptions) {
     if (themeOptions.dark) {
@@ -76,7 +76,22 @@ export const applyThemesOnElement = (
   }
 
   if (selectedTheme && themes.themes[selectedTheme]) {
-    themeRules = { ...themes.themes[selectedTheme], ...themeRules };
+    // If dark is requested, check if the theme actually provides "dark_styles" to use
+    if (
+      themeOptions &&
+      themeOptions.dark &&
+      themes.themes[selectedTheme].dark_styles
+    )
+      themeRules = {
+        ...themes.themes[selectedTheme].dark_styles,
+        ...themeRules,
+      };
+    else {
+      // Check if the theme provides "styles" (= new theme scheme), otherwise fallback to old scheme
+      const rules =
+        themes.themes[selectedTheme].styles || themes.themes[selectedTheme];
+      themeRules = { ...rules, ...themeRules };
+    }
   }
 
   if (!element._themes && !Object.keys(themeRules).length) {
@@ -104,12 +119,12 @@ export const applyThemesOnElement = (
 
 const processTheme = (
   cacheKey: string,
-  theme: Partial<Theme>
+  theme: Partial<ThemeVars>
 ): ProcessedTheme | undefined => {
   if (!theme || !Object.keys(theme).length) {
     return undefined;
   }
-  const combinedTheme: Partial<Theme> = {
+  const combinedTheme: Partial<ThemeVars> = {
     ...derivedStyles,
     ...theme,
   };

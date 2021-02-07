@@ -9,7 +9,8 @@ export interface ThemeVars {
 }
 
 export type Theme = ThemeVars & {
-  dark: boolean;
+  styles?: ThemeVars;
+  dark_styles?: ThemeVars;
 };
 
 export interface Themes {

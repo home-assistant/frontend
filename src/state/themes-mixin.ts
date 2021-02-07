@@ -25,13 +25,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
-        const selectedTheme = { ...this.hass!.selectedTheme!, ...ev.detail };
-        if (ev.detail?.theme && ev.detail?.theme !== "default") {
-          selectedTheme.dark = ev.detail?.theme
-            ? this.hass!.themes.themes[ev.detail?.theme]?.dark
-            : false;
-        }
-        this._updateHass({ selectedTheme });
+        this._updateHass({
+          selectedTheme: { ...this.hass!.selectedTheme!, ...ev.detail },
+        });
         this._applyTheme(mql.matches);
         storeState(this.hass!);
       });
@@ -48,23 +44,32 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
     }
 
-    private _applyTheme(dark: boolean) {
+    private _applyTheme(darkPreferred: boolean) {
       if (!this.hass) {
         return;
       }
       const themeName =
         this.hass.selectedTheme?.theme ||
-        (dark && this.hass.themes.default_dark_theme
+        (darkPreferred && this.hass.themes.default_dark_theme
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
       let options: Partial<HomeAssistant["selectedTheme"]> = this.hass!
         .selectedTheme;
 
-      if (themeName === "default" && options?.dark === undefined) {
+      const selectedTheme = this.hass.themes.themes[
+        this.hass.selectedTheme!.theme
+      ];
+      const darkMode = darkPreferred;
+
+      if (selectedTheme.styles && !selectedTheme.dark_styles) darkMode = false;
+      else if (!selectedTheme.styles && selectedTheme.dark_styles)
+        darkMode = true;
+
+      if (options?.dark === undefined) {
         options = {
           ...this.hass.selectedTheme!,
-          dark,
+          dark: darkPreferred,
         };
       }
 
@@ -76,7 +81,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
 
       const darkMode =
-        !!options?.dark || !!(dark && this.hass.themes.default_dark_theme);
+        !!options?.dark ||
+        !!(darkPreferred && this.hass.themes.default_dark_theme);
 
       if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({
