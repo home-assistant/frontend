@@ -261,7 +261,8 @@
     "ui": {
         "card": {
             "alarm_control_panel": {
-                "arm_custom_bypass": "Individualizuotas apėjimas"
+                "arm_custom_bypass": "Individualizuotas apėjimas",
+                "arm_night": "Naktinė apsauga"
             },
             "camera": {
                 "not_available": "Vaizdas negalimas"
@@ -308,7 +309,8 @@
             "device-picker": {
                 "device": "Įrenginys",
                 "no_devices": "Neturite jokių įrenginių",
-                "no_match": "Nerasta atitinkančių įrenginių"
+                "no_match": "Nerasta atitinkančių įrenginių",
+                "show_devices": "Rodyti įrenginius"
             },
             "entity": {
                 "entity-picker": {
@@ -461,6 +463,9 @@
                 },
                 "areas": {
                     "caption": "Sričių registras",
+                    "data_table": {
+                        "devices": "Įrenginiai"
+                    },
                     "description": "Visų jūsų namų sričių apžvalga.",
                     "editor": {
                         "create": "SUKURTI",
@@ -550,6 +555,7 @@
                         "copy_to_clipboard": "Kopijuoti į iškarpinę",
                         "edit_ui": "Redaguoti naudojant vartotojo sąsają",
                         "edit_yaml": "Redaguoti kaip YAML",
+                        "load_error_not_editable": "Redagavimas leidžiamas tik automatizavimai, esantys automations.yaml",
                         "triggers": {
                             "add": "Pridėti trigerį",
                             "delete": "Ištrinti",
@@ -622,7 +628,9 @@
                         }
                     },
                     "picker": {
-                        "learn_more": "Sužinokite daugiau apie automatizavimą"
+                        "learn_more": "Sužinokite daugiau apie automatizavimą",
+                        "no_automations": "Redaguojamas automatizavimas nerastas",
+                        "only_editable": "Redagavimas leidžiamas tik automatizavimai, esantys automations.yaml"
                     }
                 },
                 "blueprint": {
@@ -661,6 +669,10 @@
                 "cloud": {
                     "account": {
                         "connected": "Prisijungęs",
+                        "google": {
+                            "devices_pin": "Įrenginio saugos Pin kodas",
+                            "security_devices": "Apsaugoti įrenginiai"
+                        },
                         "not_connected": "Neprisijungęs"
                     },
                     "caption": "Home Assistant Cloud"
@@ -680,23 +692,34 @@
                             "no_actions": "Nėra veiksmų",
                             "unknown_action": "Nežinomas veiksmas"
                         },
+                        "automations": "Automatizavimas",
                         "conditions": {
                             "no_conditions": "Nėra sąlygų",
                             "unknown_condition": "Nežinoma sąlyga"
                         },
                         "create_disable": "Negalima sukurti automatizavimo su išjungtu įrenginiu",
+                        "no_automations": "Nėra automatizavimų",
+                        "no_device_automations": "Šiam įrenginiui nėra automatizavimo įrankių",
                         "triggers": {
                             "no_triggers": "Nėra paleidiklių",
                             "unknown_trigger": "Nežinomas paleidiklis"
                         },
                         "unknown_automation": "Nežinomas automatizavimas"
                     },
+                    "confirm_delete": "Ar tikrai norite ištrinti šį įrenginį?",
                     "data_table": {
                         "area": "Sritis",
+                        "battery": "Baterija",
                         "device": "Įrenginys",
-                        "model": "Modelis"
+                        "integration": "Integracija",
+                        "manufacturer": "Gamintojas",
+                        "model": "Modelis",
+                        "no_devices": "Nėra įrenginių"
                     },
+                    "delete": "Ištrinti",
                     "description": "Tvarkyti prijungtus įrenginius",
+                    "device_info": "Įrenginio info",
+                    "device_not_found": "Įrenginys nerastas",
                     "disabled": "Išjungta",
                     "disabled_by": {
                         "config_entry": "Konfigūracijos įrašas",
@@ -706,6 +729,7 @@
                     "enabled_cause": "Įrenginį išjungė {cause}.",
                     "enabled_description": "Išjungti įrenginiai nebus rodomi, o įrenginiui priklausantys objektai bus išjungti ir nepridedami į Home Assistant.",
                     "enabled_label": "Įgalinti įrenginį",
+                    "no_devices": "Nėra įrenginių",
                     "picker": {
                         "filter": {
                             "filter": "Filtras",
@@ -716,11 +740,16 @@
                         "search": "Ieškoti įrenginių"
                     },
                     "scene": {
-                        "create_disable": "Negalima sukurti scenos su išjungtu įrenginiu"
+                        "create_disable": "Negalima sukurti scenos su išjungtu įrenginiu",
+                        "no_scenes": "Nėra scenų",
+                        "scenes": "Scenos"
                     },
+                    "scenes": "Scenos",
                     "script": {
                         "create_disable": "Negalima sukurti skripto su išjungtu įrenginiu"
-                    }
+                    },
+                    "unknown_error": "Nežinoma klaida",
+                    "unnamed_device": "Bevardis įrenginys"
                 },
                 "entities": {
                     "caption": "Subjektų registras",
@@ -815,6 +844,22 @@
                     "person_not_found": "Nepavyko rasti asmens, kurį bandėte redaguoti.",
                     "person_not_found_title": "Asmuo nerastas"
                 },
+                "scene": {
+                    "caption": "Scenos",
+                    "editor": {
+                        "devices": {
+                            "add": "Pridėti įrenginį",
+                            "delete": "Pašalinti įrenginį",
+                            "header": "Įrenginiai"
+                        },
+                        "load_error_not_editable": "Redaguoti galima tik scenas, esančias scenes.yaml."
+                    },
+                    "picker": {
+                        "learn_more": "Sužinokite daugiau apie scenas",
+                        "no_scenes": "Neradome jokių redaguojamų scenų",
+                        "only_editable": "Redaguoti galima tik scenas, esančias scenes.yaml."
+                    }
+                },
                 "script": {
                     "editor": {
                         "save_script": "Įrašyti scenarijų"
@@ -823,6 +868,13 @@
                         "duplicate": "Dubliuoti",
                         "duplicate_script": "Dubliuoti skriptą",
                         "run_script": "Vykdyti scenarijų"
+                    }
+                },
+                "server_control": {
+                    "section": {
+                        "reloading": {
+                            "scene": "Perkraukite scenas"
+                        }
                     }
                 },
                 "tags": {
@@ -860,6 +912,10 @@
                         "discovery_text": "Čia bus rodomi atrasti įrenginiai. Vadovaukitės jūsų įtaiso instrukcijomis ir nustatykite jį suporavimo režimui.",
                         "header": "„Zigbee“ namų automatika - pridėti įrenginių",
                         "spinner": "Ieškoma ZHA Zigbee įrenginių..."
+                    },
+                    "common": {
+                        "add_devices": "Pridėti įrenginius",
+                        "devices": "Įrenginiai"
                     },
                     "description": "„Zigbee Home Automation“ tinklo valdymas",
                     "device_pairing_card": {
@@ -928,6 +984,7 @@
             },
             "lovelace": {
                 "cards": {
+                    "action_confirmation": "Ar tikrai norite atlikti veiksmą  \"{action}\" ?",
                     "empty_state": {
                         "go_to_integrations_page": "Į integracijų puslapį",
                         "title": "Sveiki sugrįžę namo"

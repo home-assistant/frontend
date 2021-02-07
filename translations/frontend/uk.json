@@ -512,6 +512,7 @@
             "close": "Закрити",
             "continue": "Продовжити",
             "copied": "Скопійовано",
+            "copied_clipboard": "Скопійовано в буфер обміну",
             "delete": "Видалити",
             "disable": "Вимкнути",
             "enable": "Увімкнути",
@@ -2586,7 +2587,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Візуалізація",
-                        "header": "Візуалізація мережі"
+                        "header": "Візуалізація мережі",
+                        "highlight_label": "Виділити пристрої",
+                        "zoom_label": "Збільшити до пристрою"
                     }
                 },
                 "zone": {
@@ -2811,6 +2814,7 @@
                     "yaml_unsupported": "Цю функцію не можна використовувати, якщо інтерфейс користувача Lovelace працює в режимі YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Ви впевнені, що хочете виконати дію \"{action}\"?",
                     "confirm_delete": "Ви впевнені, що хочете видалити цю картку?",
                     "empty_state": {
                         "go_to_integrations_page": "Перейти на сторінку інтеграцій.",
@@ -2836,7 +2840,9 @@
                     "shopping-list": {
                         "add_item": "Додати елемент",
                         "checked_items": "Позначені елементи",
-                        "clear_items": "Очистити позначені елементи"
+                        "clear_items": "Очистити позначені елементи",
+                        "drag_and_drop": "Перетягнути і кинути",
+                        "reorder_items": "Змінити порядок елементів"
                     },
                     "starting": {
                         "description": "Home Assistant запускається, будь ласка, зачекайте ...",
@@ -2846,6 +2852,12 @@
                 "changed_toast": {
                     "message": "Конфігурацію Lovelace було оновлено, хочете оновити?",
                     "refresh": "Оновити"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Невірна часова мітка",
+                        "invalid_format": "Невірний формат відображення"
+                    }
                 },
                 "editor": {
                     "action-editor": {

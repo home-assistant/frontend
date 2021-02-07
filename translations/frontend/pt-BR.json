@@ -2,6 +2,7 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Entrada de configuração",
+            "device": "Dispositivo",
             "integration": "Integração",
             "user": "Usuário"
         }
@@ -511,6 +512,7 @@
             "close": "Fechar",
             "continue": "Continuar",
             "copied": "Copiado",
+            "copied_clipboard": "Copiado para a àrea de transferência",
             "delete": "Eliminar",
             "disable": "Desabilitar",
             "enable": "Habilitar",
@@ -528,6 +530,7 @@
             "rename": "Renomear",
             "save": "Salvar",
             "skip": "Ignorar",
+            "stay": "Ficar",
             "successfully_deleted": "Eliminado com sucesso",
             "successfully_saved": "Salvo com sucesso",
             "undo": "Desfazer",
@@ -647,7 +650,8 @@
                 "pick": "Escolher",
                 "pick-media": "Escolher mídia",
                 "play": "Tocar",
-                "play-media": "Reproduzir Mídia"
+                "play-media": "Reproduzir Mídia",
+                "web-browser": "Navegador da web"
             },
             "picture-upload": {
                 "label": "Imagem",
@@ -712,6 +716,7 @@
                     "delete": "Excluir",
                     "device_disabled": "O dispositivo desta entidade está desativado.",
                     "enabled_cause": "Desativado por {cause}.",
+                    "enabled_delay_confirm": "As entidades habilitadas serão adicionadas ao Home Assistant em {delay} segundos",
                     "enabled_description": "Entidades desativadas não serão adicionadas ao Home Assistant.",
                     "enabled_label": "Ativar entidade",
                     "entity_id": "ID da entidade",
@@ -860,11 +865,18 @@
                     },
                     "reload": {
                         "automation": "Recarregar automações",
+                        "command_line": "Recarregar entidades de linha de comando",
+                        "generic": "Recarregar entidades genéricas de câmera IP",
+                        "generic_thermostat": "Recarregar entidades genéricas de termostato",
                         "group": "Recarregar grupos, grupos de entidades e serviços de notificação",
                         "homekit": "Recarregar HomeKit",
+                        "mqtt": "Recarregar entidades MQTT configuradas manualmente",
                         "person": "Recarregar pessoas",
                         "reload": "Recarregar {domain}",
                         "scene": "Recarregar cenas",
+                        "script": "Recarregar scripts",
+                        "smtp": "Recarregar serviço de notificação SMTP",
+                        "telegram": "Recarregar serviço de notificação do telegram",
                         "zone": "Recarregar zonas"
                     },
                     "server_control": {
@@ -985,7 +997,9 @@
                     "dialog_new": {
                         "header": "Criar nova automação",
                         "how": "Como você quer criar sua nova automação?",
+                        "start_empty": "Começar com uma automação vazia",
                         "thingtalk": {
+                            "create": "Criar",
                             "header": "Descreva a automação que você deseja criar",
                             "input_label": "O que essa automação deve fazer?",
                             "intro": "E vamos tentar criar isso para você. Por exemplo: Apague as luzes quando eu sair."
@@ -1565,7 +1579,7 @@
                         "user": "Usuário"
                     },
                     "enabled_cause": "Dispositivo desativado por {cause}.",
-                    "enabled_label": "Habilitaar dispositivo",
+                    "enabled_label": "Habilitar dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {entidade desabilitada}\n  other {entidades desabilitadas}\n}",
@@ -1581,7 +1595,7 @@
                             "show_all": "Mostrar tudo",
                             "show_disabled": "Mostrar dispositivos desativados"
                         },
-                        "search": "Persquisar dispositivos"
+                        "search": "Pesquisar dispositivos"
                     },
                     "scene": {
                         "create": "Criar cenário com o dispositivo",
@@ -1702,6 +1716,9 @@
                     "system_health_error": "O componente System Health não foi carregado. Adicione 'system_health:' ao configuration.yaml",
                     "system_health": {
                         "checks": {
+                            "cloud": {
+                                "logged_in": "Logado"
+                            },
                             "homeassistant": {
                                 "arch": "Arquitetura da CPU",
                                 "docker": "Docker",
@@ -1709,6 +1726,7 @@
                                 "installation_type": "Tipo de Instalação",
                                 "os_name": "Nome do Sistema Operacional",
                                 "os_version": "Versão do Sistema Operacional",
+                                "python_version": "Versão do Python",
                                 "timezone": "Fuso horário",
                                 "version": "Versão"
                             },
@@ -1930,6 +1948,8 @@
                     },
                     "network_status": {
                         "details": {
+                            "driverready": "Inicializando o controlador Z-Wave",
+                            "driverremoved": "O driver foi removido",
                             "driverreset": "O driver foi reiniciado",
                             "ready": "Pronto para conectar",
                             "started": "Conectado ao MQTT",
@@ -1942,6 +1962,10 @@
                     },
                     "network": {
                         "header": "Gerenciamento de Rede"
+                    },
+                    "node_query_stages": {
+                        "nodeplusinfo": "Obtendo informações Z-Wave + do nó",
+                        "versions": "Obtendo informações sobre versões de firmware e classe de comando"
                     },
                     "node": {
                         "not_found": "Nó não encontrado"
@@ -2109,6 +2133,7 @@
                             "input_select": "Recarregar entradas de seleção",
                             "input_text": "Recarregar entradas de texto",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem precisar reiniciar. Pressionar recarregar descarregará sua configuração YAML atual e carregará a nova.",
+                            "mqtt": "Recarregar entidades MQTT configuradas manualmente",
                             "person": "Recarregar pessoas",
                             "ping": "Recarregar entidades de sensores binários ping",
                             "rest": "Recarregar entidades rest e serviços de notificação",
@@ -2117,6 +2142,7 @@
                             "script": "Recarregar os scripts",
                             "smtp": "Recarregar serviços de notificação de SMTP",
                             "statistics": "Recarregar estatísticas de entidades",
+                            "telegram": "Recarregar serviços de notificação do telegram",
                             "template": "Recarregar entidades de modelo",
                             "universal": "Recarregar entidades de reprodutor de mídia universal",
                             "zone": "Recarregar zonas"
@@ -2546,6 +2572,7 @@
                     "yaml_unsupported": "Você não pode usar esta função ao usar a UI do Lovelace no modo YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Tem certeza de que deseja executar a ação \" {action} \"?",
                     "confirm_delete": "Tem certeza de que deseja excluir este cartão?",
                     "empty_state": {
                         "go_to_integrations_page": "Vá para a página de integrações.",
@@ -2571,7 +2598,8 @@
                     "shopping-list": {
                         "add_item": "Adicionar item",
                         "checked_items": "Itens marcados",
-                        "clear_items": "Limpar itens marcados"
+                        "clear_items": "Limpar itens marcados",
+                        "reorder_items": "Reordenar itens"
                     },
                     "starting": {
                         "description": "O Home Assistant está iniciando, por favor aguarde...",
@@ -3223,6 +3251,9 @@
                     "header": "Módulos de Autenticação Multifator"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nome do dispositivo"
+                    },
                     "description": "Envie notificações para este dispositivo.",
                     "error_load_platform": "Configure o notify.html5.",
                     "error_use_https": "Requer SSL habilitado para o frontend.",

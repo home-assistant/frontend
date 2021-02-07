@@ -7,6 +7,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
 import {
   DeviceAction,
@@ -22,6 +23,7 @@ import "./ha-device-actions-card";
 import "./ha-device-conditions-card";
 import "./ha-device-triggers-card";
 import { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
+import "@material/mwc-button/mwc-button";
 
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {
@@ -38,6 +40,11 @@ export class DialogDeviceAutomation extends LitElement {
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
     this._params = params;
     await this.updateComplete;
+  }
+
+  public closeDialog(): void {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected firstUpdated(changedProps) {
@@ -84,14 +91,14 @@ export class DialogDeviceAutomation extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing="${this._close}"
+        @closed=${this.closeDialog}
         .heading=${this.hass.localize(
           `ui.panel.config.devices.${
             this._params.script ? "script" : "automation"
           }.create`
         )}
       >
-        <div @chip-clicked=${this._close}>
+        <div @chip-clicked=${this.closeDialog}>
           ${this._triggers.length ||
           this._conditions.length ||
           this._actions.length
@@ -126,15 +133,11 @@ export class DialogDeviceAutomation extends LitElement {
                 "ui.panel.config.devices.automation.no_device_automations"
               )}
         </div>
-        <mwc-button slot="primaryAction" @click="${this._close}">
-          Close
+        <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+          ${this.hass.localize("ui.common.close")}
         </mwc-button>
       </ha-dialog>
     `;
-  }
-
-  private _close(): void {
-    this._params = undefined;
   }
 
   static get styles(): CSSResult {

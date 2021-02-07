@@ -5,12 +5,15 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { SUPPORT_SET_SPEED } from "../../../data/fan";
 
 /*
  * @appliesMixin EventsMixin
@@ -20,13 +23,15 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return html`
       <style include="iron-flex"></style>
       <style>
-        .container-speed_list,
+        .container-preset_modes,
         .container-direction,
+        .container-percentage,
         .container-oscillating {
           display: none;
         }
 
-        .has-speed_list .container-speed_list,
+        .has-percentage .container-percentage,
+        .has-preset_modes .container-preset_modes,
         .has-direction .container-direction,
         .has-oscillating .container-oscillating {
           display: block;
@@ -42,21 +47,33 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <div class$="[[computeClassNames(stateObj)]]">
-        <div class="container-speed_list">
+        <div class="container-percentage">
+          <ha-labeled-slider
+            caption="[[localize('ui.card.fan.speed')]]"
+            min="0"
+            max="100"
+            value="{{percentageSliderValue}}"
+            on-change="percentageChanged"
+            pin=""
+            extra=""
+          ></ha-labeled-slider>
+        </div>
+
+        <div class="container-preset_modes">
           <ha-paper-dropdown-menu
             label-float=""
             dynamic-align=""
-            label="[[localize('ui.card.fan.speed')]]"
+            label="[[localize('ui.card.fan.preset_mode')]]"
           >
             <paper-listbox
               slot="dropdown-content"
-              selected="[[stateObj.attributes.speed]]"
-              on-selected-changed="speedChanged"
+              selected="[[stateObj.attributes.preset_mode]]"
+              on-selected-changed="presetModeChanged"
               attr-for-selected="item-name"
             >
               <template
                 is="dom-repeat"
-                items="[[stateObj.attributes.speed_list]]"
+                items="[[stateObj.attributes.preset_modes]]"
               >
                 <paper-item item-name$="[[item]]">[[item]]</paper-item>
               </template>
@@ -96,7 +113,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <ha-attributes
         state-obj="[[stateObj]]"
-        extra-filters="speed,speed_list,oscillating,direction"
+        extra-filters="speed,preset_mode,preset_modes,speed_list,percentage,oscillating,direction"
       ></ha-attributes>
     `;
   }
@@ -115,6 +132,10 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
       oscillationToggleChecked: {
         type: Boolean,
       },
+
+      percentageSliderValue: {
+        type: Number,
+      },
     };
   }
 
@@ -122,6 +143,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (newVal) {
       this.setProperties({
         oscillationToggleChecked: newVal.attributes.oscillating,
+        percentageSliderValue: newVal.attributes.percentage,
       });
     }
 
@@ -135,19 +157,36 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computeClassNames(stateObj) {
     return (
       "more-info-fan " +
-      attributeClassNames(stateObj, ["oscillating", "speed_list", "direction"])
+      (supportsFeature(stateObj, SUPPORT_SET_SPEED) ? "has-percentage " : "") +
+      (stateObj.attributes.preset_modes &&
+      stateObj.attributes.preset_modes.length
+        ? "has-preset_modes "
+        : "") +
+      attributeClassNames(stateObj, ["oscillating", "direction"])
     );
   }
 
-  speedChanged(ev) {
-    const oldVal = this.stateObj.attributes.speed;
+  presetModeChanged(ev) {
+    const oldVal = this.stateObj.attributes.preset_mode;
     const newVal = ev.detail.value;
 
     if (!newVal || oldVal === newVal) return;
 
-    this.hass.callService("fan", "turn_on", {
+    this.hass.callService("fan", "set_preset_mode", {
       entity_id: this.stateObj.entity_id,
-      speed: newVal,
+      preset_mode: newVal,
+    });
+  }
+
+  percentageChanged(ev) {
+    const oldVal = parseInt(this.stateObj.attributes.percentage, 10);
+    const newVal = ev.target.value;
+
+    if (isNaN(newVal) || oldVal === newVal) return;
+
+    this.hass.callService("fan", "set_percentage", {
+      entity_id: this.stateObj.entity_id,
+      percentage: newVal,
     });
   }
 

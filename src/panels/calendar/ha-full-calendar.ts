@@ -114,7 +114,7 @@ export class HAFullCalendar extends LitElement {
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
-                          "ui.panel.calendar.today"
+                          "ui.components.calendar.today"
                         )}</mwc-button
                       >
                       <ha-icon-button
@@ -169,7 +169,7 @@ export class HAFullCalendar extends LitElement {
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
-                          "ui.panel.calendar.today"
+                          "ui.components.calendar.today"
                         )}</mwc-button
                       >
                       <ha-button-toggle-group

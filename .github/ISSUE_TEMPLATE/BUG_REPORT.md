@@ -77,8 +77,8 @@ DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed w
 ## Problem-relevant frontend configuration
 
 <!--
-  An example configuration that caused the problem for you, e.g. the YAML configuration 
-  of the used cards. Fill this out even if it seems unimportant to you. Please be sure 
+  An example configuration that caused the problem for you, e.g. the YAML configuration
+  of the used cards. Fill this out even if it seems unimportant to you. Please be sure
   to remove personal information like passwords, private URLs and other credentials.
 -->
 

@@ -401,6 +401,7 @@
                 "direction": "Suunta",
                 "forward": "Eteenpäin",
                 "oscillate": "Kääntyminen",
+                "preset_mode": "Esiasetustila",
                 "reverse": "Taaksepäin",
                 "speed": "Nopeus"
             },
@@ -554,7 +555,10 @@
             "blueprint-picker": {
                 "add_user": "Lisää käyttäjä",
                 "remove_user": "Poista käyttäjä",
-                "select_blueprint": "Valitse pohjapiirros"
+                "select_blueprint": "Valitse piirustus"
+            },
+            "calendar": {
+                "today": "Tänään"
             },
             "data-table": {
                 "no-data": "Ei dataa",
@@ -745,6 +749,8 @@
                 "control": "Ohjaus",
                 "dismiss": "Hylkää",
                 "editor": {
+                    "advanced": "Lisäasetukset",
+                    "change_device_area": "Vaihda laitteen aluetta",
                     "confirm_delete": "Haluatko varmasti poistaa tämän kohteen?",
                     "delete": "Poista",
                     "device_disabled": "Tämän kohteen laite on poistettu käytöstä.",
@@ -753,6 +759,7 @@
                     "enabled_label": "Ota kohte käyttöön",
                     "enabled_restart_confirm": "Käynnistä Home Assistant uudelleen, jotta kohteet otetaan käyttöön",
                     "entity_id": "Kohde ID",
+                    "follow_device_area": "Seuraa laitteen aluetta",
                     "icon": "Kuvakkeen yliajo",
                     "icon_error": "Kuvakkeen tulisi olla muodossa etuliite:ikoni, esimerkiksi: mdi:home",
                     "name": "Nimen yliajo",
@@ -891,12 +898,12 @@
                     "navigation": {
                         "areas": "Alueet",
                         "automation": "Automaatiot",
-                        "blueprint": "Pohjapiirrokset",
+                        "blueprint": "Piirustukset",
                         "core": "Yleinen",
                         "customize": "Kustomointi",
                         "devices": "Laitteet",
                         "entities": "Kohteet",
-                        "helpers": "Apurit",
+                        "helpers": "Auttajat",
                         "info": "Tiedot",
                         "integrations": "Integraatiot",
                         "logs": "Lokit",
@@ -979,6 +986,11 @@
             "second": "{count} {count, plural,\none {sekunti}\nother {sekuntia}\n}",
             "week": "{count} {count, plural,\n  one {viikko}\n  other {viikkoa}\n}"
         },
+        "errors": {
+            "config": {
+                "no_type_provided": "Tyyppiä ei ole annettu."
+            }
+        },
         "login-form": {
             "log_in": "Kirjaudu sisään",
             "password": "Salasana",
@@ -1044,7 +1056,7 @@
                     "description": "Luo ja muokkaa automaatioita",
                     "dialog_new": {
                         "blueprint": {
-                            "use_blueprint": "Käytä pohjapiirrosta"
+                            "use_blueprint": "Käytä piirustusta"
                         },
                         "header": "Luo uusi automaatio",
                         "how": "Miten haluat luoda uuden automaation?",
@@ -1084,7 +1096,9 @@
                                 "device_id": {
                                     "action": "Toiminta",
                                     "extra_fields": {
-                                        "code": "Koodi"
+                                        "code": "Koodi",
+                                        "message": "Viesti",
+                                        "title": "Otsikko"
                                     },
                                     "label": "Laite"
                                 },
@@ -1134,7 +1148,12 @@
                         },
                         "alias": "Nimi",
                         "blueprint": {
-                            "inputs": "Tulot"
+                            "blueprint_to_use": "Käytettävä piirustus",
+                            "header": "Piirustus",
+                            "inputs": "Syötteet",
+                            "manage_blueprints": "Hallitse piirustuksia",
+                            "no_blueprints": "Sinulla ei ole yhtään piirustusta",
+                            "no_inputs": "Tällä piirustuksella ei ole syötteitä."
                         },
                         "conditions": {
                             "add": "Lisää ehto",
@@ -1380,19 +1399,35 @@
                 "blueprint": {
                     "add": {
                         "community_forums": "yhteisön keskustelualueet",
-                        "file_name": "Blueprint polku",
+                        "error_no_url": "Ole hyvä ja kirjoita piirustuksen URL",
+                        "file_name": "Piirustuksen polku",
+                        "header": "Tuo piirustus",
+                        "import_btn": "Piirustuksen esikatselu",
+                        "import_header": "Piirustus \"{name}\"",
+                        "import_introduction": "Voit tuoda muiden käyttäjien piirustuksia Githubista ja yhteisön foorumeista. Kirjoita alle piirustuksen URL-osoite.",
                         "import_introduction_link": "Voit tuoda muiden käyttäjien piirustuksia Githubista ja {community_link}. Kirjoita piirustuksen URL-osoite alle.",
+                        "importing": "Lataan piirustusta...",
                         "raw_blueprint": "Piirustuksen sisältö",
-                        "save_btn": "Tuo pohjapiirros"
+                        "save_btn": "Tuo piirustus",
+                        "saving": "Tuon piirustusta...",
+                        "unsupported_blueprint": "Tämä piirustus ei ole tuettu",
+                        "url": "Piirustuksen URL"
                     },
+                    "caption": "Piirustukset",
+                    "description": "Hallitse piirustuksia",
                     "overview": {
-                        "delete_blueprint": "Poista pohjapiirros",
+                        "add_blueprint": "Tuo piirustus",
+                        "confirm_delete_header": "Poistetaanko tämä piirustus?",
+                        "confirm_delete_text": "Haluatko varmasti poistaa tämän piirustuksen?",
+                        "delete_blueprint": "Poista piirustus",
                         "discover_more": "Löydä lisää piirustuksia",
+                        "header": "Piirustusten muokkain",
                         "headers": {
                             "domain": "Toimialue",
                             "file_name": "Tiedoston nimi",
                             "name": "Nimi"
                         },
+                        "learn_more": "Lisätietoja piirustusten käytöstä",
                         "use_blueprint": "Luo automaatio"
                     }
                 },
@@ -1449,6 +1484,17 @@
                         },
                         "sign_out": "Kirjaudu ulos",
                         "thank_you_note": "Kiitos, että olet osa Home Assistant Cloudia. Sinun kaltaisten ihmisten takia pystymme tarjoamaan loistavan kodin automaatiokokemuksen kaikille. Kiitos!",
+                        "tts": {
+                            "dialog": {
+                                "header": "Kokeile \"teksti puheeksi\"-toimintoa",
+                                "play": "Toista",
+                                "target": "Kohde",
+                                "target_browser": "Selain"
+                            },
+                            "female": "Nainen",
+                            "male": "Mies",
+                            "try": "Yritä"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Webhookin poistaminen epäonnistui:",
                             "info": "Kaikille, jotka ovat määritetty käynnistymään webhookin avulla, voidaan antaa julkisesti saatavilla oleba URL jotta voit lähettää tietoja takaisin Home Assistant mistä tahansa, paljastamatta järjestelmääsi Internetiin.",
@@ -1769,7 +1815,7 @@
                         "create": "Luo"
                     },
                     "picker": {
-                        "add_helper": "Lisää apustin",
+                        "add_helper": "Lisää auttaja",
                         "headers": {
                             "editable": "Muokattavissa",
                             "entity_id": "Kohde ID",
@@ -2560,6 +2606,40 @@
                     "introduction": "Vyöhykkeiden avulla voit määrittää alueita maan päällä. Kun henkilö on vyöhykkeellä, tila saa vyöhykkeen nimen. Vyöhykkeitä voidaan käyttää myös laukaisimina tai ehtoina automaatioissa.",
                     "no_zones_created_yet": "Näyttää siltä, että et ole vielä luonut vyöhykkeitä."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Näytä laite"
+                    },
+                    "button": "Määrittele",
+                    "common": {
+                        "close": "Sulje",
+                        "home_id": "Kodin ID",
+                        "network": "Verkko"
+                    },
+                    "dashboard": {
+                        "driver_version": "Ohjaimen versio",
+                        "dump_not_ready_confirm": "Lataa",
+                        "home_id": "Kodin ID"
+                    },
+                    "device_info": {
+                        "node_ready": "Solmu valmis"
+                    },
+                    "navigation": {
+                        "network": "Verkko"
+                    },
+                    "network_status": {
+                        "connected": "Yhdistetty",
+                        "connecting": "Yhdistetään",
+                        "unknown": "Tuntematon"
+                    },
+                    "node_status": {
+                        "alive": "Elossa",
+                        "asleep": "Unessa",
+                        "awake": "Hereillä",
+                        "dead": "Kuollut",
+                        "unknown": "Tuntematon"
+                    }
+                },
                 "zwave": {
                     "button": "Määritä",
                     "caption": "Z-Wave",
@@ -2776,7 +2856,8 @@
                     "shopping-list": {
                         "add_item": "Lisää",
                         "checked_items": "Valitut kohteet",
-                        "clear_items": "Tyhjää valitut kohteet"
+                        "clear_items": "Tyhjää valitut kohteet",
+                        "drag_and_drop": "Raahaa ja pudota"
                     },
                     "starting": {
                         "description": "Home Assistant käynnistyy...",
@@ -2926,8 +3007,10 @@
                             "name": "Pikavilkaisu"
                         },
                         "grid": {
+                            "columns": "Sarakkeet",
                             "description": "Ruudukkokortin avulla voit näyttää useita kortteja ruudukossa.",
-                            "name": "Ruudukko"
+                            "name": "Ruudukko",
+                            "square": "Tee kortit neliöinä"
                         },
                         "history-graph": {
                             "description": "Historiakaavio-kortin avulla voit näyttää kaavion kullekin luettelossa olevalle kohteelle.",
@@ -3093,6 +3176,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Hallinnoi työpöytiä",
+                        "manage_resources": "Hallinnoi resursseja",
                         "open": "Avaa Lovelace-valikko",
                         "raw_editor": "Raaka konfigurointieditori"
                     },

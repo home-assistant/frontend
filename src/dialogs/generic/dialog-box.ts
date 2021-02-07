@@ -57,7 +57,7 @@ class DialogBox extends LitElement {
         open
         ?scrimClickAction=${confirmPrompt}
         ?escapeKeyAction=${confirmPrompt}
-        @closed=${this._dialogClosed}
+        @closing=${this._dialogClosed}
         defaultAction="ignore"
         .heading=${this._params.title
           ? this._params.title

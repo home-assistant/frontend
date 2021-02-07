@@ -292,7 +292,7 @@
             "on": "wł."
         },
         "sun": {
-            "above_horizon": "powyżej horyzontu",
+            "above_horizon": "nad horyzontem",
             "below_horizon": "poniżej horyzontu"
         },
         "switch": {
@@ -379,7 +379,7 @@
                 "low": "niska",
                 "on_off": "wł. / wył.",
                 "operation": "Tryb pracy",
-                "preset_mode": "Ustawienia",
+                "preset_mode": "Ustawienie predefiniowane",
                 "swing_mode": "Tryb ruchu łopatek",
                 "target_humidity": "Wilgotność docelowa",
                 "target_temperature": "Temperatura docelowa",
@@ -388,9 +388,9 @@
             },
             "counter": {
                 "actions": {
-                    "decrement": "ubytek",
-                    "increment": "przyrost",
-                    "reset": "reset"
+                    "decrement": "zmniejsz",
+                    "increment": "zwiększ",
+                    "reset": "zresetuj"
                 }
             },
             "cover": {
@@ -401,6 +401,7 @@
                 "direction": "Kierunek",
                 "forward": "Naprzód",
                 "oscillate": "Oscylacja",
+                "preset_mode": "Ustawienie predefiniowane",
                 "reverse": "Wstecz",
                 "speed": "Prędkość"
             },
@@ -512,6 +513,7 @@
             "close": "Zamknij",
             "continue": "Kontynuuj",
             "copied": "Skopiowano",
+            "copied_clipboard": "Skopiowano do schowka",
             "delete": "Usuń",
             "disable": "Wyłącz",
             "enable": "Włącz",
@@ -556,6 +558,10 @@
                 "remove_user": "Usuń użytkownika",
                 "select_blueprint": "Wybierz schemat"
             },
+            "calendar": {
+                "my_calendars": "Moje kalendarze",
+                "today": "Dzisiaj"
+            },
             "data-table": {
                 "no-data": "Brak danych",
                 "search": "Szukaj"
@@ -587,6 +593,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integracja historia wyłączona",
                 "loading_history": "Ładowanie historii...",
                 "no_history_found": "Nie znaleziono historii."
             },
@@ -720,6 +727,8 @@
                 "add_area_id": "Wybierz obszar",
                 "add_device_id": "Wybierz urządzenie",
                 "add_entity_id": "Wybierz encję",
+                "expand_area_id": "Rozwiń ten obszar do listy urządzeń i encji, które on zawiera. Po rozwinięciu lista urządzeń i encji i nie będzie aktualizowana, gdy zmieni się obszar.",
+                "expand_device_id": "Rozwiń to urządzenie do listy encji, które ono zawiera. Po rozwinięciu lista encji i nie będzie aktualizowana, gdy zmieni się urządzenie.",
                 "remove_area_id": "Usuń obszar",
                 "remove_device_id": "Usuń urządzenie",
                 "remove_entity_id": "Usuń encję"
@@ -743,8 +752,13 @@
             },
             "entity_registry": {
                 "control": "Kontrola",
+                "customize_link": "dostosowywania encji",
                 "dismiss": "Odrzuć",
                 "editor": {
+                    "advanced": "Zaawansowane ustawienia",
+                    "area": "Ustaw obszar encji",
+                    "area_note": "Domyślnie encje urządzenia znajdują się w tym samym obszarze co urządzenie. Jeśli zmienisz obszar tej encji, nie będzie ona już występować w obszarze urządzenia.",
+                    "change_device_area": "Zmień obszar urządzenia",
                     "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
                     "delete": "Usuń",
                     "device_disabled": "Urządzenie tej encji jest wyłączone",
@@ -754,6 +768,7 @@
                     "enabled_label": "Włącz encję",
                     "enabled_restart_confirm": "Uruchom ponownie Home Assistanta, aby zakończyć włączanie encji",
                     "entity_id": "Identyfikator encji",
+                    "follow_device_area": "Użyj obszaru urządzenia",
                     "icon": "Ikona",
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nazwa",
@@ -763,6 +778,7 @@
                     "update": "Aktualizuj"
                 },
                 "faq": "dokumentacja",
+                "info_customize": "Możesz nadpisać niektóre atrybuty w sekcji {customize_link}.",
                 "no_unique_id": "Encja \"{entity_id}\" nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami. Więcej szczegółów znajdziesz w {faq_link}.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
@@ -927,7 +943,7 @@
                         "filter": "Wczytaj ponownie encje komponentu filtr",
                         "generic": "Wczytaj ponownie encje komponentu kamera IP generic",
                         "generic_thermostat": "Wczytaj ponownie encje komponentu termostatu generic",
-                        "group": "Wczytaj ponownie grupy, ich encje oraz usługi powiadomień",
+                        "group": "Wczytaj ponownie grupy, ich encje oraz ich usługi powiadomień",
                         "history_stats": "Wczytaj ponownie encje komponentu historia stanów",
                         "homekit": "Wczytaj ponownie HomeKit",
                         "input_boolean": "Wczytaj ponownie pomocników typu przełącznik",
@@ -940,7 +956,7 @@
                         "person": "Wczytaj ponownie osoby",
                         "ping": "Wczytaj ponownie encje komponentu ping",
                         "reload": "Wczytaj ponownie domenę {domain}",
-                        "rest": "Wczytaj ponownie encje komponentu rest i usługi powiadomień",
+                        "rest": "Wczytaj ponownie encje komponentu rest i ich usługi powiadomień",
                         "rpi_gpio": "Wczytaj ponownie encje komponentu Raspberry Pi GPIO",
                         "scene": "Wczytaj ponownie sceny",
                         "script": "Wczytaj ponownie skrypty",
@@ -1005,6 +1021,18 @@
             "minute": "{count} {count, plural,\n  one {minuta}\n  few {minuty}\n  many {minut}\n  other {minut}\n}",
             "second": "{count} {count, plural,\n  one {sekunda}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n}",
             "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Nadal możesz edytować konfigurację w YAML.",
+                "editor_not_available": "Brak edytora wizualnego dla typu \"{type}\".",
+                "editor_not_supported": "Edytor wizualny nie jest obsługiwany dla tej konfiguracji",
+                "error_detected": "Wykryto błędy konfiguracji",
+                "key_missing": "Brak wymaganego klucza \"{key}\".",
+                "key_not_expected": "Klucz \"{key}\" nie jest oczekiwany lub nie jest obsługiwany przez edytor wizualny.",
+                "key_wrong_type": "Wprowadzona wartość dla \"{key}\" nie jest obsługiwana przez edytor wizualny. Obsługujemy ({type_correct}), a otrzymaliśmy ({type_wrong}).",
+                "no_type_provided": "Nie wprowadzono typu."
+            }
         },
         "login-form": {
             "log_in": "Zaloguj",
@@ -1114,7 +1142,10 @@
                                 "device_id": {
                                     "action": "Akcja",
                                     "extra_fields": {
-                                        "code": "Kod"
+                                        "code": "Kod",
+                                        "message": "Wiadomość",
+                                        "position": "Pozycja",
+                                        "title": "Tytuł"
                                     },
                                     "label": "Urządzenie"
                                 },
@@ -1290,7 +1321,8 @@
                                     "extra_fields": {
                                         "above": "Powyżej",
                                         "below": "Poniżej",
-                                        "for": "Czas trwania"
+                                        "for": "Czas trwania",
+                                        "zone": "Strefa"
                                     },
                                     "label": "Urządzenie",
                                     "trigger": "Wyzwalacz"
@@ -1461,7 +1493,7 @@
                             "info_state_reporting": "Jeśli włączysz raportowanie stanów, Home Assistant wyśle wszystkie zmiany stanu udostępnionych encji na serwery Amazona. Dzięki temu zawsze możesz zobaczyć najnowsze stany w aplikacji Alexa i używać zmian stanów do tworzenia rutyn.",
                             "manage_entities": "Zarządzanie encjami",
                             "state_reporting_error": "Nie można przesłać stanu {enable_disable}",
-                            "sync_entities": "Synchronizuj encje",
+                            "sync_entities": "Synchronizuj encje z Amazon",
                             "sync_entities_error": "Nie udało się zsynchronizować encji:",
                             "title": "Alexa"
                         },
@@ -1502,6 +1534,21 @@
                         },
                         "sign_out": "Wyloguj",
                         "thank_you_note": "Dziękujemy, że jesteś częścią Chmury Home Assistant. To dzięki ludziom takim jak Ty jesteśmy w stanie zapewnić wszystkim wspaniałe doświadczenia z automatyzacją domu. Dziękuję Ci!",
+                        "tts": {
+                            "default_language": "Używany język domyślny",
+                            "dialog": {
+                                "example_message": "Witaj {name} , możesz odtwarzać dowolny tekst na dowolnym obsługiwanym odtwarzaczu multimedialnym!",
+                                "header": "Wypróbuj zamiany tekstu na mowę",
+                                "play": "Odtwarzaj",
+                                "target": "Cel",
+                                "target_browser": "Przeglądarka"
+                            },
+                            "female": "Kobieta",
+                            "info": "Podaruj swemu domu osobowość dając mu możliwość mówienia do Ciebie za pomocą naszych usług zamiany tekstu na mowę. Możesz ich użyć w automatyzacjach i skryptach, korzystając z usługi {service}.",
+                            "male": "Mężczyzna",
+                            "title": "Zamiana tekstu na mowę",
+                            "try": "Wypróbuj"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Nie udało się wyłączyć webhook:",
                             "info": "Wszystko, co jest skonfigurowane do działania poprzez webhook, może otrzymać publicznie dostępny adres URL, aby umożliwić wysyłanie danych do Home Assistanta z dowolnego miejsca, bez narażania instancji na publiczny dostęp z Internetu.",
@@ -1533,11 +1580,11 @@
                     "description_login": "Zalogowany jako {email}",
                     "description_not_login": "Nie zalogowany",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Data ważności certyfikatu",
+                        "certificate_expiration_date": "Data ważności certyfikatu:",
                         "certificate_information": "Informacja o certyfikacie",
                         "close": "Zamknij",
                         "fingerprint": "Odcisk palca certyfikatu:",
-                        "will_be_auto_renewed": "Będzie automatycznie odnawiany"
+                        "will_be_auto_renewed": "będzie automatycznie odnawiany"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Webhook jest dostępny pod następującym adresem URL:",
@@ -2343,7 +2390,7 @@
                             "filter": "Wczytaj ponownie encje komponentu filtr",
                             "generic": "Wczytaj ponownie encje komponentu kamera IP generic",
                             "generic_thermostat": "Wczytaj ponownie encje komponentu termostatu generic",
-                            "group": "Wczytaj ponownie grupy, ich encje oraz usługi powiadomień",
+                            "group": "Wczytaj ponownie grupy, ich encje oraz ich usługi powiadomień",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
                             "history_stats": "Wczytaj ponownie encje komponentu historia stanów",
                             "homekit": "Wczytaj ponownie HomeKit",
@@ -2358,7 +2405,7 @@
                             "person": "Wczytaj ponownie osoby",
                             "ping": "Wczytaj ponownie encje komponentu ping",
                             "reload": "Wczytaj ponownie domenę {domain}",
-                            "rest": "Wczytaj ponownie encje komponentu rest i usługi powiadomień",
+                            "rest": "Wczytaj ponownie encje komponentu rest i ich usługi powiadomień",
                             "rpi_gpio": "Wczytaj ponownie encje komponentu Raspberry Pi GPIO",
                             "scene": "Wczytaj ponownie sceny",
                             "script": "Wczytaj ponownie skrypty",
@@ -2514,7 +2561,7 @@
                     },
                     "description": "Zarządzanie siecią Zigbee Home Automation",
                     "device_pairing_card": {
-                        "CONFIGURED": "Konfigurowanie zakończona",
+                        "CONFIGURED": "Konfigurowanie zakończone",
                         "CONFIGURED_status_text": "Inicjalizacja",
                         "INITIALIZED": "Inicjalizacja zakończona",
                         "INITIALIZED_status_text": "Urządzenie jest gotowe do użycia",
@@ -2584,7 +2631,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Wizualizacja",
-                        "header": "Wizualizacja sieci"
+                        "header": "Wizualizacja sieci",
+                        "highlight_label": "Zaznacz urządzenia",
+                        "zoom_label": "Powiększ do urządzenia"
                     }
                 },
                 "zone": {
@@ -2616,6 +2665,76 @@
                     "introduction": "Strefy pozwalają określić regiony na ziemi. Gdy dana osoba znajduje się w strefie, jej encja pobierze stan z nazwy strefy. Strefy mogą być również używane jako wyzwalacz lub warunek w automatyzacjach.",
                     "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Anuluj dodawanie węzła",
+                        "controller_in_inclusion_mode": "Kontroler Z-Wave jest teraz w trybie dodawania węzła.",
+                        "follow_device_instructions": "Postępuj zgodnie ze wskazówkami dołączonymi do urządzenia, aby wywołać dodawanie do sieci.",
+                        "inclusion_failed": "Nie można dodać węzła. Sprawdź logi, aby uzyskać więcej informacji.",
+                        "inclusion_finished": "Węzeł został dodany. Trwa kończenie konfiguracji węzła w tle, dodawanie encji urządzenia może zająć kilka minut.",
+                        "introduction": "Ten kreator poprowadzi Cię przez proces dodawania węzła do sieci Z-Wave.",
+                        "secure_inclusion_warning": "Bezpieczne węzły wymagają dodatkowej przepustowości; zbyt wiele bezpiecznych węzłów może spowolnić twoją sieć Z-Wave. Zalecamy używanie bezpiecznego dodawania tylko w przypadku urządzeń, które tego wymagają, takich jak zamki lub urządzenia sterujące bramami garażowymi.",
+                        "start_inclusion": "Rozpocznij dodawanie węzła",
+                        "start_secure_inclusion": "Rozpocznij dodawanie bezpiecznego węzła",
+                        "title": "Dodaj węzeł Z-Wave",
+                        "use_secure_inclusion": "Użyj bezpiecznego dodawania",
+                        "view_device": "Wyświetl urządzenie"
+                    },
+                    "button": "Konfiguruj",
+                    "common": {
+                        "add_node": "Dodaj węzeł",
+                        "close": "Zamknij",
+                        "home_id": "Identyfikator domu",
+                        "network": "Sieć",
+                        "node_id": "Identyfikator węzła",
+                        "remove_node": "Usuń węzeł"
+                    },
+                    "dashboard": {
+                        "driver_version": "Wersja sterownika",
+                        "dump_dead_nodes_text": "Niektóre z Twoich węzłów nie odpowiedziały i są uznawane za martwe. Nie zostaną one w pełni wyeksportowane.",
+                        "dump_dead_nodes_title": "Niektóre z twoich węzłów są martwe",
+                        "dump_debug": "Pobierz zrzut swojej sieci, aby zdiagnozować problemy",
+                        "dump_not_ready_confirm": "Pobierz",
+                        "dump_not_ready_text": "Jeśli utworzysz zrzut, gdy nie wszystkie węzły są gotowe, może w nim brakować ważnych danych. Daj swojej sieci trochę czasu na odpytanie wszystkich węzłów. Czy chcesz kontynuować zrzut?",
+                        "dump_not_ready_title": "Jeszcze nie wszystkie węzły są gotowe",
+                        "header": "Zarządzaj siecią Z-Wave",
+                        "home_id": "Identyfikator domu",
+                        "introduction": "Zarządzaj siecią i węzłami Z-Wave",
+                        "node_count": "Liczba węzłów",
+                        "nodes_ready": "Węzły gotowe",
+                        "server_version": "Wersja serwera"
+                    },
+                    "device_info": {
+                        "node_ready": "gotowy",
+                        "node_status": "Stan węzła",
+                        "zwave_info": "Informacje Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Sieć"
+                    },
+                    "network_status": {
+                        "connected": "połączono",
+                        "connecting": "łączenie",
+                        "unknown": "nieznany"
+                    },
+                    "node_status": {
+                        "alive": "żywy",
+                        "asleep": "uśpiony",
+                        "awake": "wybudzony",
+                        "dead": "martwy",
+                        "unknown": "nieznany"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Anuluj usuwanie węzła",
+                        "controller_in_exclusion_mode": "Kontroler Z-Wave jest teraz w trybie usuwania węzła.",
+                        "exclusion_failed": "Nie można usunąć węzła. Sprawdź logi, aby uzyskać więcej informacji.",
+                        "exclusion_finished": "Węzeł {id} został usunięty z sieci Z-Wave.",
+                        "follow_device_instructions": "Postępuj zgodnie ze wskazówkami dołączonymi do urządzenia, aby wywołać usuwanie z sieci.",
+                        "introduction": "Usuń węzeł ze swojej sieci Z-Wave i usuń powiązane urządzenie i encje z Home Assistanta.",
+                        "start_exclusion": "Rozpocznij usuwanie węzła",
+                        "title": "Usuń węzeł Z-Wave"
+                    }
+                },
                 "zwave": {
                     "button": "Konfiguracja",
                     "caption": "Z-Wave",
@@ -2628,6 +2747,12 @@
                     },
                     "description": "Zarządzaj siecią Z-Wave",
                     "learn_more": "Dowiedz się więcej o Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migruj do OpenZWave",
+                            "introduction": "Ten kreator pomoże Ci w migracji ze starszej integracji Z-Wave do integracji OpenZWave, która jest obecnie w wersji beta."
+                        }
+                    },
                     "network_management": {
                         "header": "Zarządzanie siecią Z-Wave",
                         "introduction": "Uruchom polecenia sterujące siecią Z-Wave. Nie otrzymasz informacji o tym, czy wykonanie poleceń się powiodło, ale możesz szukać informacji na ten temat w logu OZW."
@@ -2809,6 +2934,15 @@
                     "yaml_unsupported": "Nie możesz używać tej funkcji, gdy używasz interfejsu użytkownika Lovelace w trybie YAML."
                 },
                 "cards": {
+                    "action_confirmation": "Czy na pewno chcesz wykonać akcję \"{action}\"?",
+                    "actions": {
+                        "action_confirmation": "Czy na pewno chcesz wykonać akcję \"{action}\"?",
+                        "no_entity_more_info": "Nie wybrano encji dla okna dialogowego \"więcej informacji\"",
+                        "no_entity_toggle": "Nie wybrano encji do przełączenia",
+                        "no_navigation_path": "Nie określono ścieżki nawigacji",
+                        "no_service": "Nie określono usługi do wykonania",
+                        "no_url": "Nie określono adresu URL do otwarcia"
+                    },
                     "confirm_delete": "Czy na pewno chcesz usunąć tę kartę?",
                     "empty_state": {
                         "go_to_integrations_page": "Przejdź do strony integracji.",
@@ -2834,7 +2968,9 @@
                     "shopping-list": {
                         "add_item": "Dodaj pozycję",
                         "checked_items": "Pozycje zaznaczone",
-                        "clear_items": "Wyczyść zaznaczone pozycje"
+                        "clear_items": "Wyczyść zaznaczone pozycje",
+                        "drag_and_drop": "Przeciągnij i upuść",
+                        "reorder_items": "Zmień kolejność elementów"
                     },
                     "starting": {
                         "description": "Home Assistant uruchamia się, proszę czekać.",
@@ -2844,6 +2980,12 @@
                 "changed_toast": {
                     "message": "Zaktualizowano konfigurację interfejsu Lovelace. Odświeżyć teraz?",
                     "refresh": "Wczytaj ponownie"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Nieprawidłowy znacznik czasu",
+                        "invalid_format": "Nieprawidłowy format czasu"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2867,7 +3009,7 @@
                             "name": "Panel alarmu"
                         },
                         "button": {
-                            "default_action_help": "Domyślna akcja zależy od możliwości encji, encja zostanie przełączona lub zostanie wyświetlone okno więcej informacji.",
+                            "default_action_help": "Domyślna akcja zależy od możliwości encji, encja zostanie przełączona lub zostanie wyświetlone okno \"Więcej informacji\".",
                             "description": "Karta przycisku umożliwia dodawanie przycisków do wykonywania zadań.",
                             "name": "Przycisk"
                         },
@@ -2984,8 +3126,10 @@
                             "name": "Glance"
                         },
                         "grid": {
+                            "columns": "Kolumny",
                             "description": "Karta siatka umożliwia wyświetlanie wielu kart w siatce.",
-                            "name": "Siatka"
+                            "name": "Siatka",
+                            "square": "Renderuj karty jako kwadraty"
                         },
                         "history-graph": {
                             "description": "Karta wykres historii umożliwia wyświetlenie wykresu dla każdej z wymienionych encji.",
@@ -3153,6 +3297,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Zarządzaj dashboardami",
+                        "manage_resources": "Zarządzaj zasobami",
                         "open": "Otwórz menu interfejsu użytkownika Lovelace",
                         "raw_editor": "Edytor konfiguracji YAML"
                     },
@@ -3251,7 +3397,7 @@
                     "attribute_not_found": "Atrybut {attribute} jest niedostępny dla: {entity}",
                     "entity_non_numeric": "Encja nie jest numeryczna: {entity}",
                     "entity_not_found": "Encja niedostępna: {entity}",
-                    "entity_unavailable": "{entity} jest obecnie niedostępna",
+                    "entity_unavailable": "Encja obecnie niedostępna: {entity}",
                     "starting": "Home Assistant uruchamia się, jeszcze nie wszystko będzie dostępne"
                 }
             },
@@ -3358,6 +3504,7 @@
                     "working": "Proszę czekać"
                 },
                 "initializing": "inicjalizacja",
+                "logging_in_to_with": "Logowanie do **{locationName}** przy użyciu **{authProviderName}**.",
                 "logging_in_with": "Logowanie za pomocą **{authProviderName}**.",
                 "pick_auth_provider": "Lub zaloguj się za pomocą"
             },

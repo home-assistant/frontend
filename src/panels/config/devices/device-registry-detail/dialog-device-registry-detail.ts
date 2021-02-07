@@ -149,7 +149,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         area_id: this._areaId || null,
         disabled_by: this._disabledBy || null,
       });
-      this._params = undefined;
+      this.closeDialog();
     } catch (err) {
       this._error =
         err.message ||

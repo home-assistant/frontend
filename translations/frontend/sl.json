@@ -512,6 +512,7 @@
             "close": "Zapri",
             "continue": "Nadaljuj",
             "copied": "Kopirano",
+            "copied_clipboard": "Kopirano v odložišče",
             "delete": "Izbriši",
             "disable": "Onemogoči",
             "enable": "Omogoči",
@@ -555,6 +556,9 @@
                 "add_user": "Dodaj uporabnika",
                 "remove_user": "Odstrani uporabnika",
                 "select_blueprint": "Izberite načrt"
+            },
+            "calendar": {
+                "my_calendars": "Moji koledarji"
             },
             "data-table": {
                 "no-data": "Ni podatkov",
@@ -747,6 +751,7 @@
                 "control": "Nadzor",
                 "dismiss": "Opusti",
                 "editor": {
+                    "change_device_area": "Spremenite območje naprave",
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati ta vnos?",
                     "delete": "Izbriši",
                     "device_disabled": "Naprava za to entiteto je onemogočena",
@@ -1008,6 +1013,12 @@
             "second": "{count} {count, plural,\none {sekunda}\ntwo {sekundi}\nthree {sekunde}\nfour {sekunde}\nother {sekund}\n}",
             "week": "{count} {count, plural,\none {Teden}\nother {Tednov}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Konfiguracijo lahko še vedno urejate v YAML.",
+                "key_missing": "Manjka zahtevani ključ \"{key} \"."
+            }
+        },
         "login-form": {
             "log_in": "Prijavi se",
             "password": "Geslo",
@@ -1116,7 +1127,9 @@
                                 "device_id": {
                                     "action": "Akcija",
                                     "extra_fields": {
-                                        "code": "Koda"
+                                        "code": "Koda",
+                                        "message": "Sporočilo",
+                                        "title": "Naslov"
                                     },
                                     "label": "Naprava"
                                 },
@@ -1504,6 +1517,15 @@
                         },
                         "sign_out": "Izpis",
                         "thank_you_note": "Zahvaljujemo se vam za to, da ste del Home Assistant Cloud-a. Zaradi ljudi, kot ste vi, smo sposobni narediti dobro izkušnjo avtomatizacije doma za vsakogar. hvala!",
+                        "tts": {
+                            "dialog": {
+                                "play": "Predvajaj",
+                                "target_browser": "Brskalnik"
+                            },
+                            "female": "Ženska",
+                            "male": "Moški",
+                            "try": "Poskusi"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Ni uspelo onemogočiti webhook:",
                             "info": "Vsemu, kar je nastavljeno tako, da se sproži webhook je mogoče dati javno dostopen URL, kar jim omogoča, pošljanje podatkov nazaj na Home Assistant od kjerkoli, ne da bi izpostavili vaš primerek na internetu.",
@@ -1582,7 +1604,7 @@
                         "dismiss": "Opustite",
                         "email": "E-poštni naslov",
                         "email_error_msg": "Neveljaven e-poštni naslov",
-                        "forgot_password": "pozabljeno geslo?",
+                        "forgot_password": "Pozabljeno geslo",
                         "introduction": "Home Assistant Cloud vam tudi takrat, ko vas ni doma zagotavlja varno oddaljeno povezavo do vašega Home Assistant-a. Prav tako vam omogoča, da se povežete z ostalimi oblačnimi storitvami Amazon Alexa in Google Assistant.",
                         "introduction2": "To storitev upravlja naš partner ",
                         "introduction2a": ", podjetje, ki so ga ustanovili ustanovitelji Home Assistant-a.",
@@ -1819,7 +1841,7 @@
                 "header": "Konfiguriraj Home Assistant",
                 "helpers": {
                     "caption": "Pomočniki",
-                    "description": "Upravljanje elementov, s katerimi si lahko pomagate pri gradnji  avtomatizacij.",
+                    "description": "Upravljanje elementov, s katerimi si lahko pomagate pri gradnji avtomatizacij.",
                     "dialog": {
                         "add_helper": "Dodajte pomočnika",
                         "add_platform": "Dodaj {platform}",
@@ -2586,7 +2608,8 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Vizualizacija",
-                        "header": "Prikaz omrežja"
+                        "header": "Prikaz omrežja",
+                        "zoom_label": "Povečaj na napravo"
                     }
                 },
                 "zone": {
@@ -2617,6 +2640,51 @@
                     "home_zone_core_config": "Lokacijo domačega območja je mogoče urejati na strani splošne konfiguracije. Polmera domačega območja še ni mogoče urejati iz frontend-a. Ali želite iti na splošno konfiguracijo?",
                     "introduction": "Območja omogočajo določitev določenih regij. Ko je oseba znotraj tega območja, bo stanje prevzelo njegovo ime. Območja se lahko uporabljajo tudi kot sprožilec ali pogoj v avtomatizacijah.",
                     "no_zones_created_yet": "Izgleda, da še niste ustvarili nobenih con."
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Ogled naprave"
+                    },
+                    "button": "Nastavi",
+                    "common": {
+                        "add_node": "Dodaj vozlišče",
+                        "close": "Zapri",
+                        "home_id": "ID doma",
+                        "network": "Omrežje",
+                        "node_id": "ID vozlišča",
+                        "remove_node": "Odstrani vozlišče"
+                    },
+                    "dashboard": {
+                        "driver_version": "Različica gonilnika",
+                        "dump_dead_nodes_text": "Nekatera vaša vozlišča se niso odzvala in so domnevno mrtva. Ta ne bodo v celoti izvožena.",
+                        "home_id": "ID doma",
+                        "node_count": "Število vozlišč"
+                    },
+                    "device_info": {
+                        "node_ready": "Vozlišče pripravljeno",
+                        "node_status": "Stanje vozlišča",
+                        "zwave_info": "Z-Wave Informacije"
+                    },
+                    "navigation": {
+                        "network": "Omrežje"
+                    },
+                    "network_status": {
+                        "connected": "Povezan",
+                        "connecting": "Povezovanje",
+                        "unknown": "Neznano"
+                    },
+                    "node_status": {
+                        "alive": "Živ",
+                        "asleep": "Spi",
+                        "awake": "Buden",
+                        "dead": "Mrtev",
+                        "unknown": "Neznano"
+                    },
+                    "remove_node": {
+                        "exclusion_failed": "Vozlišča ni bilo mogoče odstraniti. Za več informacij preverite dnevnike.",
+                        "exclusion_finished": "Vozlišče {id} je bilo odstranjeno iz vašega Z-Wave omrežja.",
+                        "title": "Odstrani Z-Wave vozlišče"
+                    }
                 },
                 "zwave": {
                     "button": "Konfiguriraj",
@@ -2811,6 +2879,10 @@
                     "yaml_unsupported": "Te funkcije ne morete uporabljati, če uporabniški vmesnik Lovelace uporabljate v načinu YAML."
                 },
                 "cards": {
+                    "actions": {
+                        "action_confirmation": "Ali ste prepričani, da želite izvesti akcijo \" {action} \"?",
+                        "no_url": "Ni URL-ja za odpiranje izbranega"
+                    },
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati to kartico?",
                     "empty_state": {
                         "go_to_integrations_page": "Pojdite na stran za integracije.",
@@ -2836,7 +2908,9 @@
                     "shopping-list": {
                         "add_item": "Dodaj element",
                         "checked_items": "Označeni predmeti",
-                        "clear_items": "Počisti označene elemente"
+                        "clear_items": "Počisti označene elemente",
+                        "drag_and_drop": "Povleci in spusti",
+                        "reorder_items": "Prerazporedite elemente"
                     },
                     "starting": {
                         "description": "Home Assistant se zaganja, prosimo počakajte ...",
@@ -2846,6 +2920,11 @@
                 "changed_toast": {
                     "message": "Nastavitve uporabniškega vmesnika Lovelace za to nadzorno ploščo so bile posodobljene. Če želite videti spremembe, jo osvežite.",
                     "refresh": "Osveži"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid_format": "Neveljavna oblika prikaza"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2986,6 +3065,7 @@
                             "name": "Pregled"
                         },
                         "grid": {
+                            "columns": "Stolpci",
                             "description": "Kartica Mreža omogoča prikaz več kartic v mreži.",
                             "name": "Mreža"
                         },

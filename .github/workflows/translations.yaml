@@ -60,6 +60,6 @@ jobs:
 
       - name: Update translation
         run: |
-          git add translation
+          git add translations
           git commit -am "Translation update"
           git push

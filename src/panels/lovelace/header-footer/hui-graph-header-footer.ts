@@ -13,7 +13,7 @@ import {
 import "../../../components/ha-circular-progress";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { coordinates } from "../common/graph/coordinates";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-graph-base";
@@ -21,7 +21,7 @@ import { LovelaceHeaderFooter, LovelaceHeaderFooterEditor } from "../types";
 import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
-const DAY = 86400000;
+const HOUR = MINUTE * 60;
 
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter extends LitElement
@@ -162,10 +162,24 @@ export class HuiGraphHeaderFooter extends LitElement
         : this._date;
 
     if (this._stateHistory!.length) {
-      this._stateHistory = this._stateHistory!.filter(
-        (entity) =>
-          endTime.getTime() - new Date(entity.last_changed).getTime() <= DAY
+      const inHoursToShow: HassEntity[] = [];
+      const outHoursToShow: HassEntity[] = [];
+      // Split into inside and outside of "hours to show".
+      this._stateHistory!.forEach((entity) =>
+        (endTime.getTime() - new Date(entity.last_changed).getTime() <=
+        this._config!.hours_to_show! * HOUR
+          ? inHoursToShow
+          : outHoursToShow
+        ).push(entity)
       );
+
+      if (outHoursToShow.length) {
+        // If we have values that are now outside of "hours to show", re-add the last entry. This could e.g. be
+        // the "initial state" from the history backend. Without it, it would look like there is no history data
+        // at the start at all in the database = graph would start suddenly instead of on the left side of the card.
+        inHoursToShow.push(outHoursToShow[outHoursToShow.length - 1]);
+      }
+      this._stateHistory = inHoursToShow;
     }
 
     const stateHistory = await fetchRecent(

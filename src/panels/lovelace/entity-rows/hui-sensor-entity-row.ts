@@ -22,10 +22,11 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import { TimestampRenderingFormats } from "../components/types";
 import { LovelaceRow } from "./types";
 
 interface SensorEntityConfig extends EntitiesCardEntityConfig {
-  format?: "relative" | "total" | "date" | "time" | "datetime";
+  format?: TimestampRenderingFormats;
 }
 
 @customElement("hui-sensor-entity-row")

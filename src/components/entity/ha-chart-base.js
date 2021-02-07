@@ -638,8 +638,14 @@ class HaChartBase extends mixinBehaviors(
       const name = data[3];
       if (name === null) return Color().hsl(0, 40, 38);
       if (name === undefined) return Color().hsl(120, 40, 38);
-      const name1 = name.toLowerCase();
+      let name1 = name.toLowerCase();
       if (ret === undefined) {
+        if (data[4]) {
+          // Invert on/off if data[4] is true. Required for some binary_sensor device classes
+          // (BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED) where "off" is the good (= green color) value.
+          name1 = name1 === "on" ? "off" : name1 === "off" ? "on" : name1;
+        }
+
         ret = colorDict[name1];
       }
       if (ret === undefined) {

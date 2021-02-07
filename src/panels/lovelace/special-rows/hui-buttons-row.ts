@@ -6,6 +6,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-buttons-base";
@@ -28,7 +30,13 @@ export class HuiButtonsRow extends LitElement implements LovelaceRow {
   public setConfig(config: ButtonsRowConfig): void {
     this._configEntities = processConfigEntities(config.entities).map(
       (entityConfig) => ({
-        tap_action: { action: "toggle" },
+        tap_action: {
+          action:
+            entityConfig.entity &&
+            DOMAINS_TOGGLE.has(computeDomain(entityConfig.entity))
+              ? "toggle"
+              : "more-info",
+        },
         hold_action: { action: "more-info" },
         ...entityConfig,
       })

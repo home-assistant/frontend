@@ -2,11 +2,13 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "ערך תצורה",
+            "device": "מכשיר",
             "integration": "אינטגרציה",
             "user": "משתמש"
         }
     },
     "groups": {
+        "owner": "בעלים",
         "system-admin": "מנהלים",
         "system-read-only": "משתמשים לקריאה בלבד",
         "system-users": "משתמשים"
@@ -500,7 +502,10 @@
             "close": "סגור",
             "continue": "המשך",
             "copied": "מועתק",
+            "copied_clipboard": "הועתק ללוח",
             "delete": "מחיקה",
+            "disable": "השבת",
+            "enable": "אפשר",
             "error_required": "חובה",
             "loading": "טוען",
             "menu": "תפריט",
@@ -509,7 +514,9 @@
             "overflow_menu": "תפריט גולש",
             "previous": "הקודם",
             "refresh": "רענן",
+            "remove": "הסר",
             "save": "שמור",
+            "skip": "דלג",
             "successfully_deleted": "נמחק בהצלחה",
             "successfully_saved": "נשמר בהצלחה",
             "undo": "בטל",
@@ -527,7 +534,13 @@
                 "add_new": "הוסף אזור חדש...",
                 "area": "אזור",
                 "clear": "נקה",
+                "no_areas": "אין לך אזורים",
+                "no_match": "לא נמצאו אזורים תואמים",
                 "show_areas": "הצג אזורים"
+            },
+            "calendar": {
+                "my_calendars": "היומנים שלי",
+                "today": "היום"
             },
             "data-table": {
                 "no-data": "אין נתונים",
@@ -542,6 +555,8 @@
                 "clear": "נקה",
                 "device": "מכשיר",
                 "no_area": "אין אזור",
+                "no_devices": "אין לך מכשירים",
+                "no_match": "לא נמצאו מכשירים תואמים",
                 "show_devices": "הצג התקנים",
                 "toggle": "בורר מצבים"
             },
@@ -549,6 +564,7 @@
                 "entity-picker": {
                     "clear": "נקה",
                     "entity": "ישות",
+                    "no_match": "לא נמצאו ישויות תואמות",
                     "show_entities": "הצג ישויות"
                 }
             },
@@ -564,8 +580,8 @@
                     "changed_to_state": "שונה ל- {state}",
                     "cleared_device_class": "נוקה (לא זוהה {device_class} )",
                     "detected_device_class": "זוהה {device_class}",
-                    "rose": "עלה",
-                    "set": "הגדר",
+                    "rose": "זרחה",
+                    "set": "שקעה",
                     "turned_off": "נכבה",
                     "turned_on": "הופעל",
                     "was_at_home": "היה בבית",
@@ -628,6 +644,19 @@
             },
             "service-picker": {
                 "service": "שירות"
+            },
+            "target-picker": {
+                "add_area_id": "בחר אזור",
+                "add_device_id": "בחר מכשיר",
+                "add_entity_id": "בחר ישות",
+                "expand_device_id": "הרחב מכשיר זה בישויות נפרדות. לאחר ההרחבה הגופים לא יעודכנו כאשר המכשיר ישתנה.",
+                "remove_area_id": "הסר אזור",
+                "remove_device_id": "הסר מכשיר",
+                "remove_entity_id": "הסר ישות"
+            },
+            "user-picker": {
+                "add_user": "הוסף משתמש",
+                "no_user": "אין משתמש"
             }
         },
         "dialogs": {
@@ -646,6 +675,7 @@
                 "editor": {
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק רשומה זו?",
                     "delete": "מחק",
+                    "device_disabled": "המכשיר של ישות זו מושבת.",
                     "enabled_cause": "מושבת עקב {סיבה}.",
                     "enabled_description": "ישויות מושבתות לא יתווספו ל Home Assistant.",
                     "enabled_label": "הפוך ישות לזמינה",
@@ -654,6 +684,7 @@
                     "icon_error": "סמלים צריכים להיות בפורמט: prefix:iconname, למשל: mdi:home",
                     "name": "שם חלופי",
                     "note": "הערה: יתכן וזה עדיין לא עובד עם כל האינטגרציות.",
+                    "open_device_settings": "פתח את הגדרות המכשיר",
                     "unavailable": "ישות זו אינה זמינה כרגע.",
                     "update": "עדכון"
                 },
@@ -772,6 +803,9 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "blueprint": "שרטוטים"
+                    },
                     "server_control": {
                         "perform_action": "{action} שרת",
                         "restart": "הפעל מחדש",
@@ -839,6 +873,7 @@
         },
         "notification_toast": {
             "connection_lost": "החיבור אבד. מתחבר מחדש...",
+            "dismiss": "בטל",
             "service_call_failed": "נכשלה הקריאה לשירות {service} .",
             "started": "Home Assistant עלה!",
             "starting": "Home Assistant בעלייה, ייתכן שלא הכל יהיה זמין עד שהעליה תסתיים",
@@ -1084,6 +1119,7 @@
                                     "trigger": "טריגר"
                                 },
                                 "event": {
+                                    "context_user_pick": "בחר משתמש",
                                     "event_data": "נתוני אירוע",
                                     "event_type": "סוג אירוע",
                                     "label": "אירוע"
@@ -1175,6 +1211,40 @@
                         "only_editable": "רק אוטומציות שהוגדרו ב automations.yaml ניתנות לעריכה.",
                         "pick_automation": "בחר אוטומציה לעריכה",
                         "show_info_automation": "הצג מידע על אוטומציה"
+                    },
+                    "thingtalk": {
+                        "create": "צור אוטומציה",
+                        "link_devices": {
+                            "unknown_placeholder": "לא ידוע"
+                        },
+                        "task_selection": {
+                            "for_example": "לדוגמה:"
+                        }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "community_forums": "פורומים קהילתיים",
+                        "file_name": "נתיב שרטוט",
+                        "import_btn": "תצוגה מקדימה של שרטוט",
+                        "import_header": "שרטוט \" {name} \"",
+                        "import_introduction_link": "באפשרותך לייבא שרטוטים של משתמשים אחרים מ- Github ומ {community_link}. הזן את כתובת ה- URL של השרטוט.",
+                        "importing": "טוען שרטוט ...",
+                        "raw_blueprint": "תוכן שרטוט",
+                        "save_btn": "יבוא שרטוט",
+                        "saving": "מייבא תכנית שרטוט ...",
+                        "unsupported_blueprint": "שרטוט זה לא נתמך",
+                        "url": "כתובת URL של השרטוט"
+                    },
+                    "overview": {
+                        "add_blueprint": "יבוא שרטוט",
+                        "delete_blueprint": "מחק שרטוט",
+                        "discover_more": "גלה שרטוטים נוספים",
+                        "headers": {
+                            "domain": "דומיין",
+                            "file_name": "שם קובץ"
+                        },
+                        "use_blueprint": "צור אוטומציה"
                     }
                 },
                 "cloud": {
@@ -1426,7 +1496,15 @@
                     "description": "ניהול התקנים מחוברים",
                     "device_info": "פרטי התקן",
                     "device_not_found": "המכשיר לא נמצא.",
-                    "disabled": "disabilitato",
+                    "disabled": "מושבת",
+                    "disabled_by": {
+                        "config_entry": "ערך תצורה",
+                        "integration": "אינטגרציה",
+                        "user": "משתמש"
+                    },
+                    "enabled_cause": "המכשיר מושבת על ידי {cause} .",
+                    "enabled_description": "מכשירים מושבתים לא יוצגו והישויות השייכות למכשיר יושבתו ולא יתווספו ל- Home Assistant.",
+                    "enabled_label": "הפעל מכשיר",
                     "entities": {
                         "add_entities_lovelace": "הוסף לממשק Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
@@ -1438,22 +1516,23 @@
                     "no_devices": "אין התקנים",
                     "picker": {
                         "filter": {
-                            "filter": "filtro",
-                            "show_all": "mostra tutto",
-                            "show_disabled": "mostra entità disabilitate"
+                            "filter": "מסנן",
+                            "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+                            "show_all": "הצג הכל",
+                            "show_disabled": "הצג מכשירים לא זמינים"
                         },
-                        "search": "cerca dispositivi"
+                        "search": "חפש מכשירים"
                     },
                     "scene": {
                         "create": "צור סצינה עם המכשיר",
-                        "create_disable": "non posso creare scene con dispositivi disabilitati",
+                        "create_disable": "לא ניתן ליצור סצנה עם מכשיר מושבת",
                         "no_scenes": "אין סצינות",
                         "scenes": "סצינות"
                     },
                     "scenes": "סצינות",
                     "script": {
                         "create": "צור סקריפט עם המכשיר",
-                        "create_disable": "non posso creare script con dispositivi disabilitati",
+                        "create_disable": "לא ניתן ליצור סקריפט עם מכשיר מושבת",
                         "no_scripts": "אין סקריפטים",
                         "scripts": "סקריפטים"
                     },
@@ -1486,6 +1565,7 @@
                         },
                         "header": "מאגר הישויות",
                         "headers": {
+                            "area": "אֵזוֹר",
                             "entity_id": "מזהה ישות",
                             "integration": "אינטגרציה",
                             "name": "שם",
@@ -1788,6 +1868,9 @@
                     },
                     "select_instance": {
                         "none_found": "לא הצלחנו למצוא שרת OpenZWave. אם אתה סבור שזה לא נכון, בדוק את הגדרות OpenZWave ו- MQTT וודא ש Home Assistant יכול לתקשר עם ה MQTT broker."
+                    },
+                    "services": {
+                        "cancel_command": "בטל פקודה"
                     }
                 },
                 "person": {
@@ -1992,6 +2075,7 @@
                     "editor": {
                         "activate_user": "הפעל משתמש",
                         "active": "פעיל",
+                        "active_tooltip": "שולט האם המשתמש יכול להתחבר",
                         "admin": "מנהל",
                         "caption": "הצג משתמש",
                         "change_password": "שינוי סיסמה",
@@ -2006,18 +2090,23 @@
                         "system_generated_users_not_editable": "לא ניתן לעדכן משתמשים שנוצרו על ידי המערכת.",
                         "system_generated_users_not_removable": "לא ניתן להסיר משתמשים שנוצרו על ידי המערכת.",
                         "unnamed_user": "משתמש ללא שם",
-                        "update_user": "עדכון"
+                        "update_user": "עדכון",
+                        "username": "שם משתמש"
                     },
                     "picker": {
                         "headers": {
                             "group": "קבוצה",
+                            "is_active": "פעיל",
+                            "is_owner": "בעלים",
                             "name": "שם",
-                            "system": "מערכת"
+                            "system": "מערכת",
+                            "username": "שם משתמש"
                         }
                     },
                     "users_privileges_note": "קבוצת המשתמשים הינה עבודה בעיצומה. המשתמש לא יוכל לנהל את המופע באמצעות ממשק המשתמש. אנו עדיין בודקים את כל נקודות הקצה של ממשק ה- API כדי לוודא שהם מגבילים נכון את הגישה למנהלים."
                 },
                 "zha": {
+                    "add_device": "הוסף מכשיר",
                     "add_device_page": {
                         "discovered_text": "התקנים יופיעו כאן לאחר שהתגלו.",
                         "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום.",
@@ -2063,6 +2152,16 @@
                         "value": "ערך"
                     },
                     "description": "ניהול רשת Zigbee לאוטומציה ביתית",
+                    "device_pairing_card": {
+                        "CONFIGURED": "קביעת התצורה הושלמה",
+                        "CONFIGURED_status_text": "מאתחל",
+                        "INITIALIZED": "האתחול הושלם",
+                        "INITIALIZED_status_text": "המכשיר מוכן לשימוש",
+                        "INTERVIEW_COMPLETE": "הראיון הושלם",
+                        "INTERVIEW_COMPLETE_status_text": "הגדרת תצורה",
+                        "PAIRED": "התקן נמצא",
+                        "PAIRED_status_text": "מתחיל ראיון"
+                    },
                     "devices": {
                         "header": "אוטומציה ביתית של Zigbee - מכשיר"
                     },
@@ -2078,6 +2177,7 @@
                         "unbind_button_label": "ביטול קישור של קבוצה"
                     },
                     "groups": {
+                        "add_group": "הוסף קבוצה",
                         "add_members": "הוסף חברים",
                         "adding_members": "מוסיף חברים",
                         "caption": "קבוצות",
@@ -2120,7 +2220,13 @@
                         "hint_wakeup": "מכשירים מסוימים, כגון חיישני Xiaomi, כוללים כפתור להתעוררות עליו ניתן ללחוץ במרווח של ~5 שניות על מנת להשאיר אותם ערים בזמן שמתקשרים איתם.",
                         "introduction": "הפעל פקודות ZHA המשפיעות על מכשיר בודד. בחר מכשיר כדי לראות את רשימת הפקודות הזמינות."
                     },
-                    "title": "אוטומציה ביתית של Zigbee"
+                    "title": "אוטומציה ביתית של Zigbee",
+                    "visualization": {
+                        "caption": "ויזואליזציה",
+                        "header": "הדמית רשת",
+                        "highlight_label": "הדגש התקנים",
+                        "zoom_label": "הכנס למכשיר"
+                    }
                 },
                 "zone": {
                     "add_zone": "הוסף אזור",
@@ -2150,6 +2256,17 @@
                     "home_zone_core_config": "המיקום של אזור הבית שלך ניתן לעריכה מדף הקונפיגורציה הכללי. עדיין לא ניתן לערוך את מיקום אזור הבית מממשק המשתמש. האם ברצונך לעבור לקונפיגורציה הכללית?",
                     "introduction": "אזורים מאפשרים לך לציין אזורים מסוימים בכדור הארץ. כאשר אדם נמצא באזור, הסטטוס יקח את השם מהאזור. אזורים יכולים לשמש גם כטריגר או תנאי בתוך הגדרות אוטומציה.",
                     "no_zones_created_yet": "נראה שעדיין לא יצרת אזורים."
+                },
+                "zwave_js": {
+                    "dashboard": {
+                        "dump_dead_nodes_text": "חלק מהצמתים שלך לא הגיבו ונחשבים מתים. אלה לא ייוצאו לחלוטין.",
+                        "dump_dead_nodes_title": "חלק מהצמתים שלך מתים",
+                        "dump_debug": "הורד תמונת מצב של הרשת שלך כדי לעזור באבחון בעיות",
+                        "dump_not_ready_confirm": "הורדה",
+                        "dump_not_ready_text": "אם אתה יוצר ייצוא בזמן שלא כל הצמתים מוכנים, אתה עלול לפספס את הנתונים הדרושים. תן לרשת שלך זמן לשאילת כל הצמתים. האם אתה רוצה להמשיך?",
+                        "dump_not_ready_title": "עדיין לא כל הצמתים מוכנים",
+                        "nodes_ready": "צמתים מוכנים"
+                    }
                 },
                 "zwave": {
                     "button": "הגדר",
@@ -2334,6 +2451,11 @@
                     "yaml_unsupported": "אינך יכול להשתמש בפונקציה זו כשמשתמשים בממשק המשתמש של Lovelace במצב YAML."
                 },
                 "cards": {
+                    "action_confirmation": "האם אתה בטוח שברצונך לבצע פעולה \" {action} \"?",
+                    "actions": {
+                        "no_service": "לא צוין שום שירות לביצוע",
+                        "no_url": "לא צוין כתובת אתר לפתיחה"
+                    },
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק את הכרטיס הזה?",
                     "empty_state": {
                         "go_to_integrations_page": "עבור אל דף האינטגרציות.",
@@ -2359,7 +2481,9 @@
                     "shopping-list": {
                         "add_item": "הוסף פריט",
                         "checked_items": "פריטים מסומנים",
-                        "clear_items": "נקה פריטים מסומנים"
+                        "clear_items": "נקה פריטים מסומנים",
+                        "drag_and_drop": "גרור ושחרר",
+                        "reorder_items": "סדר מחדש פריטים"
                     },
                     "starting": {
                         "description": "Home Assistant בעלייה. אנא המתן...",
@@ -2369,6 +2493,12 @@
                 "changed_toast": {
                     "message": "תצורת Lovelace עודכנה, האם ברצונך לרענן?",
                     "refresh": "רענן"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "תאריך זמן לא חוקי",
+                        "invalid_format": "פורמט תצוגה לא חוקי"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2433,6 +2563,7 @@
                                 "entity-id": "מזהה ישות",
                                 "last-changed": "שונה לאחרונה",
                                 "last-triggered": "הופעל לאחרונה",
+                                "last-updated": "עודכן לאחרונה",
                                 "none": "אין מידע משני",
                                 "position": "מיקום",
                                 "tilt-position": "הטה מיקום"
@@ -2496,7 +2627,9 @@
                             "name": "Glance"
                         },
                         "grid": {
-                            "name": "רשת"
+                            "columns": "עמודות",
+                            "name": "רשת",
+                            "square": "הצג כרטיסים כריבועים"
                         },
                         "history-graph": {
                             "description": "הכרטיס History Graph מאפשר לך להציג גרף עבור כל אחת מהישויות המפורטות.",
@@ -2546,7 +2679,8 @@
                         },
                         "picture-glance": {
                             "description": "כרטיס ה- Picture Glance מציג תמונה ומצבי ישות תואמים כסמל. הישויות בצד שמאל מאפשרות לבצע פעולות, אחרות מציגות דיאלוג מידע נוסף.",
-                            "name": "Picture Glance"
+                            "name": "Picture Glance",
+                            "state_entity": "ישות מצב"
                         },
                         "picture": {
                             "description": "כרטיס התמונה מאפשר לך להגדיר תמונה שתשמש לניווט ליעדים שונים בממשק שלך או לקריאה לשירות.",
@@ -2827,6 +2961,7 @@
                     "working": "אנא המתן"
                 },
                 "initializing": "מאתחל",
+                "logging_in_to_with": "כניסה ל- ** {locationName} ** באמצעות ** {authProviderName} **.",
                 "logging_in_with": "מתחבר עם **{authProviderName}**.",
                 "pick_auth_provider": "או התחבר עם"
             },
@@ -2920,18 +3055,22 @@
                 "change_password": {
                     "confirm_new_password": "אשר סיסמה חדשה",
                     "current_password": "סיסמה נוכחית",
-                    "error_new_is_old": "la nuova password deve essere diversa dalla attuale",
+                    "error_new_is_old": "הסיסמה חדשה חייבת להיות שונה מהסיסמה הנוכחית",
+                    "error_new_mismatch": "ערכי הסיסמה החדשים שהוזנו אינם תואמים",
                     "error_required": "נדרש",
                     "header": "שינוי סיסמה",
                     "new_password": "סיסמה חדשה",
                     "submit": "שלח",
-                    "success": "cambio password riuscito"
+                    "success": "הסיסמה שונתה בהצלחה"
                 },
                 "current_user": "אתה מחובר כעת כ- {fullName} .",
                 "dashboard": {
                     "description": "בחר לוח בקרה ברירת מחדל עבור התקן זה.",
                     "dropdown_label": "לוח בקרה",
                     "header": "לוח בקרה"
+                },
+                "enable_shortcuts": {
+                    "header": "קיצורי מקשים"
                 },
                 "force_narrow": {
                     "description": "פעולה זו תסתיר את הסרגל הצדדי כברירת מחדל, בדומה לחוויה בנייד.",
@@ -3019,6 +3158,9 @@
                     "description": "הפעל או בטל את הרטט במכשיר זה בעת שליטה בהתקנים.",
                     "header": "רטט"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "התחל שיחה"
             },
             "shopping-list": {
                 "add_item": "הוסף פריט",

@@ -18,7 +18,11 @@ import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  EntitiesEditorEvent,
+} from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -28,6 +32,9 @@ const cardConfigStruct = object({
   theme: optional(string()),
   show_forecast: optional(boolean()),
   secondary_info_attribute: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
 });
 
 const includeDomains = ["weather"];

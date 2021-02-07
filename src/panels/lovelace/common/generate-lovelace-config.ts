@@ -43,18 +43,9 @@ import {
   PictureEntityCardConfig,
   ThermostatCardConfig,
 } from "../cards/types";
-import { processEditorEntities } from "../editor/process-editor-entities";
 import { LovelaceRowConfig } from "../entity-rows/types";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
-const DOMAINS_BADGES = [
-  "binary_sensor",
-  "mailbox",
-  "person",
-  "sensor",
-  "sun",
-  "timer",
-];
 const HIDE_DOMAIN = new Set([
   "automation",
   "configurator",
@@ -91,10 +82,12 @@ const splitByAreas = (
     );
     for (const entity of entityEntries) {
       if (
-        areaDevices.has(
+        ((areaDevices.has(
           // @ts-ignore
           entity.device_id
         ) &&
+          !entity.area_id) ||
+          entity.area_id === area.area_id) &&
         entity.entity_id in allEntities
       ) {
         areaEntities.push(allEntities[entity.entity_id]);
@@ -191,7 +184,7 @@ export const computeCards = (
         (name = computeStateName(stateObj)).startsWith(titlePrefix)
           ? {
               entity: entityId,
-              name: name.substr(titlePrefix.length),
+              name: adjustName(name.substr(titlePrefix.length)),
             }
           : entityId;
 
@@ -208,6 +201,18 @@ export const computeCards = (
   }
 
   return cards;
+};
+
+const hasUpperCase = (str: string): boolean => {
+  return str.toLowerCase() !== str;
+};
+
+const adjustName = (name: string): string => {
+  // If first word already has an upper case letter (e.g. from brand name)
+  // leave as-is, otherwise capitalize the first word.
+  return hasUpperCase(name.substr(0, name.indexOf(" ")))
+    ? name
+    : name[0].toUpperCase() + name.slice(1);
 };
 
 const computeDefaultViewStates = (
@@ -246,30 +251,18 @@ const generateViewConfig = (
     (gr1, gr2) => groupOrders[gr1.entity_id] - groupOrders[gr2.entity_id]
   );
 
-  const badgeEntities: { [domain: string]: string[] } = {};
   const ungroupedEntitites: { [domain: string]: string[] } = {};
 
-  // Organize ungrouped entities in badges/ungrouped things
+  // Organize ungrouped entities in ungrouped things
   Object.keys(splitted.ungrouped).forEach((entityId) => {
     const state = splitted.ungrouped[entityId];
     const domain = computeStateDomain(state);
 
-    const coll = DOMAINS_BADGES.includes(domain)
-      ? badgeEntities
-      : ungroupedEntitites;
-
-    if (!(domain in coll)) {
-      coll[domain] = [];
+    if (!(domain in ungroupedEntitites)) {
+      ungroupedEntitites[domain] = [];
     }
 
-    coll[domain].push(state.entity_id);
-  });
-
-  let badges: string[] = [];
-  DOMAINS_BADGES.forEach((domain) => {
-    if (domain in badgeEntities) {
-      badges = badges.concat(badgeEntities[domain]);
-    }
+    ungroupedEntitites[domain].push(state.entity_id);
   });
 
   let cards: LovelaceCardConfig[] = [];
@@ -315,7 +308,6 @@ const generateViewConfig = (
   const view: LovelaceViewConfig = {
     path,
     title,
-    badges: processEditorEntities(badges),
     cards,
   };
 

@@ -177,7 +177,7 @@
                 "on": "Unsicher"
             },
             "smoke": {
-                "off": "OK",
+                "off": "Normal",
                 "on": "Rauch erkannt"
             },
             "sound": {
@@ -512,6 +512,7 @@
             "close": "Schließen",
             "continue": "Weiter",
             "copied": "Kopiert",
+            "copied_clipboard": "In die Zwischenablage kopiert",
             "delete": "Löschen",
             "disable": "Deaktivieren",
             "enable": "Aktivieren",
@@ -556,6 +557,10 @@
                 "remove_user": "Benutzer entfernen",
                 "select_blueprint": "Wähle eine Vorlage aus"
             },
+            "calendar": {
+                "my_calendars": "Meine Kalender",
+                "today": "Heute"
+            },
             "data-table": {
                 "no-data": "Keine Daten",
                 "search": "Suche"
@@ -587,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integration \"Historie\" deaktiviert",
                 "loading_history": "Lade Zustandsverlauf...",
                 "no_history_found": "Kein Zustandsverlauf gefunden."
             },
@@ -597,15 +603,15 @@
                 "messages": {
                     "became_unavailable": "nicht mehr verfügbar",
                     "changed_to_state": "wechselte zu {state}",
-                    "cleared_device_class": "gelöscht (keine {device_class} erkannt)",
-                    "detected_device_class": "erkannt {device_class}",
+                    "cleared_device_class": "zurückgesetzt (kein(e) {device_class} erkannt)",
+                    "detected_device_class": "{device_class} erkannt",
                     "rose": "aufgegangen",
-                    "set": "einstellen",
+                    "set": "untergegangen",
                     "turned_off": "ausgeschaltet",
                     "turned_on": "eingeschaltet",
-                    "was_at_home": "war zu Hause",
-                    "was_at_state": "war bei {state}",
-                    "was_away": "war abwesend",
+                    "was_at_home": "wurde zu Hause erkannt",
+                    "was_at_state": "wurde bei {state} erkannt",
+                    "was_away": "wurde als abwesend erkannt",
                     "was_closed": "wurde geschlossen",
                     "was_connected": "wurde verbunden",
                     "was_disconnected": "wurde getrennt",
@@ -745,8 +751,13 @@
             },
             "entity_registry": {
                 "control": "Steuerung",
+                "customize_link": "Entitätsanpassungen",
                 "dismiss": "Ausblenden",
                 "editor": {
+                    "advanced": "Erweiterte Einstellungen",
+                    "area": "Nur Entitätsbereich festlegen",
+                    "area_note": "Standardmäßig befinden sich die Entitäten eines Geräts in demselben Bereich wie das Gerät. Wenn du den Bereich dieser Entität änderst, folgt sie nicht mehr dem Bereich des Geräts.",
+                    "change_device_area": "Gerätebereich ändern",
                     "confirm_delete": "Möchtest du diesen Eintrag wirklich löschen?",
                     "delete": "Löschen",
                     "device_disabled": "Das Gerät dieser Entität ist deaktiviert.",
@@ -756,6 +767,7 @@
                     "enabled_label": "Entität aktivieren",
                     "enabled_restart_confirm": "Starte Home Assistant neu, um die Aktivierung der Entitäten abzuschließen",
                     "entity_id": "Entitäts-ID",
+                    "follow_device_area": "Gerätebereich übernehmen",
                     "icon": "Symbol",
                     "icon_error": "Symbole sollten das Format 'Präfix:iconname' haben, z. B. 'mdi:home'",
                     "name": "Namen",
@@ -765,6 +777,7 @@
                     "update": "Aktualisieren"
                 },
                 "faq": "Dokumentation",
+                "info_customize": "Du kannst einige Attribute im Abschnitt {customize_link} überschreiben.",
                 "no_unique_id": "Diese Entität (\"{entity_id}\") hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden. Schaue in der {faq_link} nach für mehr Details.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
@@ -922,7 +935,7 @@
                         "zone": "Zonen"
                     },
                     "reload": {
-                        "automation": "Automationen neu laden",
+                        "automation": "Automatisierungen neu laden",
                         "command_line": "Komandozeilenentätien neu laden",
                         "core": "Positionsdaten und Anpassungen neu laden",
                         "filesize": "Dateigröße-Entitäten neu laden",
@@ -1007,6 +1020,18 @@
             "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
             "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
             "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Du kannst deine Konfiguration weiterhin in YAML bearbeiten.",
+                "editor_not_available": "Kein visueller Editor für Typ \"{type}\" verfügbar.",
+                "editor_not_supported": "Visueller Editor wird für diese Konfiguration nicht unterstützt.",
+                "error_detected": "Konfigurationsfehler erkannt",
+                "key_missing": "Erforderlicher Schlüssel \"{key}\" fehlt.",
+                "key_not_expected": "Der Schlüssel \"{key}\" wird vom visuellen Editor nicht erwartet oder nicht unterstützt.",
+                "key_wrong_type": "Der angegebene Wert für \"{key}\" wird vom visuellen Editor nicht unterstützt. Wir unterstützen ({type_correct}), haben aber ({type_wrong}) erhalten.",
+                "no_type_provided": "Kein Typ angegeben."
+            }
         },
         "login-form": {
             "log_in": "Anmelden",
@@ -1116,7 +1141,10 @@
                                 "device_id": {
                                     "action": "Aktion",
                                     "extra_fields": {
-                                        "code": "Code"
+                                        "code": "Code",
+                                        "message": "Nachricht",
+                                        "position": "Position",
+                                        "title": "Titel"
                                     },
                                     "label": "Gerät"
                                 },
@@ -1292,7 +1320,8 @@
                                     "extra_fields": {
                                         "above": "Über",
                                         "below": "Unter",
-                                        "for": "Dauer"
+                                        "for": "Dauer",
+                                        "zone": "Zone"
                                     },
                                     "label": "Gerät",
                                     "trigger": "Auslöser"
@@ -1385,7 +1414,7 @@
                         "delete_automation": "Automatisierung löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
                         "duplicate": "Duplizieren",
-                        "duplicate_automation": "Automatisierung kopieren",
+                        "duplicate_automation": "Automatisierung duplizieren",
                         "edit_automation": "Automatisierung bearbeiten",
                         "header": "Automatisierungseditor",
                         "headers": {
@@ -1463,7 +1492,7 @@
                             "info_state_reporting": "Wenn die Statusberichterstellung aktiviert wird, sendet Home Assistant alle Statusänderungen exponierter Entitäten an Amazon. So wird in der Alexa-App immer der neueste Status angezeigt.",
                             "manage_entities": "Entitäten verwalten",
                             "state_reporting_error": "Der Berichtsstatus kann nicht {enable_disable} werden.",
-                            "sync_entities": "Entitäten synchronisieren",
+                            "sync_entities": "Entitäten zu Amazon synchronisieren",
                             "sync_entities_error": "Fehler beim Synchronisieren von Entitäten:",
                             "title": "Alexa"
                         },
@@ -1504,6 +1533,21 @@
                         },
                         "sign_out": "Abmelden",
                         "thank_you_note": "Vielen Dank, dass du Teil der Home Assistant Cloud bist. Es ist wegen Menschen wie dir, dass wir in der Lage sind, eine großartige Home Automation Erfahrung für alle zu machen. Danke!",
+                        "tts": {
+                            "default_language": "Zu verwendende Standardsprache",
+                            "dialog": {
+                                "example_message": "Hallo {name} , du kannst beliebigen Text auf jedem unterstützten Media Player abspielen!",
+                                "header": "Text-zu-Sprache ausprobieren",
+                                "play": "Abspielen",
+                                "target": "Ziel",
+                                "target_browser": "Browser"
+                            },
+                            "female": "Weiblich",
+                            "info": "Bringe Flair in dein Haus, indem du es mit unseren Text-zu-Sprache-Diensten zu dir sprechen lässt. Du kannst dies in Automatisierungen und Skripten verwenden, indem du den Dienst {service} nutzst.",
+                            "male": "Männlich",
+                            "title": "Text-zu-Sprache",
+                            "try": "Probieren"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Fehler beim Deaktivieren des Webhooks:",
                             "info": "Alles, was so konfiguriert ist, dass es durch einen Webhook ausgelöst wird, kann mit einer öffentlich zugänglichen URL versehen werden, damit Daten von überall an Home Assistant gesendet werden können, ohne deine Installation dem Internet zu öffnen.",
@@ -1535,11 +1579,11 @@
                     "description_login": "Angemeldet als {email}",
                     "description_not_login": "Nicht angemeldet",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Ablaufdatum des Zertifikats",
+                        "certificate_expiration_date": "Ablaufdatum des Zertifikats:",
                         "certificate_information": "Zertifikatsinformationen",
                         "close": "Schließen",
                         "fingerprint": "Zertifikat Fingerabdruck:",
-                        "will_be_auto_renewed": "Wird automatisch erneuert"
+                        "will_be_auto_renewed": "wird automatisch erneuert"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Der Webhook ist unter der folgenden URL verfügbar:",
@@ -2586,7 +2630,9 @@
                     "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualisierung",
-                        "header": "Netzwerkvisualisierung"
+                        "header": "Netzwerkvisualisierung",
+                        "highlight_label": "Geräte hervorheben",
+                        "zoom_label": "Auf Gerät zoomen"
                     }
                 },
                 "zone": {
@@ -2618,6 +2664,47 @@
                     "introduction": "Mit Zonen kannst du bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
                     "no_zones_created_yet": "Es sieht so aus, als hättest du noch keine Zonen erstellt."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Gerät anzeigen"
+                    },
+                    "button": "Konfigurieren",
+                    "common": {
+                        "close": "Schließen",
+                        "network": "Netzwerk",
+                        "remove_node": "Node entfernen"
+                    },
+                    "dashboard": {
+                        "driver_version": "Treiberversion",
+                        "dump_not_ready_confirm": "Herunterladen",
+                        "header": "Verwalte dein Z-Wave-Netzwerk",
+                        "node_count": "Anzahl an Nodes",
+                        "server_version": "Serverversion"
+                    },
+                    "device_info": {
+                        "node_ready": "Node Bereit",
+                        "node_status": "Node Status"
+                    },
+                    "navigation": {
+                        "network": "Netzwerk"
+                    },
+                    "network_status": {
+                        "connected": "Verbunden",
+                        "connecting": "Verbinden",
+                        "unknown": "Unbekannt"
+                    },
+                    "node_status": {
+                        "alive": "Lebendig",
+                        "asleep": "Schläft",
+                        "awake": "Wach",
+                        "dead": "Tot",
+                        "unknown": "Unbekannt"
+                    },
+                    "remove_node": {
+                        "exclusion_failed": "Die Knoten konnte nicht entfernt werden. Bitte schaue für mehr Informationen in die Logs.",
+                        "exclusion_finished": "Der Knoten {id} wurde aus deinem Z-Wave-Netzwerk entfernt."
+                    }
+                },
                 "zwave": {
                     "button": "Konfigurieren",
                     "caption": "Z-Wave",
@@ -2630,6 +2717,11 @@
                     },
                     "description": "Z-Wave-Netzwerk verwalten",
                     "learn_more": "Erfahre mehr über Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migration zu OpenZWave"
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave Netzwerkverwaltung",
                         "introduction": "Führt Befehle aus, die das Z-Wave Netzwerk betreffen. Es wird keine Rückmeldung darüber geben, ob die meisten Befehle erfolgreich waren, aber das OZW-Protokoll kann Hinweise darauf enthalten."
@@ -2811,6 +2903,15 @@
                     "yaml_unsupported": "Du kannst diese Funktion nicht verwenden, wenn du Lovelace im YAML-Modus verwendest."
                 },
                 "cards": {
+                    "action_confirmation": "Bist du sicher, dass du die Aktion \"{action}\" ausführen möchtest?",
+                    "actions": {
+                        "action_confirmation": "Bist du sicher, dass du die Aktion \"{action}\" ausführen möchtest?",
+                        "no_entity_more_info": "Keine Entität für Mehr-Info Dialog angegeben",
+                        "no_entity_toggle": "Keine Entität zum Umschalten angegeben",
+                        "no_navigation_path": "Kein Navigationspfad angegeben",
+                        "no_service": "Kein Dienst zur Ausführung angegeben",
+                        "no_url": "Keine URL zum Öffnen angegeben"
+                    },
                     "confirm_delete": "Möchten Sie diese Karte wirklich löschen?",
                     "empty_state": {
                         "go_to_integrations_page": "Gehe zur Integrationsseite.",
@@ -2836,7 +2937,9 @@
                     "shopping-list": {
                         "add_item": "Artikel hinzufügen",
                         "checked_items": "Markierte Artikel",
-                        "clear_items": "Markierte Elemente löschen"
+                        "clear_items": "Markierte Elemente löschen",
+                        "drag_and_drop": "Drag & Drop",
+                        "reorder_items": "Elemente neu anordnen"
                     },
                     "starting": {
                         "description": "Home Assistant startet, bitte warten…",
@@ -2846,6 +2949,12 @@
                 "changed_toast": {
                     "message": "Die Lovelace-Konfiguration wurde aktualisiert, möchten Sie sie aktualisieren?",
                     "refresh": "Aktualisieren"
+                },
+                "components": {
+                    "timestamp-display": {
+                        "invalid": "Ungültiger Zeitstempel",
+                        "invalid_format": "Ungültiges Anzeigeformat"
+                    }
                 },
                 "editor": {
                     "action-editor": {
@@ -2869,7 +2978,7 @@
                             "name": "Alarmpanel"
                         },
                         "button": {
-                            "default_action_help": "Die Standardaktion hängt von den Funktionen der Entität ab: sie wird entweder umgeschaltet oder die weiteren Informationen werden angezeigt.",
+                            "default_action_help": "Die Standardaktion hängt von den Funktionen der Entität ab. Sie wird entweder umgeschaltet oder die weiteren Informationen werden angezeigt.",
                             "description": "Mit der Schaltflächen-Karte kannst du Schaltflächen hinzufügen, um Aufgaben auszuführen.",
                             "name": "Schaltfläche"
                         },
@@ -2986,8 +3095,10 @@
                             "name": "Glance"
                         },
                         "grid": {
+                            "columns": "Spalten",
                             "description": "Mit der Grid-Karte können Sie mehrere Karten in einem Raster anzeigen.",
-                            "name": "Raster"
+                            "name": "Raster",
+                            "square": "Karten als Quadrate rendern"
                         },
                         "history-graph": {
                             "description": "Mit der Verlaufsdiagramm-Karte kannst du für jedes der aufgelisteten Objekte ein Diagramm anzeigen.",
@@ -3155,6 +3266,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Dashboards verwalten",
+                        "manage_resources": "Ressourcen verwalten",
                         "open": "Lovelace-Menü öffnen",
                         "raw_editor": "Raw-Konfigurationseditor"
                     },
@@ -3360,6 +3473,7 @@
                     "working": "Bitte warten"
                 },
                 "initializing": "Initialisieren",
+                "logging_in_to_with": "Anmelden bei **{locationName}** mit **{authProviderName}**.",
                 "logging_in_with": "Anmeldung mit **{authProviderName}**.",
                 "pick_auth_provider": "Oder melde dich an mit"
             },

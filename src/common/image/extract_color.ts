@@ -1,7 +1,7 @@
-import { Swatch, Vec3 } from "@vibrant/color";
-import { BasicPipeline } from "@vibrant/core/lib/pipeline";
-import MMCQ from "@vibrant/quantizer-mmcq";
-import Vibrant from "node-vibrant/lib/browser";
+// We import the minified bundle because the unminified bundle
+// has some quirks that break wds. See #7784 for unminified version.
+import Vibrant from "node-vibrant/dist/vibrant";
+import type { Swatch, Vec3 } from "@vibrant/color";
 import { getRGBContrastRatio } from "../color/rgb";
 
 const CONTRAST_RATIO = 4.5;
@@ -104,23 +104,15 @@ const customGenerator = (colors: Swatch[]) => {
   }
 
   return {
-    foreground: new Swatch(foregroundColor, 0),
+    // We can't import Swatch constructor from the minified bundle, take it from background color.
+    // @ts-expect-error
+    foreground: new backgroundColor.constructor(foregroundColor, 0),
     background: backgroundColor,
   };
 };
 
-Vibrant.use(
-  new BasicPipeline().filter
-    .register(
-      "default",
-      (r: number, g: number, b: number, a: number) =>
-        a >= 125 && !(r > 250 && g > 250 && b > 250)
-    )
-    .quantizer.register("mmcq", MMCQ)
-    // Our generator has different output
-    // @ts-expect-error
-    .generator.register("default", customGenerator)
-);
+// Set our custom generator as the default.
+Vibrant._pipeline.generator.register("default", customGenerator);
 
 export const extractColors = (url: string, downsampleColors = 16) =>
   new Vibrant(url, {

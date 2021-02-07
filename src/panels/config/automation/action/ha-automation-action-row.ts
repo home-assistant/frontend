@@ -27,7 +27,7 @@ import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
@@ -251,7 +251,7 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(ev.detail);
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }

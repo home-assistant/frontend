@@ -2,7 +2,6 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@material/mwc-button";
-import { mdiPlayCircleOutline } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -23,20 +22,18 @@ import {
   updateCloudPref,
 } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
-import { convertTextToSpeech } from "../../../../data/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { translationMetadata } from "../../../../resources/translations-metadata";
 import { caseInsensitiveCompare } from "../../../../common/string/compare";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
 
 @customElement("cloud-tts-pref")
 export class CloudTTSPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
-
-  @internalProperty() private loadingExample = false;
 
   @internalProperty() private savingPreferences = false;
 
@@ -61,15 +58,6 @@ export class CloudTTSPref extends LitElement {
       <ha-card
         header=${this.hass.localize("ui.panel.config.cloud.account.tts.title")}
       >
-        <div class="example">
-          <mwc-button
-            @click=${this._playExample}
-            .disabled=${this.loadingExample}
-          >
-            <ha-svg-icon .path=${mdiPlayCircleOutline}></ha-svg-icon>
-            &nbsp;Example
-          </mwc-button>
-        </div>
         <div class="card-content">
           ${this.hass.localize(
             "ui.panel.config.cloud.account.tts.info",
@@ -116,6 +104,11 @@ export class CloudTTSPref extends LitElement {
               )}
             </paper-listbox>
           </paper-dropdown-menu-light>
+        </div>
+        <div class="card-actions">
+          <mwc-button @click=${this._openTryDialog}>
+            ${this.hass.localize("ui.panel.config.cloud.account.tts.try")}
+          </mwc-button>
         </div>
       </ha-card>
     `;
@@ -191,46 +184,9 @@ export class CloudTTSPref extends LitElement {
     }
   );
 
-  async _playExample() {
-    this.loadingExample = true;
-    const defaultVoice = this.cloudStatus!.prefs.tts_default_voice;
-    // Our example sentence is English. If user uses English voice, use that
-    // for example.
-    let language;
-    let gender;
-    if (defaultVoice[0].split("-")[0] === "en") {
-      language = defaultVoice[0];
-      gender = defaultVoice[1];
-    } else {
-      language = "en-US";
-      gender = "female";
-    }
-
-    let url;
-    try {
-      const result = await convertTextToSpeech(this.hass, {
-        platform: "cloud",
-        message: `Hello ${
-          this.hass.user!.name
-        }, you can play any text on any supported media player!`,
-        language,
-        options: { gender },
-      });
-      url = result.url;
-    } catch (err) {
-      this.loadingExample = false;
-      // eslint-disable-next-line no-console
-      console.error(err);
-      showAlertDialog(this, {
-        text: `Unable to load example. ${err}`,
-        warning: true,
-      });
-      return;
-    }
-    const audio = new Audio(url);
-    audio.play();
-    audio.addEventListener("playing", () => {
-      this.loadingExample = false;
+  private _openTryDialog() {
+    showTryTtsDialog(this, {
+      defaultVoice: this.cloudStatus!.prefs.tts_default_voice,
     });
   }
 

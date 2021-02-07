@@ -74,7 +74,7 @@ class PanelCalendar extends LitElement {
         <div class="content">
           <div class="calendar-list">
             <div class="calendar-list-header">
-              ${this.hass.localize("ui.panel.calendar.my_calendars")}
+              ${this.hass.localize("ui.components.calendar.my_calendars")}
             </div>
             ${this._calendars.map(
               (selCal) =>

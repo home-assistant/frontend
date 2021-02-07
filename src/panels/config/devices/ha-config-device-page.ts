@@ -605,6 +605,17 @@ export class HaConfigDevicePage extends LitElement {
         </div>
       `);
     }
+    if (integrations.includes("zwave_js")) {
+      import(
+        "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
+      );
+      templates.push(html`
+        <ha-device-info-zwave_js
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-zwave_js>
+      `);
+    }
     return templates;
   }
 
