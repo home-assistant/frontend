@@ -80,7 +80,7 @@
             "triggered": "Utlöst"
         },
         "default": {
-            "entity_not_found": "Enheten hittades inte",
+            "entity_not_found": "Entiteten hittades inte",
             "error": "Fel",
             "unavailable": "Otillgänglig",
             "unknown": "Okänd"
@@ -401,6 +401,7 @@
                 "direction": "Riktning",
                 "forward": "Framåt",
                 "oscillate": "Pendlar",
+                "preset_mode": "Förinställt läge",
                 "reverse": "Baklänges",
                 "speed": "Hastighet"
             },
@@ -751,9 +752,11 @@
             },
             "entity_registry": {
                 "control": "Kontrollera",
+                "customize_link": "entitetsanpassningar",
                 "dismiss": "Avfärda",
                 "editor": {
                     "advanced": "Avancerade inställningar",
+                    "area": "Ange endast entitetsområde",
                     "area_note": "Som standard har entiteterna som tillhör en enhet samma område som enheten. Om du ändrar området för denna entitet kommer den inte längre att använda enhetens område.",
                     "change_device_area": "Ändra område för enhet",
                     "confirm_delete": "Är du säker på att du vill ta bort den här posten?",
@@ -1026,6 +1029,8 @@
                 "editor_not_supported": "Visuell redigerare stöds inte för den här konfigurationen",
                 "error_detected": "Konfigurationsfel upptäcktes",
                 "key_missing": "Nödvändig nyckel \"{key}\" saknas.",
+                "key_not_expected": "Nyckeln \"{key}\" förväntas inte eller stöds inte av den visuella redigeraren.",
+                "key_wrong_type": "Det angivna värdet för \"{key}\" stöds inte av den visuella redigeraren. Vi stöder ({type_correct}) men fick ({type_wrong}).",
                 "no_type_provided": "Ingen typ angiven."
             }
         },
@@ -1957,11 +1962,11 @@
                         "delete": "Ta bort",
                         "delete_button": "Ta bort {integration}",
                         "delete_confirm": "Är du säker på att du vill radera denna integration?",
-                        "device_unavailable": "enhet otillgänglig",
+                        "device_unavailable": "Enhet otillgänglig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "documentation": "Dokumentation",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
-                        "entity_unavailable": "entitet otillgänglig",
+                        "entity_unavailable": "Entitet otillgänglig",
                         "firmware": "Firmware: {version}",
                         "hub": "Ansluten via",
                         "manuf": "av {manufacturer}",
@@ -2627,7 +2632,8 @@
                     "visualization": {
                         "caption": "Visualisering",
                         "header": "Visualisering av nätverk",
-                        "highlight_label": "Markera enheter"
+                        "highlight_label": "Markera enheter",
+                        "zoom_label": "Zooma till enhet"
                     }
                 },
                 "zone": {
@@ -2689,6 +2695,7 @@
                         "dump_dead_nodes_title": "Några av dina noder är döda",
                         "dump_debug": "Ladda ner en rapport från ditt nätverk för att diagnostisera problem",
                         "dump_not_ready_confirm": "Ladda ner",
+                        "dump_not_ready_text": "Om du skapar en export när inte alla noder är klara, kan du missa data som behövs. Ge ditt nätverk lite tid att fråga alla noder. Vill du fortsätta med exporten?",
                         "dump_not_ready_title": "Alla noder är inte redo än",
                         "header": "Hantera ditt Z-Wave-nätverk",
                         "home_id": "Hem ID",
@@ -2933,6 +2940,7 @@
                         "no_entity_more_info": "Ingen entitet angiven för mer info dialog",
                         "no_entity_toggle": "Ingen entitet angiven för växla",
                         "no_navigation_path": "Ingen navigationsväg angiven",
+                        "no_service": "Ingen tjänst för körning har angetts",
                         "no_url": "Ingen URL att öppna angiven"
                     },
                     "confirm_delete": "Är du säker på att du vill ta bort det här kortet?",
