@@ -12,7 +12,7 @@ import {
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceCard } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
