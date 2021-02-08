@@ -7,10 +7,12 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { extractSearchParam } from "../../../common/url/search-params";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
@@ -155,6 +157,16 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    if (this.route.path === "/import") {
+      const url = extractSearchParam("blueprint_url");
+      if (url) {
+        this._addBlueprint(url);
+      }
+    }
+  }
+
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage-data-table
@@ -228,8 +240,11 @@ class HaBlueprintOverview extends LitElement {
     });
   }
 
-  private _addBlueprint() {
-    showAddBlueprintDialog(this, { importedCallback: () => this._reload() });
+  private _addBlueprint(url?: string) {
+    showAddBlueprintDialog(this, {
+      url,
+      importedCallback: () => this._reload(),
+    });
   }
 
   private _reload() {
