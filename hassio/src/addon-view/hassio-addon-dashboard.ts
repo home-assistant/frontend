@@ -19,6 +19,7 @@ import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
@@ -34,6 +35,8 @@ import "./log/hassio-addon-logs";
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -106,6 +109,7 @@ class HassioAddonDashboard extends LitElement {
           .route=${route}
           .narrow=${this.narrow}
           .hass=${this.hass}
+          .supervisor=${this.supervisor}
           .addon=${this.addon}
         ></hassio-addon-router>
       </hass-tabs-subpage>

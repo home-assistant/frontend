@@ -1,9 +1,10 @@
 import { HomeAssistant, PanelInfo } from "../../types";
+import { SupervisorArch } from "../supervisor/supervisor";
 import { HassioAddonInfo, HassioAddonRepository } from "./addon";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export type HassioHomeAssistantInfo = {
-  arch: string;
+  arch: SupervisorArch;
   audio_input: string | null;
   audio_output: string | null;
   boot: boolean;
@@ -22,7 +23,7 @@ export type HassioHomeAssistantInfo = {
 export type HassioSupervisorInfo = {
   addons: HassioAddonInfo[];
   addons_repositories: HassioAddonRepository[];
-  arch: string;
+  arch: SupervisorArch;
   channel: string;
   debug: boolean;
   debug_block: boolean;
@@ -39,7 +40,7 @@ export type HassioSupervisorInfo = {
 };
 
 export type HassioInfo = {
-  arch: string;
+  arch: SupervisorArch;
   channel: string;
   docker: string;
   features: string[];
@@ -51,7 +52,7 @@ export type HassioInfo = {
   operating_system: string;
   supervisor: string;
   supported: boolean;
-  supported_arch: string[];
+  supported_arch: SupervisorArch[];
   timezone: string;
 };
 

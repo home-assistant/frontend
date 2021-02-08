@@ -1,6 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
+            "device": "Tæki",
             "integration": "Samþætting",
             "user": "Notandi"
         }
@@ -473,6 +474,7 @@
             "cancel": "Hætta við",
             "close": "Loka",
             "continue": "Halda áfram",
+            "copied_clipboard": "Afritað á klemmuspjald",
             "delete": "Eyða",
             "error_required": "Skilyrt",
             "loading": "Hleð",
@@ -503,6 +505,10 @@
                 "add_user": "Bæta við notanda",
                 "remove_user": "Fjarlægja notanda",
                 "select_blueprint": "Velja uppdrátt"
+            },
+            "calendar": {
+                "my_calendars": "Dagatölin mín",
+                "today": "Í dag"
             },
             "data-table": {
                 "search": "Leita"
@@ -567,8 +573,10 @@
                 "service": "Þjónusta"
             },
             "target-picker": {
-                "add_area_id": "Veldu svæði",
+                "add_area_id": "Velja svæði",
                 "add_device_id": "Velja tæki",
+                "add_entity_id": "Velja einingu",
+                "remove_area_id": "Fjarlægja svæði",
                 "remove_device_id": "Fjarlægja tæki",
                 "remove_entity_id": "Fjarlægja einingu"
             }
@@ -582,12 +590,15 @@
             "entity_registry": {
                 "dismiss": "Vísa frá",
                 "editor": {
+                    "advanced": "Ítarlegar stillingar",
                     "delete": "Eyða",
+                    "device_disabled": "Tæki þessarar einingar er óvirkt.",
                     "enabled_cause": "Afvirkjað vegna {cause}.",
                     "enabled_label": "Virkja einingu",
                     "entity_id": "Kenni eingar",
                     "icon": "Yfirskrifa táknmynd",
                     "name": "Yfirskrifa nafn",
+                    "open_device_settings": "Opna stillingar tækis",
                     "update": "Uppfæra"
                 },
                 "related": "Tengt",
@@ -631,6 +642,10 @@
                 "required_error_msg": "þetta er skilyrtur reitur"
             },
             "more_info_control": {
+                "cover": {
+                    "close_cover": "Loka kápu",
+                    "open_cover": "Opna kápu"
+                },
                 "edit": "Breyta einingu",
                 "history": "Saga",
                 "last_changed": "Síðast breytt",
@@ -673,13 +688,16 @@
             "quick-bar": {
                 "commands": {
                     "navigation": {
+                        "areas": "Svæði",
                         "automation": "Sjálfvirkni",
+                        "blueprint": "Uppdrættir",
                         "core": "Almennt",
                         "devices": "Tæki",
                         "entities": "Einingar",
                         "helpers": "Hjálp",
                         "info": "Upplýsingar",
                         "integrations": "Samþættingar",
+                        "logs": "Atburðaskrá",
                         "lovelace": "Skjáborð",
                         "person": "Persónur",
                         "scene": "Senur",
@@ -729,6 +747,17 @@
             "minute": "{count} {count, plural,\n  one {mínúta}\n  other {mínútur}\n}",
             "second": "{count} {count, plural,\n  one {sekúnda}\n  other {sekúndur}\n}",
             "week": "{count} {count, plural,\n  one {vika}\n  other {vikur}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Þú getur samt breytt stillingum þínum í YAML.",
+                "editor_not_available": "Enginn ritill er tiltækur fyrir gerð \"{type}\".",
+                "editor_not_supported": "Ritill er ekki studdur fyrir þessar stillingar",
+                "error_detected": "Villur fundust í stillingum",
+                "key_missing": "Nauðsynlegan lykil \"{key}\" vantar.",
+                "key_not_expected": "Ekki er búist við lyklinum \"{key}\" eða hann er ekki studdur af ritlinum.",
+                "key_wrong_type": "Uppgefið gildi fyrir \"{key}\" er ekki stutt af ritlinum. Við styðjum ({type_correct}) en fengum ({type_wrong})."
+            }
         },
         "login-form": {
             "log_in": "Skrá inn",
@@ -781,11 +810,14 @@
                         "blueprint": {
                             "use_blueprint": "Nota uppdrátt"
                         },
+                        "header": "Búa til nýja sjálfvirkni",
                         "how": "Hvernig viltu búa til nýju sjálfvirknina?",
+                        "start_empty": "Byrja með tóma sjálfvirkni",
                         "thingtalk": {
                             "create": "Stofna",
                             "header": "Lýstu sjálfvirkninni sem þú vilt búa til",
-                            "input_label": "Hvað ætti þessi sjálfvirkni að gera?"
+                            "input_label": "Hvað ætti þessi sjálfvirkni að gera?",
+                            "intro": "Og við munum reyna að búa það til fyrir þig. Til dæmis: Slökktu ljósin þegar ég fer."
                         }
                     },
                     "editor": {
@@ -810,7 +842,9 @@
                                 "device_id": {
                                     "action": "Aðgerð",
                                     "extra_fields": {
-                                        "code": "Kóði"
+                                        "code": "Kóði",
+                                        "message": "Skilaboð",
+                                        "title": "Titill"
                                     },
                                     "label": "Tæki"
                                 },
@@ -836,7 +870,12 @@
                         },
                         "alias": "Nafn",
                         "blueprint": {
-                            "header": "Uppdráttur"
+                            "blueprint_to_use": "Uppdráttur sem skal nota",
+                            "header": "Uppdráttur",
+                            "inputs": "Inntök",
+                            "manage_blueprints": "Stjórna uppdráttum",
+                            "no_blueprints": "Þú ert ekki með neina uppdrætti",
+                            "no_inputs": "Þessi uppdráttur er ekki með neinum inntökum."
                         },
                         "conditions": {
                             "add": "Bæta við skilyrði",
@@ -942,7 +981,8 @@
                                     "extra_fields": {
                                         "above": "Yfir",
                                         "below": "Undir",
-                                        "for": "Tímalengd"
+                                        "for": "Tímalengd",
+                                        "zone": "Svæði"
                                     },
                                     "label": "Tæki"
                                 },
@@ -1044,24 +1084,36 @@
                 },
                 "blueprint": {
                     "add": {
+                        "error_no_url": "Færðu inn vefslóð uppdráttarins",
                         "file_name": "Slóð uppdráttar",
                         "header": "Flytja inn uppdrátt",
                         "import_btn": "Forskoða uppdrátt",
+                        "import_header": "Uppdráttur \"{name}\"",
+                        "import_introduction": "Þú getur flutt inn uppdrætti frá öðrum notendum frá Github og samfélagsspjallsvæðum. Sláðu inn vefslóð uppdráttarins hér að neðan.",
                         "importing": "Hleð inn uppdrátt...",
                         "raw_blueprint": "Innihald uppdráttar",
                         "save_btn": "Flytja inn uppdrátt",
-                        "saving": "Flyt inn uppdrátt..."
+                        "saving": "Flyt inn uppdrátt...",
+                        "unsupported_blueprint": "Þessi uppdráttur er ekki studdur",
+                        "url": "Vefslóð uppdráttarins"
                     },
                     "caption": "Uppdrættir",
+                    "description": "Stjórna uppdráttum",
                     "overview": {
                         "add_blueprint": "Flytja inn uppdrátt",
-                        "delete_blueprint": "Eyða uppdrátt",
+                        "confirm_delete_header": "Eyða þessum uppdrætti?",
+                        "confirm_delete_text": "Á örugglega að eyða þessum uppdrætti?",
+                        "delete_blueprint": "Eyða uppdrætti",
                         "discover_more": "Uppgötva fleiri uppdrætti",
+                        "header": "Uppdráttarritill",
                         "headers": {
+                            "domain": "Lén",
                             "file_name": "Skráarnafn",
                             "name": "Nafn"
                         },
-                        "learn_more": "Læra meira um hvernig nota á uppdrætti"
+                        "introduction": "Stjórnun uppdrátta gerir þér kleift að flytja inn og stjórna uppdráttunum þínum.",
+                        "learn_more": "Læra meira um hvernig nota á uppdrætti",
+                        "use_blueprint": "Búa til sjálfvirkni"
                     }
                 },
                 "cloud": {
@@ -1089,6 +1141,17 @@
                             "title": "Fjarstýring"
                         },
                         "sign_out": "Skrá út",
+                        "tts": {
+                            "default_language": "Sjálfgefið tungumál",
+                            "dialog": {
+                                "header": "Reyna texta í tal",
+                                "play": "Spila",
+                                "target_browser": "Vafri"
+                            },
+                            "female": "Kvenkyns",
+                            "male": "Karlkyns",
+                            "try": "Reyna"
+                        },
                         "webhooks": {
                             "loading": "Hleð ...",
                             "no_hooks_yet2": " eða með því að stofna ",
@@ -1197,6 +1260,7 @@
                         "conditions": {
                             "caption": "Bara framkvæma eitthvað ef..."
                         },
+                        "create_disable": "Ekki er hægt að búa til sjálfvirkni með óvirku tæki",
                         "no_automations": "Engin sjálfvirkni",
                         "triggers": {
                             "caption": "Framkvæma eitthvað þegar..."
@@ -1218,12 +1282,13 @@
                     "description": "Stjórna tengdum tækjum",
                     "device_info": "Upplýsingar um tæki",
                     "device_not_found": "Tæki fannst ekki.",
-                    "disabled": "Afvirkjað",
+                    "disabled": "Óvirkt",
                     "disabled_by": {
                         "integration": "Samþætting",
                         "user": "Notandi"
                     },
-                    "enabled_cause": "Afvirkjað vegna {cause}.",
+                    "enabled_cause": "Tækið er óvirkt vegna {cause}.",
+                    "enabled_description": "Óvirk tæki verða ekki sýnd, einingar sem tilheyra tækinu verða gerðar óvirkar og þeim ekki bætt við Home Assistant.",
                     "enabled_label": "Virkja einingu",
                     "entities": {
                         "add_entities_lovelace": "Bæta við í Lovelace",
@@ -1239,14 +1304,16 @@
                             "show_all": "Sýna allt",
                             "show_disabled": "Sýna óvirk tæki"
                         },
-                        "search": "Leit að tækjum"
+                        "search": "Leita að tækjum"
                     },
                     "scene": {
+                        "create_disable": "Ekki er hægt að búa til vettvang með óvirku tæki",
                         "no_scenes": "Engar senur",
                         "scenes": "Senur"
                     },
                     "scenes": "Senur",
                     "script": {
+                        "create_disable": "Ekki er hægt að búa til forskrift með óvirku tæki",
                         "scripts": "Skriftur"
                     },
                     "scripts": "Skriftur",
@@ -1269,6 +1336,7 @@
                         },
                         "header": "Einingarskrá",
                         "headers": {
+                            "area": "Svæði",
                             "integration": "Samþætting",
                             "name": "Nafn",
                             "status": "Staða"
@@ -1315,6 +1383,7 @@
                 "info": {
                     "built_using": "Byggt með",
                     "caption": "Upplýsingar",
+                    "copy_github": "Fyrir GitHub",
                     "copy_raw": "Hrár texti",
                     "documentation": "Skjölun",
                     "icons_by": "Smátákn eftir",
@@ -1544,6 +1613,8 @@
                         "sequence": "Röð"
                     },
                     "picker": {
+                        "duplicate": "Tvífalda",
+                        "duplicate_script": "Tvífalda forskrift",
                         "headers": {
                             "name": "Nafn"
                         },
@@ -1609,6 +1680,7 @@
                     "editor": {
                         "activate_user": "Virkja notanda",
                         "active": "Virkur",
+                        "active_tooltip": "Stýrir því hvort notandi getur skráð sig inn",
                         "admin": "Stjórnandi",
                         "caption": "Skoða notanda",
                         "change_password": "Breyta lykilorði",
@@ -1627,6 +1699,7 @@
                         "add_user": "Bæta við notanda",
                         "headers": {
                             "group": "Hópur",
+                            "is_active": "Virkur",
                             "is_owner": "Eigandi",
                             "name": "Nafn",
                             "system": "Kerfi",
@@ -1635,6 +1708,7 @@
                     }
                 },
                 "zha": {
+                    "add_device": "Bæta við tæki",
                     "add_device_page": {
                         "discovery_text": "Uppgötvuð tæki munu birtast hér. Fylgdu leiðbeiningunum fyrir tækið þitt og setjið tækið í pörunarstillingu.",
                         "header": "Zigbee sjálfvirkni - Bæta við tækjum",
@@ -1659,7 +1733,16 @@
                         "value": "Gildi"
                     },
                     "description": "Zigbee Home Automation net stjórnun",
+                    "device_pairing_card": {
+                        "CONFIGURED": "Uppsetningu lokið",
+                        "CONFIGURED_status_text": "Frumstilli",
+                        "INITIALIZED": "Frumstillingu lokið",
+                        "INITIALIZED_status_text": "Tækið er tilbúið til notkunar",
+                        "INTERVIEW_COMPLETE_status_text": "Set upp",
+                        "PAIRED": "Tæki fannst"
+                    },
                     "groups": {
+                        "add_group": "Bæta við hópi",
                         "add_members": "Bæta við meðlim",
                         "adding_members": "Bæti meðlimum við",
                         "caption": "Hópar",
@@ -1683,6 +1766,10 @@
                     },
                     "node_management": {
                         "header": "Tækjaumsýsla"
+                    },
+                    "visualization": {
+                        "header": "Netbirting",
+                        "zoom_label": "Þysja inn að tæki"
                     }
                 },
                 "zone": {
@@ -1697,6 +1784,60 @@
                         "radius": "Radíus",
                         "required_error_msg": "þetta er skilyrtur reitur",
                         "update": "Uppfæra"
+                    }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "title": "Bæta við Z-Wave hnúti",
+                        "view_device": "Skoða tæki"
+                    },
+                    "button": "Stilla",
+                    "common": {
+                        "add_node": "Bæta við hnúti",
+                        "close": "Loka",
+                        "network": "Net",
+                        "node_id": "Hnútauðkenni",
+                        "remove_node": "Fjarlægja hnút"
+                    },
+                    "dashboard": {
+                        "driver_version": "Útgáfa rekils",
+                        "dump_dead_nodes_text": "Sumir hnútanna svöruðu ekki og er gert ráð fyrir að þeir séu dauðir. Þessir hnútar verða ekki fluttir út að fullu.",
+                        "dump_dead_nodes_title": "Sumir hnútanna eru dauðir",
+                        "dump_not_ready_confirm": "Sækja",
+                        "dump_not_ready_title": "Ekki eru allir hnútar tilbúnir ennþá",
+                        "node_count": "Fjöldi hnúta",
+                        "nodes_ready": "Hnútar tilbúnir",
+                        "server_version": "Útgáfa miðlara"
+                    },
+                    "device_info": {
+                        "node_ready": "Hnútur tilbúinn",
+                        "node_status": "Staða hnúts",
+                        "zwave_info": "Z-Wave upplýsingar"
+                    },
+                    "navigation": {
+                        "network": "Net"
+                    },
+                    "network_status": {
+                        "connected": "Tengt",
+                        "connecting": "Tengist",
+                        "unknown": "Óþekkt"
+                    },
+                    "node_status": {
+                        "alive": "Á lífi",
+                        "asleep": "Sofandi",
+                        "awake": "Vakandi",
+                        "dead": "Dauður",
+                        "unknown": "Óþekkt"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Hætta við útilokun",
+                        "controller_in_exclusion_mode": "Z-Wave stjórinn þinn er nú í útilokunarham.",
+                        "exclusion_failed": "Ekki tókst að fjarlægja hnútinn. Vinsamlegast athugaðu atburðaskrár fyrir frekari upplýsingar.",
+                        "exclusion_finished": "Hnúturinn {id} hefur verið fjarlægður af Z-Wave netinu.",
+                        "follow_device_instructions": "Fylgdu leiðbeiningunum sem fylgdu tækinu þínu til að kveikja á útilokun í tækinu.",
+                        "introduction": "Fjarlægðu hnút af Z-Wave netinu þínu og fjarlægðu tengd tæki og einingar úr Home Assistant.",
+                        "start_exclusion": "Hefja útilokun",
+                        "title": "Fjarlægja Z-Wave hnút"
                     }
                 },
                 "zwave": {
@@ -1801,6 +1942,10 @@
             },
             "lovelace": {
                 "cards": {
+                    "actions": {
+                        "action_confirmation": "Á örugglega að framkvæma aðgerð \"{action}\"?",
+                        "no_url": "Engin vefslóð til að opna tilgreint"
+                    },
                     "empty_state": {
                         "go_to_integrations_page": "Fara á samþættingar síðu.",
                         "no_devices": "Þessi síða leyfir þér að stjórna tækjunum þínum, hinsvegar lýtur út fyrir að þú sért ekki með nein tæki uppsett sem stendur. Farðu yfir á samþættingarsíðu til að byrja.",
@@ -1908,6 +2053,9 @@
                         "glance": {
                             "columns": "Dálkar"
                         },
+                        "grid": {
+                            "columns": "Dálkar"
+                        },
                         "history-graph": {
                             "name": "Sögulínurit"
                         },
@@ -1924,6 +2072,7 @@
                             "name": "Ljós"
                         },
                         "logbook": {
+                            "description": "Skráningarsöguspjaldið sýnir lista yfir atburði eininga.",
                             "name": "Skráningarsaga"
                         },
                         "map": {
@@ -1935,6 +2084,9 @@
                         "markdown": {
                             "content": "Innihald",
                             "name": "Markdown"
+                        },
+                        "picture-glance": {
+                            "state_entity": "Stöðueining"
                         },
                         "picture": {
                             "name": "Mynd"
@@ -2148,6 +2300,7 @@
                     "working": "Vinsamlegast bíðið"
                 },
                 "initializing": "Frumstilli",
+                "logging_in_to_with": "Skrái þig inn á **{locationName}** með **{authProviderName}**.",
                 "logging_in_with": "Skrái inn með ** {authProviderName} **.",
                 "pick_auth_provider": "Eða skráðu þig inn með"
             },
@@ -2231,11 +2384,12 @@
                     "confirm_new_password": "Staðfesta nýtt lykilorð",
                     "current_password": "Núverandi lykilorð",
                     "error_new_is_old": "Nýja lykilorðið verður að vera annað en núverandi lykilorð",
+                    "error_new_mismatch": "Innslegin lykilorð eru ekki eins",
                     "error_required": "Skilyrt",
                     "header": "Breyta lykilorði",
                     "new_password": "Nýtt lykilorð",
                     "submit": "Senda",
-                    "success": "Lykilorðið breytt"
+                    "success": "Lykilorði breytt"
                 },
                 "current_user": "Þú ert skráð(ur) inn sem {fullName}.",
                 "customize_sidebar": {
