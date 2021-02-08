@@ -22,7 +22,11 @@ import {
   fetchHassioSnapshotInfo,
   HassioSnapshotDetail,
 } from "../../../../src/data/hassio/snapshot";
-import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../src/dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../../../../src/polymer-types";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -75,6 +79,8 @@ interface FolderItem {
 class HassioSnapshotDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor?: Supervisor;
+
   @internalProperty() private _error?: string;
 
   @internalProperty() private _onboarding = false;
@@ -102,6 +108,7 @@ class HassioSnapshotDialog extends LitElement {
 
     this._dialogParams = params;
     this._onboarding = params.onboarding ?? false;
+    this.supervisor = params.supervisor;
   }
 
   protected render(): TemplateResult {
@@ -299,6 +306,16 @@ class HassioSnapshotDialog extends LitElement {
 
   private async _partialRestoreClicked() {
     if (
+      this.supervisor !== undefined &&
+      this.supervisor.info.state !== "running"
+    ) {
+      await showAlertDialog(this, {
+        title: "Could not restore snapshot",
+        text: `Restoring a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
+      });
+      return;
+    }
+    if (
       !(await showConfirmationDialog(this, {
         title: "Are you sure you want partially to restore this snapshot?",
         confirmText: "restore",
@@ -359,6 +376,16 @@ class HassioSnapshotDialog extends LitElement {
   }
 
   private async _fullRestoreClicked() {
+    if (
+      this.supervisor !== undefined &&
+      this.supervisor.info.state !== "running"
+    ) {
+      await showAlertDialog(this, {
+        title: "Could not restore snapshot",
+        text: `Restoring a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
+      });
+      return;
+    }
     if (
       !(await showConfirmationDialog(this, {
         title:
