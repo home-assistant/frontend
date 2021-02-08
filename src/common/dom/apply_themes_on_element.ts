@@ -88,9 +88,9 @@ export const applyThemesOnElement = (
       themeRules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
       themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
       themeRules["text-primary-color"] =
-        rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+        rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 7 ? "#fff" : "#212121";
       themeRules["text-light-primary-color"] =
-        rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6
+        rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 7
           ? "#fff"
           : "#212121";
       themeRules["state-icon-color"] = themeRules["dark-primary-color"];
@@ -100,7 +100,7 @@ export const applyThemesOnElement = (
       themeRules["accent-color"] = accentColor;
       const rgbAccentColor = hex2rgb(accentColor);
       themeRules["text-accent-color"] =
-        rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+        rgbContrast(rgbAccentColor, [33, 33, 33]) < 7 ? "#fff" : "#212121";
     }
   }
 
