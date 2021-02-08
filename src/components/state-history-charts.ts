@@ -87,7 +87,7 @@ class StateHistoryCharts extends LitElement {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
-      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.has("isLoadingData") ||
       changedProps.has("historyData")
     );
   }
