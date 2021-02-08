@@ -70,9 +70,13 @@ class HassErrorScreen extends LitElement {
           color: var(--primary-text-color);
           height: calc(100% - var(--header-height));
           display: flex;
+          padding: 16px;
           align-items: center;
           justify-content: center;
           flex-direction: column;
+        }
+        a {
+          color: var(--primary-color);
         }
       `,
     ];
