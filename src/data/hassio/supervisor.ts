@@ -49,6 +49,15 @@ export type HassioInfo = {
   hostname: string;
   logging: string;
   machine: string;
+  state:
+    | "initialize"
+    | "setup"
+    | "startup"
+    | "running"
+    | "freeze"
+    | "shutdown"
+    | "stopping"
+    | "close";
   operating_system: string;
   supervisor: string;
   supported: boolean;
