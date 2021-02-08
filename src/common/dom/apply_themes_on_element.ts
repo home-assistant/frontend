@@ -40,13 +40,21 @@ export const applyThemesOnElement = (
     if (themeSettings.dark) {
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
-      if (themeSettings.primaryColor) {
-        themeRules["app-header-background-color"] = hexBlend(
-          themeSettings.primaryColor,
-          "#121212",
-          8
-        );
+
+      let blendColor;
+      if (selectedTheme === "default") {
+        blendColor = themeSettings.primaryColor;
+      } else if (selectedTheme && themes.themes[selectedTheme].dark_styles) {
+        blendColor =
+          themes.themes[selectedTheme].dark_styles!["primary-color"] ||
+          darkStyles["primary-color"];
       }
+
+      themeRules["app-header-background-color"] = hexBlend(
+        blendColor,
+        "#121212",
+        8
+      );
     }
 
     if (selectedTheme === "default") {
@@ -55,13 +63,13 @@ export const applyThemesOnElement = (
         const rgbPrimaryColor = hex2rgb(themeSettings.primaryColor);
         const labPrimaryColor = rgb2lab(rgbPrimaryColor);
         themeRules["primary-color"] = themeSettings.primaryColor;
-        const rgbLigthPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
-        themeRules["light-primary-color"] = rgb2hex(rgbLigthPrimaryColor);
+        const rgbLightPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
+        themeRules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
         themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
         themeRules["text-primary-color"] =
           rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
         themeRules["text-light-primary-color"] =
-          rgbContrast(rgbLigthPrimaryColor, [33, 33, 33]) < 6
+          rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6
             ? "#fff"
             : "#212121";
         themeRules["state-icon-color"] = themeRules["dark-primary-color"];
@@ -77,21 +85,21 @@ export const applyThemesOnElement = (
   }
 
   if (selectedTheme && themes.themes[selectedTheme]) {
-    // If dark is requested, check if the theme actually provides "dark_styles" to use
+    // If dark is requested, check if the theme actually provides dark styles to use
     if (
       themeSettings &&
       themeSettings.dark &&
       themes.themes[selectedTheme].dark_styles
     )
       themeRules = {
-        ...themes.themes[selectedTheme].dark_styles,
         ...themeRules,
+        ...themes.themes[selectedTheme].dark_styles,
       };
     else {
-      // Check if the theme provides "styles" (= new theme scheme), otherwise fallback to old scheme
+      // Check if the theme provides styles (= new theme scheme), otherwise fallback to old scheme
       const rules =
         themes.themes[selectedTheme].styles || themes.themes[selectedTheme];
-      themeRules = { ...rules, ...themeRules };
+      themeRules = { ...themeRules, ...rules };
     }
   }
 
