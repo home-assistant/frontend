@@ -401,6 +401,7 @@
                 "direction": "Direction",
                 "forward": "En avant",
                 "oscillate": "Osciller",
+                "preset_mode": "Mode préréglé",
                 "reverse": "Sens inverse",
                 "speed": "Vitesse"
             },
@@ -609,9 +610,9 @@
                     "set": "s'est couché",
                     "turned_off": "éteint",
                     "turned_on": "activé",
-                    "was_at_home": "Présent",
-                    "was_at_state": "était à {state}",
-                    "was_away": "Absent",
+                    "was_at_home": "a été détecté à la maison",
+                    "was_at_state": "a été détecté à {state}",
+                    "was_away": "a été détecté absent",
                     "was_closed": "était fermé",
                     "was_connected": "était connecté",
                     "was_disconnected": "était déconnecté",
@@ -755,6 +756,7 @@
                 "dismiss": "Ignorer",
                 "editor": {
                     "advanced": "Paramètres avancés",
+                    "area": "Définir la zone d'entité uniquement",
                     "area_note": "Par défaut, les entités d'un appareil se trouvent dans la même zone que l'appareil. Si vous modifiez la zone de cette entité, elle ne suivra plus la zone de l'appareil.",
                     "change_device_area": "Modifier la zone de l'appareil",
                     "confirm_delete": "Voulez-vous vraiment supprimer cette entrée ?",
@@ -1142,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Code",
                                         "message": "Message",
+                                        "position": "Position",
                                         "title": "Titre"
                                     },
                                     "label": "Appareil"
@@ -1536,7 +1539,9 @@
                             "dialog": {
                                 "example_message": "Bonjour {name}, vous pouvez lire n’importe quel texte sur n’importe quel lecteur multimédia pris en charge !",
                                 "header": "Essayez la synthèse vocale",
-                                "play": "Lecture"
+                                "play": "Lecture",
+                                "target": "Cible",
+                                "target_browser": "Navigateur"
                             },
                             "female": "Femme",
                             "info": "Donnez de la personnalité à votre maison en lui faisant parler en utilisant nos services de synthèse vocale. Vous pouvez l'utiliser dans des automatismes et des scripts en utilisant le service {service}.",
@@ -2664,6 +2669,7 @@
                     "add_node": {
                         "cancel_inclusion": "Annuler l'inclusion",
                         "controller_in_inclusion_mode": "Votre contrôleur Z-Wave est maintenant en mode inclusion.",
+                        "follow_device_instructions": "Suivez les instructions fournies avec votre appareil pour déclencher l'appairage sur l'appareil.",
                         "inclusion_failed": "Le nœud n'a pas pu être ajouté. Veuillez consulter les journaux pour plus d'informations.",
                         "inclusion_finished": "Le nœud a été ajouté. Quelques minutes peuvent s'écouler avant que toutes les entités n'apparaissent, alors que nous terminons la mise en place du nœud en arrière-plan.",
                         "introduction": "Cet assistant vous guidera dans l'ajout d'un nœud à votre réseau Z-Wave.",
@@ -2687,7 +2693,9 @@
                         "driver_version": "Version du pilote",
                         "dump_dead_nodes_text": "Certains de vos nœuds n'ont pas répondu et sont supposés morts. Ils ne seront pas entièrement exportés.",
                         "dump_dead_nodes_title": "Certains de vos nœuds sont morts",
+                        "dump_debug": "Téléchargez un vidage de votre réseau pour aider à diagnostiquer les problèmes",
                         "dump_not_ready_confirm": "Télécharger",
+                        "dump_not_ready_text": "Si vous créez une exportation alors que tous les nœuds ne sont pas prêts, vous risquez de manquer les données nécessaires. Donnez à votre réseau le temps d'interroger tous les nœuds. Voulez-vous continuer le vidage?",
                         "dump_not_ready_title": "Tous les nœuds ne sont pas encore prêts",
                         "header": "Gérez votre réseau Z-Wave",
                         "home_id": "ID de la maison",
@@ -2719,7 +2727,9 @@
                     "remove_node": {
                         "cancel_exclusion": "Annuler l'exclusion",
                         "controller_in_exclusion_mode": "Votre contrôleur Z-Wave est maintenant en mode exclusion.",
+                        "exclusion_failed": "Le nœud n'a pas pu être supprimé. Veuillez consulter les journaux pour plus d'informations.",
                         "exclusion_finished": "Le nœud {id} a été supprimé de votre réseau Z-Wave.",
+                        "follow_device_instructions": "Suivez les instructions fournies avec votre appareil pour déclencher une exclusion sur l'appareil.",
                         "introduction": "Supprimez un nœud de votre réseau Z-Wave et supprimez l’appareil et les entités associés de Home Assistant.",
                         "start_exclusion": "Commencer l'exclusion",
                         "title": "Supprimer un nœud Z-Wave"
@@ -2927,6 +2937,8 @@
                     "action_confirmation": "Voulez-vous vraiment exécuter l'action \" {action} \"?",
                     "actions": {
                         "action_confirmation": "Voulez-vous vraiment exécuter l'action \" {action} \"?",
+                        "no_entity_more_info": "Aucune entité fournie pour plus d'informations",
+                        "no_entity_toggle": "Aucune entité fournie pour basculer",
                         "no_navigation_path": "Aucun chemin de navigation spécifié",
                         "no_service": "Aucun service d'exécution spécifié",
                         "no_url": "Aucune URL à ouvrir spécifiée"

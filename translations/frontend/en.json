@@ -3101,7 +3101,7 @@
                             "icon_height": "Icon Height",
                             "image": "Image Path",
                             "manual": "Manual",
-                            "manual_description": "Need to add a custom card or just want to manually write the yaml?",
+                            "manual_description": "Need to add a custom card or just want to manually write the YAML?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",

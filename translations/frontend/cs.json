@@ -2692,7 +2692,7 @@
                     "dashboard": {
                         "driver_version": "Verze ovladače",
                         "dump_dead_nodes_text": "Některé uzly neodpověděly a předpokládá se, že jsou mrtvé. Ty nebudou plně exportovány.",
-                        "dump_dead_nodes_title": "Některé uzly jsou mrtvé.",
+                        "dump_dead_nodes_title": "Některé uzly jsou mrtvé",
                         "dump_debug": "Stáhněte si výpis své sítě a pomozte diagnostikovat problémy",
                         "dump_not_ready_confirm": "Stáhnout",
                         "dump_not_ready_text": "Pokud vytvoříte export, zatímco ne všechny uzly jsou připraveny, mohla by vám chybět potřebná data. Dejte své síti nějaký čas na dotazování všech uzlů. Chcete pokračovat s výpisem?",
