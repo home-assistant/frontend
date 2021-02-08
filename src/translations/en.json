@@ -804,6 +804,11 @@
       "done": "Done"
     },
     "panel": {
+      "my": {
+        "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
+        "faq_link": "My Home Assistant FAQ",
+        "error": "An unknown error occured"
+      },
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
@@ -2000,6 +2005,7 @@
           "attention": "Attention required",
           "configured": "Configured",
           "new": "Set up a new integration",
+          "confirm_new": "Do you want to set up {integration}?",
           "add_integration": "Add integration",
           "no_integrations": "Seems like you don't have any integations configured yet. Click on the button below to add your first integration!",
           "note_about_integrations": "Not all integrations can be configured via the UI yet.",

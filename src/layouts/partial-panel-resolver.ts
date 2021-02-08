@@ -29,6 +29,7 @@ const COMPONENTS = {
   logbook: () => import("../panels/logbook/ha-panel-logbook"),
   mailbox: () => import("../panels/mailbox/ha-panel-mailbox"),
   map: () => import("../panels/map/ha-panel-map"),
+  my: () => import("../panels/my/ha-panel-my"),
   profile: () => import("../panels/profile/ha-panel-profile"),
   "shopping-list": () =>
     import("../panels/shopping-list/ha-panel-shopping-list"),
