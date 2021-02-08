@@ -202,10 +202,7 @@ class HassioAddonConfig extends LitElement {
 
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, {
-        options:
-          !this._yamlMode && this._canShowSchema && this.addon.schema
-            ? this._options!
-            : this._editor?.value,
+        options: this._yamlMode ? this._editor?.value : this._options,
       });
 
       this._configHasChanged = false;
