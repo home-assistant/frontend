@@ -13,7 +13,6 @@ import {
   extractSearchParamsObject,
 } from "../../common/url/search-params";
 import "../../layouts/hass-error-screen";
-import "../../layouts/hass-loading-screen";
 
 const REDIRECTS = {
   info: {
@@ -43,7 +42,7 @@ type ParamType = "url" | "string";
 
 interface Redirect {
   redirect: string;
-  params: {
+  params?: {
     [key: string]: ParamType;
   };
 }
@@ -51,8 +50,6 @@ interface Redirect {
 @customElement("ha-panel-my")
 class HaPanelMy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property() public narrow!: boolean;
 
   @property() public route!: Route;
 
@@ -81,7 +78,7 @@ class HaPanelMy extends LitElement {
     try {
       url = this._createRedirectUrl(redirect);
     } catch (err) {
-      this._error = err.message;
+      this._error = this.hass.localize("ui.panel.my.error");
       return;
     }
 
@@ -90,11 +87,11 @@ class HaPanelMy extends LitElement {
 
   protected render() {
     if (this._error) {
-      return html`<hass-error-screen .error=${this._error}>
-      </hass-error-screen>`;
+      return html`<hass-error-screen
+        .error=${this._error}
+      ></hass-error-screen>`;
     }
-
-    return html`<hass-loading-screen></hass-loading-screen>`;
+    return html``;
   }
 
   private _createRedirectUrl(redirect: Redirect): string {
@@ -107,15 +104,14 @@ class HaPanelMy extends LitElement {
     if (!redirect.params && !Object.keys(params).length) {
       return "";
     }
-    if (Object.keys(redirect.params).length !== Object.keys(params).length) {
-      throw Error("Wrong parameters");
-    }
-    Object.entries(redirect.params).forEach(([key, type]) => {
+    const resultParams = {};
+    Object.entries(redirect.params || {}).forEach(([key, type]) => {
       if (!params[key] || !this._checkParamType(type, params[key])) {
-        throw Error("Wrong parameters");
+        throw Error();
       }
+      resultParams[key] = params[key];
     });
-    return `?${createSearchParam(params)}`;
+    return `?${createSearchParam(resultParams)}`;
   }
 
   private _checkParamType(type: ParamType, value: string) {

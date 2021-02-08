@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
@@ -161,6 +162,7 @@ class HaBlueprintOverview extends LitElement {
     super.firstUpdated(changedProps);
     if (this.route.path === "/import") {
       const url = extractSearchParam("blueprint_url");
+      navigate(this, "/config/blueprint/dashboard", true);
       if (url) {
         this._addBlueprint(url);
       }

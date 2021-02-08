@@ -18,6 +18,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import "../../../common/search/search-input";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -223,10 +224,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
     this._loadConfigEntries();
-    this.hass.loadBackendTranslation("title", undefined, true);
+    const localizePromise = this.hass.loadBackendTranslation(
+      "title",
+      undefined,
+      true
+    );
     this._fetchManifests();
     if (this.route.path === "/add") {
-      this._handleAdd();
+      this._handleAdd(localizePromise);
     }
   }
 
@@ -656,17 +661,19 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _handleAdd() {
+  private async _handleAdd(localizePromise: Promise<LocalizeFunc>) {
     const domain = extractSearchParam("domain");
+    navigate(this, "/config/integrations", true);
     if (!domain) {
       return;
     }
+    const localize = await localizePromise;
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize(
+        title: localize(
           "ui.panel.config.integrations.confirm_new",
           "integration",
-          domainToName(this.hass.localize, domain)
+          domainToName(localize, domain)
         ),
       }))
     ) {
