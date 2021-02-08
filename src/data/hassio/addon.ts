@@ -1,4 +1,6 @@
+import { HaFormSchema } from "../../components/ha-form/ha-form";
 import { HomeAssistant } from "../../types";
+import { SupervisorArch } from "../supervisor/supervisor";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export interface HassioAddonInfo {
@@ -23,7 +25,7 @@ export interface HassioAddonInfo {
 
 export interface HassioAddonDetails extends HassioAddonInfo {
   apparmor: "disable" | "default" | "profile";
-  arch: "armhf" | "aarch64" | "i386" | "amd64";
+  arch: SupervisorArch[];
   audio_input: null | string;
   audio_output: null | string;
   audio: boolean;
@@ -41,6 +43,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   gpio: boolean;
   hassio_api: boolean;
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
+  hostname: string;
   homeassistant_api: boolean;
   homeassistant: string;
   host_dbus: boolean;
@@ -61,7 +64,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   privileged: any;
   protected: boolean;
   rating: "1-6";
-  schema: Record<string, any>;
+  schema: HaFormSchema[] | null;
   services_role: string[];
   slug: string;
   startup: "initialize" | "system" | "services" | "application" | "once";

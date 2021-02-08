@@ -401,6 +401,7 @@
                 "direction": "Direcció",
                 "forward": "Endavant",
                 "oscillate": "Oscil·lació",
+                "preset_mode": "Mode predefinit",
                 "reverse": "Invers",
                 "speed": "Velocitat"
             },
@@ -557,6 +558,10 @@
                 "remove_user": "Elimina usuari",
                 "select_blueprint": "Selecciona un blueprint"
             },
+            "calendar": {
+                "my_calendars": "Calendaris",
+                "today": "Avui"
+            },
             "data-table": {
                 "no-data": "No hi ha dades",
                 "search": "Cerca"
@@ -588,8 +593,9 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integració d'històric desactivada",
                 "loading_history": "Carregant historial d'estats...",
-                "no_history_found": "No s'ha trobat cap historial d'estats."
+                "no_history_found": "No s'ha trobat cap històric d'estats."
             },
             "logbook": {
                 "by": "per",
@@ -746,8 +752,13 @@
             },
             "entity_registry": {
                 "control": "Control",
+                "customize_link": "personalitzacions d'entitat",
                 "dismiss": "Omet",
                 "editor": {
+                    "advanced": "Configuració avançada",
+                    "area": "Defineix només l'àrea de l'entitat",
+                    "area_note": "De manera predeterminada, les entitats d'un dispositiu es troben a la mateixa àrea que el dispositiu. Si canvies l'àrea d'aquesta entitat, deixarà de seguir la del dispositiu.",
+                    "change_device_area": "Canvia l'àrea del dispositiu",
                     "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
                     "delete": "Elimina",
                     "device_disabled": "El dispositiu d'aquesta entitat està desactivat.",
@@ -757,6 +768,7 @@
                     "enabled_label": "Activa l'entitat",
                     "enabled_restart_confirm": "Reinicia Home Assistant per acabar d'activar les entitats",
                     "entity_id": "ID de l'entitat",
+                    "follow_device_area": "Segueix l'àrea del dispositiu",
                     "icon": "Icona",
                     "icon_error": "Els icones han de tenir el format 'prefix:nom_icona', per exemple: 'mdi:home'",
                     "name": "Nom",
@@ -766,6 +778,7 @@
                     "update": "Actualitza"
                 },
                 "faq": "documentació",
+                "info_customize": "Pots sobreescriure alguns atributs a la secció {customize_link}.",
                 "no_unique_id": "Aquesta entitat (\"{entity_id}\") no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari. Consulta les {faq_link} per a més detalls.",
                 "related": "Relacionat",
                 "settings": "Configuració"
@@ -1009,6 +1022,18 @@
             "second": "{count} {count, plural,\none {segon}\nother {segons}\n}",
             "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Encara pots editar la configuració a YAML.",
+                "editor_not_available": "L'eeditor visual no està disponible per al tipus \"{type}\".",
+                "editor_not_supported": "L'editor visual no és compatible amb aquesta configuració",
+                "error_detected": "S'han detectat errors de configuració",
+                "key_missing": "Falta la clau obligatòria \"{key}\".",
+                "key_not_expected": "No s'està esperant la clau \"{key}\" o no és compatible amb l'editor visual.",
+                "key_wrong_type": "L'editor visual no admet el valor proporcionat de \"{key}\". ({type_correct}) és compatible, però s'ha rebut ({type_wrong}).",
+                "no_type_provided": "No s'ha proporcionat cap tipus."
+            }
+        },
         "login-form": {
             "log_in": "Iniciar sessió",
             "password": "Contrasenya",
@@ -1119,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Codi",
                                         "message": "Missatge",
+                                        "position": "Posició",
                                         "title": "Títol"
                                     },
                                     "label": "Dispositiu"
@@ -1510,10 +1536,18 @@
                         "thank_you_note": "Gràcies per formar part de Home Assistant Cloud. És gràcies a persones com tu que podem oferir una experiència domòtica excel·lent per a tothom.",
                         "tts": {
                             "default_language": "Idioma predeterminat a utilitzar",
+                            "dialog": {
+                                "example_message": "Hola {name}, pots reproduir qualsevol text en els reproductor multimèdia compatibles!",
+                                "header": "Prova el text a veu",
+                                "play": "Reprodueix",
+                                "target": "Objectiu",
+                                "target_browser": "Navegador"
+                            },
                             "female": "Dona",
                             "info": "Afegeix personalitat a casa teva a mitjançant l'ús dels nostres serveis de text a veu. Pots utilitzar-los en automatitzacions i scripts a través del servei {service}.",
                             "male": "Home",
-                            "title": "Text a veu"
+                            "title": "Text a veu",
+                            "try": "Prova-ho"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "No s'ha pogut desactivar el webhook:",
@@ -2657,14 +2691,21 @@
                     },
                     "dashboard": {
                         "driver_version": "Versió del controlador",
+                        "dump_dead_nodes_text": "Alguns dels nodes no han respost i s'han donat com a morts. Aquests no s'exportaran completament.",
+                        "dump_dead_nodes_title": "Alguns dels teus nodes estan morts",
+                        "dump_debug": "Baixa un fitxer de buidatge de la xarxa per ajudar-te a diagnosticar problemes",
+                        "dump_not_ready_confirm": "Baixa",
+                        "dump_not_ready_text": "Si fas una exportació mentre tots els nodes no estan preparats, pots perdre dades útils. Deixa més temps perque la xarxa consulti tots els nodes. Vols seguir amb el procés?",
+                        "dump_not_ready_title": "Encara no tots els nodes estan preparats",
                         "header": "Gestiona la teva xarxa Z-Wave",
                         "home_id": "ID principal",
                         "introduction": "Gestiona la teva xarxa i nodes Z-Wave",
                         "node_count": "Recompte de nodes",
+                        "nodes_ready": "Nodes preparats",
                         "server_version": "Versió del servidor"
                     },
                     "device_info": {
-                        "node_ready": "Node llest",
+                        "node_ready": "Node preparat",
                         "node_status": "Estat del node",
                         "zwave_info": "Informació Z-Wave"
                     },
@@ -2706,6 +2747,12 @@
                     },
                     "description": "Gestiona la teva xarxa Z-Wave",
                     "learn_more": "Més informació sobre Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migra a OpenZWave",
+                            "introduction": "Aquest assistent t'ajudarà a fer la migració des de la integració Z-Wave estàndard a la integració d'OpenZWave, actualment en versió beta."
+                        }
+                    },
                     "network_management": {
                         "header": "Gestió de la xarxa Z-Wave",
                         "introduction": "Executa ordres a la xarxa Z-Wave. No es rebrà cap resposta si la majoria de les ordres han tingut èxit, però pots consultar el registre OZW."
@@ -3250,6 +3297,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Gestiona els panells",
+                        "manage_resources": "Gestiona els recursos",
                         "open": "Obre el menú de Lovelace",
                         "raw_editor": "Editor de codi"
                     },

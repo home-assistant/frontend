@@ -598,9 +598,9 @@
                     "set": "setați",
                     "turned_off": "oprit",
                     "turned_on": "pornit",
-                    "was_at_home": "era acasă",
-                    "was_at_state": "a fost în {state}",
-                    "was_away": "a fost plecat",
+                    "was_at_home": "a fost detectat acasă",
+                    "was_at_state": "a fost detectat la {state}",
+                    "was_away": "a fost detectat plecat",
                     "was_closed": "a fost închis",
                     "was_connected": "a fost conectat",
                     "was_disconnected": "a fost deconectat",
@@ -734,6 +734,8 @@
                 "control": "Control",
                 "dismiss": "Renunțați",
                 "editor": {
+                    "advanced": "Setari avansate",
+                    "change_device_area": "Schimbați zona dispozitivului",
                     "confirm_delete": "Sigur doriți să ștergeți această intrare?",
                     "delete": "Ștergeți",
                     "device_disabled": "Dispozitivul acestei entități este dezactivat.",
@@ -743,6 +745,7 @@
                     "enabled_label": "Activați entitatea",
                     "enabled_restart_confirm": "Reporniți Home Assistant pentru a finaliza activarea entităților",
                     "entity_id": "ID-ul entității",
+                    "follow_device_area": "Urmați zona dispozitivului",
                     "icon": "Pictogramă",
                     "icon_error": "Pictogramele trebuie să fie în formatul 'prefix:iconname', de ex. 'mdi:home'",
                     "name": "Nume",
@@ -964,6 +967,18 @@
             "second": "{count} {count, plural,\n  one {secundă}\n  other {secunde}\n}",
             "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Puteți edita în continuare configurația în YAML.",
+                "editor_not_available": "Nu există editor vizual disponibil pentru tipul „ {type} ”.",
+                "editor_not_supported": "Editorul vizual nu este acceptat pentru această configurație",
+                "error_detected": "Au fost detectate erori de configurare",
+                "key_missing": "Cheia necesară \"{key}\" lipsește.",
+                "key_not_expected": "Cheia \"{key}\" nu este așteptată sau nu este acceptată de editorul vizual.",
+                "key_wrong_type": "Valoarea furnizată pentru \"{key}\" nu este acceptată de editorul de editare vizuală. Acceptăm ({type_correct}), dar am primit ({type_wrong}).",
+                "no_type_provided": "Niciun tip furnizat."
+            }
+        },
         "login-form": {
             "log_in": "Autentificare",
             "password": "Parolă",
@@ -1072,7 +1087,9 @@
                                 "device_id": {
                                     "action": "Acțiune",
                                     "extra_fields": {
-                                        "code": "Cod"
+                                        "code": "Cod",
+                                        "message": "Mesaj",
+                                        "title": "Titlu"
                                     },
                                     "label": "Dispozitiv"
                                 },
@@ -1245,7 +1262,8 @@
                                     "extra_fields": {
                                         "above": "Deasupra",
                                         "below": "Sub",
-                                        "for": "Durată"
+                                        "for": "Durată",
+                                        "zone": "Zonă"
                                     },
                                     "label": "Dispozitiv",
                                     "trigger": "Declanșator"
@@ -1412,7 +1430,7 @@
                             "info_state_reporting": "Dacă activați raportarea stării, Home Assistant va trimite toate modificările de stare ale entităților expuse către Amazon. Acest lucru vă permite să vedeți întotdeauna cele mai recente stări în aplicația Alexa și să utilizați modificările de stare pentru a crea rutine.",
                             "manage_entities": "Gestionați entități",
                             "state_reporting_error": "Imposibil de {enable_disable} stare raport.",
-                            "sync_entities": "Sincronizează entități",
+                            "sync_entities": "Sincronizați entitățile cu Amazon",
                             "sync_entities_error": "Sincronizarea entităților nu a reușit:",
                             "title": "Alexa"
                         },
@@ -1450,6 +1468,21 @@
                         },
                         "sign_out": "Deconectare",
                         "thank_you_note": "Vă mulțumim că faceți parte din Home Assistant Cloud. Datorită oamenilor ca dvs. suntem capabili să facem o experiență excelentă de automatizare a locuinței pentru toată lumea. Mulțumim!",
+                        "tts": {
+                            "default_language": "Limba implicită de utilizat",
+                            "dialog": {
+                                "example_message": "Bună ziua {name}, puteți reda orice text pe orice player media acceptat!",
+                                "header": "Încercați text în vorbire",
+                                "play": "Redare",
+                                "target": "Ţintă",
+                                "target_browser": "Browser"
+                            },
+                            "female": "Femeie",
+                            "info": "Aduceți personalitate acasă, făcându-i să vă vorbească folosind serviciile noastre Text-to-Speech. Puteți utiliza acest lucru în automatizări și scripturi utilizând serviciul {service} .",
+                            "male": "Bărbat",
+                            "title": "Text în vorbire",
+                            "try": "Încercaţi"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Nu putut fi dezactivat webhook-ul:",
                             "info": "Orice lucru care este configurat pentru a fi declanșat de un webhook poate primi o adresă URL accesibilă publicului pentru a vă permite să trimiteți date înapoi la Home Assistant de oriunde, fără a vă expune instanța pe internet.",
@@ -1480,11 +1513,11 @@
                     "description_login": "Conectat ca {email}",
                     "description_not_login": "Nu v-ați conectat",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Data expirării certificatului",
+                        "certificate_expiration_date": "Data expirării certificatului:",
                         "certificate_information": "Informații despre certificat",
                         "close": "Închideți",
                         "fingerprint": "Amprenta certificatului:",
-                        "will_be_auto_renewed": "Va fi reînnoit automat"
+                        "will_be_auto_renewed": "va fi reînnoit automat"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Webhook-ul este disponibil la următoarea adresă URL:",
@@ -2267,7 +2300,7 @@
                             "mqtt": "Reîncărcați entitățile MQTT configurate manual",
                             "person": "Reîncărcați persoanele",
                             "reload": "Reîncarcă {domain}",
-                            "rest": "Reîncărcați entitățile în repaus și notificați serviciile",
+                            "rest": "Reîncărcați entitățile rest și serviciile de notificare rest",
                             "rpi_gpio": "Reîncărcați entitățile Raspberry Pi GPIO",
                             "scene": "Reîncărcați scenarii",
                             "script": "Reîncărcați script-uri",
@@ -2367,7 +2400,8 @@
                             "system": "Generat de sistem",
                             "username": "Nume de utilizator"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Funcția de grup de utilizatori este o lucrare în desfășurare. Utilizatorul nu va putea administra instanța prin interfața de utilizare. În continuare audităm toate punctele finale ale API-ului de gestionare pentru a ne asigura că limitează corect accesul la administratori."
                 },
                 "zha": {
                     "add_device": "Adăugați dispozitiv",
@@ -2517,6 +2551,57 @@
                     "introduction": "Zonele vă permit să specificați anumite regiuni de pe pământ. Când o persoană se află într-o zonă, identificatorul va lua numele din zonă. Zonele pot fi de asemenea utilizate ca declanșator sau condiție în cadrul setărilor de automatizare.",
                     "no_zones_created_yet": "Se pare că nu ai creat încă nici o zonă."
                 },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Anulați includerea",
+                        "controller_in_inclusion_mode": "Controlerul dvs. Z-Wave este acum în modul de includere.",
+                        "inclusion_failed": "Nodul nu a putut fi adăugat. Vă rugăm să verificați jurnalele pentru mai multe informații.",
+                        "introduction": "Acest expert vă va ghida prin adăugarea unui nod în rețeaua dvs. Z-Wave.",
+                        "secure_inclusion_warning": "Dispozitivele securizate necesită lățime de bandă suplimentară; prea multe dispozitive sigure vă pot încetini rețeaua Z-Wave. Vă recomandăm să folosiți o includere sigură numai pentru dispozitivele care necesită acest lucru, cum ar fi încuietori sau deschizători de uși de garaj.",
+                        "start_inclusion": "Pornire includere",
+                        "start_secure_inclusion": "Pornire includere securizată",
+                        "title": "Adăugați un nod Z-Wave",
+                        "use_secure_inclusion": "Folosiți includere sigură"
+                    },
+                    "button": "Configurează",
+                    "common": {
+                        "add_node": "Adăugați nod",
+                        "close": "Închide",
+                        "home_id": "ID domiciliu",
+                        "network": "Rețea",
+                        "node_id": "ID Nod",
+                        "remove_node": "Eliminați nodul"
+                    },
+                    "dashboard": {
+                        "driver_version": "Versiunea driverului",
+                        "dump_not_ready_confirm": "Descarca",
+                        "header": "Gestionați-vă rețeaua Z-Wave",
+                        "home_id": "ID domiciliu",
+                        "introduction": "Gestionați rețeaua Z-Wave și nodurile Z-Wave",
+                        "node_count": "Numărul de noduri",
+                        "server_version": "Versiunea serverului"
+                    },
+                    "device_info": {
+                        "node_ready": "Nod gata",
+                        "node_status": "Stare nod",
+                        "zwave_info": "Informații Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Rețea"
+                    },
+                    "network_status": {
+                        "connected": "Conectat",
+                        "connecting": "Se conectează la",
+                        "unknown": "Necunoscut"
+                    },
+                    "node_status": {
+                        "alive": "În viaţă",
+                        "asleep": "Adormit",
+                        "awake": "Treaz",
+                        "dead": "Inactiv",
+                        "unknown": "Necunoscut"
+                    }
+                },
                 "zwave": {
                     "button": "Configurează",
                     "caption": "Z-Wave",
@@ -2529,6 +2614,12 @@
                     },
                     "description": "Gestionați-vă rețeaua Z-Wave",
                     "learn_more": "Aflați mai multe despre Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrați la OpenZWave",
+                            "introduction": "Acest expert vă va ajuta să migrați de la integrarea Z-Wave moștenită la integrarea OpenZWave care este în prezent în versiune beta."
+                        }
+                    },
                     "network_management": {
                         "header": "Managementul rețelei Z-Wave",
                         "introduction": "Executați comenzi care afectează rețeaua Z-Wave. Nu veți primi feedback dacă majoritatea comenzilor au reușit, dar puteți verifica istoricul OZW pentru a încerca să aflați."
@@ -2765,6 +2856,7 @@
                             "name": "Panou alarmă"
                         },
                         "button": {
+                            "default_action_help": "Acțiunea implicită depinde de capacitățile entității, va fi fie comutată, fie va fi afișat dialogul cu mai multe informații.",
                             "description": "Cardul buton vă permite să adăugați butoane pentru a efectua sarcini.",
                             "name": "Buton"
                         },
@@ -2917,6 +3009,7 @@
                             "name": "Entitate imagine"
                         },
                         "picture-glance": {
+                            "description": "Cardul Picture Glance arată o imagine și stările de entitate corespunzătoare ca pictogramă. Entitățile din partea dreaptă permit comutarea acțiunilor, altele afișează dialogul cu mai multe informații.",
                             "name": "Privire imagine",
                             "state_entity": "Entitate de stare"
                         },
@@ -3029,6 +3122,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Gestionați tablourile de bord",
+                        "manage_resources": "Gestionați resursele",
                         "open": "Deschideți meniul Lovelace UI",
                         "raw_editor": "Editor de configurare brut"
                     },

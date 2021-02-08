@@ -557,6 +557,10 @@
                 "remove_user": "Fjern bruger",
                 "select_blueprint": "Vælg et Blueprint"
             },
+            "calendar": {
+                "my_calendars": "Mine kalendere",
+                "today": "I dag"
+            },
             "data-table": {
                 "no-data": "Ingen data",
                 "search": "Søg"
@@ -588,6 +592,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Historikintegration deaktiveret",
                 "loading_history": "Indlæser tilstandshistorik...",
                 "no_history_found": "Ingen tilstandshistorik fundet."
             },
@@ -605,7 +610,7 @@
                     "turned_off": "blev slukket",
                     "turned_on": "tændte",
                     "was_at_home": "var hjemme",
-                    "was_at_state": "var på {state}",
+                    "was_at_state": "blev registreret som {state}",
                     "was_away": "var væk",
                     "was_closed": "blev lukket",
                     "was_connected": "blev tilsluttet",
@@ -746,8 +751,13 @@
             },
             "entity_registry": {
                 "control": "Kontrol",
+                "customize_link": "entitetstilpasninger",
                 "dismiss": "Afvis",
                 "editor": {
+                    "advanced": "Avancerede indstillinger",
+                    "area": "Angiv entitetsomåde",
+                    "area_note": "Som standard er entiteterne på en enhed i samme område som enheden. Hvis du ændrer området for denne entitet, følger den ikke længere enhedens område.",
+                    "change_device_area": "Ændre enhedsområde",
                     "confirm_delete": "Er du sikker på, at du vil slette denne post?",
                     "delete": "Slet",
                     "device_disabled": "Denne entitets enheden er deaktiveret.",
@@ -757,16 +767,18 @@
                     "enabled_label": "Aktivér entitet",
                     "enabled_restart_confirm": "Genstart Home Assistant for at fuldføre aktiveringen af entiteterne",
                     "entity_id": "Entitets-id",
+                    "follow_device_area": "Følg enhedsområde",
                     "icon": "Brugerdefineret ikon",
                     "icon_error": "Ikoner skal være i formatet 'præfiks:ikonnavn', fx. 'mdi:home'",
                     "name": "Brugerdefineret navn",
-                    "note": "Bemærk: Dette virker muligvis ikke med alle integrationer endnu.",
+                    "note": "Bemærk: Alle integrationer virker muligvis ikke med endnu.",
                     "open_device_settings": "Åbn enhedsindstillinger",
                     "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
                     "update": "Opdater"
                 },
                 "faq": "dokumentation",
-                "no_unique_id": "Denne entitet har ikke et unikt id. Derfor kan dens indstillinger ikke styres fra brugerfladen.",
+                "info_customize": "Du kan overskrive nogle attributter i afsnittet {customize_link}.",
+                "no_unique_id": "Denne entitet (\" {entity_id} \") har ikke et unikt id, og dens indstillinger kan derfor ikke administreres fra brugergrænsefladen. Se {faq_link} for flere detaljer.",
                 "related": "Relaterede",
                 "settings": "Indstillinger"
             },
@@ -1009,6 +1021,18 @@
             "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
             "week": "{count} {count, plural,\none {uge}\nother {uger}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Du kan stadig redigere din konfiguration i YAML.",
+                "editor_not_available": "Ingen visuel editor tilgængelig for typen \" {type} \".",
+                "editor_not_supported": "Visuel editor understøttes ikke til denne konfiguration",
+                "error_detected": "Der blev fundet konfigurationsfejl",
+                "key_missing": "Påkrævede nøgle \"{key}\" mangler.",
+                "key_not_expected": "Nøglen \"{key}\" er ikke forventet eller understøttes ikke af den visuelle editor.",
+                "key_wrong_type": "Den angivne værdi for \" {key} \" understøttes ikke af den visuelle editor. Vi understøtter ( {type_correct} ) men modtog ( {type_wrong} ).",
+                "no_type_provided": "Der er ikke angivet nogen type."
+            }
+        },
         "login-form": {
             "log_in": "Log ind",
             "password": "Adgangskode",
@@ -1163,7 +1187,7 @@
                                     "wait_template": "Vente-skabelon"
                                 }
                             },
-                            "unsupported_action": "Ikke-understøttet handling: {action}"
+                            "unsupported_action": "Ingen UI-understøttelse af handling: {action}"
                         },
                         "alias": "Navn",
                         "blueprint": {
@@ -1248,7 +1272,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_condition": "Ikke-understøttet betingelse: {condition}"
+                            "unsupported_condition": "Ingen UI-understøttelse af betingelse: {condition}"
                         },
                         "copy_to_clipboard": "Kopier til udklipsholder",
                         "default_name": "Ny automatisering",
@@ -1376,7 +1400,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_platform": "Ikke understøttet platform: {platform}"
+                            "unsupported_platform": "Ingen UI-understøttelse af platform: {platform}"
                         },
                         "unsaved_confirm": "Du har ikke-gemte ændringer. Er du sikker på, at du vil forlade?"
                     },
@@ -1463,7 +1487,7 @@
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsændringer af eksponerede entiteter til Amazon. Dette giver dig mulighed for altid at se de seneste tilstande i Alexa-appen og bruge tilstandsændringer til at oprette rutiner.",
                             "manage_entities": "Administrer entiteter",
                             "state_reporting_error": "Kunne ikke {enable_disable} rapporteringstilstand.",
-                            "sync_entities": "Synkroniser entiteter",
+                            "sync_entities": "Synkroniser entiteter til Amazon",
                             "sync_entities_error": "Kunne ikke synkronisere entiteter:",
                             "title": "Alexa"
                         },
@@ -1504,6 +1528,14 @@
                         },
                         "sign_out": "Log ud",
                         "thank_you_note": "Tak for at du er en del af Home Assistant Cloud. Det er på grund af folk som dig, at vi er i stand til at skabe en god hjemmeautomatiseringsoplevelse for alle. Tak skal du have!",
+                        "tts": {
+                            "dialog": {
+                                "example_message": "Hej {name}, kan du afspille tekst på enhver understøttet medieafspiller!",
+                                "play": "Afspil",
+                                "target": "Modtager",
+                                "target_browser": "Gennemse"
+                            }
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Webhook kunne ikke deaktiveres:",
                             "info": "Alt, hvad der er konfigureret til at blive udløst af en webhook, kan gives en offentligt tilgængelig webadresse, så du kan sende data tilbage til Home Assistant hvor som helst, uden at eksponere din instans til internettet.",
@@ -1535,11 +1567,11 @@
                     "description_login": "Logget ind som {email}",
                     "description_not_login": "Ikke logget ind",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Udløbsdato for certifikat",
+                        "certificate_expiration_date": "Udløbsdato for certifikat:",
                         "certificate_information": "Certifikatoplysninger",
                         "close": "Luk",
                         "fingerprint": "Certifikat-fingeraftryk:",
-                        "will_be_auto_renewed": "Vil automatisk blive fornyet"
+                        "will_be_auto_renewed": "vil automatisk blive fornyet"
                     },
                     "dialog_cloudhook": {
                         "available_at": "Webhook er tilgængelig på følgende webadresse:",
@@ -1582,7 +1614,7 @@
                         "dismiss": "Afvis",
                         "email": "Email",
                         "email_error_msg": "Ugyldig email",
-                        "forgot_password": "glemt adgangskode?",
+                        "forgot_password": "Glemt adgangskode?",
                         "introduction": "Home Assistant Cloud giver dig en sikker fjernforbindelse til din instans, når du er væk fra hjemmet. Det giver dig også mulighed for at oprette forbindelse til cloud-tjenesterne: Amazon Alexa og Google Assistant.",
                         "introduction2": "Denne tjeneste drives af vores partner",
                         "introduction2a": ", et selskab grundlagt af grundlæggerne af Home Assistant og Hass.io.",
@@ -2260,7 +2292,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Administrer scripts",
+                    "description": "Udføre en sekvens af handlinger",
                     "editor": {
                         "alias": "Navn",
                         "default_name": "Nyt script",
@@ -2576,7 +2608,7 @@
                         "create": "Opret",
                         "delete": "Slet",
                         "icon": "Ikon",
-                        "icon_error_msg": "Ikonet skal være i formatet præfiks:ikonnavn, for eksempel: mdi:home",
+                        "icon_error_msg": "Ikonet skal være i formatet \"præfiks:ikonnavn\", for eksempel: \"mdi:home\"",
                         "latitude": "Breddegrad",
                         "longitude": "Længdegrad",
                         "name": "Navn",
@@ -2971,8 +3003,10 @@
                             "name": "Blik"
                         },
                         "grid": {
+                            "columns": "Kolonner",
                             "description": "Gitterkortet giver dig mulighed for at vise flere kort i et gitter.",
-                            "name": "Gitter"
+                            "name": "Gitter",
+                            "square": "Vis kort som kvadrater"
                         },
                         "history-graph": {
                             "description": "Historikgraf-kortet kan vise en graf for hver af de anførte entiteter.",
@@ -3140,6 +3174,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Administrer betjeningspaneler",
+                        "manage_resources": "Administrer ressourcer",
                         "open": "Åbn Lovelace-brugerflademenu",
                         "raw_editor": "Tekstbaseret redigering"
                     },
@@ -3345,6 +3381,7 @@
                     "working": "Vent venligst"
                 },
                 "initializing": "Initialiserer",
+                "logging_in_to_with": "Logger ind på ** {locationName} ** med ** {authProviderName} **.",
                 "logging_in_with": "Log ind med **{authProviderName}**.",
                 "pick_auth_provider": "Eller log ind med"
             },
