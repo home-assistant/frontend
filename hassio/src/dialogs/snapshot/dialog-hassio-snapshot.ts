@@ -311,7 +311,7 @@ class HassioSnapshotDialog extends LitElement {
     ) {
       await showAlertDialog(this, {
         title: "Could not restore snapshot",
-        text: `Restoring snapshots is disabled. System is not running (${this.supervisor.info.state})`,
+        text: `Restoring a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
       });
       return;
     }
@@ -382,7 +382,7 @@ class HassioSnapshotDialog extends LitElement {
     ) {
       await showAlertDialog(this, {
         title: "Could not restore snapshot",
-        text: `Restoring snapshots is disabled. System is not running (${this.supervisor.info.state})`,
+        text: `Restoring a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
       });
       return;
     }

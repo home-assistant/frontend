@@ -215,7 +215,7 @@ class HassioSnapshots extends LitElement {
                 <ha-progress-button
                   @click=${this._createSnapshot}
                   title="${this.supervisor.info.state !== "running"
-                    ? `Creating snapshots is disabled. System is not running (${this.supervisor.info.state})`
+                    ? `Creating a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`
                     : ""}"
                   .disabled=${this.supervisor.info.state !== "running"}
                 >
@@ -335,7 +335,7 @@ class HassioSnapshots extends LitElement {
     if (this.supervisor.info.state !== "running") {
       await showAlertDialog(this, {
         title: "Could not create snapshot",
-        text: `Creating snapshots is disabled. System is not running (${this.supervisor.info.state})`,
+        text: `Creating a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
       });
     }
     const button = ev.currentTarget as any;
