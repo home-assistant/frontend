@@ -1,0 +1,140 @@
+name: Report a bug with the UI, Frontend or Lovelace
+about: Report an issue related to the Home Assistant frontend.
+labels: bug
+title: ""
+issue_body: true
+inputs:
+  - type: description
+    attributes:
+      value: |
+        Make sure you are running the [latest version of Home Assistant][releases] before reporting an issue.
+
+        If you have a feature or enhancement request for the frontend, please [start an discussion][fr] instead of creating an issue.
+
+        **Please not not report issues for custom Lovelace cards.**
+
+        [fr]: https://github.com/home-assistant/frontend/discussions
+        [releases]: https://github.com/home-assistant/home-assistant/releases
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Please verify that you've followed these steps
+      choices:
+        - label: I have updated to the latest available Home Assistant version.
+          required: true
+        - label: I have cleared the cache of my browser.
+          required: true
+        - label: I have tried a different browser to see if it is related to my browser.
+          required: true
+  - type: description
+    attributes:
+      value: |
+        ## The problem
+  - type: textarea
+    attributes:
+      label: Describe the issue you are experiencing
+      required: true
+      description: Provide a clear and concise description of what the bug is.
+  - type: textarea
+    attributes:
+      label: Describe the behavior you expected
+      required: true
+      description: Describe what you expected to happen or it should look/behave.
+  - type: textarea
+    attributes:
+      label: Steps to reproduce the issue
+      required: true
+      description: |
+        Please tell us exactly how to reproduce your issue.
+        Provide clear and concise step by step instructions and add code snippets if needed.
+      value: |
+        1.
+        2.
+        3.
+        ...
+  - type: description
+    attributes:
+      value: |
+        ## Environment
+  - type: input
+    attributes:
+      label: What version of Home Assistant Core has the issue?
+      required: true
+      placeholder: core-
+      description: >
+        Can be found in the Configuration panel -> Info.
+  - type: input
+    attributes:
+      label: What was the last working version of Home Assistant Core?
+      required: false
+      placeholder: core-
+      description: >
+        If known, otherwise leave blank.
+  - type: input
+    attributes:
+      label: In which browser are you experiencing the issue with?
+      required: false
+      placeholder: Google Chrome 88.0.4324.150
+      description: >
+        Provide the full name and don't forget to add the version!
+  - type: input
+    attributes:
+      label: Which operating system are you using to run this browser?
+      required: false
+      placeholder: macOS Big Sur (1.11)
+      description: >
+        Don't forget to add the version!
+  - type: description
+    attributes:
+      value: |
+        # Details
+
+  - type: textarea
+    attributes:
+      label: State of relevant entities
+      required: false
+      description: >
+        If your issue is about how an entity is shown in the UI, please add the
+        state and attributes for all situations. You can find this information
+        at Developer Tools -> States.
+      value: |
+        ```yaml
+        # Paste your state here.
+
+        ```
+  - type: textarea
+    attributes:
+      label: Problem-relevant frontend configuration
+      required: false
+      description: >
+        An example configuration that caused the problem for you, e.g., the YAML
+        configuration of the used cards. Fill this out even if it seems
+        unimportant to you. Please be sure to remove personal information like
+        passwords, private URLs and other credentials.
+      value: |
+        ```yaml
+        # Paste your YAML here.
+
+        ```
+  - type: textarea
+    attributes:
+      label: Javascript errors shown in your browser console/inspector
+      description: >
+        If you come across any Javascript or other error logs, e.g., in your
+        browser console/inspector please provide them.
+      required: false
+      value: |
+        ```txt
+        # Paste your logs here.
+
+        ```
+  - type: description
+    attributes:
+      value: |
+        ## Additional information
+  - type: description
+    attributes:
+      value: |
+        If you have any additional information for us, use the field below.
+        Please note, you can attach screenshots or screen recordings here,
+        by dragging and dropping files in the field below.
