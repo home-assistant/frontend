@@ -33,9 +33,9 @@ class HassioAddonConfigDashboard extends LitElement {
 
     return html`
       <div class="content">
-        ${hasOptions || hasSchema || this.addon.network || this.addon.audio
+        ${(hasOptions && hasSchema) || this.addon.network || this.addon.audio
           ? html`
-              ${hasOptions || hasSchema
+              ${hasOptions && hasSchema
                 ? html`
                     <hassio-addon-config
                       .hass=${this.hass}
