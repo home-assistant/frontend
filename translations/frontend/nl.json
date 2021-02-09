@@ -1144,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Code",
                                         "message": "Bericht",
+                                        "position": "Positie",
                                         "title": "Titel"
                                     },
                                     "label": "Apparaat"
@@ -2677,6 +2678,7 @@
                     "common": {
                         "add_node": "Knooppunt toevoegen",
                         "close": "Sluiten",
+                        "home_id": "Home ID",
                         "network": "Netwerk",
                         "node_id": "Knooppunt-ID",
                         "remove_node": "Knooppunt verwijderen"
@@ -2689,6 +2691,7 @@
                         "dump_not_ready_text": "Als u een export maakt terwijl niet alle knooppunten gereed zijn, mist u mogelijk de benodigde gegevens. Geef uw netwerk wat tijd om alle knooppunten te doorzoeken. Wilt u doorgaan met de dump?",
                         "dump_not_ready_title": "Nog niet alle knooppunten zijn gereed",
                         "header": "Beheer je Z-Wave netwerk",
+                        "home_id": "Home ID",
                         "introduction": "Beheer uw Z-Wave netwerk en Z-Wave knooppunten",
                         "node_count": "Aantal knooppunten",
                         "nodes_ready": "Knooppunten gereed",
@@ -2715,9 +2718,11 @@
                         "unknown": "Onbekend"
                     },
                     "remove_node": {
+                        "cancel_exclusion": "Uitsluiting annuleren",
                         "exclusion_failed": "Het knooppunt kon niet worden verwijderd. Controleer de logboeken voor meer informatie.",
                         "exclusion_finished": "Knooppunt {id} is verwijderd uit het Z-Wave-netwerk.",
                         "introduction": "Verwijder een knooppunt uit uw Z-Wave-netwerk en verwijder het gekoppelde apparaat met bijbehorende entiteiten uit Home Assistant.",
+                        "start_exclusion": "Start uitsluiting",
                         "title": "Een Z-Wave Node verwijderen"
                     }
                 },

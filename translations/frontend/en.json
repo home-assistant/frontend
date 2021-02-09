@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Configure",
                     "configured": "Configured",
+                    "confirm_new": "Do you want to set up {integration}?",
                     "description": "Manage integrations with services, devices, ...",
                     "details": "Integration details",
                     "discovered": "Discovered",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "Delete this message?",
                 "empty": "You do not have any messages",
                 "playback_title": "Message playback"
+            },
+            "my": {
+                "error": "An unknown error occured",
+                "faq_link": "My Home Assistant FAQ",
+                "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
             },
             "page-authorize": {
                 "abort_intro": "Login aborted",

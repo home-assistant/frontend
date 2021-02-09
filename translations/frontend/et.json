@@ -3101,7 +3101,7 @@
                             "icon_height": "Ikooni kõrgus",
                             "image": "Pildi asukoht",
                             "manual": "Käsitsi",
-                            "manual_description": "Kas soovite lisada kohandatud kaarti või soovite muuta koodiredaktoris?",
+                            "manual_description": "Kas soovid lisada kohandatud kaarti või soovid ainult  muuta YAML-is?",
                             "maximum": "Maksimaalne",
                             "minimum": "Minimaalne",
                             "name": "Nimi",

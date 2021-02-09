@@ -3101,7 +3101,7 @@
                             "icon_height": "Výška ikony",
                             "image": "Cesta obrázku",
                             "manual": "Manuální",
-                            "manual_description": "Potřebujete přidat vlastní kartu nebo jen chcete ručně napsat yaml?",
+                            "manual_description": "Potřebujete přidat vlastní kartu nebo jen chcete ručně zapsat YAML?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Název",

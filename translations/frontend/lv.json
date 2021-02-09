@@ -942,6 +942,8 @@
                         "email_error_msg": "Nederīgs e-pasts"
                     },
                     "login": {
+                        "alert_email_confirm_necessary": "Pirms pieteikšanās jums jāapstiprina savs e-pasts.",
+                        "alert_password_change_required": "Pirms pieteikšanās jums ir jānomaina sava parole.",
                         "email_error_msg": "Nederīgs e-pasts"
                     },
                     "register": {
@@ -1837,10 +1839,11 @@
                 "playback_title": "Ziņu atskaņošana"
             },
             "page-authorize": {
-                "abort_intro": "Pieteikšanās priekšlaikus pārtraukta",
+                "abort_intro": "Pieteikšanās pārtraukta",
                 "authorizing_client": "Jūs gatavojaties piešķirt {clientId} piekļuvi jūsu Home Assistant.",
                 "form": {
-                    "next": "Nākamais",
+                    "error": "Kļūda: {error}",
+                    "next": "Tālāk",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -1914,6 +1917,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Jūsu dators nav atļauto sarakstā.",
                                 "not_whitelisted": "Jūsu dators nav iekļauts baltajā sarakstā."
                             },
                             "step": {
@@ -1926,12 +1930,14 @@
                             }
                         }
                     },
+                    "start_over": "Sākt no jauna",
                     "unknown_error": "Kaut kas nogāja greizi",
                     "working": "Lūdzu uzgaidiet"
                 },
                 "initializing": "Inicializēšana",
+                "logging_in_to_with": "Pieteikšanās **{locationName}**, izmantojot **{authProviderName}**.",
                 "logging_in_with": "Pieteikšanās ar **{authProviderName}**.",
-                "pick_auth_provider": "Vai pieteikties, izmantojot"
+                "pick_auth_provider": "Vai arī piesakaties, izmantojot"
             },
             "page-demo": {
                 "cards": {
@@ -1979,7 +1985,7 @@
             "page-onboarding": {
                 "core-config": {
                     "button_detect": "Noteikt",
-                    "finish": "Nākamais",
+                    "finish": "Tālāk",
                     "intro": "Sveiki {name}! Laipni lūdzam Home Assistant. Kā jūs vēlētos nosaukt savas mājas?",
                     "intro_location": "Mēs gribētu zināt, kur tu dzīvo. Šī informācija palīdzēs parādīt informāciju un iestatīt uz saules bāzes balstītas automātikas. Šie dati nekad netiek koplietoti ārpus jūsu tīkla.",
                     "intro_location_detect": "Mēs varam palīdzēt jums aizpildīt šo informāciju, iesniedzot vienreizēju pieprasījumu ārējam pakalpojumam.",
@@ -2031,6 +2037,10 @@
                     "description": "Izvēlēties noklusējuma infopaneli šai ierīcei",
                     "dropdown_label": "Infopanelis",
                     "header": "Infopanelis"
+                },
+                "enable_shortcuts": {
+                    "description": "Iespējojiet vai atspējojiet īsinājumtaustiņus dažādu darbību veikšanai lietotāja saskarnē.",
+                    "header": "Īsinājumtaustiņi"
                 },
                 "force_narrow": {
                     "description": "Sānjosla pēc noklusējuma tiks slēpta, līdzīgi kā mobilajās ierīcēs.",
