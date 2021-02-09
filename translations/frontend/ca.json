@@ -1537,7 +1537,7 @@
                         "tts": {
                             "default_language": "Idioma predeterminat a utilitzar",
                             "dialog": {
-                                "example_message": "Hola {name}, pots reproduir qualsevol text en els reproductor multimèdia compatibles!",
+                                "example_message": "Hola {name}, pots reproduir qualsevol text en els reproductors multimèdia compatibles!",
                                 "header": "Prova el text a veu",
                                 "play": "Reprodueix",
                                 "target": "Objectiu",
@@ -3101,7 +3101,7 @@
                             "icon_height": "Alçada de la icona",
                             "image": "Ruta de la imatge",
                             "manual": "Manual",
-                            "manual_description": "Vols afegir una targeta personalitzada o escriure el codi yaml manualment?",
+                            "manual_description": "Afegir una targeta personalitzada o escriure el codi YAML manualment?",
                             "maximum": "Màxim",
                             "minimum": "Mínim",
                             "name": "Nom",
