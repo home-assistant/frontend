@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Seadista",
                     "configured": "Seadistatud",
+                    "confirm_new": "Kas soovid seadistada sidumist {integration}?",
                     "description": "Halda teenuste, seadmete jne. sidumisi",
                     "details": "Sidumise üksikasjad",
                     "discovered": "Leitud",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "Kas kustutada sõnum?",
                 "empty": "Teile pole ühtegi sõnumit",
                 "playback_title": "Sõnumi taasesitus"
+            },
+            "my": {
+                "error": "Ilmnes tundmatu viga",
+                "faq_link": "Home Assistanti My sidumise KKK",
+                "not_supported": "Home Assistant ei toeta seda ümbersuunamist. Kontrolli kas {link} on toetatud ümbersuunamiseks ja nende kasutusele võetud HA versiooni."
             },
             "page-authorize": {
                 "abort_intro": "Sisselogimine katkestatud",
