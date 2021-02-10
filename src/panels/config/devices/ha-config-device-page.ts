@@ -160,6 +160,9 @@ export class HaConfigDevicePage extends LitElement {
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
+    const batteryIsBinary =
+      batteryState &&
+      (batteryState.state === "off" || batteryState.state === "on");
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
@@ -215,7 +218,7 @@ export class HaConfigDevicePage extends LitElement {
                     batteryState
                       ? html`
                           <div class="battery">
-                            ${batteryState.state}%
+                            ${batteryIsBinary ? "" : batteryState.state + "%"}
                             <ha-battery-icon
                               .hass=${this.hass!}
                               .batteryStateObj=${batteryState}

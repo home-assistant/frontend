@@ -302,6 +302,14 @@ export class HaConfigDeviceDashboard extends LitElement {
                   .batteryChargingStateObj=${batteryCharging}
                 ></ha-battery-icon>
               `
+            : battery && (battery.state === "on" || battery.state === "off")
+            ? html`
+                <ha-battery-icon
+                  .hass=${this.hass!}
+                  .batteryStateObj=${battery}
+                  .batteryChargingStateObj=${batteryCharging}
+                ></ha-battery-icon>
+              `
             : html` - `;
         },
       };
