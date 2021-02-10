@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurades",
+                    "confirm_new": "Vols configurar {integration}?",
                     "description": "Gestiona les integracions amb serveis, dispositius, ...",
                     "details": "Detalls de la integració",
                     "discovered": "Descobertes",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "Vols eliminar aquest missatge?",
                 "empty": "No tens missatges",
                 "playback_title": "Reproducció de missatges"
+            },
+            "my": {
+                "error": "S'ha produït un error desconegut",
+                "faq_link": "Preguntes freqüents de Home Assistant",
+                "not_supported": "La teva instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
             },
             "page-authorize": {
                 "abort_intro": "S'ha avortat l'inici de sessió",
