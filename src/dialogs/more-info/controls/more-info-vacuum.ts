@@ -123,7 +123,7 @@ class MoreInfoVacuum extends LitElement {
               <div>
                 <span>
                   <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
-                  ${stateObj.attributes.battery_level}%
+                  ${stateObj.attributes.battery_level} %
                 </span>
               </div>
             `
