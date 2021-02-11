@@ -16,6 +16,7 @@ export const demoConfig: HassConfig = {
   config_dir: "/config",
   version: "DEMO",
   allowlist_external_dirs: [],
+  allowlist_external_urls: [],
   config_source: "storage",
   safe_mode: false,
   state: STATE_RUNNING,
