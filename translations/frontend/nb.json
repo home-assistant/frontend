@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigurert",
+                    "confirm_new": "Vil du sette opp {integration}?",
                     "description": "Administrer integrasjoner med tjenester, enheter, ...",
                     "details": "Integrasjonsdetaljer",
                     "discovered": "Oppdaget",
@@ -3101,7 +3102,7 @@
                             "icon_height": "Ikon høyde",
                             "image": "Bane til bilde",
                             "manual": "Manuell",
-                            "manual_description": "Trenger du å legge til et tilpasset kort eller ønsker du bare å skrive YAML manuelt?",
+                            "manual_description": "Trenger du å legge til et tilpasset kort eller bare ønsker å manuelt skrive YAML?",
                             "maximum": "Maksimalt",
                             "minimum": "",
                             "name": "Navn",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "Slette denne meldingen?",
                 "empty": "Du har ingen meldinger",
                 "playback_title": "Meldingsavspilling"
+            },
+            "my": {
+                "error": "Det oppstod en ukjent feil",
+                "faq_link": "Vanlige spørsmål om Min Home Assistant",
+                "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
             },
             "page-authorize": {
                 "abort_intro": "Innlogging avbrutt",

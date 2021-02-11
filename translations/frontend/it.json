@@ -1051,7 +1051,7 @@
             "dismiss": "Rimuovi",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
             "started": "Home Assistant si è avviato!",
-            "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino a quando non avrà completato l'avvio.",
+            "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino ad avvio completo.",
             "triggered": "Attivato {name}"
         },
         "panel": {
@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Configura",
                     "configured": "Configurato",
+                    "confirm_new": "Vuoi configurare {integration}?",
                     "description": "Gestisci le integrazioni con servizi, dispositivi, ...",
                     "details": "Dettagli dell'integrazione",
                     "discovered": "Rilevato",
@@ -2213,7 +2214,7 @@
                         "session": "Recupero di valori che cambiano di rado dal nodo",
                         "static": "Recupero di valori statici dal dispositivo",
                         "versions": "Recupero di informazioni sulle versioni del firmware e della classe di comando",
-                        "wakeup": "Configurazione del supporto per code di riattivazione e messaggi"
+                        "wakeup": "Configurazione del supporto per code di riattivazione e messaggi "
                     },
                     "node": {
                         "button": "Dettagli del nodo",
@@ -2231,7 +2232,7 @@
                         "battery_note": "Se il nodo è alimentato a batteria, assicurarsi di riattivarlo prima di procedere",
                         "button": "Aggiorna nodo",
                         "complete": "Aggiornamento del nodo completato",
-                        "description": "In questo modo si dirà a OpenZWave di re interrogare un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
+                        "description": "In questo modo si dirà a OpenZWave di interrogare nuovamente un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
                         "node_status": "Stato del nodo",
                         "refreshing_description": "Aggiornamento delle informazioni sul nodo in corso ...",
                         "start_refresh_button": "Avvia aggiornamento",
@@ -3101,7 +3102,7 @@
                             "icon_height": "Altezza icona",
                             "image": "Percorso immagine",
                             "manual": "Manuale",
-                            "manual_description": "Devi aggiungere una scheda personalizzata o vuoi semplicemente scrivere manualmente il file in yaml?",
+                            "manual_description": "Devi aggiungere una scheda personalizzata o vuoi semplicemente scrivere manualmente il file in YAML?",
                             "maximum": "Massimo",
                             "minimum": "Minimo",
                             "name": "Nome",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "Eliminare questo messaggio?",
                 "empty": "Non hai nessun messaggio",
                 "playback_title": "Riproduzione messaggio"
+            },
+            "my": {
+                "error": "Si è verificato un errore sconosciuto",
+                "faq_link": "My Home Assistant FAQ",
+                "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
             },
             "page-authorize": {
                 "abort_intro": "Login interrotto",

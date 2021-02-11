@@ -2002,6 +2002,7 @@
                     },
                     "configure": "配置",
                     "configured": "已配置",
+                    "confirm_new": "您想要配置 {integration} 吗？",
                     "description": "管理集成",
                     "details": "集成详细信息",
                     "discovered": "已发现",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "删除此消息？",
                 "empty": "您还没有任何消息",
                 "playback_title": "消息回放"
+            },
+            "my": {
+                "error": "发生未知错误",
+                "faq_link": "我的 Home Assistant 常见问题",
+                "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
             },
             "page-authorize": {
                 "abort_intro": "登录中断",
