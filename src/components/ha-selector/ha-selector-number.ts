@@ -65,7 +65,8 @@ export class HaNumberSelector extends LitElement {
   }
 
   private _handleInputChange(ev) {
-    const value = ev.detail.value;
+    ev.stopPropagation();
+    const value = Number(ev.detail.value);
     if (this._value === value) {
       return;
     }
@@ -73,7 +74,8 @@ export class HaNumberSelector extends LitElement {
   }
 
   private _handleSliderChange(ev) {
-    const value = ev.target.value;
+    ev.stopPropagation();
+    const value = Number(ev.target.value);
     if (this._value === value) {
       return;
     }

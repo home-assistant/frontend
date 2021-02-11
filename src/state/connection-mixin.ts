@@ -51,17 +51,24 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         enableShortcuts: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
-        callService: async (domain, service, serviceData = {}) => {
+        callService: async (domain, service, serviceData = {}, target) => {
           if (__DEV__) {
             // eslint-disable-next-line no-console
-            console.log("Calling service", domain, service, serviceData);
+            console.log(
+              "Calling service",
+              domain,
+              service,
+              serviceData,
+              target
+            );
           }
           try {
             return (await callService(
               conn,
               domain,
               service,
-              serviceData
+              serviceData,
+              target
             )) as Promise<ServiceCallResponse>;
           } catch (err) {
             if (__DEV__) {
@@ -71,6 +78,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                 domain,
                 service,
                 serviceData,
+                target,
                 err
               );
             }

@@ -15,7 +15,7 @@ export const demoConfig: HassConfig = {
   time_zone: "America/Los_Angeles",
   config_dir: "/config",
   version: "DEMO",
-  whitelist_external_dirs: [],
+  allowlist_external_dirs: [],
   config_source: "storage",
   safe_mode: false,
   state: STATE_RUNNING,

@@ -7,7 +7,7 @@ import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-code-editor";
-import "../../../components/ha-service-picker";
+import "../../../components/ha-service-control";
 import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -115,10 +115,15 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
         </p>
 
         <div class="ha-form">
-          <ha-service-picker
+          <ha-service-control
+            hass="[[hass]]"
+            value="[[_computeServiceValue(domainService, serviceData)]]"
+            on-value-changed="_serviceChanged"
+          ></ha-service-control>
+<!--           <ha-service-picker
             hass="[[hass]]"
             value="{{domainService}}"
-          ></ha-service-picker>
+          ></ha-service-picker> -->
           <template is="dom-if" if="[[_computeHasEntity(_attributes)]]">
             <ha-entity-picker
               hass="[[hass]]"

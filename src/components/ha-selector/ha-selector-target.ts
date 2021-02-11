@@ -3,7 +3,11 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import "@polymer/paper-input/paper-input";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  HassEntity,
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -20,7 +24,6 @@ import {
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
 import { TargetSelector } from "../../data/selector";
-import { Target } from "../../data/target";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../types";
 import "../ha-target-picker";
@@ -31,7 +34,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   @property() public selector!: TargetSelector;
 
-  @property() public value?: Target;
+  @property() public value?: HassServiceTarget;
 
   @property() public label?: string;
 
@@ -139,7 +142,6 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
   static get styles(): CSSResult {
     return css`
       ha-target-picker {
-        margin: 0 -8px;
         display: block;
       }
     `;
