@@ -282,8 +282,8 @@ export class HaConfigDeviceDashboard extends LitElement {
         title: this.hass.localize("ui.panel.config.devices.data_table.battery"),
         sortable: true,
         type: "numeric",
-        width: narrow ? "90px" : "15%",
-        maxWidth: "90px",
+        width: narrow ? "95px" : "15%",
+        maxWidth: "95px",
         template: (batteryEntityPair: DeviceRowData["battery_entity"]) => {
           const battery =
             batteryEntityPair && batteryEntityPair[0]
