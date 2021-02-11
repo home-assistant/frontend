@@ -2002,6 +2002,7 @@
                     },
                     "configure": "設定",
                     "configured": "已設定整合",
+                    "confirm_new": "是否要設定 {integration}？",
                     "description": "管理服務、裝置整合等",
                     "details": "整合詳細資訊",
                     "discovered": "已掃描",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "刪除此訊息？",
                 "empty": "目前沒有任何訊息",
                 "playback_title": "訊息播放"
+            },
+            "my": {
+                "error": "發生未知錯誤",
+                "faq_link": "Home Assistant 常見問答集",
+                "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
             },
             "page-authorize": {
                 "abort_intro": "登入中止",

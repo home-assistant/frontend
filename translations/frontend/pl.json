@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Konfiguruj",
                     "configured": "Skonfigurowane",
+                    "confirm_new": "Czy chcesz skonfigurować {integration}?",
                     "description": "Zarządzaj integracjami z usługami, urządzeniami, ...",
                     "details": "Szczegóły integracji",
                     "discovered": "Wykryte",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "Usunąć tę wiadomość?",
                 "empty": "Nie masz żadnych wiadomości",
                 "playback_title": "Odtwarzanie wiadomości"
+            },
+            "my": {
+                "error": "Wystąpił nieznany błąd",
+                "faq_link": "Mój Home Assistant - często zadawane pytania",
+                "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
             },
             "page-authorize": {
                 "abort_intro": "Logowanie przerwane",
