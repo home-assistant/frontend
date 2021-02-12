@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Yapılandır",
                     "configured": "Yapılandırıldı",
+                    "confirm_new": "{integration} kurmak istiyor musunuz?",
                     "description": "Bağlı aygıtları ve hizmetleri yönetin",
                     "details": "Entegrasyon detayları",
                     "discovered": "Bulundu",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "Bu mesajı sil?",
                 "empty": "Herhangi bir mesaj yok",
                 "playback_title": "Mesajı dinleme"
+            },
+            "my": {
+                "error": "Bilinmeyen bir hata oluştu",
+                "faq_link": "Home Assistant SSS",
+                "not_supported": "Bu yönlendirme, Home Assistant örneğiniz tarafından desteklenmiyor. Desteklenen yönlendirmeler ve bunların sunulduğu sürüm için {link} kontrol edin."
             },
             "page-authorize": {
                 "abort_intro": "Giriş iptal edildi",
