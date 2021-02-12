@@ -25,6 +25,12 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
         ${this.stateInfoTemplate}
         <mwc-button
           on-click="_callService"
+          data-service="open"
+          hidden$="[[!canOpen]]"
+          >[[localize('ui.card.lock.open')]]</mwc-button
+        >        
+        <mwc-button
+          on-click="_callService"
           data-service="unlock"
           hidden$="[[!isLocked]]"
           >[[localize('ui.card.lock.unlock')]]</mwc-button
@@ -61,12 +67,14 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
         value: false,
       },
       isLocked: Boolean,
+      canOpen: Boolean,
     };
   }
 
   _stateObjChanged(newVal) {
     if (newVal) {
       this.isLocked = newVal.state === "locked";
+      this.canOpen = supportsFeature(newVal, SUPPORT_OPEN);
     }
   }
 
