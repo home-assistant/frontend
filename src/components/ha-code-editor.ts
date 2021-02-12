@@ -1,4 +1,12 @@
-import { Editor } from "codemirror";
+import { EditorState, Prec, tagExtension } from "@codemirror/state";
+import { EditorView, keymap, ViewUpdate } from "@codemirror/view";
+import { defaultKeymap, defaultTabBinding } from "@codemirror/commands";
+import { lineNumbers } from "@codemirror/gutter";
+import { HighlightStyle, tags } from "@codemirror/highlight";
+import { StreamLanguage } from "@codemirror/stream-parser";
+import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
+import { yaml } from "@codemirror/legacy-modes/mode/yaml";
+
 import {
   customElement,
   internalProperty,
@@ -7,7 +15,6 @@ import {
   UpdatingElement,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
-import { loadCodeMirror } from "../resources/codemirror.ondemand";
 
 declare global {
   interface HASSDomEvents {
@@ -15,9 +22,116 @@ declare global {
   }
 }
 
+const modeTag = Symbol("mode");
+
+const theme = EditorView.theme({
+  $: {
+    color: "var(--primary-text-color)",
+    backgroundColor:
+      "var(--code-editor-background-color, var(--card-background-color))",
+    "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.2)" },
+    caretColor: "#var(--secondary-text-color)",
+  },
+
+  $$focused: { outline: "none" },
+
+  "$$focused $cursor": { borderLeftColor: "#var(--secondary-text-color)" },
+  "$$focused $selectionBackground, $selectionBackground": {
+    backgroundColor: "rgba(var(--rgb-primary-color), 0.2)",
+  },
+
+  $gutters: {
+    backgroundColor:
+      "var(--paper-dialog-background-color, var(--primary-background-color))",
+    color: "var(--paper-dialog-color, var(--secondary-text-color))",
+    border: "none",
+    borderRight:
+      "1px solid var(--paper-input-container-color, var(--secondary-text-color))",
+  },
+  "$$focused $gutters": {
+    borderRight:
+      "2px solid var(--paper-input-container-focus-color, var(--primary-color))",
+  },
+  "$gutterElementags.lineNumber": { color: "inherit" },
+});
+
+const highlightStyle = HighlightStyle.define(
+  { tag: tags.keyword, color: "var(--codemirror-keyword, #6262FF)" },
+  {
+    tag: [
+      tags.name,
+      tags.deleted,
+      tags.character,
+      tags.propertyName,
+      tags.macroName,
+    ],
+    color: "var(--codemirror-property, #905)",
+  },
+  {
+    tag: [tags.function(tags.variableName), tags.labelName],
+    color: "var(--codemirror-variable, #07a)",
+  },
+  {
+    tag: [tags.color, tags.constant(tags.name), tags.standard(tags.name)],
+    color: "var(--codemirror-qualifier, #690)",
+  },
+  {
+    tag: [tags.definition(tags.name), tags.separator],
+    color: "var(--codemirror-def, #8DA6CE)",
+  },
+  {
+    tag: [
+      tags.typeName,
+      tags.className,
+      tags.number,
+      tags.changed,
+      tags.annotation,
+      tags.modifier,
+      tags.self,
+      tags.namespace,
+    ],
+    color: "var(--codemirror-number, #ca7841)",
+  },
+  {
+    tag: [
+      tags.operator,
+      tags.operatorKeyword,
+      tags.url,
+      tags.escape,
+      tags.regexp,
+      tags.link,
+      tags.special(tags.string),
+    ],
+    color: "var(--codemirror-operator, #cda869)",
+  },
+  { tag: tags.comment, color: "var(--codemirror-comment, #777)" },
+  {
+    tag: tags.meta,
+    color: "var(--codemirror-meta, var(--primary-text-color))",
+  },
+  { tag: tags.strong, fontWeight: "bold" },
+  { tag: tags.emphasis, fontStyle: "italic" },
+  {
+    tag: tags.link,
+    color: "var(--primary-color)",
+    textDecoration: "underline",
+  },
+  { tag: tags.heading, fontWeight: "bold" },
+  { tag: tags.atom, color: "var(--codemirror-atom, #F90)" },
+  { tag: tags.bool, color: "var(--codemirror-atom, #F90)" },
+  {
+    tag: tags.special(tags.variableName),
+    color: "var(--codemirror-variable-2, #690)",
+  },
+  { tag: tags.processingInstruction, color: "var(--secondary-text-color)" },
+  { tag: tags.string, color: "var(--codemirror-string, #07a)" },
+  { tag: tags.inserted, color: "var(--codemirror-string2, #07a)" },
+  { tag: tags.invalid, color: "var(--error-color)" }
+);
+
 @customElement("ha-code-editor")
 export class HaCodeEditor extends UpdatingElement {
-  public codemirror?: Editor;
+  public codemirror?: EditorView;
 
   @property() public mode?: string;
 
@@ -36,11 +150,12 @@ export class HaCodeEditor extends UpdatingElement {
   }
 
   public get value(): string {
-    return this.codemirror ? this.codemirror.getValue() : this._value;
+    return this.codemirror ? this.codemirror.state.doc.toString() : this._value;
   }
 
   public get hasComments(): boolean {
-    return !!this.shadowRoot!.querySelector("span.cm-comment");
+    // TODO: no static classes anymore?
+    return !!this.shadowRoot!.querySelector("span.ͼu");
   }
 
   public connectedCallback() {
@@ -48,7 +163,6 @@ export class HaCodeEditor extends UpdatingElement {
     if (!this.codemirror) {
       return;
     }
-    this.codemirror.refresh();
     if (this.autofocus !== false) {
       this.codemirror.focus();
     }
@@ -62,17 +176,20 @@ export class HaCodeEditor extends UpdatingElement {
     }
 
     if (changedProps.has("mode")) {
-      this.codemirror.setOption("mode", this.mode);
-    }
-    if (changedProps.has("autofocus")) {
-      this.codemirror.setOption("autofocus", this.autofocus !== false);
+      this.codemirror.dispatch({
+        reconfigure: {
+          [modeTag]: this._mode,
+        },
+      });
     }
     if (changedProps.has("_value") && this._value !== this.value) {
-      this.codemirror.setValue(this._value);
-    }
-    if (changedProps.has("rtl")) {
-      this.codemirror.setOption("gutters", this._calcGutters());
-      this._setScrollBarDirection();
+      this.codemirror.dispatch({
+        changes: {
+          from: 0,
+          to: this.codemirror.state.doc.length,
+          insert: this._value,
+        },
+      });
     }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
@@ -85,175 +202,56 @@ export class HaCodeEditor extends UpdatingElement {
     this._load();
   }
 
+  private get _mode() {
+    return this.mode === "jinja2"
+      ? StreamLanguage.define(jinja2)
+      : StreamLanguage.define(yaml);
+  }
+
   private async _load(): Promise<void> {
-    const loaded = await loadCodeMirror();
-
-    const codeMirror = loaded.codeMirror;
-
     const shadowRoot = this.attachShadow({ mode: "open" });
 
-    shadowRoot!.innerHTML = `
-    <style>
-      ${loaded.codeMirrorCss}
-      .CodeMirror {
-        height: var(--code-mirror-height, auto);
-        direction: var(--code-mirror-direction, ltr);
-        font-family: var(--code-font-family, monospace);
-      }
-      .CodeMirror-scroll {
-        max-height: var(--code-mirror-max-height, --code-mirror-height);
-      }
-      :host(.error-state) .CodeMirror-gutters {
+    shadowRoot!.innerHTML = `<style>
+      :host(.error-state) div.cm-wrap .cm-gutters {
         border-color: var(--error-state-color, red);
-      }
-      .CodeMirror-focused .CodeMirror-gutters {
-        border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));
-      }
-      .CodeMirror-linenumber {
-        color: var(--paper-dialog-color, var(--secondary-text-color));
-      }
-      .rtl .CodeMirror-vscrollbar {
-        right: auto;
-        left: 0px;
-      }
-      .rtl-gutter {
-        width: 20px;
-      }
-      .CodeMirror-gutters {
-        border-right: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
-        background-color: var(--paper-dialog-background-color, var(--primary-background-color));
-        transition: 0.2s ease border-right;
-      }
-      .cm-s-default.CodeMirror {
-        background-color: var(--code-editor-background-color, var(--card-background-color));
-        color: var(--primary-text-color);
-      }
-      .cm-s-default .CodeMirror-cursor {
-        border-left: 1px solid var(--secondary-text-color);
-      }
-
-      .cm-s-default div.CodeMirror-selected, .cm-s-default.CodeMirror-focused div.CodeMirror-selected {
-        background: rgba(var(--rgb-primary-color), 0.2);
-      }
-
-      .cm-s-default .CodeMirror-line::selection,
-      .cm-s-default .CodeMirror-line>span::selection,
-      .cm-s-default .CodeMirror-line>span>span::selection {
-        background: rgba(var(--rgb-primary-color), 0.2);
-      }
-
-      .cm-s-default .cm-keyword {
-        color: var(--codemirror-keyword, #6262FF);
-      }
-
-      .cm-s-default .cm-operator {
-        color: var(--codemirror-operator, #cda869);
-      }
-
-      .cm-s-default .cm-variable-2 {
-        color: var(--codemirror-variable-2, #690);
-      }
-
-      .cm-s-default .cm-builtin {
-        color: var(--codemirror-builtin, #9B7536);
-      }
-
-      .cm-s-default .cm-atom {
-        color: var(--codemirror-atom, #F90);
-      }
-
-      .cm-s-default .cm-number {
-        color: var(--codemirror-number, #ca7841);
-      }
-
-      .cm-s-default .cm-def {
-        color: var(--codemirror-def, #8DA6CE);
-      }
-
-      .cm-s-default .cm-string {
-        color: var(--codemirror-string, #07a);
-      }
-
-      .cm-s-default .cm-string-2 {
-        color: var(--codemirror-string-2, #bd6b18);
-      }
-
-      .cm-s-default .cm-comment {
-        color: var(--codemirror-comment, #777);
-      }
-
-      .cm-s-default .cm-variable {
-        color: var(--codemirror-variable, #07a);
-      }
-
-      .cm-s-default .cm-tag {
-        color: var(--codemirror-tag, #997643);
-      }
-
-      .cm-s-default .cm-meta {
-        color: var(--codemirror-meta, var(--primary-text-color));
-      }
-
-      .cm-s-default .cm-attribute {
-        color: var(--codemirror-attribute, #d6bb6d);
-      }
-
-      .cm-s-default .cm-property {
-        color: var(--codemirror-property, #905);
-      }
-
-      .cm-s-default .cm-qualifier {
-        color: var(--codemirror-qualifier, #690);
-      }
-
-      .cm-s-default .cm-variable-3  {
-        color: var(--codemirror-variable-3, #07a);
-      }
-
-      .cm-s-default .cm-type {
-        color: var(--codemirror-type, #07a);
       }
     </style>`;
 
-    this.codemirror = codeMirror(shadowRoot, {
-      value: this._value,
-      lineNumbers: true,
-      tabSize: 2,
-      mode: this.mode,
-      autofocus: this.autofocus !== false,
-      viewportMargin: Infinity,
-      readOnly: this.readOnly,
-      extraKeys: {
-        Tab: "indentMore",
-        "Shift-Tab": "indentLess",
-      },
-      gutters: this._calcGutters(),
+    const container = document.createElement("div");
+
+    shadowRoot.appendChild(container);
+
+    this.codemirror = new EditorView({
+      state: EditorState.create({
+        doc: this._value,
+        extensions: [
+          lineNumbers(),
+          keymap.of([...defaultKeymap, defaultTabBinding]),
+          tagExtension(modeTag, this._mode),
+          theme,
+          Prec.fallback(highlightStyle),
+          EditorView.updateListener.of((update) => this._onUpdate(update)),
+        ],
+      }),
+      root: shadowRoot,
+      parent: container,
     });
-    this._setScrollBarDirection();
-    this.codemirror!.on("changes", () => this._onChange());
   }
 
   private _blockKeyboardShortcuts() {
     this.addEventListener("keydown", (ev) => ev.stopPropagation());
   }
 
-  private _onChange(): void {
+  private _onUpdate(update: ViewUpdate): void {
+    if (!update.docChanged) {
+      return;
+    }
     const newValue = this.value;
     if (newValue === this._value) {
       return;
     }
     this._value = newValue;
     fireEvent(this, "value-changed", { value: this._value });
-  }
-
-  private _calcGutters(): string[] {
-    return this.rtl ? ["rtl-gutter", "CodeMirror-linenumbers"] : [];
-  }
-
-  private _setScrollBarDirection(): void {
-    if (this.codemirror) {
-      this.codemirror.getWrapperElement().classList.toggle("rtl", this.rtl);
-    }
   }
 }
 
