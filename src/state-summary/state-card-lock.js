@@ -5,6 +5,8 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/entity/state-info";
 import LocalizeMixin from "../mixins/localize-mixin";
+import { supportsFeature } from "../common/entity/supports-feature";
+import { SUPPORT_OPEN } from "../data/lock";
 
 /*
  * @appliesMixin LocalizeMixin
