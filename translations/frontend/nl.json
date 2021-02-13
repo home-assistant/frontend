@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
+                    "confirm_new": "Wil je {integratie} instellen?",
                     "description": "Beheer integraties met services, apparaten, ...",
                     "details": "Integratiedetails",
                     "discovered": "Ontdekt",
@@ -2687,6 +2688,7 @@
                         "driver_version": "Driver Versie",
                         "dump_dead_nodes_text": "Sommige van uw knooppunten reageerden niet en worden verondersteld onbereikbaar te zijn. Deze worden niet volledig geëxporteerd.",
                         "dump_dead_nodes_title": "Sommige van uw knooppunten zijn onbereikbaar",
+                        "dump_debug": "Download een dump van uw netwerk om problemen te diagnosticeren",
                         "dump_not_ready_confirm": "Downloaden",
                         "dump_not_ready_text": "Als u een export maakt terwijl niet alle knooppunten gereed zijn, mist u mogelijk de benodigde gegevens. Geef uw netwerk wat tijd om alle knooppunten te doorzoeken. Wilt u doorgaan met de dump?",
                         "dump_not_ready_title": "Nog niet alle knooppunten zijn gereed",
@@ -3397,6 +3399,10 @@
                 "delete_prompt": "Bericht verwijderen?",
                 "empty": "Je hebt geen berichten",
                 "playback_title": "Bericht afspelen"
+            },
+            "my": {
+                "error": "Er is een onbekende fout opgetreden",
+                "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
             },
             "page-authorize": {
                 "abort_intro": "Inloggen afgebroken",

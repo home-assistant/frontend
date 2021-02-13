@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Configurer",
                     "configured": "Configuré",
+                    "confirm_new": "Voulez-vous configurer {intégration} ?",
                     "description": "Gérer les appareils et services connectés",
                     "details": "Détails de l'intégration",
                     "discovered": "Découvert",
@@ -3406,6 +3407,10 @@
                 "delete_prompt": "Supprimer ce message ?",
                 "empty": "Vous n'avez aucun message",
                 "playback_title": "Lecture de messages"
+            },
+            "my": {
+                "error": "Une erreur inconnue est survenue",
+                "faq_link": "Ma Home Assistant FAQ"
             },
             "page-authorize": {
                 "abort_intro": "Connexion interrompue",

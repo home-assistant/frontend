@@ -387,6 +387,7 @@
                 "direction": "方向",
                 "forward": "進む",
                 "oscillate": "振動",
+                "preset_mode": "プリセットモード",
                 "reverse": "戻す",
                 "speed": "風速"
             },
@@ -763,6 +764,7 @@
                     "update": "更新"
                 },
                 "faq": "ドキュメント",
+                "info_customize": "{customize_link} セクションの一部の属性を上書きできます。",
                 "no_unique_id": "このエンティティには一意のIDがないため、その設定はUIから管理できません。",
                 "related": "関連",
                 "settings": "設定"
@@ -1009,8 +1011,11 @@
         "errors": {
             "config": {
                 "edit_in_yaml_supported": "YAMLで設定を編集することはできます。",
+                "editor_not_available": "タイプ\"{type}\"で利用できるビジュアルエディタがありません。",
+                "editor_not_supported": "この設定では、Visual エディタはサポートされていません。",
                 "error_detected": "構成エラーが検出されました",
                 "key_missing": "必要なキー \"{key}\" がありません。",
+                "key_not_expected": "キー \" {key} \"は予期されていないか、ビジュアルエディターでサポートされていません。",
                 "key_wrong_type": "\"{key}\" に指定された値は、ビジュアル エディターではサポートされていません。({type_correct}) をサポートしていますが、受信しました ({type_wrong})。",
                 "no_type_provided": "タイプは提供されていません。"
             }
@@ -1125,6 +1130,7 @@
                                     "extra_fields": {
                                         "code": "コード",
                                         "message": "メッセージ",
+                                        "position": "ポジション",
                                         "title": "タイトル"
                                     },
                                     "label": "デバイス"
@@ -1518,6 +1524,7 @@
                             "default_language": "使用するデフォルト言語",
                             "dialog": {
                                 "example_message": "こんにちは{name} 、サポートされているメディアプレーヤーで任意のテキストを再生できます！",
+                                "header": "テキスト読み上げの試行",
                                 "play": "再生",
                                 "target": "ターゲット",
                                 "target_browser": "ブラウザ"
@@ -1981,6 +1988,7 @@
                     },
                     "configure": "構成",
                     "configured": "設定済み",
+                    "confirm_new": "{integration}を設定しますか？",
                     "description": "インテグレーションの管理とセットアップ",
                     "details": "インテグレーションの詳細",
                     "discovered": "発見",
@@ -3080,7 +3088,7 @@
                             "icon_height": "アイコンの高さ",
                             "image": "画像パス",
                             "manual": "マニュアル",
-                            "manual_description": "カスタムカードを追加する必要があるか、手動でyamlを記述したいだけですか？",
+                            "manual_description": "カスタムカードを追加するか、手動でyamlを記述したいだけですか？",
                             "maximum": "最大",
                             "minimum": "最小",
                             "name": "名前",
@@ -3277,6 +3285,7 @@
                     },
                     "menu": {
                         "manage_dashboards": "ダッシュボードの管理",
+                        "manage_resources": "リソースの管理",
                         "open": "Lovelace メニューを開く",
                         "raw_editor": "詳細設定エディター"
                     },
@@ -3384,6 +3393,11 @@
                 "delete_prompt": "このメッセージを削除しますか？",
                 "empty": "メッセージはありません",
                 "playback_title": "メッセージの再生"
+            },
+            "my": {
+                "error": "不明なエラーが発生しました",
+                "faq_link": "マイホームアシスタントFAQ",
+                "not_supported": "このリダイレクトは、HomeAssistantインスタンスではサポートされていません。サポートされているリダイレクトとそれらが導入されたバージョンについては、 {link}を確認してください。"
             },
             "page-authorize": {
                 "abort_intro": "ログインが中止されました",

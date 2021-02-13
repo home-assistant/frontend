@@ -401,6 +401,7 @@
                 "direction": "Richtung",
                 "forward": "Vorwärts",
                 "oscillate": "Oszillieren",
+                "preset_mode": "Voreinstellung",
                 "reverse": "Rückwärts",
                 "speed": "Geschwindigkeit"
             },
@@ -2001,6 +2002,7 @@
                     },
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
+                    "confirm_new": "Möchtest du {integration} einrichten?",
                     "description": "Integrationen zu Diensten, Geräten, usw. verwalten",
                     "details": "Details zur Integration",
                     "discovered": "Entdeckt",
@@ -2666,24 +2668,39 @@
                 },
                 "zwave_js": {
                     "add_node": {
+                        "follow_device_instructions": "Befolge die mit dem Gerät gelieferten Anweisungen, um die Kopplung am Gerät auszulösen.",
+                        "inclusion_failed": "Der Knoten konnte nicht hinzugefügt werden. Bitte überprüfe die Protokolle für weitere Informationen.",
+                        "inclusion_finished": "Der Knoten wurde hinzugefügt. Es kann einige Minuten dauern, bis alle Einheiten angezeigt werden, da der Knoten im Hintergrund fertig eingerichtet wird.",
+                        "introduction": "Dieser Assistent führt dich durch das Hinzufügen eines Knotens zu deinem Z-Wave-Netzwerk.",
+                        "title": "Z-Wave-Knoten hinzufügen",
                         "view_device": "Gerät anzeigen"
                     },
                     "button": "Konfigurieren",
                     "common": {
+                        "add_node": "Knoten hinzufügen",
                         "close": "Schließen",
                         "network": "Netzwerk",
+                        "node_id": "Knoten-ID",
                         "remove_node": "Node entfernen"
                     },
                     "dashboard": {
                         "driver_version": "Treiberversion",
+                        "dump_dead_nodes_text": "Einige deiner Knoten haben nicht geantwortet und gelten als tot. Diese werden nicht vollständig exportiert.",
+                        "dump_dead_nodes_title": "Einige deiner Knoten sind tot",
+                        "dump_debug": "Lade einen Dump deines Netzwerks herunter, um Probleme zu diagnostizieren",
                         "dump_not_ready_confirm": "Herunterladen",
+                        "dump_not_ready_text": "Wenn du einen Export erstellst, während nicht alle Knoten bereit sind, können benötigte Daten fehlen. Gib deinem Netzwerk etwas Zeit, um alle Knoten abzufragen. Möchtest du mit dem Dump fortfahren?",
+                        "dump_not_ready_title": "Es sind noch nicht alle Knoten bereit",
                         "header": "Verwalte dein Z-Wave-Netzwerk",
+                        "introduction": "Verwalte dein Z-Wave-Netzwerk und Z-Wave-Knoten",
                         "node_count": "Anzahl an Nodes",
+                        "nodes_ready": "Knoten bereit",
                         "server_version": "Serverversion"
                     },
                     "device_info": {
                         "node_ready": "Node Bereit",
-                        "node_status": "Node Status"
+                        "node_status": "Node Status",
+                        "zwave_info": "Z-Wave Info"
                     },
                     "navigation": {
                         "network": "Netzwerk"
@@ -2702,7 +2719,9 @@
                     },
                     "remove_node": {
                         "exclusion_failed": "Der Knoten konnte nicht entfernt werden. Bitte in den Logs nach mehr Informationen suchen.",
-                        "exclusion_finished": "Der Knoten {id} wurde aus deinem Z-Wave-Netzwerk entfernt."
+                        "exclusion_finished": "Der Knoten {id} wurde aus deinem Z-Wave-Netzwerk entfernt.",
+                        "introduction": "Entferne einen Knoten aus deinem Z-Wave-Netzwerk und entferne die zugehörigen Geräte und Entitäten aus Home Assistant.",
+                        "title": "Z-Wave-Knoten entfernen"
                     }
                 },
                 "zwave": {
@@ -2719,7 +2738,8 @@
                     "learn_more": "Erfahre mehr über Z-Wave",
                     "migration": {
                         "ozw": {
-                            "header": "Migration zu OpenZWave"
+                            "header": "Migration zu OpenZWave",
+                            "introduction": "Dieser Assistent hilft dir bei der Migration von der alten Z-Wave-Integration zur OpenZWave-Integration, die sich derzeit in der Beta befindet."
                         }
                     },
                     "network_management": {
@@ -3375,6 +3395,11 @@
                 "delete_prompt": "Diese Nachricht löschen?",
                 "empty": "Sie haben keine Nachrichten",
                 "playback_title": "Nachrichtenwiedergabe"
+            },
+            "my": {
+                "error": "Ein unbekannter Fehler ist aufgetreten.",
+                "faq_link": "Meine Home Assistant FAQ",
+                "not_supported": "Diese Weiterleitung wird von deiner Home Assistant-Instanz nicht unterstützt. Überprüfe den {link} auf die unterstützten Weiterleitungen und die Version, in der sie eingeführt wurden."
             },
             "page-authorize": {
                 "abort_intro": "Anmeldung abgebrochen",
