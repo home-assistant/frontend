@@ -1329,7 +1329,7 @@
                             "enable_ha_skill": "Ativar o Home Assistant para a Alexa",
                             "enable_state_reporting": "Ativar relatório de estado",
                             "info": "Com a integração da Alexa para o Home Assistant Cloud, você poderá controlar todos os seus dispositivos do Home Assistant por meio de qualquer dispositivo ativado pela Alexa.",
-                            "info_state_reporting": "Se você ativar os relatórios de estado, o Home Assistant enviará todas as alterações de estado das entidades expostas ao Google. Isso permite que você sempre veja os estados mais recentes no aplicativo do Google.",
+                            "info_state_reporting": "Se você ativar os relatórios de estado, o Home Assistant enviará todas as alterações de estado das entidades expostas na Alexa. Isso permite que você sempre veja os estados mais recentes no aplicativo da Alexa.",
                             "manage_entities": "Gerenciar Entidades",
                             "state_reporting_error": "Não foi possível {enable_disable} o relatório de estado.",
                             "sync_entities": "Sincronizar entidades",
