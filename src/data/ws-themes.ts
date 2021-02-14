@@ -8,9 +8,20 @@ export interface ThemeVars {
   [key: string]: string;
 }
 
+export interface ThemeDefaultVars {
+  "primary-color": string;
+  "accent-color": string;
+}
+
 export type Theme = ThemeVars & {
-  light?: ThemeVars;
-  dark?: ThemeVars;
+  defaults?: {
+    light?: ThemeDefaultVars;
+    dark?: ThemeDefaultVars;
+  };
+  styles?: {
+    light?: ThemeVars;
+    dark?: ThemeVars;
+  };
 };
 
 export interface Themes {

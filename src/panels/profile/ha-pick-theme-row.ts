@@ -41,6 +41,8 @@ export class HaPickThemeRow extends LitElement {
       this.hass!.selectedThemeSettings?.theme ||
       this.hass!.themes.default_theme;
 
+    const themeSettings = this.hass!.selectedThemeSettings;
+
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading"
@@ -89,7 +91,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="auto"
-                ?checked=${this.hass.selectedThemeSettings?.dark === undefined}
+                ?checked=${themeSettings?.dark === undefined}
               ></ha-radio>
             </ha-formfield>
             <ha-formfield
@@ -101,7 +103,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="light"
-                ?checked=${this.hass.selectedThemeSettings?.dark === false}
+                ?checked=${themeSettings?.dark === false}
               >
               </ha-radio>
             </ha-formfield>
@@ -114,14 +116,21 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="dark"
-                ?checked=${this.hass.selectedThemeSettings?.dark === true}
+                ?checked=${themeSettings?.dark === true}
               >
               </ha-radio>
             </ha-formfield>
-            ${curTheme === "default"
+            ${curTheme === "default" ||
+            (this._selectedTheme &&
+              this._supportsColorSelection(this._selectedTheme))
               ? html` <div class="color-pickers">
                   <paper-input
-                    .value=${this.hass!.selectedThemeSettings?.primaryColor ||
+                    .value=${themeSettings?.primaryColor ||
+                    (themeSettings?.dark
+                      ? this._selectedTheme?.defaults?.dark?.["primary-color"]
+                      : this._selectedTheme?.defaults?.light?.[
+                          "primary-color"
+                        ]) ||
                     "#03a9f4"}
                     type="color"
                     .label=${this.hass!.localize(
@@ -131,7 +140,12 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></paper-input>
                   <paper-input
-                    .value=${this.hass!.selectedThemeSettings?.accentColor ||
+                    .value=${themeSettings?.accentColor ||
+                    (themeSettings?.dark
+                      ? this._selectedTheme?.defaults?.dark?.["accent-color"]
+                      : this._selectedTheme?.defaults?.light?.[
+                          "accent-color"
+                        ]) ||
                     "#ff9800"}
                     type="color"
                     .label=${this.hass!.localize(
@@ -140,8 +154,7 @@ export class HaPickThemeRow extends LitElement {
                     .name=${"accentColor"}
                     @change=${this._handleColorChange}
                   ></paper-input>
-                  ${this.hass!.selectedThemeSettings?.primaryColor ||
-                  this.hass!.selectedThemeSettings?.accentColor
+                  ${themeSettings?.primaryColor || themeSettings?.accentColor
                     ? html` <mwc-button @click=${this._resetColors}>
                         ${this.hass!.localize("ui.panel.profile.themes.reset")}
                       </mwc-button>`
@@ -199,7 +212,15 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsModeSelection(theme: Theme): boolean {
-    return theme && theme.light !== undefined && theme.dark !== undefined;
+    return (
+      theme.styles?.light !== undefined && theme.styles?.dark !== undefined
+    );
+  }
+
+  private _supportsColorSelection(theme: Theme): boolean {
+    return this.hass.themes?.darkMode
+      ? theme.defaults?.dark !== undefined
+      : theme.defaults?.light !== undefined;
   }
 
   private _handleDarkMode(ev: CustomEvent) {

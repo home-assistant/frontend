@@ -47,22 +47,44 @@ export const applyThemesOnElement = (
       primaryColor = themeSettings.primaryColor;
       accentColor = themeSettings.accentColor;
     } else if (selectedTheme && themes.themes[selectedTheme]) {
-      // Values from theme or default style
+      // Try in that order:
+      // 1. User selected colors (if supported by theme = "defaults" provided)
+      // 2. Theme defaults
+      // 3. Fixed values from theme (light or dark mode)
+      // 4. HA defaults for dark, since legacy themes might not provide any values
       if (themeSettings.dark) {
-        primaryColor = themes.themes[selectedTheme].dark
-          ? themes.themes[selectedTheme].dark!["primary-color"]
-          : darkStyles["primary-color"];
-        accentColor = themes.themes[selectedTheme].dark
-          ? themes.themes[selectedTheme].dark!["accent-color"]
-          : darkStyles["accent-color"];
+        if (themes.themes[selectedTheme].defaults?.dark) {
+          primaryColor =
+            themeSettings.primaryColor ||
+            themes.themes[selectedTheme].defaults?.dark!["primary-color"];
+          accentColor =
+            themeSettings.accentColor ||
+            themes.themes[selectedTheme].defaults?.dark!["accent-color"];
+        } else {
+          primaryColor =
+            themes.themes[selectedTheme].styles?.dark!["primary-color"] ||
+            darkStyles["primary-color"];
+          accentColor =
+            themes.themes[selectedTheme].styles?.dark!["accent-color"] ||
+            darkStyles["accent-color"];
+        }
       } else {
-        const newScheme = themes.themes[selectedTheme].light !== undefined;
-        primaryColor = newScheme
-          ? themes.themes[selectedTheme].light!["primary-color"]
-          : themes.themes[selectedTheme]["primary-color"];
-        accentColor = newScheme
-          ? themes.themes[selectedTheme].light!["accent-color"]
-          : themes.themes[selectedTheme]["accent-color"];
+        // eslint-disable-next-line no-lonely-if
+        if (themes.themes[selectedTheme].defaults?.light) {
+          primaryColor =
+            themeSettings.primaryColor ||
+            themes.themes[selectedTheme].defaults?.light!["primary-color"];
+          accentColor =
+            themeSettings.accentColor ||
+            themes.themes[selectedTheme].defaults?.light!["accent-color"];
+        } else {
+          primaryColor =
+            themes.themes[selectedTheme].styles?.light!["primary-color"] ||
+            themes.themes[selectedTheme]["primary-color"];
+          accentColor =
+            themes.themes[selectedTheme].styles?.light!["accent-color"] ||
+            themes.themes[selectedTheme]["accent-color"];
+        }
       }
     }
     primaryColor = primaryColor || "#03a9f4";
@@ -109,16 +131,17 @@ export const applyThemesOnElement = (
     if (
       themeSettings &&
       themeSettings.dark &&
-      themes.themes[selectedTheme].dark
+      themes.themes[selectedTheme].styles?.dark
     )
       themeRules = {
         ...themeRules,
-        ...themes.themes[selectedTheme].dark,
+        ...themes.themes[selectedTheme].styles?.dark,
       };
     else {
       // Check if the theme provides styles (= new theme scheme), otherwise fallback to old scheme
       const rules =
-        themes.themes[selectedTheme].light || themes.themes[selectedTheme];
+        themes.themes[selectedTheme].styles?.light ||
+        themes.themes[selectedTheme];
       themeRules = { ...themeRules, ...rules };
     }
   }
