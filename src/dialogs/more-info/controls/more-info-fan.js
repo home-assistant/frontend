@@ -52,6 +52,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
             caption="[[localize('ui.card.fan.speed')]]"
             min="0"
             max="100"
+            step="[[computePercentageStepSize(stateObj)]]"
             value="{{percentageSliderValue}}"
             on-change="percentageChanged"
             pin=""
@@ -152,6 +153,13 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         this.fire("iron-resize");
       }, 500);
     }
+  }
+
+  computePercentageStepSize(stateObj) {
+    if (stateObj.attributes.percentage_step) {
+      return stateObj.attributes.percentage_step;
+    }
+    return 1;
   }
 
   computeClassNames(stateObj) {
