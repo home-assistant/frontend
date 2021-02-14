@@ -71,13 +71,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (selectedTheme) {
         // Override dark mode selection depending on what the theme actually provides.
         // Leave the selection as-is if the theme can provide the requested style.
-        if (darkMode && !selectedTheme.dark_styles) {
+        if (darkMode && !selectedTheme.dark) {
           darkMode = false;
-        } else if (
-          !darkMode &&
-          !selectedTheme.styles &&
-          selectedTheme.dark_styles
-        ) {
+        } else if (!darkMode && !selectedTheme.light && selectedTheme.dark) {
           darkMode = true;
         }
       }

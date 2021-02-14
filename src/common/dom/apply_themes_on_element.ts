@@ -49,19 +49,19 @@ export const applyThemesOnElement = (
     } else if (selectedTheme && themes.themes[selectedTheme]) {
       // Values from theme or default style
       if (themeSettings.dark) {
-        primaryColor = themes.themes[selectedTheme].dark_styles
-          ? themes.themes[selectedTheme].dark_styles!["primary-color"]
+        primaryColor = themes.themes[selectedTheme].dark
+          ? themes.themes[selectedTheme].dark!["primary-color"]
           : darkStyles["primary-color"];
-        accentColor = themes.themes[selectedTheme].dark_styles
-          ? themes.themes[selectedTheme].dark_styles!["accent-color"]
+        accentColor = themes.themes[selectedTheme].dark
+          ? themes.themes[selectedTheme].dark!["accent-color"]
           : darkStyles["accent-color"];
       } else {
-        const newScheme = themes.themes[selectedTheme].styles !== undefined;
+        const newScheme = themes.themes[selectedTheme].light !== undefined;
         primaryColor = newScheme
-          ? themes.themes[selectedTheme].styles!["primary-color"]
+          ? themes.themes[selectedTheme].light!["primary-color"]
           : themes.themes[selectedTheme]["primary-color"];
         accentColor = newScheme
-          ? themes.themes[selectedTheme].styles!["accent-color"]
+          ? themes.themes[selectedTheme].light!["accent-color"]
           : themes.themes[selectedTheme]["accent-color"];
       }
     }
@@ -109,16 +109,16 @@ export const applyThemesOnElement = (
     if (
       themeSettings &&
       themeSettings.dark &&
-      themes.themes[selectedTheme].dark_styles
+      themes.themes[selectedTheme].dark
     )
       themeRules = {
         ...themeRules,
-        ...themes.themes[selectedTheme].dark_styles,
+        ...themes.themes[selectedTheme].dark,
       };
     else {
       // Check if the theme provides styles (= new theme scheme), otherwise fallback to old scheme
       const rules =
-        themes.themes[selectedTheme].styles || themes.themes[selectedTheme];
+        themes.themes[selectedTheme].light || themes.themes[selectedTheme];
       themeRules = { ...themeRules, ...rules };
     }
   }
