@@ -37,9 +37,8 @@ export const applyThemesOnElement = (
   let themeRules: Partial<ThemeVars> = {};
 
   if (themeSettings) {
-    // Determine the primary and accent colors (fallbacks are the HA default blue and orange).
-    // Currently only the default theme offers color pickers, so for all other themes
-    // we have to check if the theme explicitly defines a color value for them.
+    // Determine the primary and accent colors. Fallbacks are the HA default blue and orange
+    // or the derived "darkStyles" values, depending on the light vs dark mode.
     let primaryColor;
     let accentColor;
     if (selectedTheme === "default") {
@@ -48,10 +47,10 @@ export const applyThemesOnElement = (
       accentColor = themeSettings.accentColor;
     } else if (selectedTheme && themes.themes[selectedTheme]) {
       // Try in that order:
-      // 1. User selected colors (if supported by theme = "defaults" provided)
+      // 1. User selected colors (if supported by theme = "defaults" key provided)
       // 2. Theme defaults
-      // 3. Fixed values from theme (light or dark mode)
-      // 4. HA defaults for dark, since legacy themes might not provide any values
+      // 3. Fixed values from theme styles
+      // 4. HA default colors
       if (themeSettings.dark) {
         if (themes.themes[selectedTheme].defaults?.dark) {
           primaryColor =
@@ -80,15 +79,13 @@ export const applyThemesOnElement = (
         } else {
           primaryColor =
             themes.themes[selectedTheme].styles?.light!["primary-color"] ||
-            themes.themes[selectedTheme]["primary-color"];
+            "#03a9f4";
           accentColor =
             themes.themes[selectedTheme].styles?.light!["accent-color"] ||
-            themes.themes[selectedTheme]["accent-color"];
+            "#ff9800";
         }
       }
     }
-    primaryColor = primaryColor || "#03a9f4";
-    accentColor = accentColor || "#ff9800";
 
     if (themeSettings.dark) {
       cacheKey = `${cacheKey}__dark`;
@@ -128,11 +125,7 @@ export const applyThemesOnElement = (
 
   if (selectedTheme && themes.themes[selectedTheme]) {
     // If dark is requested, check if the theme actually provides dark styles to use
-    if (
-      themeSettings &&
-      themeSettings.dark &&
-      themes.themes[selectedTheme].styles?.dark
-    )
+    if (themeSettings?.dark && themes.themes[selectedTheme].styles?.dark)
       themeRules = {
         ...themeRules,
         ...themes.themes[selectedTheme].styles?.dark,

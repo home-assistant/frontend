@@ -240,11 +240,19 @@ export class HaPickThemeRow extends LitElement {
     const theme = ev.detail.item.theme;
     if (theme === "Backend-selected") {
       if (this.hass.selectedThemeSettings?.theme) {
-        fireEvent(this, "settheme", { theme: "" });
+        fireEvent(this, "settheme", {
+          theme: "",
+          primaryColor: undefined,
+          accentColor: undefined,
+        });
       }
       return;
     }
-    fireEvent(this, "settheme", { theme });
+    fireEvent(this, "settheme", {
+      theme,
+      primaryColor: undefined,
+      accentColor: undefined,
+    });
   }
 
   static get styles(): CSSResult {
