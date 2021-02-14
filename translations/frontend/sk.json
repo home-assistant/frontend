@@ -519,6 +519,10 @@
                 "no_match": "Nenašli sa žiadne zodpovedajúce oblasti",
                 "show_areas": "Zobraziť oblasti"
             },
+            "calendar": {
+                "my_calendars": "Moje kalendáre",
+                "today": "Dnes"
+            },
             "data-table": {
                 "no-data": "Žiadne údaje",
                 "search": "Hľadať"
@@ -679,6 +683,8 @@
                 "control": "Ovládanie",
                 "dismiss": "Zrušiť",
                 "editor": {
+                    "advanced": "Rozšírené nastavenia",
+                    "change_device_area": "Zmeniť oblasť zariadenia",
                     "confirm_delete": "Naozaj chcete odstrániť túto entitu?",
                     "delete": "VYMAZAŤ",
                     "enabled_cause": "Zakázané {cause}",
@@ -863,6 +869,12 @@
             "minute": "{count} {count, plural,\none {minúta}\nother {minút}\n}",
             "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekúnd}\n}",
             "week": "{count} {count, plural,\none {týždeň}\nfew {týždne}\nother {týždňov}\n}"
+        },
+        "errors": {
+            "config": {
+                "editor_not_supported": "Vizuálny editor nie je pre túto konfiguráciu podporovaný",
+                "error_detected": "Zistili sa chyby v konfigurácii"
+            }
         },
         "login-form": {
             "log_in": "Prihlásiť sa",
@@ -1214,7 +1226,7 @@
                             "info": "Vďaka integrácii Alexa pre Home Assistant Cloud budete môcť ovládať všetky svoje zariadenia Home Assistant pomocou akéhokoľvek zariadenia s podporou Alexa.",
                             "info_state_reporting": "Ak povolíte hlásenie stavu, Home Assistant odošle všetky zmeny stavov vystavených entít do Amazonu. To vám umožní vždy vidieť najnovšie stavy v aplikácii Alexa a pomocou zmien stavov vytvárať rutiny.",
                             "manage_entities": "Spravovať entity",
-                            "sync_entities": "Synchronizovať entity",
+                            "sync_entities": "Synchronizovať entity s Amazonom",
                             "title": "Alexa"
                         },
                         "connected": "Pripojené",
@@ -1247,6 +1259,14 @@
                         },
                         "sign_out": "Odhlásiť sa",
                         "thank_you_note": "Ďakujeme, že ste sa stali súčasťou Home Assistant Cloudu. Vďaka ľuďom, ako ste vy, sme schopní urobiť skvelý zážitok z automatizácie domácnosti pre každého. Ďakujeme!",
+                        "tts": {
+                            "dialog": {
+                                "play": "Prehrať",
+                                "target": "Cieľ",
+                                "target_browser": "Prehliadač"
+                            },
+                            "try": "Vyskúšať"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Nepodarilo sa deaktivovať webhook:",
                             "info": "Čokoľvek, čo je nakonfigurované na spúšťanie webhookom, môže dostať verejne prístupnú adresu URL, ktorá vám umožní odosielať údaje späť Home Assistant odkiaľkoľvek bez toho, aby ste svoju inštanciu vystavili na internete.",
@@ -1318,7 +1338,7 @@
                         "dismiss": "Zrušiť",
                         "email": "E-mail",
                         "email_error_msg": "Neplatný email",
-                        "forgot_password": "zabudnuté heslo?",
+                        "forgot_password": "Zabudnuté heslo?",
                         "introduction": "Home Assistant Cloud vám poskytuje zabezpečené vzdialené pripojenie k vašej inštancii. Umožňuje tiež pripojiť sa do cloudových služieb Amazon Alexa a Google Assistant.",
                         "introduction2": "Túto službu poskytuje náš partner",
                         "introduction2a": ", spoločnosť založená zakladateľmi Home Assistant a Hass.io.",
@@ -2143,6 +2163,11 @@
                     "introduction": "Zóny vám umožňujú vybrať špecifické oblasti na mape. Ak sa osoba nachádza v nejakej zóne, v stavoch sa zobrazí názov konkrétnej zóny. Zóny môžu byť tiež použité ako spúšťač alebo podmienka v rámci automatizácií.",
                     "no_zones_created_yet": "Zdá sa, že ste ešte nevytvorili žiadne zóny."
                 },
+                "zwave_js": {
+                    "dashboard": {
+                        "dump_not_ready_confirm": "Stiahnuť"
+                    }
+                },
                 "zwave": {
                     "button": "Konfigurovať",
                     "caption": "Z-Wave",
@@ -2452,6 +2477,9 @@
                             "description": "Karta Glance je užitočná na zoskupenie viacerých senzorov do kompaktného prehľadu.",
                             "name": "Náhľad"
                         },
+                        "grid": {
+                            "columns": "Stĺpce"
+                        },
                         "history-graph": {
                             "description": "Karta Graf histórie umožňuje zobraziť graf pre každú z uvedených entít.",
                             "name": "Graf Histórie"
@@ -2679,6 +2707,9 @@
                 "delete_prompt": "Vymazať túto správu?",
                 "empty": "Nemáte žiadne správy",
                 "playback_title": "Prehrávanie správ"
+            },
+            "my": {
+                "error": "Vyskytla sa neznáma chyba"
             },
             "page-authorize": {
                 "abort_intro": "Prihlásenie bolo zrušené",

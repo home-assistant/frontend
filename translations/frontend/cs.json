@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Nastavit",
                     "configured": "Nastaveno",
+                    "confirm_new": "Chcete nastavit {integration}?",
                     "description": "Správa integrací a jejich služeb, zařízení, ...",
                     "details": "Podrobnosti o integraci",
                     "discovered": "Objeveno",
@@ -3406,6 +3407,11 @@
                 "delete_prompt": "Smazat tuto zprávu?",
                 "empty": "Nemáte žádné zprávy",
                 "playback_title": "Přehrávání zpráv"
+            },
+            "my": {
+                "error": "Nastala neznámá chyba",
+                "faq_link": "Časté dotazy týkající se My Home Assistant",
+                "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
             },
             "page-authorize": {
                 "abort_intro": "Přihlášení bylo zrušeno",
