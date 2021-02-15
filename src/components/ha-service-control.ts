@@ -36,6 +36,8 @@ export class HaServiceControl extends LitElement {
     data?: Record<string, any>;
   };
 
+  @property({ reflect: true, type: Boolean }) public narrow!: boolean;
+
   @internalProperty() private _serviceData?: ExtHassService;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
@@ -142,7 +144,7 @@ export class HaServiceControl extends LitElement {
           ></ha-yaml-editor>`
         : this._serviceData?.fields.map((dataField) =>
             dataField.selector
-              ? html`<ha-settings-row>
+              ? html`<ha-settings-row .narrow=${this.narrow}>
                   <span slot="heading">${dataField.name || dataField.key}</span>
                   <span slot="description">${dataField?.description}</span
                   ><ha-selector
@@ -237,6 +239,15 @@ export class HaServiceControl extends LitElement {
     return css`
       ha-settings-row {
         padding: 0;
+      }
+      ha-settings-row {
+        --paper-time-input-justify-content: flex-end;
+      }
+      :host(:not([narrow])) ha-settings-row paper-input {
+        width: 60%;
+      }
+      :host(:not([narrow])) ha-settings-row ha-selector {
+        width: 60%;
       }
     `;
   }

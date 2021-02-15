@@ -235,6 +235,7 @@ export class HaManualAutomationEditor extends LitElement {
           .actions=${this.config.action}
           @value-changed=${this._actionChanged}
           .hass=${this.hass}
+          .narrow=${this.narrow}
         ></ha-automation-action>
       </ha-config-section>`;
   }

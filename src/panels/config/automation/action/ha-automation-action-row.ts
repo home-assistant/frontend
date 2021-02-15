@@ -99,6 +99,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property() public totalActions!: number;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @internalProperty() private _warnings?: string[];
 
   @internalProperty() private _uiModeAvailable = true;
@@ -243,6 +245,7 @@ export default class HaAutomationActionRow extends LitElement {
                   ${dynamicElement(`ha-automation-action-${type}`, {
                     hass: this.hass,
                     action: this.action,
+                    narrow: this.narrow,
                   })}
                 </div>
               `}

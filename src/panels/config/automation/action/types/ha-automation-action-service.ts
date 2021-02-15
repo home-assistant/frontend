@@ -28,6 +28,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: ServiceAction;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @internalProperty() private _action!: ServiceAction;
 
   public static get defaultConfig() {
@@ -57,6 +59,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
   protected render() {
     return html`
       <ha-service-control
+        .narrow=${this.narrow}
         .hass=${this.hass}
         .value=${this._action}
         @value-changed=${this._actionChanged}
