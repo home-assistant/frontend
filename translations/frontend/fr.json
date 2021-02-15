@@ -3509,7 +3509,7 @@
                     "working": "Veuillez patienter"
                 },
                 "initializing": "Initialisation",
-                "logging_in_to_with": "Connexion à ** {locationName} ** avec ** {authProviderName} **.",
+                "logging_in_to_with": "Connexion à **{locationName}** avec **{authProviderName}**.",
                 "logging_in_with": "Se connecter avec **{authProviderName}**.",
                 "pick_auth_provider": "Ou connectez-vous avec"
             },
