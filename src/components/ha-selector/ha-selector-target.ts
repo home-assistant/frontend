@@ -61,8 +61,9 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     if (changedProperties.has("selector")) {
       const oldSelector = changedProperties.get("selector");
       if (
-        oldSelector !== this.selector &&
-        this.selector.target.device?.integration
+        (oldSelector !== this.selector &&
+          this.selector.target.device?.integration) ||
+        this.selector.target.entity?.integration
       ) {
         this._loadConfigEntries();
       }
@@ -87,11 +88,15 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
   }
 
   private _filterEntities(entity: HassEntity): boolean {
-    if (this.selector.target.entity?.integration) {
+    if (
+      this.selector.target.entity?.integration ||
+      this.selector.target.device?.integration
+    ) {
       if (
         !this._entityPlaformLookup ||
         this._entityPlaformLookup[entity.entity_id] !==
-          this.selector.target.entity.integration
+          (this.selector.target.entity?.integration ||
+            this.selector.target.device?.integration)
       ) {
         return false;
       }
@@ -121,7 +126,10 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     ) {
       return false;
     }
-    if (this.selector.target.device?.integration) {
+    if (
+      this.selector.target.device?.integration ||
+      this.selector.target.entity?.integration
+    ) {
       if (
         !this._configEntries?.some((entry) =>
           device.config_entries.includes(entry.entry_id)
@@ -135,7 +143,10 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   private async _loadConfigEntries() {
     this._configEntries = (await getConfigEntries(this.hass)).filter(
-      (entry) => entry.domain === this.selector.target.device?.integration
+      (entry) =>
+        entry.domain ===
+        (this.selector.target.device?.integration ||
+          this.selector.target.entity?.integration)
     );
   }
 
