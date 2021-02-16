@@ -172,9 +172,10 @@ export class HaServiceControl extends LitElement {
                     .selector=${dataField.selector}
                     .key=${dataField.key}
                     @value-changed=${this._serviceDataChanged}
-                    .value=${(this.value?.data &&
-                      this.value.data[dataField.key]) ||
-                    dataField.default}
+                    .value=${this.value?.data &&
+                    this.value.data[dataField.key] !== undefined
+                      ? this.value.data[dataField.key]
+                      : dataField.default}
                   ></ha-selector
                 ></ha-settings-row>`
               : ""
@@ -187,7 +188,7 @@ export class HaServiceControl extends LitElement {
       return;
     }
     fireEvent(this, "value-changed", {
-      value: { service: ev.detail.value || "", data: {} },
+      value: { service: ev.detail.value || "" },
     });
   }
 
