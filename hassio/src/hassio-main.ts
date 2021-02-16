@@ -74,10 +74,14 @@ export class HassioMain extends SupervisorBaseElement {
     if (
       event.event === "supervisor-update" &&
       event.update_key !== undefined &&
-      event.data !== undefined
+      event.data !== undefined &&
+      this.supervisor !== undefined
     ) {
       const data: Partial<Supervisor> = {};
-      data[event.update_key] = event.data;
+      data[event.update_key] = {
+        ...this.supervisor![event.update_key],
+        ...event.data,
+      };
       fireEvent(this, "supervisor-update", data);
     }
   }
