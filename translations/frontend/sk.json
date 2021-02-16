@@ -567,6 +567,7 @@
                     "turned_off": "vypnuté",
                     "turned_on": "zapnuté",
                     "was_at_home": "bol doma",
+                    "was_at_state": "bol zistený v {state}",
                     "was_away": "bol preč",
                     "was_closed": "boli zavreté",
                     "was_connected": "bol pripojený",
@@ -682,6 +683,7 @@
             },
             "entity_registry": {
                 "control": "Ovládanie",
+                "customize_link": "prispôsobenia entít",
                 "dismiss": "Zrušiť",
                 "editor": {
                     "advanced": "Rozšírené nastavenia",
@@ -818,15 +820,18 @@
                         "logs": "Logy"
                     },
                     "reload": {
-                        "automation": "Znovu načítať automatizácie",
-                        "command_line": "Znovu načítať Command line entity",
-                        "input_boolean": "Znovu načítať pomocníkov - prepínače",
-                        "mqtt": "Znovu načítať mqtt entity",
-                        "person": "Znovu načítať osoby",
-                        "rpi_gpio": "Znovu načítať Raspberry Pi GPIO entity",
-                        "scene": "Znovu načítať scény",
-                        "script": "Znovu načítať skripty",
-                        "zone": "Znovu načítať zóny"
+                        "automation": "Znova načítať automatizácie",
+                        "command_line": "Znova načítať Command line entity",
+                        "input_boolean": "Znova načítať pomocníkov - prepínače",
+                        "input_select": "Znova načítať pomocníkov - výbery",
+                        "mqtt": "Znova načítať MQTT entity",
+                        "person": "Znova načítať osoby",
+                        "rpi_gpio": "Znova načítať Raspberry Pi GPIO entity",
+                        "scene": "Znova načítať scény",
+                        "script": "Znova načítať skripty",
+                        "smtp": "Znova načítať notifikačné služby SMTP",
+                        "telegram": "Znova načítať notifikačné služby telegram",
+                        "zone": "Znova načítať zóny"
                     }
                 },
                 "filter_placeholder": "Filter entít"
@@ -865,15 +870,16 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\none {deň}\nfew {dni}\nother {dní}\n}",
+            "day": "{count} {count, plural,\n  one {deň}\n  other {dní}\n}",
             "hour": "{count} {count, plural,\n  one {hodina}\n  other {hodiny}\n}",
             "minute": "{count} {count, plural,\none {minúta}\nother {minút}\n}",
-            "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekúnd}\n}",
-            "week": "{count} {count, plural,\none {týždeň}\nfew {týždne}\nother {týždňov}\n}"
+            "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekúnd}\n}",
+            "week": "{count} {count, plural,\n  one {týždeň}\n  other {týždňov}\n}"
         },
         "errors": {
             "config": {
                 "edit_in_yaml_supported": "Stále môžete upravovať svoju konfiguráciu v YAML.",
+                "editor_not_available": "Pre typ \"{type}\" nie je k dispozícii žiadny vizuálny editor.",
                 "editor_not_supported": "Vizuálny editor nie je pre túto konfiguráciu podporovaný",
                 "error_detected": "Zistili sa chyby v konfigurácii",
                 "key_missing": "Chýba požadovaný kľúč \"{key}\".",
@@ -1279,6 +1285,7 @@
                         "thank_you_note": "Ďakujeme, že ste sa stali súčasťou Home Assistant Cloudu. Vďaka ľuďom, ako ste vy, sme schopní urobiť skvelý zážitok z automatizácie domácnosti pre každého. Ďakujeme!",
                         "tts": {
                             "dialog": {
+                                "example_message": "Dobrý deň, {name} , môžete prehrávať ľubovoľný text v ľubovoľnom podporovanom prehrávači médií!",
                                 "header": "Vyskúšať prevod textu na reč",
                                 "play": "Prehrať",
                                 "target": "Cieľ",
@@ -1510,12 +1517,12 @@
                         "disable_selected": {
                             "button": "Zrušiť vybraté",
                             "confirm_text": "Zakázané entity nebudú pridané do Home Assistanta",
-                            "confirm_title": "Chcete zakázať {number} entity?"
+                            "confirm_title": "Chcete zakázať {number} {number, plural,\n  one {entita}\n  other {entity}\n}?"
                         },
                         "enable_selected": {
                             "button": "Povoliť vybrané",
                             "confirm_text": "Ak sú teraz deaktivované, budú v Home Assistant opäť sprístupnené.",
-                            "confirm_title": "Chcete povoliť {number} entity?"
+                            "confirm_title": "Chcete povoliť {number} {number, plural,\n  one {entita}\n  other {entity}\n}?"
                         },
                         "filter": {
                             "filter": "Filter",
@@ -1536,9 +1543,9 @@
                         "introduction2": "Použite register entít na prepísanie mena, zmenu ID entity alebo odstránenie položky z Home Assistant. Poznámka: Odstránenie položky databázy entít neodstráni entitu. Postupujte podľa nižšie uvedeného odkazu a odstráňte ho z integračnej stránky.",
                         "remove_selected": {
                             "button": "Odstrániť vybraté",
-                            "confirm_partly_title": "Iba {number} vybrané entity môžu byť odstránené.",
+                            "confirm_partly_title": "Iba {number} {number, plural,\n  one {vybraná entita}\n  other {vybrané entity}\n} môžu byť odstránené.",
                             "confirm_text": "Entity je možné odstrániť, iba ak ich integrácia už neposkytuje.",
-                            "confirm_title": "Chcete odstrániť {number} entity?"
+                            "confirm_title": "Chcete odstrániť {number} {number, plural,\n  one {entita}\n  other {entity}\n}?"
                         },
                         "search": "Vyhľadať entity",
                         "selected": "{number} vybrané",
@@ -1955,28 +1962,39 @@
                     "description": "Reštartujte a zastavte server Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Znovu načítať automatizácie",
-                            "core": "Znovu načítať polohu a jadro",
+                            "automation": "Znova načítať automatizácie",
+                            "command_line": "Znova načítať entity príkazového riadku",
+                            "core": "Znova načítať polohu a prispôsobenia",
                             "filesize": "Znova načítať entity veľkosti súboru",
+                            "filter": "Znova načítať entity filtra",
+                            "generic": "Znova načítať entity generických IP kamier",
                             "generic_thermostat": "Znova načítať entity generického termostatu",
-                            "group": "Znovu načítať skupiny",
+                            "group": "Znova načítať skupiny, skupiny entít a skupiny notifikačných služieb",
                             "heading": "Načítavanie novej konfigurácie",
                             "history_stats": "Znova načítať entity štatistiky histórie",
                             "homekit": "Znova načítať HomeKit",
+                            "input_boolean": "Znova načítať pomocníkov - prepínače",
+                            "input_datetime": "Znova načítať pomocníkov - dátumy, časy",
+                            "input_number": "Znova načítať pomocníkov - čísla",
+                            "input_select": "Znova načítať pomocníkov - výbery",
+                            "input_text": "Znova načítať pomocníkov - texty",
                             "introduction": "Niektoré časti aplikácie Home Assistant sa môžu načítať bez nutnosti reštartovania. Opätovným načítaním sa zahodí aktuálna konfigurácia a načíta sa nová.",
                             "min_max": "Znova načítať min/max entity",
                             "mqtt": "Znova načítať ručne nakonfigurované MQTT entity",
-                            "person": "Znovu načítať osoby",
+                            "person": "Znova načítať osoby",
                             "ping": "Znova načítať entity binárneho snímača ping",
                             "reload": "Znova načítať {domain}",
-                            "rpi_gpio": "Opätovné načítanie entít GPIO Raspberry Pi",
-                            "scene": "Znovu načítať scény",
-                            "script": "Znovu načítať skripty",
+                            "rest": "Znova načítať rest entity a rest notifikačné služby",
+                            "rpi_gpio": "Znova načítať Raspberry Pi GPIO entity",
+                            "scene": "Znova načítať scény",
+                            "script": "Znova načítať skripty",
                             "smtp": "Znova načítať notifikačné služby SMTP",
-                            "telegram": "Opätovné načítanie telegram notifikačných služieb",
+                            "statistics": "Znova načítať štatistické entity",
+                            "telegram": "Znova načítať notifikačné služby telegram",
                             "template": "Znova načítať entity šablóny",
                             "trend": "Znova načítať entity trendov",
-                            "zone": "Znovu načítať zóny"
+                            "universal": "Znova načítať entity univerzálneho prehrávača médií",
+                            "zone": "Znova načítať zóny"
                         },
                         "server_management": {
                             "confirm_restart": "Naozaj chcete reštartovať Home Assistanta?",
@@ -2651,8 +2669,8 @@
                         "confirm_remove_config_title": "Naozaj chcete odstrániť konfiguráciu používateľského rozhrania Lovelace? Vaše zobrazenia používateľské rozhranie Lovelace automaticky vygenerujeme s vašimi oblasťami a zariadeniami.",
                         "confirm_unsaved_changes": "Máte neuložené zmeny. Naozaj chcete odísť?",
                         "confirm_unsaved_comments": "Vaša konfigurácia obsahuje komentáre, ktoré sa neuložia. Chcete pokračovať?",
-                        "error_invalid_config": "Vaša konfigurácia je neplatná: {chyby}",
-                        "error_remove": "Nepodarilo sa odstrániť konfiguráciu: {chyby}",
+                        "error_invalid_config": "Vaša konfigurácia je neplatná: {error}",
+                        "error_remove": "Konfiguráciu sa nepodarilo odstrániť: {error}",
                         "error_save_yaml": "Nepodarilo sa uložiť YAML: {error}",
                         "header": "Upraviť konfiguráciu",
                         "resources_moved": "Prostriedky by už nemali byť pridané do konfigurácie Lovelace, ale môžu byť pridané v konfiguračnom paneli Lovelace.",
@@ -2695,10 +2713,10 @@
                     "exit_edit_mode": "Skončiť režim úprav používateľského rozhrania",
                     "help": "Pomoc",
                     "refresh": "Obnoviť",
-                    "reload_resources": "Znovu načítať prostriedky",
+                    "reload_resources": "Znova načítať prostriedky",
                     "start_conversation": "Začať konverzáciu"
                 },
-                "reload_lovelace": "Znovu načítať Lovelace",
+                "reload_lovelace": "Znova načítať UI",
                 "reload_resources": {
                     "refresh_body": "Ak chcete dokončiť načítanie, musíte stránku obnoviť. Chcete ju obnoviť teraz?",
                     "refresh_header": "Chcete obnoviť?"
