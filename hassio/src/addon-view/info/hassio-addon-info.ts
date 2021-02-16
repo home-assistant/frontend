@@ -914,6 +914,12 @@ class HassioAddonInfo extends LitElement {
     try {
       await startHassioAddon(this.hass, this.addon.slug);
       this.addon = await fetchHassioAddonInfo(this.hass, this.addon.slug);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "start",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to start addon",

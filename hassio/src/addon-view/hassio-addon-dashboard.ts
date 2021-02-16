@@ -15,6 +15,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
@@ -22,9 +23,12 @@ import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
-import "../../../src/layouts/hass-loading-screen";
-import "../../../src/layouts/hass-error-screen";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import { fetchHassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/layouts/hass-error-screen";
+import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
@@ -36,7 +40,6 @@ import "./config/hassio-addon-network";
 import "./hassio-addon-router";
 import "./info/hassio-addon-info";
 import "./log/hassio-addon-logs";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
@@ -180,14 +183,20 @@ class HassioAddonDashboard extends LitElement {
   }
 
   private async _apiCalled(ev): Promise<void> {
-    const path: string = ev.detail.path;
+    const pathSplit: string[] = ev.detail.path?.split("/");
 
-    if (!path) {
+    if (!pathSplit || pathSplit.length === 0) {
       return;
     }
 
+    const path: string = pathSplit[pathSplit.length - 1];
+
+    if (["uninstall", "install", "update", "start", "stop"].includes(path)) {
+      await this._updateSupervisor();
+    }
+
     if (path === "uninstall") {
-      history.back();
+      window.history.back();
     } else {
       await this._routeDataChanged();
     }
@@ -210,6 +219,18 @@ class HassioAddonDashboard extends LitElement {
     } catch (err) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
+    }
+  }
+
+  private async _updateSupervisor(): Promise<void> {
+    try {
+      const supervisor = await fetchHassioSupervisorInfo(this.hass);
+      fireEvent(this, "supervisor-update", { supervisor });
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to fetch supervisor information",
+        text: extractApiErrorMessage(err),
+      });
     }
   }
 }
