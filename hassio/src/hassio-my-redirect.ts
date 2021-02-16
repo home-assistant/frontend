@@ -4,6 +4,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import {
@@ -46,7 +47,7 @@ class HassioMyRedirect extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() public _error = "";
+  @internalProperty() public _error?: TemplateResult | string;
 
   connectedCallback() {
     super.connectedCallback();
@@ -54,16 +55,15 @@ class HassioMyRedirect extends LitElement {
     const redirect = REDIRECTS[path];
 
     if (!redirect) {
-      this._error = this.hass.localize(
-        "ui.panel.my.not_supported",
-        "link",
-        html`<a
+      this._error = html`This redirect is not supported by your Home Assistant
+        instance. Check the
+        <a
           target="_blank"
           rel="noreferrer noopener"
           href="https://my.home-assistant.io/faq.html#supported-pages"
-          >${this.hass.localize("ui.panel.my.faq_link")}</a
-        >`
-      );
+          >My Home Assistant FAQ</a
+        >
+        for the supported redirects and the version they where introduced.`;
       return;
     }
 
@@ -71,14 +71,14 @@ class HassioMyRedirect extends LitElement {
     try {
       url = this._createRedirectUrl(redirect);
     } catch (err) {
-      this._error = this.hass.localize("ui.panel.my.error");
+      this._error = "An unknown error occured";
       return;
     }
 
     navigate(this, url, true);
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     if (this._error) {
       return html`<hass-error-screen
         .error=${this._error}
