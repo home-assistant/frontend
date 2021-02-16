@@ -9,7 +9,7 @@ export const atLeastVersion = (
     Number(haMajor) > major ||
     (Number(haMajor) === major && Number(haMinor) >= minor) ||
     (patch !== undefined &&
-      Number(haMinor) === minor &&
+      Number(haMajor) === major && Number(haMinor) === minor &&
       Number(haPatch) >= patch)
   );
 };
