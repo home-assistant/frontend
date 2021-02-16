@@ -46,7 +46,7 @@ export class HaNumberSelector extends LitElement {
         class=${classMap({ single: this.selector.number.mode === "box" })}
         .min=${this.selector.number.min}
         .max=${this.selector.number.max}
-        .value=${this._value}
+        .value=${this.value}
         .step=${this.selector.number.step}
         type="number"
         auto-validate
@@ -66,8 +66,11 @@ export class HaNumberSelector extends LitElement {
 
   private _handleInputChange(ev) {
     ev.stopPropagation();
-    const value = Number(ev.detail.value);
-    if (this._value === value) {
+    const value =
+      ev.detail.value === "" || isNaN(ev.detail.value)
+        ? undefined
+        : Number(ev.detail.value);
+    if (this.value === value) {
       return;
     }
     fireEvent(this, "value-changed", { value });
@@ -76,7 +79,7 @@ export class HaNumberSelector extends LitElement {
   private _handleSliderChange(ev) {
     ev.stopPropagation();
     const value = Number(ev.target.value);
-    if (this._value === value) {
+    if (this.value === value) {
       return;
     }
     fireEvent(this, "value-changed", { value });

@@ -211,13 +211,21 @@ export class HaServiceControl extends LitElement {
   private _serviceDataChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const key = (ev.currentTarget as any).key;
-    if (this.value?.data && this.value.data[key] === ev.detail.value) {
+    const value = ev.detail.value;
+    if (this.value?.data && this.value.data[key] === value) {
       return;
     }
+
+    const data = { ...this.value?.data, [key]: value };
+
+    if (value === "" || value === undefined) {
+      delete data[key];
+    }
+
     fireEvent(this, "value-changed", {
       value: {
         ...this.value,
-        data: { ...this.value?.data, [key]: ev.detail.value },
+        data,
       },
     });
   }
