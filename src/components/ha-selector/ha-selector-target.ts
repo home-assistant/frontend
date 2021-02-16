@@ -61,9 +61,9 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     if (changedProperties.has("selector")) {
       const oldSelector = changedProperties.get("selector");
       if (
-        (oldSelector !== this.selector &&
-          this.selector.target.device?.integration) ||
-        this.selector.target.entity?.integration
+        oldSelector !== this.selector &&
+        (this.selector.target.device?.integration ||
+          this.selector.target.entity?.integration)
       ) {
         this._loadConfigEntries();
       }
