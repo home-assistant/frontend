@@ -41,8 +41,25 @@ class HaMarkdownElement extends UpdatingElement {
     while (walker.nextNode()) {
       const node = walker.currentNode;
 
-      // Open external links in a new window
+      // Handle my.home-assistant.io links
+      console.log(node);
       if (
+        node instanceof HTMLAnchorElement &&
+        node.host === "my.home-assistant.io"
+      ) {
+        const hrefNodes = node.href.split("/");
+        if (document.location.pathname.includes("hassio")) {
+          node.target = "_parent";
+        } else {
+          node.target = "_self";
+        }
+        node.href = `/_my_redirect/${hrefNodes
+          .slice(4, hrefNodes.length)
+          .join("/")}`;
+      }
+
+      // Open external links in a new window
+      else if (
         node instanceof HTMLAnchorElement &&
         node.host !== document.location.host
       ) {
