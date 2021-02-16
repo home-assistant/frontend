@@ -36,10 +36,7 @@ export interface Supervisor {
 }
 
 const subscribeSupervisorEventUpdates = (conn: Connection, store) =>
-  conn.subscribeEvents(
-    (event) => store.setState(event, true),
-    "supervisor_event"
-  );
+  conn.subscribeEvents((event) => store.setState(event), "supervisor_event");
 
 const getSupervisorEventCollection = (conn: Connection) =>
   getCollection(
