@@ -178,7 +178,7 @@ class HassioAddonDashboard extends LitElement {
     }
 
     if (path === "uninstall") {
-      history.back();
+      window.history.back();
     } else {
       await this._routeDataChanged(this.route);
     }
