@@ -3,6 +3,7 @@ import {
   Connection,
   HassConfig,
   HassEntities,
+  HassServiceTarget,
   HassServices,
   MessageBase,
 } from "home-assistant-js-websocket";
@@ -178,6 +179,7 @@ export interface ServiceCallRequest {
   domain: string;
   service: string;
   serviceData?: Record<string, any>;
+  target?: HassServiceTarget;
 }
 
 export interface HomeAssistant {
@@ -216,7 +218,8 @@ export interface HomeAssistant {
   callService(
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
-    serviceData?: ServiceCallRequest["serviceData"]
+    serviceData?: ServiceCallRequest["serviceData"],
+    target?: ServiceCallRequest["target"]
   ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",

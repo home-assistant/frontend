@@ -45,6 +45,7 @@ export class HaSettingsRow extends LitElement {
         min-height: calc(
           var(--paper-item-body-two-line-min-height, 72px) - 16px
         );
+        flex: 1;
       }
       :host([narrow]) {
         align-items: normal;
