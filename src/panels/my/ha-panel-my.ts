@@ -77,6 +77,7 @@ class HaPanelMy extends LitElement {
         `/hassio/_my_redirect/${path}${window.location.search}`,
         true
       );
+      return;
     }
 
     const redirect = REDIRECTS[path];
