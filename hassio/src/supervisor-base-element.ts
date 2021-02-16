@@ -1,4 +1,5 @@
 import { LitElement, property, PropertyValues } from "lit-element";
+import { atLeastVersion } from "../../src/common/config/version";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
@@ -10,7 +11,10 @@ import {
   fetchHassioInfo,
   fetchHassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
-import { Supervisor } from "../../src/data/supervisor/supervisor";
+import {
+  Supervisor,
+  SupervisorEvent,
+} from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
 
@@ -35,6 +39,14 @@ export class SupervisorBaseElement extends urlSyncMixin(
     this.addEventListener("supervisor-update", (ev) =>
       this._updateSupervisor(ev.detail)
     );
+
+    if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+      this.hass.connection.subscribeEvents(
+        (event) =>
+          this._handleSupervisorEvent((event as any).data as SupervisorEvent),
+        "supervisor_event"
+      );
+    }
   }
 
   private async _initSupervisor(): Promise<void> {
@@ -65,5 +77,21 @@ export class SupervisorBaseElement extends urlSyncMixin(
       network,
       resolution,
     };
+  }
+
+  private _handleSupervisorEvent(event: SupervisorEvent): void {
+    if (
+      event.event === "supervisor-update" &&
+      event.update_key !== undefined &&
+      event.data !== undefined &&
+      this.supervisor !== undefined
+    ) {
+      const data: Partial<Supervisor> = {};
+      data[event.update_key] = {
+        ...this.supervisor![event.update_key],
+        ...event.data,
+      };
+      fireEvent(this, "supervisor-update", data);
+    }
   }
 }
