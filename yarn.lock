@@ -8174,10 +8174,10 @@ hmac-drbg@^1.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-home-assistant-js-websocket@^5.4.1:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-5.4.1.tgz#3f677391b38e4feb24f1670e3a9b695767332a51"
-  integrity sha512-FTVoO5yMSa2dy1ffZDvJy/r79VTjwFOzyP/bPld5lDHKbNyXC8wgqpn8Kdf5ZQISYJf1T1dfH+v2NYEngn5NgQ==
+home-assistant-js-websocket@^5.8.1:
+  version "5.8.1"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-5.8.1.tgz#4c5930aa47e7089f5806bb3d190ebe53697d2edc"
+  integrity sha512-2H3q8NK3WrT50iYODv95iz0E2E+nAUOD452V6lhBxhUTQlVFBsuxNMRTTbIZp+6Xab7ad84uF0z+hHFmBMq/Sw==
 
 homedir-polyfill@^1.0.1:
   version "1.0.3"

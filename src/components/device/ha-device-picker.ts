@@ -1,10 +1,5 @@
-import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -38,7 +33,7 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import "../ha-svg-icon";
+import { HaComboBox } from "../ha-combo-box";
 
 interface Device {
   name: string;
@@ -115,7 +110,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private _opened?: boolean;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("ha-combo-box", true) private _comboBox!: HaComboBox;
 
   private _init = false;
 
@@ -244,15 +239,11 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   );
 
   public open() {
-    this.updateComplete.then(() => {
-      (this.shadowRoot?.querySelector("vaadin-combo-box-light") as any)?.open();
-    });
+    this._comboBox?.open();
   }
 
   public focus() {
-    this.updateComplete.then(() => {
-      this.shadowRoot?.querySelector("paper-input")?.focus();
-    });
+    this._comboBox?.focus();
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -292,75 +283,37 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       return html``;
     }
     return html`
-      <vaadin-combo-box-light
+      <ha-combo-box
+        .hass=${this.hass}
+        .label=${this.label === undefined && this.hass
+          ? this.hass.localize("ui.components.device-picker.device")
+          : this.label}
+        .value=${this._value}
+        .renderer=${rowRenderer}
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
-        .value=${this._value}
-        .renderer=${rowRenderer}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._deviceChanged}
-      >
-        <paper-input
-          .label=${this.label === undefined && this.hass
-            ? this.hass.localize("ui.components.device-picker.device")
-            : this.label}
-          class="input"
-          autocapitalize="none"
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-        >
-          ${this.value
-            ? html`
-                <mwc-icon-button
-                  .label=${this.hass.localize(
-                    "ui.components.device-picker.clear"
-                  )}
-                  slot="suffix"
-                  class="clear-button"
-                  @click=${this._clearValue}
-                >
-                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                </mwc-icon-button>
-              `
-            : ""}
-
-          <mwc-icon-button
-            .label=${this.hass.localize(
-              "ui.components.device-picker.show_devices"
-            )}
-            slot="suffix"
-            class="toggle-button"
-          >
-            <ha-svg-icon
-              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-            ></ha-svg-icon>
-          </mwc-icon-button>
-        </paper-input>
-      </vaadin-combo-box-light>
+      ></ha-combo-box>
     `;
-  }
-
-  private _clearValue(ev: Event) {
-    ev.stopPropagation();
-    this._setValue("");
   }
 
   private get _value() {
     return this.value || "";
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-  }
-
   private _deviceChanged(ev: PolymerChangedEvent<string>) {
+    ev.stopPropagation();
     const newValue = ev.detail.value;
 
     if (newValue !== this._value) {
       this._setValue(newValue);
     }
+  }
+
+  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+    this._opened = ev.detail.value;
   }
 
   private _setValue(value: string) {
