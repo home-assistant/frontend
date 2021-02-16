@@ -228,7 +228,7 @@ class HassioAddonDashboard extends LitElement {
       fireEvent(this, "supervisor-update", { supervisor });
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to import from USB",
+        title: "Failed to fetch supervisor information",
         text: extractApiErrorMessage(err),
       });
     }
