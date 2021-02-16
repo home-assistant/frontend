@@ -25,7 +25,11 @@ class HaPanelDevService extends LitElement {
   private _yamlMode = false;
 
   protected render() {
-    const fields = this._fields(this.hass.services, this._serviceData?.service);
+    const fields = this._fields(
+      this.hass.services,
+      this._serviceData?.service,
+      !this._yamlMode
+    );
 
     return html`
       <div class="content">
@@ -52,13 +56,20 @@ class HaPanelDevService extends LitElement {
               "ui.panel.developer-tools.tabs.services.call_service"
             )}</mwc-button
           >
-          <mwc-button @click=${this._toggleYaml}>Toggle YAML mode</mwc-button>
+          <mwc-button @click=${this._toggleYaml}
+            >${this._yamlMode
+              ? "Go to UI mode"
+              : "Toggle YAML mode"}</mwc-button
+          >
         </div>
 
         ${fields.length
           ? html` <ha-expansion-panel
-              header="All available parameters"
+              .header=${this._yamlMode
+                ? "All available parameters"
+                : "Advanced parameters (only available in YAML mode)"}
               outlined
+              .expanded=${this._yamlMode}
             >
               <table class="attributes">
                 <tr>
@@ -93,16 +104,36 @@ class HaPanelDevService extends LitElement {
   }
 
   private _fields = memoizeOne(
-    (serviceDomains: HomeAssistant["services"], domainService: string) => {
+    (
+      serviceDomains: HomeAssistant["services"],
+      domainService: string,
+      hideSelectorField: boolean
+    ) => {
       const domain = computeDomain(domainService);
       const service = computeObjectId(domainService);
       if (!(domain in serviceDomains)) return [];
       if (!(service in serviceDomains[domain])) return [];
 
       const fields = serviceDomains[domain][service].fields;
-      return Object.keys(fields).map(function (field) {
+      const result = Object.keys(fields).map((field) => {
         return { key: field, ...fields[field] };
       });
+
+      if (hideSelectorField) {
+        return result.filter((field) => !field.selector);
+      }
+      if ("target" in serviceDomains[domain][service]) {
+        return [
+          {
+            key: "target",
+            description:
+              "Target for this call, can contain area_id, device_id and or entity_id. Should be used outside of `data`.",
+            example: "{entity_id: [light.lamp, switch.toggle]}",
+          },
+          ...result,
+        ];
+      }
+      return result;
     }
   );
 
