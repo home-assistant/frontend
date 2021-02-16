@@ -48,7 +48,7 @@ class HaMarkdownElement extends UpdatingElement {
         node.host === "my.home-assistant.io"
       ) {
         const hrefNodes = node.href.split("/");
-        if (document.location.pathname.includes("hassio")) {
+        if (document.location.pathname.startsWith("/hassio")) {
           node.target = "_parent";
         } else {
           node.target = "_self";
