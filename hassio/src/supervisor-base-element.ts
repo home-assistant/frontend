@@ -1,6 +1,5 @@
 import { LitElement, property, PropertyValues } from "lit-element";
 import { atLeastVersion } from "../../src/common/config/version";
-import { fireEvent } from "../../src/common/dom/fire_event";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
