@@ -38,29 +38,6 @@ const REDIRECTS: Redirects = {
       domain: "string",
     },
   },
-  supervisor_system: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor_system",
-  },
-  supervisor_snapshots: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor_snapshots",
-  },
-  supervisor_store: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor_store",
-  },
-  supervisor: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor",
-  },
-  supervisor_addon: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor_addon",
-    params: {
-      addon: "string",
-    },
-  },
 };
 
 export type ParamType = "url" | "string";
@@ -85,6 +62,23 @@ class HaPanelMy extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     const path = this.route.path.substr(1);
+
+    if (path.startsWith("supervisor")) {
+      if (!isComponentLoaded(this.hass, "hassio")) {
+        this._error = this.hass.localize(
+          "ui.panel.my.component_not_loaded",
+          "integration",
+          domainToName(this.hass.localize, "hassio")
+        );
+        return;
+      }
+      navigate(
+        this,
+        `/hassio/_my_redirect/${path}${window.location.search}`,
+        true
+      );
+    }
+
     const redirect = REDIRECTS[path];
 
     if (!redirect) {

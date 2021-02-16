@@ -36,6 +36,7 @@ import "./config/hassio-addon-network";
 import "./hassio-addon-router";
 import "./info/hassio-addon-info";
 import "./log/hassio-addon-logs";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
@@ -206,8 +207,8 @@ class HassioAddonDashboard extends LitElement {
     try {
       const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
       this.addon = addoninfo;
-    } catch {
-      this._error = "Error fetching addon info";
+    } catch (err) {
+      this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
     }
   }
