@@ -14,6 +14,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-selector/ha-selector";
@@ -23,7 +24,13 @@ import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 
 interface ExtHassService extends Omit<HassService, "fields"> {
-  fields: { [key: string]: any }[];
+  fields: {
+    key: string;
+    name?: string;
+    description: string;
+    example: string | number | boolean;
+    selector?: Selector;
+  }[];
 }
 
 @customElement("ha-service-control")
@@ -74,7 +81,9 @@ export class HaServiceControl extends LitElement {
     computeDomain(service),
   ]);
 
-  private _getServiceInfo = memoizeOne((service: string) => {
+  private _getServiceInfo = memoizeOne((service: string):
+    | ExtHassService
+    | undefined => {
     if (!service) {
       return undefined;
     }
@@ -91,9 +100,16 @@ export class HaServiceControl extends LitElement {
     const fields = Object.entries(
       serviceDomains[domain][serviceName].fields
     ).map(([key, value]) => {
-      return { key, ...value };
+      return {
+        key,
+        ...value,
+        selector: value.selector as Selector | undefined,
+      };
     });
-    return { ...serviceDomains[domain][serviceName], fields };
+    return {
+      ...serviceDomains[domain][serviceName],
+      fields,
+    };
   });
 
   protected render() {
