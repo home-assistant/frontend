@@ -3,6 +3,10 @@ import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
+import {
+  Supervisor,
+  SupervisorEvent,
+} from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-router";
@@ -56,6 +60,26 @@ export class HassioMain extends SupervisorBaseElement {
     });
 
     makeDialogManager(this, this.shadowRoot!);
+
+    if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+      this.hass.connection.subscribeEvents(
+        (event) =>
+          this._handleSupervisorEvent((event as any).data as SupervisorEvent),
+        "supervisor_event"
+      );
+    }
+  }
+
+  private _handleSupervisorEvent(event: SupervisorEvent): void {
+    if (
+      event.event === "supervisor-update" &&
+      event.update_key !== undefined &&
+      event.data !== undefined
+    ) {
+      const data: Partial<Supervisor> = {};
+      data[event.update_key] = event.data;
+      fireEvent(this, "supervisor-update", data);
+    }
   }
 
   protected updated(changedProps: PropertyValues) {

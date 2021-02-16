@@ -1,3 +1,4 @@
+import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
@@ -8,7 +9,17 @@ export interface HassioResolution {
   suggestions: string[];
 }
 
-export const fetchHassioResolution = async (hass: HomeAssistant) => {
+export const fetchHassioResolution = async (
+  hass: HomeAssistant
+): Promise<HassioResolution> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return await hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/resolution/info",
+      method: "get",
+    });
+  }
+
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioResolution>>(
       "GET",

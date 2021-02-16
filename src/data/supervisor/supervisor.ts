@@ -9,6 +9,20 @@ import {
 
 export type SupervisorArch = "armhf" | "armv7" | "aarch64" | "i386" | "amd64";
 
+export interface SupervisorEvent {
+  event: string;
+  update_key?:
+    | "host"
+    | "supervisor"
+    | "info"
+    | "core"
+    | "network"
+    | "resolution"
+    | "os";
+  data?: any;
+  [key: string]: any;
+}
+
 export interface Supervisor {
   host: HassioHostInfo;
   supervisor: HassioSupervisorInfo;
