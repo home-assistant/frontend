@@ -104,7 +104,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
         ...this.supervisor![event.update_key],
         ...event.data,
       };
-      fireEvent(this, "supervisor-update", data);
+      this._updateSupervisor(data);
     }
   }
 }
