@@ -2,11 +2,13 @@
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfigurēt Ierakstu",
+            "device": "Ierīce",
             "integration": "Integrācija",
             "user": "Lietotājs"
         }
     },
     "groups": {
+        "owner": "Īpašnieks",
         "system-admin": "Administratori",
         "system-read-only": "Lietotāji ar tiesībām tikai lasīt",
         "system-users": "Lietotāji"
@@ -19,6 +21,7 @@
         "logbook": "Žurnāls",
         "mailbox": "Pastkaste",
         "map": "Karte",
+        "media_browser": "Multivides Pārlūks",
         "profile": "Profils",
         "shopping_list": "Iepirkumu saraksts",
         "states": "Pārskats"
@@ -393,9 +396,13 @@
                 "unlock": "Atslēgt"
             },
             "media_player": {
+                "media_play": "Atskaņot",
+                "media_play_pause": "Atskaņot/pauzēt",
                 "sound_mode": "Skaņas režīms",
                 "source": "Avots",
-                "text_to_speak": "Teksts, ko izrunāt"
+                "text_to_speak": "Teksts, ko izrunāt",
+                "turn_off": "Izslēgt",
+                "turn_on": "Ieslēgt"
             },
             "persistent_notification": {
                 "dismiss": "Aizvērt"
@@ -462,6 +469,7 @@
         "common": {
             "back": "Atpakaļ",
             "cancel": "Atcelt",
+            "copied_clipboard": "Kopēts starpliktuvē",
             "loading": "Ielāde",
             "no": "Nē",
             "save": "Saglabāt",
@@ -472,9 +480,19 @@
             "area-picker": {
                 "add_dialog": {
                     "add": "Pievienot",
-                    "name": "Nosaukums"
+                    "failed_create_area": "Neizdevās izveidot apgabalu.",
+                    "name": "Nosaukums",
+                    "text": "Ievadiet jaunā apgabala nosaukumu.",
+                    "title": "Pievienot jaunu apgabalu"
                 },
-                "clear": "Notīrīt"
+                "add_new": "Pievienot jaunu apgabalu...",
+                "area": "Apgabals",
+                "clear": "Notīrīt",
+                "show_areas": "Rādīt Apgabalus"
+            },
+            "calendar": {
+                "my_calendars": "Mani kalendāri",
+                "today": "Šodien"
             },
             "date-range-picker": {
                 "end_date": "Beigu datums",
@@ -483,7 +501,8 @@
             },
             "device-picker": {
                 "clear": "Notīrīt",
-                "device": "Ierīce"
+                "device": "Ierīce",
+                "no_area": "Nav apgabala"
             },
             "entity": {
                 "entity-picker": {
@@ -494,6 +513,42 @@
             "history_charts": {
                 "loading_history": "Vēsturiskie ieraksti par stāvokli tiek ielādēti.",
                 "no_history_found": "Vēsturiskie ieraksti par stāvokli netika atrasti."
+            },
+            "media-browser": {
+                "choose_player": "Izvēlēties Atskaņotāju",
+                "class": {
+                    "album": "Albums",
+                    "artist": "Izpildītājs",
+                    "channel": "Kanāls",
+                    "composer": "Komponists",
+                    "directory": "Bibliotēka",
+                    "episode": "Sērija",
+                    "game": "Spēle",
+                    "genre": "Žanrs",
+                    "image": "Attēls",
+                    "movie": "Filma",
+                    "music": "Mūzika",
+                    "playlist": "Atskaņošanas saraksts",
+                    "podcast": "Raidieraksts",
+                    "season": "Sezona",
+                    "track": "Celiņš",
+                    "tv_show": "TV Raidījums",
+                    "url": "URL",
+                    "video": "Video"
+                },
+                "content-type": {
+                    "album": "Albums",
+                    "artist": "Izpildītājs",
+                    "library": "Bibliotēka",
+                    "playlist": "Atskaņošanas saraksts",
+                    "server": "Serveris"
+                },
+                "documentation": "dokumentācija",
+                "media_player": "Multivides Atskaņotājs",
+                "pick": "Izvēlēties",
+                "pick-media": "Izvēlaties Multvidi",
+                "play": "Atskaņot",
+                "play-media": "Atskaņot Multividi"
             },
             "related-items": {
                 "area": "Apgabals",
@@ -517,6 +572,9 @@
                 "future": "Pēc {time}",
                 "never": "Nekad",
                 "past": "{time} atpakaļ"
+            },
+            "target-picker": {
+                "add_area_id": "Izvēlieties apgabalu"
             }
         },
         "dialogs": {
@@ -529,12 +587,15 @@
             "entity_registry": {
                 "dismiss": "Aizvērt",
                 "editor": {
+                    "advanced": "Papildus Iestatījumi",
+                    "change_device_area": "Mainīt ierīces apgabalu",
                     "confirm_delete": "Vai tiešām vēlaties dzēst šo vienību?",
                     "delete": "Dzēst",
                     "enabled_cause": "Atspējots dēļ {cause}.",
                     "enabled_description": "Atspējotās vienības netiks pievienotas Home Assistant.",
                     "enabled_label": "Iespējot vienību",
                     "entity_id": "Vienības ID",
+                    "follow_device_area": "Sekot ierīces apgabalam",
                     "icon": "Pielāgota ikona",
                     "icon_error": "Ikonām jābūt formātā “prefikss:nosaukums”, piemēram, “mdi:home”",
                     "name": "Nosaukuma pārlabošana",
@@ -618,6 +679,13 @@
                     "description": "Opcijas ir veiksmīgi saglabātas."
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "areas": "Apgabali"
+                    }
+                }
+            },
             "voice_command": {
                 "how_can_i_help": "Kā es varu palīdzēt?",
                 "label": "Uzrakstiet jautājumu un nospiediet 'Enter'",
@@ -650,6 +718,13 @@
             "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekundes}\n}",
             "week": "{count} {count, plural,\n  one {nedēļa}\n  other {nedēļas}\n}"
         },
+        "errors": {
+            "config": {
+                "editor_not_available": "Vizuālais redaktors nav pieejams veidam \"{type}\".",
+                "editor_not_supported": "Vizuālais Redaktors netiek atbalstīts šajā konfigurācijā",
+                "error_detected": "Atrastas konfigurācijas kļūdas"
+            }
+        },
         "login-form": {
             "log_in": "Pieslēgties",
             "password": "Parole",
@@ -673,14 +748,26 @@
                 },
                 "areas": {
                     "caption": "Apgabali",
+                    "data_table": {
+                        "area": "Apgabals",
+                        "devices": "Ierīces"
+                    },
+                    "delete": {
+                        "confirmation_text": "Visas ierīces šajā apgabalā kļūs par nepiesaistītām.",
+                        "confirmation_title": "Vai tiešām vēlaties dzēst šo apgabalu?"
+                    },
                     "description": "Pārvaldiet mājas apgabalus",
                     "editor": {
+                        "area_id": "Apgabala ID",
                         "create": "Izveidot",
+                        "default_name": "Jauns Apgabals",
                         "delete": "Dzēst",
                         "name": "Nosaukums",
+                        "unknown_error": "Nezināma kļūda",
                         "update": "Atjaunināt"
                     },
                     "picker": {
+                        "create_area": "Izveidot Apgabalu",
                         "header": "Apgabali",
                         "integrations_page": "Integrāciju lapa",
                         "introduction": "Apgabali tiek izmantoti, lai organizētu ierīces atrašanās vietu. Šī informācija tiks izmantota daudzviet Home Assistant, lai palīdzētu organizēt lietotāja saskarni, atļaujas un integrācijas ar citām sistēmām.",
@@ -824,7 +911,8 @@
                                     "extra_fields": {
                                         "above": "Virs",
                                         "below": "Zem",
-                                        "for": "Ilgums"
+                                        "for": "Ilgums",
+                                        "zone": "Zona"
                                     },
                                     "label": "Ierīce"
                                 },
@@ -923,6 +1011,11 @@
                     "account": {
                         "alexa": {
                             "title": "Alexa"
+                        },
+                        "tts": {
+                            "dialog": {
+                                "play": "Atskaņot"
+                            }
                         },
                         "webhooks": {
                             "loading": "Ielādē..."
@@ -1030,6 +1123,11 @@
                     "description": "Pievienoto ierīču pārvaldība",
                     "device_info": "Informācija par ierīci",
                     "device_not_found": "Ierīce nav atrasta.",
+                    "disabled": "Atspējots",
+                    "disabled_by": {
+                        "user": "Lietotājs"
+                    },
+                    "enabled_label": "Iespējot Ierīci",
                     "entities": {
                         "add_entities_lovelace": "Pievienot Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {atspējota ierīce}\n  other {atspējotas ierīces}\n}",
@@ -1039,6 +1137,14 @@
                     },
                     "name": "Nosaukums",
                     "no_devices": "Nav ierīču",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filtrs",
+                            "show_all": "Rādīt visu",
+                            "show_disabled": "Rādīt atspējotās ierīces"
+                        },
+                        "search": "Meklēt ierīces"
+                    },
                     "scene": {
                         "create": "Izveidot ainu ar ierīci",
                         "no_scenes": "Nav ainas",
@@ -1077,6 +1183,7 @@
                         },
                         "header": "Vienības",
                         "headers": {
+                            "area": "Apgabals",
                             "entity_id": "Vienības ID",
                             "integration": "Integrācija",
                             "name": "Nosaukums",
@@ -1195,6 +1302,7 @@
                     },
                     "configure": "Konfigurēt",
                     "configured": "Nokonfigurētās",
+                    "confirm_new": "Vai vēlaties uzstādīt {integration}?",
                     "description": "Pārvaldiet integrācijas",
                     "details": "Integrācijas detaļas",
                     "discovered": "Atklātās",
@@ -1494,18 +1602,23 @@
                         "system_generated_users_not_editable": "Sistēmas ģenerētos lietotājus nevar atjaunināt.",
                         "system_generated_users_not_removable": "Sistēmas ģenerētos lietotājus nevar dzēst.",
                         "unnamed_user": "Lietotājs bez vārda",
-                        "update_user": "Atjaunināt"
+                        "update_user": "Atjaunināt",
+                        "username": "Lietotājvārds"
                     },
                     "picker": {
                         "headers": {
                             "group": "Grupa",
+                            "is_active": "Aktīvs",
+                            "is_owner": "Īpašnieks",
                             "name": "Vārds",
-                            "system": "Sistēmas"
+                            "system": "Sistēmas",
+                            "username": "Lietotājvārds"
                         }
                     },
                     "users_privileges_note": "Lietotāju grupa ir izstrādes procesā. Lietotājs nevarēs administrēt instalāciju, izmantojot lietotāja saskarni. Mēs joprojām pārbaudām pārvaldības API, lai pārliecinātos, ka tie pareizi ierobežo piekļuvi administratoriem."
                 },
                 "zha": {
+                    "add_device": "Pievienot ierīci",
                     "add_device_page": {
                         "discovery_text": "Šeit tiks parādītas atklātās ierīces. Izpildiet ierīces (-ču) instrukcijas un iestatiet ierīci (-es) pārī savienošanas režīmā.",
                         "header": "Zigbee Home Automation - Pievienot ierīces",
@@ -1526,7 +1639,12 @@
                         "value": "Vērtība"
                     },
                     "description": "Zigbee Home Automation tīkla pārvaldība",
+                    "device_pairing_card": {
+                        "CONFIGURED_status_text": "Inicializē",
+                        "INITIALIZED_status_text": "Ierīce ir gatava lietošanai"
+                    },
                     "groups": {
+                        "add_group": "Pievienot grupu",
                         "caption": "Grupas",
                         "group_id": "Grupas ID",
                         "group_name_placeholder": "Grupas nosaukums"
@@ -1536,6 +1654,10 @@
                     },
                     "node_management": {
                         "header": "Ierīču pārvaldība"
+                    },
+                    "visualization": {
+                        "caption": "Vizualizācija",
+                        "header": "Tīkla vizualizācija"
                     }
                 },
                 "zone": {
@@ -1566,6 +1688,30 @@
                     "home_zone_core_config": "Jūsu mājas zonas atrašanās vietu var rediģēt no vispārējās konfigurācijas lapas. Mājas zonas rādiusu pagaidām nevar rediģēt, izmantojot lietotāja saskarni. Vai vēlaties pāriet uz vispārīgo konfigurāciju?",
                     "introduction": "Zonas ļauj norādīt noteiktus reģionus uz zemes. Kad cilvēks atrodas zonā, vienības stāvoklim tiks izmantots zonas nosaukums. Zonas var izmantotas kā aktivators vai nosacījums automatizācijās.",
                     "no_zones_created_yet": "Izskatās, ka vēl neesat izveidojis nevienu zonu."
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Skatīt Ierīci"
+                    },
+                    "common": {
+                        "close": "Aizvērt",
+                        "home_id": "Mājas ID",
+                        "network": "Tīkls"
+                    },
+                    "dashboard": {
+                        "driver_version": "Draivera versija",
+                        "dump_not_ready_confirm": "Lejupielādēt",
+                        "home_id": "Mājas ID",
+                        "server_version": "Servera versija"
+                    },
+                    "navigation": {
+                        "network": "Tīkls"
+                    },
+                    "network_status": {
+                        "connected": "Savienots",
+                        "connecting": "Savienojas",
+                        "unknown": "Nezināms"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1707,6 +1853,10 @@
                             "tap_action": "Pieskariena darbība",
                             "url": "URL"
                         },
+                        "grid": {
+                            "columns": "Kolonnas",
+                            "square": "Attēlot kartiņas kā kvadrātus"
+                        },
                         "humidifier": {
                             "description": "Mitrinātāja kartīte ļauj kontrolēt jūsu mitrinātāja vienību, sniedzot iespēju pielāgot vienības mitrumu un režīmu.",
                             "name": "Mitrinātājs"
@@ -1837,6 +1987,9 @@
                 "delete_prompt": "Vai dzēst šo ziņojumu?",
                 "empty": "Jums nav ziņu",
                 "playback_title": "Ziņu atskaņošana"
+            },
+            "my": {
+                "error": "Radusies nezināma kļūda"
             },
             "page-authorize": {
                 "abort_intro": "Pieteikšanās pārtraukta",
@@ -2025,7 +2178,8 @@
                     "error_required": "Obligāts",
                     "header": "Mainīt paroli",
                     "new_password": "Jauna parole",
-                    "submit": "Iesniegt"
+                    "submit": "Iesniegt",
+                    "success": "Parole veiksmīgi nomainīta"
                 },
                 "current_user": "Jūs šobrīd esat pieteicies kā {fullName}.",
                 "customize_sidebar": {
