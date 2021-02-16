@@ -42,7 +42,6 @@ class HaMarkdownElement extends UpdatingElement {
       const node = walker.currentNode;
 
       // Handle my.home-assistant.io links
-      console.log(node);
       if (
         node instanceof HTMLAnchorElement &&
         node.host === "my.home-assistant.io"
