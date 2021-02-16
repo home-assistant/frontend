@@ -29,13 +29,13 @@ class HassioAddonConfigDashboard extends LitElement {
     const hasOptions =
       this.addon.options && Object.keys(this.addon.options).length;
     const hasSchema =
-      this.addon.schema && Object.keys(this.addon.schema).length;
+      hasOptions && this.addon.schema && Object.keys(this.addon.schema).length;
 
     return html`
       <div class="content">
-        ${(hasOptions && hasSchema) || this.addon.network || this.addon.audio
+        ${hasOptions || hasSchema || this.addon.network || this.addon.audio
           ? html`
-              ${hasOptions && hasSchema
+              ${hasOptions || hasSchema
                 ? html`
                     <hassio-addon-config
                       .hass=${this.hass}
