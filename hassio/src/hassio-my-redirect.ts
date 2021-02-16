@@ -6,76 +6,42 @@ import {
   property,
 } from "lit-element";
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import { navigate } from "../../common/navigate";
-import { HomeAssistant, Route } from "../../types";
 import {
   createSearchParam,
   extractSearchParamsObject,
-} from "../../common/url/search-params";
-import "../../layouts/hass-error-screen";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { domainToName } from "../../data/integration";
+} from "../../src/common/url/search-params";
+import "../../src/layouts/hass-error-screen";
+import {
+  ParamType,
+  Redirect,
+  Redirects,
+} from "../../src/panels/my/ha-panel-my";
+import { navigate } from "../../src/common/navigate";
+import { HomeAssistant, Route } from "../../src/types";
 
 const REDIRECTS: Redirects = {
-  info: {
-    redirect: "/config/info",
-  },
-  logs: {
-    redirect: "/config/logs",
-  },
-  profile: {
-    redirect: "/profile/dashboard",
-  },
-  blueprint_import: {
-    redirect: "/config/blueprint/dashboard/import",
-    params: {
-      blueprint_url: "url",
-    },
-  },
-  config_flow_start: {
-    redirect: "/config/integrations/add",
-    params: {
-      domain: "string",
-    },
-  },
   supervisor_system: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor_system",
+    redirect: "/hassio/system",
   },
   supervisor_snapshots: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor_snapshots",
+    redirect: "/hassio/snapshots",
   },
   supervisor_store: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor_store",
+    redirect: "/hassio/store",
   },
   supervisor: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor",
+    redirect: "/hassio/dashboard",
   },
   supervisor_addon: {
-    component: "hassio",
-    redirect: "/hassio/_my_redirect/supervisor_addon",
+    redirect: "/hassio/addon",
     params: {
       addon: "string",
     },
   },
 };
 
-export type ParamType = "url" | "string";
-
-export type Redirects = { [key: string]: Redirect };
-export interface Redirect {
-  redirect: string;
-  component?: string;
-  params?: {
-    [key: string]: ParamType;
-  };
-}
-
-@customElement("ha-panel-my")
-class HaPanelMy extends LitElement {
+@customElement("hassio-my-redirect")
+class HassioMyRedirect extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public route!: Route;
@@ -97,18 +63,6 @@ class HaPanelMy extends LitElement {
           href="https://my.home-assistant.io/faq.html#supported-pages"
           >${this.hass.localize("ui.panel.my.faq_link")}</a
         >`
-      );
-      return;
-    }
-
-    if (
-      redirect.component &&
-      !isComponentLoaded(this.hass, redirect.component)
-    ) {
-      this._error = this.hass.localize(
-        "ui.panel.my.component_not_loaded",
-        "integration",
-        domainToName(this.hass.localize, redirect.component)
       );
       return;
     }
@@ -166,6 +120,6 @@ class HaPanelMy extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-panel-my": HaPanelMy;
+    "hassio-my-redirect": HassioMyRedirect;
   }
 }

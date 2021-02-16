@@ -41,6 +41,10 @@ class HassioRouter extends HassRouterPage {
         tag: "hassio-ingress-view",
         load: () => import("./ingress-view/hassio-ingress-view"),
       },
+      _my_redirect: {
+        tag: "hassio-my-redirect",
+        load: () => import("./hassio-my-redirect"),
+      },
     },
   };
 
