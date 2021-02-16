@@ -9,12 +9,15 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import { navigate } from "../../../src/common/navigate";
+import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
 import {
   fetchHassioAddonInfo,
@@ -24,6 +27,8 @@ import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/layouts/hass-error-screen";
+import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
@@ -48,6 +53,8 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
+  @internalProperty() _error?: string;
+
   private _computeTail = memoizeOne((route: Route) => {
     const dividerPos = route.path.indexOf("/", 1);
     return dividerPos === -1
@@ -62,8 +69,14 @@ class HassioAddonDashboard extends LitElement {
   });
 
   protected render(): TemplateResult {
+    if (this._error) {
+      return html`<hass-error-screen
+        .error=${this._error}
+      ></hass-error-screen>`;
+    }
+
     if (!this.addon) {
-      return html`<ha-circular-progress active></ha-circular-progress>`;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
     const addonTabs: PageNavigation[] = [
@@ -160,7 +173,12 @@ class HassioAddonDashboard extends LitElement {
   }
 
   protected async firstUpdated(): Promise<void> {
-    await this._routeDataChanged(this.route);
+    if (this.route.path === "") {
+      const addon = extractSearchParam("addon");
+      if (addon) {
+        navigate(this, `/hassio/addon/${addon}`, true);
+      }
+    }
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
@@ -180,16 +198,26 @@ class HassioAddonDashboard extends LitElement {
     if (path === "uninstall") {
       window.history.back();
     } else {
-      await this._routeDataChanged(this.route);
+      await this._routeDataChanged();
     }
   }
 
-  private async _routeDataChanged(routeData: Route): Promise<void> {
-    const addon = routeData.path.split("/")[1];
+  protected updated(changedProperties) {
+    if (changedProperties.has("route") && !this.addon) {
+      this._routeDataChanged();
+    }
+  }
+
+  private async _routeDataChanged(): Promise<void> {
+    const addon = this.route.path.split("/")[1];
+    if (!addon) {
+      return;
+    }
     try {
       const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
       this.addon = addoninfo;
-    } catch {
+    } catch (err) {
+      this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
     }
   }
