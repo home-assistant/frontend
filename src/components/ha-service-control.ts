@@ -29,6 +29,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
     key: string;
     name?: string;
     description: string;
+    required?: boolean;
     default?: any;
     example?: any;
     selector?: Selector;
