@@ -880,27 +880,6 @@ class HassioAddonInfo extends LitElement {
     button.progress = false;
   }
 
-  private async _installClicked(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
-    try {
-      await installHassioAddon(this.hass, this.addon.slug);
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "install",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to install addon",
-        text: extractApiErrorMessage(err),
-      });
-    }
-    button.progress = false;
-  }
-
   private async _stopClicked(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
     button.progress = true;
