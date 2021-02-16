@@ -29,7 +29,8 @@ interface ExtHassService extends Omit<HassService, "fields"> {
     key: string;
     name?: string;
     description: string;
-    example: string | number | boolean;
+    default?: any;
+    example?: any;
     selector?: Selector;
   }[];
 }
@@ -170,7 +171,9 @@ export class HaServiceControl extends LitElement {
                     .selector=${dataField.selector}
                     .key=${dataField.key}
                     @value-changed=${this._serviceDataChanged}
-                    .value=${this.value?.data && this.value.data[dataField.key]}
+                    .value=${(this.value?.data &&
+                      this.value.data[dataField.key]) ||
+                    dataField.default}
                   ></ha-selector
                 ></ha-settings-row>`
               : ""
