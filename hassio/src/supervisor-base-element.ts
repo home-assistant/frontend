@@ -1,5 +1,6 @@
 import { LitElement, property, PropertyValues } from "lit-element";
 import { atLeastVersion } from "../../src/common/config/version";
+import { fireEvent } from "../../src/common/dom/fire_event";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
@@ -12,6 +13,7 @@ import {
   fetchHassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
 import {
+  subscribeSupervisorEvents,
   Supervisor,
   SupervisorEvent,
 } from "../../src/data/supervisor/supervisor";
@@ -29,6 +31,16 @@ export class SupervisorBaseElement extends urlSyncMixin(
 ) {
   @property({ attribute: false }) public supervisor?: Supervisor;
 
+  private _unsubEvents?: () => void;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubEvents) {
+      this._unsubEvents();
+      this._unsubEvents = undefined;
+    }
+  }
+
   protected _updateSupervisor(obj: Partial<Supervisor>): void {
     this.supervisor = { ...this.supervisor!, ...obj };
   }
@@ -41,11 +53,12 @@ export class SupervisorBaseElement extends urlSyncMixin(
     );
 
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      this.hass.connection.subscribeEvents(
-        (event) =>
-          this._handleSupervisorEvent((event as any).data as SupervisorEvent),
-        "supervisor_event"
-      );
+      this._unsubEvents = subscribeSupervisorEvents(this.hass, (event) => {
+        if (!event) {
+          return;
+        }
+        this._handleSupervisorEvent((event as any).data as SupervisorEvent);
+      });
     }
   }
 

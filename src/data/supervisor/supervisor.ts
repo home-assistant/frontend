@@ -1,3 +1,5 @@
+import { Connection, getCollection } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../../types";
 import { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import { NetworkInfo } from "../hassio/network";
 import { HassioResolution } from "../hassio/resolution";
@@ -32,3 +34,24 @@ export interface Supervisor {
   resolution: HassioResolution;
   os: HassioHassOSInfo;
 }
+
+const subscribeSupervisorEventUpdates = (conn: Connection, store) =>
+  conn.subscribeEvents(
+    (event) => store.setState(event, true),
+    "supervisor_event"
+  );
+
+const getSupervisorEventCollection = (conn: Connection) =>
+  getCollection(
+    conn,
+    "_supervisorEvent",
+    async () => {
+      return null;
+    },
+    subscribeSupervisorEventUpdates
+  );
+
+export const subscribeSupervisorEvents = (
+  hass: HomeAssistant,
+  onChange: (event) => void
+) => getSupervisorEventCollection(hass.connection).subscribe(onChange);
