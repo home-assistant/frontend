@@ -42,7 +42,10 @@ class HaServicePicker extends LitElement {
       <ha-combo-box
         .hass=${this.hass}
         .label=${this.hass.localize("ui.components.service-picker.service")}
-        .filteredItems=${this._services(this.hass.services, this._filter)}
+        .filteredItems=${this._filteredServices(
+          this.hass.services,
+          this._filter
+        )}
         .value=${this.value}
         .renderer=${rowRenderer}
         item-value-path="service"
@@ -54,36 +57,47 @@ class HaServicePicker extends LitElement {
     `;
   }
 
-  private _services = memoizeOne(
+  private _services = memoizeOne((services: HomeAssistant["services"]): {
+    service: string;
+    description: string;
+  }[] => {
+    if (!services) {
+      return [];
+    }
+    const result: { service: string; description: string }[] = [];
+
+    Object.keys(services)
+      .sort()
+      .forEach((domain) => {
+        const services_keys = Object.keys(services[domain]).sort();
+
+        for (const service of services_keys) {
+          result.push({
+            service: `${domain}.${service}`,
+            description:
+              services[domain][service].description || `${domain}.${service}`,
+          });
+        }
+      });
+
+    return result;
+  });
+
+  private _filteredServices = memoizeOne(
     (services: HomeAssistant["services"], filter?: string) => {
       if (!services) {
         return [];
       }
-      const result: { service: string; description: string }[] = [];
+      const processedServices = this._services(services);
 
-      Object.keys(services)
-        .sort()
-        .forEach((domain) => {
-          const services_keys = Object.keys(services[domain]).sort();
-
-          for (const service of services_keys) {
-            result.push({
-              service: `${domain}.${service}`,
-              description:
-                services[domain][service].description || `${domain}.${service}`,
-            });
-          }
-        });
-
-      // TO DO: Don't recalc the services everytime filter changes
-      if (filter) {
-        return result.filter(
-          (service) =>
-            service.service.toLowerCase().includes(filter) ||
-            service.description.toLowerCase().includes(filter)
-        );
+      if (!filter) {
+        return processedServices;
       }
-      return result;
+      return processedServices.filter(
+        (service) =>
+          service.service.toLowerCase().includes(filter) ||
+          service.description.toLowerCase().includes(filter)
+      );
     }
   );
 
