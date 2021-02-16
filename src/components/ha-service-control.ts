@@ -14,6 +14,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import { ENTITY_COMPONENT_DOMAINS } from "../data/entity";
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
@@ -77,9 +78,10 @@ export class HaServiceControl extends LitElement {
     }
   }
 
-  private _domainFilter = memoizeOne((service: string) => [
-    computeDomain(service),
-  ]);
+  private _domainFilter = memoizeOne((service: string) => {
+    const domain = computeDomain(service);
+    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
+  });
 
   private _getServiceInfo = memoizeOne((service: string):
     | ExtHassService
