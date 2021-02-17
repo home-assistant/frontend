@@ -369,12 +369,7 @@ class HassioHostInfo extends LitElement {
     if (hostname && hostname !== curHostname) {
       try {
         await changeHostOptions(this.hass, { hostname });
-        if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-          fireEvent(this, "supervisor-store-refresh", { store: "host" });
-        } else {
-          const host = await fetchHassioHostInfo(this.hass);
-          fireEvent(this, "supervisor-update", { host });
-        }
+        fireEvent(this, "supervisor-store-refresh", { store: "host" });
       } catch (err) {
         showAlertDialog(this, {
           title: "Setting hostname failed",
@@ -387,12 +382,7 @@ class HassioHostInfo extends LitElement {
   private async _importFromUSB(): Promise<void> {
     try {
       await configSyncOS(this.hass);
-      if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-        fireEvent(this, "supervisor-store-refresh", { store: "host" });
-      } else {
-        const host = await fetchHassioHostInfo(this.hass);
-        fireEvent(this, "supervisor-update", { host });
-      }
+      fireEvent(this, "supervisor-store-refresh", { store: "host" });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to import from USB",

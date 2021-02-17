@@ -319,12 +319,7 @@ class HassioSupervisorInfo extends LitElement {
 
   private async _reloadSupervisor(): Promise<void> {
     await reloadSupervisor(this.hass);
-    if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
-    } else {
-      const supervisor = await fetchHassioSupervisorInfo(this.hass);
-      fireEvent(this, "supervisor-update", { supervisor });
-    }
+    fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
   }
 
   private async _supervisorRestart(ev: CustomEvent): Promise<void> {

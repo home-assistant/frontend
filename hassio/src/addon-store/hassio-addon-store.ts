@@ -17,14 +17,10 @@ import "../../../src/common/search/search-input";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-svg-icon";
 import {
-  fetchHassioAddonsInfo,
-  HassioAddonInfo,
   HassioAddonRepository,
-  HassioAddonsInfo,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { fetchHassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -52,20 +48,15 @@ const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
 class HassioAddonStore extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) private _addons?: HassioAddonInfo[];
-
-  @property({ attribute: false }) private _repos?: HassioAddonRepository[];
-
   @internalProperty() private _filter?: string;
 
   public async refreshData() {
-    this._repos = undefined;
-    this._addons = undefined;
-    this._filter = undefined;
     await reloadHassioAddons(this.hass);
     await this._loadData();
   }
@@ -73,9 +64,9 @@ class HassioAddonStore extends LitElement {
   protected render(): TemplateResult {
     const repos: TemplateResult[] = [];
 
-    if (this._repos) {
-      for (const repo of this._repos) {
-        const addons = this._addons!.filter(
+    if (this.supervisor.addon.repositories) {
+      for (const repo of this.supervisor.addon.repositories.sort(sortRepos)) {
+        const addons = this.supervisor.addon.addons.filter(
           (addon) => addon.repository === repo.slug
         );
 
@@ -182,7 +173,7 @@ class HassioAddonStore extends LitElement {
 
   private async _manageRepositories() {
     showRepositoriesDialog(this, {
-      repos: this._repos!,
+      repos: this.supervisor.addon.repositories,
       loadData: () => this._loadData(),
     });
   }
@@ -192,29 +183,8 @@ class HassioAddonStore extends LitElement {
   }
 
   private async _loadData() {
-    let addonsInformation: HassioAddonsInfo;
-    try {
-      if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-        addonsInformation = await fetchHassioAddonsInfo(this.hass);
-        fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
-      } else {
-        const [addonsInfo, supervisor] = await Promise.all([
-          fetchHassioAddonsInfo(this.hass),
-          fetchHassioSupervisorInfo(this.hass),
-        ]);
-        fireEvent(this, "supervisor-update", { supervisor });
-        addonsInformation = addonsInfo;
-      }
-    } catch (err) {
-      alert(extractApiErrorMessage(err));
-      return;
-    }
-    if (addonsInformation === undefined) {
-      return;
-    }
-    this._repos = addonsInformation.repositories;
-    this._repos.sort(sortRepos);
-    this._addons = addonsInformation.addons;
+    fireEvent(this, "supervisor-store-refresh", { store: "addon" });
+    fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
   }
 
   private async _filterChanged(e) {

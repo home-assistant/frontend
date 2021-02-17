@@ -193,7 +193,7 @@ class HassioAddonDashboard extends LitElement {
     const path: string = pathSplit[pathSplit.length - 1];
 
     if (["uninstall", "install", "update", "start", "stop"].includes(path)) {
-      await this._updateSupervisor();
+      fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
     }
 
     if (path === "uninstall") {
@@ -220,22 +220,6 @@ class HassioAddonDashboard extends LitElement {
     } catch (err) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
-    }
-  }
-
-  private async _updateSupervisor(): Promise<void> {
-    try {
-      if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-        fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
-      } else {
-        const supervisor = await fetchHassioSupervisorInfo(this.hass);
-        fireEvent(this, "supervisor-update", { supervisor });
-      }
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to fetch supervisor information",
-        text: extractApiErrorMessage(err),
-      });
     }
   }
 }

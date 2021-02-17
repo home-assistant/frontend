@@ -6,6 +6,8 @@ import {
   PropertyValues,
 } from "lit-element";
 import { atLeastVersion } from "../../src/common/config/version";
+import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";
+import { HassioResponse } from "../../src/data/hassio/common";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
@@ -22,6 +24,7 @@ import {
   subscribeSupervisorEvents,
   Supervisor,
   SupervisorObject,
+  supervisorStore,
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
@@ -32,16 +35,6 @@ declare global {
     "supervisor-store-refresh": { store: SupervisorObject };
   }
 }
-
-export const supervisorStores = [
-  { key: "host", endpoint: "/host/info" },
-  { key: "supervisor", endpoint: "/supervisor/info" },
-  { key: "info", endpoint: "/info" },
-  { key: "core", endpoint: "/core/info" },
-  { key: "network", endpoint: "/network/info" },
-  { key: "resolution", endpoint: "/resolution/info" },
-  { key: "os", endpoint: "/os/info" },
-];
 
 export class SupervisorBaseElement extends urlSyncMixin(
   ProvideHassLitMixin(LitElement)
@@ -66,37 +59,46 @@ export class SupervisorBaseElement extends urlSyncMixin(
     this.supervisor = { ...this.supervisor!, ...obj };
   }
 
-  protected _updateSupervisorFromStore(obj: Partial<Supervisor>): void {
-    if (!obj) {
-      return;
-    }
-    this._updateSupervisor(obj);
-  }
-
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this._initSupervisor();
   }
 
-  private async _initSupervisor(): Promise<void> {
+  private async _handleSupervisorStoreRefreshEvent(ev) {
+    const store = ev.detail.store;
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      this.addEventListener("supervisor-store-refresh", (ev) => {
-        this._collections[ev.detail.store].refresh();
-      });
-      supervisorStores.forEach((store) => {
-        this._unsubs[store.key] = subscribeSupervisorEvents(
+      this._collections[store].refresh();
+      return;
+    }
+
+    const response = await this.hass.callApi<HassioResponse<any>>(
+      "GET",
+      `hassio${supervisorStore[store]}`
+    );
+    this._updateSupervisor({ [store]: response.data });
+  }
+
+  private async _initSupervisor(): Promise<void> {
+    this.addEventListener(
+      "supervisor-store-refresh",
+      this._handleSupervisorStoreRefreshEvent
+    );
+
+    if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+      Object.keys(supervisorStore).forEach((store) => {
+        this._unsubs[store] = subscribeSupervisorEvents(
           this.hass,
-          (data) => this._updateSupervisorFromStore({ [store.key]: data }),
-          store.key,
-          store.endpoint
+          (data) => this._updateSupervisor({ [store]: data }),
+          store,
+          supervisorStore[store]
         );
-        if (this._collections[store.key]) {
-          this._collections[store.key].refresh();
+        if (this._collections[store]) {
+          this._collections[store].refresh();
         } else {
-          this._collections[store.key] = getSupervisorEventCollection(
+          this._collections[store] = getSupervisorEventCollection(
             this.hass.connection,
-            store.key,
-            store.endpoint
+            store,
+            supervisorStore[store]
           );
         }
       });
@@ -112,6 +114,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
     }
 
     const [
+      addon,
       supervisor,
       host,
       core,
@@ -120,6 +123,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       network,
       resolution,
     ] = await Promise.all([
+      fetchHassioAddonsInfo(this.hass),
       fetchHassioSupervisorInfo(this.hass),
       fetchHassioHostInfo(this.hass),
       fetchHassioHomeAssistantInfo(this.hass),
@@ -130,6 +134,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
     ]);
 
     this.supervisor = {
+      addon,
       supervisor,
       host,
       core,
