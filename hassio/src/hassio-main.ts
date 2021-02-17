@@ -75,11 +75,11 @@ export class HassioMain extends SupervisorBaseElement {
 
   protected render() {
     if (!this.supervisor || !this.hass) {
-      return html``;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
     if (supervisorStores.some((store) => !this.supervisor![store.key])) {
-      return html`<hass-loading-screen></hass-loading-screen> `;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
     return html`
