@@ -13,8 +13,10 @@ import {
   extractSearchParamsObject,
 } from "../../common/url/search-params";
 import "../../layouts/hass-error-screen";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { domainToName } from "../../data/integration";
 
-const REDIRECTS = {
+const REDIRECTS: Redirects = {
   info: {
     redirect: "/config/info",
   },
@@ -38,10 +40,12 @@ const REDIRECTS = {
   },
 };
 
-type ParamType = "url" | "string";
+export type ParamType = "url" | "string";
 
-interface Redirect {
+export type Redirects = { [key: string]: Redirect };
+export interface Redirect {
   redirect: string;
+  component?: string;
   params?: {
     [key: string]: ParamType;
   };
@@ -58,7 +62,25 @@ class HaPanelMy extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     const path = this.route.path.substr(1);
-    const redirect: Redirect | undefined = REDIRECTS[path];
+
+    if (path.startsWith("supervisor")) {
+      if (!isComponentLoaded(this.hass, "hassio")) {
+        this._error = this.hass.localize(
+          "ui.panel.my.component_not_loaded",
+          "integration",
+          domainToName(this.hass.localize, "hassio")
+        );
+        return;
+      }
+      navigate(
+        this,
+        `/hassio/_my_redirect/${path}${window.location.search}`,
+        true
+      );
+      return;
+    }
+
+    const redirect = REDIRECTS[path];
 
     if (!redirect) {
       this._error = this.hass.localize(
@@ -70,6 +92,18 @@ class HaPanelMy extends LitElement {
           href="https://my.home-assistant.io/faq.html#supported-pages"
           >${this.hass.localize("ui.panel.my.faq_link")}</a
         >`
+      );
+      return;
+    }
+
+    if (
+      redirect.component &&
+      !isComponentLoaded(this.hass, redirect.component)
+    ) {
+      this._error = this.hass.localize(
+        "ui.panel.my.component_not_loaded",
+        "integration",
+        domainToName(this.hass.localize, redirect.component)
       );
       return;
     }

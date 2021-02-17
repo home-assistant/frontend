@@ -1055,18 +1055,23 @@
                             "title": "الکسا"
                         },
                         "connected": "متصل",
-                        "integrations": "Integrari",
-                        "integrations_introduction2": "Verifica website-ul pentru",
-                        "integrations_link_all_features": "toate caracteristicile disponibile",
-                        "manage_account": "Administrare Cont",
-                        "nabu_casa_account": "Cont Nabu Casa",
+                        "integrations": "ادغام ها",
+                        "integrations_introduction2": "بررسی وب سایت برای ",
+                        "integrations_link_all_features": "تمام ویژگی های موجود",
+                        "manage_account": "مدیریت حساب",
+                        "nabu_casa_account": "حساب Nabu Casa",
                         "not_connected": "متصل نیست",
                         "remote": {
                             "title": "کنترل از راه دور"
                         },
                         "sign_out": "خروج از سیستم",
+                        "tts": {
+                            "male": "مرد",
+                            "title": "متن به گفتار",
+                            "try": "تلاش كردن"
+                        },
                         "webhooks": {
-                            "loading": "Se incarca...",
+                            "loading": "بارگذاری ...",
                             "manage": "مدیریت"
                         }
                     },
@@ -2157,7 +2162,7 @@
                 "cards": {
                     "demo": {
                         "demo_by": "توسط {name}",
-                        "learn_more": "Afla mai multe despre Home Assistant ",
+                        "learn_more": "درباره Home Assistant بیشتر بدانید",
                         "next_demo": "نسخه ی نمایشی بعدی"
                     }
                 },

@@ -10,7 +10,10 @@ import {
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -41,7 +44,6 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../data/entity_registry";
-import { Target } from "../data/target";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
@@ -56,7 +58,7 @@ import "./ha-svg-icon";
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
 
-  @property() public value?: Target;
+  @property() public value?: HassServiceTarget;
 
   @property() public label?: string;
 
@@ -529,6 +531,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
       .items {
         z-index: 2;
+      }
+      .mdc-chip-set {
+        padding: 4px 0;
       }
       .mdc-chip.add {
         color: rgba(0, 0, 0, 0.87);
