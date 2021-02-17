@@ -368,6 +368,7 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       await updateSupervisor(this.hass);
+      fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update the supervisor",

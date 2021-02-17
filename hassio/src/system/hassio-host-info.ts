@@ -341,6 +341,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await updateOS(this.hass);
+      fireEvent(this, "supervisor-store-refresh", { store: "os" });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update",
