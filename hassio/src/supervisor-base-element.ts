@@ -64,7 +64,6 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected _updateSupervisor(obj: Partial<Supervisor>): void {
     this.supervisor = { ...this.supervisor!, ...obj };
-    console.log(this.supervisor);
   }
 
   protected _updateSupervisorFromStore(obj: Partial<Supervisor>): void {

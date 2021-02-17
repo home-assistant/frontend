@@ -40,10 +40,6 @@ export interface Supervisor {
   network: NetworkInfo;
   resolution: HassioResolution;
   os: HassioHassOSInfo;
-  setStoreState?: (
-    update: Partial<Supervisor>,
-    overwrite?: boolean | undefined
-  ) => void;
 }
 
 function processEvent(store: Store<any>, event: SupervisorEvent) {
@@ -55,9 +51,6 @@ function processEvent(store: Store<any>, event: SupervisorEvent) {
     return;
   }
 
-  if (!store.state!.setStoreState) {
-    store.setState({ setStoreState: store.setState });
-  }
   store.setState({
     [event.data.update_key]: {
       ...state[event.data.update_key],
