@@ -1243,9 +1243,9 @@
                                 },
                                 "sun": {
                                     "after": "晚于：",
-                                    "after_offset": "延后：（可选）",
+                                    "after_offset": "“晚于”的偏移 (可选)",
                                     "before": "早于：",
-                                    "before_offset": "提前：（可选）",
+                                    "before_offset": "“早于”的偏移 (可选)",
                                     "label": "日出/日落",
                                     "sunrise": "日出",
                                     "sunset": "日落"
