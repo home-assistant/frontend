@@ -90,12 +90,24 @@ export class SupervisorBaseElement extends urlSyncMixin(
           store.key,
           store.endpoint
         );
-        this._collections[store.key] = getSupervisorEventCollection(
-          this.hass.connection,
-          store.key,
-          store.endpoint
-        );
+        if (this._collections[store.key]) {
+          this._collections[store.key].refresh();
+        } else {
+          this._collections[store.key] = getSupervisorEventCollection(
+            this.hass.connection,
+            store.key,
+            store.endpoint
+          );
+        }
       });
+
+      if (this.supervisor === undefined) {
+        Object.keys(this._collections).forEach((collection) =>
+          this._updateSupervisor({
+            [collection]: this._collections[collection].state,
+          })
+        );
+      }
       return;
     }
 
