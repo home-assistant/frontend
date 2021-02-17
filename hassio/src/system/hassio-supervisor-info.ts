@@ -8,6 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
@@ -318,8 +319,12 @@ class HassioSupervisorInfo extends LitElement {
 
   private async _reloadSupervisor(): Promise<void> {
     await reloadSupervisor(this.hass);
-    const supervisor = await fetchHassioSupervisorInfo(this.hass);
-    fireEvent(this, "supervisor-update", { supervisor });
+    if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+      fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
+    } else {
+      const supervisor = await fetchHassioSupervisorInfo(this.hass);
+      fireEvent(this, "supervisor-update", { supervisor });
+    }
   }
 
   private async _supervisorRestart(ev: CustomEvent): Promise<void> {

@@ -13,6 +13,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
@@ -368,8 +369,12 @@ class HassioHostInfo extends LitElement {
     if (hostname && hostname !== curHostname) {
       try {
         await changeHostOptions(this.hass, { hostname });
-        const host = await fetchHassioHostInfo(this.hass);
-        fireEvent(this, "supervisor-update", { host });
+        if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+          fireEvent(this, "supervisor-store-refresh", { store: "host" });
+        } else {
+          const host = await fetchHassioHostInfo(this.hass);
+          fireEvent(this, "supervisor-update", { host });
+        }
       } catch (err) {
         showAlertDialog(this, {
           title: "Setting hostname failed",
@@ -382,8 +387,12 @@ class HassioHostInfo extends LitElement {
   private async _importFromUSB(): Promise<void> {
     try {
       await configSyncOS(this.hass);
-      const host = await fetchHassioHostInfo(this.hass);
-      fireEvent(this, "supervisor-update", { host });
+      if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+        fireEvent(this, "supervisor-store-refresh", { store: "host" });
+      } else {
+        const host = await fetchHassioHostInfo(this.hass);
+        fireEvent(this, "supervisor-update", { host });
+      }
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to import from USB",
@@ -393,8 +402,12 @@ class HassioHostInfo extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
-    const network = await fetchNetworkInfo(this.hass);
-    fireEvent(this, "supervisor-update", { network });
+    if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+      fireEvent(this, "supervisor-store-refresh", { store: "network" });
+    } else {
+      const network = await fetchNetworkInfo(this.hass);
+      fireEvent(this, "supervisor-update", { network });
+    }
   }
 
   static get styles(): CSSResult[] {

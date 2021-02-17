@@ -20,6 +20,7 @@ import {
   fetchHassioAddonsInfo,
   HassioAddonInfo,
   HassioAddonRepository,
+  HassioAddonsInfo,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -191,18 +192,29 @@ class HassioAddonStore extends LitElement {
   }
 
   private async _loadData() {
+    let addonsInformation: HassioAddonsInfo;
     try {
-      const [addonsInfo, supervisor] = await Promise.all([
-        fetchHassioAddonsInfo(this.hass),
-        fetchHassioSupervisorInfo(this.hass),
-      ]);
-      fireEvent(this, "supervisor-update", { supervisor });
-      this._repos = addonsInfo.repositories;
-      this._repos.sort(sortRepos);
-      this._addons = addonsInfo.addons;
+      if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+        addonsInformation = await fetchHassioAddonsInfo(this.hass);
+        fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
+      } else {
+        const [addonsInfo, supervisor] = await Promise.all([
+          fetchHassioAddonsInfo(this.hass),
+          fetchHassioSupervisorInfo(this.hass),
+        ]);
+        fireEvent(this, "supervisor-update", { supervisor });
+        addonsInformation = addonsInfo;
+      }
     } catch (err) {
       alert(extractApiErrorMessage(err));
+      return;
     }
+    if (addonsInformation === undefined) {
+      return;
+    }
+    this._repos = addonsInformation.repositories;
+    this._repos.sort(sortRepos);
+    this._addons = addonsInformation.addons;
   }
 
   private async _filterChanged(e) {

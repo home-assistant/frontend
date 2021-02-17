@@ -16,17 +16,18 @@ export const supervisorWSbaseCommand = {
 };
 
 export type SupervisorArch = "armhf" | "armv7" | "aarch64" | "i386" | "amd64";
+export type SupervisorObject =
+  | "host"
+  | "supervisor"
+  | "info"
+  | "core"
+  | "network"
+  | "resolution"
+  | "os";
 
 export interface SupervisorEvent {
   event: string;
-  update_key?:
-    | "host"
-    | "supervisor"
-    | "info"
-    | "core"
-    | "network"
-    | "resolution"
-    | "os";
+  update_key?: SupervisorObject;
   data?: any;
   [key: string]: any;
 }
@@ -39,9 +40,13 @@ export interface Supervisor {
   network: NetworkInfo;
   resolution: HassioResolution;
   os: HassioHassOSInfo;
+  setStoreState?: (
+    update: Partial<Supervisor>,
+    overwrite?: boolean | undefined
+  ) => void;
 }
 
-function processEvent(store: Store<Supervisor>, event: SupervisorEvent) {
+function processEvent(store: Store<any>, event: SupervisorEvent) {
   if (!event.data || event.data.event !== "supervisor-update") {
     return;
   }
@@ -50,6 +55,9 @@ function processEvent(store: Store<Supervisor>, event: SupervisorEvent) {
     return;
   }
 
+  if (!store.state!.setStoreState) {
+    store.setState({ setStoreState: store.setState });
+  }
   store.setState({
     [event.data.update_key]: {
       ...state[event.data.update_key],
@@ -58,66 +66,43 @@ function processEvent(store: Store<Supervisor>, event: SupervisorEvent) {
   });
 }
 
-async function fetchSupervisor(conn: Connection): Promise<Supervisor> {
-  const [
-    host,
-    supervisor,
-    info,
-    core,
-    network,
-    resolution,
-    os,
-  ] = await Promise.all([
-    conn.sendMessagePromise<HassioHostInfo>({
-      ...supervisorWSbaseCommand,
-      endpoint: "/host/info",
-    }),
-    conn.sendMessagePromise<HassioSupervisorInfo>({
-      ...supervisorWSbaseCommand,
-      endpoint: "/supervisor/info",
-    }),
-    conn.sendMessagePromise<HassioInfo>({
-      ...supervisorWSbaseCommand,
-      endpoint: "/info",
-    }),
-    conn.sendMessagePromise<HassioHomeAssistantInfo>({
-      ...supervisorWSbaseCommand,
-      endpoint: "/core/info",
-    }),
-    conn.sendMessagePromise<NetworkInfo>({
-      ...supervisorWSbaseCommand,
-      endpoint: "/network/info",
-    }),
-    conn.sendMessagePromise<HassioResolution>({
-      ...supervisorWSbaseCommand,
-      endpoint: "/resolution/info",
-    }),
-    conn.sendMessagePromise<HassioHassOSInfo>({
-      ...supervisorWSbaseCommand,
-      endpoint: "/os/info",
-    }),
-  ]);
-  return { host, supervisor, info, core, network, resolution, os };
-}
+export const supervisorWsGetData = <T>(
+  conn: Connection,
+  endpoint: string
+): Promise<T> =>
+  conn.sendMessagePromise<T>({
+    type: "supervisor/api",
+    method: "get",
+    endpoint,
+  });
 
 const subscribeSupervisorEventUpdates = (
   conn: Connection,
-  store: Store<Supervisor>
+  store: Store<unknown>
 ) =>
   conn.subscribeEvents(
     (event) => processEvent(store, event as SupervisorEvent),
     "supervisor_event"
   );
 
-export const getSupervisorEventCollection = (conn: Connection) =>
+export const getSupervisorEventCollection = (
+  conn: Connection,
+  key: string,
+  endpoint: string
+) =>
   getCollection(
     conn,
-    "_supervisorEvent",
-    fetchSupervisor,
+    `_supervisor${key}Event`,
+    () => supervisorWsGetData(conn, endpoint),
     subscribeSupervisorEventUpdates
   );
 
 export const subscribeSupervisorEvents = (
   hass: HomeAssistant,
-  onChange: (event) => void
-) => getSupervisorEventCollection(hass.connection).subscribe(onChange);
+  onChange: (event) => void,
+  key: string,
+  endpoint: string
+) =>
+  getSupervisorEventCollection(hass.connection, key, endpoint).subscribe(
+    onChange
+  );

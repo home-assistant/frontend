@@ -15,6 +15,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
@@ -224,8 +225,12 @@ class HassioAddonDashboard extends LitElement {
 
   private async _updateSupervisor(): Promise<void> {
     try {
-      const supervisor = await fetchHassioSupervisorInfo(this.hass);
-      fireEvent(this, "supervisor-update", { supervisor });
+      if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+        fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
+      } else {
+        const supervisor = await fetchHassioSupervisorInfo(this.hass);
+        fireEvent(this, "supervisor-update", { supervisor });
+      }
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to fetch supervisor information",
