@@ -33,7 +33,7 @@ declare global {
   }
 }
 
-const supervisorStores = [
+export const supervisorStores = [
   { key: "host", endpoint: "/host/info" },
   { key: "supervisor", endpoint: "/supervisor/info" },
   { key: "info", endpoint: "/info" },
