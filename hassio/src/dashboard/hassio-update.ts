@@ -121,6 +121,7 @@ export class HassioUpdate extends LitElement {
           <ha-progress-button
             .apiPath=${apiPath}
             .name=${name}
+            .key=${key}
             .version=${object.version_latest}
             @click=${this._confirmUpdate}
           >

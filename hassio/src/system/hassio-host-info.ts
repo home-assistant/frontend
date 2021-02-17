@@ -27,7 +27,6 @@ import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   changeHostOptions,
   configSyncOS,
-  fetchHassioHostInfo,
   rebootHost,
   shutdownHost,
   updateOS,

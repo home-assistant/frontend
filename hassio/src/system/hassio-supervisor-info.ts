@@ -8,7 +8,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
@@ -20,7 +19,6 @@ import {
   HassioStats,
 } from "../../../src/data/hassio/common";
 import {
-  fetchHassioSupervisorInfo,
   reloadSupervisor,
   restartSupervisor,
   setSupervisorOption,

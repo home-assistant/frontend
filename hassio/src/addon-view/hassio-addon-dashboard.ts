@@ -15,7 +15,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
@@ -25,9 +24,7 @@ import {
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { fetchHassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-error-screen";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
