@@ -42,20 +42,23 @@ export interface Supervisor {
   os: HassioHassOSInfo;
 }
 
-function processEvent(store: Store<any>, event: SupervisorEvent) {
-  if (!event.data || event.data.event !== "supervisor-update") {
+function processEvent(store: Store<any>, event: SupervisorEvent, key: string) {
+  if (
+    !event.data ||
+    event.data.event !== "supervisor-update" ||
+    event.data.update_key !== key
+  ) {
     return;
   }
+
   const state = store.state;
   if (state === undefined) {
     return;
   }
 
   store.setState({
-    [event.data.update_key]: {
-      ...state[event.data.update_key],
-      ...event.data.data,
-    },
+    ...state,
+    ...event.data.data,
   });
 }
 
@@ -71,10 +74,11 @@ export const supervisorWsGetData = <T>(
 
 const subscribeSupervisorEventUpdates = (
   conn: Connection,
-  store: Store<unknown>
+  store: Store<unknown>,
+  key: string
 ) =>
   conn.subscribeEvents(
-    (event) => processEvent(store, event as SupervisorEvent),
+    (event) => processEvent(store, event as SupervisorEvent, key),
     "supervisor_event"
   );
 
@@ -87,7 +91,8 @@ export const getSupervisorEventCollection = (
     conn,
     `_supervisor${key}Event`,
     () => supervisorWsGetData(conn, endpoint),
-    subscribeSupervisorEventUpdates
+    (connection, store) =>
+      subscribeSupervisorEventUpdates(connection, store, key)
   );
 
 export const subscribeSupervisorEvents = (
