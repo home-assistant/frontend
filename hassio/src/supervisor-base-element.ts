@@ -14,7 +14,6 @@ import {
 import {
   subscribeSupervisorEvents,
   Supervisor,
-  SupervisorEvent,
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
@@ -46,18 +45,19 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this._initSupervisor();
     this.addEventListener("supervisor-update", (ev) =>
       this._updateSupervisor(ev.detail)
     );
 
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      this._unsubEvents = subscribeSupervisorEvents(this.hass, (event) => {
-        if (!event) {
+      this._unsubEvents = subscribeSupervisorEvents(this.hass, (store) => {
+        if (!store) {
           return;
         }
-        this._handleSupervisorEvent((event as any).data as SupervisorEvent);
+        this._updateSupervisor(store);
       });
+    } else {
+      this._initSupervisor();
     }
   }
 
@@ -89,21 +89,5 @@ export class SupervisorBaseElement extends urlSyncMixin(
       network,
       resolution,
     };
-  }
-
-  private _handleSupervisorEvent(event: SupervisorEvent): void {
-    if (
-      event.event === "supervisor-update" &&
-      event.update_key !== undefined &&
-      event.data !== undefined &&
-      this.supervisor !== undefined
-    ) {
-      const data: Partial<Supervisor> = {};
-      data[event.update_key] = {
-        ...this.supervisor![event.update_key],
-        ...event.data,
-      };
-      this._updateSupervisor(data);
-    }
   }
 }
