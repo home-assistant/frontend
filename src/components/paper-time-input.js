@@ -92,6 +92,9 @@ export class PaperTimeInput extends PolymerElement {
             --paper-input-container-color,
             var(--secondary-text-color)
           );
+          display: block;
+          margin-bottom: -6px;
+          padding-top: 2px;
         }
 
         .time-input-wrap {

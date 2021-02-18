@@ -75,10 +75,10 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .hour=${stateObj.state === UNKNOWN
                   ? ""
-                  : ("0" + stateObj.attributes.hour).slice(-2)}
+                  : stateObj.attributes.hour.toString().padStart(2, "0")}
                 .min=${stateObj.state === UNKNOWN
                   ? ""
-                  : ("0" + stateObj.attributes.minute).slice(-2)}
+                  : stateObj.attributes.minute.toString().padStart(2, "0")}
                 @change=${this._selectedValueChanged}
                 @click=${this._stopEventPropagation}
                 hide-label
