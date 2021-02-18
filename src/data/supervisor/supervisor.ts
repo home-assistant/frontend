@@ -69,12 +69,25 @@ export const supervisorApiWsRequest = <T>(
 ): Promise<T> =>
   conn.sendMessagePromise<T>({ ...supervisorWSbaseCommand, ...request });
 
-function processEvent(store: Store<any>, event: SupervisorEvent, key: string) {
+async function processEvent(
+  conn: Connection,
+  store: Store<any>,
+  event: SupervisorEvent,
+  key: string
+) {
   if (
     !event.data ||
     event.data.event !== "supervisor-update" ||
     event.data.update_key !== key
   ) {
+    return;
+  }
+
+  if (Object.keys(event.data.data).length === 0) {
+    const data = await supervisorApiWsRequest<any>(conn, {
+      endpoint: supervisorStore[key],
+    });
+    store.setState(data);
     return;
   }
 
@@ -95,7 +108,7 @@ const subscribeSupervisorEventUpdates = (
   key: string
 ) =>
   conn.subscribeEvents(
-    (event) => processEvent(store, event as SupervisorEvent, key),
+    (event) => processEvent(conn, store, event as SupervisorEvent, key),
     "supervisor_event"
   );
 
