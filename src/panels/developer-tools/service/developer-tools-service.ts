@@ -110,9 +110,12 @@ class HaPanelDevService extends LitElement {
   private _fields = memoizeOne(
     (
       serviceDomains: HomeAssistant["services"],
-      domainService: string,
+      domainService: string | undefined,
       hideSelectorField: boolean
     ): { target: boolean; fields: any[] } => {
+      if (!domainService) {
+        return { target: false, fields: [] };
+      }
       const domain = computeDomain(domainService);
       const service = computeObjectId(domainService);
       if (!(domain in serviceDomains)) {
