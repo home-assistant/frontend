@@ -169,11 +169,20 @@ export class HaServiceControl extends LitElement {
             <div slot="prefix">
               <ha-checkbox checked disabled></ha-checkbox
               ><paper-tooltip animation-delay="0"
-                >This field is required</paper-tooltip
+                >${this.hass.localize(
+                  "ui.components.service-control.required"
+                )}</paper-tooltip
               >
             </div>
-            <span slot="heading">Target</span>
-            <span slot="description">What should this service target</span
+            <span slot="heading"
+              >${this.hass.localize(
+                "ui.components.service-control.target"
+              )}</span
+            >
+            <span slot="description"
+              >${this.hass.localize(
+                "ui.components.service-control.target_description"
+              )}</span
             ><ha-selector
               .hass=${this.hass}
               .selector=${this._serviceData.target
@@ -214,7 +223,9 @@ export class HaServiceControl extends LitElement {
                         <div slot="prefix">
                           <ha-checkbox checked disabled></ha-checkbox
                           ><paper-tooltip animation-delay="0"
-                            >This field is required</paper-tooltip
+                            >${this.hass.localize(
+                              "ui.components.service-control.required"
+                            )}</paper-tooltip
                           >
                         </div>
                       `
@@ -236,7 +247,6 @@ export class HaServiceControl extends LitElement {
                     .hass=${this.hass}
                     .selector=${dataField.selector}
                     .key=${dataField.key}
-                    .placeholder=${dataField.example}
                     @value-changed=${this._serviceDataChanged}
                     .value=${this.value?.data &&
                     this.value.data[dataField.key] !== undefined

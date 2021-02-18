@@ -424,6 +424,11 @@
       "service-picker": {
         "service": "Service"
       },
+      "service-control": {
+        "required": "This field is required",
+        "target": "Target",
+        "target_description": "What should this service call target"
+      },
       "related-items": {
         "no_related_found": "No related items found.",
         "integration": "Integration",
@@ -3273,16 +3278,16 @@
           "services": {
             "title": "Services",
             "description": "The service dev tool allows you to call any available service in Home Assistant.",
-            "data": "Service Data (YAML, optional)",
             "call_service": "Call Service",
-            "select_service": "Select a service to see the description",
-            "no_description": "No description is available",
-            "no_parameters": "This service takes no parameters.",
             "column_parameter": "Parameter",
             "column_description": "Description",
             "column_example": "Example",
             "fill_example_data": "Fill Example Data",
-            "alert_parsing_yaml": "Error parsing YAML: {data}"
+            "yaml_mode": "Go to YAML mode",
+            "ui_mode": "Go to UI mode",
+            "yaml_parameters": "Parameters only available in YAML mode",
+            "all_parameters": "All available parameters",
+            "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`"
           },
           "states": {
             "title": "States",

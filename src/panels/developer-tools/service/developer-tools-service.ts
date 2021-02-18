@@ -1,4 +1,12 @@
-import { css, CSSResultArray, html, LitElement, property } from "lit-element";
+import {
+  css,
+  CSSResultArray,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  query,
+} from "lit-element";
 import { LocalStorage } from "../../../common/decorators/local-storage";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
@@ -14,6 +22,8 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { haStyle } from "../../../resources/styles";
 import memoizeOne from "memoize-one";
 import "../../../components/ha-expansion-panel";
+import { safeLoad } from "js-yaml";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -23,6 +33,8 @@ class HaPanelDevService extends LitElement {
 
   @LocalStorage("panel-dev-service-state-yaml-mode", true)
   private _yamlMode = false;
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected render() {
     const { target, fields } = this._fields(
@@ -59,21 +71,33 @@ class HaPanelDevService extends LitElement {
           >
           <mwc-button @click=${this._toggleYaml}
             >${this._yamlMode
-              ? "Go to UI mode"
-              : "Toggle YAML mode"}</mwc-button
+              ? this.hass.localize(
+                  "ui.panel.developer-tools.tabs.services.ui_mode"
+                )
+              : this.hass.localize(
+                  "ui.panel.developer-tools.tabs.services.yaml_mode"
+                )}</mwc-button
           >
         </div>
 
         ${fields.length
           ? html`<ha-expansion-panel
               .header=${this._yamlMode
-                ? "All available parameters"
-                : "Parameters only available in YAML mode"}
+                ? this.hass.localize(
+                    "ui.panel.developer-tools.tabs.services.all_parameters"
+                  )
+                : this.hass.localize(
+                    "ui.panel.developer-tools.tabs.services.yaml_parameters"
+                  )}
               outlined
               .expanded=${this._yamlMode}
             >
               ${this._yamlMode && target
-                ? html`<b>This service accepts a target</b>`
+                ? html`<h3>
+                    ${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.services.accepts_target"
+                    )}
+                  </h3>`
                 : ""}
               <table class="attributes">
                 <tr>
@@ -101,6 +125,13 @@ class HaPanelDevService extends LitElement {
                   </tr>`
                 )}
               </table>
+              ${this._yamlMode
+                ? html`<mwc-button @click=${this._fillExampleData}
+                    >${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.services.fill_example_data"
+                    )}</mwc-button
+                  >`
+                : ""}
             </ha-expansion-panel>`
           : ""}
       </div>
@@ -164,6 +195,28 @@ class HaPanelDevService extends LitElement {
 
   private _serviceChanged(ev) {
     this._serviceData = ev.detail.value;
+  }
+
+  private _fillExampleData() {
+    const { fields } = this._fields(
+      this.hass.services,
+      this._serviceData?.service,
+      !this._yamlMode
+    );
+    const example = {};
+    fields.forEach((field) => {
+      if (field.example) {
+        let value = "";
+        try {
+          value = safeLoad(field.example);
+        } catch (err) {
+          value = field.example;
+        }
+        example[field.key] = value;
+      }
+    });
+    this._serviceData = { ...this._serviceData, data: example };
+    this._yamlEditor?.setValue(this._serviceData);
   }
 
   static get styles(): CSSResultArray {
