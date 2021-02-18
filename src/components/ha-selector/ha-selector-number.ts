@@ -21,6 +21,8 @@ export class HaNumberSelector extends LitElement {
 
   @property() public value?: number;
 
+  @property() public placeholder?: number;
+
   @property() public label?: string;
 
   @property({ type: Boolean }) public disabled = false;
@@ -45,6 +47,7 @@ export class HaNumberSelector extends LitElement {
         .label=${this.selector.number.mode === "slider"
           ? undefined
           : this.label}
+        .placeholder=${this.placeholder}
         .noLabelFloat=${this.selector.number.mode === "slider"}
         class=${classMap({ single: this.selector.number.mode === "box" })}
         .min=${this.selector.number.min}

@@ -13,6 +13,8 @@ export class HaTextSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public placeholder?: string;
+
   @property() public selector!: StringSelector;
 
   @property({ type: Boolean }) public disabled = false;
@@ -21,9 +23,10 @@ export class HaTextSelector extends LitElement {
     if (this.selector.text?.multiline) {
       return html`<paper-textarea
         .label=${this.label}
-        .value="${this.value}"
+        .placeholder=${this.placeholder}
+        .value=${this.value}
         .disabled=${this.disabled}
-        @value-changed="${this._handleChange}"
+        @value-changed=${this._handleChange}
         autocapitalize="none"
         autocomplete="off"
         spellcheck="false"
@@ -32,6 +35,7 @@ export class HaTextSelector extends LitElement {
     return html`<paper-input
       required
       .value=${this.value}
+      .placeholder=${this.placeholder}
       .disabled=${this.disabled}
       @value-changed=${this._handleChange}
       .label=${this.label}

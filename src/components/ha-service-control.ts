@@ -236,6 +236,7 @@ export class HaServiceControl extends LitElement {
                     .hass=${this.hass}
                     .selector=${dataField.selector}
                     .key=${dataField.key}
+                    .placeholder=${dataField.example}
                     @value-changed=${this._serviceDataChanged}
                     .value=${this.value?.data &&
                     this.value.data[dataField.key] !== undefined
