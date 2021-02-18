@@ -47,15 +47,6 @@ const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   return a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1;
 };
 
-const addonRepositories = memoizeOne((repositories: HassioAddonRepository[]) =>
-  repositories.sort(sortRepos)
-);
-
-const filterAddons = memoizeOne(
-  (repository: HassioAddonRepository, addons: HassioAddonInfo[]) =>
-    addons.filter((addon) => addon.repository === repository.slug)
-);
-
 class HassioAddonStore extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -73,27 +64,13 @@ class HassioAddonStore extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const repos: TemplateResult[] = [];
+    let repos: TemplateResult[] = [];
 
     if (this.supervisor.addon.repositories) {
-      for (const repo of addonRepositories(
-        this.supervisor.addon.repositories
-      )) {
-        const addons = filterAddons(repo, this.supervisor.addon.addons);
-
-        if (addons.length === 0) {
-          continue;
-        }
-
-        repos.push(html`
-          <hassio-addon-repository
-            .hass=${this.hass}
-            .repo=${repo}
-            .addons=${addons}
-            .filter=${this._filter!}
-          ></hassio-addon-repository>
-        `);
-      }
+      repos = this.addonRepositories(
+        this.supervisor.addon.repositories,
+        this.supervisor.addon.addons
+      );
     }
 
     return html`
@@ -161,6 +138,27 @@ class HassioAddonStore extends LitElement {
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
     this._loadData();
   }
+
+  private addonRepositories = memoizeOne(
+    (repositories: HassioAddonRepository[], addons: HassioAddonInfo[]) => {
+      return repositories.sort(sortRepos).map((repo) => {
+        const filteredAddons = addons.filter(
+          (addon) => addon.repository === repo.slug
+        );
+
+        return filteredAddons.length !== 0
+          ? html`
+              <hassio-addon-repository
+                .hass=${this.hass}
+                .repo=${repo}
+                .addons=${filteredAddons}
+                .filter=${this._filter!}
+              ></hassio-addon-repository>
+            `
+          : html``;
+      });
+    }
+  );
 
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
