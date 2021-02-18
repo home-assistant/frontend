@@ -17,14 +17,42 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { domainToName } from "../../data/integration";
 
 const REDIRECTS: Redirects = {
-  info: {
-    redirect: "/config/info",
+  developer_states: {
+    redirect: "/developer-tools/state",
   },
-  logs: {
-    redirect: "/config/logs",
+  developer_services: {
+    redirect: "/developer-tools/service",
   },
-  profile: {
-    redirect: "/profile/dashboard",
+  developer_template: {
+    redirect: "/developer-tools/template",
+  },
+  developer_events: {
+    redirect: "/developer-tools/event",
+  },
+  cloud: {
+    component: "cloud",
+    redirect: "/config/cloud",
+  },
+  integrations: {
+    redirect: "/config/integrations",
+  },
+  config_flow_start: {
+    redirect: "/config/integrations/add",
+    params: {
+      domain: "string",
+    },
+  },
+  devices: {
+    redirect: "/config/devices/dashboard",
+  },
+  entities: {
+    redirect: "/config/entities",
+  },
+  areas: {
+    redirect: "/config/areas/dashboard",
+  },
+  blueprints: {
+    redirect: "/config/blueprint/dashboard",
   },
   blueprint_import: {
     redirect: "/config/blueprint/dashboard/import",
@@ -32,11 +60,53 @@ const REDIRECTS: Redirects = {
       blueprint_url: "url",
     },
   },
-  config_flow_start: {
-    redirect: "/config/integrations/add",
-    params: {
-      domain: "string",
-    },
+  automations: {
+    redirect: "/config/automation/dashboard",
+  },
+  scenes: {
+    redirect: "/config/scene/dashboard",
+  },
+  scripts: {
+    redirect: "/config/script/dashboard",
+  },
+  helpers: {
+    redirect: "/config/helpers",
+  },
+  tags: {
+    redirect: "/config/tags",
+  },
+  lovelace_dashboards: {
+    redirect: "/config/lovelace/dashboards",
+  },
+  lovelace_resources: {
+    redirect: "/config/lovelace/resources",
+  },
+  people: {
+    redirect: "/config/person",
+  },
+  zones: {
+    redirect: "/config/zone",
+  },
+  users: {
+    redirect: "/config/users",
+  },
+  general: {
+    redirect: "/config/core",
+  },
+  server_controls: {
+    redirect: "/config/server_control",
+  },
+  logs: {
+    redirect: "/config/logs",
+  },
+  info: {
+    redirect: "/config/info",
+  },
+  customize: {
+    redirect: "/config/customize",
+  },
+  profile: {
+    redirect: "/profile/dashboard",
   },
 };
 
