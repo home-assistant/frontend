@@ -113,7 +113,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <ha-attributes
         state-obj="[[stateObj]]"
-        extra-filters="percentage_step,speed,preset_mode,preset_modes,speed_list,oscillating,direction"
+        extra-filters="percentage_step,speed,preset_mode,preset_modes,speed_list,percentage,oscillating,direction"
       ></ha-attributes>
     `;
   }
