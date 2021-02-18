@@ -25,7 +25,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
       if (isNaN(this.action.delay)) {
         const parts = this.action.delay?.toString().split(":") || [];
         data = {
-          hours: Number(parts[0]),
+          hours: Number(parts[0]) || 0,
           minutes: Number(parts[1]),
           seconds: Number(parts[2]),
           milliseconds: Number(parts[3]),
