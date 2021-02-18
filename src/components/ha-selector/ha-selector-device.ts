@@ -23,6 +23,8 @@ export class HaDeviceSelector extends LitElement {
 
   @internalProperty() public _configEntries?: ConfigEntry[];
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected updated(changedProperties) {
     if (changedProperties.has("selector")) {
       const oldSelector = changedProperties.get("selector");
@@ -44,6 +46,7 @@ export class HaDeviceSelector extends LitElement {
       .includeDomains=${this.selector.device.entity?.domain
         ? [this.selector.device.entity.domain]
         : undefined}
+      .disabled=${this.disabled}
       allow-custom-entity
     ></ha-device-picker>`;
   }

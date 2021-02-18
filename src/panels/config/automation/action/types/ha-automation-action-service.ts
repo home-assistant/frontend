@@ -62,6 +62,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .narrow=${this.narrow}
         .hass=${this.hass}
         .value=${this._action}
+        .showAdvanced=${this.hass.userData?.showAdvanced}
         @value-changed=${this._actionChanged}
       ></ha-service-control>
     `;

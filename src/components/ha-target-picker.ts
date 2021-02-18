@@ -84,6 +84,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
+  @property({ type: Boolean, reflect: true }) public disabled = false;
+
   @internalProperty() private _areas?: { [areaId: string]: AreaRegistryEntry };
 
   @internalProperty() private _devices?: {
@@ -598,6 +600,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
       paper-tooltip.expand {
         min-width: 200px;
+      }
+      :host([disabled]) .mdc-chip {
+        opacity: var(--light-disabled-opacity);
+        pointer-events: none;
       }
     `;
   }

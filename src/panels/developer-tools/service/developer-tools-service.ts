@@ -25,7 +25,7 @@ class HaPanelDevService extends LitElement {
   private _yamlMode = false;
 
   protected render() {
-    const fields = this._fields(
+    const { target, fields } = this._fields(
       this.hass.services,
       this._serviceData?.service,
       !this._yamlMode
@@ -40,13 +40,14 @@ class HaPanelDevService extends LitElement {
         </p>
 
         ${this._yamlMode
-          ? html` <ha-yaml-editor
+          ? html`<ha-yaml-editor
               .defaultValue=${this._serviceData}
               @value-changed=${this._yamlChanged}
             ></ha-yaml-editor>`
           : html`<ha-service-control
               .hass=${this.hass}
               .value=${this._serviceData}
+              showAdvanced
               @value-changed=${this._serviceChanged}
             ></ha-service-control>`}
 
@@ -64,13 +65,16 @@ class HaPanelDevService extends LitElement {
         </div>
 
         ${fields.length
-          ? html` <ha-expansion-panel
+          ? html`<ha-expansion-panel
               .header=${this._yamlMode
                 ? "All available parameters"
-                : "Advanced parameters (only available in YAML mode)"}
+                : "Parameters only available in YAML mode"}
               outlined
               .expanded=${this._yamlMode}
             >
+              ${this._yamlMode && target
+                ? html`<b>This service accepts a target</b>`
+                : ""}
               <table class="attributes">
                 <tr>
                   <th>
@@ -108,32 +112,28 @@ class HaPanelDevService extends LitElement {
       serviceDomains: HomeAssistant["services"],
       domainService: string,
       hideSelectorField: boolean
-    ) => {
+    ): { target: boolean; fields: any[] } => {
       const domain = computeDomain(domainService);
       const service = computeObjectId(domainService);
-      if (!(domain in serviceDomains)) return [];
-      if (!(service in serviceDomains[domain])) return [];
-
+      if (!(domain in serviceDomains)) {
+        return { target: false, fields: [] };
+      }
+      if (!(service in serviceDomains[domain])) {
+        return { target: false, fields: [] };
+      }
+      const target = "target" in serviceDomains[domain][service];
       const fields = serviceDomains[domain][service].fields;
       const result = Object.keys(fields).map((field) => {
         return { key: field, ...fields[field] };
       });
 
       if (hideSelectorField) {
-        return result.filter((field) => !field.selector);
+        return { target, fields: result.filter((field) => !field.selector) };
       }
-      if ("target" in serviceDomains[domain][service]) {
-        return [
-          {
-            key: "target",
-            description:
-              "Target for this call, can contain area_id, device_id and or entity_id. Should be used outside of `data`.",
-            example: "{entity_id: [light.lamp, switch.toggle]}",
-          },
-          ...result,
-        ];
-      }
-      return result;
+      return {
+        target,
+        fields: result,
+      };
     }
   );
 

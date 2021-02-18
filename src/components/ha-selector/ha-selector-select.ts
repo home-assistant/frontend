@@ -21,8 +21,13 @@ export class HaSelectSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected render() {
-    return html`<ha-paper-dropdown-menu .label=${this.label}>
+    return html`<ha-paper-dropdown-menu
+      .disabled=${this.disabled}
+      .label=${this.label}
+    >
       <paper-listbox
         slot="dropdown-content"
         attr-for-selected="item-value"

@@ -25,12 +25,15 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected render() {
     return html`<ha-entity-picker
       .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
       .entityFilter=${(entity) => this._filterEntities(entity)}
+      .disabled=${this.disabled}
       allow-custom-entity
     ></ha-entity-picker>`;
   }

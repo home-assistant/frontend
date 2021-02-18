@@ -18,6 +18,7 @@ export class HaSettingsRow extends LitElement {
 
   protected render(): SVGTemplateResult {
     return html`
+      <slot name="prefix"></slot>
       <paper-item-body
         ?two-line=${!this.threeLine}
         ?three-line=${this.threeLine}

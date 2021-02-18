@@ -22,6 +22,7 @@ import "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
+import "./ha-checkbox";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 
 interface ExtHassService extends Omit<HassService, "fields"> {
@@ -30,6 +31,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
     name?: string;
     description: string;
     required?: boolean;
+    advanced?: boolean;
     default?: any;
     example?: any;
     selector?: Selector;
@@ -48,7 +50,11 @@ export class HaServiceControl extends LitElement {
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
+  @property({ type: Boolean }) public showAdvanced?: boolean;
+
   @internalProperty() private _serviceData?: ExtHassService;
+
+  @internalProperty() private _checkedKeys = new Set();
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -56,6 +62,14 @@ export class HaServiceControl extends LitElement {
     if (!changedProperties.has("value")) {
       return;
     }
+    const oldValue = changedProperties.get("value") as
+      | undefined
+      | this["value"];
+
+    if (oldValue?.service !== this.value?.service) {
+      this._checkedKeys = new Set();
+    }
+
     this._serviceData = this.value?.service
       ? this._getServiceInfo(this.value.service)
       : undefined;
@@ -131,18 +145,28 @@ export class HaServiceControl extends LitElement {
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
       ${this._serviceData && "target" in this._serviceData
-        ? html`<ha-selector
-            .hass=${this.hass}
-            .selector=${this._serviceData.target
-              ? { target: this._serviceData.target }
-              : {
-                  target: {
-                    entity: { domain: computeDomain(this.value!.service) },
-                  },
-                }}
-            @value-changed=${this._targetChanged}
-            .value=${this.value?.target}
-          ></ha-selector>`
+        ? html`<ha-settings-row .narrow=${this.narrow}>
+            <div slot="prefix">
+              <ha-checkbox checked disabled></ha-checkbox
+              ><paper-tooltip animation-delay="0"
+                >This field is required</paper-tooltip
+              >
+            </div>
+            <span slot="heading">Target</span>
+            <span slot="description">What should this service target</span
+            ><ha-selector
+              .hass=${this.hass}
+              .selector=${this._serviceData.target
+                ? { target: this._serviceData.target }
+                : {
+                    target: {
+                      entity: { domain: computeDomain(this.value!.service) },
+                    },
+                  }}
+              @value-changed=${this._targetChanged}
+              .value=${this.value?.target}
+            ></ha-selector
+          ></ha-settings-row>`
         : entityId
         ? html`<ha-entity-picker
             .hass=${this.hass}
@@ -163,11 +187,32 @@ export class HaServiceControl extends LitElement {
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
         : this._serviceData?.fields.map((dataField) =>
-            dataField.selector
+            dataField.selector && (!dataField.advanced || this.showAdvanced)
               ? html`<ha-settings-row .narrow=${this.narrow}>
+                  ${dataField.required
+                    ? html`
+                        <div slot="prefix">
+                          <ha-checkbox checked disabled></ha-checkbox
+                          ><paper-tooltip animation-delay="0"
+                            >This field is required</paper-tooltip
+                          >
+                        </div>
+                      `
+                    : html`<ha-checkbox
+                        .key=${dataField.key}
+                        .checked=${this._checkedKeys.has(dataField.key) ||
+                        (this.value?.data &&
+                          this.value.data[dataField.key] !== undefined)}
+                        @change=${this._checkboxChanged}
+                        slot="prefix"
+                      ></ha-checkbox>`}
                   <span slot="heading">${dataField.name || dataField.key}</span>
                   <span slot="description">${dataField?.description}</span
                   ><ha-selector
+                    .disabled=${!dataField.required &&
+                    !this._checkedKeys.has(dataField.key) &&
+                    (!this.value?.data ||
+                      this.value.data[dataField.key] === undefined)}
                     .hass=${this.hass}
                     .selector=${dataField.selector}
                     .key=${dataField.key}
@@ -180,6 +225,27 @@ export class HaServiceControl extends LitElement {
                 ></ha-settings-row>`
               : ""
           )} `;
+  }
+
+  private _checkboxChanged(ev) {
+    const checked = ev.currentTarget.checked;
+    const key = ev.currentTarget.key;
+    if (checked) {
+      this._checkedKeys.add(key);
+    } else {
+      this._checkedKeys.delete(key);
+      const data = { ...this.value?.data };
+
+      delete data[key];
+
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.value,
+          data,
+        },
+      });
+    }
+    this.requestUpdate("_checkedKeys");
   }
 
   private _serviceChanged(ev: PolymerChangedEvent<string>) {

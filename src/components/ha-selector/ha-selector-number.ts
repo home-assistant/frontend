@@ -23,6 +23,8 @@ export class HaNumberSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected render() {
     return html`${this.label}
       ${this.selector.number.mode === "slider"
@@ -31,6 +33,7 @@ export class HaNumberSelector extends LitElement {
             .max=${this.selector.number.max}
             .value=${this._value}
             .step=${this.selector.number.step}
+            .disabled=${this.disabled}
             pin
             ignore-bar-touch
             @change=${this._handleSliderChange}
@@ -48,6 +51,7 @@ export class HaNumberSelector extends LitElement {
         .max=${this.selector.number.max}
         .value=${this.value}
         .step=${this.selector.number.step}
+        .disabled=${this.disabled}
         type="number"
         auto-validate
         @value-changed=${this._handleInputChange}
