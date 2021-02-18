@@ -3409,6 +3409,7 @@
                 "playback_title": "Reproducción de mensajes"
             },
             "my": {
+                "component_not_loaded": "Esta redirección no es compatible con tu instancia de Home Assistant. Necesitas la integración {integration} para usar este redireccionamiento.",
                 "error": "Se ha producido un error desconocido",
                 "faq_link": "Preguntas frecuentes sobre mi Home Assistant",
                 "not_supported": "Esta redirección no es compatible con tu instancia de Home Assistant. Consulta el {link} para conocer las redirecciones admitidas y la versión en la que se introdujeron."
