@@ -4,7 +4,6 @@ import {
   html,
   LitElement,
   property,
-  PropertyValues,
   query,
 } from "lit-element";
 import { LocalStorage } from "../../../common/decorators/local-storage";
