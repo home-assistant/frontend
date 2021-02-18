@@ -47,9 +47,10 @@ class HaSlider extends PaperSliderClass {
             .pin.expand > .slider-knob > .slider-knob-inner::before {
               -webkit-transform: rotate(-45deg) scale(1) translate(7px, -7px);
               transform: rotate(-45deg) scale(1) translate(7px, -7px);
-            }
+            }            
 
             .pin > .slider-knob > .slider-knob-inner::after {
+              content: calc(attr(value));
               top: unset;
               font-size: unset;
 
