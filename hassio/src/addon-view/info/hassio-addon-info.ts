@@ -43,10 +43,13 @@ import {
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
   installHassioAddon,
+  restartHassioAddon,
   setHassioAddonOption,
   setHassioAddonSecurity,
   startHassioAddon,
+  stopHassioAddon,
   uninstallHassioAddon,
+  updateHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import {
@@ -196,13 +199,9 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               </div>
               <div class="card-actions">
-                <ha-call-api-button
-                  .hass=${this.hass}
-                  .disabled=${!this.addon.available}
-                  path="hassio/addons/${this.addon.slug}/update"
-                >
+                <ha-progress-button @click=${this._updateClicked}>
                   Update
-                </ha-call-api-button>
+                </ha-progress-button>
                 ${this.addon.changelog
                   ? html`
                       <mwc-button @click=${this._openChangelog}>
@@ -579,20 +578,18 @@ class HassioAddonInfo extends LitElement {
             ${this.addon.version
               ? this._computeIsRunning
                 ? html`
-                    <ha-call-api-button
+                    <ha-progress-button
                       class="warning"
-                      .hass=${this.hass}
-                      .path="hassio/addons/${this.addon.slug}/stop"
+                      @click=${this._stopClicked}
                     >
                       Stop
-                    </ha-call-api-button>
-                    <ha-call-api-button
+                    </ha-progress-button>
+                    <ha-progress-button
                       class="warning"
-                      .hass=${this.hass}
-                      .path="hassio/addons/${this.addon.slug}/restart"
+                      @click=${this._restartClicked}
                     >
                       Restart
-                    </ha-call-api-button>
+                    </ha-progress-button>
                   `
                 : html`
                     <ha-progress-button @click=${this._startClicked}>
@@ -883,6 +880,82 @@ class HassioAddonInfo extends LitElement {
     button.progress = false;
   }
 
+  private async _stopClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    try {
+      await stopHassioAddon(this.hass, this.addon.slug);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "stop",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to stop addon",
+        text: extractApiErrorMessage(err),
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _restartClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    try {
+      await restartHassioAddon(this.hass, this.addon.slug);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "stop",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to restart addon",
+        text: extractApiErrorMessage(err),
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _updateClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.addon.name,
+      text: "Are you sure you want to update this add-on?",
+      confirmText: "update add-on",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
+      button.progress = false;
+      return;
+    }
+
+    this._error = undefined;
+    try {
+      await updateHassioAddon(this.hass, this.addon.slug);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "update",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to update addon",
+        text: extractApiErrorMessage(err),
+      });
+    }
+    button.progress = false;
+  }
+
   private async _startClicked(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
     button.progress = true;
@@ -891,10 +964,10 @@ class HassioAddonInfo extends LitElement {
         this.hass,
         this.addon.slug
       );
-      if (!validate.data.valid) {
+      if (!validate.valid) {
         await showConfirmationDialog(this, {
           title: "Failed to start addon - configuration validation failed!",
-          text: validate.data.message.split(" Got ")[0],
+          text: validate.message.split(" Got ")[0],
           confirm: () => this._openConfiguration(),
           confirmText: "Go to configuration",
           dismissText: "Cancel",

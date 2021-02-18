@@ -1,3 +1,4 @@
+import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
@@ -51,7 +52,17 @@ export interface NetworkInfo {
   docker: DockerNetwork;
 }
 
-export const fetchNetworkInfo = async (hass: HomeAssistant) => {
+export const fetchNetworkInfo = async (
+  hass: HomeAssistant
+): Promise<NetworkInfo> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return await hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/network/info",
+      method: "get",
+    });
+  }
+
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<NetworkInfo>>(
       "GET",
@@ -65,6 +76,17 @@ export const updateNetworkInterface = async (
   network_interface: string,
   options: Partial<NetworkInterface>
 ) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/network/interface/${network_interface}/update`,
+      method: "post",
+      data: options,
+      timeout: null,
+    });
+    return;
+  }
+
   await hass.callApi<HassioResponse<NetworkInfo>>(
     "POST",
     `hassio/network/interface/${network_interface}/update`,
@@ -75,7 +97,16 @@ export const updateNetworkInterface = async (
 export const accesspointScan = async (
   hass: HomeAssistant,
   network_interface: string
-) => {
+): Promise<AccessPoints> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/network/interface/${network_interface}/accesspoints`,
+      method: "get",
+      timeout: null,
+    });
+  }
+
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<AccessPoints>>(
       "GET",
