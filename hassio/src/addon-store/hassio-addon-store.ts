@@ -11,12 +11,14 @@ import {
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/common/search/search-input";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-svg-icon";
 import {
+  HassioAddonInfo,
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
@@ -45,6 +47,15 @@ const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   return a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1;
 };
 
+const addonRepositories = memoizeOne((repositories: HassioAddonRepository[]) =>
+  repositories.sort(sortRepos)
+);
+
+const filterAddons = memoizeOne(
+  (repository: HassioAddonRepository, addons: HassioAddonInfo[]) =>
+    addons.filter((addon) => addon.repository === repository.slug)
+);
+
 class HassioAddonStore extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -65,10 +76,10 @@ class HassioAddonStore extends LitElement {
     const repos: TemplateResult[] = [];
 
     if (this.supervisor.addon.repositories) {
-      for (const repo of this.supervisor.addon.repositories.sort(sortRepos)) {
-        const addons = this.supervisor.addon.addons.filter(
-          (addon) => addon.repository === repo.slug
-        );
+      for (const repo of addonRepositories(
+        this.supervisor.addon.repositories
+      )) {
+        const addons = filterAddons(repo, this.supervisor.addon.addons);
 
         if (addons.length === 0) {
           continue;
