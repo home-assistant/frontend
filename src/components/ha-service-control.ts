@@ -77,13 +77,33 @@ export class HaServiceControl extends LitElement {
     if (
       this._serviceData &&
       "target" in this._serviceData &&
-      this.value?.data?.entity_id
+      (this.value?.data?.entity_id ||
+        this.value?.data?.area_id ||
+        this.value?.data?.device_id)
     ) {
+      const target = {
+        ...this.value.target,
+      };
+
+      if (this.value.data.entity_id && !this.value.target?.entity_id) {
+        target.entity_id = this.value.data.entity_id;
+      }
+      if (this.value.data.area_id && !this.value.target?.area_id) {
+        target.area_id = this.value.data.area_id;
+      }
+      if (this.value.data.device_id && !this.value.target?.device_id) {
+        target.device_id = this.value.data.device_id;
+      }
+
       this.value = {
         ...this.value,
-        target: { ...this.value.target, entity_id: this.value.data.entity_id },
+        target,
+        data: { ...this.value.data },
       };
+
       delete this.value.data!.entity_id;
+      delete this.value.data!.device_id;
+      delete this.value.data!.area_id;
     }
 
     if (this.value?.data) {

@@ -440,7 +440,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     type: string,
     id: string
   ): this["value"] {
-    const newVal = ensureArray(value![type])!.filter((val) => val !== id);
+    const newVal = ensureArray(value![type])!.filter(
+      (val) => String(val) !== id
+    );
     if (newVal.length) {
       return {
         ...value,
