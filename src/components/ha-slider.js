@@ -50,7 +50,6 @@ class HaSlider extends PaperSliderClass {
             }            
 
             .pin > .slider-knob > .slider-knob-inner::after {
-              content: calc(attr(value));
               top: unset;
               font-size: unset;
 
@@ -78,6 +77,10 @@ class HaSlider extends PaperSliderClass {
       );
     }
     return subTemplate;
+  }
+
+  _setImmediateValue(newImmediateValue) {
+    super._setImmediateValue(Math.round(newImmediateValue));
   }
 
   _calcStep(value) {
