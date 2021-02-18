@@ -46,7 +46,7 @@ export class HaSelectSelector extends LitElement {
   }
 
   private _valueChanged(ev) {
-    if (!ev.detail.value) {
+    if (this.disabled || !ev.detail.value) {
       return;
     }
     fireEvent(this, "value-changed", {
