@@ -53,12 +53,13 @@ class HassioRouter extends HassRouterPage {
     const route = el.nodeName === "HASSIO-PANEL" ? this.route : this.routeTail;
 
     el.hass = this.hass;
-    el.supervisor = this.supervisor;
     el.narrow = this.narrow;
     el.route = route;
 
     if (el.localName === "hassio-ingress-view") {
       el.ingressPanel = this.panel.config && this.panel.config.ingress;
+    } else {
+      el.supervisor = this.supervisor;
     }
   }
 

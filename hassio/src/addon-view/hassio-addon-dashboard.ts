@@ -24,9 +24,7 @@ import {
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { fetchHassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-error-screen";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
@@ -192,7 +190,7 @@ class HassioAddonDashboard extends LitElement {
     const path: string = pathSplit[pathSplit.length - 1];
 
     if (["uninstall", "install", "update", "start", "stop"].includes(path)) {
-      await this._updateSupervisor();
+      fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
     }
 
     if (path === "uninstall") {
@@ -219,18 +217,6 @@ class HassioAddonDashboard extends LitElement {
     } catch (err) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
-    }
-  }
-
-  private async _updateSupervisor(): Promise<void> {
-    try {
-      const supervisor = await fetchHassioSupervisorInfo(this.hass);
-      fireEvent(this, "supervisor-update", { supervisor });
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to fetch supervisor information",
-        text: extractApiErrorMessage(err),
-      });
     }
   }
 }

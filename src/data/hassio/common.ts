@@ -1,3 +1,4 @@
+import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant } from "../../types";
 
 export interface HassioResponse<T> {
@@ -33,6 +34,14 @@ export const fetchHassioStats = async (
   hass: HomeAssistant,
   container: string
 ): Promise<HassioStats> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/${container}/stats`,
+      method: "get",
+    });
+  }
+
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioStats>>(
       "GET",

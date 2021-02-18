@@ -11,19 +11,18 @@ import {
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/common/search/search-input";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-svg-icon";
 import {
-  fetchHassioAddonsInfo,
   HassioAddonInfo,
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { fetchHassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -51,46 +50,27 @@ const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
 class HassioAddonStore extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) private _addons?: HassioAddonInfo[];
-
-  @property({ attribute: false }) private _repos?: HassioAddonRepository[];
-
   @internalProperty() private _filter?: string;
 
   public async refreshData() {
-    this._repos = undefined;
-    this._addons = undefined;
-    this._filter = undefined;
     await reloadHassioAddons(this.hass);
     await this._loadData();
   }
 
   protected render(): TemplateResult {
-    const repos: TemplateResult[] = [];
+    let repos: TemplateResult[] = [];
 
-    if (this._repos) {
-      for (const repo of this._repos) {
-        const addons = this._addons!.filter(
-          (addon) => addon.repository === repo.slug
-        );
-
-        if (addons.length === 0) {
-          continue;
-        }
-
-        repos.push(html`
-          <hassio-addon-repository
-            .hass=${this.hass}
-            .repo=${repo}
-            .addons=${addons}
-            .filter=${this._filter!}
-          ></hassio-addon-repository>
-        `);
-      }
+    if (this.supervisor.addon.repositories) {
+      repos = this.addonRepositories(
+        this.supervisor.addon.repositories,
+        this.supervisor.addon.addons
+      );
     }
 
     return html`
@@ -159,6 +139,27 @@ class HassioAddonStore extends LitElement {
     this._loadData();
   }
 
+  private addonRepositories = memoizeOne(
+    (repositories: HassioAddonRepository[], addons: HassioAddonInfo[]) => {
+      return repositories.sort(sortRepos).map((repo) => {
+        const filteredAddons = addons.filter(
+          (addon) => addon.repository === repo.slug
+        );
+
+        return filteredAddons.length !== 0
+          ? html`
+              <hassio-addon-repository
+                .hass=${this.hass}
+                .repo=${repo}
+                .addons=${filteredAddons}
+                .filter=${this._filter!}
+              ></hassio-addon-repository>
+            `
+          : html``;
+      });
+    }
+  );
+
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
@@ -181,7 +182,7 @@ class HassioAddonStore extends LitElement {
 
   private async _manageRepositories() {
     showRepositoriesDialog(this, {
-      repos: this._repos!,
+      repos: this.supervisor.addon.repositories,
       loadData: () => this._loadData(),
     });
   }
@@ -191,18 +192,8 @@ class HassioAddonStore extends LitElement {
   }
 
   private async _loadData() {
-    try {
-      const [addonsInfo, supervisor] = await Promise.all([
-        fetchHassioAddonsInfo(this.hass),
-        fetchHassioSupervisorInfo(this.hass),
-      ]);
-      fireEvent(this, "supervisor-update", { supervisor });
-      this._repos = addonsInfo.repositories;
-      this._repos.sort(sortRepos);
-      this._addons = addonsInfo.addons;
-    } catch (err) {
-      alert(extractApiErrorMessage(err));
-    }
+    fireEvent(this, "supervisor-store-refresh", { store: "addon" });
+    fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
   }
 
   private async _filterChanged(e) {
