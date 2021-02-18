@@ -102,6 +102,9 @@ const REDIRECTS: Redirects = {
   info: {
     redirect: "/config/info",
   },
+  customize: {
+    redirect: "/config/customize",
+  },
   profile: {
     redirect: "/profile/dashboard",
   },
