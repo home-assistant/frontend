@@ -1243,9 +1243,9 @@
                                 },
                                 "sun": {
                                     "after": "Peale:",
-                                    "after_offset": "Pärastine viiteaeg (valikuline)",
+                                    "after_offset": "Pärastine ajanihe (valikuline)",
                                     "before": "Enne:",
-                                    "before_offset": "Eelnev viiteaeg (valikuline)",
+                                    "before_offset": "Eelnev ajanihe (valikuline)",
                                     "label": "Päike",
                                     "sunrise": "Tõusu",
                                     "sunset": "Loojangut"
@@ -3409,6 +3409,7 @@
                 "playback_title": "Sõnumi taasesitus"
             },
             "my": {
+                "component_not_loaded": "Home Assistant ei toeta seda ümbersuunamist. Selle ümbersuunamise kasutamiseks on vaja sidumist {integration}.",
                 "error": "Ilmnes tundmatu viga",
                 "faq_link": "Home Assistanti My sidumise KKK",
                 "not_supported": "Home Assistant ei toeta seda ümbersuunamist. Kontrolli kas {link} on toetatud ümbersuunamiseks ja nende kasutusele võetud HA versiooni."

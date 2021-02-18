@@ -3409,6 +3409,7 @@
                 "playback_title": "Riproduzione messaggio"
             },
             "my": {
+                "component_not_loaded": "Questo reindirizzamento non è supportato dalla tua istanza di Home Assistant. È necessaria l'integrazione {integration} per utilizzare questo reindirizzamento.",
                 "error": "Si è verificato un errore sconosciuto",
                 "faq_link": "My Home Assistant FAQ",
                 "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."

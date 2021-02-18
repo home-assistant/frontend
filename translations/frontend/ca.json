@@ -3409,9 +3409,10 @@
                 "playback_title": "Reproducció de missatges"
             },
             "my": {
+                "component_not_loaded": "La instància de Home Assistant no admet aquesta redirecció. Necessites la integració {integration} per poder fer aquesta redirecció.",
                 "error": "S'ha produït un error desconegut",
                 "faq_link": "Preguntes freqüents de Home Assistant",
-                "not_supported": "La teva instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
+                "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
             },
             "page-authorize": {
                 "abort_intro": "S'ha avortat l'inici de sessió",

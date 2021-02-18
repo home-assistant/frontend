@@ -3409,6 +3409,7 @@
                 "playback_title": "訊息播放"
             },
             "my": {
+                "component_not_loaded": "Home Assistant 不支援此重新導向。需要使用整合 {integration} 方能使用。",
                 "error": "發生未知錯誤",
                 "faq_link": "Home Assistant 常見問答集",
                 "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
