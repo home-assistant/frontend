@@ -55,6 +55,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
             step="[[computePercentageStepSize(stateObj)]]"
             value="{{percentageSliderValue}}"
             on-change="percentageChanged"
+            pin=""
             extra=""
           ></ha-labeled-slider>
         </div>
