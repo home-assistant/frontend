@@ -127,7 +127,7 @@ class HaPanelMy extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() public _error = "";
+  @internalProperty() public _error?: string;
 
   connectedCallback() {
     super.connectedCallback();
@@ -135,11 +135,7 @@ class HaPanelMy extends LitElement {
 
     if (path.startsWith("supervisor")) {
       if (!isComponentLoaded(this.hass, "hassio")) {
-        this._error = this.hass.localize(
-          "ui.panel.my.component_not_loaded",
-          "integration",
-          domainToName(this.hass.localize, "hassio")
-        );
+        this._error = "no_supervisor";
         return;
       }
       navigate(
@@ -153,16 +149,7 @@ class HaPanelMy extends LitElement {
     const redirect = REDIRECTS[path];
 
     if (!redirect) {
-      this._error = this.hass.localize(
-        "ui.panel.my.not_supported",
-        "link",
-        html`<a
-          target="_blank"
-          rel="noreferrer noopener"
-          href="https://my.home-assistant.io/faq.html#supported-pages"
-          >${this.hass.localize("ui.panel.my.faq_link")}</a
-        >`
-      );
+      this._error = "not_supported";
       return;
     }
 
@@ -170,11 +157,7 @@ class HaPanelMy extends LitElement {
       redirect.component &&
       !isComponentLoaded(this.hass, redirect.component)
     ) {
-      this._error = this.hass.localize(
-        "ui.panel.my.component_not_loaded",
-        "integration",
-        domainToName(this.hass.localize, redirect.component)
-      );
+      this._error = "no_component";
       return;
     }
 
@@ -182,7 +165,7 @@ class HaPanelMy extends LitElement {
     try {
       url = this._createRedirectUrl(redirect);
     } catch (err) {
-      this._error = this.hass.localize("ui.panel.my.error");
+      this._error = "url_error";
       return;
     }
 
@@ -191,9 +174,44 @@ class HaPanelMy extends LitElement {
 
   protected render() {
     if (this._error) {
-      return html`<hass-error-screen
-        .error=${this._error}
-      ></hass-error-screen>`;
+      let error = "Unknown error";
+      switch (this._error) {
+        case "not_supported":
+          error =
+            this.hass.localize(
+              "ui.panel.my.not_supported",
+              "link",
+              html`<a
+                target="_blank"
+                rel="noreferrer noopener"
+                href="https://my.home-assistant.io/faq.html#supported-pages"
+                >${this.hass.localize("ui.panel.my.faq_link")}</a
+              >`
+            ) || "This redirect is not supported.";
+          break;
+        case "no_component":
+          error =
+            this.hass.localize(
+              "ui.panel.my.component_not_loaded",
+              "integration",
+              domainToName(
+                this.hass.localize,
+                REDIRECTS[this.route.path.substr(1)].component!
+              )
+            ) || "This redirect is not supported.";
+          break;
+        case "no_supervisor":
+          error =
+            this.hass.localize(
+              "ui.panel.my.component_not_loaded",
+              "integration",
+              "Home Assistant Supervisor"
+            ) || "This redirect requires Home Assistant Supervisor.";
+          break;
+        default:
+          error = this.hass.localize("ui.panel.my.error") || "Unknown error";
+      }
+      return html`<hass-error-screen .error=${error}></hass-error-screen>`;
     }
     return html``;
   }
