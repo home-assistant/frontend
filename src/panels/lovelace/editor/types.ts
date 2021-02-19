@@ -120,20 +120,27 @@ const actionConfigStructConfirmation = union([
 
 const actionConfigStructUrl = object({
   action: literal("url"),
-  url_path: string(),
+  url_path: optional(string()),
   confirmation: optional(actionConfigStructConfirmation),
 });
 
 const actionConfigStructService = object({
   action: literal("call-service"),
-  service: string(),
+  service: optional(string()),
   service_data: optional(object()),
+  target: optional(
+    object({
+      entity_id: optional(union([string(), array(string())])),
+      device_id: optional(union([string(), array(string())])),
+      area_id: optional(union([string(), array(string())])),
+    })
+  ),
   confirmation: optional(actionConfigStructConfirmation),
 });
 
 const actionConfigStructNavigate = object({
   action: literal("navigate"),
-  navigation_path: string(),
+  navigation_path: optional(string()),
   confirmation: optional(actionConfigStructConfirmation),
 });
 

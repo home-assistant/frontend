@@ -15,15 +15,17 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-help-tooltip";
-import "../../../components/ha-service-picker";
 import {
   ActionConfig,
   CallServiceActionConfig,
   NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace";
+import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import "../../../components/ha-service-control";
+import memoizeOne from "memoize-one";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -47,10 +49,15 @@ export class HuiActionEditor extends LitElement {
     return config.url_path || "";
   }
 
-  get _service(): string {
-    const config = this.config as CallServiceActionConfig;
-    return config.service || "";
-  }
+  private _serviceAction = memoizeOne(
+    (config: CallServiceActionConfig): ServiceAction => {
+      return {
+        service: config.service || "",
+        data: config.service_data,
+        target: config.target,
+      };
+    }
+  );
 
   protected render(): TemplateResult {
     if (!this.hass || !this.actions) {
@@ -117,17 +124,13 @@ export class HuiActionEditor extends LitElement {
         : ""}
       ${this.config?.action === "call-service"
         ? html`
-            <ha-service-picker
+            <ha-service-control
               .hass=${this.hass}
-              .value=${this._service}
-              .configValue=${"service"}
-              @value-changed=${this._valueChanged}
-            ></ha-service-picker>
-            <b>
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.editor_service_data"
-              )}
-            </b>
+              .value=${this._serviceAction(this.config)}
+              .showAdvanced=${this.hass.userData?.showAdvanced}
+              narrow
+              @value-changed=${this._serviceValueChanged}
+            ></ha-service-control>
           `
         : ""}
     `;
@@ -172,6 +175,18 @@ export class HuiActionEditor extends LitElement {
         value: { ...this.config!, [target.configValue!]: value },
       });
     }
+  }
+
+  private _serviceValueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.config!,
+        service: ev.detail.value.service || "",
+        service_data: ev.detail.value.data || {},
+        target: ev.detail.value.target || {},
+      },
+    });
   }
 
   static get styles(): CSSResult {
