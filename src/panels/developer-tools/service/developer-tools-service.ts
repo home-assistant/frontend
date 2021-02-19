@@ -1,3 +1,4 @@
+import { safeLoad } from "js-yaml";
 import {
   css,
   CSSResultArray,
@@ -6,23 +7,22 @@ import {
   property,
   query,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { LocalStorage } from "../../../common/decorators/local-storage";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
-import "../../../components/ha-yaml-editor";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-service-control";
 import "../../../components/ha-service-picker";
+import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
 import "../../../util/app-localstorage-document";
-import "../../../components/ha-service-control";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { haStyle } from "../../../resources/styles";
-import memoizeOne from "memoize-one";
-import "../../../components/ha-expansion-panel";
-import { safeLoad } from "js-yaml";
-import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -61,26 +61,30 @@ class HaPanelDevService extends LitElement {
               showAdvanced
               @value-changed=${this._serviceChanged}
             ></ha-service-control>`}
+      </div>
+      <div class="button-row">
+        <mwc-button
+          .disabled=${!this._serviceData?.service}
+          raised
+          @click=${this._callService}
+          >${this.hass.localize(
+            "ui.panel.developer-tools.tabs.services.call_service"
+          )}</mwc-button
+        >
+        <mwc-button @click=${this._toggleYaml}
+          >${this._yamlMode
+            ? this.hass.localize(
+                "ui.panel.developer-tools.tabs.services.ui_mode"
+              )
+            : this.hass.localize(
+                "ui.panel.developer-tools.tabs.services.yaml_mode"
+              )}</mwc-button
+        >
+      </div>
 
-        <div class="button-row">
-          <mwc-button raised @click=${this._callService}
-            >${this.hass.localize(
-              "ui.panel.developer-tools.tabs.services.call_service"
-            )}</mwc-button
-          >
-          <mwc-button @click=${this._toggleYaml}
-            >${this._yamlMode
-              ? this.hass.localize(
-                  "ui.panel.developer-tools.tabs.services.ui_mode"
-                )
-              : this.hass.localize(
-                  "ui.panel.developer-tools.tabs.services.yaml_mode"
-                )}</mwc-button
-          >
-        </div>
-
-        ${fields.length
-          ? html`<ha-expansion-panel
+      ${fields.length
+        ? html`<div class="content">
+            <ha-expansion-panel
               .header=${this._yamlMode
                 ? this.hass.localize(
                     "ui.panel.developer-tools.tabs.services.all_parameters"
@@ -131,9 +135,9 @@ class HaPanelDevService extends LitElement {
                     )}</mwc-button
                   >`
                 : ""}
-            </ha-expansion-panel>`
-          : ""}
-      </div>
+            </ha-expansion-panel>
+          </div>`
+        : ""}
     `;
   }
 
@@ -226,12 +230,17 @@ class HaPanelDevService extends LitElement {
           padding: 16px;
         }
         .button-row {
-          margin: 8px 0;
+          display: flex;
+          justify-content: space-between;
+          padding: 8px 16px;
+          border-top: 1px solid var(--divider-color);
+          border-bottom: 1px solid var(--divider-color);
+          background: var(--card-background-color);
+          position: sticky;
+          bottom: 0;
+          box-sizing: border-box;
+          width: 100%;
         }
-        .button-row mwc-button {
-          padding-right: 8px;
-        }
-
         .attributes {
           width: 100%;
         }
