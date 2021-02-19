@@ -3409,8 +3409,10 @@
                 "playback_title": "Lecture de messages"
             },
             "my": {
+                "component_not_loaded": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vous avez besoin de l'intégration {integration} pour utiliser cette redirection.",
                 "error": "Une erreur inconnue est survenue",
-                "faq_link": "Ma Home Assistant FAQ"
+                "faq_link": "Ma Home Assistant FAQ",
+                "not_supported": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vérifiez le {link} pour les redirections prises en charge et la version dans laquelle elles ont été introduites."
             },
             "page-authorize": {
                 "abort_intro": "Connexion interrompue",

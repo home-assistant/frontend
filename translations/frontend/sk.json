@@ -2760,6 +2760,7 @@
                 "playback_title": "Prehrávanie správ"
             },
             "my": {
+                "component_not_loaded": "Inštancia Home Assistant toto presmerovanie nepodporuje. Na použitie tohto presmerovania potrebujete integráciu {integration}.",
                 "error": "Vyskytla sa neznáma chyba"
             },
             "page-authorize": {
