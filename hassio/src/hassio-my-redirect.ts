@@ -21,7 +21,10 @@ import { navigate } from "../../src/common/navigate";
 import { HomeAssistant, Route } from "../../src/types";
 
 const REDIRECTS: Redirects = {
-  supervisor_system: {
+  supervisor_logs: {
+    redirect: "/hassio/system",
+  },
+  supervisor_info: {
     redirect: "/hassio/system",
   },
   supervisor_snapshots: {
