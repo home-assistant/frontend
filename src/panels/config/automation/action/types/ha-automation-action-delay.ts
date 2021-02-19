@@ -22,13 +22,17 @@ export class HaDelayAction extends LitElement implements ActionElement {
     let data: HaFormTimeData = {};
 
     if (typeof this.action.delay !== "object") {
-      const parts = this.action.delay?.toString().split(":") || [];
-      data = {
-        hours: Number(parts[0]),
-        minutes: Number(parts[1]),
-        seconds: Number(parts[2]),
-        milliseconds: Number(parts[3]),
-      };
+      if (isNaN(this.action.delay)) {
+        const parts = this.action.delay?.toString().split(":") || [];
+        data = {
+          hours: Number(parts[0]) || 0,
+          minutes: Number(parts[1]) || 0,
+          seconds: Number(parts[2]) || 0,
+          milliseconds: Number(parts[3]) || 0,
+        };
+      } else {
+        data = { seconds: this.action.delay };
+      }
     } else {
       const { days, minutes, seconds, milliseconds } = this.action.delay;
       let { hours } = this.action.delay || 0;
@@ -46,7 +50,8 @@ export class HaDelayAction extends LitElement implements ActionElement {
         .data=${data}
         enableMillisecond
         @value-changed=${this._valueChanged}
-      ></ha-time-input>
+      >
+      </ha-time-input>
     `;
   }
 
