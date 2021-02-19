@@ -41,11 +41,10 @@ class HaPanelDevService extends LitElement {
   protected render() {
     const { target, fields } = this._fields(
       this.hass.services,
-      this._serviceData?.service,
-      !this._yamlMode
+      this._serviceData?.service
     );
 
-    const isValid = this._isValid(this._serviceData, fields, target);
+    const isValid = this._isValid(this._serviceData);
 
     return html`
       <div class="content">
@@ -85,7 +84,8 @@ class HaPanelDevService extends LitElement {
         >
       </div>
 
-      ${fields.length
+      ${(this._yamlMode ? fields : fields.filter((field) => !field.selector))
+        .length
         ? html`<div class="content">
             <ha-expansion-panel
               .header=${this._yamlMode
@@ -155,8 +155,7 @@ class HaPanelDevService extends LitElement {
     }
     const { target, fields } = this._fields(
       this.hass.services,
-      serviceData.service,
-      false
+      serviceData.service
     );
     if (
       target &&
@@ -181,8 +180,7 @@ class HaPanelDevService extends LitElement {
   private _fields = memoizeOne(
     (
       serviceDomains: HomeAssistant["services"],
-      domainService: string | undefined,
-      hideSelectorField: boolean
+      domainService: string | undefined
     ): { target: boolean; fields: any[] } => {
       if (!domainService) {
         return { target: false, fields: [] };
@@ -201,9 +199,6 @@ class HaPanelDevService extends LitElement {
         return { key: field, ...fields[field] };
       });
 
-      if (hideSelectorField) {
-        return { target, fields: result.filter((field) => !field.selector) };
-      }
       return {
         target,
         fields: result,
@@ -243,8 +238,7 @@ class HaPanelDevService extends LitElement {
   private _fillExampleData() {
     const { fields } = this._fields(
       this.hass.services,
-      this._serviceData?.service,
-      !this._yamlMode
+      this._serviceData?.service
     );
     const example = {};
     fields.forEach((field) => {
