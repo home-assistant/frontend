@@ -429,7 +429,7 @@
                 "media_previous_track": "이전",
                 "sound_mode": "사운드 모드",
                 "source": "입력 소스",
-                "text_to_speak": "음성합성 내용 입력 (TTS)",
+                "text_to_speak": "텍스트 음성 변환 입력",
                 "turn_off": "끄기",
                 "turn_on": "켜기"
             },
@@ -1474,7 +1474,7 @@
                         "tts": {
                             "dialog": {
                                 "example_message": "안녕하세요, {name}님. 지원되는 모든 미디어 플레이어에서 텍스트를 재생할 수 있습니다!",
-                                "header": "음성합성 사용해보기",
+                                "header": "텍스트 음성 변환 사용해보기",
                                 "play": "재생",
                                 "target": "대상",
                                 "target_browser": "브라우저"
@@ -3199,6 +3199,7 @@
                 "playback_title": "메시지 재생"
             },
             "my": {
+                "component_not_loaded": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. 이 리디렉션을 사용하려면 {integration} 통합 구성요소가 필요합니다.",
                 "error": "알 수 없는 오류가 발생했습니다",
                 "faq_link": "내 Home Assistant 자주 묻는 질문",
                 "not_supported": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. {link} 에서 지원되는 리디렉션과 리디렉션이 도입된 버전을 확인해주세요."
