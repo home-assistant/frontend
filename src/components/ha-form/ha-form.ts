@@ -202,9 +202,8 @@ export class HaForm extends LitElement implements HaFormElement {
     ev.stopPropagation();
     const schema = (ev.target as HaFormElement).schema as HaFormSchema;
     const data = this.data as HaFormDataContainer;
-    data[schema.name] = ev.detail.value;
     fireEvent(this, "value-changed", {
-      value: { ...data },
+      value: { ...data, [schema.name]: ev.detail.value },
     });
   }
 
