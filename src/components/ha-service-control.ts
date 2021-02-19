@@ -24,6 +24,7 @@ import "./ha-settings-row";
 import "./ha-yaml-editor";
 import "./ha-checkbox";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+import { classMap } from "lit-html/directives/class-map";
 
 interface ExtHassService extends Omit<HassService, "fields"> {
   fields: {
@@ -159,6 +160,13 @@ export class HaServiceControl extends LitElement {
       legacy &&
       this._serviceData?.fields.find((field) => field.key === "entity_id");
 
+    const hasOptional = Boolean(
+      !legacy &&
+        this._serviceData?.fields.some(
+          (field) => field.selector && !field.required
+        )
+    );
+
     return html`<ha-service-picker
         .hass=${this.hass}
         .value=${this.value?.service}
@@ -166,14 +174,10 @@ export class HaServiceControl extends LitElement {
       ></ha-service-picker>
       ${this._serviceData && "target" in this._serviceData
         ? html`<ha-settings-row .narrow=${this.narrow}>
-            <div slot="prefix">
-              <ha-checkbox checked disabled></ha-checkbox
-              ><paper-tooltip animation-delay="0"
-                >${this.hass.localize(
-                  "ui.components.service-control.required"
-                )}</paper-tooltip
-              >
-            </div>
+            <div
+              slot="prefix"
+              class="${classMap({ "checkbox-spacer": hasOptional })}"
+            ></div>
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
@@ -219,16 +223,10 @@ export class HaServiceControl extends LitElement {
             dataField.selector && (!dataField.advanced || this.showAdvanced)
               ? html`<ha-settings-row .narrow=${this.narrow}>
                   ${dataField.required
-                    ? html`
-                        <div slot="prefix">
-                          <ha-checkbox checked disabled></ha-checkbox
-                          ><paper-tooltip animation-delay="0"
-                            >${this.hass.localize(
-                              "ui.components.service-control.required"
-                            )}</paper-tooltip
-                          >
-                        </div>
-                      `
+                    ? html`<div
+                        slot="prefix"
+                        class="${classMap({ "checkbox-spacer": hasOptional })}"
+                      ></div>`
                     : html`<ha-checkbox
                         .key=${dataField.key}
                         .checked=${this._checkedKeys.has(dataField.key) ||
@@ -376,6 +374,9 @@ export class HaServiceControl extends LitElement {
       }
       :host(:not([narrow])) ha-settings-row ha-selector {
         width: 60%;
+      }
+      .checkbox-spacer {
+        width: 48px;
       }
     `;
   }
