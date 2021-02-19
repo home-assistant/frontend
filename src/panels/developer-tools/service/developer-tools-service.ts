@@ -27,6 +27,8 @@ import "../../../util/app-localstorage-document";
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property() public narrow!: boolean;
+
   @LocalStorage("panel-dev-service-state-service-data", true)
   private _serviceData;
 
@@ -58,6 +60,7 @@ class HaPanelDevService extends LitElement {
           : html`<ha-service-control
               .hass=${this.hass}
               .value=${this._serviceData}
+              .narrow=${this.narrow}
               showAdvanced
               @value-changed=${this._serviceChanged}
             ></ha-service-control>`}
