@@ -24,7 +24,6 @@ import "./ha-settings-row";
 import "./ha-yaml-editor";
 import "./ha-checkbox";
 import type { HaYamlEditor } from "./ha-yaml-editor";
-import { classMap } from "lit-html/directives/class-map";
 
 interface ExtHassService extends Omit<HassService, "fields"> {
   fields: {
@@ -174,10 +173,9 @@ export class HaServiceControl extends LitElement {
       ></ha-service-picker>
       ${this._serviceData && "target" in this._serviceData
         ? html`<ha-settings-row .narrow=${this.narrow}>
-            <div
-              slot="prefix"
-              class="${classMap({ "checkbox-spacer": hasOptional })}"
-            ></div>
+            ${hasOptional
+              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+              : ""}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
@@ -223,10 +221,9 @@ export class HaServiceControl extends LitElement {
             dataField.selector && (!dataField.advanced || this.showAdvanced)
               ? html`<ha-settings-row .narrow=${this.narrow}>
                   ${dataField.required
-                    ? html`<div
-                        slot="prefix"
-                        class="${classMap({ "checkbox-spacer": hasOptional })}"
-                      ></div>`
+                    ? hasOptional
+                      ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+                      : ""
                     : html`<ha-checkbox
                         .key=${dataField.key}
                         .checked=${this._checkedKeys.has(dataField.key) ||
