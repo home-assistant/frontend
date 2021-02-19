@@ -19,6 +19,7 @@ import "../../../components/ha-service-control";
 import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import { ServiceAction } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
@@ -30,7 +31,7 @@ class HaPanelDevService extends LitElement {
   @property() public narrow!: boolean;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
-  private _serviceData;
+  private _serviceData?: ServiceAction;
 
   @LocalStorage("panel-dev-service-state-yaml-mode", true)
   private _yamlMode = false;
@@ -43,6 +44,8 @@ class HaPanelDevService extends LitElement {
       this._serviceData?.service,
       !this._yamlMode
     );
+
+    const isValid = this._isValid(this._serviceData, fields, target);
 
     return html`
       <div class="content">
@@ -66,10 +69,7 @@ class HaPanelDevService extends LitElement {
             ></ha-service-control>`}
       </div>
       <div class="button-row">
-        <mwc-button
-          .disabled=${!this._serviceData?.service}
-          raised
-          @click=${this._callService}
+        <mwc-button .disabled=${!isValid} raised @click=${this._callService}
           >${this.hass.localize(
             "ui.panel.developer-tools.tabs.services.call_service"
           )}</mwc-button
@@ -144,6 +144,40 @@ class HaPanelDevService extends LitElement {
     `;
   }
 
+  private _isValid = memoizeOne((serviceData): boolean => {
+    if (!serviceData?.service) {
+      return false;
+    }
+    const domain = computeDomain(serviceData.service);
+    const service = computeObjectId(serviceData.service);
+    if (!domain || !service) {
+      return false;
+    }
+    const { target, fields } = this._fields(
+      this.hass.services,
+      serviceData.service,
+      false
+    );
+    if (
+      target &&
+      !serviceData.target &&
+      !serviceData.data?.entity_id &&
+      !serviceData.data?.device_id &&
+      !serviceData.data?.area_id
+    ) {
+      return false;
+    }
+    for (const field of fields) {
+      if (
+        field.required &&
+        (!serviceData.data || serviceData.data[field.key] === undefined)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
+
   private _fields = memoizeOne(
     (
       serviceDomains: HomeAssistant["services"],
@@ -178,13 +212,16 @@ class HaPanelDevService extends LitElement {
   );
 
   private _callService() {
-    const domain = computeDomain(this._serviceData.service);
-    const service = computeObjectId(this._serviceData.service);
+    const domain = computeDomain(this._serviceData!.service);
+    const service = computeObjectId(this._serviceData!.service);
+    if (!domain || !service) {
+      return;
+    }
     this.hass.callService(
       domain,
       service,
-      this._serviceData.data,
-      this._serviceData.target
+      this._serviceData!.data,
+      this._serviceData!.target
     );
   }
 
@@ -221,7 +258,7 @@ class HaPanelDevService extends LitElement {
         example[field.key] = value;
       }
     });
-    this._serviceData = { ...this._serviceData, data: example };
+    this._serviceData = { ...this._serviceData!, data: example };
     this._yamlEditor?.setValue(this._serviceData);
   }
 
