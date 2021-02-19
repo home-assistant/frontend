@@ -26,9 +26,9 @@ export class HaDelayAction extends LitElement implements ActionElement {
         const parts = this.action.delay?.toString().split(":") || [];
         data = {
           hours: Number(parts[0]) || 0,
-          minutes: Number(parts[1]),
-          seconds: Number(parts[2]),
-          milliseconds: Number(parts[3]),
+          minutes: Number(parts[1]) || 0,
+          seconds: Number(parts[2]) || 0,
+          milliseconds: Number(parts[3]) || 0,
         };
       } else {
         data = { seconds: this.action.delay };
