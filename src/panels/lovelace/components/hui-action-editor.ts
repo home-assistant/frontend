@@ -127,6 +127,8 @@ export class HuiActionEditor extends LitElement {
             <ha-service-control
               .hass=${this.hass}
               .value=${this._serviceAction(this.config)}
+              .showAdvanced=${this.hass.userData?.showAdvanced}
+              narrow
               @value-changed=${this._serviceValueChanged}
             ></ha-service-control>
           `
