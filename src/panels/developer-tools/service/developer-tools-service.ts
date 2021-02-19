@@ -275,6 +275,7 @@ class HaPanelDevService extends LitElement {
 
         .attributes td {
           padding: 4px;
+          vertical-align: middle;
         }
       `,
     ];
