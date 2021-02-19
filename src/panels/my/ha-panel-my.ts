@@ -201,11 +201,12 @@ class HaPanelMy extends LitElement {
             ) || "This redirect is not supported.";
           break;
         case "no_supervisor":
-          error = this.hass.localize(
-            "ui.panel.my.component_not_loaded",
-            "integration",
-            domainToName(this.hass.localize, "hassio")
-          );
+          error =
+            this.hass.localize(
+              "ui.panel.my.component_not_loaded",
+              "integration",
+              "Home Assistant Supervisor"
+            ) || "This redirect requires Home Assistant Supervisor.";
           break;
         default:
           error = this.hass.localize("ui.panel.my.error") || "Unknown error";
