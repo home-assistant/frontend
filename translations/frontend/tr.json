@@ -3409,6 +3409,7 @@
                 "playback_title": "Mesajı dinleme"
             },
             "my": {
+                "component_not_loaded": "Bu yeniden yönlendirme, Ev Yardımcısı örneğiniz tarafından desteklenmiyor. Bu yeniden yönlendirmeyi kullanmak için {integration} tümleştirmesine ihtiyacınız var.",
                 "error": "Bilinmeyen bir hata oluştu",
                 "faq_link": "Home Assistant SSS",
                 "not_supported": "Bu yönlendirme, Home Assistant örneğiniz tarafından desteklenmiyor. Desteklenen yönlendirmeler ve bunların sunulduğu sürüm için {link} kontrol edin."
