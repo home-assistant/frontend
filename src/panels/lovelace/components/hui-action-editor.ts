@@ -152,8 +152,25 @@ export class HuiActionEditor extends LitElement {
       }
       return;
     }
+
+    let data;
+    switch (value) {
+      case "url": {
+        data = { url_path: this._url_path };
+        break;
+      }
+      case "call-service": {
+        data = { service: this._service };
+        break;
+      }
+      case "navigate": {
+        data = { navigation_path: this._navigation_path };
+        break;
+      }
+    }
+
     fireEvent(this, "value-changed", {
-      value: { action: value },
+      value: { action: value, ...data },
     });
   }
 
