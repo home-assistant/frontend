@@ -3482,7 +3482,7 @@
                     "token_title": "{clientId} 의 리프레시 토큰"
                 },
                 "suspend": {
-                    "description": "Home Assistant UI 가 5분 동안 보이지 않는 경우 서버와의 연결을 종료시킬까요?",
+                    "description": "5 분 동안 기다렸다가 서버와의 연결을 종료시킵니다.",
                     "header": "자동 연결 종료"
                 },
                 "themes": {
