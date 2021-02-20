@@ -68,20 +68,22 @@ class HaPanelDevService extends LitElement {
             ></ha-service-control>`}
       </div>
       <div class="button-row">
-        <mwc-button .disabled=${!isValid} raised @click=${this._callService}
-          >${this.hass.localize(
-            "ui.panel.developer-tools.tabs.services.call_service"
-          )}</mwc-button
-        >
-        <mwc-button @click=${this._toggleYaml}
-          >${this._yamlMode
-            ? this.hass.localize(
-                "ui.panel.developer-tools.tabs.services.ui_mode"
-              )
-            : this.hass.localize(
-                "ui.panel.developer-tools.tabs.services.yaml_mode"
-              )}</mwc-button
-        >
+        <div class="buttons">
+          <mwc-button .disabled=${!isValid} raised @click=${this._callService}
+            >${this.hass.localize(
+              "ui.panel.developer-tools.tabs.services.call_service"
+            )}</mwc-button
+          >
+          <mwc-button @click=${this._toggleYaml}
+            >${this._yamlMode
+              ? this.hass.localize(
+                  "ui.panel.developer-tools.tabs.services.ui_mode"
+                )
+              : this.hass.localize(
+                  "ui.panel.developer-tools.tabs.services.yaml_mode"
+                )}</mwc-button
+          >
+        </div>
       </div>
 
       ${(this._yamlMode ? fields : fields.filter((field) => !field.selector))
@@ -262,10 +264,10 @@ class HaPanelDevService extends LitElement {
       css`
         .content {
           padding: 16px;
+          max-width: 1200px;
+          margin: auto;
         }
         .button-row {
-          display: flex;
-          justify-content: space-between;
           padding: 8px 16px;
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
@@ -275,6 +277,14 @@ class HaPanelDevService extends LitElement {
           box-sizing: border-box;
           width: 100%;
         }
+
+        .button-row .buttons {
+          display: flex;
+          justify-content: space-between;
+          max-width: 1200px;
+          margin: auto;
+        }
+
         .attributes {
           width: 100%;
         }
