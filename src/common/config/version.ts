@@ -1,11 +1,15 @@
 export const atLeastVersion = (
   version: string,
   major: number,
-  minor: number
+  minor: number,
+  patch?: number
 ): boolean => {
-  const [haMajor, haMinor] = version.split(".", 2);
+  const [haMajor, haMinor, haPatch] = version.split(".", 3);
   return (
     Number(haMajor) > major ||
-    (Number(haMajor) === major && Number(haMinor) >= minor)
+    (Number(haMajor) === major && Number(haMinor) >= minor) ||
+    (patch !== undefined &&
+      Number(haMajor) === major && Number(haMinor) === minor &&
+      Number(haPatch) >= patch)
   );
 };
