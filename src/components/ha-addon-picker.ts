@@ -7,16 +7,15 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { compare } from "../common/string/compare";
 import { HassioAddonInfo } from "../data/hassio/addon";
 import { fetchHassioSupervisorInfo } from "../data/hassio/supervisor";
-import { HomeAssistant } from "../types";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HaComboBox } from "./ha-combo-box";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { PolymerChangedEvent } from "../polymer-types";
+import { HomeAssistant } from "../types";
+import { HaComboBox } from "./ha-combo-box";
 
 const rowRenderer = (
   root: HTMLElement,
@@ -66,13 +65,6 @@ class HaAddonPicker extends LitElement {
     this._comboBox?.focus();
   }
 
-  private _processedAddons = memoizeOne((addons?: HassioAddonInfo[]) => {
-    if (!addons) {
-      return [];
-    }
-    return addons.sort((a, b) => compare(a.name, b.name));
-  });
-
   protected firstUpdated() {
     this._getAddons();
   }
@@ -102,7 +94,9 @@ class HaAddonPicker extends LitElement {
     try {
       if (isComponentLoaded(this.hass, "hassio")) {
         const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
-        this._addons = this._processedAddons(supervisorInfo.addons);
+        this._addons = supervisorInfo.addons.sort((a, b) =>
+          compare(a.name, b.name)
+        );
       } else {
         showAlertDialog(this, {
           title: this.hass.localize(
