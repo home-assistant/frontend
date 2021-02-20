@@ -18,11 +18,14 @@ import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
-import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
+import {
+  Calendar,
+  fetchCalendarEvents,
+  getCalendars,
+} from "../../data/calendar";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type {
-  Calendar,
   CalendarEvent,
   CalendarViewChanged,
   HomeAssistant,
@@ -71,7 +74,7 @@ class PanelCalendar extends LitElement {
         <div class="content">
           <div class="calendar-list">
             <div class="calendar-list-header">
-              ${this.hass.localize("ui.panel.calendar.my_calendars")}
+              ${this.hass.localize("ui.components.calendar.my_calendars")}
             </div>
             ${this._calendars.map(
               (selCal) =>

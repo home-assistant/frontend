@@ -1,4 +1,4 @@
-import "../../../components/ha-icon-button";
+import { mdiContentSave } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -8,9 +8,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -24,8 +24,10 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-input";
-import "@material/mwc-fab";
+import "../../../components/ha-svg-icon";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -48,18 +50,16 @@ import {
   SCENE_IGNORED_DOMAINS,
 } from "../../../data/scene";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import "../../../components/ha-svg-icon";
-import { showToast } from "../../../util/toast";
-import { mdiContentSave } from "@mdi/js";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 interface DeviceEntities {
   id: string;
@@ -221,7 +221,7 @@ export class HaSceneEditor extends SubscribeMixin(
         >
           ${this._config
             ? html`
-                <ha-config-section .isWide=${this.isWide}>
+                <ha-config-section vertical .isWide=${this.isWide}>
                   ${!this.narrow
                     ? html` <span slot="header">${name}</span> `
                     : ""}
@@ -253,7 +253,7 @@ export class HaSceneEditor extends SubscribeMixin(
                   </ha-card>
                 </ha-config-section>
 
-                <ha-config-section .isWide=${this.isWide}>
+                <ha-config-section vertical .isWide=${this.isWide}>
                   <div slot="header">
                     ${this.hass.localize(
                       "ui.panel.config.scene.editor.devices.header"
@@ -324,7 +324,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
                 ${this.showAdvanced
                   ? html`
-                      <ha-config-section .isWide=${this.isWide}>
+                      <ha-config-section vertical .isWide=${this.isWide}>
                         <div slot="header">
                           ${this.hass.localize(
                             "ui.panel.config.scene.editor.entities.header"
@@ -403,7 +403,7 @@ export class HaSceneEditor extends SubscribeMixin(
               `
             : ""}
         </div>
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.scene.editor.save")}
           extended
@@ -411,7 +411,7 @@ export class HaSceneEditor extends SubscribeMixin(
           class=${classMap({ dirty: this._dirty })}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -786,12 +786,12 @@ export class HaSceneEditor extends SubscribeMixin(
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
-        mwc-fab {
+        ha-fab {
           position: relative;
           bottom: calc(-80px - env(safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
-        mwc-fab.dirty {
+        ha-fab.dirty {
           bottom: 0;
         }
       `,

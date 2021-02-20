@@ -28,10 +28,11 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
+import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
-import { HomeAssistant, LightEntity } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -41,9 +42,7 @@ import { ButtonCardConfig } from "./types";
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-button-card-editor" */ "../editor/config-elements/hui-button-card-editor"
-    );
+    await import("../editor/config-elements/hui-button-card-editor");
     return document.createElement("hui-button-card-editor");
   }
 
@@ -86,7 +85,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: ButtonCardConfig): void {
     if (config.entity && !isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
+      throw new Error("Invalid entity");
     }
 
     this._config = {
@@ -273,6 +272,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         height: auto;
         color: var(--paper-item-icon-color, #44739e);
         --mdc-icon-size: 100%;
+        margin-bottom: 8px;
       }
 
       ha-icon,

@@ -16,9 +16,8 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { fetchCalendarEvents } from "../../../data/calendar";
+import { Calendar, fetchCalendarEvents } from "../../../data/calendar";
 import type {
-  Calendar,
   CalendarEvent,
   CalendarViewChanged,
   FullCalendarView,
@@ -26,7 +25,7 @@ import type {
 } from "../../../types";
 import "../../calendar/ha-full-calendar";
 import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -35,9 +34,7 @@ import type { CalendarCardConfig } from "./types";
 @customElement("hui-calendar-card")
 export class HuiCalendarCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-calendar-card-editor" */ "../editor/config-elements/hui-calendar-card-editor"
-    );
+    await import("../editor/config-elements/hui-calendar-card-editor");
     return document.createElement("hui-calendar-card-editor");
   }
 
@@ -83,7 +80,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
-      throw new Error("Entities must be defined");
+      throw new Error("Entities must be specified");
     }
 
     if (!Array.isArray(config.entities)) {

@@ -1,4 +1,3 @@
-import "@material/mwc-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -19,6 +18,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-svg-icon";
 import {
@@ -103,7 +103,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         hasFab
         clickable
       >
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.lovelace.resources.picker.add_resource"
@@ -112,7 +112,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           @click=${this._addResource}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }

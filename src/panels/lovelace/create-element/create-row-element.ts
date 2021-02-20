@@ -36,6 +36,7 @@ const LAZY_LOAD_TYPES = {
     import("../entity-rows/hui-input-select-entity-row"),
   "input-text-entity": () => import("../entity-rows/hui-input-text-entity-row"),
   "lock-entity": () => import("../entity-rows/hui-lock-entity-row"),
+  "number-entity": () => import("../entity-rows/hui-number-entity-row"),
   "timer-entity": () => import("../entity-rows/hui-timer-entity-row"),
   conditional: () => import("../special-rows/hui-conditional-row"),
   "weather-entity": () => import("../entity-rows/hui-weather-entity-row"),
@@ -63,6 +64,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   light: "toggle",
   lock: "lock",
   media_player: "media-player",
+  number: "number",
   remote: "toggle",
   scene: "scene",
   script: "script",
@@ -71,7 +73,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   switch: "toggle",
   vacuum: "toggle",
   // Temporary. Once climate is rewritten,
-  // water heater should get it's own row.
+  // water heater should get its own row.
   water_heater: "climate",
   input_datetime: "input-datetime",
   weather: "weather",

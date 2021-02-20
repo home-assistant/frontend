@@ -1,7 +1,6 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "../../../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -13,8 +12,9 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import { sortStatesByName } from "../../../../../common/entity/states_sort_by_name";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-menu-button";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
+import "../../../../../components/ha-menu-button";
 import "../../../../../components/ha-service-description";
 import "../../../../../layouts/ha-app-layout";
 import { EventsMixin } from "../../../../../mixins/events-mixin";
@@ -101,6 +101,36 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </div>
           </app-toolbar>
         </app-header>
+
+        <ha-config-section is-wide="[[isWide]]">
+          <ha-card
+            class="content"
+            header="[[localize('ui.panel.config.zwave.migration.ozw.header')]]"
+          >
+            <div class="card-content">
+              <p>
+                If you are experiencing problems with your Z-Wave devices, you
+                can migrate to the newer OZW integration, that is currently in
+                beta.
+              </p>
+              <p>
+                Be aware that the future of OZW is not guaranteed, as the
+                development has stopped.
+              </p>
+              <p>
+                If you are currently not experiencing issues with your Z-Wave
+                devices, we recommend you to wait for the successor of the OZW
+                integration, Z-Wave JS, that is in active development at the
+                moment.
+              </p>
+            </div>
+            <div class="card-actions">
+              <a href="/config/zwave/migration"
+                ><mwc-button>Start Migration to OZW</mwc-button></a
+              >
+            </div>
+          </ha-card>
+        </ha-config-section>
 
         <zwave-network
           id="zwave-network"

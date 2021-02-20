@@ -1,3 +1,4 @@
+import { mdiClose } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -7,14 +8,13 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { guard } from "lit-html/directives/guard";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { fetchUsers, User } from "../../data/user";
 import type { PolymerChangedEvent } from "../../polymer-types";
 import type { HomeAssistant } from "../../types";
-import { fetchUsers, User } from "../../data/user";
 import "./ha-user-picker";
-import { mdiClose } from "@mdi/js";
-import memoizeOne from "memoize-one";
-import { guard } from "lit-html/directives/guard";
 
 @customElement("ha-users-picker")
 class HaUsersPickerLight extends LitElement {

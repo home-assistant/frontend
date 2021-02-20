@@ -1,6 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 import { createMediaPlayerEntities } from "../data/media_players";
@@ -146,35 +151,33 @@ const CONFIGS = [
     entity: media_player.receiver_off
     `,
   },
+  {
+    heading: "Grid Full Size",
+    config: `
+  - type: grid
+    columns: 1
+    cards:
+    - type: media-control
+      entity: media_player.music_paused
+    `,
+  },
 ];
 
-class DemoHuiMediControlCard extends PolymerElement {
-  static get template() {
-    return html`
-      <demo-cards
-        id="demos"
-        hass="[[hass]]"
-        configs="[[_configs]]"
-      ></demo-cards>
-    `;
+@customElement("demo-hui-media-control-card")
+class DemoHuiMediaControlCard extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-      hass: Object,
-    };
-  }
-
-  public ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
     hass.addEntities(createMediaPlayerEntities());
   }
 }
 
-customElements.define("demo-hui-media-control-card", DemoHuiMediControlCard);
+customElements.define("demo-hui-media-control-card", DemoHuiMediaControlCard);

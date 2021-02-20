@@ -19,7 +19,7 @@ const LINE_ATTRIBUTES_TO_KEEP = [
 export interface LineChartState {
   state: string;
   last_changed: string;
-  attributes?: { [key: string]: any };
+  attributes?: Record<string, any>;
 }
 
 export interface LineChartEntity {

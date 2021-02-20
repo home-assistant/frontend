@@ -22,7 +22,7 @@ import "../../../components/ha-icon-button";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -38,9 +38,7 @@ const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-picture-glance-card-editor" */ "../editor/config-elements/hui-picture-glance-card-editor"
-    );
+    await import("../editor/config-elements/hui-picture-glance-card-editor");
     return document.createElement("hui-picture-glance-card-editor");
   }
 
@@ -86,7 +84,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       !(config.image || config.camera_image || config.state_image) ||
       (config.state_image && !config.entity)
     ) {
-      throw new Error("Invalid card configuration");
+      throw new Error("Invalid configuration");
     }
 
     const entities = processConfigEntities(config.entities);

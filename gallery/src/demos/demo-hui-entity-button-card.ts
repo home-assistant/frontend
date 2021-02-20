@@ -1,6 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -20,10 +25,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "With Name",
+    heading: "With Name (defined in card)",
     config: `
 - type: button
-  name: Bedroom
+  name: Custom Name
   entity: light.bed_light
     `,
   },
@@ -32,7 +37,7 @@ const CONFIGS = [
     config: `
 - type: button
   entity: light.bed_light
-  icon: mdi:hotel
+  icon: mdi:tools
     `,
   },
   {
@@ -48,7 +53,7 @@ const CONFIGS = [
     config: `
 - type: button
   entity: light.bed_light
-  tap_action: 
+  tap_action:
     action: toggle
     `,
   },
@@ -69,31 +74,19 @@ const CONFIGS = [
   },
 ];
 
-class DemoButtonEntity extends PolymerElement {
-  static get template() {
-    return html`
-      <demo-cards
-        id="demos"
-        hass="[[hass]]"
-        configs="[[_configs]]"
-      ></demo-cards>
-    `;
+@customElement("demo-hui-entity-button-card")
+class DemoButtonEntity extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-      hass: Object,
-    };
-  }
-
-  public ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
   }
 }

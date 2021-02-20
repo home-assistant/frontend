@@ -1,4 +1,3 @@
-import "@material/mwc-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -23,6 +22,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-loading-screen";
@@ -148,7 +148,7 @@ export class HaConfigHelpers extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.helpers}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
@@ -158,7 +158,7 @@ export class HaConfigHelpers extends LitElement {
           "ui.panel.config.helpers.picker.no_helpers"
         )}
       >
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.helpers.picker.add_helper"
@@ -167,7 +167,7 @@ export class HaConfigHelpers extends LitElement {
           @click=${this._createHelpler}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }

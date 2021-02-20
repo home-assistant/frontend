@@ -1,4 +1,3 @@
-import "@material/mwc-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -18,6 +17,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
@@ -124,7 +124,7 @@ export class HaConfigAreasDashboard extends LitElement {
           icon="hass:help-circle"
           @click=${this._showHelp}
         ></ha-icon-button>
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.areas.picker.create_area"
@@ -133,7 +133,7 @@ export class HaConfigAreasDashboard extends LitElement {
           @click=${this._createArea}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
   }

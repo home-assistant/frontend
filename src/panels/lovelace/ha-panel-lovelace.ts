@@ -2,9 +2,9 @@ import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
 import {
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { domainToName } from "../../data/integration";
@@ -289,7 +289,7 @@ class LovelacePanel extends LitElement {
       enableFullEditMode: () => {
         if (!editorLoaded) {
           editorLoaded = true;
-          import(/* webpackChunkName: "lovelace-yaml-editor" */ "./hui-editor");
+          import("./hui-editor");
         }
         this._state = "yaml-editor";
       },

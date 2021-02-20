@@ -4,8 +4,9 @@ import {
 } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
 import { Context, HomeAssistant } from "../types";
+import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
-import { Action } from "./script";
+import { Action, MODES } from "./script";
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -14,15 +15,23 @@ export interface AutomationEntity extends HassEntityBase {
   };
 }
 
-export interface AutomationConfig {
+export type AutomationConfig =
+  | ManualAutomationConfig
+  | BlueprintAutomationConfig;
+
+export interface ManualAutomationConfig {
   id?: string;
-  alias: string;
-  description: string;
+  alias?: string;
+  description?: string;
   trigger: Trigger[];
   condition?: Condition[];
   action: Action[];
-  mode?: "single" | "restart" | "queued" | "parallel";
+  mode?: typeof MODES[number];
   max?: number;
+}
+
+export interface BlueprintAutomationConfig extends ManualAutomationConfig {
+  use_blueprint: { path: string; input?: BlueprintInput };
 }
 
 export interface ForDict {
@@ -148,6 +157,7 @@ export interface StateCondition {
   entity_id: string;
   attribute?: string;
   state: string | number;
+  for?: string | number | ForDict;
 }
 
 export interface NumericStateCondition {

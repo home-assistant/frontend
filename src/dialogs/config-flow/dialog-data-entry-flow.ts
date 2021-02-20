@@ -22,13 +22,17 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
-import type { DataEntryFlowStep } from "../../data/data_entry_flow";
+import type {
+  DataEntryFlowProgressedEvent,
+  DataEntryFlowStep,
+} from "../../data/data_entry_flow";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { showAlertDialog } from "../generic/show-dialog-box";
 import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
@@ -102,9 +106,20 @@ class DataEntryFlowDialog extends LitElement {
 
     this._loading = true;
     const curInstance = this._instance;
-    const step = await (params.continueFlowId
-      ? params.flowConfig.fetchFlow(this.hass, params.continueFlowId)
-      : params.flowConfig.createFlow(this.hass, params.startFlowHandler!));
+    let step: DataEntryFlowStep;
+    try {
+      step = await (params.continueFlowId
+        ? params.flowConfig.fetchFlow(this.hass, params.continueFlowId)
+        : params.flowConfig.createFlow(this.hass, params.startFlowHandler!));
+    } catch (err) {
+      this._step = undefined;
+      this._params = undefined;
+      showAlertDialog(this, {
+        title: "Error",
+        text: "Config flow could not be loaded",
+      });
+      return;
+    }
 
     // Happens if second showDialog called
     if (curInstance !== this._instance) {
@@ -224,6 +239,19 @@ class DataEntryFlowDialog extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this.hass.connection.subscribeEvents<DataEntryFlowProgressedEvent>(
+      async (ev) => {
+        if (ev.data.flow_id !== this._step?.flow_id) {
+          return;
+        }
+        const step = await this._params!.flowConfig.fetchFlow(
+          this.hass,
+          this._step?.flow_id
+        );
+        this._processStep(step);
+      },
+      "data_entry_flow_progressed"
+    );
     this.addEventListener("flow-update", (ev) => {
       const { step, stepPromise } = (ev as any).detail;
       this._processStep(step || stepPromise);

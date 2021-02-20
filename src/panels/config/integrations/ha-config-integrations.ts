@@ -1,4 +1,3 @@
-import "@material/mwc-fab";
 import "@material/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
@@ -19,12 +18,15 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import "../../../common/search/search-input";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import {
   ConfigEntry,
@@ -60,6 +62,7 @@ import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../ha-panel-config";
 import "./ha-integration-card";
 import type {
@@ -67,7 +70,6 @@ import type {
   ConfigEntryUpdatedEvent,
   HaIntegrationCard,
 } from "./ha-integration-card";
-import { brandsUrl } from "../../../util/brands-url";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
   localized_title?: string;
@@ -222,8 +224,15 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
     this._loadConfigEntries();
-    this.hass.loadBackendTranslation("title", undefined, true);
+    const localizePromise = this.hass.loadBackendTranslation(
+      "title",
+      undefined,
+      true
+    );
     this._fetchManifests();
+    if (this.route.path === "/add") {
+      this._handleAdd(localizePromise);
+    }
   }
 
   protected updated(changed: PropertyValues) {
@@ -338,7 +347,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         />
                       </div>
                       <h2>
-                        ${item.localized_domain_name}
+                        ${// In 2020.2 we added support for item.title. All ignored entries before
+                        // that have title "Ignored" so we fallback to localized domain name.
+                        item.title === "Ignored"
+                          ? item.localized_domain_name
+                          : item.title}
                       </h2>
                       <mwc-button
                         @click=${this._removeIgnoredIntegration}
@@ -474,7 +487,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               `
             : ""}
         </div>
-        <mwc-fab
+        <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.integrations.add_integration"
@@ -483,7 +496,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           @click=${this._createFlow}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -531,11 +544,15 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     );
   }
 
+  private _handleFlowUpdated() {
+    this._loadConfigEntries();
+    getConfigFlowInProgressCollection(this.hass.connection).refresh();
+  }
+
   private _createFlow() {
     showConfigFlowDialog(this, {
       dialogClosedCallback: () => {
-        this._loadConfigEntries();
-        getConfigFlowInProgressCollection(this.hass.connection).refresh();
+        this._handleFlowUpdated();
       },
       showAdvanced: this.showAdvanced,
     });
@@ -547,8 +564,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     showConfigFlowDialog(this, {
       continueFlowId: (ev.target! as any).flowId,
       dialogClosedCallback: () => {
-        this._loadConfigEntries();
-        getConfigFlowInProgressCollection(this.hass.connection).refresh();
+        this._handleFlowUpdated();
       },
     });
   }
@@ -571,7 +587,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (!confirmed) {
       return;
     }
-    await ignoreConfigFlow(this.hass, flow.flow_id);
+    await ignoreConfigFlow(
+      this.hass,
+      flow.flow_id,
+      localizeConfigFlowTitle(this.hass.localize, flow)
+    );
     this._loadConfigEntries();
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
   }
@@ -639,6 +659,33 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       card.classList.add("highlight");
       card.selectedConfigEntryId = entryId;
     }
+  }
+
+  private async _handleAdd(localizePromise: Promise<LocalizeFunc>) {
+    const domain = extractSearchParam("domain");
+    navigate(this, "/config/integrations", true);
+    if (!domain) {
+      return;
+    }
+    const localize = await localizePromise;
+    if (
+      !(await showConfirmationDialog(this, {
+        title: localize(
+          "ui.panel.config.integrations.confirm_new",
+          "integration",
+          domainToName(localize, domain)
+        ),
+      }))
+    ) {
+      return;
+    }
+    showConfigFlowDialog(this, {
+      dialogClosedCallback: () => {
+        this._handleFlowUpdated();
+      },
+      startFlowHandler: domain,
+      showAdvanced: this.hass.userData?.showAdvanced,
+    });
   }
 
   static get styles(): CSSResult[] {

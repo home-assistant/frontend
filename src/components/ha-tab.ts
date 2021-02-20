@@ -1,21 +1,21 @@
+import type { Ripple } from "@material/mwc-ripple";
+import "@material/mwc-ripple/mwc-ripple";
+import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import {
   css,
   CSSResult,
   customElement,
+  eventOptions,
+  html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
-  html,
   queryAsync,
-  eventOptions,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-ripple/mwc-ripple";
-import type { Ripple } from "@material/mwc-ripple";
-import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
+import { ifDefined } from "lit-html/directives/if-defined";
 import "./ha-icon";
 import "./ha-svg-icon";
-import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-tab")
 export class HaTab extends LitElement {

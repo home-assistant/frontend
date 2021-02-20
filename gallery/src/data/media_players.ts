@@ -7,8 +7,8 @@ export const createMediaPlayerEntities = () => [
     media_title: "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
     media_artist: "Technohead",
     // Pause + Seek + Volume Set + Volume Mute + Previous Track + Next Track + Play Media +
-    // Select Source + Stop + Clear + Play + Shuffle Set + Browse Media
-    supported_features: 195135,
+    // Select Source + Stop + Clear + Play + Shuffle Set
+    supported_features: 64063,
     entity_picture: "/images/album_cover_2.jpg",
     media_duration: 300,
     media_position: 50,
@@ -24,8 +24,8 @@ export const createMediaPlayerEntities = () => [
     media_title: "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
     media_artist: "Technohead",
     // Pause + Seek + Volume Set + Volume Mute + Previous Track + Next Track + Play Media +
-    // Select Source + Stop + Clear + Play + Shuffle Set
-    supported_features: 64063,
+    // Select Source + Stop + Clear + Play + Shuffle Set + Browse Media
+    supported_features: 195135,
     entity_picture: "/images/album_cover.jpg",
     media_duration: 300,
     media_position: 0,

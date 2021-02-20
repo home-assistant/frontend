@@ -21,8 +21,8 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   LeafletModuleType,
-  setupLeafletMap,
   replaceTileLayer,
+  setupLeafletMap,
 } from "../../common/dom/setup-leaflet-map";
 import { defaultRadiusColor } from "../../data/zone";
 import { HomeAssistant } from "../../types";
@@ -66,7 +66,7 @@ export class HaLocationsEditor extends LitElement {
 
   private _locationMarkers?: { [key: string]: Marker | Circle };
 
-  private _circles: { [key: string]: Circle } = {};
+  private _circles: Record<string, Circle> = {};
 
   public fitMap(): void {
     if (

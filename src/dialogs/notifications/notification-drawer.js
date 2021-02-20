@@ -63,8 +63,8 @@ export class HuiNotificationDrawer extends EventsMixin(
     <app-drawer id="drawer" opened="{{open}}" disable-swipe align="start">
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
-        <ha-icon-button-prev hass="[[hass]]" on-click="_closeDrawer" 
-          title="[[localize('ui.notification_drawer.close')]]" 
+        <ha-icon-button-prev hass="[[hass]]" on-click="_closeDrawer"
+          title="[[localize('ui.notification_drawer.close')]]"
           label="[[localize('ui.notification_drawer.close')]]">
         </ha-icon-button-prev>
       </app-toolbar>
@@ -164,7 +164,7 @@ export class HuiNotificationDrawer extends EventsMixin(
     if (
       this.open &&
       oldNotifications.length > 0 &&
-      !newNotifications.length === 0
+      newNotifications.length === 0
     ) {
       this.open = false;
     }

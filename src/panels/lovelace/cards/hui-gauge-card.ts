@@ -17,8 +17,9 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
+import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -34,9 +35,7 @@ export const severityMap = {
 @customElement("hui-gauge-card")
 class HuiGaugeCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-gauge-card-editor" */ "../editor/config-elements/hui-gauge-card-editor"
-    );
+    await import("../editor/config-elements/hui-gauge-card-editor");
     return document.createElement("hui-gauge-card-editor");
   }
 
@@ -72,12 +71,13 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: GaugeCardConfig): void {
-    if (!config || !config.entity) {
-      throw new Error("Invalid card configuration");
+    if (!config.entity) {
+      throw new Error("Entity must be specified");
     }
     if (!isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
+      throw new Error("Invalid entity");
     }
+
     this._config = { min: 0, max: 100, ...config };
   }
 
@@ -98,6 +98,18 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const state = Number(stateObj.state);
 
+    if (stateObj.state === UNAVAILABLE) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_unavailable",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
+    }
+
     if (isNaN(state)) {
       return html`
         <hui-warning
@@ -110,12 +122,15 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
+    // for consistent value display across gauge, entity, entity-row, etc.
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
-          .value=${state}
+          .value=${stateObj.state}
+          .language=${this.hass!.language}
           .label=${this._config!.unit ||
           this.hass?.states[this._config!.entity].attributes
             .unit_of_measurement ||

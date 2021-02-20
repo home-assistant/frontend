@@ -4,11 +4,11 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { CastManager } from "../../../cast/cast_manager";
@@ -32,7 +32,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: CastConfig): void {
     if (!config || config.view === undefined || config.view === null) {
-      throw new Error("Invalid Configuration: 'view' required");
+      throw new Error("View required");
     }
 
     this._config = {

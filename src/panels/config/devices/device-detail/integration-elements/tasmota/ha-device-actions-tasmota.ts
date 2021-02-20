@@ -1,11 +1,11 @@
 import {
+  css,
   CSSResult,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  css,
 } from "lit-element";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { removeTasmotaDeviceEntry } from "../../../../../../data/tasmota";

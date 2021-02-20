@@ -11,8 +11,8 @@ import {
 } from "lit-element";
 import "../../../components/ha-relative-time";
 import { triggerAutomation } from "../../../data/automation";
-import { HomeAssistant } from "../../../types";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-automation")
 class MoreInfoAutomation extends LitElement {
@@ -57,7 +57,9 @@ class MoreInfoAutomation extends LitElement {
       }
       .actions {
         margin: 8px 0;
-        text-align: right;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
       }
     `;
   }

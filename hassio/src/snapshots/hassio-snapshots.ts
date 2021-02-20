@@ -26,7 +26,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { atLeastVersion } from "../../../src/common/config/version";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -41,7 +40,8 @@ import {
   HassioSnapshot,
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
-import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-tabs-subpage";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
@@ -67,7 +67,7 @@ class HassioSnapshots extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public supervisorInfo!: HassioSupervisorInfo;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @internalProperty() private _snapshotName = "";
 
@@ -212,7 +212,13 @@ class HassioSnapshots extends LitElement {
                   : undefined}
               </div>
               <div class="card-actions">
-                <ha-progress-button @click=${this._createSnapshot}>
+                <ha-progress-button
+                  @click=${this._createSnapshot}
+                  title="${this.supervisor.info.state !== "running"
+                    ? `Creating a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`
+                    : ""}"
+                  .disabled=${this.supervisor.info.state !== "running"}
+                >
                   Create
                 </ha-progress-button>
               </div>
@@ -265,8 +271,8 @@ class HassioSnapshots extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("supervisorInfo")) {
-      this._addonList = this.supervisorInfo.addons
+    if (changedProps.has("supervisor")) {
+      this._addonList = this.supervisor.supervisor.addons
         .map((addon) => ({
           slug: addon.slug,
           name: addon.name,
@@ -326,6 +332,12 @@ class HassioSnapshots extends LitElement {
   }
 
   private async _createSnapshot(ev: CustomEvent): Promise<void> {
+    if (this.supervisor.info.state !== "running") {
+      await showAlertDialog(this, {
+        title: "Could not create snapshot",
+        text: `Creating a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
+      });
+    }
     const button = ev.currentTarget as any;
     button.progress = true;
 
@@ -372,7 +384,6 @@ class HassioSnapshots extends LitElement {
         await createHassioPartialSnapshot(this.hass, data);
       }
       this._updateSnapshots();
-      fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }
@@ -388,6 +399,7 @@ class HassioSnapshots extends LitElement {
   private _snapshotClicked(ev) {
     showHassioSnapshotDialog(this, {
       slug: ev.currentTarget!.snapshot.slug,
+      supervisor: this.supervisor,
       onDelete: () => this._updateSnapshots(),
     });
   }
@@ -397,6 +409,7 @@ class HassioSnapshots extends LitElement {
       showSnapshot: (slug: string) =>
         showHassioSnapshotDialog(this, {
           slug,
+          supervisor: this.supervisor,
           onDelete: () => this._updateSnapshots(),
         }),
       reloadSnapshot: () => this.refreshData(),

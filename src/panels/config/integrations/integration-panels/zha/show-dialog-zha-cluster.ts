@@ -5,10 +5,7 @@ export interface ZHAClusterDialogParams {
   device: ZHADevice;
 }
 
-export const loadZHAClusterDialog = () =>
-  import(
-    /* webpackChunkName: "dialog-zha-device-zigbee-info" */ "./dialog-zha-cluster"
-  );
+export const loadZHAClusterDialog = () => import("./dialog-zha-cluster");
 
 export const showZHAClusterDialog = (
   element: HTMLElement,

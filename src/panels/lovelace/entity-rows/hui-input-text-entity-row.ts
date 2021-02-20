@@ -1,14 +1,16 @@
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -24,7 +26,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
   }
@@ -52,7 +54,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <paper-input
           no-label-float
-          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+          .disabled=${stateObj.state === UNAVAILABLE}
           .value="${stateObj.state}"
           .minlength="${stateObj.attributes.min}"
           .maxlength="${stateObj.attributes.max}"
@@ -79,6 +81,14 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     }
 
     ev.target.blur();
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        cursor: pointer;
+      }
+    `;
   }
 }
 

@@ -35,7 +35,7 @@ import "../../../components/ha-icon-button";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import "../../map/ha-entity-marker";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { installResizeObserver } from "../common/install-resize-observer";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
@@ -45,9 +45,7 @@ import { MapCardConfig } from "./types";
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
-    await import(
-      /* webpackChunkName: "hui-map-card-editor" */ "../editor/config-elements/hui-map-card-editor"
-    );
+    await import("../editor/config-elements/hui-map-card-editor");
     return document.createElement("hui-map-card-editor");
   }
 
@@ -113,7 +111,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _mapPaths: Array<Polyline | CircleMarker> = [];
 
-  private _colorDict: { [key: string]: string } = {};
+  private _colorDict: Record<string, string> = {};
 
   private _colorIndex = 0;
 
@@ -137,9 +135,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       throw new Error("Error in card configuration.");
     }
 
-    if (!config.entities && !config.geo_location_sources) {
+    if (!config.entities?.length && !config.geo_location_sources) {
       throw new Error(
-        "Either entities or geo_location_sources must be defined"
+        "Either entities or geo_location_sources must be specified"
       );
     }
     if (config.entities && !Array.isArray(config.entities)) {

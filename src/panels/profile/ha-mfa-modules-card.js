@@ -5,9 +5,9 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/ha-card";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "../../styles/polymer-ha-style";
 
 let registeredDialog = false;
@@ -83,10 +83,7 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-mfa-module-setup-flow",
         dialogTag: "ha-mfa-module-setup-flow",
-        dialogImport: () =>
-          import(
-            /* webpackChunkName: "ha-mfa-module-setup-flow" */ "./ha-mfa-module-setup-flow"
-          ),
+        dialogImport: () => import("./ha-mfa-module-setup-flow"),
       });
     }
   }

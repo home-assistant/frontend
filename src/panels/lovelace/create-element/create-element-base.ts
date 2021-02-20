@@ -104,6 +104,10 @@ const _customCreate = <T extends keyof CreateElementConfigTypes>(
     `Custom element doesn't exist: ${tag}.`,
     config
   );
+  // Custom elements are required to have a - in the name
+  if (!tag.includes("-")) {
+    return element;
+  }
   element.style.display = "None";
   const timer = window.setTimeout(() => {
     element.style.display = "";
@@ -193,7 +197,7 @@ export const tryCreateLovelaceElement = <
     // If domain types is given, we can derive a type from "entity"
     (!domainTypes || !("entity" in config))
   ) {
-    throw new Error("No card type configured.");
+    throw new Error("No card type configured");
   }
 
   const customTag = config.type ? _getCustomTag(config.type) : undefined;
@@ -215,7 +219,7 @@ export const tryCreateLovelaceElement = <
   }
 
   if (type === undefined) {
-    throw new Error("No type specified.");
+    throw new Error("No type specified");
   }
 
   const tag = `hui-${type}-${tagSuffix}`;
@@ -244,20 +248,26 @@ export const getLovelaceElementClass = async <
 
   if (customTag) {
     const customCls = customElements.get(customTag);
-    return (
-      customCls ||
-      new Promise((resolve, reject) => {
-        // We will give custom components up to TIMEOUT seconds to get defined
-        setTimeout(
-          () => reject(new Error(`Custom element not found: ${customTag}`)),
-          TIMEOUT
-        );
+    if (customCls) {
+      return customCls;
+    }
 
-        customElements
-          .whenDefined(customTag)
-          .then(() => resolve(customElements.get(customTag)));
-      })
-    );
+    // Custom elements are required to have a - in the name
+    if (!customTag.includes("-")) {
+      throw new Error(`Custom element not found: ${customTag}`);
+    }
+
+    return new Promise((resolve, reject) => {
+      // We will give custom components up to TIMEOUT seconds to get defined
+      setTimeout(
+        () => reject(new Error(`Custom element not found: ${customTag}`)),
+        TIMEOUT
+      );
+
+      customElements
+        .whenDefined(customTag)
+        .then(() => resolve(customElements.get(customTag)));
+    });
   }
 
   const tag = `hui-${type}-${tagSuffix}`;

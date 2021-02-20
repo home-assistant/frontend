@@ -1,21 +1,19 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  CSSResult,
-  css,
-  customElement,
-  TemplateResult,
-  html,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
 import { UNAVAILABLE } from "../data/entity";
 import { HomeAssistant } from "../types";
 import CoverEntity from "../util/cover-model";
-
 import "./ha-icon-button";
 
 @customElement("ha-cover-tilt-controls")
@@ -41,7 +39,7 @@ class HaCoverTiltControls extends LitElement {
 
     return html` <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStop,
+          invisible: !this._entityObj.supportsOpenTilt,
         })}
         label=${this.hass.localize(
           "ui.dialogs.more_info_control.open_tilt_cover"
@@ -52,7 +50,7 @@ class HaCoverTiltControls extends LitElement {
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStop,
+          invisible: !this._entityObj.supportsStopTilt,
         })}
         label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
         icon="hass:stop"
@@ -61,10 +59,10 @@ class HaCoverTiltControls extends LitElement {
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStop,
+          invisible: !this._entityObj.supportsCloseTilt,
         })}
         label=${this.hass.localize(
-          "ui.dialogs.more_info_control.open_tilt_cover"
+          "ui.dialogs.more_info_control.close_tilt_cover"
         )}
         icon="hass:arrow-bottom-left"
         @click=${this._onCloseTiltTap}

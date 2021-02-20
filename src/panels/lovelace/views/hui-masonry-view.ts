@@ -10,6 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-label-badge";
@@ -21,7 +22,6 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
-import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
@@ -83,7 +83,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       <div id="columns"></div>
       ${this.lovelace?.editMode
         ? html`
-            <mwc-fab
+            <ha-fab
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}
@@ -94,7 +94,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
               })}
             >
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </mwc-fab>
+            </ha-fab>
           `
         : ""}
     `;
@@ -114,9 +114,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
-      import(
-        /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
-      );
+      import("./default-view-editable");
     }
 
     if (changedProperties.has("hass")) {
@@ -150,11 +148,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    showCreateCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: [this.index!],
-    });
+    fireEvent(this, "ll-create-card");
   }
 
   private async _createColumns() {
@@ -295,10 +289,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
       .column > * {
         display: block;
-        margin: 4px 4px 8px;
+        margin: var(--masonry-view-card-margin, 4px 4px 8px);
       }
 
-      mwc-fab {
+      ha-fab {
         position: sticky;
         float: right;
         right: calc(16px + env(safe-area-inset-right));
@@ -306,7 +300,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         z-index: 1;
       }
 
-      mwc-fab.rtl {
+      ha-fab.rtl {
         float: left;
         right: auto;
         left: calc(16px + env(safe-area-inset-left));

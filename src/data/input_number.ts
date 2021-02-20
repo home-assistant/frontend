@@ -5,10 +5,10 @@ export interface InputNumber {
   name: string;
   min: number;
   max: number;
+  step: number;
+  mode: "box" | "slider";
   icon?: string;
   initial?: number;
-  step?: number;
-  mode?: "box" | "slider";
   unit_of_measurement?: string;
 }
 

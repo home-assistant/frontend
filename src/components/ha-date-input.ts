@@ -2,6 +2,26 @@ import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
 
 const VaadinDatePicker = customElements.get("vaadin-date-picker");
 
+const documentContainer = document.createElement("template");
+documentContainer.setAttribute("style", "display: none;");
+documentContainer.innerHTML = `
+  <dom-module id="ha-date-input-styles" theme-for="vaadin-text-field">
+    <template>
+      <style>
+      [part="input-field"] {
+        top: 2px;
+        height: 30px;
+        color: var(--primary-text-color);
+      }
+      [part="value"] {
+        text-align: center;
+      }
+      </style>
+    </template>
+  </dom-module>
+`;
+document.head.appendChild(documentContainer.content);
+
 export class HaDateInput extends VaadinDatePicker {
   constructor() {
     super();

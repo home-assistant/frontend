@@ -12,7 +12,7 @@ import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
 import { compare } from "../../../src/common/string/compare";
 import "../../../src/components/ha-card";
-import { HassioAddonInfo } from "../../../src/data/hassio/addon";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
@@ -22,14 +22,14 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioAddons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public addons?: HassioAddonInfo[];
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   protected render(): TemplateResult {
     return html`
       <div class="content">
         <h1>Add-ons</h1>
         <div class="card-group">
-          ${!this.addons?.length
+          ${!this.supervisor.supervisor.addons?.length
             ? html`
                 <ha-card>
                   <div class="card-content">
@@ -41,7 +41,7 @@ class HassioAddons extends LitElement {
                   </div>
                 </ha-card>
               `
-            : this.addons
+            : this.supervisor.supervisor.addons
                 .sort((a, b) => compare(a.name, b.name))
                 .map(
                   (addon) => html`

@@ -8,8 +8,7 @@ export interface ZoneDetailDialogParams {
   removeEntry?: () => Promise<boolean>;
 }
 
-export const loadZoneDetailDialog = () =>
-  import(/* webpackChunkName: "zone-detail-dialog" */ "./dialog-zone-detail");
+export const loadZoneDetailDialog = () => import("./dialog-zone-detail");
 
 export const showZoneDetailDialog = (
   element: HTMLElement,

@@ -9,8 +9,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../components/ha-circular-progress";
-import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 

@@ -2,10 +2,16 @@ import { css, CSSResult } from "lit-element";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 import { GridCardConfig } from "./types";
+import { LovelaceCardEditor } from "../types";
 
 const DEFAULT_COLUMNS = 3;
 
 class HuiGridCard extends HuiStackCard<GridCardConfig> {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-grid-card-editor");
+    return document.createElement("hui-grid-card-editor");
+  }
+
   public async getCardSize(): Promise<number> {
     if (!this._cards || !this._config) {
       return 0;

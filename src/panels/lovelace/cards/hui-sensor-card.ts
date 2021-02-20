@@ -1,7 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
 import { customElement } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { GraphHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardEditor } from "../types";
 import { HuiEntityCard } from "./hui-entity-card";
@@ -10,9 +10,7 @@ import { EntityCardConfig, SensorCardConfig } from "./types";
 @customElement("hui-sensor-card")
 class HuiSensorCard extends HuiEntityCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-sensor-card-editor" */ "../editor/config-elements/hui-sensor-card-editor"
-    );
+    await import("../editor/config-elements/hui-sensor-card-editor");
     return document.createElement("hui-sensor-card-editor");
   }
 
@@ -44,7 +42,7 @@ class HuiSensorCard extends HuiEntityCard {
 
   public setConfig(config: SensorCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "sensor") {
-      throw new Error("Specify an entity from within the sensor domain.");
+      throw new Error("Specify an entity from within the sensor domain");
     }
 
     const { graph, detail, hours_to_show, ...cardConfig } = config;

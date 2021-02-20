@@ -4,6 +4,21 @@ const TerserPlugin = require("terser-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
 const bundle = require("./bundle");
+const log = require("fancy-log");
+
+class LogStartCompilePlugin {
+  ignoredFirst = false;
+
+  apply(compiler) {
+    compiler.hooks.beforeCompile.tap("LogStartCompilePlugin", () => {
+      if (!this.ignoredFirst) {
+        this.ignoredFirst = true;
+        return;
+      }
+      log("Changes detected. Starting compilation");
+    });
+  }
+}
 
 const createWebpackConfig = ({
   entry,
@@ -21,6 +36,7 @@ const createWebpackConfig = ({
   const ignorePackages = bundle.ignorePackages({ latestBuild });
   return {
     mode: isProdBuild ? "production" : "development",
+    target: ["web", latestBuild ? "es2017" : "es5"],
     devtool: isProdBuild
       ? "cheap-module-source-map"
       : "eval-cheap-module-source-map",
@@ -104,7 +120,8 @@ const createWebpackConfig = ({
         ),
         path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
       ),
-    ],
+      !isProdBuild && new LogStartCompilePlugin(),
+    ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
     },
@@ -114,22 +131,6 @@ const createWebpackConfig = ({
           return `${chunk.name}.js`;
         }
         return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
-      },
-      environment: {
-        // The environment supports arrow functions ('() => { ... }').
-        arrowFunction: latestBuild,
-        // The environment supports BigInt as literal (123n).
-        bigIntLiteral: false,
-        // The environment supports const and let for variable declarations.
-        const: latestBuild,
-        // The environment supports destructuring ('{ a, b } = obj').
-        destructuring: latestBuild,
-        // The environment supports an async import() function to import EcmaScript modules.
-        dynamicImport: latestBuild,
-        // The environment supports 'for of' iteration ('for (const x of array) { ... }').
-        forOf: latestBuild,
-        // The environment supports ECMAScript Module syntax to import ECMAScript modules (import ... from '...').
-        module: latestBuild,
       },
       chunkFilename:
         isProdBuild && !isStatsBuild

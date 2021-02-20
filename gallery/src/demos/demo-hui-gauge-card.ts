@@ -1,12 +1,19 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 
 const ENTITIES = [
   getEntity("sensor", "brightness", "12", {}),
+  getEntity("sensor", "brightness_medium", "53", {}),
+  getEntity("sensor", "brightness_high", "87", {}),
   getEntity("plant", "bonsai", "ok", {}),
   getEntity("sensor", "not_working", "unavailable", {}),
   getEntity("sensor", "outside_humidity", "54", {
@@ -22,15 +29,9 @@ const CONFIGS = [
     heading: "Basic example",
     config: `
 - type: gauge
-  entity: sensor.brightness
-    `,
-  },
-  {
-    heading: "With title",
-    config: `
-- type: gauge
   title: Humidity
   entity: sensor.outside_humidity
+  name: Outside Humidity
     `,
   },
   {
@@ -39,6 +40,7 @@ const CONFIGS = [
 - type: gauge
   entity: sensor.outside_temperature
   unit_of_measurement: C
+  name: Outside Temperature
     `,
   },
   {
@@ -46,19 +48,45 @@ const CONFIGS = [
     config: `
 - type: gauge
   entity: sensor.brightness
+  name: Brightness Low
   severity:
-    red: 32
+    red: 75
     green: 0
-    yellow: 23
+    yellow: 50
     `,
   },
   {
-    heading: "Setting Min and Max Values",
+    heading: "Setting Severity Levels",
+    config: `
+- type: gauge
+  entity: sensor.brightness_medium
+  name: Brightness Medium
+  severity:
+    red: 75
+    green: 0
+    yellow: 50
+    `,
+  },
+  {
+    heading: "Setting Severity Levels",
+    config: `
+- type: gauge
+  entity: sensor.brightness_high
+  name: Brightness High
+  severity:
+    red: 75
+    green: 0
+    yellow: 50
+    `,
+  },
+  {
+    heading: "Setting Min (0) and Max (15) Values",
     config: `
 - type: gauge
   entity: sensor.brightness
+  name: Brightness
   min: 0
-  max: 38
+  max: 15
     `,
   },
   {
@@ -84,24 +112,19 @@ const CONFIGS = [
   },
 ];
 
-class DemoGaugeEntity extends PolymerElement {
-  static get template() {
-    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
+@customElement("demo-hui-gauge-card")
+class DemoGaugeEntity extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-    };
-  }
-
-  public ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
   }
 }

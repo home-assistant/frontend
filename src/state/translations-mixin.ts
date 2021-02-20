@@ -36,6 +36,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
+    private __loadedFragmetTranslations: Set<string> = new Set();
+
     private __loadedTranslations: {
       // track what things have been loaded
       [category: string]: LoadedTranslationCategory;
@@ -47,6 +49,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this._selectLanguage((e as CustomEvent).detail.language, true)
       );
       this._loadCoreTranslations(getLocalLanguage());
+    }
+
+    protected updated(changedProps) {
+      super.updated(changedProps);
+      if (!changedProps.has("hass")) {
+        return;
+      }
+      const oldHass = changedProps.get("hass");
+      if (this.hass?.panels && oldHass.panels !== this.hass.panels) {
+        this._loadFragmentTranslations(this.hass.language, this.hass.panelUrl);
+      }
     }
 
     protected hassConnected() {
@@ -101,6 +114,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
+      this.__loadedFragmetTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -195,10 +209,28 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       language: string,
       panelUrl: string
     ) {
-      if (translationMetadata.fragments.includes(panelUrl)) {
-        const result = await getTranslation(panelUrl, language);
-        this._updateResources(result.language, result.data);
+      if (!panelUrl) {
+        return;
       }
+      const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
+
+      // If it's the first call we don't have panel info yet to check the component.
+      const fragment = translationMetadata.fragments.includes(
+        panelComponent || panelUrl
+      )
+        ? panelComponent || panelUrl
+        : undefined;
+
+      if (!fragment) {
+        return;
+      }
+
+      if (this.__loadedFragmetTranslations.has(fragment)) {
+        return;
+      }
+      this.__loadedFragmetTranslations.add(fragment);
+      const result = await getTranslation(fragment, language);
+      this._updateResources(result.language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -210,7 +242,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.__coreProgress = language;
       try {
         const result = await getTranslation(null, language);
-        this._updateResources(result.language, result.data);
+        await this._updateResources(result.language, result.data);
       } finally {
         this.__coreProgress = undefined;
       }
@@ -226,18 +258,29 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // before this.hass is even created. In this case our base state comes
       // from this._pendingHass instead. Otherwise the first set of strings is
       // overwritten when we call _updateHass the second time!
-      const baseHass = this.hass ?? this._pendingHass;
+
+      // Allow hass to be updated
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      if (language !== (this.hass ?? this._pendingHass).language) {
+        // the language was changed, abort
+        return;
+      }
+
       const resources = {
         [language]: {
-          ...baseHass?.resources?.[language],
+          ...(this.hass ?? this._pendingHass)?.resources?.[language],
           ...data,
         },
       };
-      const changes: Partial<HomeAssistant> = { resources };
-      if (this.hass && language === this.hass.language) {
-        changes.localize = await computeLocalize(this, language, resources);
+      const changes: Partial<HomeAssistant> = {
+        resources,
+        localize: await computeLocalize(this, language, resources),
+      };
+
+      if (language === (this.hass ?? this._pendingHass).language) {
+        this._updateHass(changes);
       }
-      this._updateHass(changes);
     }
 
     private _refetchCachedHassTranslations(

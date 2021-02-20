@@ -17,6 +17,7 @@ export interface DeviceRegistryEntry {
   area_id?: string;
   name_by_user?: string;
   entry_type: "service" | null;
+  disabled_by: string | null;
 }
 
 export interface DeviceEntityLookup {
@@ -26,6 +27,7 @@ export interface DeviceEntityLookup {
 export interface DeviceRegistryEntryMutableParams {
   area_id?: string | null;
   name_by_user?: string | null;
+  disabled_by?: string | null;
 }
 
 export const fallbackDeviceName = (
@@ -69,7 +71,7 @@ export const updateDeviceRegistryEntry = (
     ...updates,
   });
 
-const fetchDeviceRegistry = (conn) =>
+export const fetchDeviceRegistry = (conn) =>
   conn.sendMessagePromise({
     type: "config/device_registry/list",
   });
