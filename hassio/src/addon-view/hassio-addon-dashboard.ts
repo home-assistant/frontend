@@ -80,6 +80,7 @@ class HassioAddonDashboard extends LitElement {
     const addonTabs: PageNavigation[] = [
       {
         name: "Info",
+        translationKey: "addon.panel.info",
         path: `/hassio/addon/${this.addon.slug}/info`,
         iconPath: mdiInformationVariant,
       },
@@ -88,6 +89,7 @@ class HassioAddonDashboard extends LitElement {
     if (this.addon.documentation) {
       addonTabs.push({
         name: "Documentation",
+        translationKey: "addon.panel.documentation",
         path: `/hassio/addon/${this.addon.slug}/documentation`,
         iconPath: mdiFileDocument,
       });
@@ -97,11 +99,13 @@ class HassioAddonDashboard extends LitElement {
       addonTabs.push(
         {
           name: "Configuration",
+          translationKey: "addon.panel.configuration",
           path: `/hassio/addon/${this.addon.slug}/config`,
           iconPath: mdiCogs,
         },
         {
           name: "Log",
+          translationKey: "addon.panel.log",
           path: `/hassio/addon/${this.addon.slug}/logs`,
           iconPath: mdiMathLog,
         }
@@ -113,10 +117,10 @@ class HassioAddonDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .supervisor=${this.supervisor}
         .narrow=${this.narrow}
         .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
         .route=${route}
-        hassio
         .tabs=${addonTabs}
       >
         <span slot="header">${this.addon.name}</span>

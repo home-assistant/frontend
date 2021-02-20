@@ -6,6 +6,10 @@ import {
   PropertyValues,
 } from "lit-element";
 import { atLeastVersion } from "../../src/common/config/version";
+import {
+  computeLocalize,
+  LocalizeFunc,
+} from "../../src/common/translations/localize";
 import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";
 import { HassioResponse } from "../../src/data/hassio/common";
 import {
@@ -28,6 +32,7 @@ import {
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
+import { getTranslation } from "../../src/util/common-translation";
 
 declare global {
   interface HASSDomEvents {
@@ -36,10 +41,14 @@ declare global {
   }
 }
 
+const empty = () => "";
+
 export class SupervisorBaseElement extends urlSyncMixin(
   ProvideHassLitMixin(LitElement)
 ) {
   @property({ attribute: false }) public supervisor?: Supervisor;
+
+  @internalProperty() private _localize: LocalizeFunc = empty;
 
   @internalProperty() private _unsubs: Record<string, UnsubscribeFunc> = {};
 
@@ -47,6 +56,8 @@ export class SupervisorBaseElement extends urlSyncMixin(
     string,
     Collection<unknown>
   > = {};
+
+  @internalProperty() private _language = "en";
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -61,7 +72,29 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+    this._language = this.hass.language;
     this._initSupervisor();
+  }
+
+  private async _initLocalize() {
+    const { language, data } = await getTranslation(
+      "supervisor",
+      this._language,
+      true
+    );
+
+    this._localize = await computeLocalize(
+      this.constructor.prototype,
+      this._language,
+      {
+        [language]: data,
+      }
+    );
+
+    this.supervisor = {
+      ...this.supervisor!,
+      localize: (key: string, ...args: any[]) => this._localize(key, ...args),
+    };
   }
 
   private async _handleSupervisorStoreRefreshEvent(ev) {
@@ -110,42 +143,44 @@ export class SupervisorBaseElement extends urlSyncMixin(
           })
         );
       }
-      return;
+    } else {
+      const [
+        addon,
+        supervisor,
+        host,
+        core,
+        info,
+        os,
+        network,
+        resolution,
+      ] = await Promise.all([
+        fetchHassioAddonsInfo(this.hass),
+        fetchHassioSupervisorInfo(this.hass),
+        fetchHassioHostInfo(this.hass),
+        fetchHassioHomeAssistantInfo(this.hass),
+        fetchHassioInfo(this.hass),
+        fetchHassioHassOsInfo(this.hass),
+        fetchNetworkInfo(this.hass),
+        fetchHassioResolution(this.hass),
+      ]);
+
+      this.supervisor = {
+        ...this.supervisor!,
+        addon,
+        supervisor,
+        host,
+        core,
+        info,
+        os,
+        network,
+        resolution,
+      };
+
+      this.addEventListener("supervisor-update", (ev) =>
+        this._updateSupervisor(ev.detail)
+      );
     }
 
-    const [
-      addon,
-      supervisor,
-      host,
-      core,
-      info,
-      os,
-      network,
-      resolution,
-    ] = await Promise.all([
-      fetchHassioAddonsInfo(this.hass),
-      fetchHassioSupervisorInfo(this.hass),
-      fetchHassioHostInfo(this.hass),
-      fetchHassioHomeAssistantInfo(this.hass),
-      fetchHassioInfo(this.hass),
-      fetchHassioHassOsInfo(this.hass),
-      fetchNetworkInfo(this.hass),
-      fetchHassioResolution(this.hass),
-    ]);
-
-    this.supervisor = {
-      addon,
-      supervisor,
-      host,
-      core,
-      info,
-      os,
-      network,
-      resolution,
-    };
-
-    this.addEventListener("supervisor-update", (ev) =>
-      this._updateSupervisor(ev.detail)
-    );
+    await this._initLocalize();
   }
 }

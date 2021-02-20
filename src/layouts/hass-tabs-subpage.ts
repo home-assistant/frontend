@@ -22,6 +22,7 @@ import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
+import { Supervisor } from "../data/supervisor/supervisor";
 import { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
@@ -40,7 +41,7 @@ export interface PageNavigation {
 class HassTabsSubpage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public hassio = false;
+  @property({ attribute: false }) public supervisor?: Supervisor;
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
@@ -91,7 +92,9 @@ class HassTabsSubpage extends LitElement {
               .active=${page === activeTab}
               .narrow=${this.narrow}
               .name=${page.translationKey
-                ? this.hass.localize(page.translationKey)
+                ? this.supervisor
+                  ? this.supervisor.localize(page.translationKey)
+                  : this.hass.localize(page.translationKey)
                 : page.name}
             >
               ${page.iconPath
@@ -138,7 +141,7 @@ class HassTabsSubpage extends LitElement {
         ${this.mainPage
           ? html`
               <ha-menu-button
-                .hassio=${this.hassio}
+                .hassio=${this.supervisor !== undefined}
                 .hass=${this.hass}
                 .narrow=${this.narrow}
               ></ha-menu-button>

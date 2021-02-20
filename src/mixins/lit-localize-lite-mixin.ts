@@ -1,7 +1,8 @@
 import { LitElement, property, PropertyValues } from "lit-element";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { Constructor, Resources } from "../types";
-import { getLocalLanguage, getTranslation } from "../util/hass-translation";
+import { getLocalLanguage } from "../util/common-translation";
+import { getTranslation } from "../util/hass-translation";
 
 const empty = () => "";
 

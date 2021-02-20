@@ -104,13 +104,15 @@ class HassioSnapshots extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .supervisor=${this.supervisor}
         .narrow=${this.narrow}
-        hassio
         main-page
         .route=${this.route}
         .tabs=${supervisorTabs}
       >
-        <span slot="header">Snapshots</span>
+        <span slot="header">
+          ${this.supervisor.localize("panel.snapshots")}
+        </span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"

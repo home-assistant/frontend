@@ -72,7 +72,7 @@ export class HassioMain extends SupervisorBaseElement {
   }
 
   protected render() {
-    if (!this.supervisor || !this.hass) {
+    if (!this.supervisor?.localize || !this.hass) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 

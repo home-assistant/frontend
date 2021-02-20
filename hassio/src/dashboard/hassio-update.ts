@@ -10,9 +10,11 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-svg-icon";
 import {
   extractApiErrorMessage,
@@ -24,7 +26,10 @@ import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import {
+  Supervisor,
+  supervisorApiWsRequest,
+} from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -59,8 +64,16 @@ export class HassioUpdate extends LitElement {
       <div class="content">
         <h1>
           ${updatesAvailable > 1
-            ? "Updates Available 🎉"
-            : "Update Available 🎉"}
+            ? this.supervisor.localize(
+                "dashboard.updates_available",
+                "icon",
+                "🎉"
+              )
+            : this.supervisor.localize(
+                "dashboard.update_available",
+                "icon",
+                "🎉"
+              )}
         </h1>
         <div class="card-group">
           ${this._renderUpdateCard(
@@ -109,14 +122,30 @@ export class HassioUpdate extends LitElement {
           <div class="icon">
             <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
           </div>
-          <div class="update-heading">${name} ${object.version_latest}</div>
-          <div class="warning">
-            You are currently running version ${object.version}
-          </div>
+          <div class="update-heading">${name}</div>
+          <ha-settings-row two-line>
+            <span slot="heading">
+              ${this.supervisor.localize("common.version")}
+            </span>
+            <span slot="description">
+              ${object.version}
+            </span>
+          </ha-settings-row>
+
+          <ha-settings-row two-line>
+            <span slot="heading">
+              ${this.supervisor.localize("common.newest_version")}
+            </span>
+            <span slot="description">
+              ${object.version_latest}
+            </span>
+          </ha-settings-row>
         </div>
         <div class="card-actions">
           <a href="${releaseNotesUrl}" target="_blank" rel="noreferrer">
-            <mwc-button>Release notes</mwc-button>
+            <mwc-button>
+              ${this.supervisor.localize("common.release_notes")}
+            </mwc-button>
           </a>
           <ha-progress-button
             .apiPath=${apiPath}
@@ -125,7 +154,7 @@ export class HassioUpdate extends LitElement {
             .version=${object.version_latest}
             @click=${this._confirmUpdate}
           >
-            Update
+            ${this.supervisor.localize("common.update")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -137,9 +166,15 @@ export class HassioUpdate extends LitElement {
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: `Update ${item.name}`,
-      text: `Are you sure you want to update ${item.name} to version ${item.version}?`,
-      confirmText: "update",
-      dismissText: "cancel",
+      text: this.supervisor.localize(
+        "confirm.update",
+        "name",
+        item.name,
+        "version",
+        item.version
+      ),
+      confirmText: this.supervisor.localize("common.update"),
+      dismissText: this.supervisor.localize("common.cancel"),
     });
 
     if (!confirmed) {
@@ -147,14 +182,22 @@ export class HassioUpdate extends LitElement {
       return;
     }
     try {
-      await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
+      if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+        await supervisorApiWsRequest(this.hass.connection, {
+          method: "post",
+          endpoint: item.apiPath.replace("hassio", ""),
+          timeout: null,
+        });
+      } else {
+        await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
+      }
       fireEvent(this, "supervisor-store-refresh", { store: item.key });
     } catch (err) {
       // Only show an error if the status code was not expected (user behind proxy)
       // or no status at all(connection terminated)
       if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
         showAlertDialog(this, {
-          title: "Update failed",
+          title: this.supervisor.localize("error.update_failed"),
           text: extractApiErrorMessage(err),
         });
       }
@@ -179,9 +222,6 @@ export class HassioUpdate extends LitElement {
           margin-bottom: 0.5em;
           color: var(--primary-text-color);
         }
-        .warning {
-          color: var(--secondary-text-color);
-        }
         .card-content {
           height: calc(100% - 47px);
           box-sizing: border-box;
@@ -189,12 +229,12 @@ export class HassioUpdate extends LitElement {
         .card-actions {
           text-align: right;
         }
-        .errors {
-          color: var(--error-color);
-          padding: 16px;
-        }
         a {
           text-decoration: none;
+        }
+        ha-settings-row {
+          padding: 0;
+          --paper-item-body-two-line-min-height: 32px;
         }
       `,
     ];

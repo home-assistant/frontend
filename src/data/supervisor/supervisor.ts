@@ -1,5 +1,6 @@
 import { Connection, getCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
+import { LocalizeFunc } from "../../common/translations/localize";
 import { HomeAssistant } from "../../types";
 import { HassioAddonsInfo } from "../hassio/addon";
 import { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
@@ -43,6 +44,7 @@ interface supervisorApiRequest {
   method?: "get" | "post" | "delete" | "put";
   force_rest?: boolean;
   data?: any;
+  timeout?: number | null;
 }
 
 export interface SupervisorEvent {
@@ -61,6 +63,7 @@ export interface Supervisor {
   resolution: HassioResolution;
   os: HassioHassOSInfo;
   addon: HassioAddonsInfo;
+  localize: LocalizeFunc;
 }
 
 export const supervisorApiWsRequest = <T>(

@@ -76,13 +76,15 @@ class HassioAddonStore extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .supervisor=${this.supervisor}
         .narrow=${this.narrow}
         .route=${this.route}
-        hassio
         main-page
         .tabs=${supervisorTabs}
       >
-        <span slot="header">Add-on Store</span>
+        <span slot="header">
+          ${this.supervisor.localize("panel.store")}
+        </span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
