@@ -82,7 +82,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                 @change=${this._selectedValueChanged}
                 @click=${this._stopEventPropagation}
                 hide-label
-                .format=${24}
+                format="24"
               ></paper-time-input>
             `
           : ``}

@@ -73,7 +73,7 @@ class DatetimeInput extends LitElement {
                         .padStart(2, "0")}
                   @change=${this._selectedValueChanged}
                   @click=${this._stopEventPropagation}
-                  .format=${24}
+                  format="24"
                 ></paper-time-input>
               </div>
             `
