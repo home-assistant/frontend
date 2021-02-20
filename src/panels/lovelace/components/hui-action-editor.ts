@@ -49,10 +49,15 @@ export class HuiActionEditor extends LitElement {
     return config.url_path || "";
   }
 
+  get _service(): string {
+    const config = this.config as CallServiceActionConfig;
+    return config.service || "";
+  }
+
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => {
       return {
-        service: config.service || "",
+        service: this._service,
         data: config.service_data,
         target: config.target,
       };
