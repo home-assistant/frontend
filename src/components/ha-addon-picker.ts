@@ -1,14 +1,9 @@
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import {
-  css,
-  CSSResult,
   customElement,
   html,
   internalProperty,
   LitElement,
   property,
-  PropertyValues,
   query,
   TemplateResult,
 } from "lit-element";
@@ -39,7 +34,7 @@ const rowRenderer = (
     <paper-item>
       <paper-item-body two-line="">
         <div class='name'>[[item.name]]</div>
-        <div secondary>[[item.area]]</div>
+        <div secondary>[[item.slug]]</div>
       </paper-item-body>
     </paper-item>
     `;
@@ -61,11 +56,7 @@ class HaAddonPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) private _opened?: boolean;
-
   @query("ha-combo-box") private _comboBox!: HaComboBox;
-
-  private _init = false;
 
   public open() {
     this._comboBox?.open();
@@ -81,16 +72,6 @@ class HaAddonPicker extends LitElement {
     }
     return addons.sort((a, b) => compare(a.name, b.name));
   });
-
-  protected updated(changedProps: PropertyValues) {
-    if (
-      (!this._init && this._addons) ||
-      (changedProps.has("_opened") && this._opened)
-    ) {
-      this._init = true;
-      (this._comboBox as any).items = this._processedAddons(this._addons);
-    }
-  }
 
   protected firstUpdated() {
     this._getAddons();
@@ -108,10 +89,10 @@ class HaAddonPicker extends LitElement {
           : this.label}
         .value=${this._value}
         .renderer=${rowRenderer}
+        .items=${this._addons}
         item-value-path="slug"
         item-id-path="slug"
         item-label-path="name"
-        @opened-changed=${this._openedChanged}
         @value-changed=${this._addonChanged}
       ></ha-combo-box>
     `;
@@ -124,14 +105,22 @@ class HaAddonPicker extends LitElement {
         this._addons = this._processedAddons(supervisorInfo.addons);
       } else {
         showAlertDialog(this, {
-          title: "No Supervisor",
-          text: "No Supervisor found, so add-ons could not be loaded.",
+          title: this.hass.localize(
+            "ui.componencts.addon-picker.error.no_supervisor.title"
+          ),
+          text: this.hass.localize(
+            "ui.componencts.addon-picker.error.no_supervisor.description"
+          ),
         });
       }
-    } catch (err) {
+    } catch (error) {
       showAlertDialog(this, {
-        title: "Error fetching add-ons",
-        text: err,
+        title: this.hass.localize(
+          "ui.componencts.addon-picker.error.fetch_addons.title"
+        ),
+        text: this.hass.localize(
+          "ui.componencts.addon-picker.error.fetch_addons.description"
+        ),
       });
     }
   }
@@ -149,29 +138,12 @@ class HaAddonPicker extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-  }
-
   private _setValue(value: string) {
     this.value = value;
     setTimeout(() => {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      paper-input > mwc-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    `;
   }
 }
 
