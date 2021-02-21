@@ -7,7 +7,10 @@ import {
 } from "lit-element";
 import { atLeastVersion } from "../../src/common/config/version";
 import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";
-import { HassioResponse } from "../../src/data/hassio/common";
+import {
+  hassioApiResultExtractor,
+  HassioResponse,
+} from "../../src/data/hassio/common";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
@@ -23,6 +26,9 @@ import {
   getSupervisorEventCollection,
   subscribeSupervisorEvents,
   Supervisor,
+  supervisorApiRequest,
+  SupervisorAPIRequestParams,
+  supervisorApiWsRequest,
   SupervisorObject,
   supervisorStore,
 } from "../../src/data/supervisor/supervisor";
@@ -56,7 +62,11 @@ export class SupervisorBaseElement extends urlSyncMixin(
   }
 
   protected _updateSupervisor(obj: Partial<Supervisor>): void {
-    this.supervisor = { ...this.supervisor!, ...obj };
+    this.supervisor = {
+      ...this.supervisor!,
+      ...obj,
+      callApi: (params) => this._callAPI(params),
+    };
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {
@@ -142,10 +152,48 @@ export class SupervisorBaseElement extends urlSyncMixin(
       os,
       network,
       resolution,
+      callApi: (params) => this._callAPI(params),
     };
 
     this.addEventListener("supervisor-update", (ev) =>
       this._updateSupervisor(ev.detail)
     );
+  }
+
+  private async _callAPI<T>(params: SupervisorAPIRequestParams): Promise<T> {
+    const hasHass = this.hass !== undefined;
+    const canUseWS =
+      !params.rest &&
+      hasHass &&
+      atLeastVersion(this.hass.config.version, 2021, 2, 4);
+
+    if (canUseWS) {
+      const connection = hasHass ? this.hass.connection : params.connection;
+      if (connection === undefined) {
+        throw Error(`No connection found, aborting API call - ${params}`);
+      }
+      const requestParams: supervisorApiRequest = {
+        ...params,
+      };
+      delete requestParams.rest;
+      delete requestParams.connection;
+      return await supervisorApiWsRequest<T>(connection, requestParams);
+    } else {
+      const method =
+        params.method === "post"
+          ? "POST"
+          : params.method === "put"
+          ? "PUT"
+          : params.method === "delete"
+          ? "DELETE"
+          : "GET";
+      return hassioApiResultExtractor<T>(
+        await this.hass.callApi<HassioResponse<T>>(
+          method,
+          `hassio${params.endpoint}`,
+          params.data
+        )
+      );
+    }
   }
 }

@@ -25,6 +25,9 @@ class HassioAddons extends LitElement {
   @property({ attribute: false }) public supervisor!: Supervisor;
 
   protected render(): TemplateResult {
+    this.supervisor
+      ?.callApi({ endpoint: "/supervisor/ping", rest: false })
+      .then((result) => console.log("result", result));
     return html`
       <div class="content">
         <h1>Add-ons</h1>

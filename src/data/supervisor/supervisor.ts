@@ -41,7 +41,6 @@ export type SupervisorObject =
 interface supervisorApiRequest {
   endpoint: string;
   method?: "get" | "post" | "delete" | "put";
-  force_rest?: boolean;
   data?: any;
 }
 
@@ -50,6 +49,14 @@ export interface SupervisorEvent {
   update_key?: SupervisorObject;
   data?: any;
   [key: string]: any;
+}
+
+export interface SupervisorAPIRequestParams {
+  connection?: any;
+  rest?: boolean;
+  data?: any;
+  endpoint: string;
+  method?: "get" | "post" | "delete" | "put";
 }
 
 export interface Supervisor {
@@ -61,6 +68,7 @@ export interface Supervisor {
   resolution: HassioResolution;
   os: HassioHassOSInfo;
   addon: HassioAddonsInfo;
+  callApi<T>(params: SupervisorAPIRequestParams): Promise<T>;
 }
 
 export const supervisorApiWsRequest = <T>(
