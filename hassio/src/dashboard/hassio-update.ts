@@ -38,6 +38,10 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
 
+const computeVersion = (key: string, version: string): string => {
+  return key === "os" ? version : `${key}-${version}`;
+};
+
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -128,7 +132,7 @@ export class HassioUpdate extends LitElement {
               ${this.supervisor.localize("common.version")}
             </span>
             <span slot="description">
-              ${key}-${object.version}
+              ${computeVersion(key, object.version!)}
             </span>
           </ha-settings-row>
 
@@ -137,7 +141,7 @@ export class HassioUpdate extends LitElement {
               ${this.supervisor.localize("common.newest_version")}
             </span>
             <span slot="description">
-              ${key}-${object.version_latest}
+              ${computeVersion(key, object.version_latest!)}
             </span>
           </ha-settings-row>
         </div>
@@ -175,7 +179,7 @@ export class HassioUpdate extends LitElement {
         "name",
         item.name,
         "version",
-        `${item.key}-${item.version}`
+        computeVersion(item.key, item.version)
       ),
       confirmText: this.supervisor.localize("common.update"),
       dismissText: this.supervisor.localize("common.cancel"),
