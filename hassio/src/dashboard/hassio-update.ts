@@ -165,9 +165,13 @@ export class HassioUpdate extends LitElement {
     const item = ev.currentTarget;
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
-      title: `Update ${item.name}`,
+      title: this.supervisor.localize(
+        "confirm.update.title",
+        "name",
+        item.name
+      ),
       text: this.supervisor.localize(
-        "confirm.update",
+        "confirm.update.text",
         "name",
         item.name,
         "version",

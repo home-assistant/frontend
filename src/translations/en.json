@@ -3385,7 +3385,10 @@
       "version": "Version"
     },
     "confirm": {
-      "update": "Are you sure you want to update {name} to version {version}?"
+      "update": {
+        "title": "Update ${name}",
+        "text": "Are you sure you want to update {name} to version {version}?"
+      }
     },
     "dashboard": {
       "addon_new_version": "New version available",
