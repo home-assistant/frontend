@@ -611,7 +611,7 @@
                     "turned_off": "slogs av",
                     "turned_on": "slogs på",
                     "was_at_home": "var hemma",
-                    "was_at_state": "var på {state}",
+                    "was_at_state": "var vid {state}",
                     "was_away": "var borta",
                     "was_closed": "var stängd",
                     "was_connected": "var ansluten",
