@@ -128,7 +128,7 @@ export class HassioUpdate extends LitElement {
               ${this.supervisor.localize("common.version")}
             </span>
             <span slot="description">
-              ${object.version}
+              ${key}-${object.version}
             </span>
           </ha-settings-row>
 
@@ -137,7 +137,7 @@ export class HassioUpdate extends LitElement {
               ${this.supervisor.localize("common.newest_version")}
             </span>
             <span slot="description">
-              ${object.version_latest}
+              ${key}-${object.version_latest}
             </span>
           </ha-settings-row>
         </div>
@@ -175,7 +175,7 @@ export class HassioUpdate extends LitElement {
         "name",
         item.name,
         "version",
-        item.version
+        `${item.key}-${item.version}`
       ),
       confirmText: this.supervisor.localize("common.update"),
       dismissText: this.supervisor.localize("common.cancel"),
