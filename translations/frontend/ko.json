@@ -22,7 +22,7 @@
         "map": "지도",
         "media_browser": "미디어 브라우저",
         "profile": "프로필",
-        "shopping_list": "장보기목록",
+        "shopping_list": "장보기 목록",
         "states": "둘러보기"
     },
     "state_attributes": {
@@ -3023,9 +3023,9 @@
                             "show_more_detail": "자세한 내용 표시"
                         },
                         "shopping-list": {
-                            "description": "장보기목록 카드를 사용하면 장보기목록에서 항목을 추가, 편집, 확인 및 삭제를 할 수 있습니다.",
+                            "description": "장보기 목록 카드를 사용하면 장보기 목록에서 항목을 추가, 편집, 확인 및 삭제를 할 수 있습니다.",
                             "integration_not_loaded": "이 카드를 설정하려면 `shopping_list` 통합 구성요소가 필요합니다.",
-                            "name": "장보기목록"
+                            "name": "장보기 목록"
                         },
                         "thermostat": {
                             "description": "온도 조절기 카드는 냉난방 기기를 제어합니다. 구성요소의 온도와 모드를 변경할 수 있습니다.",

@@ -3409,6 +3409,7 @@
                 "playback_title": "Přehrávání zpráv"
             },
             "my": {
+                "component_not_loaded": "Toto přesměrování není vaší instancí Home Assistant podporováno. Potřebujete integraci \"{integration}\", aby šlo použít toto přesměrování.",
                 "error": "Nastala neznámá chyba",
                 "faq_link": "Časté dotazy týkající se My Home Assistant",
                 "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
