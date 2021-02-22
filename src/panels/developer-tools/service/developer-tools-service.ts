@@ -38,6 +38,19 @@ class HaPanelDevService extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
+  protected firstUpdated(params) {
+    super.firstUpdated(params);
+    if (!this._serviceData?.service) {
+      const domain = Object.keys(this.hass.services).sort()[0];
+      const service = Object.keys(this.hass.services[domain]).sort()[0];
+      this._serviceData = {
+        service: `${domain}.${service}`,
+        target: {},
+        data: {},
+      };
+    }
+  }
+
   protected render() {
     const { target, fields } = this._fields(
       this.hass.services,
