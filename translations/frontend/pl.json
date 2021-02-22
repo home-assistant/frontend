@@ -3409,6 +3409,7 @@
                 "playback_title": "Odtwarzanie wiadomości"
             },
             "my": {
+                "component_not_loaded": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Aby skorzystać z tego przekierowania, potrzebujesz integracji {integration}.",
                 "error": "Wystąpił nieznany błąd",
                 "faq_link": "Mój Home Assistant - często zadawane pytania",
                 "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
