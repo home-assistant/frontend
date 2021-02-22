@@ -401,6 +401,7 @@
                 "direction": "Irány",
                 "forward": "Előre",
                 "oscillate": "Oszcilláció",
+                "preset_mode": "Előre beállított mód",
                 "reverse": "Fordított",
                 "speed": "Sebesség"
             },
@@ -1009,6 +1010,12 @@
             "second": "{count} {count, plural,\none {másodperc}\nother {másodperc}\n}",
             "week": "{count} {count, plural,\none {hét}\nother {hét}\n}"
         },
+        "errors": {
+            "config": {
+                "key_missing": "A (z) \" {key} \" szükséges kulcs hiányzik.",
+                "key_not_expected": "A(z) \"{key}\" kulcs nem várható, vagy a vizuális szerkesztő nem támogatja."
+            }
+        },
         "login-form": {
             "log_in": "Bejelentkezés",
             "password": "Jelszó",
@@ -1505,6 +1512,16 @@
                         },
                         "sign_out": "Kijelentkezés",
                         "thank_you_note": "Köszönjük, hogy a Home Assistant Felhő részese vagy. Az olyan emberek miatt, mint te, vagyunk képesek mindenki számára nagyszerű otthoni automatizálási élményt nyújtani. Köszönjük!",
+                        "tts": {
+                            "dialog": {
+                                "example_message": "Hello {name}, bármilyen szöveget lejátszhat bármely támogatott médialejátszón!",
+                                "header": "Próbálja ki a szövegfelolvasást",
+                                "play": "Lejátszása",
+                                "target": "Cél",
+                                "target_browser": "Böngésző"
+                            },
+                            "try": "Próbálja meg"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Nem sikerült letiltani a webhookot:",
                             "info": "Bármihez, ami úgy van beállítva, hogy egy webhook által elindulhasson, létrehozható egy nyilvánosan elérhető URL, ami lehetővé teszi, hogy adatokat küldhess vissza a Home Assistant számára bárhonnan, anélkül, hogy kinyitnád a rendszered az internet felé.",
@@ -2633,6 +2650,11 @@
                     },
                     "description": "Z-Wave hálózat kezelése",
                     "learn_more": "Tudj meg többet a Z-Wave-ről",
+                    "migration": {
+                        "ozw": {
+                            "header": "Áthelyezés az OpenZWave-re"
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave hálózat menedzsment",
                         "introduction": "Olyan parancsok futtatása, amelyek befolyásolják a Z-Wave hálózatot. Nem fogsz visszajelzést kapni arról, hogy a legtöbb parancs sikeres volt-e, de az OZW logok alapján megpróbálhatod kideríteni."
@@ -3167,6 +3189,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Irányítópultok kezelése",
+                        "manage_resources": "Források kezelése",
                         "open": "Lovelace menü megnyitása",
                         "raw_editor": "Konfiguráció szerkesztő"
                     },

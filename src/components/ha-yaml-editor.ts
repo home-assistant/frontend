@@ -44,14 +44,14 @@ export class HaYamlEditor extends LitElement {
 
   @internalProperty() private _yaml = "";
 
-  @query("ha-code-editor", true) private _editor?: HaCodeEditor;
+  @query("ha-code-editor") private _editor?: HaCodeEditor;
 
   public setValue(value): void {
     try {
       this._yaml = value && !isEmpty(value) ? safeDump(value) : "";
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(err);
+      console.error(err, value);
       alert(`There was an error converting to YAML: ${err}`);
     }
     afterNextRender(() => {
@@ -73,7 +73,7 @@ export class HaYamlEditor extends LitElement {
       return html``;
     }
     return html`
-      ${this.label ? html` <p>${this.label}</p> ` : ""}
+      ${this.label ? html`<p>${this.label}</p>` : ""}
       <ha-code-editor
         .value=${this._yaml}
         mode="yaml"
@@ -85,13 +85,13 @@ export class HaYamlEditor extends LitElement {
 
   private _onChange(ev: CustomEvent): void {
     ev.stopPropagation();
-    const value = ev.detail.value;
+    this._yaml = ev.detail.value;
     let parsed;
     let isValid = true;
 
-    if (value) {
+    if (this._yaml) {
       try {
-        parsed = safeLoad(value);
+        parsed = safeLoad(this._yaml);
       } catch (err) {
         // Invalid YAML
         isValid = false;
@@ -107,7 +107,7 @@ export class HaYamlEditor extends LitElement {
   }
 
   get yaml() {
-    return this._editor?.value;
+    return this._yaml;
   }
 }
 

@@ -400,6 +400,7 @@
                 "direction": "Direcţie",
                 "forward": "Înainte",
                 "oscillate": "Oscilare",
+                "preset_mode": "Mod presetat",
                 "reverse": "Invers",
                 "speed": "Viteză"
             },
@@ -585,6 +586,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integrarea istoricului este dezactivată",
                 "loading_history": "Se încarcă istoricul stărilor...",
                 "no_history_found": "Nici un istoric de stare nu a fost găsit."
             },
@@ -732,9 +734,12 @@
             },
             "entity_registry": {
                 "control": "Control",
+                "customize_link": "personalizarea entității",
                 "dismiss": "Renunțați",
                 "editor": {
                     "advanced": "Setari avansate",
+                    "area": "Setați numai zona entității",
+                    "area_note": "În mod implicit, entitățile unui dispozitiv se află în aceeași zonă cu dispozitivul. Dacă modificați zona acestei entități, aceasta nu va mai urma zona dispozitivului.",
                     "change_device_area": "Schimbați zona dispozitivului",
                     "confirm_delete": "Sigur doriți să ștergeți această intrare?",
                     "delete": "Ștergeți",
@@ -755,6 +760,7 @@
                     "update": "Actualizați"
                 },
                 "faq": "documentație",
+                "info_customize": "Puteți suprascrie unele atribute în secțiunea {customize_link} .",
                 "no_unique_id": "Această entitate („ {entity_id} ”) nu are un ID unic, prin urmare setările sale nu pot fi gestionate din interfața de utilizator. Consultați {faq_link} pentru mai multe detalii.",
                 "related": "În legătură cu",
                 "settings": "Setări"
@@ -1089,6 +1095,7 @@
                                     "extra_fields": {
                                         "code": "Cod",
                                         "message": "Mesaj",
+                                        "position": "Pozitie",
                                         "title": "Titlu"
                                     },
                                     "label": "Dispozitiv"
@@ -1926,6 +1933,7 @@
                     },
                     "configure": "Configurează",
                     "configured": "Configurat",
+                    "confirm_new": "Doriți să configurați {integration} ?",
                     "description": "Gestionați integrările cu servicii, dispozitive, ...",
                     "details": "Detalii integrare",
                     "discovered": "Descoperit",
@@ -2796,6 +2804,9 @@
                 },
                 "cards": {
                     "action_confirmation": "Sunteți sigur că doriți să efectuați acțiunea \"{action}\"?",
+                    "actions": {
+                        "action_confirmation": "Sunteți sigur că doriți să efectuați acțiunea \"{action}\"?"
+                    },
                     "confirm_delete": "Sunteți sigur că doriți să ștergeți acest card?",
                     "empty_state": {
                         "go_to_integrations_page": "Accesați pagina de integrări.",
@@ -3230,6 +3241,11 @@
                 "delete_prompt": "Ștergeți acest mesaj?",
                 "empty": "Nu aveți mesaje",
                 "playback_title": "Redarea mesajelor"
+            },
+            "my": {
+                "error": "A apărut o eroare necunoscută",
+                "faq_link": "Întrebări frecvente despre Home Assistant",
+                "not_supported": "Această redirecționare nu este acceptată de instanța Home Assistant. Verificați {link} pentru redirecționările acceptate și versiunea pe care au fost introduse."
             },
             "page-authorize": {
                 "abort_intro": "Conectarea a fost anulată",

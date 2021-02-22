@@ -510,6 +510,7 @@
                 "control": "Kontrol",
                 "dismiss": "Tutup",
                 "editor": {
+                    "area_note": "Secara default, entitas perangkat berada di area yang sama dengan perangkat. Jika Anda mengubah area entitas ini, itu tidak akan lagi mengikuti area perangkat.",
                     "confirm_delete": "Apakah Anda yakin ingin menghapus entri ini?",
                     "delete": "Hapus",
                     "enabled_cause": "Dinonaktifkan oleh {cause}."
@@ -535,6 +536,12 @@
             "minute": "{count} {count, plural,\n  one { menit }\n  other { menit }\n}",
             "second": "{count}{count, plural,\n  one { detik }\n  other { detik }\n}",
             "week": "{count}{count, plural,\n  one { minggu }\n  other { minggu }\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Anda masih dapat mengedit konfigurasi Anda di YAML.",
+                "no_type_provided": "Tidak ada tipe yang tersedia."
+            }
         },
         "login-form": {
             "log_in": "Masuk",
@@ -1194,6 +1201,11 @@
                         "passive_note": "Zona pasif disembunyikan di antarmuka dan tidak digunakan sebagai lokasi untuk pelacak perangkat. Ini berguna jika Anda hanya ingin menggunakannya untuk otomasi."
                     },
                     "edit_home_zone": "Radius zona Rumah belum dapat diedit dari antarmuka. Seret penanda di peta untuk memindahkan zona Rumah."
+                },
+                "zwave_js": {
+                    "dashboard": {
+                        "dump_not_ready_title": "Belum semua node siap"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",

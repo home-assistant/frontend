@@ -41,6 +41,7 @@ import {
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-tabs-subpage";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
@@ -211,7 +212,13 @@ class HassioSnapshots extends LitElement {
                   : undefined}
               </div>
               <div class="card-actions">
-                <ha-progress-button @click=${this._createSnapshot}>
+                <ha-progress-button
+                  @click=${this._createSnapshot}
+                  title="${this.supervisor.info.state !== "running"
+                    ? `Creating a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`
+                    : ""}"
+                  .disabled=${this.supervisor.info.state !== "running"}
+                >
                   Create
                 </ha-progress-button>
               </div>
@@ -325,6 +332,12 @@ class HassioSnapshots extends LitElement {
   }
 
   private async _createSnapshot(ev: CustomEvent): Promise<void> {
+    if (this.supervisor.info.state !== "running") {
+      await showAlertDialog(this, {
+        title: "Could not create snapshot",
+        text: `Creating a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
+      });
+    }
     const button = ev.currentTarget as any;
     button.progress = true;
 
@@ -386,6 +399,7 @@ class HassioSnapshots extends LitElement {
   private _snapshotClicked(ev) {
     showHassioSnapshotDialog(this, {
       slug: ev.currentTarget!.snapshot.slug,
+      supervisor: this.supervisor,
       onDelete: () => this._updateSnapshots(),
     });
   }
@@ -395,6 +409,7 @@ class HassioSnapshots extends LitElement {
       showSnapshot: (slug: string) =>
         showHassioSnapshotDialog(this, {
           slug,
+          supervisor: this.supervisor,
           onDelete: () => this._updateSnapshots(),
         }),
       reloadSnapshot: () => this.refreshData(),

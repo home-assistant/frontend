@@ -1537,7 +1537,7 @@
                         "tts": {
                             "default_language": "Idioma predeterminat a utilitzar",
                             "dialog": {
-                                "example_message": "Hola {name}, pots reproduir qualsevol text en els reproductor multimèdia compatibles!",
+                                "example_message": "Hola {name}, pots reproduir qualsevol text en els reproductors multimèdia compatibles!",
                                 "header": "Prova el text a veu",
                                 "play": "Reprodueix",
                                 "target": "Objectiu",
@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurades",
+                    "confirm_new": "Vols configurar {integration}?",
                     "description": "Gestiona les integracions amb serveis, dispositius, ...",
                     "details": "Detalls de la integració",
                     "discovered": "Descobertes",
@@ -3101,7 +3102,7 @@
                             "icon_height": "Alçada de la icona",
                             "image": "Ruta de la imatge",
                             "manual": "Manual",
-                            "manual_description": "Vols afegir una targeta personalitzada o escriure el codi yaml manualment?",
+                            "manual_description": "Afegir una targeta personalitzada o escriure el codi YAML manualment?",
                             "maximum": "Màxim",
                             "minimum": "Mínim",
                             "name": "Nom",
@@ -3406,6 +3407,12 @@
                 "delete_prompt": "Vols eliminar aquest missatge?",
                 "empty": "No tens missatges",
                 "playback_title": "Reproducció de missatges"
+            },
+            "my": {
+                "component_not_loaded": "La instància de Home Assistant no admet aquesta redirecció. Necessites la integració {integration} per poder fer aquesta redirecció.",
+                "error": "S'ha produït un error desconegut",
+                "faq_link": "Preguntes freqüents de Home Assistant",
+                "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
             },
             "page-authorize": {
                 "abort_intro": "S'ha avortat l'inici de sessió",

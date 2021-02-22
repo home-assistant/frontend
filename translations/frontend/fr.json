@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Configurer",
                     "configured": "Configuré",
+                    "confirm_new": "Voulez-vous configurer {intégration} ?",
                     "description": "Gérer les appareils et services connectés",
                     "details": "Détails de l'intégration",
                     "discovered": "Découvert",
@@ -3407,6 +3408,12 @@
                 "empty": "Vous n'avez aucun message",
                 "playback_title": "Lecture de messages"
             },
+            "my": {
+                "component_not_loaded": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vous avez besoin de l'intégration {integration} pour utiliser cette redirection.",
+                "error": "Une erreur inconnue est survenue",
+                "faq_link": "Ma Home Assistant FAQ",
+                "not_supported": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vérifiez le {link} pour les redirections prises en charge et la version dans laquelle elles ont été introduites."
+            },
             "page-authorize": {
                 "abort_intro": "Connexion interrompue",
                 "authorizing_client": "Vous êtes sur le point de donner accès à {clientId} à votre instance de Home Assistant.",
@@ -3504,7 +3511,7 @@
                     "working": "Veuillez patienter"
                 },
                 "initializing": "Initialisation",
-                "logging_in_to_with": "Connexion à ** {locationName} ** avec ** {authProviderName} **.",
+                "logging_in_to_with": "Connexion à **{locationName}** avec **{authProviderName}**.",
                 "logging_in_with": "Se connecter avec **{authProviderName}**.",
                 "pick_auth_provider": "Ou connectez-vous avec"
             },
