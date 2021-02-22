@@ -375,13 +375,13 @@ export class HaServiceControl extends LitElement {
       ha-entity-picker,
       ha-yaml-editor {
         display: block;
-        margin: var(--item-padding, 0 16px);
+        margin: var(--service-control-padding, 0 16px);
       }
       ha-yaml-editor {
         padding: 16px 0;
       }
       p {
-        margin: var(--item-padding, 0 16px);
+        margin: var(--service-control-padding, 0 16px);
         padding: 16px 0;
       }
       :host(:not([narrow])) ha-settings-row paper-input {
