@@ -72,20 +72,20 @@ class HaPanelDevService extends LitElement {
       </div>
       <div class="button-row">
         <div class="buttons">
-          <mwc-button .disabled=${!isValid} raised @click=${this._callService}
-            >${this.hass.localize(
-              "ui.panel.developer-tools.tabs.services.call_service"
-            )}</mwc-button
-          >
-          <mwc-button @click=${this._toggleYaml}
-            >${this._yamlMode
+          <mwc-button @click=${this._toggleYaml}>
+            ${this._yamlMode
               ? this.hass.localize(
                   "ui.panel.developer-tools.tabs.services.ui_mode"
                 )
               : this.hass.localize(
                   "ui.panel.developer-tools.tabs.services.yaml_mode"
-                )}</mwc-button
-          >
+                )}
+          </mwc-button>
+          <mwc-button .disabled=${!isValid} raised @click=${this._callService}>
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.services.call_service"
+            )}
+          </mwc-button>
         </div>
       </div>
 
