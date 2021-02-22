@@ -424,6 +424,12 @@
       "service-picker": {
         "service": "Service"
       },
+      "service-control": {
+        "required": "This field is required",
+        "target": "Target",
+        "target_description": "What should this service call target",
+        "service_data": "Service data"
+      },
       "related-items": {
         "no_related_found": "No related items found.",
         "integration": "Integration",
@@ -1401,8 +1407,7 @@
               "type_select": "Action type",
               "type": {
                 "service": {
-                  "label": "Call service",
-                  "service_data": "Service data"
+                  "label": "Call service"
                 },
                 "delay": {
                   "label": "Delay",
@@ -1425,7 +1430,7 @@
                 "event": {
                   "label": "Fire event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
-                  "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                  "service_data": "[%key:ui::components::service-control::service_data%]"
                 },
                 "device_id": {
                   "label": "Device",
@@ -2694,7 +2699,6 @@
           "action-editor": {
             "navigation_path": "Navigation Path",
             "url_path": "URL Path",
-            "editor_service_data": "Service data can only be entered in the code editor",
             "actions": {
               "default_action": "Default Action",
               "call-service": "Call Service",
@@ -3273,16 +3277,16 @@
           "services": {
             "title": "Services",
             "description": "The service dev tool allows you to call any available service in Home Assistant.",
-            "data": "Service Data (YAML, optional)",
             "call_service": "Call Service",
-            "select_service": "Select a service to see the description",
-            "no_description": "No description is available",
-            "no_parameters": "This service takes no parameters.",
             "column_parameter": "Parameter",
             "column_description": "Description",
             "column_example": "Example",
             "fill_example_data": "Fill Example Data",
-            "alert_parsing_yaml": "Error parsing YAML: {data}"
+            "yaml_mode": "Go to YAML mode",
+            "ui_mode": "Go to UI mode",
+            "yaml_parameters": "Parameters only available in YAML mode",
+            "all_parameters": "All available parameters",
+            "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`"
           },
           "states": {
             "title": "States",
