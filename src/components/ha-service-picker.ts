@@ -7,7 +7,7 @@ import "./ha-combo-box";
 const rowRenderer = (
   root: HTMLElement,
   _owner,
-  model: { item: { service: string; description: string } }
+  model: { item: { service: string; name: string } }
 ) => {
   if (!root.firstElementChild) {
     root.innerHTML = `
@@ -19,15 +19,16 @@ const rowRenderer = (
     </style>
     <paper-item>
       <paper-item-body two-line="">
-        <div class='name'>[[item.description]]</div>
+        <div class='name'>[[item.name]]</div>
         <div secondary>[[item.service]]</div>
       </paper-item-body>
     </paper-item>
     `;
   }
 
-  root.querySelector(".name")!.textContent = model.item.description;
-  root.querySelector("[secondary]")!.textContent = model.item.service;
+  root.querySelector(".name")!.textContent = model.item.name;
+  root.querySelector("[secondary]")!.textContent =
+    model.item.name === model.item.service ? "" : model.item.service;
 };
 
 class HaServicePicker extends LitElement {
@@ -49,7 +50,7 @@ class HaServicePicker extends LitElement {
         .value=${this.value}
         .renderer=${rowRenderer}
         item-value-path="service"
-        item-label-path="description"
+        item-label-path="name"
         allow-custom-value
         @filter-changed=${this._filterChanged}
         @value-changed=${this._valueChanged}
@@ -59,12 +60,12 @@ class HaServicePicker extends LitElement {
 
   private _services = memoizeOne((services: HomeAssistant["services"]): {
     service: string;
-    description: string;
+    name: string;
   }[] => {
     if (!services) {
       return [];
     }
-    const result: { service: string; description: string }[] = [];
+    const result: { service: string; name: string }[] = [];
 
     Object.keys(services)
       .sort()
@@ -74,8 +75,7 @@ class HaServicePicker extends LitElement {
         for (const service of services_keys) {
           result.push({
             service: `${domain}.${service}`,
-            description:
-              services[domain][service].description || `${domain}.${service}`,
+            name: services[domain][service].name || `${domain}.${service}`,
           });
         }
       });
@@ -96,7 +96,7 @@ class HaServicePicker extends LitElement {
       return processedServices.filter(
         (service) =>
           service.service.toLowerCase().includes(filter) ||
-          service.description.toLowerCase().includes(filter)
+          service.name?.toLowerCase().includes(filter)
       );
     }
   );

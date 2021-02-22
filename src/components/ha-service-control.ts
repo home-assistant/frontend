@@ -171,6 +171,7 @@ export class HaServiceControl extends LitElement {
         .value=${this.value?.service}
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
+      <p>${this._serviceData?.description}</p>
       ${this._serviceData && "target" in this._serviceData
         ? html`<ha-settings-row .narrow=${this.narrow}>
             ${hasOptional
