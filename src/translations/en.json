@@ -426,8 +426,8 @@
       },
       "service-control": {
         "required": "This field is required",
-        "target": "Target",
-        "target_description": "What should this service use as target.",
+        "target": "Targets",
+        "target_description": "What should this service use as targets.",
         "service_data": "Service data"
       },
       "related-items": {
