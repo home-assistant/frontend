@@ -44,7 +44,7 @@ class HaPanelDevService extends LitElement {
       this._serviceData?.service
     );
 
-    const isValid = this._isValid(this._serviceData);
+    const isValid = this._isValid(this._serviceData, fields, target);
 
     return html`
       <div class="content">
@@ -59,13 +59,16 @@ class HaPanelDevService extends LitElement {
               .defaultValue=${this._serviceData}
               @value-changed=${this._yamlChanged}
             ></ha-yaml-editor>`
-          : html`<ha-service-control
-              .hass=${this.hass}
-              .value=${this._serviceData}
-              .narrow=${this.narrow}
-              showAdvanced
-              @value-changed=${this._serviceChanged}
-            ></ha-service-control>`}
+          : html`<ha-card
+              ><div>
+                <ha-service-control
+                  .hass=${this.hass}
+                  .value=${this._serviceData}
+                  .narrow=${this.narrow}
+                  showAdvanced
+                  @value-changed=${this._serviceChanged}
+                ></ha-service-control></div
+            ></ha-card>`}
       </div>
       <div class="button-row">
         <div class="buttons">
@@ -86,8 +89,7 @@ class HaPanelDevService extends LitElement {
         </div>
       </div>
 
-      ${(this._yamlMode ? fields : fields.filter((field) => !field.selector))
-        .length
+      ${(this._yamlMode ? fields : this._filterSelectorFields(fields)).length
         ? html`<div class="content">
             <ha-expansion-panel
               .header=${this._yamlMode
@@ -146,7 +148,11 @@ class HaPanelDevService extends LitElement {
     `;
   }
 
-  private _isValid = memoizeOne((serviceData): boolean => {
+  private _filterSelectorFields = memoizeOne((fields) =>
+    fields.filter((field) => !field.selector)
+  );
+
+  private _isValid = memoizeOne((serviceData, fields, target): boolean => {
     if (!serviceData?.service) {
       return false;
     }
@@ -155,10 +161,6 @@ class HaPanelDevService extends LitElement {
     if (!domain || !service) {
       return false;
     }
-    const { target, fields } = this._fields(
-      this.hass.services,
-      serviceData.service
-    );
     if (
       target &&
       !serviceData.target &&

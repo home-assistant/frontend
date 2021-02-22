@@ -427,7 +427,8 @@
       "service-control": {
         "required": "This field is required",
         "target": "Target",
-        "target_description": "What should this service call target"
+        "target_description": "What should this service call target",
+        "service_data": "Service data"
       },
       "related-items": {
         "no_related_found": "No related items found.",
@@ -1406,8 +1407,7 @@
               "type_select": "Action type",
               "type": {
                 "service": {
-                  "label": "Call service",
-                  "service_data": "Service data"
+                  "label": "Call service"
                 },
                 "delay": {
                   "label": "Delay",
@@ -2699,7 +2699,6 @@
           "action-editor": {
             "navigation_path": "Navigation Path",
             "url_path": "URL Path",
-            "editor_service_data": "Service data can only be entered in the code editor",
             "actions": {
               "default_action": "Default Action",
               "call-service": "Call Service",

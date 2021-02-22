@@ -1,5 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import {
+  css,
+  CSSResult,
   customElement,
   internalProperty,
   LitElement,
@@ -72,6 +74,15 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (ev.detail.value === this._action) {
       ev.stopPropagation();
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-service-control {
+        display: block;
+        margin: 0 -16px;
+      }
+    `;
   }
 }
 

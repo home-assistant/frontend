@@ -212,7 +212,7 @@ export class HaServiceControl extends LitElement {
       ${legacy
         ? html`<ha-yaml-editor
             .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.type.service.service_data"
+              "ui.components.service-control.service_data"
             )}
             .name=${"data"}
             .defaultValue=${this.value?.data}
@@ -362,10 +362,27 @@ export class HaServiceControl extends LitElement {
   static get styles(): CSSResult {
     return css`
       ha-settings-row {
-        padding: 0;
+        padding: var(--service-control-padding, 0 16px);
       }
       ha-settings-row {
         --paper-time-input-justify-content: flex-end;
+        border-top: var(
+          --service-control-items-border-top,
+          1px solid var(--divider-color)
+        );
+      }
+      ha-service-picker,
+      ha-entity-picker,
+      ha-yaml-editor {
+        display: block;
+        margin: var(--item-padding, 0 16px);
+      }
+      ha-yaml-editor {
+        padding: 16px 0;
+      }
+      p {
+        margin: var(--item-padding, 0 16px);
+        padding: 16px 0;
       }
       :host(:not([narrow])) ha-settings-row paper-input {
         width: 60%;
