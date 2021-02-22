@@ -19,7 +19,6 @@ import {
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../../components/ha-dialog";
-import keybindings from "tinykeys";
 
 let instance = 0;
 
