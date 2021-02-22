@@ -242,9 +242,9 @@ class HaBlueprintOverview extends LitElement {
     });
   }
 
-  private _addBlueprint(url?: string) {
+  private _addBlueprint(url?: string | MouseEvent) {
     showAddBlueprintDialog(this, {
-      url,
+      url: url instanceof String ? url : "",
       importedCallback: () => this._reload(),
     });
   }
