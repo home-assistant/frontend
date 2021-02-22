@@ -31,7 +31,7 @@ class HaPanelDevService extends LitElement {
   @property() public narrow!: boolean;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
-  private _serviceData?: ServiceAction;
+  private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
 
   @LocalStorage("panel-dev-service-state-yaml-mode", true)
   private _yamlMode = false;
