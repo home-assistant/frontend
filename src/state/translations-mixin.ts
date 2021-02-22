@@ -51,6 +51,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._loadCoreTranslations(getLocalLanguage());
     }
 
+    protected updated(changedProps) {
+      super.updated(changedProps);
+      if (!changedProps.has("hass")) {
+        return;
+      }
+      const oldHass = changedProps.get("hass");
+      if (this.hass?.panels && oldHass.panels !== this.hass.panels) {
+        this._loadFragmentTranslations(this.hass.language, this.hass.panelUrl);
+      }
+    }
+
     protected hassConnected() {
       super.hassConnected();
       getUserLanguage(this.hass!).then((language) => {
@@ -204,13 +215,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
 
       // If it's the first call we don't have panel info yet to check the component.
-      // If the url is not known it might be a custom lovelace dashboard, so we load lovelace translations
       const fragment = translationMetadata.fragments.includes(
         panelComponent || panelUrl
       )
         ? panelComponent || panelUrl
-        : !panelComponent
-        ? "lovelace"
         : undefined;
 
       if (!fragment) {

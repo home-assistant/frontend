@@ -1243,9 +1243,9 @@
                                 },
                                 "sun": {
                                     "after": "Peale:",
-                                    "after_offset": "Pärastine viiteaeg (valikuline)",
+                                    "after_offset": "Pärastine ajanihe (valikuline)",
                                     "before": "Enne:",
-                                    "before_offset": "Eelnev viiteaeg (valikuline)",
+                                    "before_offset": "Eelnev ajanihe (valikuline)",
                                     "label": "Päike",
                                     "sunrise": "Tõusu",
                                     "sunset": "Loojangut"
@@ -2002,6 +2002,7 @@
                     },
                     "configure": "Seadista",
                     "configured": "Seadistatud",
+                    "confirm_new": "Kas soovid seadistada sidumist {integration}?",
                     "description": "Halda teenuste, seadmete jne. sidumisi",
                     "details": "Sidumise üksikasjad",
                     "discovered": "Leitud",
@@ -3101,7 +3102,7 @@
                             "icon_height": "Ikooni kõrgus",
                             "image": "Pildi asukoht",
                             "manual": "Käsitsi",
-                            "manual_description": "Kas soovite lisada kohandatud kaarti või soovite muuta koodiredaktoris?",
+                            "manual_description": "Kas soovid lisada kohandatud kaarti või soovid ainult  muuta YAML-is?",
                             "maximum": "Maksimaalne",
                             "minimum": "Minimaalne",
                             "name": "Nimi",
@@ -3406,6 +3407,12 @@
                 "delete_prompt": "Kas kustutada sõnum?",
                 "empty": "Teile pole ühtegi sõnumit",
                 "playback_title": "Sõnumi taasesitus"
+            },
+            "my": {
+                "component_not_loaded": "Home Assistant ei toeta seda ümbersuunamist. Selle ümbersuunamise kasutamiseks on vaja sidumist {integration}.",
+                "error": "Ilmnes tundmatu viga",
+                "faq_link": "Home Assistanti My sidumise KKK",
+                "not_supported": "Home Assistant ei toeta seda ümbersuunamist. Kontrolli kas {link} on toetatud ümbersuunamiseks ja nende kasutusele võetud HA versiooni."
             },
             "page-authorize": {
                 "abort_intro": "Sisselogimine katkestatud",

@@ -19,7 +19,6 @@ import {
   HassioStats,
 } from "../../../src/data/hassio/common";
 import {
-  fetchHassioSupervisorInfo,
   reloadSupervisor,
   restartSupervisor,
   setSupervisorOption,
@@ -318,8 +317,7 @@ class HassioSupervisorInfo extends LitElement {
 
   private async _reloadSupervisor(): Promise<void> {
     await reloadSupervisor(this.hass);
-    const supervisor = await fetchHassioSupervisorInfo(this.hass);
-    fireEvent(this, "supervisor-update", { supervisor });
+    fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
   }
 
   private async _supervisorRestart(ev: CustomEvent): Promise<void> {
@@ -368,6 +366,7 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       await updateSupervisor(this.hass);
+      fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update the supervisor",

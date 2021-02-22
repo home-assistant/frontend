@@ -80,11 +80,14 @@ export class HaConfigSection extends LitElement {
         font-weight: var(--paper-font-subhead_-_font-weight);
         line-height: var(--paper-font-subhead_-_line-height);
         width: 100%;
-        max-width: 400px;
-        margin-right: 40px;
         opacity: var(--dark-primary-opacity);
         font-size: 14px;
         padding-bottom: 20px;
+      }
+
+      .horizontal .intro {
+        max-width: 400px;
+        margin-right: 40px;
       }
 
       .panel {

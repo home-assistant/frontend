@@ -41,6 +41,10 @@ class HassioRouter extends HassRouterPage {
         tag: "hassio-ingress-view",
         load: () => import("./ingress-view/hassio-ingress-view"),
       },
+      _my_redirect: {
+        tag: "hassio-my-redirect",
+        load: () => import("./hassio-my-redirect"),
+      },
     },
   };
 
@@ -49,12 +53,13 @@ class HassioRouter extends HassRouterPage {
     const route = el.nodeName === "HASSIO-PANEL" ? this.route : this.routeTail;
 
     el.hass = this.hass;
-    el.supervisor = this.supervisor;
     el.narrow = this.narrow;
     el.route = route;
 
     if (el.localName === "hassio-ingress-view") {
       el.ingressPanel = this.panel.config && this.panel.config.ingress;
+    } else {
+      el.supervisor = this.supervisor;
     }
   }
 

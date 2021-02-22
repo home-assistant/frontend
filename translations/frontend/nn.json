@@ -14,7 +14,7 @@
     "panel": {
         "calendar": "Kalendrar",
         "config": "Konfigurasjon",
-        "developer_tools": "Utviklarverkty",
+        "developer_tools": "Utviklarverktøy",
         "history": "Historie",
         "logbook": "Loggbok",
         "mailbox": "Postkasse",
@@ -208,7 +208,7 @@
         "default": {
             "off": "Av",
             "on": "På",
-            "unavailable": "Utilgjengelig",
+            "unavailable": "Utilgjengeleg",
             "unknown": "Ukjent"
         },
         "device_tracker": {
@@ -919,7 +919,7 @@
                     "section": {
                         "core": {
                             "core_config": {
-                                "edit_requires_storage": "Redigeringsverkty deaktivert sidan konfigurasjonener lagra i configuration.yaml",
+                                "edit_requires_storage": "Redigeringsverktøy deaktivert sidan konfigurasjonen er lagra i configuration.yaml",
                                 "elevation": "Høgde",
                                 "elevation_meters": "Meter",
                                 "external_url": "Ekstern URL",
@@ -1021,10 +1021,10 @@
                     "config_entry": {
                         "delete": "Slett",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
-                        "device_unavailable": "Eininga utilgjengelig",
+                        "device_unavailable": "Eininga utilgjengeleg",
                         "devices": "{count} {count, plural,\n  one {eining}\n  other {einingar}\n}",
                         "entities": "{count} {count, plural,\n  one {oppføring}\n  other {oppføringar}\n}",
-                        "entity_unavailable": "Oppføringa utilgjengelig",
+                        "entity_unavailable": "Oppføringa utilgjengeleg",
                         "firmware": "Firmware: {version}",
                         "hub": "Tilkopla via",
                         "manuf": "av {manufacturer}",
@@ -1049,6 +1049,7 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigurer",
+                    "confirm_new": "Vil du setje opp {integration}?",
                     "description": "Administrer tilkopla einingar og tenester",
                     "discovered": "Oppdaga",
                     "integration": "integrasjon ",
@@ -1505,7 +1506,7 @@
                 },
                 "warning": {
                     "entity_non_numeric": "Oppføringa er ikkje numerisk: {entity}",
-                    "entity_not_found": "Oppføringa er utilgjengelig: {entity}",
+                    "entity_not_found": "Oppføringa er utilgjengeleg: {entity}",
                     "entity_unavailable": "{entity} er utilgjengeleg for augeblinken",
                     "starting": "Home Assistant held på å starte. Det kan hende at alt ikkje er tilgjengeleg endå."
                 }

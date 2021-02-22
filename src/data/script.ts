@@ -1,6 +1,7 @@
 import {
   HassEntityAttributeBase,
   HassEntityBase,
+  HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
@@ -36,6 +37,7 @@ export interface EventAction {
 export interface ServiceAction {
   service: string;
   entity_id?: string;
+  target?: HassServiceTarget;
   data?: Record<string, any>;
 }
 

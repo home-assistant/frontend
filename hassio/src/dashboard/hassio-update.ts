@@ -10,6 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
@@ -64,6 +65,7 @@ export class HassioUpdate extends LitElement {
         <div class="card-group">
           ${this._renderUpdateCard(
             "Home Assistant Core",
+            "core",
             this.supervisor.core,
             "hassio/homeassistant/update",
             `https://${
@@ -72,6 +74,7 @@ export class HassioUpdate extends LitElement {
           )}
           ${this._renderUpdateCard(
             "Supervisor",
+            "supervisor",
             this.supervisor.supervisor,
             "hassio/supervisor/update",
             `https://github.com//home-assistant/hassio/releases/tag/${this.supervisor.supervisor.version_latest}`
@@ -79,6 +82,7 @@ export class HassioUpdate extends LitElement {
           ${this.supervisor.host.features.includes("hassos")
             ? this._renderUpdateCard(
                 "Operating System",
+                "os",
                 this.supervisor.os,
                 "hassio/os/update",
                 `https://github.com//home-assistant/hassos/releases/tag/${this.supervisor.os.version_latest}`
@@ -91,6 +95,7 @@ export class HassioUpdate extends LitElement {
 
   private _renderUpdateCard(
     name: string,
+    key: string,
     object: HassioHomeAssistantInfo | HassioSupervisorInfo | HassioHassOSInfo,
     apiPath: string,
     releaseNotesUrl: string
@@ -116,6 +121,7 @@ export class HassioUpdate extends LitElement {
           <ha-progress-button
             .apiPath=${apiPath}
             .name=${name}
+            .key=${key}
             .version=${object.version_latest}
             @click=${this._confirmUpdate}
           >
@@ -142,6 +148,7 @@ export class HassioUpdate extends LitElement {
     }
     try {
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
+      fireEvent(this, "supervisor-store-refresh", { store: item.key });
     } catch (err) {
       // Only show an error if the status code was not expected (user behind proxy)
       // or no status at all(connection terminated)

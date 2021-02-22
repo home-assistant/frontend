@@ -109,8 +109,8 @@ class HassioAddonConfig extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._canShowSchema =
-      this.addon.schema !== null &&
-      !this.addon.schema.find(
+      Object.keys(this.addon.options).length !== 0 &&
+      !this.addon.schema!.find(
         // @ts-ignore
         (entry) => !SUPPORTED_UI_TYPES.includes(entry.type) || entry.multiple
       );
@@ -150,12 +150,10 @@ class HassioAddonConfig extends LitElement {
     if (this.addon.schema && this._canShowSchema && !this._yamlMode) {
       this._valid = true;
       this._configHasChanged = true;
+      this._options! = ev.detail.value;
     } else {
       this._configHasChanged = true;
       this._valid = ev.detail.isValid;
-    }
-    if (this._valid) {
-      this._options! = ev.detail.value;
     }
   }
 
@@ -204,8 +202,9 @@ class HassioAddonConfig extends LitElement {
 
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, {
-        options: this._options!,
+        options: this._yamlMode ? this._editor?.value : this._options,
       });
+
       this._configHasChanged = false;
       const eventdata = {
         success: true,
