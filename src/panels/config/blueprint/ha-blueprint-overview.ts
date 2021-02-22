@@ -211,7 +211,7 @@ class HaBlueprintOverview extends LitElement {
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
           extended
-          @click=${this._addBlueprint}
+          @click=${this._addBlueprintClicked}
         >
           <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
         </ha-fab>
@@ -247,6 +247,10 @@ class HaBlueprintOverview extends LitElement {
       url,
       importedCallback: () => this._reload(),
     });
+  }
+
+  private _addBlueprintClicked(): void {
+    this._addBlueprint();
   }
 
   private _reload() {
