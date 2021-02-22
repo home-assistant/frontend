@@ -6,7 +6,7 @@ import {
   html,
   LitElement,
   property,
-  SVGTemplateResult,
+  TemplateResult,
 } from "lit-element";
 
 @customElement("ha-settings-row")
@@ -16,7 +16,7 @@ export class HaSettingsRow extends LitElement {
   @property({ type: Boolean, attribute: "three-line" })
   public threeLine = false;
 
-  protected render(): SVGTemplateResult {
+  protected render(): TemplateResult {
     return html`
       <slot name="prefix"></slot>
       <paper-item-body

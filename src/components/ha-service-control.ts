@@ -391,7 +391,10 @@ export class HaServiceControl extends LitElement {
         width: 60%;
       }
       .checkbox-spacer {
-        width: 48px;
+        width: 32px;
+      }
+      ha-checkbox {
+        margin-left: -16px;
       }
     `;
   }
