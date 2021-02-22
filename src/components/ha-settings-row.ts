@@ -18,14 +18,16 @@ export class HaSettingsRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <slot name="prefix"></slot>
-      <paper-item-body
-        ?two-line=${!this.threeLine}
-        ?three-line=${this.threeLine}
-      >
-        <slot name="heading"></slot>
-        <div secondary><slot name="description"></slot></div>
-      </paper-item-body>
+      <div class="prefix-wrap">
+        <slot name="prefix"></slot>
+        <paper-item-body
+          ?two-line=${!this.threeLine}
+          ?three-line=${this.threeLine}
+        >
+          <slot name="heading"></slot>
+          <div secondary><slot name="description"></slot></div>
+        </paper-item-body>
+      </div>
       <slot></slot>
     `;
   }
@@ -59,6 +61,13 @@ export class HaSettingsRow extends LitElement {
       }
       div[secondary] {
         white-space: normal;
+      }
+      .prefix-wrap {
+        display: contents;
+      }
+      :host([narrow]) .prefix-wrap {
+        display: flex;
+        align-items: center;
       }
     `;
   }
