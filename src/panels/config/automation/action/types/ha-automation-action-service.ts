@@ -1,5 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import {
+  css,
+  CSSResult,
   customElement,
   internalProperty,
   LitElement,
@@ -62,6 +64,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .narrow=${this.narrow}
         .hass=${this.hass}
         .value=${this._action}
+        .showAdvanced=${this.hass.userData?.showAdvanced}
         @value-changed=${this._actionChanged}
       ></ha-service-control>
     `;
@@ -71,6 +74,15 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (ev.detail.value === this._action) {
       ev.stopPropagation();
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-service-control {
+        display: block;
+        margin: 0 -16px;
+      }
+    `;
   }
 }
 

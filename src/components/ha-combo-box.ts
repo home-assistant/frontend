@@ -10,6 +10,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   query,
@@ -67,8 +68,9 @@ export class HaComboBox extends LitElement {
     model: { item: any }
   ) => void;
 
-  @property({ type: Boolean })
-  private _opened?: boolean;
+  @property({ type: Boolean }) public disabled?: boolean;
+
+  @internalProperty() private _opened?: boolean;
 
   @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
 
@@ -95,12 +97,14 @@ export class HaComboBox extends LitElement {
         .filteredItems=${this.filteredItems}
         .renderer=${this.renderer || defaultRowRenderer}
         .allowCustomValue=${this.allowCustomValue}
+        .disabled=${this.disabled}
         @opened-changed=${this._openedChanged}
         @filter-changed=${this._filterChanged}
         @value-changed=${this._valueChanged}
       >
         <paper-input
           .label=${this.label}
+          .disabled=${this.disabled}
           class="input"
           autocapitalize="none"
           autocomplete="off"

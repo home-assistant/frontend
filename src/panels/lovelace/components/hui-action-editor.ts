@@ -194,6 +194,9 @@ export class HuiActionEditor extends LitElement {
       .dropdown {
         display: flex;
       }
+      ha-service-control {
+        --service-control-padding: 0;
+      }
     `;
   }
 }
