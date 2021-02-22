@@ -3409,6 +3409,7 @@
                 "playback_title": "消息回放"
             },
             "my": {
+                "component_not_loaded": "您的 Home Assistant 不支持此重定向。需要使用 {integration} 集成才能使用它。",
                 "error": "发生未知错误",
                 "faq_link": "我的 Home Assistant 常见问题",
                 "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
