@@ -204,7 +204,9 @@ class HaMfaModuleSetupFlow extends LitElement {
       })
       .then(
         (step) => {
-          if (curInstance !== this._instance) return;
+          if (curInstance !== this._instance) {
+            return;
+          }
 
           this._processStep(step);
           this._loading = false;
