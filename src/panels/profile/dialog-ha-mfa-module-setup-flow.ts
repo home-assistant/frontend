@@ -19,6 +19,7 @@ import {
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../../components/ha-dialog";
+import keybindings from "tinykeys";
 
 let instance = 0;
 
@@ -112,7 +113,13 @@ class HaMfaModuleSetupFlow extends LitElement {
                 ? html` <ha-markdown
                       allowsvg
                       breaks
-                      .content=${this._computeStepDescription()}
+                      .content=${localizeKey(
+                        this.hass.localize,
+                        `component.auth.mfa_setup.${this._step!.handler}.step.${
+                          (this._step! as DataEntryFlowStepForm).step_id
+                        }.description`,
+                        this._step!.description_placeholders
+                      )}
                     ></ha-markdown>
                     <ha-form
                       .data=${this._stepData}
@@ -179,7 +186,7 @@ class HaMfaModuleSetupFlow extends LitElement {
     super.firstUpdated(changedProperties);
     this.hass.loadBackendTranslation("mfa_setup", "auth");
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._submitStep();
       }
     });
@@ -255,33 +262,17 @@ class HaMfaModuleSetupFlow extends LitElement {
       : "";
   }
 
-  private _computeStepDescription() {
-    return localizeKey(
-      this.hass.localize,
+  private _computeLabel = (schema) =>
+    this.hass.localize(
       `component.auth.mfa_setup.${this._step!.handler}.step.${
         (this._step! as DataEntryFlowStepForm).step_id
-      }.description`,
-      this._step!.description_placeholders
-    );
-  }
+      }.data.${schema.name}`
+    ) || schema.name;
 
-  private _computeLabel = (schema) => {
-    return (
-      this.hass.localize(
-        `component.auth.mfa_setup.${this._step!.handler}.step.${
-          (this._step! as DataEntryFlowStepForm).step_id
-        }.data.${schema.name}`
-      ) || schema.name
-    );
-  };
-
-  private _computeError = (error) => {
-    return (
-      this.hass.localize(
-        `component.auth.mfa_setup.${this._step!.handler}.error.${error}`
-      ) || error
-    );
-  };
+  private _computeError = (error) =>
+    this.hass.localize(
+      `component.auth.mfa_setup.${this._step!.handler}.error.${error}`
+    ) || error;
 }
 
 declare global {
