@@ -117,9 +117,7 @@ class HassioAddonConfig extends LitElement {
         </div>
         ${showForm
           ? html`<ha-formfield
-              .label=${this._showOptional
-                ? "Hide unused optional configuration options"
-                : "Show unused optional configuration options"}
+              label="Show unused optional configuration options"
             >
               <ha-checkbox
                 @change=${this._toggleOptional}
