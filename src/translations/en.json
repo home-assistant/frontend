@@ -2074,7 +2074,13 @@
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
             },
-            "loading_first_time": "Please wait while the integration is being installed"
+            "pick_flow_step": {
+              "title": "We discovered these, want to set them up?",
+              "new_flow": "No, set up an other instance of {integration}"
+            },
+            "loading_first_time": "Please wait while the integration is being installed",
+            "error": "Error",
+            "could_not_load": "Config flow could not be loaded"
           }
         },
         "users": {

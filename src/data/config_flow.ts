@@ -65,16 +65,18 @@ export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
 export const getConfigFlowHandlers = (hass: HomeAssistant) =>
   hass.callApi<string[]>("GET", "config/config_entries/flow_handlers");
 
-const fetchConfigFlowInProgress = (conn) =>
+export const fetchConfigFlowInProgress = (
+  conn: Connection
+): Promise<DataEntryFlowProgress[]> =>
   conn.sendMessagePromise({
     type: "config_entries/flow/progress",
   });
 
-const subscribeConfigFlowInProgressUpdates = (conn, store) =>
+const subscribeConfigFlowInProgressUpdates = (conn: Connection, store) =>
   conn.subscribeEvents(
     debounce(
       () =>
-        fetchConfigFlowInProgress(conn).then((flows) =>
+        fetchConfigFlowInProgress(conn).then((flows: DataEntryFlowProgress[]) =>
           store.setState(flows, true)
         ),
       500,
