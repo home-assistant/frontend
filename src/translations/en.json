@@ -1430,7 +1430,7 @@
                 "event": {
                   "label": "Fire event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
-                  "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                  "service_data": "[%key:ui::components::service-control::service_data%]"
                 },
                 "device_id": {
                   "label": "Device",
