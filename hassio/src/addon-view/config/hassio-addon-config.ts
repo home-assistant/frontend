@@ -73,6 +73,8 @@ class HassioAddonConfig extends LitElement {
   );
 
   protected render(): TemplateResult {
+    const showForm =
+      !this._yamlMode && this._canShowSchema && this.addon.schema;
     return html`
       <h1>${this.addon.name}</h1>
       <ha-card>
@@ -94,13 +96,13 @@ class HassioAddonConfig extends LitElement {
         </div>
 
         <div class="card-content">
-          ${!this._yamlMode && this._canShowSchema && this.addon.schema
+          ${showForm
             ? html`<ha-form
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .schema=${this._filteredShchema(
                   this._showOptional,
-                  this.addon.schema
+                  this.addon.schema!
                 )}
               ></ha-form>`
             : html` <ha-yaml-editor
@@ -113,17 +115,19 @@ class HassioAddonConfig extends LitElement {
             ? ""
             : html` <div class="errors">Invalid YAML</div> `}
         </div>
-        <ha-formfield
-          .label=${this._showOptional
-            ? "Hide unused optional configuration options"
-            : "Show unused optional configuration options"}
-        >
-          <ha-checkbox
-            @change=${this._toggleOptional}
-            .checked=${this._showOptional}
-          >
-          </ha-checkbox
-        ></ha-formfield>
+        ${showForm
+          ? html`<ha-formfield
+              .label=${this._showOptional
+                ? "Hide unused optional configuration options"
+                : "Show unused optional configuration options"}
+            >
+              <ha-checkbox
+                @change=${this._toggleOptional}
+                .checked=${this._showOptional}
+              >
+              </ha-checkbox>
+            </ha-formfield>`
+          : ""}
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
