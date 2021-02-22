@@ -1,6 +1,8 @@
 import { html, internalProperty, LitElement, property } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { LocalizeFunc } from "../common/translations/localize";
+import { domainToName } from "../data/integration";
 import { HomeAssistant } from "../types";
 import "./ha-combo-box";
 
@@ -44,6 +46,7 @@ class HaServicePicker extends LitElement {
         .hass=${this.hass}
         .label=${this.hass.localize("ui.components.service-picker.service")}
         .filteredItems=${this._filteredServices(
+          this.hass.localize,
           this.hass.services,
           this._filter
         )}
@@ -58,37 +61,48 @@ class HaServicePicker extends LitElement {
     `;
   }
 
-  private _services = memoizeOne((services: HomeAssistant["services"]): {
-    service: string;
-    name: string;
-  }[] => {
-    if (!services) {
-      return [];
-    }
-    const result: { service: string; name: string }[] = [];
-
-    Object.keys(services)
-      .sort()
-      .forEach((domain) => {
-        const services_keys = Object.keys(services[domain]).sort();
-
-        for (const service of services_keys) {
-          result.push({
-            service: `${domain}.${service}`,
-            name: services[domain][service].name || `${domain}.${service}`,
-          });
-        }
-      });
-
-    return result;
-  });
-
-  private _filteredServices = memoizeOne(
-    (services: HomeAssistant["services"], filter?: string) => {
+  private _services = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"]
+    ): {
+      service: string;
+      name: string;
+    }[] => {
       if (!services) {
         return [];
       }
-      const processedServices = this._services(services);
+      const result: { service: string; name: string }[] = [];
+
+      Object.keys(services)
+        .sort()
+        .forEach((domain) => {
+          const services_keys = Object.keys(services[domain]).sort();
+
+          for (const service of services_keys) {
+            result.push({
+              service: `${domain}.${service}`,
+              name: `${domainToName(localize, domain)}: ${
+                services[domain][service].name || service
+              }`,
+            });
+          }
+        });
+
+      return result;
+    }
+  );
+
+  private _filteredServices = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      filter?: string
+    ) => {
+      if (!services) {
+        return [];
+      }
+      const processedServices = this._services(localize, services);
 
       if (!filter) {
         return processedServices;
