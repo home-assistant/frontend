@@ -20,10 +20,10 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-checkbox";
 import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
 import {
@@ -121,13 +121,14 @@ class HassioAddonConfig extends LitElement {
         </div>
         ${hasHiddenOptions
           ? html`<ha-formfield
+              class="show-additional"
               label="Show unused optional configuration options"
             >
-              <ha-checkbox
+              <ha-switch
                 @change=${this._toggleOptional}
                 .checked=${this._showOptional}
               >
-              </ha-checkbox>
+              </ha-switch>
             </ha-formfield>`
           : ""}
         <div class="card-actions right">
@@ -314,6 +315,10 @@ class HassioAddonConfig extends LitElement {
         }
         .card-actions.right {
           justify-content: flex-end;
+        }
+
+        .show-additional {
+          padding: 16px;
         }
       `,
     ];
