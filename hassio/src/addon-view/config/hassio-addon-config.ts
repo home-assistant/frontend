@@ -37,6 +37,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
+import { options } from "marked";
 
 const SUPPORTED_UI_TYPES = ["string", "select", "boolean", "integer", "float"];
 
@@ -75,6 +76,10 @@ class HassioAddonConfig extends LitElement {
   protected render(): TemplateResult {
     const showForm =
       !this._yamlMode && this._canShowSchema && this.addon.schema;
+    const hasHiddenOptions =
+      showForm &&
+      JSON.stringify(this.addon.schema) !==
+        JSON.stringify(this._filteredShchema(false, this.addon.schema!));
     return html`
       <h1>${this.addon.name}</h1>
       <ha-card>
@@ -115,7 +120,7 @@ class HassioAddonConfig extends LitElement {
             ? ""
             : html` <div class="errors">Invalid YAML</div> `}
         </div>
-        ${showForm
+        ${hasHiddenOptions
           ? html`<ha-formfield
               label="Show unused optional configuration options"
             >
