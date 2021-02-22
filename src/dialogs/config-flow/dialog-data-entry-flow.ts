@@ -109,8 +109,12 @@ class DataEntryFlowDialog extends LitElement {
         this._step = undefined;
         this._params = undefined;
         showAlertDialog(this, {
-          title: "Error",
-          text: "Config flow could not be loaded",
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.could_not_load"
+          ),
         });
         return;
       }
@@ -352,8 +356,12 @@ class DataEntryFlowDialog extends LitElement {
         this._step = undefined;
         this._params = undefined;
         showAlertDialog(this, {
-          title: "Error",
-          text: "Config flow could not be loaded",
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.could_not_load"
+          ),
         });
         return;
       }

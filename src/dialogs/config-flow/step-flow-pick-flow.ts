@@ -33,7 +33,11 @@ class StepFlowPickFlow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <h2>We discovered these, want to set them up?</h2>
+      <h2>
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_flow.pick_flow_step.title"
+        )}
+      </h2>
 
       <div>
         ${this.flowsInProgress.map(
@@ -56,8 +60,11 @@ class StepFlowPickFlow extends LitElement {
         )}
         <paper-item @click=${this._startNewFlowPicked} .handler=${this.handler}>
           <paper-item-body>
-            No, set up an other instance of
-            ${domainToName(this.hass.localize, this.handler)}
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_flow.pick_flow_step.new_flow",
+              "integration",
+              domainToName(this.hass.localize, this.handler)
+            )}
           </paper-item-body>
           <ha-icon-next></ha-icon-next>
         </paper-item>
