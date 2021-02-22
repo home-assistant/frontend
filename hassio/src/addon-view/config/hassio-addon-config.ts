@@ -63,12 +63,8 @@ class HassioAddonConfig extends LitElement {
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   private _filteredShchema = memoizeOne(
-    (showOptional: boolean, schema: HaFormSchema[]) => {
-      return showOptional
-        ? schema
-        : schema.filter(
-            (entry) => entry.name in this.addon.options || entry.required
-          );
+    (options: Record<string, unknown>, schema: HaFormSchema[]) => {
+      return schema.filter((entry) => entry.name in options || entry.required);
     }
   );
 
@@ -78,7 +74,9 @@ class HassioAddonConfig extends LitElement {
     const hasHiddenOptions =
       showForm &&
       JSON.stringify(this.addon.schema) !==
-        JSON.stringify(this._filteredShchema(false, this.addon.schema!));
+        JSON.stringify(
+          this._filteredShchema(this.addon.options, this.addon.schema!)
+        );
     return html`
       <h1>${this.addon.name}</h1>
       <ha-card>
@@ -104,10 +102,12 @@ class HassioAddonConfig extends LitElement {
             ? html`<ha-form
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
-                .schema=${this._filteredShchema(
-                  this._showOptional,
-                  this.addon.schema!
-                )}
+                .schema=${this._showOptional
+                  ? this.addon.schema!
+                  : this._filteredShchema(
+                      this.addon.options,
+                      this.addon.schema!
+                    )}
               ></ha-form>`
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}
