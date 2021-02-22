@@ -88,7 +88,6 @@ class HaMfaModuleSetupFlow extends LitElement {
           ${this._errorMessage
             ? html`<div class="error">${this._errorMessage}</div>`
             : ""}
-          ${this._step ? html`` : html``}
           ${!this._step
             ? html`<div class="init-spinner">
                 <ha-circular-progress active></ha-circular-progress>
