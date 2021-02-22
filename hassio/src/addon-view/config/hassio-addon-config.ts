@@ -1,4 +1,3 @@
-import "../../../../src/components/ha-formfield";
 import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
@@ -24,6 +23,7 @@ import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-checkbox";
 import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
+import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
 import {
@@ -37,7 +37,6 @@ import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
-import { options } from "marked";
 
 const SUPPORTED_UI_TYPES = ["string", "select", "boolean", "integer", "float"];
 
