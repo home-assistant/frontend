@@ -79,6 +79,10 @@ class HaSlider extends PaperSliderClass {
     return subTemplate;
   }
 
+  _setImmediateValue(newImmediateValue) {
+    super._setImmediateValue(Math.round(newImmediateValue));
+  }
+
   _calcStep(value) {
     if (!this.step) {
       return parseFloat(value);
