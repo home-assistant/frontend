@@ -427,7 +427,7 @@
       "service-control": {
         "required": "This field is required",
         "target": "Target",
-        "target_description": "What should this service call target",
+        "target_description": "What should this service use as target.",
         "service_data": "Service data"
       },
       "related-items": {
