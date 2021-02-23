@@ -50,7 +50,12 @@ class HassioRouter extends HassRouterPage {
 
   protected updatePageEl(el) {
     // the tabs page does its own routing so needs full route.
-    const route = el.nodeName === "HASSIO-PANEL" ? this.route : this.routeTail;
+    const hassioPanel = el.nodeName === "HASSIO-PANEL";
+    const route = hassioPanel ? this.route : this.routeTail;
+
+    if (hassioPanel && route?.prefix !== "/hassio") {
+      this._fetchData();
+    }
 
     el.hass = this.hass;
     el.narrow = this.narrow;
