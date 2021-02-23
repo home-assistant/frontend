@@ -140,7 +140,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         this._devices = devices;
       }),
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities;
+        this._entities = entities.filter((entity) => entity.area_id);
       }),
     ];
   }
@@ -193,11 +193,14 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           deviceEntityLookup[entity.device_id].push(entity);
         }
         inputDevices = devices;
-        inputEntities = entities.filter((entity) => entity.area_id);
-      } else if (deviceFilter) {
-        inputDevices = devices;
-      } else if (entityFilter) {
-        inputEntities = entities.filter((entity) => entity.area_id);
+        inputEntities = entities;
+      } else {
+        if (deviceFilter) {
+          inputDevices = devices;
+        }
+        if (entityFilter) {
+          inputEntities = entities;
+        }
       }
 
       if (includeDomains) {
