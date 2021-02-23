@@ -73,6 +73,15 @@
             "config": {
                 "automation": {
                     "editor": {
+                        "conditions": {
+                            "type": {
+                                "time": {
+                                    "weekdays": {
+                                        "mon": "Понедељак"
+                                    }
+                                }
+                            }
+                        },
                         "triggers": {
                             "type": {
                                 "mqtt": {
