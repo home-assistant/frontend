@@ -92,21 +92,22 @@ class ZWaveJSNodeConfig extends LitElement {
                                         Property ${item.property}
                                       </div>
                                     </div>
-                                    <span class="secondary"
-                                      >${item.metadata.description}</span
-                                    >
+                                    <span class="secondary">
+                                      ${item.metadata.description}
+                                    </span>
+
                                     ${item.metadata.states
                                       ? html`
                                           <p>
                                             ${item.metadata.states[
                                               item.value
-                                            ]}<br /><span
-                                              class="secondary tech-info"
-                                              >Value ${item.value}</span
-                                            >
+                                            ]}<br />
+                                            <span class="secondary tech-info">
+                                              Value ${item.value}
+                                            </span>
                                           </p>
                                         `
-                                      : html` <p>${item.value}</p> `}
+                                      : html`<p>${item.value}</p>`}
                                   </div>
                                 </ha-card>
                               `
