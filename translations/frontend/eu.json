@@ -442,7 +442,10 @@
                                     "value_template": "Valio txantiloia"
                                 },
                                 "time": {
-                                    "label": "Denbora"
+                                    "label": "Denbora",
+                                    "weekdays": {
+                                        "mon": "Astelehena"
+                                    }
                                 }
                             }
                         },

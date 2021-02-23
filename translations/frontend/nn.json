@@ -766,7 +766,10 @@
                                 "time": {
                                     "after": "Etter",
                                     "before": "Før",
-                                    "label": "Tid"
+                                    "label": "Tid",
+                                    "weekdays": {
+                                        "mon": "mandag"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Eining med posisjon",

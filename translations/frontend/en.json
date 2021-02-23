@@ -720,6 +720,12 @@
                     "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
                 }
             },
+            "service-control": {
+                "required": "This field is required",
+                "service_data": "Service data",
+                "target": "Target",
+                "target_description": "What should this service call target"
+            },
             "service-picker": {
                 "service": "Service"
             },
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "Aborted",
                         "close": "Close",
+                        "could_not_load": "Config flow could not be loaded",
                         "created_config": "Created configuration for {name}.",
                         "dismiss": "Dismiss dialog",
+                        "error": "Error",
                         "error_saving_area": "Error saving area: {error}",
                         "external_step": {
                             "description": "This step requires you to visit an external website to be completed.",
@@ -1998,6 +2006,10 @@
                         "finish": "Finish",
                         "loading_first_time": "Please wait while the integration is being installed",
                         "not_all_required_fields": "Not all required fields are filled in.",
+                        "pick_flow_step": {
+                            "new_flow": "No, set up an other instance of {integration}",
+                            "title": "We discovered these, want to set them up?"
+                        },
                         "submit": "Submit"
                     },
                     "configure": "Configure",
@@ -2857,7 +2869,9 @@
                         "type": "Event Type"
                     },
                     "services": {
+                        "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`",
                         "alert_parsing_yaml": "Error parsing YAML: {data}",
+                        "all_parameters": "All available parameters",
                         "call_service": "Call Service",
                         "column_description": "Description",
                         "column_example": "Example",
@@ -2868,7 +2882,10 @@
                         "no_description": "No description is available",
                         "no_parameters": "This service takes no parameters.",
                         "select_service": "Select a service to see the description",
-                        "title": "Services"
+                        "title": "Services",
+                        "ui_mode": "Go to UI mode",
+                        "yaml_mode": "Go to YAML mode",
+                        "yaml_parameters": "Parameters only available in YAML mode"
                     },
                     "states": {
                         "alert_entity_field": "Entity is a mandatory field",

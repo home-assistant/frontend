@@ -7,6 +7,19 @@
         },
         "panel": {
             "config": {
+                "automation": {
+                    "editor": {
+                        "conditions": {
+                            "type": {
+                                "time": {
+                                    "weekdays": {
+                                        "mon": "Monday"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "integrations": {
                     "caption": "Integrations",
                     "configure": "Configure",
