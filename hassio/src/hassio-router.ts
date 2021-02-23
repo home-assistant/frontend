@@ -53,7 +53,7 @@ class HassioRouter extends HassRouterPage {
     const hassioPanel = el.nodeName === "HASSIO-PANEL";
     const route = hassioPanel ? this.route : this.routeTail;
 
-    if (hassioPanel && this.panel.config && this.panel.config.ingress) {
+    if (hassioPanel && this.panel.config?.ingress) {
       this._redirectIngress();
       return;
     }
