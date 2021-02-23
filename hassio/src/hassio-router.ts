@@ -55,6 +55,7 @@ class HassioRouter extends HassRouterPage {
 
     if (hassioPanel && route?.prefix !== "/hassio") {
       this._fetchData();
+      return;
     }
 
     el.hass = this.hass;
