@@ -2507,7 +2507,13 @@
           "device_info": {
             "zwave_info": "Z-Wave Info",
             "node_status": "Node Status",
-            "node_ready": "Node Ready"
+            "node_ready": "Node Ready",
+            "node_config": "Node Config"
+          },
+          "node_config": {
+            "header": "Z-Wave Device Configuration",
+            "introduction": "Manage and adjust device (node) specific configuration parameters for the selected device",
+            "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device."
           },
           "node_status": {
             "unknown": "Unknown",

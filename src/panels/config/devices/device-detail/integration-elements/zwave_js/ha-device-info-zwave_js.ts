@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResult,
@@ -91,6 +92,17 @@ export class HaDeviceInfoZWaveJS extends LitElement {
         ${this._node.ready
           ? this.hass.localize("ui.common.yes")
           : this.hass.localize("ui.common.no")}
+      </div>
+      <div>
+        <a
+          href=${`/config/zwave_js/node_config/${this._node.node_id}?config_entry=${this._entryId}`}
+        >
+          <mwc-button>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.device_info.node_config"
+            )}
+          </mwc-button>
+        </a>
       </div>
     `;
   }
