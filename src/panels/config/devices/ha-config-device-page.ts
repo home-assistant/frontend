@@ -261,11 +261,13 @@ export class HaConfigDevicePage extends LitElement {
                           )}
                         </p>
                       </div>
-                      <div class="card-actions" slot="actions">
-                        <mwc-button unelevated @click=${this._enableDevice}>
-                          ${this.hass.localize("ui.common.enable")}
-                        </mwc-button>
-                      </div>
+                      ${device.disabled_by === "user"
+                        ? html` <div class="card-actions" slot="actions">
+                            <mwc-button unelevated @click=${this._enableDevice}>
+                              ${this.hass.localize("ui.common.enable")}
+                            </mwc-button>
+                          </div>`
+                        : ""}
                     `
                   : html``
               }

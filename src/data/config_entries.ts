@@ -9,6 +9,7 @@ export interface ConfigEntry {
   connection_class: string;
   supports_options: boolean;
   supports_unload: boolean;
+  disabled_by: string | null;
 }
 
 export interface ConfigEntryMutableParams {
@@ -42,6 +43,27 @@ export const reloadConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
   hass.callApi<{
     require_restart: boolean;
   }>("POST", `config/config_entries/entry/${configEntryId}/reload`);
+
+export const disableConfigEntry = (
+  hass: HomeAssistant,
+  configEntryId: string
+) =>
+  hass.callWS<{
+    require_restart: boolean;
+  }>({
+    type: "config_entries/disable",
+    entry_id: configEntryId,
+    disabled_by: "user",
+  });
+
+export const enableConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
+  hass.callWS<{
+    require_restart: boolean;
+  }>({
+    type: "config_entries/disable",
+    entry_id: configEntryId,
+    disabled_by: null,
+  });
 
 export const getConfigEntrySystemOptions = (
   hass: HomeAssistant,
