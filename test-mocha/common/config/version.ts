@@ -22,7 +22,7 @@ describe("atLeastVersion", () => {
     assert.isFalse(atLeastVersion("2021.2.3", 2021, 2, 4));
   });
   it("'0.114.0', 0, 113", () => {
-    assert.isFalse(atLeastVersion("0.114.0", 0, 113));
+    assert.isTrue(atLeastVersion("0.114.0", 0, 113));
   });
   it("'2021.2.0dev.2323', 2021, 2, 4", () => {
     assert.isFalse(atLeastVersion("2021.2.0dev.2323", 2021, 2, 1));
