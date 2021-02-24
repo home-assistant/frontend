@@ -149,12 +149,10 @@ class LovelaceFullConfigEditor extends LitElement {
 
   private _yamlChanged() {
     this._changed = true;
-    if (this._changed && !window.onbeforeunload) {
+    if (!window.onbeforeunload) {
       window.onbeforeunload = () => {
         return true;
       };
-    } else if (!this._changed && window.onbeforeunload) {
-      window.onbeforeunload = null;
     }
   }
 
