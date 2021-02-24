@@ -666,6 +666,9 @@
                     "week": "Pred {count} {count, plural,\none {týždňom}\nother {týždňami}\n}"
                 }
             },
+            "service-control": {
+                "service_data": "Dáta služby"
+            },
             "service-picker": {
                 "service": "Služba"
             },
@@ -1643,6 +1646,7 @@
                         "close": "Zavrieť",
                         "created_config": "Vytvorená konfigurácia pre {name}.",
                         "dismiss": "Zrušiť dialógové okno",
+                        "error": "Chyba",
                         "error_saving_area": "Chyba pri ukladaní oblasti: {error}",
                         "external_step": {
                             "description": "Tento krok vyžaduje, aby ste navštívili externú webovú stránku, ktorá dokončí proces.",

@@ -720,6 +720,12 @@
                     "week": "{count} {count, plural,\n  one {nädala}\n  other {nädala}\n} eest"
                 }
             },
+            "service-control": {
+                "required": "See väli on nõutav",
+                "service_data": "Teenuse andmed",
+                "target": "Sihtmärk",
+                "target_description": "Mida peaks see teenus välja kutsuma"
+            },
             "service-picker": {
                 "service": "Teenus"
             },
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "Katkestatud",
                         "close": "Sulge",
+                        "could_not_load": "Konfiguratsioonivoogu ei saanud laadida",
                         "created_config": "Üksuse {name} jaoks on loodud konfiguratsioon.",
                         "dismiss": "Loobumisdialoog",
+                        "error": "Viga",
                         "error_saving_area": "Viga ala salvestamisel: {error}",
                         "external_step": {
                             "description": "Selle etapi lõpetamine nõuab välise veebisaidi külastamist.",
@@ -1998,6 +2006,10 @@
                         "finish": "Lõpeta",
                         "loading_first_time": "Palun oodake kuni sidumist paigaldatakse",
                         "not_all_required_fields": "Kõik nõutavad väljad pole täidetud.",
+                        "pick_flow_step": {
+                            "new_flow": "Ei, seadista teine {integration} eksemplar",
+                            "title": "Avastasime need, kas soovid neid seadistada?"
+                        },
                         "submit": "Esita"
                     },
                     "configure": "Seadista",
@@ -2857,7 +2869,9 @@
                         "type": "Sündmuse tüüp"
                     },
                     "services": {
+                        "accepts_target": "See teenus aktsepteerib sihtmärki, näiteks: \"entity_id: light.elutuba\"",
                         "alert_parsing_yaml": "Viga YAML'i parsimisel: {data}",
+                        "all_parameters": "Kõik saadaolevad parameetrid",
                         "call_service": "Kutsu teenus",
                         "column_description": "Kirjeldus",
                         "column_example": "Näide",
@@ -2868,7 +2882,10 @@
                         "no_description": "Kirjeldus pole saadaval",
                         "no_parameters": "Sellel teenusel pole parameetreid.",
                         "select_service": "Kirjelduse kuvamiseks vali teenus",
-                        "title": "Teenused"
+                        "title": "Teenused",
+                        "ui_mode": "Ava kasutajaliidese režiim",
+                        "yaml_mode": "Redigeeri YAML-is",
+                        "yaml_parameters": "Parameetrid on saadaval ainult YAML režiimis"
                     },
                     "states": {
                         "alert_entity_field": "Olem on kohustuslik väli",

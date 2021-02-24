@@ -720,6 +720,12 @@
                     "week": "{count} {count, plural,\n  one {нед.}\n  other {нед.}\n} назад"
                 }
             },
+            "service-control": {
+                "required": "Обязательное поле",
+                "service_data": "Данные службы",
+                "target": "Цель",
+                "target_description": "Что эта служба должна использовать в качестве цели"
+            },
             "service-picker": {
                 "service": "Служба"
             },
@@ -1152,7 +1158,7 @@
                                 "event": {
                                     "event": "Событие:",
                                     "label": "Создание события",
-                                    "service_data": "Данные"
+                                    "service_data": "Данные службы"
                                 },
                                 "repeat": {
                                     "label": "Повтор",
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "Отменено",
                         "close": "Закрыть",
+                        "could_not_load": "Не удалось загрузить мастер настройки",
                         "created_config": "Создана конфигурация для {name}.",
                         "dismiss": "Закрыть",
+                        "error": "Ошибка",
                         "error_saving_area": "Ошибка сохранения помещения: {error}",
                         "external_step": {
                             "description": "Для завершения этого шага требуется посетить внешний веб-сайт.",
@@ -1998,6 +2006,10 @@
                         "finish": "Готово",
                         "loading_first_time": "Идет установка интеграции, пожалуйста, подождите",
                         "not_all_required_fields": "Не все обязательные поля заполнены.",
+                        "pick_flow_step": {
+                            "new_flow": "Нет, настроить другой экземпляр {integration}",
+                            "title": "Это обнаружено автоматически, начать настройку?"
+                        },
                         "submit": "Подтвердить"
                     },
                     "configure": "Настроить",
@@ -2857,7 +2869,9 @@
                         "type": "Событие"
                     },
                     "services": {
+                        "accepts_target": "Эта служба принимает целевой объект, например: `entity_id: light.bed_light`",
                         "alert_parsing_yaml": "Ошибка при разборе синтаксиса YAML: {data}",
+                        "all_parameters": "Все доступные параметры",
                         "call_service": "Вызвать службу",
                         "column_description": "Описание",
                         "column_example": "Пример",
@@ -2868,7 +2882,10 @@
                         "no_description": "Описание недоступно",
                         "no_parameters": "Нет параметров для этой службы.",
                         "select_service": "Выберите службу, чтобы увидеть описание.",
-                        "title": "Службы"
+                        "title": "Службы",
+                        "ui_mode": "Перейти в режим формы ввода",
+                        "yaml_mode": "Перейти в режим YAML",
+                        "yaml_parameters": "Параметры доступны только в режиме YAML"
                     },
                     "states": {
                         "alert_entity_field": "Укажите объект.",

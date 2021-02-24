@@ -720,6 +720,12 @@
                     "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n} temu"
                 }
             },
+            "service-control": {
+                "required": "To pole jest wymagane",
+                "service_data": "Dane usługi",
+                "target": "Cel",
+                "target_description": "Jaki powinien być cel wywołania tej usługi"
+            },
             "service-picker": {
                 "service": "Usługa"
             },
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "Przerwano",
                         "close": "Zamknij",
+                        "could_not_load": "Nie można wczytać interfejsu konfiguracji",
                         "created_config": "Utworzono konfigurację dla {name}.",
                         "dismiss": "Okno dialogowe odrzucenia",
+                        "error": "Błąd",
                         "error_saving_area": "Błąd podczas zapisywania obszaru: {error}",
                         "external_step": {
                             "description": "Ten krok wymaga od Ciebie odwiedzenia zewnętrznej strony.",
@@ -1998,6 +2006,10 @@
                         "finish": "Zakończ",
                         "loading_first_time": "Proszę czekać, trwa instalowanie integracji...",
                         "not_all_required_fields": "Nie wszystkie wymagane pola są wypełnione.",
+                        "pick_flow_step": {
+                            "new_flow": "Nie, skonfiguruj inną instancję integracji {integration}",
+                            "title": "Odkryliśmy je, chcesz je skonfigurować?"
+                        },
                         "submit": "Zatwierdź"
                     },
                     "configure": "Konfiguruj",
@@ -2857,7 +2869,9 @@
                         "type": "Typ zdarzenia"
                     },
                     "services": {
+                        "accepts_target": "Ta usługa akceptuje cel, na przykład: `entity_id: light.bed_light`",
                         "alert_parsing_yaml": "Błąd parsowania YAML: {data}",
+                        "all_parameters": "Wszystkie dostępne parametry",
                         "call_service": "Wywołaj usługę",
                         "column_description": "Opis",
                         "column_example": "Przykład",
@@ -2868,7 +2882,10 @@
                         "no_description": "Opis nie jest dostępny",
                         "no_parameters": "Ta usługa nie przyjmuje parametrów.",
                         "select_service": "Wybierz usługę, aby zobaczyć opis",
-                        "title": "Usługi"
+                        "title": "Usługi",
+                        "ui_mode": "Przejdź do trybu interfejsu użytkownika",
+                        "yaml_mode": "Przejdź do trybu YAML",
+                        "yaml_parameters": "Parametry dostępne tylko w trybie YAML"
                     },
                     "states": {
                         "alert_entity_field": "Encja jest polem obowiązkowym",
