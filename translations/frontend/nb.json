@@ -3409,6 +3409,7 @@
                 "playback_title": "Meldingsavspilling"
             },
             "my": {
+                "component_not_loaded": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Du trenger integrasjonen {integration} å bruke denne viderekoblingen.",
                 "error": "Det oppstod en ukjent feil",
                 "faq_link": "Vanlige spørsmål om Min Home Assistant",
                 "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."

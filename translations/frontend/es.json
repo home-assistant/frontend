@@ -720,6 +720,12 @@
                     "week": "hace {count} {count, plural,\none {semana}\nother {semanas}\n}"
                 }
             },
+            "service-control": {
+                "required": "Este campo es obligatorio",
+                "service_data": "Datos de servicio",
+                "target": "Objetivo",
+                "target_description": "¿A qué debería dirigirse esta llamada de servicio?"
+            },
             "service-picker": {
                 "service": "Servicio"
             },
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "Abortado",
                         "close": "Cerrar",
+                        "could_not_load": "No se pudo cargar el flujo de configuración",
                         "created_config": "Configuración creada para {name}.",
                         "dismiss": "Descartar diálogo",
+                        "error": "Error",
                         "error_saving_area": "Error al guardar el área: {error}",
                         "external_step": {
                             "description": "Este paso requiere que visites una web externa para ser completado.",
@@ -1998,6 +2006,10 @@
                         "finish": "Terminar",
                         "loading_first_time": "Por favor, espera mientras la integración está siendo instalada",
                         "not_all_required_fields": "No se han completado todos los campos requeridos.",
+                        "pick_flow_step": {
+                            "new_flow": "No, configura otra instancia de {integration}",
+                            "title": "Hemos descubierto éstas, ¿quieres configurarlas?"
+                        },
                         "submit": "Enviar"
                     },
                     "configure": "Configurar",
@@ -2857,7 +2869,9 @@
                         "type": "Tipo de evento"
                     },
                     "services": {
+                        "accepts_target": "Este servicio acepta un objetivo, por ejemplo: `entity_id: light.luz_dormitorio`",
                         "alert_parsing_yaml": "Error al analizar YAML: {data}",
+                        "all_parameters": "Todos los parámetros disponibles",
                         "call_service": "Llamar servicio",
                         "column_description": "Descripción",
                         "column_example": "Ejemplo",
@@ -2868,7 +2882,10 @@
                         "no_description": "No hay descripción disponible.",
                         "no_parameters": "Este servicio no toma parámetros.",
                         "select_service": "Seleccione un servicio para ver la descripción.",
-                        "title": "Servicios"
+                        "title": "Servicios",
+                        "ui_mode": "Ir al modo IU",
+                        "yaml_mode": "Ir al modo YAML",
+                        "yaml_parameters": "Parámetros solo disponibles en modo YAML"
                     },
                     "states": {
                         "alert_entity_field": "Entidad es un campo obligatorio",

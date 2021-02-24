@@ -754,7 +754,10 @@
                                 "time": {
                                     "after": "Na",
                                     "before": "Voor",
-                                    "label": "Tyd"
+                                    "label": "Tyd",
+                                    "weekdays": {
+                                        "mon": "Maandag"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entiteit met plek",

@@ -98,7 +98,7 @@
     "disabled_by": {
       "user": "User",
       "integration": "Integration",
-      "config_entry": "Config Entry",
+      "config_entry": "Config entry",
       "device": "Device"
     }
   },
@@ -339,8 +339,8 @@
         }
       },
       "target-picker": {
-        "expand_area_id": "Expand this area in the seperate devices and entities that it contains. After expanding it will not update the devices and entities when the area changes.",
-        "expand_device_id": "Expand this device in seperate entities. After expanding it will not update the entities when the device changes.",
+        "expand_area_id": "Expand this area into the separate devices and entities that it contains. After expanding, it will not update the devices and entities when the area changes.",
+        "expand_device_id": "Expand this device into the separate entities that it contains. After expanding, it will not update the entities when the device changes.",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
@@ -380,6 +380,19 @@
           "name": "Name",
           "add": "Add",
           "failed_create_area": "Failed to create area."
+        }
+      },
+      "addon-picker": {
+        "addon": "Add-on",
+        "error": {
+          "no_supervisor": {
+            "title": "No Supervisor",
+            "description": "No Supervisor found, so add-ons could not be loaded."
+          },
+          "fetch_addons": {
+            "title": "Error fetching add-ons",
+            "description": "Fetching add-ons returned an error."
+          }
         }
       },
       "picture-upload": {
@@ -426,8 +439,8 @@
       },
       "service-control": {
         "required": "This field is required",
-        "target": "Target",
-        "target_description": "What should this service call target",
+        "target": "Targets",
+        "target_description": "What should this service use as targeted areas, devices or entities.",
         "service_data": "Service data"
       },
       "related-items": {
@@ -813,6 +826,8 @@
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
+        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
+        "documentation": "documentation",
         "faq_link": "My Home Assistant FAQ",
         "error": "An unknown error occured"
       },
@@ -821,7 +836,8 @@
         "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
         "filtering": {
           "filtering_by": "Filtering by",
-          "clear": "Clear"
+          "clear": "Clear",
+          "show": "Show"
         },
         "advanced_mode": {
           "hint_enable": "Missing config options? Enable advanced mode on",
@@ -1819,7 +1835,7 @@
           "disabled_by": {
             "user": "User",
             "integration": "Integration",
-            "config_entry": "Config Entry"
+            "config_entry": "Config entry"
           },
           "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
           "automation": {
@@ -1870,6 +1886,7 @@
           "scenes": "Scenes",
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
+          "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
           "disabled": "Disabled",
           "data_table": {
             "device": "Device",
@@ -2027,6 +2044,11 @@
           "rename_dialog": "Edit the name of this config entry",
           "rename_input_label": "Entry name",
           "search": "Search integrations",
+          "disable": {
+            "show_disabled": "Show disabled integrations",
+            "hide_disabled": "Hide disabled integrations",
+            "disabled_integrations": "{number} disabled"
+          },
           "ignore": {
             "ignore": "Ignore",
             "confirm_ignore_title": "Ignore discovery of {name}?",
@@ -2052,6 +2074,8 @@
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
             "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
+            "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
+            "enable_restart_confirm": "Restart Home Assistant to finish enabling this integration",
             "manuf": "by {manufacturer}",
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
@@ -2059,7 +2083,17 @@
             "device_unavailable": "Device unavailable",
             "entity_unavailable": "Entity unavailable",
             "area": "In {area}",
-            "no_area": "No Area"
+            "no_area": "No Area",
+            "disable": {
+              "disabled": "Disabled",
+              "disabled_cause": "Disabled by {cause}",
+              "disabled_by": {
+                "user": "user",
+                "integration": "integration",
+                "device": "device"
+              },
+              "disable_confirm": "Are you sure you want to disable this config entry? It's devices and entities will be disabled."
+            }
           },
           "config_flow": {
             "aborted": "Aborted",
@@ -2620,7 +2654,7 @@
             "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
-            "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
+            "confirm_unsaved_comments": "Your configuration might contains comment(s), these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
@@ -3311,7 +3345,8 @@
             "more_info": "More Info",
             "alert_entity_field": "Entity is a mandatory field",
             "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
-            "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]"
+            "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",
+            "copy_id": "Copy ID to clipboard"
           },
           "templates": {
             "title": "Template",

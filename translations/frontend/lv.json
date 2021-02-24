@@ -874,7 +874,10 @@
                                 "time": {
                                     "after": "Pēc",
                                     "before": "Pirms",
-                                    "label": "Laiks"
+                                    "label": "Laiks",
+                                    "weekdays": {
+                                        "mon": "Pirmdiena"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Vienība ar atrašanos vietu",

@@ -49,10 +49,15 @@ export class HuiActionEditor extends LitElement {
     return config.url_path || "";
   }
 
+  get _service(): string {
+    const config = this.config as CallServiceActionConfig;
+    return config.service || "";
+  }
+
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => {
       return {
-        service: config.service || "",
+        service: this._service,
         data: config.service_data,
         target: config.target,
       };
@@ -155,8 +160,25 @@ export class HuiActionEditor extends LitElement {
       }
       return;
     }
+
+    let data;
+    switch (value) {
+      case "url": {
+        data = { url_path: this._url_path };
+        break;
+      }
+      case "call-service": {
+        data = { service: this._service };
+        break;
+      }
+      case "navigate": {
+        data = { navigation_path: this._navigation_path };
+        break;
+      }
+    }
+
     fireEvent(this, "value-changed", {
-      value: { action: value },
+      value: { action: value, ...data },
     });
   }
 

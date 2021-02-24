@@ -5,20 +5,10 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
-import { afterNextRender } from "../common/util/render-status";
 import "./ha-code-editor";
-import type { HaCodeEditor } from "./ha-code-editor";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "editor-refreshed": undefined;
-  }
-}
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
@@ -44,8 +34,6 @@ export class HaYamlEditor extends LitElement {
 
   @internalProperty() private _yaml = "";
 
-  @query("ha-code-editor") private _editor?: HaCodeEditor;
-
   public setValue(value): void {
     try {
       this._yaml = value && !isEmpty(value) ? safeDump(value) : "";
@@ -54,12 +42,6 @@ export class HaYamlEditor extends LitElement {
       console.error(err, value);
       alert(`There was an error converting to YAML: ${err}`);
     }
-    afterNextRender(() => {
-      if (this._editor?.codemirror) {
-        this._editor.codemirror.refresh();
-      }
-      afterNextRender(() => fireEvent(this, "editor-refreshed"));
-    });
   }
 
   protected firstUpdated(): void {

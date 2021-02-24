@@ -74,7 +74,14 @@
                             }
                         },
                         "conditions": {
-                            "name": "Kondiĉo"
+                            "name": "Kondiĉo",
+                            "type": {
+                                "time": {
+                                    "weekdays": {
+                                        "mon": "Lundo"
+                                    }
+                                }
+                            }
                         },
                         "edit_ui": "Redakti kun UI",
                         "edit_yaml": "Redakti kiel YAML",

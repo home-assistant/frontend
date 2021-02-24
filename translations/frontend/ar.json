@@ -717,7 +717,10 @@
                                 "time": {
                                     "after": "بعد",
                                     "before": "قبل",
-                                    "label": "وقت"
+                                    "label": "وقت",
+                                    "weekdays": {
+                                        "mon": "الاثنين"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "كيان مع موقع",

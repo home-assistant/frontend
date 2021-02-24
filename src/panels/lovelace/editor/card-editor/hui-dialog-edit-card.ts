@@ -282,7 +282,7 @@ export class HuiDialogEditCard extends LitElement
   }
 
   private _opened() {
-    this._cardEditorEl?.refreshYamlEditor();
+    this._cardEditorEl?.focusYamlEditor();
   }
 
   private get _canSave(): boolean {

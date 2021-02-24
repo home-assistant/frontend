@@ -544,7 +544,10 @@
                                 "time": {
                                     "after": "Po",
                                     "before": "Prieš",
-                                    "label": "Laikas"
+                                    "label": "Laikas",
+                                    "weekdays": {
+                                        "mon": "Pirmadienis"
+                                    }
                                 },
                                 "zone": {
                                     "label": "Vieta",

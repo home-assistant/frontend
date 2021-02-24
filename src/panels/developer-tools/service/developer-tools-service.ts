@@ -11,6 +11,7 @@ import memoizeOne from "memoize-one";
 import { LocalStorage } from "../../../common/decorators/local-storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
+import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
@@ -40,7 +41,19 @@ class HaPanelDevService extends LitElement {
 
   protected firstUpdated(params) {
     super.firstUpdated(params);
-    if (!this._serviceData?.service) {
+    const serviceParam = extractSearchParam("service");
+    if (serviceParam) {
+      this._serviceData = {
+        service: serviceParam,
+        target: {},
+        data: {},
+      };
+      if (this._yamlMode) {
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
+        );
+      }
+    } else if (!this._serviceData?.service) {
       const domain = Object.keys(this.hass.services).sort()[0];
       const service = Object.keys(this.hass.services[domain]).sort()[0];
       this._serviceData = {
@@ -48,6 +61,11 @@ class HaPanelDevService extends LitElement {
         target: {},
         data: {},
       };
+      if (this._yamlMode) {
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
+        );
+      }
     }
   }
 
@@ -140,7 +158,10 @@ class HaPanelDevService extends LitElement {
                     )}
                   </th>
                 </tr>
-                ${fields.map(
+                ${(this._yamlMode
+                  ? fields
+                  : this._filterSelectorFields(fields)
+                ).map(
                   (field) => html` <tr>
                     <td><pre>${field.key}</pre></td>
                     <td>${field.description}</td>

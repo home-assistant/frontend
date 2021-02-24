@@ -242,6 +242,15 @@
             "config": {
                 "automation": {
                     "editor": {
+                        "conditions": {
+                            "type": {
+                                "time": {
+                                    "weekdays": {
+                                        "mon": "Ponedeljak"
+                                    }
+                                }
+                            }
+                        },
                         "triggers": {
                             "type": {
                                 "mqtt": {

@@ -670,7 +670,10 @@
                                 "time": {
                                     "after": "หลังจาก",
                                     "before": "ก่อนที่จะ",
-                                    "label": "เวลา"
+                                    "label": "เวลา",
+                                    "weekdays": {
+                                        "mon": "วันจันทร์"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entity พร้อมตำแหน่ง",
