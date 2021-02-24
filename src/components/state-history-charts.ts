@@ -85,10 +85,7 @@ class StateHistoryCharts extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return (
-      changedProps.has("isLoadingData") ||
-      changedProps.has("historyData")
-    );
+    return !(changedProps.size === 1 && changedProps.has("hass"));
   }
 
   private _isHistoryEmpty(): boolean {
