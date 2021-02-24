@@ -720,6 +720,12 @@
                     "week": "{count} {count, plural,\n  one {週}\n  other {週}\n}以前"
                 }
             },
+            "service-control": {
+                "required": "必填欄位",
+                "service_data": "服務資料",
+                "target": "目標",
+                "target_description": "此服務呼叫的目標"
+            },
             "service-picker": {
                 "service": "服務"
             },
@@ -1152,7 +1158,7 @@
                                 "event": {
                                     "event": "事件：",
                                     "label": "執行事件",
-                                    "service_data": "資料"
+                                    "service_data": "服務資料"
                                 },
                                 "repeat": {
                                     "label": "重複",
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "已中止",
                         "close": "關閉",
+                        "could_not_load": "設定流程無法載入",
                         "created_config": "新增 {name} 設定。",
                         "dismiss": "關閉對話",
+                        "error": "錯誤",
                         "error_saving_area": "儲存分區錯誤：{error}",
                         "external_step": {
                             "description": "此步驟將需要開啟外部網站方能完成。",
@@ -1998,6 +2006,10 @@
                         "finish": "完成",
                         "loading_first_time": "請稍候、正在安裝整合",
                         "not_all_required_fields": "所有所需欄位都需要填寫。",
+                        "pick_flow_step": {
+                            "new_flow": "不，設定另一組 {integration} 實例",
+                            "title": "發現以下裝置，是否進行設定？"
+                        },
                         "submit": "傳送"
                     },
                     "configure": "設定",
@@ -2857,7 +2869,9 @@
                         "type": "事件類別"
                     },
                     "services": {
+                        "accepts_target": "服務接受目標，例如：`entity_id: light.bed_light`",
                         "alert_parsing_yaml": "解析 YAML 錯誤：{data}",
+                        "all_parameters": "所有可用參數",
                         "call_service": "執行服務",
                         "column_description": "說明",
                         "column_example": "範例",
@@ -2868,7 +2882,10 @@
                         "no_description": "無描述可使用",
                         "no_parameters": "此服務未含任何參數。",
                         "select_service": "選擇服務以檢視其說明",
-                        "title": "服務"
+                        "title": "服務",
+                        "ui_mode": "進入 UI 模式",
+                        "yaml_mode": "進入 YAML 模式",
+                        "yaml_parameters": "參數僅限於 YAML 模式"
                     },
                     "states": {
                         "alert_entity_field": "實體為必填欄位",

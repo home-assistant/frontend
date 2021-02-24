@@ -723,8 +723,8 @@
             "service-control": {
                 "required": "This field is required",
                 "service_data": "Service data",
-                "target": "Target",
-                "target_description": "What should this service call target"
+                "target": "Targets",
+                "target_description": "What should this service use as targeted areas, devices or entities."
             },
             "service-picker": {
                 "service": "Service"
@@ -733,8 +733,8 @@
                 "add_area_id": "Pick area",
                 "add_device_id": "Pick device",
                 "add_entity_id": "Pick entity",
-                "expand_area_id": "Expand this area in the seperate devices and entities that it contains. After expanding it will not update the devices and entities when the area changes.",
-                "expand_device_id": "Expand this device in seperate entities. After expanding it will not update the entities when the device changes.",
+                "expand_area_id": "Expand this area into the separate devices and entities that it contains. After expanding, it will not update the devices and entities when the area changes.",
+                "expand_device_id": "Expand this device into the separate entities that it contains. After expanding, it will not update the entities when the device changes.",
                 "remove_area_id": "Remove area",
                 "remove_device_id": "Remove device",
                 "remove_entity_id": "Remove entity"
