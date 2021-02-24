@@ -1,12 +1,5 @@
-import { EditorState, Prec, tagExtension } from "@codemirror/state";
-import { EditorView, KeyBinding, keymap, ViewUpdate } from "@codemirror/view";
-import { defaultKeymap, defaultTabBinding } from "@codemirror/commands";
-import { lineNumbers } from "@codemirror/gutter";
-import { HighlightStyle, tags } from "@codemirror/highlight";
-import { StreamLanguage } from "@codemirror/stream-parser";
-import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
-import { yaml } from "@codemirror/legacy-modes/mode/yaml";
-
+import type { StreamLanguage } from "@codemirror/stream-parser";
+import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import {
   customElement,
   internalProperty,
@@ -15,6 +8,7 @@ import {
   UpdatingElement,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
+import { loadCodeMirror } from "../resources/codemirror.ondemand";
 
 declare global {
   interface HASSDomEvents {
@@ -32,117 +26,11 @@ const saveKeyBinding: KeyBinding = {
   },
 };
 
-const theme = EditorView.theme({
-  $: {
-    color: "var(--primary-text-color)",
-    backgroundColor:
-      "var(--code-editor-background-color, var(--card-background-color))",
-    "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.2)" },
-    caretColor: "var(--secondary-text-color)",
-    height: "var(--code-mirror-height, auto)",
-  },
-
-  $$focused: { outline: "none" },
-
-  "$$focused $cursor": { borderLeftColor: "#var(--secondary-text-color)" },
-  "$$focused $selectionBackground, $selectionBackground": {
-    backgroundColor: "rgba(var(--rgb-primary-color), 0.2)",
-  },
-
-  $gutters: {
-    backgroundColor:
-      "var(--paper-dialog-background-color, var(--primary-background-color))",
-    color: "var(--paper-dialog-color, var(--secondary-text-color))",
-    border: "none",
-    borderRight:
-      "1px solid var(--paper-input-container-color, var(--secondary-text-color))",
-  },
-  "$$focused $gutters": {
-    borderRight:
-      "2px solid var(--paper-input-container-focus-color, var(--primary-color))",
-  },
-  "$gutterElementags.lineNumber": { color: "inherit" },
-});
-
-const highlightStyle = HighlightStyle.define(
-  { tag: tags.keyword, color: "var(--codemirror-keyword, #6262FF)" },
-  {
-    tag: [
-      tags.name,
-      tags.deleted,
-      tags.character,
-      tags.propertyName,
-      tags.macroName,
-    ],
-    color: "var(--codemirror-property, #905)",
-  },
-  {
-    tag: [tags.function(tags.variableName), tags.labelName],
-    color: "var(--codemirror-variable, #07a)",
-  },
-  {
-    tag: [tags.color, tags.constant(tags.name), tags.standard(tags.name)],
-    color: "var(--codemirror-qualifier, #690)",
-  },
-  {
-    tag: [tags.definition(tags.name), tags.separator],
-    color: "var(--codemirror-def, #8DA6CE)",
-  },
-  {
-    tag: [
-      tags.typeName,
-      tags.className,
-      tags.number,
-      tags.changed,
-      tags.annotation,
-      tags.modifier,
-      tags.self,
-      tags.namespace,
-    ],
-    color: "var(--codemirror-number, #ca7841)",
-  },
-  {
-    tag: [
-      tags.operator,
-      tags.operatorKeyword,
-      tags.url,
-      tags.escape,
-      tags.regexp,
-      tags.link,
-      tags.special(tags.string),
-    ],
-    color: "var(--codemirror-operator, #cda869)",
-  },
-  { tag: tags.comment, color: "var(--codemirror-comment, #777)" },
-  {
-    tag: tags.meta,
-    color: "var(--codemirror-meta, var(--primary-text-color))",
-  },
-  { tag: tags.strong, fontWeight: "bold" },
-  { tag: tags.emphasis, fontStyle: "italic" },
-  {
-    tag: tags.link,
-    color: "var(--primary-color)",
-    textDecoration: "underline",
-  },
-  { tag: tags.heading, fontWeight: "bold" },
-  { tag: tags.atom, color: "var(--codemirror-atom, #F90)" },
-  { tag: tags.bool, color: "var(--codemirror-atom, #F90)" },
-  {
-    tag: tags.special(tags.variableName),
-    color: "var(--codemirror-variable-2, #690)",
-  },
-  { tag: tags.processingInstruction, color: "var(--secondary-text-color)" },
-  { tag: tags.string, color: "var(--codemirror-string, #07a)" },
-  { tag: tags.inserted, color: "var(--codemirror-string2, #07a)" },
-  { tag: tags.invalid, color: "var(--error-color)" }
-);
-
 @customElement("ha-code-editor")
 export class HaCodeEditor extends UpdatingElement {
   public codemirror?: EditorView;
 
-  @property() public mode?: string;
+  @property() public mode = "yaml";
 
   @property({ type: Boolean }) public autofocus = false;
 
@@ -153,6 +41,8 @@ export class HaCodeEditor extends UpdatingElement {
   @property() public error = false;
 
   @internalProperty() private _value = "";
+
+  @internalProperty() private _langs?: Record<string, StreamLanguage<unknown>>;
 
   public set value(value: string) {
     this._value = value;
@@ -207,12 +97,14 @@ export class HaCodeEditor extends UpdatingElement {
   }
 
   private get _mode() {
-    return this.mode === "jinja2"
-      ? StreamLanguage.define(jinja2)
-      : StreamLanguage.define(yaml);
+    return this._langs![this.mode];
   }
 
   private async _load(): Promise<void> {
+    const loaded = await loadCodeMirror();
+
+    this._langs = loaded.langs;
+
     const shadowRoot = this.attachShadow({ mode: "open" });
 
     shadowRoot!.innerHTML = `<style>
@@ -225,16 +117,22 @@ export class HaCodeEditor extends UpdatingElement {
 
     shadowRoot.appendChild(container);
 
-    this.codemirror = new EditorView({
-      state: EditorState.create({
+    this.codemirror = new loaded.EditorView({
+      state: loaded.EditorState.create({
         doc: this._value,
         extensions: [
-          lineNumbers(),
-          keymap.of([...defaultKeymap, defaultTabBinding, saveKeyBinding]),
-          tagExtension(modeTag, this._mode),
-          theme,
-          Prec.fallback(highlightStyle),
-          EditorView.updateListener.of((update) => this._onUpdate(update)),
+          loaded.lineNumbers(),
+          loaded.keymap.of([
+            ...loaded.defaultKeymap,
+            loaded.defaultTabBinding,
+            saveKeyBinding,
+          ]),
+          loaded.tagExtension(modeTag, this._mode),
+          loaded.theme,
+          loaded.Prec.fallback(loaded.highlightStyle),
+          loaded.EditorView.updateListener.of((update) =>
+            this._onUpdate(update)
+          ),
         ],
       }),
       root: shadowRoot,
