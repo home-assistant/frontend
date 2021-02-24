@@ -98,7 +98,7 @@
     "disabled_by": {
       "user": "User",
       "integration": "Integration",
-      "config_entry": "Config Entry",
+      "config_entry": "Config entry",
       "device": "Device"
     }
   },
@@ -834,7 +834,8 @@
         "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
         "filtering": {
           "filtering_by": "Filtering by",
-          "clear": "Clear"
+          "clear": "Clear",
+          "show": "Show"
         },
         "advanced_mode": {
           "hint_enable": "Missing config options? Enable advanced mode on",
@@ -1832,7 +1833,7 @@
           "disabled_by": {
             "user": "User",
             "integration": "Integration",
-            "config_entry": "Config Entry"
+            "config_entry": "Config entry"
           },
           "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
           "automation": {
@@ -1883,6 +1884,7 @@
           "scenes": "Scenes",
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
+          "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
           "disabled": "Disabled",
           "data_table": {
             "device": "Device",
@@ -2040,6 +2042,11 @@
           "rename_dialog": "Edit the name of this config entry",
           "rename_input_label": "Entry name",
           "search": "Search integrations",
+          "disable": {
+            "show_disabled": "Show disabled integrations",
+            "hide_disabled": "Hide disabled integrations",
+            "disabled_integrations": "{number} disabled"
+          },
           "ignore": {
             "ignore": "Ignore",
             "confirm_ignore_title": "Ignore discovery of {name}?",
@@ -2065,6 +2072,8 @@
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
             "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
+            "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
+            "enable_restart_confirm": "Restart Home Assistant to finish enabling this integration",
             "manuf": "by {manufacturer}",
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
@@ -2072,7 +2081,17 @@
             "device_unavailable": "Device unavailable",
             "entity_unavailable": "Entity unavailable",
             "area": "In {area}",
-            "no_area": "No Area"
+            "no_area": "No Area",
+            "disable": {
+              "disabled": "Disabled",
+              "disabled_cause": "Disabled by {cause}",
+              "disabled_by": {
+                "user": "user",
+                "integration": "integration",
+                "device": "device"
+              },
+              "disable_confirm": "Are you sure you want to disable this config entry? It's devices and entities will be disabled."
+            }
           },
           "config_flow": {
             "aborted": "Aborted",
