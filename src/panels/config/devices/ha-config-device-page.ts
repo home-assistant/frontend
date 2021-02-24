@@ -12,6 +12,7 @@ import {
 import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { compare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
@@ -160,6 +161,8 @@ export class HaConfigDevicePage extends LitElement {
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
+    const batteryIsBinary = batteryState
+      && computeStateDomain(batteryState) === "binary_sensor";
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
@@ -215,7 +218,7 @@ export class HaConfigDevicePage extends LitElement {
                     batteryState
                       ? html`
                           <div class="battery">
-                            ${batteryState.state}%
+                            ${batteryIsBinary ? "" : batteryState.state + "%"}
                             <ha-battery-icon
                               .hass=${this.hass!}
                               .batteryStateObj=${batteryState}
