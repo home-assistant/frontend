@@ -69,11 +69,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
       const oldHass = changedProps.get("hass");
       if (this.hass?.panels && oldHass.panels !== this.hass.panels) {
-        this._loadFragmentTranslations(this.hass.language, this.hass.panelUrl);
+        this._loadFragmentTranslations(
+          this.hass.language?.language,
+          this.hass.panelUrl
+        );
       }
     }
 
-    protected hassConnected() {
+    protected async hassConnected() {
       super.hassConnected();
       const result = await fetchTranslationPreferences(this.hass!);
       const userNumberFormat = result?.number_format;
