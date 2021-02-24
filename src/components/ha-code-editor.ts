@@ -1,5 +1,5 @@
 import { EditorState, Prec, tagExtension } from "@codemirror/state";
-import { EditorView, keymap, ViewUpdate } from "@codemirror/view";
+import { EditorView, KeyBinding, keymap, ViewUpdate } from "@codemirror/view";
 import { defaultKeymap, defaultTabBinding } from "@codemirror/commands";
 import { lineNumbers } from "@codemirror/gutter";
 import { HighlightStyle, tags } from "@codemirror/highlight";
@@ -24,13 +24,22 @@ declare global {
 
 const modeTag = Symbol("mode");
 
+const saveKeyBinding: KeyBinding = {
+  key: "Mod-s",
+  run: (view: EditorView) => {
+    fireEvent(view.dom, "editor-save");
+    return true;
+  },
+};
+
 const theme = EditorView.theme({
   $: {
     color: "var(--primary-text-color)",
     backgroundColor:
       "var(--code-editor-background-color, var(--card-background-color))",
     "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.2)" },
-    caretColor: "#var(--secondary-text-color)",
+    caretColor: "var(--secondary-text-color)",
+    height: "var(--code-mirror-height, auto)",
   },
 
   $$focused: { outline: "none" },
@@ -153,11 +162,6 @@ export class HaCodeEditor extends UpdatingElement {
     return this.codemirror ? this.codemirror.state.doc.toString() : this._value;
   }
 
-  public get hasComments(): boolean {
-    // TODO: no static classes anymore?
-    return !!this.shadowRoot!.querySelector("span.ͼu");
-  }
-
   public connectedCallback() {
     super.connectedCallback();
     if (!this.codemirror) {
@@ -217,7 +221,7 @@ export class HaCodeEditor extends UpdatingElement {
       }
     </style>`;
 
-    const container = document.createElement("div");
+    const container = document.createElement("span");
 
     shadowRoot.appendChild(container);
 
@@ -226,7 +230,7 @@ export class HaCodeEditor extends UpdatingElement {
         doc: this._value,
         extensions: [
           lineNumbers(),
-          keymap.of([...defaultKeymap, defaultTabBinding]),
+          keymap.of([...defaultKeymap, defaultTabBinding, saveKeyBinding]),
           tagExtension(modeTag, this._mode),
           theme,
           Prec.fallback(highlightStyle),

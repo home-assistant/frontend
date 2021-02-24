@@ -54,8 +54,8 @@ export class HuiStackCardEditor extends LitElement
     this._config = config;
   }
 
-  public refreshYamlEditor(focus) {
-    this._cardEditorEl?.refreshYamlEditor(focus);
+  public focusYamlEditor() {
+    this._cardEditorEl?.focusYamlEditor();
   }
 
   protected render(): TemplateResult {
@@ -171,6 +171,7 @@ export class HuiStackCardEditor extends LitElement
   }
 
   protected _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
+    console.log(ev.detail);
     ev.stopPropagation();
     if (!this._config) {
       return;
