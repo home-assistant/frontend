@@ -36,8 +36,6 @@ export class HaCodeEditor extends UpdatingElement {
 
   @property({ type: Boolean }) public readOnly = false;
 
-  @property() public rtl = false;
-
   @property() public error = false;
 
   @internalProperty() private _value = "";
