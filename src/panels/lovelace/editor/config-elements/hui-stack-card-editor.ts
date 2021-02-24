@@ -171,7 +171,6 @@ export class HuiStackCardEditor extends LitElement
   }
 
   protected _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    console.log(ev.detail);
     ev.stopPropagation();
     if (!this._config) {
       return;
