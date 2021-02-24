@@ -2652,7 +2652,7 @@
             "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
-            "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
+            "confirm_unsaved_comments": "Your configuration might contains comment(s), these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
