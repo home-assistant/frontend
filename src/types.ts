@@ -205,7 +205,7 @@ export interface HomeAssistant {
   //   - english (en)
   language: FrontendTranslationData;
   // local stored language, keep that name for backward compability
-  selectedLanguage: string | null;
+  selectedLanguage: FrontendTranslationData | null;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;

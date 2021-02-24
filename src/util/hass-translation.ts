@@ -59,8 +59,8 @@ export function getLocalLanguage() {
   if (STORAGE.selectedLanguage) {
     try {
       const stored = JSON.parse(STORAGE.selectedLanguage);
-      if (stored) {
-        language = findAvailableLanguage(stored);
+      if (stored && stored.language) {
+        language = findAvailableLanguage(stored.language);
         if (language) {
           return language;
         }
