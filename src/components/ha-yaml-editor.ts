@@ -5,12 +5,10 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-code-editor";
-import type { HaCodeEditor } from "./ha-code-editor";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
