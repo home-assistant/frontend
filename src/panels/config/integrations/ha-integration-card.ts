@@ -180,7 +180,7 @@ export class HaIntegrationCard extends LitElement {
                 "cause",
                 this.hass.localize(
                   `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
-                )
+                ) || item.disabled_by
               )}
             </div>`
           : ""}
