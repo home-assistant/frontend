@@ -15,6 +15,7 @@ import {
 import "../../layouts/hass-error-screen";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { domainToName } from "../../data/integration";
+import { documentationUrl } from "../../util/documentation-url";
 
 const REDIRECTS: Redirects = {
   developer_states: {
@@ -23,11 +24,20 @@ const REDIRECTS: Redirects = {
   developer_services: {
     redirect: "/developer-tools/service",
   },
+  developer_call_service: {
+    redirect: "/developer-tools/service",
+    params: {
+      service: "string",
+    },
+  },
   developer_template: {
     redirect: "/developer-tools/template",
   },
   developer_events: {
     redirect: "/developer-tools/event",
+  },
+  config: {
+    redirect: "/config",
   },
   cloud: {
     component: "cloud",
@@ -201,12 +211,16 @@ class HaPanelMy extends LitElement {
             ) || "This redirect is not supported.";
           break;
         case "no_supervisor":
-          error =
-            this.hass.localize(
-              "ui.panel.my.component_not_loaded",
-              "integration",
-              "Home Assistant Supervisor"
-            ) || "This redirect requires Home Assistant Supervisor.";
+          error = this.hass.localize(
+            "ui.panel.my.no_supervisor",
+            "docs_link",
+            html`<a
+              target="_blank"
+              rel="noreferrer noopener"
+              href="${documentationUrl(this.hass, "/installation")}"
+              >${this.hass.localize("ui.panel.my.documentation")}</a
+            >`
+          );
           break;
         default:
           error = this.hass.localize("ui.panel.my.error") || "Unknown error";
