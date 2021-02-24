@@ -115,7 +115,7 @@ export class StateBadge extends LitElement {
             // eslint-disable-next-line
             console.warn(errorMessage);
           }
-          // lowest brighntess will be around 50% (that's pretty dark)
+          // lowest brightness will be around 50% (that's pretty dark)
           iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
         }
       }
