@@ -52,6 +52,15 @@ const REDIRECTS: Redirects = {
       domain: "string",
     },
   },
+  config_mqtt: {
+    redirect: "/config/mqtt",
+  },
+  config_zha: {
+    redirect: "/config/zha/dashboard",
+  },
+  config_zwave_js: {
+    redirect: "/config/zwave_js/dashboard",
+  },
   devices: {
     redirect: "/config/devices/dashboard",
   },
