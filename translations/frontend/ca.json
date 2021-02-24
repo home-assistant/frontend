@@ -720,6 +720,12 @@
                     "week": "fa {count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
                 }
             },
+            "service-control": {
+                "required": "Aquest camp és obligatori",
+                "service_data": "Dades del servei",
+                "target": "Objectiu",
+                "target_description": "Objectiu d'aquesta crida de servei"
+            },
             "service-picker": {
                 "service": "Servei"
             },
@@ -1152,7 +1158,7 @@
                                 "event": {
                                     "event": "Esdeveniment:",
                                     "label": "Disparar esdeveniment",
-                                    "service_data": "Dades de servei"
+                                    "service_data": "Dades del servei"
                                 },
                                 "repeat": {
                                     "label": "Repeteix",
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "Avortat",
                         "close": "Tanca",
+                        "could_not_load": "El flux de dades de configuració no s'ha pogut carregar",
                         "created_config": "S'ha creat configuració per a {name}.",
                         "dismiss": "Omet el diàleg",
+                        "error": "Error",
                         "error_saving_area": "Error desant àrea: {error}",
                         "external_step": {
                             "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
@@ -1998,6 +2006,10 @@
                         "finish": "Finalitza",
                         "loading_first_time": "Espera mentre s'instal·la la integració",
                         "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
+                        "pick_flow_step": {
+                            "new_flow": "No, configura una altra instància de {integration}",
+                            "title": "N'hem descobert aquests, vols configurar-los?"
+                        },
                         "submit": "Envia"
                     },
                     "configure": "Configurar",
@@ -2857,7 +2869,9 @@
                         "type": "Tipus d'esdeveniment"
                     },
                     "services": {
+                        "accepts_target": "Aquest servei accepta un objectiu, per exemple: `entity_id: light.bed_light`",
                         "alert_parsing_yaml": "S'ha produït un error analitzant el codi YAML: {data}",
+                        "all_parameters": "Tots els paràmetres disponibles",
                         "call_service": "Crida servei",
                         "column_description": "Descripció",
                         "column_example": "Exemple",
@@ -2868,7 +2882,10 @@
                         "no_description": "No hi ha cap descripció disponible",
                         "no_parameters": "Aquest servei no té paràmetres.",
                         "select_service": "Selecciona un servei per veure'n la descripció",
-                        "title": "Serveis"
+                        "title": "Serveis",
+                        "ui_mode": "Vés al mode d'interfície d'usuari",
+                        "yaml_mode": "Vés al mode YAML",
+                        "yaml_parameters": "Paràmetres només disponibles en mode YAML"
                     },
                     "states": {
                         "alert_entity_field": "L'entitat és un camp obligatori",

@@ -611,7 +611,10 @@
                                 "time": {
                                     "after": "Ar ôl",
                                     "before": "Cyn",
-                                    "label": "Amser"
+                                    "label": "Amser",
+                                    "weekdays": {
+                                        "mon": "Dydd Llun"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Endid gyda lleoliad",

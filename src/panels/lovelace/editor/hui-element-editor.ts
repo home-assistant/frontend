@@ -157,17 +157,14 @@ export abstract class HuiElementEditor<T> extends LitElement {
     this.GUImode = !this.GUImode;
   }
 
-  public refreshYamlEditor(focus = false) {
-    if (this._configElement?.refreshYamlEditor) {
-      this._configElement.refreshYamlEditor(focus);
+  public focusYamlEditor() {
+    if (this._configElement?.focusYamlEditor) {
+      this._configElement.focusYamlEditor();
     }
     if (!this._yamlEditor?.codemirror) {
       return;
     }
-    this._yamlEditor.codemirror.refresh();
-    if (focus) {
-      this._yamlEditor.codemirror.focus();
-    }
+    this._yamlEditor.codemirror.focus();
   }
 
   protected async getConfigElement(): Promise<
@@ -290,7 +287,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
       if (this._configElementType !== this.configElementType) {
         // If the type has changed, we need to load a new GUI editor
-        this._guiSupported = false;
+        this._guiSupported = undefined;
         this._configElement = undefined;
 
         if (!this.configElementType) {

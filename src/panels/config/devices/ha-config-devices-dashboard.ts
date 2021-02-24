@@ -15,6 +15,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -293,9 +294,11 @@ export class HaConfigDeviceDashboard extends LitElement {
             batteryEntityPair && batteryEntityPair[1]
               ? this.hass.states[batteryEntityPair[1]]
               : undefined;
-          return battery && !isNaN(battery.state as any)
+          const batteryIsBinary =
+            battery && computeStateDomain(battery) === "binary_sensor";
+          return battery && (batteryIsBinary || !isNaN(battery.state as any))
             ? html`
-                ${battery.state}%
+                ${batteryIsBinary ? "" : battery.state + "%"}
                 <ha-battery-icon
                   .hass=${this.hass!}
                   .batteryStateObj=${battery}

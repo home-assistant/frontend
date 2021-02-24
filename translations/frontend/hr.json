@@ -731,7 +731,10 @@
                                 "time": {
                                     "after": "Nakon",
                                     "before": "Prije",
-                                    "label": "Vrijeme"
+                                    "label": "Vrijeme",
+                                    "weekdays": {
+                                        "mon": "ponedjeljak"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entitet sa lokacijom",

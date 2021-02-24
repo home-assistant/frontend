@@ -120,13 +120,13 @@ const actionConfigStructConfirmation = union([
 
 const actionConfigStructUrl = object({
   action: literal("url"),
-  url_path: optional(string()),
+  url_path: string(),
   confirmation: optional(actionConfigStructConfirmation),
 });
 
 const actionConfigStructService = object({
   action: literal("call-service"),
-  service: optional(string()),
+  service: string(),
   service_data: optional(object()),
   target: optional(
     object({
@@ -140,7 +140,7 @@ const actionConfigStructService = object({
 
 const actionConfigStructNavigate = object({
   action: literal("navigate"),
-  navigation_path: optional(string()),
+  navigation_path: string(),
   confirmation: optional(actionConfigStructConfirmation),
 });
 

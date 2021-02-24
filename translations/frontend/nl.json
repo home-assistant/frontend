@@ -2002,7 +2002,7 @@
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
-                    "confirm_new": "Wil je {integratie} instellen?",
+                    "confirm_new": "Wil je {integration} instellen?",
                     "description": "Beheer integraties met services, apparaten, ...",
                     "details": "Integratiedetails",
                     "discovered": "Ontdekt",
