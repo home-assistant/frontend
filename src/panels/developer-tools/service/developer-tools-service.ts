@@ -48,6 +48,11 @@ class HaPanelDevService extends LitElement {
         target: {},
         data: {},
       };
+      if (this._yamlMode) {
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
+        );
+      }
     } else if (!this._serviceData?.service) {
       const domain = Object.keys(this.hass.services).sort()[0];
       const service = Object.keys(this.hass.services[domain]).sort()[0];
@@ -56,6 +61,11 @@ class HaPanelDevService extends LitElement {
         target: {},
         data: {},
       };
+      if (this._yamlMode) {
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
+        );
+      }
     }
   }
 
