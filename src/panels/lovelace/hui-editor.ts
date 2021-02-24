@@ -47,8 +47,6 @@ class LovelaceFullConfigEditor extends LitElement {
 
   @internalProperty() private _changed?: boolean;
 
-  private _generation = 1;
-
   protected render(): TemplateResult | void {
     return html`
       <ha-app-layout>
@@ -133,11 +131,7 @@ class LovelaceFullConfigEditor extends LitElement {
         }
 
         .content {
-          height: calc(100vh - 68px);
-        }
-
-        hui-code-editor {
-          height: 100%;
+          height: calc(100vh - var(--header-height));
         }
 
         .save-button {
@@ -154,15 +148,11 @@ class LovelaceFullConfigEditor extends LitElement {
   }
 
   private _yamlChanged() {
-    this._changed = !this.yamlEditor
-      .codemirror!.getDoc()
-      .isClean(this._generation);
-    if (this._changed && !window.onbeforeunload) {
+    this._changed = true;
+    if (!window.onbeforeunload) {
       window.onbeforeunload = () => {
         return true;
       };
-    } else if (!this._changed && window.onbeforeunload) {
-      window.onbeforeunload = null;
     }
   }
 
@@ -224,7 +214,7 @@ class LovelaceFullConfigEditor extends LitElement {
       return;
     }
 
-    if (this.yamlEditor.hasComments) {
+    if (/^#|\s#/gm.test(value)) {
       if (
         !confirm(
           this.hass.localize(
@@ -281,9 +271,6 @@ class LovelaceFullConfigEditor extends LitElement {
         ),
       });
     }
-    this._generation = this.yamlEditor
-      .codemirror!.getDoc()
-      .changeGeneration(true);
     window.onbeforeunload = null;
     this._saving = false;
     this._changed = false;
