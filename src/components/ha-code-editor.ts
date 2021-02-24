@@ -18,6 +18,8 @@ declare global {
 
 const modeTag = Symbol("mode");
 
+const readOnlyTag = Symbol("readOnly");
+
 const saveKeyBinding: KeyBinding = {
   key: "Mod-s",
   run: (view: EditorView) => {
@@ -71,6 +73,13 @@ export class HaCodeEditor extends UpdatingElement {
       this.codemirror.dispatch({
         reconfigure: {
           [modeTag]: this._mode,
+        },
+      });
+    }
+    if (changedProps.has("readOnly")) {
+      this.codemirror.dispatch({
+        reconfigure: {
+          [readOnlyTag]: !this.readOnly,
         },
       });
     }
@@ -130,6 +139,10 @@ export class HaCodeEditor extends UpdatingElement {
           loaded.Prec.fallback(loaded.highlightStyle),
           loaded.EditorView.updateListener.of((update) =>
             this._onUpdate(update)
+          ),
+          loaded.tagExtension(
+            readOnlyTag,
+            loaded.EditorView.editable.of(!this.readOnly)
           ),
         ],
       }),
