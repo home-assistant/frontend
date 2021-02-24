@@ -140,7 +140,10 @@ class HaPanelDevService extends LitElement {
                     )}
                   </th>
                 </tr>
-                ${fields.map(
+                ${(this._yamlMode
+                  ? fields
+                  : this._filterSelectorFields(fields)
+                ).map(
                   (field) => html` <tr>
                     <td><pre>${field.key}</pre></td>
                     <td>${field.description}</td>
