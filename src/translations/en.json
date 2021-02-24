@@ -3343,7 +3343,8 @@
             "more_info": "More Info",
             "alert_entity_field": "Entity is a mandatory field",
             "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
-            "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]"
+            "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",
+            "copy_id": "Copy ID to clipboard"
           },
           "templates": {
             "title": "Template",
