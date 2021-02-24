@@ -461,7 +461,7 @@ export class HaIntegrationCard extends LitElement {
     if (result.require_restart) {
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.restart_confirm"
+          "ui.panel.config.integrations.config_entry.disable_restart_confirm"
         ),
       });
     }
@@ -478,7 +478,7 @@ export class HaIntegrationCard extends LitElement {
     if (result.require_restart) {
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.restart_confirm"
+          "ui.panel.config.integrations.config_entry.enable_restart_confirm"
         ),
       });
     }

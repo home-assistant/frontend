@@ -18,7 +18,7 @@ import { slugify } from "../../../common/string/slugify";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
 import { AreaRegistryEntry } from "../../../data/area_registry";
-import { ConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry, disableConfigEntry } from "../../../data/config_entries";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -628,6 +628,41 @@ export class HaConfigDevicePage extends LitElement {
       updateEntry: async (updates) => {
         const oldDeviceName = device.name_by_user || device.name;
         const newDeviceName = updates.name_by_user;
+        const disabled =
+          updates.disabled_by === "user" && device.disabled_by !== "user";
+
+        if (disabled) {
+          for (const cnfg_entry of device.config_entries) {
+            if (
+              !this.devices.some(
+                (dvc) =>
+                  dvc.id !== device.id &&
+                  dvc.config_entries.includes(cnfg_entry)
+              )
+            ) {
+              const config_entry = this.entries.find(
+                (entry) => entry.entry_id === cnfg_entry
+              );
+              if (
+                config_entry &&
+                !config_entry.disabled_by &&
+                // eslint-disable-next-line no-await-in-loop
+                (await showConfirmationDialog(this, {
+                  title: this.hass.localize(
+                    "ui.panel.config.devices.confirm_disable_config_entry",
+                    "entry_name",
+                    config_entry.title
+                  ),
+                  confirmText: this.hass.localize("ui.common.yes"),
+                  dismissText: this.hass.localize("ui.common.no"),
+                }))
+              ) {
+                disableConfigEntry(this.hass, cnfg_entry);
+                delete updates.disabled_by;
+              }
+            }
+          }
+        }
         await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
 
         if (
