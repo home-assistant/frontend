@@ -169,7 +169,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <th>[[localize('ui.panel.developer-tools.tabs.states.state')]]</th>
             <th hidden$="[[narrow]]">
               [[localize('ui.panel.developer-tools.tabs.states.attributes')]]
-              <paper-checkbox checked="{{_showAttributes}}"></paper-checkbox>
+              <paper-checkbox checked="{{_showAttributes}}" on-change="{{saveAttributeCheckboxState}}"></paper-checkbox>
             </th>
           </tr>
           <tr>
@@ -285,7 +285,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
       _showAttributes: {
         type: Boolean,
-        value: true,
+        value: JSON.parse(localStorage.getItem("devToolsShowAttributes") || true),
       },
 
       _entities: {
@@ -476,6 +476,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       return `\n${safeDump(value)}`;
     }
     return Array.isArray(value) ? value.join(", ") : value;
+  }
+
+  saveAttributeCheckboxState(ev) {
+    try {
+      localStorage.setItem("devToolsShowAttributes", ev.target.checked);
+    } catch (e) {
+      // Catch for Safari private mode
+    }
   }
 
   _computeParsedStateAttributes(stateAttributes) {
