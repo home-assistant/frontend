@@ -382,6 +382,19 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "addon-picker": {
+        "addon": "Add-on",
+        "error": {
+          "no_supervisor": {
+            "title": "No Supervisor",
+            "description": "No Supervisor found, so add-ons could not be loaded."
+          },
+          "fetch_addons": {
+            "title": "Error fetching add-ons",
+            "description": "Fetching add-ons returned an error."
+          }
+        }
+      },
       "picture-upload": {
         "label": "Picture",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG or GIF image."
