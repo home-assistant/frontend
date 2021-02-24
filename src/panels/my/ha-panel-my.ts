@@ -53,12 +53,15 @@ const REDIRECTS: Redirects = {
     },
   },
   config_mqtt: {
+    component: "mqtt",
     redirect: "/config/mqtt",
   },
   config_zha: {
+    component: "zha",
     redirect: "/config/zha/dashboard",
   },
   config_zwave_js: {
+    component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
   },
   devices: {
@@ -71,39 +74,49 @@ const REDIRECTS: Redirects = {
     redirect: "/config/areas/dashboard",
   },
   blueprints: {
+    component: "blueprint",
     redirect: "/config/blueprint/dashboard",
   },
   blueprint_import: {
+    component: "blueprint",
     redirect: "/config/blueprint/dashboard/import",
     params: {
       blueprint_url: "url",
     },
   },
   automations: {
+    component: "automation",
     redirect: "/config/automation/dashboard",
   },
   scenes: {
+    component: "scene",
     redirect: "/config/scene/dashboard",
   },
   scripts: {
+    component: "script",
     redirect: "/config/script/dashboard",
   },
   helpers: {
     redirect: "/config/helpers",
   },
   tags: {
+    component: "tags",
     redirect: "/config/tags",
   },
   lovelace_dashboards: {
+    component: "lovelace",
     redirect: "/config/lovelace/dashboards",
   },
   lovelace_resources: {
+    component: "lovelace",
     redirect: "/config/lovelace/resources",
   },
   people: {
+    component: "person",
     redirect: "/config/person",
   },
   zones: {
+    component: "zone",
     redirect: "/config/zone",
   },
   users: {
@@ -126,6 +139,14 @@ const REDIRECTS: Redirects = {
   },
   profile: {
     redirect: "/profile/dashboard",
+  },
+  logbook: {
+    component: "logbook",
+    redirect: "/logbook",
+  },
+  history: {
+    component: "history",
+    redirect: "/history",
   },
 };
 
