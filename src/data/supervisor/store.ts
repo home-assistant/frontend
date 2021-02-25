@@ -33,19 +33,3 @@ export interface SupervisorStore {
   addons: StoreAddon[];
   repositories: StoreRepository[];
 }
-
-export const fetchSupervisorStore = async (
-  hass: HomeAssistant
-): Promise<SupervisorStore> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/store",
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<SupervisorStore>>("GET", "hassio/store")
-  );
-};
