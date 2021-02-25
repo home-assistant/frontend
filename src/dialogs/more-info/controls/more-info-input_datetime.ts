@@ -11,8 +11,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import type { HaDateInput } from "../../../components/ha-date-input";
-import "../../../components/ha-relative-time";
-import "../../../components/paper-time-input";
 import type { PaperTimeInput } from "../../../components/paper-time-input";
 import { UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
