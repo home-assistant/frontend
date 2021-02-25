@@ -734,6 +734,8 @@
                 "control": "Kontroll",
                 "dismiss": "Verwerfen",
                 "editor": {
+                    "advanced": "Avancéiert Astellungen",
+                    "change_device_area": "Beräich vum Apparat änneren",
                     "confirm_delete": "Sécher fir dës Entrée ze läsche?",
                     "delete": "Läschen",
                     "device_disabled": "Den Apparat vun dëser Entitéit ass déaktivéiert.",
@@ -743,6 +745,7 @@
                     "enabled_label": "Entitéit aktivéieren",
                     "enabled_restart_confirm": "Start Home Assistant nei fir dës Entitéiten z'aktivéieren",
                     "entity_id": "ID vun der Entitéit",
+                    "follow_device_area": "Beräich vum Apparat verfollegen",
                     "icon": "Ikon",
                     "icon_error": "Ikonen sollten am format 'prefix:numm' sinn, Beispill: 'mdi:home'",
                     "name": "Numm",
@@ -984,6 +987,18 @@
             "minute": "{count} {count, plural,\n  one {Minutt}\n  other {Minutten}\n}",
             "second": "{count} {count, plural,\none {Sekonn}\nother {Sekonnen}\n}",
             "week": "{count} {count, plural,\none {Woch}\nother {Wochen}\n}"
+        },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Du kanns nach ëmmer demg Konfiguratioun am YAML änneren.",
+                "editor_not_available": "Kee visuellen Editeur disponibel fir den Typ \"{type}\".",
+                "editor_not_supported": "Visuellen Editeur ass net ënnerstëtzt fir dës Konfiguratioun",
+                "error_detected": "Konfiguratiouns Feeler erkannt",
+                "key_missing": "Néidege Schlëssel \"{key}\" feelt.",
+                "key_not_expected": "Schlëssel \"{key}\" ass net erwaard oder vum visuellen Editeur ënnerstëtzt.",
+                "key_wrong_type": "De Wäert fir \"{key}\" ass net vum visuelle Editeur ënnerstëtzt. Mir ënnerstëtzen ({type_correct}) mee mir kruuten ({type_wrong}).",
+                "no_type_provided": "Keen Typ uginn."
+            }
         },
         "login-form": {
             "log_in": "Aloggen",
@@ -1480,6 +1495,16 @@
                         },
                         "sign_out": "Ofmellen",
                         "thank_you_note": "Merci dass dir Deel sidd vun der Home Assistant Cloud. Et ass wéinst iech dass mir sou eng groussaarteg Home Automation Erfarung fir jiddweree kënne maachen. Villmools Merci!",
+                        "tts": {
+                            "dialog": {
+                                "example_message": "Hallo {name}, du kanns all Text op all ënnerstëtzte Medie Spiller ofspillen!",
+                                "header": "Probéier Text zu Sprooch",
+                                "play": "Ofspillen",
+                                "target": "Ziel",
+                                "target_browser": "Navigateur"
+                            },
+                            "try": "Probéier"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "Feeler beim désaktivéieren vum Webhook:",
                             "info": "Alles wat konfiguréiert ass fir duerch e Webhook ausgeléist ze ginn, kann eng ëffentlech zougänglech URL kréien, fir datt Dir Är Donnéeën zréck un den Home Assistant vun iergendwou kënnt zréckschécken, ouni Är Instanz um Internet z'exposéieren",
@@ -2583,6 +2608,11 @@
                     "introduction": "Zonen erlaben Iech verschidde Regiounen op der Äerd ze spezifizéieren. Wann eng Persoun an enger Zone ass, hëlt de Status den Numm aus der Zone. Zonë kënnen och als Ausléiser oder als Konditioun an Automatisme benotzt ginn.",
                     "no_zones_created_yet": "Et gesäit sou aus wéi wann nach keng Zone erstallt goufen."
                 },
+                "zwave_js": {
+                    "dashboard": {
+                        "dump_not_ready_confirm": "Eroflueden"
+                    }
+                },
                 "zwave": {
                     "button": "Astellen",
                     "caption": "Z-Wave",
@@ -2595,6 +2625,12 @@
                     },
                     "description": "Verwalt är Z-Wave Netzwierk",
                     "learn_more": "Méi iwwert Z-Wave léieren",
+                    "migration": {
+                        "ozw": {
+                            "header": "Op OpenZWave migréieren",
+                            "introduction": "Dësen Assistent hëlleft bei der Migratioun vun der aler Z-Wave Integratioun op OpenZWave Integratioun wlecht nach aktuell an der Beta ass."
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave Netzwierk Verwaltung",
                         "introduction": "Féiert Commande aus am Z-Wave Netzwierk. Di kritt kee Feedback op déi meeschte Commande erfollegräich ausgeféiert goufen, mee dir kënnt de OZW Log ënnersiche fir weider Detailer"
@@ -3128,6 +3164,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Tableau de Bord verwalten",
+                        "manage_resources": "Ressource verwalten",
                         "open": "Lovelace Menu opmaachen",
                         "raw_editor": "Editeur fir déi reng Konfiguratioun"
                     },

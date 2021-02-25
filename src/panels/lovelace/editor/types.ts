@@ -96,8 +96,14 @@ export interface EditSubElementEvent {
 }
 
 export const actionConfigStruct = dynamic((_value, ctx) => {
-  const test = actionConfigMap[ctx.branch[0][ctx.path[0]].action];
-  return test || actionConfigStructType;
+  if (ctx.branch[0][ctx.path[0]]) {
+    return (
+      actionConfigMap[ctx.branch[0][ctx.path[0]].action] ||
+      actionConfigStructType
+    );
+  }
+
+  return actionConfigStructType;
 });
 
 const actionConfigStructUser = object({
@@ -122,6 +128,13 @@ const actionConfigStructService = object({
   action: literal("call-service"),
   service: string(),
   service_data: optional(object()),
+  target: optional(
+    object({
+      entity_id: optional(union([string(), array(string())])),
+      device_id: optional(union([string(), array(string())])),
+      area_id: optional(union([string(), array(string())])),
+    })
+  ),
   confirmation: optional(actionConfigStructConfirmation),
 });
 

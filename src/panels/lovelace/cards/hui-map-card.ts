@@ -35,7 +35,7 @@ import "../../../components/ha-icon-button";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import "../../map/ha-entity-marker";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { installResizeObserver } from "../common/install-resize-observer";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";

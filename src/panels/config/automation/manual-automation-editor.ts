@@ -42,7 +42,7 @@ export class HaManualAutomationEditor extends LitElement {
   @property() public stateObj?: HassEntity;
 
   protected render() {
-    return html`<ha-config-section .isWide=${this.isWide}>
+    return html`<ha-config-section vertical .isWide=${this.isWide}>
         ${!this.narrow
           ? html` <span slot="header">${this.config.alias}</span> `
           : ""}
@@ -151,7 +151,7 @@ export class HaManualAutomationEditor extends LitElement {
         </ha-card>
       </ha-config-section>
 
-      <ha-config-section .isWide=${this.isWide}>
+      <ha-config-section vertical .isWide=${this.isWide}>
         <span slot="header">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.header"
@@ -180,7 +180,7 @@ export class HaManualAutomationEditor extends LitElement {
         ></ha-automation-trigger>
       </ha-config-section>
 
-      <ha-config-section .isWide=${this.isWide}>
+      <ha-config-section vertical .isWide=${this.isWide}>
         <span slot="header">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.header"
@@ -209,7 +209,7 @@ export class HaManualAutomationEditor extends LitElement {
         ></ha-automation-condition>
       </ha-config-section>
 
-      <ha-config-section .isWide=${this.isWide}>
+      <ha-config-section vertical .isWide=${this.isWide}>
         <span slot="header">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.header"
@@ -235,6 +235,7 @@ export class HaManualAutomationEditor extends LitElement {
           .actions=${this.config.action}
           @value-changed=${this._actionChanged}
           .hass=${this.hass}
+          .narrow=${this.narrow}
         ></ha-automation-action>
       </ha-config-section>`;
   }

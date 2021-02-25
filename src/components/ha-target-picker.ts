@@ -10,7 +10,10 @@ import {
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -41,7 +44,6 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../data/entity_registry";
-import { Target } from "../data/target";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
@@ -56,7 +58,7 @@ import "./ha-svg-icon";
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
 
-  @property() public value?: Target;
+  @property() public value?: HassServiceTarget;
 
   @property() public label?: string;
 
@@ -81,6 +83,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property() public entityRegFilter?: (entity: EntityRegistryEntry) => boolean;
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @internalProperty() private _areas?: { [areaId: string]: AreaRegistryEntry };
 
@@ -436,7 +440,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     type: string,
     id: string
   ): this["value"] {
-    const newVal = ensureArray(value![type])!.filter((val) => val !== id);
+    const newVal = ensureArray(value![type])!.filter(
+      (val) => String(val) !== id
+    );
     if (newVal.length) {
       return {
         ...value,
@@ -530,6 +536,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .items {
         z-index: 2;
       }
+      .mdc-chip-set {
+        padding: 4px 0;
+      }
       .mdc-chip.add {
         color: rgba(0, 0, 0, 0.87);
       }
@@ -593,6 +602,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
       paper-tooltip.expand {
         min-width: 200px;
+      }
+      :host([disabled]) .mdc-chip {
+        opacity: var(--light-disabled-opacity);
+        pointer-events: none;
       }
     `;
   }

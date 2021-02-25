@@ -2,7 +2,6 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@material/mwc-button";
-import { mdiPlayCircleOutline } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -59,12 +58,6 @@ export class CloudTTSPref extends LitElement {
       <ha-card
         header=${this.hass.localize("ui.panel.config.cloud.account.tts.title")}
       >
-        <div class="example">
-          <mwc-button @click=${this._openTryDialog}>
-            <ha-svg-icon .path=${mdiPlayCircleOutline}></ha-svg-icon>
-            &nbsp;${this.hass.localize("ui.panel.config.cloud.account.tts.try")}
-          </mwc-button>
-        </div>
         <div class="card-content">
           ${this.hass.localize(
             "ui.panel.config.cloud.account.tts.info",
@@ -111,6 +104,11 @@ export class CloudTTSPref extends LitElement {
               )}
             </paper-listbox>
           </paper-dropdown-menu-light>
+        </div>
+        <div class="card-actions">
+          <mwc-button @click=${this._openTryDialog}>
+            ${this.hass.localize("ui.panel.config.cloud.account.tts.try")}
+          </mwc-button>
         </div>
       </ha-card>
     `;

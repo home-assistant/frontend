@@ -1,4 +1,5 @@
 export type Selector =
+  | AddonSelector
   | EntitySelector
   | DeviceSelector
   | AreaSelector
@@ -8,8 +9,8 @@ export type Selector =
   | TimeSelector
   | ActionSelector
   | StringSelector
-  | ObjectSelector;
-
+  | ObjectSelector
+  | SelectSelector;
 export interface EntitySelector {
   entity: {
     integration?: string;
@@ -27,6 +28,13 @@ export interface DeviceSelector {
       domain?: EntitySelector["entity"]["domain"];
       device_class?: EntitySelector["entity"]["device_class"];
     };
+  };
+}
+
+export interface AddonSelector {
+  addon: {
+    name?: string;
+    slug?: string;
   };
 }
 
@@ -94,4 +102,10 @@ export interface StringSelector {
 export interface ObjectSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   object: {};
+}
+
+export interface SelectSelector {
+  select: {
+    options: string[];
+  };
 }

@@ -5,6 +5,19 @@
     "ui": {
         "panel": {
             "config": {
+                "automation": {
+                    "editor": {
+                        "conditions": {
+                            "type": {
+                                "time": {
+                                    "weekdays": {
+                                        "mon": "ორშაბათს"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "blueprint": {
                     "add": {
                         "file_name": "ლოკალური გეგმა-ფაილის სახელი",

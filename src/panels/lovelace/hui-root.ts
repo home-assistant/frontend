@@ -191,30 +191,6 @@ class HUIRoot extends LitElement {
                         `}
                     <mwc-list-item
                       graphic="icon"
-                      @request-selected="${this._handleManageDashboards}"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiViewDashboard}
-                      ></ha-svg-icon>
-                      ${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.manage_dashboards"
-                      )}
-                    </mwc-list-item>
-                    <mwc-list-item
-                      graphic="icon"
-                      @request-selected="${this._handleManageResources}"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiFileMultiple}
-                      ></ha-svg-icon>
-                      ${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.manage_resources"
-                      )}
-                    </mwc-list-item>
-                    <mwc-list-item
-                      graphic="icon"
                       @request-selected="${this._handleRawEditor}"
                     >
                       <ha-svg-icon
@@ -225,6 +201,35 @@ class HUIRoot extends LitElement {
                         "ui.panel.lovelace.editor.menu.raw_editor"
                       )}
                     </mwc-list-item>
+                    ${__DEMO__ /* No config available in the demo */
+                      ? ""
+                      : html`<mwc-list-item
+                            graphic="icon"
+                            @request-selected="${this._handleManageDashboards}"
+                          >
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiViewDashboard}
+                            ></ha-svg-icon>
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.editor.menu.manage_dashboards"
+                            )}
+                          </mwc-list-item>
+                          ${this.hass.userData?.showAdvanced
+                            ? html`<mwc-list-item
+                                graphic="icon"
+                                @request-selected="${this
+                                  ._handleManageResources}"
+                              >
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiFileMultiple}
+                                ></ha-svg-icon>
+                                ${this.hass!.localize(
+                                  "ui.panel.lovelace.editor.menu.manage_resources"
+                                )}
+                              </mwc-list-item>`
+                            : ""} `}
                   </ha-button-menu>
                 </app-toolbar>
               `
@@ -841,8 +846,6 @@ class HUIRoot extends LitElement {
       haStyle,
       css`
         :host {
-          --dark-color: #455a64;
-          --text-dark-color: #fff;
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
@@ -872,8 +875,8 @@ class HUIRoot extends LitElement {
 
         .edit-mode app-header,
         .edit-mode app-toolbar {
-          background-color: var(--dark-color, #455a64);
-          color: var(--text-dark-color);
+          background-color: var(--app-header-edit-background-color, #455a64);
+          color: var(--app-header-edit-text-color, #fff);
         }
         .edit-mode div[main-title] {
           pointer-events: auto;

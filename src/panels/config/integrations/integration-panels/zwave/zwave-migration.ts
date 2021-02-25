@@ -37,9 +37,9 @@ import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box"
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import {
   computeDeviceName,
-  DeviceRegistryEntry,
-  fetchDeviceRegistry,
+  subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 
 @customElement("zwave-migration")
 export class ZwaveMigration extends LitElement {
@@ -53,8 +53,6 @@ export class ZwaveMigration extends LitElement {
 
   @internalProperty() private _networkStatus?: ZWaveNetworkStatus;
 
-  @internalProperty() private _unsub?: Promise<UnsubscribeFunc>;
-
   @internalProperty() private _step = 0;
 
   @internalProperty() private _stoppingNetwork = false;
@@ -65,10 +63,18 @@ export class ZwaveMigration extends LitElement {
 
   @internalProperty() private _migratedZwaveEntities?: string[];
 
-  @internalProperty() private _deviceRegistry?: DeviceRegistryEntry[];
+  @internalProperty() private _deviceNameLookup: { [id: string]: string } = {};
+
+  private _unsub?: Promise<UnsubscribeFunc>;
+
+  private _unsubDevices?: UnsubscribeFunc;
 
   public disconnectedCallback(): void {
     this._unsubscribe();
+    if (this._unsubDevices) {
+      this._unsubDevices();
+      this._unsubDevices = undefined;
+    }
   }
 
   protected render(): TemplateResult {
@@ -89,7 +95,8 @@ export class ZwaveMigration extends LitElement {
               "ui.panel.config.zwave.migration.ozw.introduction"
             )}
           </div>
-          ${!this.hass.config.components.includes("mqtt")
+          ${!isComponentLoaded(this.hass, "hassio") &&
+          !isComponentLoaded(this.hass, "mqtt")
             ? html`
                 <ha-card class="content" header="MQTT Required">
                   <div class="card-content">
@@ -176,7 +183,7 @@ export class ZwaveMigration extends LitElement {
                           <p>
                             Now it's time to set up the OZW integration.
                           </p>
-                          ${this.hass.config.components.includes("hassio")
+                          ${isComponentLoaded(this.hass, "hassio")
                             ? html`
                                 <p>
                                   The OZWDaemon runs in a Home Assistant addon
@@ -277,9 +284,9 @@ export class ZwaveMigration extends LitElement {
                                         ).map(
                                           (device_id) =>
                                             html`<li>
-                                              ${this._computeDeviceName(
+                                              ${this._deviceNameLookup[
                                                 device_id
-                                              )}
+                                              ] || device_id}
                                             </li>`
                                         )}
                                       </ul>`
@@ -372,10 +379,7 @@ export class ZwaveMigration extends LitElement {
 
   private async _setupOzw() {
     const ozwConfigFlow = await startOzwConfigFlow(this.hass);
-    if (
-      !this.hass.config.components.includes("hassio") &&
-      this.hass.config.components.includes("ozw")
-    ) {
+    if (isComponentLoaded(this.hass, "ozw")) {
       this._getMigrationData();
       this._step = 3;
       return;
@@ -383,7 +387,7 @@ export class ZwaveMigration extends LitElement {
     showConfigFlowDialog(this, {
       continueFlowId: ozwConfigFlow.flow_id,
       dialogClosedCallback: () => {
-        if (this.hass.config.components.includes("ozw")) {
+        if (isComponentLoaded(this.hass, "ozw")) {
           this._getMigrationData();
           this._step = 3;
         }
@@ -394,23 +398,45 @@ export class ZwaveMigration extends LitElement {
   }
 
   private async _getMigrationData() {
-    this._migrationData = await migrateZwave(this.hass, true);
+    try {
+      this._migrationData = await migrateZwave(this.hass, true);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to get migration data!",
+        text:
+          err.code === "unknown_command"
+            ? "Restart Home Assistant and try again."
+            : err.message,
+      });
+      return;
+    }
     this._migratedZwaveEntities = Object.keys(
       this._migrationData.migration_entity_map
     );
     if (Object.keys(this._migrationData.migration_device_map).length) {
-      this._deviceRegistry = await fetchDeviceRegistry(this.hass);
+      this._fetchDevices();
     }
   }
 
-  private _computeDeviceName(deviceId) {
-    const device = this._deviceRegistry?.find(
-      (devReg) => devReg.id === deviceId
+  private _fetchDevices() {
+    this._unsubDevices = subscribeDeviceRegistry(
+      this.hass.connection,
+      (devices) => {
+        if (!this._migrationData) {
+          return;
+        }
+        const migrationDevices = Object.keys(
+          this._migrationData.migration_device_map
+        );
+        const deviceNameLookup = {};
+        devices.forEach((device) => {
+          if (migrationDevices.includes(device.id)) {
+            deviceNameLookup[device.id] = computeDeviceName(device, this.hass);
+          }
+        });
+        this._deviceNameLookup = deviceNameLookup;
+      }
     );
-    if (!device) {
-      return deviceId;
-    }
-    return computeDeviceName(device, this.hass);
   }
 
   private async _doMigrate() {

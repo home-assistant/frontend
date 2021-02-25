@@ -321,15 +321,15 @@
             "fog": "Nebbia",
             "hail": "Grandine",
             "lightning": "Temporale",
-            "lightning-rainy": "Temporale, piovoso",
+            "lightning-rainy": "Temporale, pioggia",
             "partlycloudy": "Parzialmente nuvoloso",
             "pouring": "Piogge intense",
-            "rainy": "Piovoso",
-            "snowy": "Nevoso",
-            "snowy-rainy": "Nevoso, piovoso",
+            "rainy": "Pioggia",
+            "snowy": "Neve",
+            "snowy-rainy": "Neve, pioggia",
             "sunny": "Soleggiato",
-            "windy": "Ventoso",
-            "windy-variant": "Ventoso"
+            "windy": "Vento",
+            "windy-variant": "Vento"
         },
         "zwave": {
             "default": {
@@ -401,6 +401,7 @@
                 "direction": "Direzione",
                 "forward": "Avanti",
                 "oscillate": "Oscillazione",
+                "preset_mode": "Modalità Predefinita",
                 "reverse": "Indietro",
                 "speed": "Velocità"
             },
@@ -557,6 +558,10 @@
                 "remove_user": "Rimuovi utente",
                 "select_blueprint": "Seleziona un progetto"
             },
+            "calendar": {
+                "my_calendars": "Calendari personali",
+                "today": "Oggi"
+            },
             "data-table": {
                 "no-data": "Nessun dato",
                 "search": "Ricerca"
@@ -588,6 +593,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Integrazione della cronologia disabilitata",
                 "loading_history": "Caricamento storico...",
                 "no_history_found": "Nessuno storico trovato."
             },
@@ -746,8 +752,13 @@
             },
             "entity_registry": {
                 "control": "Controllo",
+                "customize_link": "personalizzazioni delle entità",
                 "dismiss": "Annullare",
                 "editor": {
+                    "advanced": "Impostazioni avanzate",
+                    "area": "Imposta solo l'area dell'entità",
+                    "area_note": "Per impostazione predefinita, le entità di un dispositivo si trovano nella stessa area del dispositivo. Se si modifica l'area di questa entità, essa non seguirà più l'area del dispositivo.",
+                    "change_device_area": "Cambia l'area del dispositivo",
                     "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
                     "delete": "Elimina",
                     "device_disabled": "Il dispositivo di questa entità è disabilitato.",
@@ -757,6 +768,7 @@
                     "enabled_label": "Abilita entità",
                     "enabled_restart_confirm": "Riavviare Home Assistant per completare l'abilitazione delle entità",
                     "entity_id": "ID entità",
+                    "follow_device_area": "Segui l'area del dispositivo",
                     "icon": "Icona",
                     "icon_error": "Le icone dovrebbero essere nel formato 'prefisso:nome_icona', ad esempio 'mdi:home'.",
                     "name": "Nome",
@@ -766,6 +778,7 @@
                     "update": "Aggiorna"
                 },
                 "faq": "documentazione",
+                "info_customize": "Puoi sovrascrivere alcuni attributi nella sezione {customize_link}.",
                 "no_unique_id": "Questa entità (\"{entity_id}\") non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente. Vedere {faq_link} per maggiori dettagli.",
                 "related": "Relazionato",
                 "settings": "Impostazioni"
@@ -1009,6 +1022,18 @@
             "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",
             "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}"
         },
+        "errors": {
+            "config": {
+                "edit_in_yaml_supported": "Puoi ancora modificare la tua configurazione in YAML.",
+                "editor_not_available": "Nessun editor visivo disponibile per il tipo \"{type}\".",
+                "editor_not_supported": "L'editor visivo non è supportato per questa configurazione",
+                "error_detected": "Rilevati errori di configurazione",
+                "key_missing": "Chiave obbligatoria \"{key}\" mancante.",
+                "key_not_expected": "La chiave \"{key}\" non è prevista o non è supportata dall'editor visivo.",
+                "key_wrong_type": "Il valore fornito per \"{key}\" non è supportato dall'editor visivo. Supportiamo ({type_correct}) ma ricevuto ({type_wrong}).",
+                "no_type_provided": "Nessun tipo fornito."
+            }
+        },
         "login-form": {
             "log_in": "Accedi",
             "password": "Password",
@@ -1026,7 +1051,7 @@
             "dismiss": "Rimuovi",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
             "started": "Home Assistant si è avviato!",
-            "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino a quando non avrà completato l'avvio.",
+            "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino ad avvio completo.",
             "triggered": "Attivato {name}"
         },
         "panel": {
@@ -1119,6 +1144,7 @@
                                     "extra_fields": {
                                         "code": "Codice",
                                         "message": "Messaggio",
+                                        "position": "Apertura",
                                         "title": "Titolo"
                                     },
                                     "label": "Dispositivo"
@@ -1236,7 +1262,7 @@
                                     "type_value": "Tempo fisso",
                                     "weekdays": {
                                         "fri": "Venerdì",
-                                        "mon": "Lunedi",
+                                        "mon": "Lunedì",
                                         "sat": "Sabato",
                                         "sun": "Domenica",
                                         "thu": "Giovedì",
@@ -1510,10 +1536,18 @@
                         "thank_you_note": "Grazie per far parte di Home Assistant Cloud. È grazie a persone come te che siamo in grado di creare un'ottima esperienza domotica per tutti. Grazie!",
                         "tts": {
                             "default_language": "Lingua predefinita da utilizzare",
+                            "dialog": {
+                                "example_message": "Ciao {name}, puoi riprodurre qualsiasi testo su qualsiasi lettore multimediale supportato!",
+                                "header": "Prova la sintesi vocale",
+                                "play": "Riproduci",
+                                "target": "Bersaglio",
+                                "target_browser": "Browser"
+                            },
                             "female": "Donna",
                             "info": "Porta un po' di personalità a casa tua facendola parlare con te utilizzando i nostri servizi di sintesi vocale. Puoi usarlo nelle automazioni e negli script usando il servizio {service}.",
                             "male": "Uomo",
-                            "title": "Sintesi vocale"
+                            "title": "Sintesi vocale",
+                            "try": "Prova"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Impossibile disabilitare webhook:",
@@ -1945,7 +1979,7 @@
                         "reload_restart_confirm": "Riavvia Home Assistant per completare il ricaricamento di questa integrazione",
                         "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
-                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+                        "services": "{count} {count, plural,\n  one {servizio}\n  other {servizi}\n}",
                         "settings_button": "Modificare le impostazioni per {integration}.",
                         "system_options": "Opzioni di sistema",
                         "system_options_button": "Opzioni di sistema per {integration}",
@@ -1968,6 +2002,7 @@
                     },
                     "configure": "Configura",
                     "configured": "Configurato",
+                    "confirm_new": "Vuoi configurare {integration}?",
                     "description": "Gestisci le integrazioni con servizi, dispositivi, ...",
                     "details": "Dettagli dell'integrazione",
                     "discovered": "Rilevato",
@@ -2131,7 +2166,7 @@
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Tutti i nodi sono stati interrogati.",
-                            "driverallnodesqueriedsomedead": "Tutti i nodi sono stati interrogati. Alcuni nodi sono stati trovati morti",
+                            "driverallnodesqueriedsomedead": "Tutti i nodi sono stati interrogati. Alcuni nodi sono stati trovati disattivi",
                             "driverawakenodesqueries": "Tutti i nodi svegli sono stati interrogati",
                             "driverfailed": "Impossibile connettersi al controller Z-Wave",
                             "driverready": "Inizializzazione del controller Z-Wave",
@@ -2197,7 +2232,7 @@
                         "battery_note": "Se il nodo è alimentato a batteria, assicurarsi di riattivarlo prima di procedere",
                         "button": "Aggiorna nodo",
                         "complete": "Aggiornamento del nodo completato",
-                        "description": "In questo modo si dirà a OpenZWave di re-interrogare un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
+                        "description": "In questo modo si dirà a OpenZWave di interrogare nuovamente un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
                         "node_status": "Stato del nodo",
                         "refreshing_description": "Aggiornamento delle informazioni sul nodo in corso ...",
                         "start_refresh_button": "Avvia aggiornamento",
@@ -2639,7 +2674,7 @@
                         "inclusion_failed": "Impossibile aggiungere il nodo. Si prega di controllare i registri per ulteriori informazioni.",
                         "inclusion_finished": "Il nodo è stato aggiunto. Potrebbero essere necessari alcuni minuti prima che tutte le entità vengano visualizzate mentre finiamo di configurare il nodo in background.",
                         "introduction": "Questa procedura ti guiderà nell'aggiunta di un nodo alla tua rete Z-Wave.",
-                        "secure_inclusion_warning": "I dispositivi protetti richiedono una larghezza di banda aggiuntiva; troppi dispositivi sicuri possono rallentare la tua rete Z-Wave. Si consiglia di utilizzare l'inclusione sicura solo per i dispositivi che lo richiedono, come serrature o apriporta da garage.",
+                        "secure_inclusion_warning": "I dispositivi protetti richiedono una larghezza di banda aggiuntiva; troppi dispositivi sicuri possono rallentare la tua rete Z-Wave. Si consiglia di utilizzare l'inclusione sicura solo per i dispositivi che lo richiedono, come serrature o apri porta da garage.",
                         "start_inclusion": "Avvia inclusione",
                         "start_secure_inclusion": "Avvia inclusione sicura",
                         "title": "Aggiungi un Nodo Z-Wave",
@@ -2657,10 +2692,17 @@
                     },
                     "dashboard": {
                         "driver_version": "Versione del driver",
+                        "dump_dead_nodes_text": "Alcuni dei tuoi nodi non hanno risposto e si presume che siano disattivi. Questi non verranno esportati completamente.",
+                        "dump_dead_nodes_title": "Alcuni dei tuoi nodi sono disattivi",
+                        "dump_debug": "Scarica una struttura della tua rete per diagnosticare i problemi",
+                        "dump_not_ready_confirm": "Scarica",
+                        "dump_not_ready_text": "Se crei un'esportazione mentre i nodi non sono tutti pronti, potresti perdere dati necessari. Dai alla tua rete un po' di tempo per interrogare tutti i nodi. Vuoi continuare con questa struttura di rete?",
+                        "dump_not_ready_title": "Non tutti i nodi sono ancora pronti",
                         "header": "Gestisci la tua rete Z-Wave",
                         "home_id": "ID Home",
                         "introduction": "Gestisci la tua rete Z-Wave e i nodi Z-Wave",
                         "node_count": "Numero Nodi",
+                        "nodes_ready": "Nodi pronti",
                         "server_version": "Versione del server"
                     },
                     "device_info": {
@@ -2706,6 +2748,12 @@
                     },
                     "description": "Gestisci la tua rete Z-Wave",
                     "learn_more": "Ulteriori informazioni su Z-Wave",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrare a OpenZWave",
+                            "introduction": "Questa procedura guidata consente di eseguire la migrazione dalla vecchia integrazione Z-Wave  all'integrazione OpenZWave attualmente in versione beta."
+                        }
+                    },
                     "network_management": {
                         "header": "Gestione della rete Z-Wave",
                         "introduction": "Eseguire comandi che interessano la rete Z-Wave. Non otterrete un feedback sul successo della maggior parte dei comandi, ma potete controllare il Log OZW per cercare di scoprirlo."
@@ -3054,7 +3102,7 @@
                             "icon_height": "Altezza icona",
                             "image": "Percorso immagine",
                             "manual": "Manuale",
-                            "manual_description": "Devi aggiungere una scheda personalizzata o vuoi semplicemente scrivere manualmente il file in yaml?",
+                            "manual_description": "Devi aggiungere una scheda personalizzata o vuoi semplicemente scrivere manualmente il file in YAML?",
                             "maximum": "Massimo",
                             "minimum": "Minimo",
                             "name": "Nome",
@@ -3250,6 +3298,8 @@
                         }
                     },
                     "menu": {
+                        "manage_dashboards": "Gestisci le plance",
+                        "manage_resources": "Gestisci le risorse",
                         "open": "Apri il menu dell'interfaccia utente di Lovelace",
                         "raw_editor": "Editor di Configurazione testuale"
                     },
@@ -3322,7 +3372,7 @@
                     "reload_resources": "Ricarica le risorse",
                     "start_conversation": "Inizia la conversazione"
                 },
-                "reload_lovelace": "Ricaricare l'Interfaccia Utente",
+                "reload_lovelace": "Ricarica l'Interfaccia Utente",
                 "reload_resources": {
                     "refresh_body": "È necessario aggiornare la pagina per completare il ricaricamento, si desidera aggiornare ora?",
                     "refresh_header": "Vuoi aggiornare?"
@@ -3357,6 +3407,12 @@
                 "delete_prompt": "Eliminare questo messaggio?",
                 "empty": "Non hai nessun messaggio",
                 "playback_title": "Riproduzione messaggio"
+            },
+            "my": {
+                "component_not_loaded": "Questo reindirizzamento non è supportato dalla tua istanza di Home Assistant. È necessaria l'integrazione {integration} per utilizzare questo reindirizzamento.",
+                "error": "Si è verificato un errore sconosciuto",
+                "faq_link": "My Home Assistant FAQ",
+                "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
             },
             "page-authorize": {
                 "abort_intro": "Login interrotto",

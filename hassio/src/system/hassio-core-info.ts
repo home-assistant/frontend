@@ -10,6 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -166,6 +167,7 @@ class HassioCoreInfo extends LitElement {
 
     try {
       await updateCore(this.hass);
+      fireEvent(this, "supervisor-store-refresh", { store: "core" });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update Home Assistant Core",

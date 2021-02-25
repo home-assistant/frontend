@@ -29,6 +29,8 @@ export interface WeblinkConfig {
   name?: string;
   icon?: string;
   url: string;
+  new_tab?: boolean;
+  download?: boolean;
 }
 export interface TextConfig {
   type: "text";

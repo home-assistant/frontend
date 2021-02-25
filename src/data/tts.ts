@@ -9,4 +9,4 @@ export const convertTextToSpeech = (
     language?: string;
     options?: Record<string, unknown>;
   }
-) => hass.callApi<{ url: string }>("POST", "tts_get_url", data);
+) => hass.callApi<{ url: string; path: string }>("POST", "tts_get_url", data);
