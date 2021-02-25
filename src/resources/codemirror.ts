@@ -7,8 +7,9 @@ import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 export { keymap } from "@codemirror/view";
 export { CMEditorView as EditorView };
 export { EditorState, Prec, tagExtension } from "@codemirror/state";
-export { defaultKeymap, defaultTabBinding } from "@codemirror/commands";
+export { defaultKeymap } from "@codemirror/commands";
 export { lineNumbers } from "@codemirror/gutter";
+export { indentMore, indentLess } from "@codemirror/commands";
 
 export const langs = {
   jinja2: StreamLanguage.define(jinja2),
