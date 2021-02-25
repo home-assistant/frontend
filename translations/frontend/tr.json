@@ -720,6 +720,12 @@
                     "week": "{count} {count, plural,\n  one {hafta}\n  other {haftalar}\n} önce"
                 }
             },
+            "service-control": {
+                "required": "Bu alan gereklidir",
+                "service_data": "Servis Verisi",
+                "target": "Hedefler",
+                "target_description": "Bu hizmet, hedeflenen alanlar, cihazlar veya varlıklar olarak neleri kullanmalıdır?"
+            },
             "service-picker": {
                 "service": "Servis"
             },
@@ -727,8 +733,8 @@
                 "add_area_id": "Alanı seç",
                 "add_device_id": "Cihazı seç",
                 "add_entity_id": "Varlığı seç",
-                "expand_area_id": "Bu alanı içerdiği ayrı cihazlarda ve varlıklarda genişletin. Genişletme sonrası, alan değiştiğinde cihazları ve varlıkları güncellemeyecektir.",
-                "expand_device_id": "Bu cihazı ayrı varlıklarda genişletin. Genişletme sonrası, cihaz değiştiğinde varlıklar güncellenmeyecektir.",
+                "expand_area_id": "Bu alanı içerdiği ayrı aygıtlara ve varlıklara genişletin. Genişlettikten sonra, alan değiştiğinde cihazları ve varlıkları güncelleştirmez.",
+                "expand_device_id": "Bu aygıtı içerdiği ayrı varlıklara genişletin. Genişlettikten sonra, cihaz değiştiğinde varlıkları güncelleştirmez.",
                 "remove_area_id": "Alanı kaldır",
                 "remove_device_id": "Cihazı kaldır",
                 "remove_entity_id": "Varlığı kaldır"
@@ -1152,7 +1158,7 @@
                                 "event": {
                                     "event": "Olay:",
                                     "label": "Olayı Çalıştır",
-                                    "service_data": "Hizmet verisi"
+                                    "service_data": "Servis Verisi"
                                 },
                                 "repeat": {
                                     "label": "Tekrar",
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "İptal edildi",
                         "close": "Kapat",
+                        "could_not_load": "Yapılandırma akışı yüklenemedi",
                         "created_config": "{name} için ayar oluşturuldu.",
                         "dismiss": "İletişim kutusunu kapat",
+                        "error": "Hata",
                         "error_saving_area": "Alan kayıt etme hatası: {error}",
                         "external_step": {
                             "description": "Bu adım, tamamlanması için harici bir web sitesini ziyaret etmenizi gerektirir.",
@@ -1998,6 +2006,10 @@
                         "finish": "Bitir",
                         "loading_first_time": "Lütfen entegrasyonun yüklenmesini bekleyin",
                         "not_all_required_fields": "Gerekli alanların tümü doldurulmamış.",
+                        "pick_flow_step": {
+                            "new_flow": "Hayır, {integration} öğesinin başka bir örneğini ayarlama",
+                            "title": "Bunları keşfettik, kurmak ister misin?"
+                        },
                         "submit": "Gönder"
                     },
                     "configure": "Yapılandır",
@@ -2857,7 +2869,9 @@
                         "type": "Olay Türü"
                     },
                     "services": {
+                        "accepts_target": "Bu hizmet bir hedefi kabul eder, örneğin: 'entity_id: light.bed_light'",
                         "alert_parsing_yaml": "YAML alınamadı: {data}",
+                        "all_parameters": "Mevcut tüm parametreler",
                         "call_service": "Arama Servisi",
                         "column_description": "Açıklama",
                         "column_example": "Örnek",
@@ -2868,7 +2882,10 @@
                         "no_description": "Açıklama mevcut değil",
                         "no_parameters": "Bu servis parametre almaz.",
                         "select_service": "Açıklamasını görmek için bir servis seçin",
-                        "title": "Servisler"
+                        "title": "Servisler",
+                        "ui_mode": "UI moduna git",
+                        "yaml_mode": "YAML moduna git",
+                        "yaml_parameters": "Parametreler yalnızca YAML modunda kullanılabilir"
                     },
                     "states": {
                         "alert_entity_field": "Varlık zorunlu bir alandır",

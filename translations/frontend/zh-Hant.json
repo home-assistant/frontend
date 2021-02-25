@@ -724,7 +724,7 @@
                 "required": "必填欄位",
                 "service_data": "服務資料",
                 "target": "目標",
-                "target_description": "此服務呼叫的目標"
+                "target_description": "此服務使用之目標區域、裝置或實體。"
             },
             "service-picker": {
                 "service": "服務"

@@ -1,7 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "Config Entry",
+            "config_entry": "Config entry",
             "device": "Device",
             "integration": "Integration",
             "user": "User"
@@ -538,6 +538,19 @@
             "yes": "Yes"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Add-on",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Fetching add-ons returned an error.",
+                        "title": "Error fetching add-ons"
+                    },
+                    "no_supervisor": {
+                        "description": "No Supervisor found, so add-ons could not be loaded.",
+                        "title": "No Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Add",
@@ -1752,6 +1765,7 @@
                     "cant_edit": "You can only edit items that are created in the UI.",
                     "caption": "Devices",
                     "confirm_delete": "Are you sure you want to delete this device?",
+                    "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
                     "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
                     "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
                     "data_table": {
@@ -1770,7 +1784,7 @@
                     "device_not_found": "Device not found.",
                     "disabled": "Disabled",
                     "disabled_by": {
-                        "config_entry": "Config Entry",
+                        "config_entry": "Config entry",
                         "integration": "Integration",
                         "user": "User"
                     },
@@ -1865,7 +1879,8 @@
                 },
                 "filtering": {
                     "clear": "Clear",
-                    "filtering_by": "Filtering by"
+                    "filtering_by": "Filtering by",
+                    "show": "Show"
                 },
                 "header": "Configure Home Assistant",
                 "helpers": {
@@ -1970,7 +1985,19 @@
                         "delete_confirm": "Are you sure you want to delete this integration?",
                         "device_unavailable": "Device unavailable",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
+                        "disable": {
+                            "disable_confirm": "Are you sure you want to disable this config entry? It's devices and entities will be disabled.",
+                            "disabled": "Disabled",
+                            "disabled_by": {
+                                "device": "device",
+                                "integration": "integration",
+                                "user": "user"
+                            },
+                            "disabled_cause": "Disabled by {cause}"
+                        },
                         "documentation": "Documentation",
+                        "enable_restart_confirm": "Restart Home Assistant to finish enabling this integration",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "Entity unavailable",
                         "firmware": "Firmware: {version}",
@@ -2017,6 +2044,11 @@
                     "confirm_new": "Do you want to set up {integration}?",
                     "description": "Manage integrations with services, devices, ...",
                     "details": "Integration details",
+                    "disable": {
+                        "disabled_integrations": "{number} disabled",
+                        "hide_disabled": "Hide disabled integrations",
+                        "show_disabled": "Show disabled integrations"
+                    },
                     "discovered": "Discovered",
                     "home_assistant_website": "Home Assistant website",
                     "ignore": {
@@ -2890,6 +2922,7 @@
                     "states": {
                         "alert_entity_field": "Entity is a mandatory field",
                         "attributes": "Attributes",
+                        "copy_id": "Copy ID to clipboard",
                         "current_entities": "Current entities",
                         "description1": "Set the representation of a device within Home Assistant.",
                         "description2": "This will not communicate with the actual device.",
@@ -3333,7 +3366,7 @@
                         "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
                         "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
                         "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
-                        "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
+                        "confirm_unsaved_comments": "Your configuration might contains comment(s), these will not be saved. Do you want to continue?",
                         "error_invalid_config": "Your configuration is not valid: {error}",
                         "error_parse_yaml": "Unable to parse YAML: {error}",
                         "error_remove": "Unable to remove configuration: {error}",
@@ -3427,8 +3460,10 @@
             },
             "my": {
                 "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
+                "documentation": "documentation",
                 "error": "An unknown error occured",
                 "faq_link": "My Home Assistant FAQ",
+                "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
                 "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
             },
             "page-authorize": {
