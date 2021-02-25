@@ -29,11 +29,7 @@ class HaConfigNavigation extends LitElement {
       ${this.pages.map((page) =>
         canShowPage(this.hass, page)
           ? html`
-              <a
-                href=${`/config/${page.component}`}
-                aria-role="option"
-                tabindex="-1"
-              >
+              <a href=${page.path} aria-role="option" tabindex="-1">
                 <paper-icon-item>
                   <ha-svg-icon
                     .path=${page.iconPath}

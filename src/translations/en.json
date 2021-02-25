@@ -556,7 +556,7 @@
             "areas": "[%key:ui::panel::config::areas::caption%]",
             "scene": "[%key:ui::panel::config::scene::caption%]",
             "helpers": "[%key:ui::panel::config::helpers::caption%]",
-            "tags": "[%key:ui::panel::config::tags::caption%]",
+            "tag": "[%key:ui::panel::config::tag::caption%]",
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
@@ -883,7 +883,7 @@
             "confirmation_text": "All devices in this area will become unassigned."
           }
         },
-        "tags": {
+        "tag": {
           "caption": "Tags",
           "description": "Trigger automations when a NFC tag, QR code, etc. is scanned",
           "learn_more": "Learn more about tags",
