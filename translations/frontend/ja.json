@@ -89,247 +89,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "disarmed": "解除",
-            "disarming": "解除",
-            "pending": "保留中",
-            "triggered": "トリガー"
-        },
-        "automation": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "通常",
-                "on": "低"
-            },
-            "cold": {
-                "off": "通常",
-                "on": "低温"
-            },
-            "connectivity": {
-                "off": "切断",
-                "on": "接続済"
-            },
-            "default": {
-                "off": "オフ",
-                "on": "オン"
-            },
-            "door": {
-                "off": "閉鎖",
-                "on": "開放"
-            },
-            "garage_door": {
-                "off": "閉鎖",
-                "on": "開放"
-            },
-            "gas": {
-                "off": "未検出",
-                "on": "検出"
-            },
-            "heat": {
-                "off": "正常",
-                "on": "高温"
-            },
-            "lock": {
-                "off": "施錠中",
-                "on": "無施錠"
-            },
-            "moisture": {
-                "off": "ドライ",
-                "on": "ウェット"
-            },
-            "motion": {
-                "off": "未検出",
-                "on": "検出"
-            },
-            "occupancy": {
-                "off": "未検出",
-                "on": "検出"
-            },
-            "opening": {
-                "off": "閉鎖",
-                "on": "開放"
-            },
-            "presence": {
-                "off": "外出",
-                "on": "在宅"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "問題"
-            },
-            "safety": {
-                "off": "安全",
-                "on": "危険"
-            },
-            "smoke": {
-                "off": "未検出",
-                "on": "検出"
-            },
-            "sound": {
-                "off": "未検出",
-                "on": "検出"
-            },
-            "vibration": {
-                "off": "未検出",
-                "on": "検出"
-            },
-            "window": {
-                "off": "閉鎖",
-                "on": "開放"
-            }
-        },
-        "calendar": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "camera": {
-            "idle": "アイドル",
-            "recording": "録音",
-            "streaming": "ストリーミング"
-        },
-        "climate": {
-            "cool": "冷房",
-            "dry": "ドライ",
-            "fan_only": "ファンのみ",
-            "heat": "暖房",
-            "heat_cool": "暖/冷",
-            "off": "オフ"
-        },
-        "configurator": {
-            "configure": "設定",
-            "configured": "設定済み"
-        },
-        "cover": {
-            "closed": "閉鎖",
-            "closing": "閉じています",
-            "open": "開く",
-            "opening": "開いています",
-            "stopped": "停止"
-        },
         "default": {
             "off": "オフ",
             "on": "オン",
             "unavailable": "利用不可",
             "unknown": "不明"
-        },
-        "device_tracker": {
-            "not_home": "外出"
-        },
-        "fan": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "group": {
-            "closed": "閉鎖",
-            "closing": "閉じています",
-            "home": "在宅",
-            "locked": "施錠中",
-            "not_home": "外出",
-            "off": "オフ",
-            "ok": "OK",
-            "on": "オン",
-            "open": "開く",
-            "opening": "開いています",
-            "problem": "問題",
-            "stopped": "停止",
-            "unlocked": "無施錠"
-        },
-        "input_boolean": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "light": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "lock": {
-            "locked": "施錠中",
-            "unlocked": "無施錠"
-        },
-        "media_player": {
-            "idle": "アイドル",
-            "off": "オフ",
-            "on": "オン",
-            "paused": "一時停止",
-            "playing": "再生中",
-            "standby": "スタンバイ"
-        },
-        "person": {
-            "home": "在宅"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "問題"
-        },
-        "remote": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "scene": {
-            "scening": "硬化"
-        },
-        "script": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "sensor": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "sun": {
-            "above_horizon": "地平線の上",
-            "below_horizon": "地平線より下"
-        },
-        "switch": {
-            "off": "オフ",
-            "on": "オン"
-        },
-        "timer": {
-            "active": "アクティブ",
-            "idle": "アイドル",
-            "paused": "一時停止"
-        },
-        "vacuum": {
-            "cleaning": "クリーニング",
-            "docked": "ドッキング",
-            "error": "エラー",
-            "idle": "アイドル",
-            "off": "オフ",
-            "on": "オン",
-            "paused": "一時停止",
-            "returning": "ドックに戻る"
-        },
-        "weather": {
-            "clear-night": "晴れた夜",
-            "cloudy": "曇り",
-            "exceptional": "半端じゃない",
-            "fog": "霧",
-            "hail": "雹",
-            "lightning": "雷",
-            "lightning-rainy": "雷雨",
-            "partlycloudy": "晴れ時々曇り",
-            "pouring": "大雨",
-            "rainy": "雨",
-            "snowy": "雪",
-            "snowy-rainy": "みぞれ",
-            "sunny": "晴れ",
-            "windy": "強風",
-            "windy-variant": "風が強い"
-        },
-        "zwave": {
-            "default": {
-                "dead": "死んで",
-                "initializing": "初期化中",
-                "ready": "準備完了",
-                "sleeping": "スリープ"
-            },
-            "query_stage": {
-                "dead": "死んで ({query_stage})",
-                "initializing": "初期化中 ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -428,8 +192,7 @@
             },
             "script": {
                 "cancel": "キャンセル",
-                "cancel_multiple": "キャンセル",
-                "execute": "実行"
+                "cancel_multiple": "キャンセル"
             },
             "service": {
                 "run": "実行"
@@ -616,7 +379,6 @@
             "media-browser": {
                 "audio_not_supported": "お使いのブラウザはオーディオをサポートしていません。",
                 "choose_player": "プレーヤーを選択",
-                "choose-source": "ソースを選択",
                 "class": {
                     "album": "アルバム",
                     "app": "アプリ",
@@ -638,13 +400,6 @@
                     "tv_show": "テレビ番組",
                     "url": "URL",
                     "video": "ビデオ"
-                },
-                "content-type": {
-                    "album": "アルバム",
-                    "artist": "アーティスト",
-                    "library": "ライブラリ",
-                    "playlist": "プレイリスト",
-                    "server": "サーバー"
                 },
                 "documentation": "ドキュメント",
                 "learn_adding_local_media": "メディアの追加の詳細については、{ドキュメント}を参照してください。",
@@ -687,7 +442,6 @@
                     "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
                     "week": "{count} {count, plural,\n  one {週間}\n  other {週間}\n}"
                 },
-                "future": "{time}以内",
                 "future_duration": {
                     "day": "{count} {count, plural,\n  one {日}\n  other {日}\n}",
                     "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}",
@@ -697,7 +451,6 @@
                 },
                 "just_now": "ちょうど今",
                 "never": "未実行",
-                "past": "{time}前",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {日}\n  other {日}\n}前",
                     "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}前",
@@ -827,7 +580,6 @@
                 "crop": "収納"
             },
             "more_info_control": {
-                "controls": "コントロール",
                 "cover": {
                     "close_cover": "カバーを閉じる",
                     "close_tile_cover": "カバーの傾きを閉じる",
@@ -912,7 +664,6 @@
                         "logs": "ログ",
                         "lovelace": "Lovelaceダッシュボード",
                         "navigate_to": "{panel}に移動します",
-                        "navigate_to_config": "{panel}構成に移動します",
                         "person": "人々",
                         "scene": "シーン",
                         "script": "スクリプト",
@@ -995,9 +746,7 @@
                 },
                 "unknown": "不明",
                 "zha_device_card": {
-                    "area_picker_label": "エリア",
-                    "device_name_placeholder": "デバイス名の変更",
-                    "update_name_button": "名前の更新"
+                    "device_name_placeholder": "デバイス名の変更"
                 }
             }
         },
@@ -1041,10 +790,6 @@
             "triggered": "トリガーしました {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "マイカレンダー",
-                "today": "今日"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "設定オプションが見つかりませんか？アドバイスモードを有効にしてください。",
@@ -1162,8 +907,7 @@
                                     "label": "シーンをアクティブにする"
                                 },
                                 "service": {
-                                    "label": "サービスの呼び出し",
-                                    "service_data": "サービスのデータ"
+                                    "label": "サービスの呼び出し"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "タイムアウト時に続行",
@@ -1183,8 +927,6 @@
                         "blueprint": {
                             "blueprint_to_use": "使用する設計図",
                             "header": "設計図",
-                            "inputs": "入力",
-                            "manage_blueprints": "設計図の管理",
                             "no_blueprints": "設計図はありません",
                             "no_inputs": "この設計図には入力がありません。"
                         },
@@ -1439,7 +1181,6 @@
                         "header": "新しい設計図を追加する",
                         "import_btn": "設計図をインポートする",
                         "import_header": "インポート{name} （ {domain} ）",
-                        "import_introduction": "Github やコミュニティフォーラムから他のユーザーの設計図をインポートできます。以下に、設計図の URL を入力します。",
                         "import_introduction_link": "他のユーザーの設計図をGithubと{community_link}からインポートできます。以下に設計図のURLを入力します。",
                         "importing": "設計図をインポートしています...",
                         "raw_blueprint": "設計図コンテンツ",
@@ -1561,7 +1302,6 @@
                         "not_exposed_entities": "公開されていないエンティティ",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "自宅の外からコントロールするために、AlexaとGoogleアシスタントに統合します。",
                     "description_login": "{email}としてログインしました",
                     "description_not_login": "ログインしていない",
@@ -1694,7 +1434,6 @@
                     "pick_attribute": "オーバーライドする属性を選択してください",
                     "picker": {
                         "documentation": "カスタマイズドキュメント",
-                        "entity": "エンティティ",
                         "header": "カスタマイズ",
                         "introduction": "エンティティごとの属性を微調整します。追加/編集されたカスタマイズは、すぐに有効になります。削除されたカスタマイズは、エンティティが更新されたときに有効になります。"
                     },
@@ -1741,7 +1480,6 @@
                         "integration": "インテグレーション",
                         "manufacturer": "メーカー",
                         "model": "型番",
-                        "no_area": "エリアなし",
                         "no_devices": "デバイスなし"
                     },
                     "delete": "削除",
@@ -1897,42 +1635,9 @@
                     "source": "ソース：",
                     "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Alexa有効",
-                                "can_reach_cert_server": "証明書サーバーに到達アクセスする",
-                                "can_reach_cloud": "Home AssistantCloudにアクセスする",
-                                "can_reach_cloud_auth": "認証サーバーにアクセスする",
-                                "google_enabled": "Google有効",
-                                "logged_in": "ログイン",
-                                "relayer_connected": "接続された再レイヤー",
-                                "remote_connected": "リモート接続",
-                                "remote_enabled": "リモート有効",
-                                "subscription_expiration": "サブスクリプションの有効期限"
-                            },
-                            "homeassistant": {
-                                "arch": "CPU アーキテクチャ",
-                                "dev": "開発",
-                                "docker": "ドッカー",
-                                "hassio": "HassOS",
-                                "installation_type": "インストールの種類",
-                                "os_name": "オペレーティング システム名",
-                                "os_version": "オペレーティング システムのバージョン",
-                                "python_version": "Python バージョン",
-                                "timezone": "タイムゾーン",
-                                "version": "バージョン",
-                                "virtualenv": "仮想環境"
-                            },
-                            "lovelace": {
-                                "dashboards": "ダッシュ ボード",
-                                "mode": "モード",
-                                "resources": "リソース"
-                            }
-                        },
                         "manage": "管理",
                         "more_info": "詳細情報"
-                    },
-                    "title": "情報"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "インテグレーションページ",
@@ -1946,7 +1651,6 @@
                     "config_entry": {
                         "area": "{area}",
                         "delete": "削除",
-                        "delete_button": "{integration} を削除",
                         "delete_confirm": "この統合を削除しますか?",
                         "device_unavailable": "デバイスを利用できません",
                         "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
@@ -1957,8 +1661,6 @@
                         "hub": "経由で接続",
                         "manuf": "{manufacturer}",
                         "no_area": "エリアなし",
-                        "no_device": "デバイスのないエンティティ",
-                        "no_devices": "この統合にはデバイスがありません。",
                         "options": "オプション",
                         "reload": "再読込",
                         "reload_confirm": "インテグレーションが再読み込みされました",
@@ -1966,9 +1668,7 @@
                         "rename": "名前を変更",
                         "restart_confirm": "ホーム アシスタントを再起動して、この統合の削除を完了します。",
                         "services": "{count} {count, plural,\n  one {サービス}\n  other {サービス}\n}",
-                        "settings_button": "{integration} の設定を編集",
                         "system_options": "システムオプション",
-                        "system_options_button": "{integration} のシステムオプション",
                         "unnamed_entry": "名前のないエントリ"
                     },
                     "config_flow": {
@@ -2029,8 +1729,7 @@
                     "multiple_messages": "メッセージは最初に{time}発生し、 {counter}回表示されます",
                     "no_errors": "エラーは報告されていません。",
                     "no_issues": "新しい問題はありません！",
-                    "refresh": "更新",
-                    "title": "ログ"
+                    "refresh": "更新"
                 },
                 "lovelace": {
                     "caption": "Lovelace ダッシュボード",
@@ -2361,8 +2060,7 @@
                         "learn_more": "スクリプトの詳細",
                         "no_scripts": "編集可能なスクリプトが見つかりませんでした",
                         "run_script": "スクリプトを実行する",
-                        "show_info": "スクリプトに関する情報を表示",
-                        "trigger_script": "トリガースクリプト"
+                        "show_info": "スクリプトに関する情報を表示"
                     }
                 },
                 "server_control": {
@@ -2456,11 +2154,9 @@
                     "add_user": {
                         "caption": "ユーザーの追加",
                         "create": "作成する",
-                        "name": "名前",
                         "password": "パスワード",
                         "password_confirm": "パスワードの確認",
-                        "password_not_match": "パスワードが一致しません",
-                        "username": "ユーザー名"
+                        "password_not_match": "パスワードが一致しません"
                     },
                     "caption": "ユーザー",
                     "description": "ユーザーの管理",
@@ -2504,19 +2200,12 @@
                     "add_device": "デバイスの追加",
                     "add_device_page": {
                         "discovered_text": "検出されると、デバイスがここに表示されます。",
-                        "discovery_text": "検出されたデバイスがここに表示されます。デバイスの指示に従い、ペアリングモードにします。",
-                        "header": "Zigbeeホームオートメーション-デバイスの追加",
                         "no_devices_found": "デバイスが見つかりませんでした。デバイスがペアリングモードであることを確認し、検出の実行中はデバイスをウェイクアップしてください。",
                         "pairing_mode": "デバイスがペアリングモードになっていることを確認します。これを行う方法については、デバイスの手順を確認してください。",
                         "search_again": "もう一度検索",
                         "spinner": "ZHA Zigbeeデバイスを検索しています..."
                     },
-                    "add": {
-                        "caption": "デバイスを追加",
-                        "description": "Zigbeeネットワークにデバイスを追加する"
-                    },
                     "button": "構成",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "選択したクラスターの属性",
                         "get_zigbee_attribute": "Zigbee属性を取得",
@@ -2540,13 +2229,10 @@
                         "introduction": "クラスタは Zigbee 機能の構成要素です。機能を論理単位に分割します。クライアントとサーバーの種類があり、属性とコマンドで構成されています。"
                     },
                     "common": {
-                        "add_devices": "デバイスを追加",
                         "clusters": "クラスター",
-                        "devices": "デバイス",
                         "manufacturer_code_override": "製造元コードの上書き",
                         "value": "バリュー"
                     },
-                    "description": "Zigbee Home Automationネットワーク管理",
                     "device_pairing_card": {
                         "CONFIGURED": "構成の完了",
                         "CONFIGURED_status_text": "初期化中",
@@ -2556,9 +2242,6 @@
                         "INTERVIEW_COMPLETE_status_text": "構成",
                         "PAIRED": "デバイスが見つかりました",
                         "PAIRED_status_text": "インタビュー開始"
-                    },
-                    "devices": {
-                        "header": "Zigbeeホームオートメーション-デバイス"
                     },
                     "group_binding": {
                         "bind_button_help": "選択したグループを選択したデバイス クラスタにバインドします。",
@@ -2574,48 +2257,24 @@
                     "groups": {
                         "add_group": "グループの追加",
                         "add_members": "メンバーの追加",
-                        "adding_members": "メンバーの追加",
                         "caption": "グループ",
                         "create": "グループの作成",
                         "create_group": "Zigbeeホームオートメーション-グループの作成",
                         "create_group_details": "必要な詳細を入力して、新しいzigbeeグループを作成します",
                         "creating_group": "グループを作成しています",
-                        "description": "Zigbeeグループを管理する",
                         "group_details": "選択した Zigbee グループの詳細をすべて次に示します。",
                         "group_id": "グループ ID",
                         "group_info": "グループ情報",
                         "group_name_placeholder": "グループ名",
                         "group_not_found": "グループが見つかりません!",
-                        "group-header": "Zigbeeホームオートメーション-グループの詳細",
                         "groups": "グループ",
-                        "groups-header": "Zigbeeホームオートメーション-グループ管理",
-                        "header": "Zigbeeホームオートメーション-グループ管理",
-                        "introduction": "zigbeeグループを作成および変更する",
-                        "manage_groups": "Zigbeeグループの管理",
                         "members": "メンバー",
-                        "remove_groups": "グループの削除",
                         "remove_members": "メンバーを削除",
-                        "removing_groups": "グループの削除",
-                        "removing_members": "メンバーの削除",
-                        "zha_zigbee_groups": "ZHA Zigbeeグループ"
-                    },
-                    "header": "Zigbee ホーム オートメーションの設定",
-                    "introduction": "ここでは、ZHAコンポーネントを構成できます。まだすべてをUIから構成できるわけではありませんが、現在取り組んでいます。",
-                    "network_management": {
-                        "header": "ネットワーク管理",
-                        "introduction": "ネットワーク全体に影響を与えるコマンド"
+                        "removing_members": "メンバーの削除"
                     },
                     "network": {
                         "caption": "ネットワーク"
                     },
-                    "node_management": {
-                        "header": "デバイス管理",
-                        "help_node_dropdown": "デバイスを選択して、デバイスごとのオプションを表示します。",
-                        "hint_battery_devices": "注：スリープ状態の（バッテリー駆動の）デバイスに対してコマンドを実行するときは、スリープ状態から復帰する必要があります。通常、スリープ状態のデバイスは、トリガーすることでスリープ解除できます。",
-                        "hint_wakeup": "Xiaomiセンサーなどの一部のデバイスには、約5秒間隔で押すことができるウェイクアップボタンがあり、デバイスを操作している間、デバイスをウェイクアップしたままにできます。",
-                        "introduction": "単一のデバイスに影響する ZHA コマンドを実行します。デバイスを選択して、使用可能なコマンドの一覧を表示します。"
-                    },
-                    "title": "Zigbeeホームオートメーション",
                     "visualization": {
                         "caption": "可視化",
                         "header": "ネットワークの視覚化",
@@ -2687,7 +2346,6 @@
                         "header": "Z-Wave ネットワークの管理",
                         "home_id": "ホームID",
                         "introduction": "Z-WaveネットワークとZ-Waveノードを管理する",
-                        "node_count": "ノード数",
                         "nodes_ready": "ノードの準備完了",
                         "server_version": "サーバーバージョン"
                     },
@@ -2724,7 +2382,6 @@
                 },
                 "zwave": {
                     "button": "設定",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "インデックス",
                         "instance": "インスタンス",
@@ -2843,17 +2500,12 @@
                         "type": "イベントの種類"
                     },
                     "services": {
-                        "alert_parsing_yaml": "YAMLの解析エラー: {error}",
                         "call_service": "サービスの呼び出し",
                         "column_description": "説明",
                         "column_example": "例",
                         "column_parameter": "パラメータ",
-                        "data": "サービスデータ（YAML、オプション）",
                         "description": "サービス開発ツールを使用すると、ホームアシスタントで利用可能なサービスを呼び出すことができます。",
                         "fill_example_data": "データ記入例",
-                        "no_description": "説明はありません",
-                        "no_parameters": "このサービスはパラメータを受け取りません",
-                        "select_service": "説明を表示するサービスを選択してください",
                         "title": "サービス"
                     },
                     "states": {
@@ -2894,25 +2546,20 @@
                 }
             },
             "history": {
-                "period": "期間",
                 "ranges": {
                     "last_week": "先週",
                     "this_week": "今週",
                     "today": "今日",
                     "yesterday": "昨日"
-                },
-                "showing_entries": "のエントリを表示する"
+                }
             },
             "logbook": {
-                "entries_not_found": "ログブックエントリが見つかりません。",
-                "period": "期間",
                 "ranges": {
                     "last_week": "先週",
                     "this_week": "今週",
                     "today": "今日",
                     "yesterday": "昨日"
-                },
-                "showing_entries": "エントリを表示します"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2921,7 +2568,6 @@
                     "yaml_unsupported": "YAMLモードでLovelace UIを使用している場合、この関数は使用できません。"
                 },
                 "cards": {
-                    "action_confirmation": "アクション「{action}」を実行してもよろしいですか？",
                     "actions": {
                         "action_confirmation": "指定したアクション \"{action}\" を実行しますか？",
                         "no_entity_more_info": "詳細情報ダイアログにエンティティが提供されていません",
@@ -2960,13 +2606,11 @@
                         "reorder_items": "再オーダーアイテム"
                     },
                     "starting": {
-                        "description": "ホームアシスタントを開始しています。お待ちください...",
-                        "header": "ホームアシスタントを開始しています..."
+                        "description": "ホームアシスタントを開始しています。お待ちください..."
                     }
                 },
                 "changed_toast": {
-                    "message": "このダッシュボードのLovelace UI設定が更新されました。更新して変更を確認しますか？",
-                    "refresh": "更新"
+                    "message": "このダッシュボードのLovelace UI設定が更新されました。更新して変更を確認しますか？"
                 },
                 "components": {
                     "timestamp-display": {
@@ -2985,7 +2629,6 @@
                             "toggle": "トグル",
                             "url": "URL"
                         },
-                        "editor_service_data": "サービス データはコード エディターでのみ入力できます。",
                         "navigation_path": "ナビゲーションパス",
                         "url_path": "URLパス"
                     },
@@ -3183,7 +2826,6 @@
                         },
                         "sensor": {
                             "description": "センサーカードは、時間の経過に伴う変化を視覚化するオプションのグラフを使用して、センサーの状態をすばやく提供します。",
-                            "graph_detail": "グラフの詳細",
                             "graph_type": "グラフの種類",
                             "name": "センサー",
                             "show_more_detail": "詳細を表示"
@@ -3354,7 +2996,6 @@
                     "configure_ui": "ダッシュボードを編集",
                     "exit_edit_mode": "UI 編集モードを終了",
                     "help": "ヘルプ",
-                    "refresh": "更新",
                     "reload_resources": "リソースの再読込",
                     "start_conversation": "会話を開始する"
                 },
@@ -3478,8 +3119,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "お使いのコンピューターは許可されていません。",
-                                "not_whitelisted": "コンピュータがホワイトリストに登録されていません。"
+                                "not_allowed": "お使いのコンピューターは許可されていません。"
                             },
                             "step": {
                                 "init": {
@@ -3632,15 +3272,12 @@
                     "create": "トークンの作成",
                     "create_failed": "アクセス トークンを作成できませんでした。",
                     "created": "{日付} に作成されました",
-                    "created_at": "{日付} に作成されました",
                     "delete_failed": "アクセス トークンを削除できませんでした。",
                     "description": "スクリプトがホーム アシスタント インスタンスと対話できるように、長期間使用できるアクセス トークンを作成します。各トークンは作成から10年間有効です。次の長期アクセス トークンは現在アクティブです。",
                     "empty_state": "長期間使用されるアクセス トークンはまだありません。",
                     "header": "長期間有効なアクセストークン",
-                    "last_used": "{location} から {date} で最後に使用されました",
                     "learn_auth_requests": "認証された要求を作成する方法について説明します。",
                     "name": "名前",
-                    "not_used": "一度も使用されていない",
                     "prompt_copy_token": "アクセス トークンをコピーします。再び表示されません。",
                     "prompt_name": "名前？"
                 },
@@ -3705,11 +3342,6 @@
             },
             "shopping_list": {
                 "start_conversation": "会話を開始する"
-            },
-            "shopping-list": {
-                "add_item": "アイテムを追加",
-                "clear_completed": "完了したアイテムを削除",
-                "microphone_tip": "右上のマイクをタップして、「買い物リストにキャンディーを追加」と言うか、入力します"
             }
         },
         "sidebar": {

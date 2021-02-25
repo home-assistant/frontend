@@ -35,140 +35,11 @@
         }
     },
     "state": {
-        "automation": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "साधारण",
-                "on": "कम"
-            },
-            "cold": {
-                "off": "साधारण",
-                "on": "सर्दी"
-            },
-            "connectivity": {
-                "off": "डिस्कनेक्ट किया गया",
-                "on": "जुड़े हुए"
-            },
-            "default": {
-                "off": "बंद",
-                "on": "चालू"
-            },
-            "door": {
-                "off": "बंद",
-                "on": "खुला"
-            },
-            "garage_door": {
-                "off": "बंद",
-                "on": "खुला"
-            },
-            "heat": {
-                "on": "गर्म"
-            },
-            "moisture": {
-                "off": "सूखा",
-                "on": "गीला"
-            },
-            "motion": {
-                "off": "विशद",
-                "on": "अनुसन्धानित"
-            },
-            "opening": {
-                "on": "खुला"
-            },
-            "presence": {
-                "on": "घर"
-            },
-            "safety": {
-                "off": "सुरक्षित",
-                "on": "असुरक्षित"
-            },
-            "window": {
-                "off": "बंद",
-                "on": "खुली"
-            }
-        },
-        "calendar": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "camera": {
-            "recording": "रिकॉर्डिंग"
-        },
-        "climate": {
-            "cool": "ठंडा",
-            "dry": "सूखा",
-            "fan_only": "केवल पंखा",
-            "heat": "गर्मी",
-            "off": "बंद"
-        },
         "default": {
             "off": "बंद",
             "on": "चालू",
             "unavailable": "अनुपलब्ध",
             "unknown": "अनजान"
-        },
-        "fan": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "group": {
-            "home": "घर",
-            "off": "बंद",
-            "on": "चालू",
-            "problem": "समस्या"
-        },
-        "input_boolean": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "light": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "lock": {
-            "locked": "अवरोधित",
-            "unlocked": "खुला"
-        },
-        "media_player": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "plant": {
-            "ok": "ठीक है",
-            "problem": "समस्या"
-        },
-        "remote": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "script": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "sensor": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "sun": {
-            "above_horizon": "क्षितिज से ऊपर",
-            "below_horizon": "क्षितिज के नीचे"
-        },
-        "switch": {
-            "off": "बंद",
-            "on": "चालू"
-        },
-        "zwave": {
-            "default": {
-                "ready": "तैयार",
-                "sleeping": "सोया हुआ"
-            },
-            "query_stage": {
-                "dead": " ( {query_stage} )",
-                "initializing": "आरंभ ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -209,9 +80,6 @@
             "title": "सूचनाएँ"
         },
         "panel": {
-            "calendar": {
-                "today": "आज"
-            },
             "config": {
                 "areas": {
                     "editor": {
@@ -312,9 +180,6 @@
                     "rename_input_label": "प्रवेश का नाम"
                 },
                 "introduction": "In questa schermata è possibile configurare Home Assistant e i suoi componenti. Non è ancora possibile configurare tutto tramite l'interfaccia, ma ci stiamo lavorando.",
-                "logs": {
-                    "title": "लॉग्स"
-                },
                 "mqtt": {
                     "title": "MQTT"
                 },
@@ -342,13 +207,10 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
-                        "header": "Zigbee Home Automation - Aggiungi dispositivi",
                         "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
                     }
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "कॉन्फ़िगरेशन पैरामीटर सेट करें"
                     }
@@ -367,14 +229,10 @@
                     }
                 }
             },
-            "logbook": {
-                "showing_entries": "Visualizza gli inserimenti per"
-            },
             "lovelace": {
                 "cards": {
                     "starting": {
-                        "description": "होम असिस्टेंट शुरू हो रहा है, कृपया प्रतीक्षा करें ...",
-                        "header": "होम असिस्टेंट शुरू हो रहा है ..."
+                        "description": "होम असिस्टेंट शुरू हो रहा है, कृपया प्रतीक्षा करें ..."
                     }
                 },
                 "changed_toast": {
@@ -437,10 +295,6 @@
                 "language": {
                     "link_promo": "अनुवाद करने में सहायता करें"
                 }
-            },
-            "shopping-list": {
-                "add_item": "आइटम जोड़ें",
-                "microphone_tip": "ऊपर दाईं ओर माइक्रोफ़ोन टैप करें और \"मेरी खरीदारी सूची में कैंडी जोड़ें\" कहें"
             }
         }
     }

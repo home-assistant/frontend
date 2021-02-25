@@ -100,7 +100,7 @@ const REDIRECTS: Redirects = {
     redirect: "/config/helpers",
   },
   tags: {
-    component: "tags",
+    component: "tag",
     redirect: "/config/tags",
   },
   lovelace_dashboards: {

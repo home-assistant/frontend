@@ -205,9 +205,13 @@ export type Condition =
   | DeviceCondition
   | LogicalCondition;
 
-export const triggerAutomation = (hass: HomeAssistant, entityId: string) => {
+export const triggerAutomationActions = (
+  hass: HomeAssistant,
+  entityId: string
+) => {
   hass.callService("automation", "trigger", {
     entity_id: entityId,
+    skip_condition: true,
   });
 };
 

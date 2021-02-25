@@ -95,253 +95,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "uzbrojony",
-            "armed_away": "uzbrojony (poza domem)",
-            "armed_custom_bypass": "uzbrojony (częściowo)",
-            "armed_home": "uzbrojony (w domu)",
-            "armed_night": "uzbrojony (noc)",
-            "arming": "uzbrajanie",
-            "disarmed": "rozbrojony",
-            "disarming": "rozbrajanie",
-            "pending": "oczekuje",
-            "triggered": "wyzwolony"
-        },
-        "automation": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "naładowana",
-                "on": "rozładowana"
-            },
-            "cold": {
-                "off": "normalnie",
-                "on": "zimno"
-            },
-            "connectivity": {
-                "off": "offline",
-                "on": "online"
-            },
-            "default": {
-                "off": "wył.",
-                "on": "wł."
-            },
-            "door": {
-                "off": "zamknięte",
-                "on": "otwarte"
-            },
-            "garage_door": {
-                "off": "zamknięta",
-                "on": "otwarta"
-            },
-            "gas": {
-                "off": "brak",
-                "on": "wykryto"
-            },
-            "heat": {
-                "off": "normalnie",
-                "on": "gorąco"
-            },
-            "lock": {
-                "off": "zamknięty",
-                "on": "otwarty"
-            },
-            "moisture": {
-                "off": "brak wilgoci",
-                "on": "wilgoć"
-            },
-            "motion": {
-                "off": "brak",
-                "on": "wykryto"
-            },
-            "occupancy": {
-                "off": "brak",
-                "on": "wykryto"
-            },
-            "opening": {
-                "off": "zamknięte",
-                "on": "otwarte"
-            },
-            "presence": {
-                "off": "poza domem",
-                "on": "w domu"
-            },
-            "problem": {
-                "off": "ok",
-                "on": "problem"
-            },
-            "safety": {
-                "off": "brak zagrożenia",
-                "on": "zagrożenie"
-            },
-            "smoke": {
-                "off": "brak",
-                "on": "wykryto"
-            },
-            "sound": {
-                "off": "brak",
-                "on": "wykryto"
-            },
-            "vibration": {
-                "off": "brak",
-                "on": "wykryto"
-            },
-            "window": {
-                "off": "zamknięte",
-                "on": "otwarte"
-            }
-        },
-        "calendar": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "camera": {
-            "idle": "nieaktywna",
-            "recording": "nagrywanie",
-            "streaming": "strumieniowanie"
-        },
-        "climate": {
-            "cool": "chłodzenie",
-            "dry": "osuszanie",
-            "fan_only": "tylko wentylator",
-            "heat": "grzanie",
-            "heat_cool": "grzanie/chłodzenie",
-            "off": "wył."
-        },
-        "configurator": {
-            "configure": "konfiguruj",
-            "configured": "skonfigurowany"
-        },
-        "cover": {
-            "closed": "zamknięta",
-            "closing": "zamykanie",
-            "open": "otwarta",
-            "opening": "otwieranie",
-            "stopped": "zatrzymanie"
-        },
         "default": {
             "off": "wył.",
             "on": "wł.",
             "unavailable": "niedostępny",
             "unknown": "nieznany"
-        },
-        "device_tracker": {
-            "not_home": "poza domem"
-        },
-        "fan": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "group": {
-            "closed": "zamknięte",
-            "closing": "zamykanie",
-            "home": "w domu",
-            "locked": "zamknięty",
-            "not_home": "poza domem",
-            "off": "wył.",
-            "ok": "ok",
-            "on": "wł.",
-            "open": "otwarte",
-            "opening": "otwieranie",
-            "problem": "problem",
-            "stopped": "zatrzymany",
-            "unlocked": "otwarty"
-        },
-        "input_boolean": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "light": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "lock": {
-            "locked": "zamknięty",
-            "unlocked": "otwarty"
-        },
-        "media_player": {
-            "idle": "nieaktywny",
-            "off": "wył.",
-            "on": "wł.",
-            "paused": "wstrzymany",
-            "playing": "odtwarzanie",
-            "standby": "tryb czuwania"
-        },
-        "person": {
-            "home": "w domu"
-        },
-        "plant": {
-            "ok": "ok",
-            "problem": "problem"
-        },
-        "remote": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "scene": {
-            "scening": "sceny"
-        },
-        "script": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "sensor": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "sun": {
-            "above_horizon": "nad horyzontem",
-            "below_horizon": "poniżej horyzontu"
-        },
-        "switch": {
-            "off": "wył.",
-            "on": "wł."
-        },
-        "timer": {
-            "active": "aktywny",
-            "idle": "nieaktywny",
-            "paused": "wstrzymany"
-        },
-        "vacuum": {
-            "cleaning": "sprzątanie",
-            "docked": "w stacji dokującej",
-            "error": "błąd",
-            "idle": "nieaktywny",
-            "off": "wył.",
-            "on": "wł.",
-            "paused": "wstrzymany",
-            "returning": "powrót do stacji dokującej"
-        },
-        "weather": {
-            "clear-night": "pogodna noc",
-            "cloudy": "pochmurno",
-            "exceptional": "warunki nadzwyczajne",
-            "fog": "mgła",
-            "hail": "grad",
-            "lightning": "błyskawice",
-            "lightning-rainy": "burza",
-            "partlycloudy": "częściowe zachmurzenie",
-            "pouring": "ulewa",
-            "rainy": "deszczowo",
-            "snowy": "opady śniegu",
-            "snowy-rainy": "śnieg z deszczem",
-            "sunny": "słonecznie",
-            "windy": "wietrznie",
-            "windy-variant": "wietrznie"
-        },
-        "zwave": {
-            "default": {
-                "dead": "martwy",
-                "initializing": "inicjalizacja",
-                "ready": "gotowy",
-                "sleeping": "uśpiony"
-            },
-            "query_stage": {
-                "dead": "martwy ({query_stage})",
-                "initializing": "inicjalizacja ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -442,8 +200,7 @@
             },
             "script": {
                 "cancel": "Anuluj",
-                "cancel_multiple": "Anuluj {number}",
-                "execute": "Uruchom"
+                "cancel_multiple": "Anuluj {number}"
             },
             "service": {
                 "run": "Uruchom"
@@ -630,7 +387,6 @@
             "media-browser": {
                 "audio_not_supported": "Twoja przeglądarka nie obsługuje elementu audio.",
                 "choose_player": "Wybierz odtwarzacz",
-                "choose-source": "Wybierz źródło",
                 "class": {
                     "album": "Album",
                     "app": "Aplikacja",
@@ -652,13 +408,6 @@
                     "tv_show": "Program telewizyjny",
                     "url": "URL",
                     "video": "Wideo"
-                },
-                "content-type": {
-                    "album": "Album",
-                    "artist": "Artysta",
-                    "library": "Biblioteka",
-                    "playlist": "Lista odtwarzania",
-                    "server": "Serwer"
                 },
                 "documentation": "dokumentacja",
                 "learn_adding_local_media": "Dowiedz się więcej o dodawaniu multimediów w {documentation}.",
@@ -701,7 +450,6 @@
                     "second": "{count} {count, plural,\n  one {sekunda}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n}",
                     "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
                 },
-                "future": "Za {time}",
                 "future_duration": {
                     "day": "Za {count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
                     "hour": "Za {count} {count, plural,\n  one {godzinę}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n}",
@@ -711,7 +459,6 @@
                 },
                 "just_now": "Właśnie teraz",
                 "never": "Nigdy",
-                "past": "{time} temu",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n} temu",
                     "hour": "{count} {count, plural,\n  one {godzinę}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n} temu",
@@ -847,7 +594,6 @@
                 "crop": "Przytnij"
             },
             "more_info_control": {
-                "controls": "Sterowanie",
                 "cover": {
                     "close_cover": "Zamknij roletę",
                     "close_tile_cover": "Przechylenie zamkniętej rolety",
@@ -932,7 +678,6 @@
                         "logs": "Logi",
                         "lovelace": "Dashboardy",
                         "navigate_to": "Przejdź do: {panel}",
-                        "navigate_to_config": "Przejdź do: Konfiguracja > {panel}",
                         "person": "Osoby",
                         "scene": "Sceny",
                         "script": "Skrypty",
@@ -1015,9 +760,7 @@
                 },
                 "unknown": "Nieznany",
                 "zha_device_card": {
-                    "area_picker_label": "Obszar",
-                    "device_name_placeholder": "Zmień nazwę urządzenia",
-                    "update_name_button": "Aktualizuj nazwę"
+                    "device_name_placeholder": "Zmień nazwę urządzenia"
                 }
             }
         },
@@ -1061,10 +804,6 @@
             "triggered": "Wyzwolenie {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Moje kalendarze",
-                "today": "Dzisiaj"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Brakuje opcji konfiguracji? Włącz tryb zaawansowany",
@@ -1157,8 +896,7 @@
                                 },
                                 "event": {
                                     "event": "Zdarzenie:",
-                                    "label": "Wywołanie zdarzenia",
-                                    "service_data": "Dane usługi"
+                                    "label": "Wywołanie zdarzenia"
                                 },
                                 "repeat": {
                                     "label": "Powtórzenie",
@@ -1182,8 +920,7 @@
                                     "label": "Aktywuj scenę"
                                 },
                                 "service": {
-                                    "label": "Wywołanie usługi",
-                                    "service_data": "Dane usługi"
+                                    "label": "Wywołanie usługi"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Kontynuuj po przekroczeniu limitu czasu",
@@ -1203,8 +940,6 @@
                         "blueprint": {
                             "blueprint_to_use": "Wybierz schemat",
                             "header": "Schemat",
-                            "inputs": "Dane wejściowe",
-                            "manage_blueprints": "Zarządzaj schematami",
                             "no_blueprints": "Nie masz żadnych schematów",
                             "no_inputs": "Ten schemat nie ma żadnych danych wejściowych"
                         },
@@ -1459,7 +1194,6 @@
                         "header": "Importuj schemat",
                         "import_btn": "Podgląd schematu",
                         "import_header": "Schemat: \"{name}\"",
-                        "import_introduction": "Możesz importować schematy innych użytkowników z Githuba i forów społecznościowych. Wprowadź poniżej adres URL schematu.",
                         "import_introduction_link": "Możesz importować schematy innych użytkowników z Githuba i {community_link}. Wpisz poniżej adres URL schematu.",
                         "importing": "Wczytywanie schematu...",
                         "raw_blueprint": "Zawartość schematu",
@@ -1581,7 +1315,6 @@
                         "not_exposed_entities": "Nieudostępnione encje",
                         "title": "Alexa"
                     },
-                    "caption": "Chmura Home Assistant",
                     "description_features": "Sterowanie spoza domu i integracja z Alexą i Asystentem Google.",
                     "description_login": "Zalogowany jako {email}",
                     "description_not_login": "Nie zalogowany",
@@ -1714,7 +1447,6 @@
                     "pick_attribute": "Wybierz atrybut do nadpisania",
                     "picker": {
                         "documentation": "Dokumentacja dostosowywania",
-                        "entity": "Encja",
                         "header": "Dostosowywanie",
                         "introduction": "Dostosuj atrybuty encji. Dodawane/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
                     },
@@ -1761,7 +1493,6 @@
                         "integration": "Integracja",
                         "manufacturer": "Producent",
                         "model": "Model",
-                        "no_area": "Brak obszaru",
                         "no_devices": "Brak urządzeń"
                     },
                     "delete": "Usuń",
@@ -1917,42 +1648,9 @@
                     "source": "Źródło:",
                     "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Alexa włączona",
-                                "can_reach_cert_server": "Dostęp do serwera certyfikatów",
-                                "can_reach_cloud": "Dostęp do chmury Home Assistant",
-                                "can_reach_cloud_auth": "Dostęp do serwera uwierzytelniania",
-                                "google_enabled": "Asystent Google włączony",
-                                "logged_in": "Zalogowany",
-                                "relayer_connected": "Relayer podłączony",
-                                "remote_connected": "Zdalny dostęp podłączony",
-                                "remote_enabled": "Zdalny dostęp włączony",
-                                "subscription_expiration": "Wygaśnięcie subskrypcji"
-                            },
-                            "homeassistant": {
-                                "arch": "Architektura procesora",
-                                "dev": "Wersja deweloperska",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "Typ instalacji",
-                                "os_name": "Nazwa systemu operacyjnego",
-                                "os_version": "Wersja systemu operacyjnego",
-                                "python_version": "Wersja Pythona",
-                                "timezone": "Strefa czasowa",
-                                "version": "Wersja",
-                                "virtualenv": "Środowisko wirtualne"
-                            },
-                            "lovelace": {
-                                "dashboards": "Dashboardy",
-                                "mode": "Tryb",
-                                "resources": "Zasoby"
-                            }
-                        },
                         "manage": "Zarządzaj",
                         "more_info": "więcej info"
-                    },
-                    "title": "Informacje"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "stronie integracji",
@@ -1966,7 +1664,6 @@
                     "config_entry": {
                         "area": "obszar: {area}",
                         "delete": "Usuń",
-                        "delete_button": "Usuń {integration}",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
                         "device_unavailable": "Urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
@@ -1977,8 +1674,6 @@
                         "hub": "połączony poprzez:",
                         "manuf": "producent: {manufacturer}",
                         "no_area": "brak",
-                        "no_device": "Encje bez urządzeń",
-                        "no_devices": "Ta integracja nie ma żadnych urządzeń.",
                         "options": "Opcje",
                         "reload": "Wczytaj ponownie",
                         "reload_confirm": "Integracja została ponownie wczytana",
@@ -1986,9 +1681,7 @@
                         "rename": "Zmień nazwę",
                         "restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć usuwanie tej integracji",
                         "services": "{count} {count, plural,\n  one {usługa}\n  few {usługi}\n  many {usług}\n  other {usług}\n}",
-                        "settings_button": "Edytuj ustawienia dla {integration}",
                         "system_options": "Opcje systemowe",
-                        "system_options_button": "Opcje systemowe dla {integration}",
                         "unnamed_entry": "Nienazwany wpis"
                     },
                     "config_flow": {
@@ -2055,8 +1748,7 @@
                     "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
                     "no_errors": "Nie zgłoszono żadnych błędów",
                     "no_issues": "Nie ma nowych problemów!",
-                    "refresh": "Odśwież",
-                    "title": "Logi"
+                    "refresh": "Odśwież"
                 },
                 "lovelace": {
                     "caption": "Dashboardy",
@@ -2387,8 +2079,7 @@
                         "learn_more": "Dowiedz się więcej o skryptach",
                         "no_scripts": "Nie znaleziono żadnych edytowalnych skryptów",
                         "run_script": "Uruchom skrypt",
-                        "show_info": "Pokaż informacje o skrypcie",
-                        "trigger_script": "Uruchom skrypt"
+                        "show_info": "Pokaż informacje o skrypcie"
                     }
                 },
                 "server_control": {
@@ -2482,11 +2173,9 @@
                     "add_user": {
                         "caption": "Dodaj użytkownika",
                         "create": "Utwórz",
-                        "name": "Imię",
                         "password": "Hasło",
                         "password_confirm": "Potwierdź hasło",
-                        "password_not_match": "Hasła nie są takie same",
-                        "username": "Nazwa użytkownika"
+                        "password_not_match": "Hasła nie są takie same"
                     },
                     "caption": "Użytkownicy",
                     "description": "Zarządzaj kontami użytkowników Home Assistanta",
@@ -2530,19 +2219,12 @@
                     "add_device": "Dodaj urządzenie",
                     "add_device_page": {
                         "discovered_text": "Urządzenia pojawią się tutaj, jak tylko zostaną wykryte.",
-                        "discovery_text": "Wykryte urządzenia pojawią się tutaj. Postępuj zgodnie z instrukcjami dla urządzeń, by wprowadzić je w tryb parowania.",
-                        "header": "Zigbee Home Automation - dodaj urządzenia",
                         "no_devices_found": "Nie znaleziono urządzeń, upewnij się, że są w trybie parowania i nie są w trybie uśpienia podczas wykrywania.",
                         "pairing_mode": "Upewnij się, że urządzenie jest w trybie parowania. Zapoznaj się z instrukcją obsługi urządzenia, by dowiedzieć się, jak to zrobić.",
                         "search_again": "Szukaj ponownie",
                         "spinner": "Wyszukiwanie urządzeń ZHA Zigbee..."
                     },
-                    "add": {
-                        "caption": "Dodaj urządzenia",
-                        "description": "Dodaj urządzenia do sieci Zigbee"
-                    },
                     "button": "Konfiguracja",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atrybuty wybranego klastra",
                         "get_zigbee_attribute": "Wyświetl atrybut Zigbee",
@@ -2566,13 +2248,10 @@
                         "introduction": "Klastry są elementami składowymi funkcjonalności Zigbee. Dzielą one funkcjonalność na jednostki logiczne. Istnieją typy klientów i serwerów, które składają się z atrybutów i poleceń."
                     },
                     "common": {
-                        "add_devices": "Dodaj urządzenia",
                         "clusters": "Klastry",
-                        "devices": "Urządzenia",
                         "manufacturer_code_override": "Zastąpienie kodu producenta",
                         "value": "Wartość"
                     },
-                    "description": "Zarządzanie siecią Zigbee Home Automation",
                     "device_pairing_card": {
                         "CONFIGURED": "Konfigurowanie zakończone",
                         "CONFIGURED_status_text": "Inicjalizacja",
@@ -2582,9 +2261,6 @@
                         "INTERVIEW_COMPLETE_status_text": "Konfigurowanie",
                         "PAIRED": "Znaleziono urządzenie",
                         "PAIRED_status_text": "Rozpoczęcie odpytywania"
-                    },
-                    "devices": {
-                        "header": "Zigbee Home Automation - urządzenie"
                     },
                     "group_binding": {
                         "bind_button_help": "Powiąż wybraną grupę z wybranymi klastrami urządzeń.",
@@ -2600,48 +2276,24 @@
                     "groups": {
                         "add_group": "Dodaj grupę",
                         "add_members": "Dodaj członków",
-                        "adding_members": "Dodawanie członków",
                         "caption": "Grupy",
                         "create": "Utwórz grupę",
                         "create_group": "Zigbee Home Automation - utwórz grupę",
                         "create_group_details": "Wprowadź wymagane dane, aby utworzyć nową grupę Zigbee",
                         "creating_group": "Tworzenie grupy",
-                        "description": "Zarządzaj grupami Zigbee",
                         "group_details": "Oto wszystkie szczegóły dotyczące zaznaczonej grupy Zigbee.",
                         "group_id": "Identyfikator grupy",
                         "group_info": "Informacje o grupie",
                         "group_name_placeholder": "Nazwa grupy",
                         "group_not_found": "Grupa nie znaleziona!",
-                        "group-header": "Zigbee Home Automation - szczegóły grupy",
                         "groups": "Grupy",
-                        "groups-header": "Zigbee Home Automation - zarządzanie grupą",
-                        "header": "Zigbee Home Automation - zarządzanie grupą",
-                        "introduction": "Twórz i modyfikuj grupy zigbee",
-                        "manage_groups": "Zarządzaj grupami Zigbee",
                         "members": "Członkowie",
-                        "remove_groups": "Usuń grupy",
                         "remove_members": "Usuń członków",
-                        "removing_groups": "Usuwanie grup",
-                        "removing_members": "Usuwanie członków",
-                        "zha_zigbee_groups": "Grupy ZHA Zigbee"
-                    },
-                    "header": "Konfiguruj Zigbee Home Automation",
-                    "introduction": "Tutaj można skonfigurować komponent ZHA. Nie wszystko jest możliwe do skonfigurowania z interfejsu użytkownika, ale pracujemy nad tym.",
-                    "network_management": {
-                        "header": "Zarządzanie siecią",
-                        "introduction": "Polecenia, które wpływają na całą sieć"
+                        "removing_members": "Usuwanie członków"
                     },
                     "network": {
                         "caption": "Sieć"
                     },
-                    "node_management": {
-                        "header": "Zarządzanie urządzeniami",
-                        "help_node_dropdown": "Wybierz urządzenie, aby wyświetlić jego opcje.",
-                        "hint_battery_devices": "Uwaga: usypiane urządzenia (zasilane bateryjnie) muszą być wybudzone podczas wykonywania poleceń. Na ogół możesz wybudzić uśpione urządzenie, uruchamiając je.",
-                        "hint_wakeup": "Niektóre urządzenia, takie jak czujniki Xiaomi, mają przycisk wybudzania, który można naciskać w odstępach co około 5 sekund, dzięki czemu urządzenia pozostają w stanie czuwania podczas interakcji z nimi.",
-                        "introduction": "Uruchom polecenia ZHA, które wpływają na pojedyncze urządzenie. Wybierz urządzenie, aby wyświetlić listę dostępnych poleceń."
-                    },
-                    "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Wizualizacja",
                         "header": "Wizualizacja sieci",
@@ -2713,7 +2365,6 @@
                         "header": "Zarządzaj siecią Z-Wave",
                         "home_id": "Identyfikator domu",
                         "introduction": "Zarządzaj siecią i węzłami Z-Wave",
-                        "node_count": "Liczba węzłów",
                         "nodes_ready": "Węzły gotowe",
                         "server_version": "Wersja serwera"
                     },
@@ -2750,7 +2401,6 @@
                 },
                 "zwave": {
                     "button": "Konfiguracja",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Indeks",
                         "instance": "Instancja",
@@ -2870,18 +2520,13 @@
                     },
                     "services": {
                         "accepts_target": "Ta usługa akceptuje cel, na przykład: `entity_id: light.bed_light`",
-                        "alert_parsing_yaml": "Błąd parsowania YAML: {data}",
                         "all_parameters": "Wszystkie dostępne parametry",
                         "call_service": "Wywołaj usługę",
                         "column_description": "Opis",
                         "column_example": "Przykład",
                         "column_parameter": "Parametr",
-                        "data": "Dane usługi (YAML, opcjonalnie)",
                         "description": "Narzędzie deweloperskie Usługi pozwala na wywołanie dowolnej dostępnej usługi.",
                         "fill_example_data": "Wypełnij przykładowymi danymi",
-                        "no_description": "Opis nie jest dostępny",
-                        "no_parameters": "Ta usługa nie przyjmuje parametrów.",
-                        "select_service": "Wybierz usługę, aby zobaczyć opis",
                         "title": "Usługi",
                         "ui_mode": "Przejdź do trybu interfejsu użytkownika",
                         "yaml_mode": "Przejdź do trybu YAML",
@@ -2925,25 +2570,20 @@
                 }
             },
             "history": {
-                "period": "Okres",
                 "ranges": {
                     "last_week": "Poprzedni tydzień",
                     "this_week": "Ten tydzień",
                     "today": "Dzisiaj",
                     "yesterday": "Wczoraj"
-                },
-                "showing_entries": "Wyświetlanie rekordów dla"
+                }
             },
             "logbook": {
-                "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
-                "period": "Okres",
                 "ranges": {
                     "last_week": "Poprzedni tydzień",
                     "this_week": "Ten tydzień",
                     "today": "Dzisiaj",
                     "yesterday": "Wczoraj"
-                },
-                "showing_entries": "Wyświetlanie rekordów dla"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2952,7 +2592,6 @@
                     "yaml_unsupported": "Nie możesz używać tej funkcji, gdy używasz interfejsu użytkownika Lovelace w trybie YAML."
                 },
                 "cards": {
-                    "action_confirmation": "Czy na pewno chcesz wykonać akcję \"{action}\"?",
                     "actions": {
                         "action_confirmation": "Czy na pewno chcesz wykonać akcję \"{action}\"?",
                         "no_entity_more_info": "Nie wybrano encji dla okna dialogowego \"więcej informacji\"",
@@ -2991,13 +2630,11 @@
                         "reorder_items": "Zmień kolejność elementów"
                     },
                     "starting": {
-                        "description": "Home Assistant uruchamia się, proszę czekać.",
-                        "header": "Home Assistant uruchamia się..."
+                        "description": "Home Assistant uruchamia się, proszę czekać."
                     }
                 },
                 "changed_toast": {
-                    "message": "Zaktualizowano konfigurację interfejsu Lovelace. Odświeżyć teraz?",
-                    "refresh": "Wczytaj ponownie"
+                    "message": "Zaktualizowano konfigurację interfejsu Lovelace. Odświeżyć teraz?"
                 },
                 "components": {
                     "timestamp-display": {
@@ -3016,7 +2653,6 @@
                             "toggle": "Przełącz",
                             "url": "URL"
                         },
-                        "editor_service_data": "Dane usługi można wprowadzać tylko w edytorze kodu",
                         "navigation_path": "Ścieżka",
                         "url_path": "Ścieżka adresu URL"
                     },
@@ -3214,7 +2850,6 @@
                         },
                         "sensor": {
                             "description": "Karta sensor zapewnia szybki przegląd stanu sensorów z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
-                            "graph_detail": "Szczegół wykresu",
                             "graph_type": "Rodzaj wykresu",
                             "name": "Sensor",
                             "show_more_detail": "Pokaż więcej informacji"
@@ -3385,7 +3020,6 @@
                     "configure_ui": "Edytuj dashboard",
                     "exit_edit_mode": "Wyjdź z trybu edycji interfejsu użytkownika",
                     "help": "Pomoc",
-                    "refresh": "Wczytaj ponownie",
                     "reload_resources": "Wczytaj ponownie zasoby",
                     "start_conversation": "Rozpocznij rozmowę"
                 },
@@ -3510,8 +3144,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Twój komputer nie ma zezwolenia",
-                                "not_whitelisted": "Twój komputer nie znajduje się na białej liście"
+                                "not_allowed": "Twój komputer nie ma zezwolenia"
                             },
                             "step": {
                                 "init": {
@@ -3664,15 +3297,12 @@
                     "create": "Utwórz token",
                     "create_failed": "Nie udało się utworzyć tokena.",
                     "created": "Utworzony {date}",
-                    "created_at": "Utworzony {date}",
                     "delete_failed": "Nie udało się usunąć tokena.",
                     "description": "Długoterminowe tokeny dostępu umożliwiają skryptom interakcję z Home Assistantem. Każdy token będzie ważny przez 10 lat od utworzenia. Następujące tokeny są obecnie aktywne.",
                     "empty_state": "Nie masz jeszcze żadnych tokenów.",
                     "header": "Tokeny dostępu",
-                    "last_used": "Ostatnio używany {date} z {location}",
                     "learn_auth_requests": "Dowiedz się, jak tworzyć uwierzytelnione żądania.",
                     "name": "Nazwa",
-                    "not_used": "Nigdy nie był używany",
                     "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
                     "prompt_name": "Nazwij token"
                 },
@@ -3737,11 +3367,6 @@
             },
             "shopping_list": {
                 "start_conversation": "Rozpocznij rozmowę"
-            },
-            "shopping-list": {
-                "add_item": "Dodaj element",
-                "clear_completed": "Wyczyść ukończone",
-                "microphone_tip": "Dotknij ikonę mikrofonu w prawym górnym rogu i powiedz “Dodaj słodycze do mojej listy zakupów”"
             }
         },
         "sidebar": {

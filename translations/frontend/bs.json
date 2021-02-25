@@ -43,189 +43,9 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Aktiviran",
-            "armed_away": "Aktiviran izvan kuće",
-            "armed_custom_bypass": "Aktiviran pod specijalnim rezimom",
-            "armed_home": "Aktiviran kod kuće",
-            "armed_night": "Aktiviran noću",
-            "arming": "Aktivacija",
-            "disarmed": "Deaktiviran",
-            "disarming": "Deaktivacija",
-            "pending": "U isčekivanju",
-            "triggered": "Pokrenut"
-        },
-        "automation": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normalno",
-                "on": "Nisko"
-            },
-            "connectivity": {
-                "off": "Nepovezan",
-                "on": "Povezan"
-            },
-            "default": {
-                "off": "Isključen",
-                "on": "Uključen"
-            },
-            "gas": {
-                "off": "Čist",
-                "on": "Otkriven"
-            },
-            "moisture": {
-                "off": "Suho",
-                "on": "Mokar"
-            },
-            "motion": {
-                "off": "Čist",
-                "on": "Otkriven"
-            },
-            "occupancy": {
-                "off": "Čist",
-                "on": "Otkriven"
-            },
-            "opening": {
-                "off": "Zatvoren",
-                "on": "Otvoren"
-            },
-            "presence": {
-                "on": "Kod kuće"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Problem"
-            },
-            "safety": {
-                "off": "Siguran",
-                "on": "Nesiguran"
-            },
-            "smoke": {
-                "off": "Čist",
-                "on": "Otkriven"
-            },
-            "sound": {
-                "off": "Čist",
-                "on": "Otkriven"
-            },
-            "vibration": {
-                "off": "Čist",
-                "on": "Otkriven"
-            }
-        },
-        "calendar": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "camera": {
-            "idle": "Besposlen",
-            "recording": "Snimanje",
-            "streaming": "Predaja slike"
-        },
-        "climate": {
-            "cool": "Hladno",
-            "dry": "Suh",
-            "fan_only": "Samo ventilator",
-            "heat": "Toplota",
-            "off": "Isključen"
-        },
-        "configurator": {
-            "configure": "Podesite",
-            "configured": "Konfigurirano"
-        },
-        "cover": {
-            "closed": "Zatvoren",
-            "closing": "Zatvoreno",
-            "open": "Otvoren",
-            "opening": "Otvoreno",
-            "stopped": "Zaustavljen"
-        },
         "default": {
             "unavailable": "Nedostupan",
             "unknown": "Nepoznat"
-        },
-        "device_tracker": {
-            "not_home": "Odsutan"
-        },
-        "fan": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "group": {
-            "closed": "Zatvoren",
-            "closing": "Zatvoreno",
-            "home": "Kod kuće",
-            "locked": "Zaključan",
-            "off": "Isključen",
-            "ok": "OK",
-            "on": "Uključen",
-            "open": "Otvoren",
-            "opening": "Otvoreno",
-            "problem": "Problem",
-            "stopped": "Zaustavljen",
-            "unlocked": "Otključan"
-        },
-        "input_boolean": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "light": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "lock": {
-            "locked": "Zaključan",
-            "unlocked": "Otključan"
-        },
-        "media_player": {
-            "idle": "Besposlen",
-            "off": "Isključen",
-            "on": "Uključen",
-            "paused": "Pauziran",
-            "playing": "Prikazuje",
-            "standby": "U stanju čekanja"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "Problem"
-        },
-        "remote": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "scene": {
-            "scening": "Scena"
-        },
-        "script": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "sensor": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "sun": {
-            "above_horizon": "Iznad horizonta",
-            "below_horizon": "Ispod horizonta"
-        },
-        "switch": {
-            "off": "Isključen",
-            "on": "Uključen"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Mrtav",
-                "initializing": "Inicijalizacija",
-                "ready": "Spreman",
-                "sleeping": "Spava"
-            },
-            "query_stage": {
-                "dead": "Mrtav ({query_stage})",
-                "initializing": "Inicijalizacija ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -260,14 +80,10 @@
                         }
                     }
                 },
-                "cloud": {
-                    "caption": "Home Assistant Cloud"
-                },
                 "mqtt": {
                     "title": "MQTT"
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "Podesite parametar Config"
                     }
@@ -289,23 +105,11 @@
                     }
                 }
             },
-            "history": {
-                "period": "Period",
-                "showing_entries": "Prikaži rezutate za"
-            },
-            "logbook": {
-                "showing_entries": "Prikaži rezutate za"
-            },
             "mailbox": {
                 "delete_button": "Izbriši",
                 "delete_prompt": "Izbriši ovu poruku?",
                 "empty": "Nemate poruke",
                 "playback_title": "Poruku preslušati"
-            },
-            "shopping-list": {
-                "add_item": "Dodajte objekat",
-                "clear_completed": "Čišćenje završeno",
-                "microphone_tip": "Dodirnite mikrofon u gornjem desnom uglu i recite “Add candy to my shopping list”"
             }
         }
     }

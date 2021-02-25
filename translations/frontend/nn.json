@@ -79,253 +79,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Påslått",
-            "armed_away": "På for borte",
-            "armed_custom_bypass": "Armert tilpassa unntak",
-            "armed_home": "På for heime",
-            "armed_night": "På for natta",
-            "arming": "Skrur på",
-            "disarmed": "Avslått",
-            "disarming": "Skrur av",
-            "pending": "I vente av",
-            "triggered": "Utløyst"
-        },
-        "automation": {
-            "off": "Av",
-            "on": "På"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normalt",
-                "on": "Lågt"
-            },
-            "cold": {
-                "off": "Normal",
-                "on": "Kald"
-            },
-            "connectivity": {
-                "off": "Fråkopla",
-                "on": "Tilkopla"
-            },
-            "default": {
-                "off": "Av",
-                "on": "På"
-            },
-            "door": {
-                "off": "Lukka",
-                "on": "Open"
-            },
-            "garage_door": {
-                "off": "Lukka",
-                "on": "Open"
-            },
-            "gas": {
-                "off": "Ikkje oppdaga",
-                "on": "Oppdaga"
-            },
-            "heat": {
-                "off": "Normal",
-                "on": "Varm"
-            },
-            "lock": {
-                "off": "Låst",
-                "on": "Ulåst"
-            },
-            "moisture": {
-                "off": "Tørr",
-                "on": "Våt"
-            },
-            "motion": {
-                "off": "Ikkje oppdaga",
-                "on": "Oppdaga"
-            },
-            "occupancy": {
-                "off": "Ikkje oppdaga",
-                "on": "Oppdaga"
-            },
-            "opening": {
-                "off": "Lukka",
-                "on": "Open"
-            },
-            "presence": {
-                "off": "Borte ",
-                "on": "Heime"
-            },
-            "problem": {
-                "off": "Ok",
-                "on": "Problem"
-            },
-            "safety": {
-                "off": "Sikker",
-                "on": "Usikker"
-            },
-            "smoke": {
-                "off": "Ikkje oppdaga",
-                "on": "Oppdaga"
-            },
-            "sound": {
-                "off": "Ikkje oppdaga",
-                "on": "Oppdaga"
-            },
-            "vibration": {
-                "off": "Ikkje oppdaga",
-                "on": "Oppdaga"
-            },
-            "window": {
-                "off": "Lukka",
-                "on": "Open"
-            }
-        },
-        "calendar": {
-            "off": "Av",
-            "on": "På"
-        },
-        "camera": {
-            "idle": "Inaktiv",
-            "recording": "Opptak",
-            "streaming": "Strøymer"
-        },
-        "climate": {
-            "cool": "Kjøle",
-            "dry": "Tørr",
-            "fan_only": "Berre vifte",
-            "heat": "Varme",
-            "heat_cool": "Oppvarming/Nedkjøling",
-            "off": "Av"
-        },
-        "configurator": {
-            "configure": "Konfigurerer",
-            "configured": "Konfigurert"
-        },
-        "cover": {
-            "closed": "Lukka",
-            "closing": "Lukkar",
-            "open": "Open",
-            "opening": "Opnar",
-            "stopped": "Stoppa"
-        },
         "default": {
             "off": "Av",
             "on": "På",
             "unavailable": "Utilgjengeleg",
             "unknown": "Ukjent"
-        },
-        "device_tracker": {
-            "not_home": "Borte"
-        },
-        "fan": {
-            "off": "Av",
-            "on": "På"
-        },
-        "group": {
-            "closed": "Lukka",
-            "closing": "Lukkar",
-            "home": "Heime",
-            "locked": "Låst",
-            "not_home": "Borte",
-            "off": "Av",
-            "ok": "Ok",
-            "on": "På",
-            "open": "Open",
-            "opening": "Opnar",
-            "problem": "Problem",
-            "stopped": "Stoppa",
-            "unlocked": "Ulåst"
-        },
-        "input_boolean": {
-            "off": "Av",
-            "on": "På"
-        },
-        "light": {
-            "off": "Av",
-            "on": "På"
-        },
-        "lock": {
-            "locked": "Låst",
-            "unlocked": "Ulåst"
-        },
-        "media_player": {
-            "idle": "Inaktiv",
-            "off": "Av",
-            "on": "På",
-            "paused": "Pausa",
-            "playing": "Spelar",
-            "standby": "Avventer"
-        },
-        "person": {
-            "home": "Heime"
-        },
-        "plant": {
-            "ok": "Ok",
-            "problem": "Problem"
-        },
-        "remote": {
-            "off": "Av",
-            "on": "På"
-        },
-        "scene": {
-            "scening": "Scenande"
-        },
-        "script": {
-            "off": "Av",
-            "on": "På"
-        },
-        "sensor": {
-            "off": "Av",
-            "on": "På"
-        },
-        "sun": {
-            "above_horizon": "Over horisonten",
-            "below_horizon": "Under horisonten"
-        },
-        "switch": {
-            "off": "Av",
-            "on": "På"
-        },
-        "timer": {
-            "active": "aktiv",
-            "idle": "tomgang",
-            "paused": "pausa"
-        },
-        "vacuum": {
-            "cleaning": "Reingjer",
-            "docked": "Parkert",
-            "error": "Feil",
-            "idle": "Tomgang",
-            "off": "Av",
-            "on": "På",
-            "paused": "Pausa",
-            "returning": "Gå tilbake til ladestasjonen"
-        },
-        "weather": {
-            "clear-night": "Klart, natt",
-            "cloudy": "Overskya",
-            "exceptional": "Utmerka",
-            "fog": "Tåke",
-            "hail": "Hagl",
-            "lightning": "Lyn",
-            "lightning-rainy": "Lyn, regn",
-            "partlycloudy": "Delvis overskya",
-            "pouring": "Pøsande",
-            "rainy": "Regn",
-            "snowy": "Snø",
-            "snowy-rainy": "Snø, regn",
-            "sunny": "Mykje sol",
-            "windy": "Vind",
-            "windy-variant": "Vind"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Død",
-                "initializing": "Initialiserer",
-                "ready": "Klar",
-                "sleeping": "Søv"
-            },
-            "query_stage": {
-                "dead": "Død ({query_stage})",
-                "initializing": "Initialiserer ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -398,8 +156,7 @@
             },
             "script": {
                 "cancel": "Avbryt",
-                "cancel_multiple": "Avbryt {number}",
-                "execute": "Utfør"
+                "cancel_multiple": "Avbryt {number}"
             },
             "service": {
                 "run": "Køyr"
@@ -520,9 +277,7 @@
                     "second": "{count} {count, plural,\none {sekund}\nother {sekundar}\n}",
                     "week": "{count} {count, plural,\none {veke}\nother {veker}\n}"
                 },
-                "future": "Om {time}",
-                "never": "Aldri",
-                "past": "{time} sidan"
+                "never": "Aldri"
             },
             "service-picker": {
                 "service": "Teneste"
@@ -613,9 +368,7 @@
                 },
                 "unknown": "Ukjent",
                 "zha_device_card": {
-                    "area_picker_label": "Område",
-                    "device_name_placeholder": "Endre navn på eining",
-                    "update_name_button": "Oppdater namn"
+                    "device_name_placeholder": "Endre navn på eining"
                 }
             }
         },
@@ -643,10 +396,6 @@
             "starting": "Home Assistant held på å starte. Alt er ikkje tilgjengeleg før den er ferdig starta."
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Mine kalendarar",
-                "today": "I dag"
-            },
             "config": {
                 "areas": {
                     "caption": "Områderegister",
@@ -706,8 +455,7 @@
                                     "label": "Gjenta"
                                 },
                                 "service": {
-                                    "label": "Utfør tenestekall",
-                                    "service_data": "Tenestedata"
+                                    "label": "Utfør tenestekall"
                                 },
                                 "wait_template": {
                                     "label": "Vent",
@@ -899,7 +647,6 @@
                     "alexa": {
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "Kontroller når du ikkje er heime og integrer med Alexa og Google Assistant",
                     "description_login": "Logga inn som {email}",
                     "description_not_login": "Ikkje logga inn",
@@ -965,8 +712,7 @@
                         "area": "Område",
                         "battery": "Batteri",
                         "manufacturer": "Produsent",
-                        "model": "Modell",
-                        "no_area": "Inga område"
+                        "model": "Modell"
                     },
                     "description": "Administrer tilkopla einingar",
                     "device_info": "Einingsinfo ",
@@ -1015,8 +761,7 @@
                     "caption": "Info",
                     "documentation": "Dokumentasjon ",
                     "integrations": "Integrasjonar",
-                    "issues": "Problem ",
-                    "title": "Info"
+                    "issues": "Problem "
                 },
                 "integrations": {
                     "add_integration": "Legg til integrasjon ",
@@ -1032,8 +777,6 @@
                         "hub": "Tilkopla via",
                         "manuf": "av {manufacturer}",
                         "no_area": "Inga område",
-                        "no_device": "Oppføringar utan einingar",
-                        "no_devices": "Denne integrasjonen har ingen oppføringar",
                         "options": "Val",
                         "rename": "Endre namn",
                         "restart_confirm": "Restart Home Assistant for å fjerne denne integrasjonen",
@@ -1066,8 +809,7 @@
                 },
                 "introduction": "Her er det mogleg å konfigurere dine komponenter og Home Assistant. Ikkje alt er mogleg å konfigurere frå brukarsnittet endå, men vi jobbar med saka.",
                 "logs": {
-                    "caption": "Loggar",
-                    "title": "Loggar"
+                    "caption": "Loggar"
                 },
                 "mqtt": {
                     "title": "MQTT"
@@ -1149,9 +891,7 @@
                     "add_user": {
                         "caption": "Legg til brukar",
                         "create": "Lag",
-                        "name": "Namn",
-                        "password": "Passord",
-                        "username": "Brukarnamn"
+                        "password": "Passord"
                     },
                     "caption": "Brukarar",
                     "description": "Administrer brukarar",
@@ -1176,22 +916,11 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "Oppdaga einingar synast her. Følg instruksjonane for eininga(ne) og gjer dei klar for samankopling.",
-                        "header": "ZigBee heimeautomasjon - Legg til eining",
                         "spinner": "Leitar etter ZHA Zigbee-apparat..."
                     },
-                    "add": {
-                        "caption": "Legg til eining ",
-                        "description": "Legg til eining i Zigbee-nettverket"
-                    },
-                    "caption": "ZHA",
                     "clusters": {
                         "header": "Klynger",
                         "introduction": "Klynger er byggesteinane for Zigbee-funksjonaliteten. Dei sepererar funksjonaliteten i logiske einingar. Det er klient- og servertyper, som består av attributtar og kommandoar."
-                    },
-                    "description": "Zigbee heimeautomasjon nettverksadministrering",
-                    "devices": {
-                        "header": "Zigbee Home Automation - Eininga"
                     },
                     "group_binding": {
                         "bind_button_help": "Huk den merka gruppa til den merka einingsklynga.",
@@ -1205,10 +934,7 @@
                         "unbind_button_label": "Huk av gruppa"
                     },
                     "groups": {
-                        "caption": "Grupper",
-                        "description": "Lag og modifiser Zigbee-grupper",
-                        "group-header": "Zigbee Home Automation - Gruppedetaljer",
-                        "groups-header": "Zigbee Home Automation - Gruppehandtering"
+                        "caption": "Grupper"
                     }
                 },
                 "zone": {
@@ -1222,7 +948,6 @@
                     "edit_home_zone": "Plasseringa av heimen din kan endrast i den generelle konfigurasjonen."
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Indeks",
                         "instance": "Førekomst",
@@ -1321,14 +1046,6 @@
                     }
                 }
             },
-            "history": {
-                "period": "Periode",
-                "showing_entries": "Viser oppføringer for"
-            },
-            "logbook": {
-                "period": "Periode",
-                "showing_entries": "Visar oppføringar for"
-            },
             "lovelace": {
                 "cards": {
                     "empty_state": {
@@ -1353,13 +1070,11 @@
                         "clear_items": "Fjern dei markerrte elementa"
                     },
                     "starting": {
-                        "description": "Home Assistant held på å starte. Ver vennleg og vent.",
-                        "header": "Home Assistant held på å starte..."
+                        "description": "Home Assistant held på å starte. Ver vennleg og vent."
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace-konfigurasjonen vart oppdatert. Ønsker du å friske opp?",
-                    "refresh": "Frisk opp"
+                    "message": "Lovelace-konfigurasjonen vart oppdatert. Ønsker du å friske opp?"
                 },
                 "editor": {
                     "card": {
@@ -1494,8 +1209,7 @@
                 "menu": {
                     "close": "Lukk",
                     "configure_ui": "Konfigurer brukargrensesnitt",
-                    "help": "Hjelp",
-                    "refresh": "Oppdater"
+                    "help": "Hjelp"
                 },
                 "reload_lovelace": "Omlast Lovelace",
                 "unused_entities": {
@@ -1598,9 +1312,6 @@
                             }
                         },
                         "trusted_networks": {
-                            "abort": {
-                                "not_whitelisted": "Datamaskina di er ikkje kvitelista."
-                            },
                             "step": {
                                 "init": {
                                     "data": {
@@ -1728,14 +1439,11 @@
                     "confirm_delete": "Er du sikker på at du vil slette tilgangstoken for {name}?",
                     "create": "Lag token",
                     "create_failed": "Klarte ikkje å lage tilgangstoken.",
-                    "created_at": "Oppretta den {date}",
                     "delete_failed": "Klarte ikkje å slette tilgangstoken",
                     "description": "Lag ein langtidslevande tilgangstoken som tillet skripta dine å samhandle med Home Assistant-instansen. Kvar token vil vere gyldig i 10 år etter oppretting. Dei fylgande langtidslevande tokenane er for tida aktive.",
                     "empty_state": "Du har ikkje langtidslevande tilgangstoken endå.",
                     "header": "Langtidslevande tilgangstokenar",
-                    "last_used": "Sist brukt den {date} frå {location}",
                     "learn_auth_requests": "Lær korleis du lagar ein autentisert førespurnad.",
-                    "not_used": "Har aldri vore brukt",
                     "prompt_copy_token": "Kopier tilgangstoken. Den vil ikkje visast igjen.",
                     "prompt_name": "Namn?"
                 },
@@ -1780,11 +1488,6 @@
                 "vibrate": {
                     "header": "Vibrer"
                 }
-            },
-            "shopping-list": {
-                "add_item": "Legg til",
-                "clear_completed": "Fjern fullført",
-                "microphone_tip": "Trykk på mikorfonen øvst til høgre og sei \"Add candy to my shopping list\""
             }
         },
         "sidebar": {
