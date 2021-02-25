@@ -24,7 +24,7 @@ import {
   subscribeSupervisorEvents,
   Supervisor,
   SupervisorObject,
-  supervisorStore,
+  supervisorCollection,
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
@@ -73,7 +73,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
     const response = await this.hass.callApi<HassioResponse<any>>(
       "GET",
-      `hassio${supervisorStore[store]}`
+      `hassio${supervisorCollection[store]}`
     );
     this._updateSupervisor({ [store]: response.data });
   }
@@ -85,12 +85,12 @@ export class SupervisorBaseElement extends urlSyncMixin(
     );
 
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      Object.keys(supervisorStore).forEach((store) => {
+      Object.keys(supervisorCollection).forEach((store) => {
         this._unsubs[store] = subscribeSupervisorEvents(
           this.hass,
           (data) => this._updateSupervisor({ [store]: data }),
           store,
-          supervisorStore[store]
+          supervisorCollection[store]
         );
         if (this._collections[store]) {
           this._collections[store].refresh();
@@ -98,7 +98,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
           this._collections[store] = getSupervisorEventCollection(
             this.hass.connection,
             store,
-            supervisorStore[store]
+            supervisorCollection[store]
           );
         }
       });

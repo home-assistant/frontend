@@ -17,7 +17,7 @@ export const supervisorWSbaseCommand = {
   method: "GET",
 };
 
-export const supervisorStore = {
+export const supervisorCollection = {
   host: "/host/info",
   supervisor: "/supervisor/info",
   info: "/info",
@@ -89,7 +89,7 @@ async function processEvent(
 
   if (Object.keys(event.data.data).length === 0) {
     const data = await supervisorApiWsRequest<any>(conn, {
-      endpoint: supervisorStore[key],
+      endpoint: supervisorCollection[key],
     });
     store.setState(data);
     return;
