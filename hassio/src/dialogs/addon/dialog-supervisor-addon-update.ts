@@ -6,7 +6,6 @@ import {
   html,
   internalProperty,
   LitElement,
-  property,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";

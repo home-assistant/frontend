@@ -49,7 +49,6 @@ import {
   startHassioAddon,
   stopHassioAddon,
   uninstallHassioAddon,
-  updateHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import {
