@@ -11,7 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
-import { canExcecute, ScriptEntity } from "../../../data/script";
+import { canRun, ScriptEntity } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -66,12 +66,12 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
           : ""}
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<mwc-button
-              @click=${this._executeScript}
+              @click=${this._runScript}
               .disabled=${UNAVAILABLE_STATES.includes(stateObj.state) ||
-              !canExcecute(stateObj)}
+              !canRun(stateObj)}
             >
               ${this._config.action_name ||
-              this.hass!.localize("ui.card.script.execute")}
+              this.hass!.localize("ui.card.script.run")}
             </mwc-button>`
           : ""}
       </hui-generic-entity-row>
@@ -91,7 +91,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
     this._callService("turn_off");
   }
 
-  private _executeScript(ev): void {
+  private _runScript(ev): void {
     ev.stopPropagation();
     this._callService("turn_on");
   }

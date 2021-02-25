@@ -117,7 +117,7 @@ export const triggerScript = (
   variables?: Record<string, unknown>
 ) => hass.callService("script", computeObjectId(entityId), variables);
 
-export const canExcecute = (state: ScriptEntity) => {
+export const canRun = (state: ScriptEntity) => {
   if (state.state === "off") {
     return true;
   }
