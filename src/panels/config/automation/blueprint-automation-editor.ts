@@ -105,7 +105,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                     )}
                   </div>
                   <mwc-button
-                    @click=${this._triggerAutomation}
+                    @click=${this._runActions}
                     .stateObj=${this.stateObj}
                   >
                     ${this.hass.localize("ui.card.automation.trigger")}
@@ -197,7 +197,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     this._blueprints = await fetchBlueprints(this.hass, "automation");
   }
 
-  private _triggerAutomation(ev: Event) {
+  private _runActions(ev: Event) {
     triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 

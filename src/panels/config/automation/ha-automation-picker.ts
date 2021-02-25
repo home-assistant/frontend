@@ -96,7 +96,7 @@ class HaAutomationPicker extends LitElement {
           template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
-              @click=${(ev) => this._triggerAutomation(ev)}
+              @click=${(ev) => this._runActions(ev)}
               .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
@@ -213,7 +213,7 @@ class HaAutomationPicker extends LitElement {
     });
   }
 
-  private _triggerAutomation(ev) {
+  private _runActions(ev) {
     const entityId = ev.currentTarget.automation.entity_id;
     triggerAutomationActions(this.hass, entityId);
   }

@@ -36,7 +36,7 @@ class MoreInfoAutomation extends LitElement {
 
       <div class="actions">
         <mwc-button
-          @click=${this._triggerAutomation}
+          @click=${this._runActions}
           .disabled=${UNAVAILABLE_STATES.includes(this.stateObj!.state)}
         >
           ${this.hass.localize("ui.card.automation.trigger")}
@@ -45,7 +45,7 @@ class MoreInfoAutomation extends LitElement {
     `;
   }
 
-  private _triggerAutomation() {
+  private _runActions() {
     triggerAutomationActions(this.hass, this.stateObj!.entity_id);
   }
 

@@ -256,7 +256,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                                     )}
                                   </div>
                                   <mwc-button
-                                    @click=${this._triggerAutomation}
+                                    @click=${this._runActions}
                                     .stateObj=${stateObj}
                                   >
                                     ${this.hass.localize(
@@ -381,7 +381,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._errors = undefined;
   }
 
-  private _triggerAutomation(ev: Event) {
+  private _runActions(ev: Event) {
     triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
