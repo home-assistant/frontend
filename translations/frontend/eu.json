@@ -40,194 +40,9 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "pending": "Zain",
-            "triggered": "Abiarazita"
-        },
-        "automation": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normala",
-                "on": "Baxua"
-            },
-            "cold": {
-                "off": "Normala",
-                "on": "Hotza"
-            },
-            "connectivity": {
-                "off": "Deskonektatuta",
-                "on": "Konektatuta"
-            },
-            "default": {
-                "off": "Itzalita",
-                "on": "Piztuta"
-            },
-            "door": {
-                "off": "Itxita",
-                "on": "Ireki"
-            },
-            "garage_door": {
-                "off": "Itxita",
-                "on": "Ireki"
-            },
-            "heat": {
-                "off": "Normala",
-                "on": "Beroa"
-            },
-            "lock": {
-                "off": "Itxita",
-                "on": "Irekita"
-            },
-            "moisture": {
-                "off": "Lehorra",
-                "on": "Buztita"
-            },
-            "opening": {
-                "off": "Itxita",
-                "on": "Ireki"
-            },
-            "presence": {
-                "off": "Kanpoan",
-                "on": "Etxean"
-            },
-            "problem": {
-                "off": "Ondo",
-                "on": "Arazoa"
-            },
-            "safety": {
-                "off": "Babestuta"
-            },
-            "window": {
-                "off": "Itxita",
-                "on": "Ireki"
-            }
-        },
-        "calendar": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "camera": {
-            "recording": "Grabatzen"
-        },
-        "climate": {
-            "cool": "Hotza",
-            "dry": "Lehorra",
-            "fan_only": "Haizagailua bakarrik",
-            "heat": "Beroa",
-            "off": "Itzalita"
-        },
-        "configurator": {
-            "configure": "Konfiguratu",
-            "configured": "Konfiguratuta"
-        },
-        "cover": {
-            "closed": "Itxita",
-            "closing": "Ixten",
-            "open": "Irekita",
-            "opening": "Irekitzen",
-            "stopped": "Geldituta"
-        },
         "default": {
             "unavailable": "Ez dago erabilgarri",
             "unknown": "Ezezaguna"
-        },
-        "device_tracker": {
-            "not_home": "Kanpoan"
-        },
-        "fan": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "group": {
-            "closed": "Itxita",
-            "closing": "Ixten",
-            "home": "Etxean",
-            "not_home": "Kanpoan",
-            "off": "Itzalita",
-            "ok": "Itzalita",
-            "on": "Piztuta",
-            "open": "Ireki",
-            "opening": "Irekitzen",
-            "problem": "Arazoa",
-            "stopped": "Geldirik"
-        },
-        "input_boolean": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "light": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "media_player": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "person": {
-            "home": "Etxean"
-        },
-        "plant": {
-            "ok": "Itzalita",
-            "problem": "Arazoa"
-        },
-        "remote": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "script": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "sensor": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "sun": {
-            "above_horizon": "Horizonte gainetik",
-            "below_horizon": "Horizonte azpitik"
-        },
-        "switch": {
-            "off": "Itzalita",
-            "on": "Piztuta"
-        },
-        "vacuum": {
-            "cleaning": "Garbitzen",
-            "docked": "Basean",
-            "error": "Errorea",
-            "off": "Itzalita",
-            "on": "Piztuta",
-            "returning": "Basera itzultzen"
-        },
-        "weather": {
-            "clear-night": "Garbia, gaua",
-            "cloudy": "Hodeitsua",
-            "fog": "Lainoa",
-            "hail": "Txingorra",
-            "lightning": "Tximistak",
-            "lightning-rainy": "Tximistak, euritsua",
-            "partlycloudy": "Ostarteak",
-            "pouring": "Botatzen",
-            "rainy": "Euritsua",
-            "snowy": "Elurtsua",
-            "snowy-rainy": "Elurtsua, euritsua",
-            "sunny": "Eguzkitsua",
-            "windy": "Haizetsua",
-            "windy-variant": "Haizetsua"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Hilda",
-                "initializing": "Hasieratzen",
-                "ready": "Prest",
-                "sleeping": "Lotan"
-            },
-            "query_stage": {
-                "dead": "Ez du erantzuten ({query_stage})",
-                "initializing": "Hasieratzen ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -272,9 +87,6 @@
             },
             "scene": {
                 "activate": "Aktibatu"
-            },
-            "script": {
-                "execute": "Exekutatu"
             },
             "vacuum": {
                 "actions": {
@@ -335,9 +147,7 @@
                     "second": "{count} {count, plural,\n  one {segundo}\n  other {segundo}\n}",
                     "week": "{count} {count, plural,\n  one {aste}\n  other {aste}\n}"
                 },
-                "future": "{time} barru",
-                "never": "Inoiz",
-                "past": "Orain dela {time}"
+                "never": "Inoiz"
             },
             "service-picker": {
                 "service": "Zerbitzua"
@@ -526,7 +336,6 @@
                     }
                 },
                 "cloud": {
-                    "caption": "Home Assistant Cloud",
                     "description_login": "{email} bezala hasi duzu saioa",
                     "description_not_login": "Ez da saioa hasi"
                 },
@@ -560,9 +369,7 @@
                     "caption": "Integrazioak",
                     "config_entry": {
                         "firmware": "Firmware: {version}",
-                        "no_area": "Ez dago gunerik",
-                        "no_device": "Gailurik gabeko entitateak",
-                        "no_devices": "Integrazio honek ez du gailurik."
+                        "no_area": "Ez dago gunerik"
                     },
                     "config_flow": {
                         "external_step": {
@@ -596,9 +403,7 @@
                     "add_user": {
                         "caption": "Erabiltzailea gehitu",
                         "create": "Sortu",
-                        "name": "Izena",
-                        "password": "Pasahitza",
-                        "username": "Erabiltzaile izena"
+                        "password": "Pasahitza"
                     },
                     "caption": "Erabiltzaileak",
                     "description": "Erabiltzaileak kudeatu",
@@ -612,13 +417,10 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "header": "Zigbee Home Automation - Gailuak Gehitu",
                         "spinner": "ZHA Zigbee gailuak bilatzen..."
-                    },
-                    "caption": "ZHA"
+                    }
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "Ezarri konfigurazio-parametroa"
                     }
@@ -639,9 +441,6 @@
                         "title": "Txantiloiak"
                     }
                 }
-            },
-            "logbook": {
-                "period": "Epea"
             },
             "lovelace": {
                 "cards": {
@@ -695,8 +494,7 @@
                 },
                 "menu": {
                     "configure_ui": "Erabiltzaile interfazea konfiguratu",
-                    "help": "Laguntza",
-                    "refresh": "Freskatu"
+                    "help": "Laguntza"
                 },
                 "warning": {
                     "entity_non_numeric": "Entitatea ez da zenbakizkoa: {entity}",
@@ -750,8 +548,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Zure ordenagailua ez dago baimenduta.",
-                                "not_whitelisted": "Zure ordenagailua ez dago baimenduta."
+                                "not_allowed": "Zure ordenagailua ez dago baimenduta."
                             },
                             "step": {
                                 "init": {
@@ -816,7 +613,6 @@
                     "create_failed": "Ezin izan da sarbide token sortu.",
                     "delete_failed": "Errorea sortu da sarbide tokena ezabatzerakoan.",
                     "header": "Iraupen luzeko sarbide tokenak",
-                    "not_used": "Ez da inoiz erabili",
                     "prompt_copy_token": "Zure sarbide tokena kopiatu. Ez da berriro erakutsiko.",
                     "prompt_name": "Izena?"
                 },
@@ -847,10 +643,6 @@
                     "header": "Gaia",
                     "link_promo": "Gaiei buruz gehiago ikasi"
                 }
-            },
-            "shopping-list": {
-                "add_item": "Artikulua gehitu",
-                "clear_completed": "Osatutakoak ezabatu"
             }
         },
         "sidebar": {

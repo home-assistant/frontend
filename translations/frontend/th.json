@@ -72,250 +72,9 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "เปิดการป้องกัน",
-            "armed_away": "เปิดการป้องกัน-โหมดไม่อยู่บ้าน",
-            "armed_custom_bypass": "ป้องกันโดยกำหนดเอง",
-            "armed_home": "เปิดการป้องกัน-โหมดอยู่บ้าน",
-            "armed_night": "เปิดการป้องกัน-โหมดกลางคืน",
-            "arming": "เปิดการป้องกัน",
-            "disarmed": "ปลดการป้องกัน",
-            "disarming": "ปลดการป้องกัน",
-            "pending": "ค้างอยู่",
-            "triggered": "ถูกกระตุ้น"
-        },
-        "automation": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "ปกติ",
-                "on": "ต่ำ"
-            },
-            "cold": {
-                "off": "ปกติ",
-                "on": "หนาว"
-            },
-            "connectivity": {
-                "off": "ตัดการเชื่อมต่อ",
-                "on": "เชื่อมต่อแล้ว"
-            },
-            "default": {
-                "off": "ปิด",
-                "on": "เปิด"
-            },
-            "door": {
-                "off": "ปิดแล้ว",
-                "on": "เปิด"
-            },
-            "garage_door": {
-                "off": "ปิดแล้ว",
-                "on": "เปิด"
-            },
-            "gas": {
-                "off": "ไม่พบแก๊ส",
-                "on": "ตรวจพบแก๊ส"
-            },
-            "heat": {
-                "off": "ปกติ",
-                "on": "ร้อน"
-            },
-            "lock": {
-                "off": "ล็อคอยู่",
-                "on": "ปลดล็อคแล้ว"
-            },
-            "moisture": {
-                "off": "แห้ง",
-                "on": "เปียก"
-            },
-            "motion": {
-                "off": "ไม่พบการเคลื่อนไหว",
-                "on": "พบการเคลื่อนไหว"
-            },
-            "occupancy": {
-                "off": "ไม่พบ",
-                "on": "พบ"
-            },
-            "opening": {
-                "off": "ปิด",
-                "on": "เปิด"
-            },
-            "presence": {
-                "off": "ไม่อยู่",
-                "on": "อยู่บ้าน"
-            },
-            "problem": {
-                "off": "ตกลง",
-                "on": "ปัญหา"
-            },
-            "safety": {
-                "off": "ปิด",
-                "on": "เปิด"
-            },
-            "smoke": {
-                "off": "ไม่พบควัน",
-                "on": "พบควัน"
-            },
-            "sound": {
-                "off": "ไม่ได้ยิน",
-                "on": "ได้ยิน"
-            },
-            "vibration": {
-                "off": "ไม่พบการสั่น",
-                "on": "พบการสั่น"
-            },
-            "window": {
-                "off": "ปิดแล้ว",
-                "on": "เปิด"
-            }
-        },
-        "calendar": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "camera": {
-            "idle": "ไม่ได้ใช้งาน",
-            "recording": "กำลังบันทึก",
-            "streaming": "สตรีมมิ่ง"
-        },
-        "climate": {
-            "cool": "เย็น",
-            "dry": "แห้ง",
-            "fan_only": "เฉพาะพัดลม",
-            "heat": "ร้อน",
-            "heat_cool": "ร้อน/เย็น",
-            "off": "ปิด"
-        },
-        "configurator": {
-            "configure": "ตั้งค่า",
-            "configured": "ตั้งค่าแล้ว"
-        },
-        "cover": {
-            "closed": "ปิด",
-            "closing": "กำลังปิด",
-            "open": "เปิด",
-            "opening": "กำลังเปิด",
-            "stopped": "หยุด"
-        },
         "default": {
             "unavailable": "ไม่พร้อมใช้งาน",
             "unknown": "ไม่ทราบสถานะ"
-        },
-        "device_tracker": {
-            "not_home": "ไม่อยู่"
-        },
-        "fan": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "group": {
-            "closed": "ปิดแล้ว",
-            "closing": "กำลังปิด",
-            "home": "อยู่บ้าน",
-            "locked": "ล็อคแล้ว",
-            "not_home": "ไม่อยู่บ้าน",
-            "off": "ปิด",
-            "ok": "พร้อมใช้งาน",
-            "on": "เปิด",
-            "open": "เปิด",
-            "opening": "กำลังเปิด",
-            "problem": "มีปัญหา",
-            "stopped": "หยุดแล้ว",
-            "unlocked": "ปลดล็อคแล้ว"
-        },
-        "input_boolean": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "light": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "lock": {
-            "locked": "ล็อค",
-            "unlocked": "ปลดล็อค"
-        },
-        "media_player": {
-            "idle": "ไม่ได้ใช้งาน",
-            "off": "ปิด",
-            "on": "เปิด",
-            "paused": "หยุดชั่วคราว",
-            "playing": "กำลังเล่น",
-            "standby": "แสตนด์บาย"
-        },
-        "person": {
-            "home": "อยู่บ้าน"
-        },
-        "plant": {
-            "ok": "พร้อมใช้งาน",
-            "problem": "มีปัญหา"
-        },
-        "remote": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "scene": {
-            "scening": "ซีน"
-        },
-        "script": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "sensor": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "sun": {
-            "above_horizon": "เหนือขอบฟ้า",
-            "below_horizon": "ตกดิน"
-        },
-        "switch": {
-            "off": "ปิด",
-            "on": "เปิด"
-        },
-        "timer": {
-            "active": "ใช้งานอยู่",
-            "idle": "ไม่ได้ใช้งาน",
-            "paused": "หยุดชั่วคราว"
-        },
-        "vacuum": {
-            "cleaning": "กำลังทำความสะอาด",
-            "docked": "เชื่อมต่อ",
-            "error": "ผิดพลาด",
-            "idle": "ว่าง",
-            "off": "ปิด",
-            "on": "เปิด",
-            "paused": "หยุดชั่วคราว",
-            "returning": "กลับไปจุดเชื่อมต่อ"
-        },
-        "weather": {
-            "clear-night": "ฟ้าโปร่ง, กลางคืน",
-            "cloudy": "มีเมฆมาก",
-            "fog": "หมอก",
-            "hail": "ลูกเห็บ",
-            "lightning": "ฟ้าแลบ",
-            "lightning-rainy": "ฟ้าแลบ, ฝนตก",
-            "partlycloudy": "มีเมฆบางส่วน",
-            "pouring": "เท",
-            "rainy": "ฝน",
-            "snowy": "หิมะ",
-            "snowy-rainy": "หิมะ, ฝน",
-            "sunny": "แดดจัด",
-            "windy": "ลมแรง",
-            "windy-variant": "ลมแรง"
-        },
-        "zwave": {
-            "default": {
-                "dead": "ไม่พร้อมใช้งาน",
-                "initializing": "กำลังเริ่มต้น",
-                "ready": "พร้อมใช้งาน",
-                "sleeping": "กำลังหลับ"
-            },
-            "query_stage": {
-                "dead": "ไม่พร้อมใช้งาน ({query_stage})",
-                "initializing": "กำลังเริ่มต้น ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -383,9 +142,6 @@
             },
             "scene": {
                 "activate": "กระตุ้น"
-            },
-            "script": {
-                "execute": "ปฏิบัติ"
             },
             "timer": {
                 "actions": {
@@ -486,9 +242,7 @@
                     "second": "{count} {count, plural,\n  one {วินาที}\n  other {วินาที}\n}",
                     "week": "{count} {count, plural,\n  one {สัปดาห์}\n  other {สัปดาห์}\n}"
                 },
-                "future": "{time} ที่แล้ว",
-                "never": "ไม่เคย",
-                "past": "{time}ที่แล้ว"
+                "never": "ไม่เคย"
             },
             "service-picker": {
                 "service": "บริการ"
@@ -529,11 +283,7 @@
                     "reconfigure": "กำหนดค่าอุปกรณ์ ZHA อีกครั้ง (เพื่อรักษาอุปกรณ์) ใช้สิ่งนี้หากคุณมีปัญหากับอุปกรณ์ หากอุปกรณ์ดังกล่าวเป็นอุปกรณ์ที่ใช้พลังงานจากแบตเตอรี่โปรดตรวจสอบให้แน่ใจว่าอุปกรณ์นั้นเปิดอยู่และยอมรับคำสั่งเมื่อคุณใช้บริการ",
                     "remove": "ลบอุปกรณ์ออกจากเครือข่าย Zigbee"
                 },
-                "unknown": "ไม่ทราบสถานะ",
-                "zha_device_card": {
-                    "area_picker_label": "พื้นที่",
-                    "update_name_button": "อัปเดตชื่อ"
-                }
+                "unknown": "ไม่ทราบสถานะ"
             }
         },
         "duration": {
@@ -607,8 +357,7 @@
                                     "service_data": "บริการ"
                                 },
                                 "service": {
-                                    "label": "เรียกบริการ",
-                                    "service_data": "ข้อมูลบริการ"
+                                    "label": "เรียกบริการ"
                                 },
                                 "wait_for_trigger": {
                                     "label": "รอทริกเกอร์"
@@ -801,7 +550,6 @@
                         "nabu_casa_account": "บัญชี Nabu Casa",
                         "sign_out": "ลงชื่อออก"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "ควบคุมการทำงานจากนอกบ้าน ร่วมกับ Alexa และ Google Assistant",
                     "description_login": "ลงชื่อเข้าใช้เป็น {email}",
                     "description_not_login": "ยังไม่ได้เข้าสู่ระบบ",
@@ -895,9 +643,6 @@
                     }
                 },
                 "header": "การตั้งค่า Home Assistant",
-                "info": {
-                    "title": "ข้อมูล"
-                },
                 "integrations": {
                     "attention": "ต้องระบุ",
                     "caption": "การทำงานร่วมกัน",
@@ -909,8 +654,6 @@
                         "hub": "เชื่อมต่อผ่านทาง",
                         "manuf": "โดย {manufacturer}",
                         "no_area": "ไม่มีห้อง",
-                        "no_device": "เป็น Entities โดยไม่มีอุปกรณ์",
-                        "no_devices": "การทำงานร่วมกันนี้ไม่มีอุปกรณ์ใดๆ อยู่เลย",
                         "restart_confirm": "เริ่ม Home Assistant ใหม่หลังจากลบการบูรณาการนี้"
                     },
                     "config_flow": {
@@ -992,9 +735,7 @@
                     "add_user": {
                         "caption": "เพิ่มผู้ใช้",
                         "create": "สร้าง",
-                        "name": "ชื่อ",
-                        "password": "รหัสผ่าน",
-                        "username": "ชื่อผู้ใช้"
+                        "password": "รหัสผ่าน"
                     },
                     "caption": "ผู้ใช้",
                     "description": "จัดการผู้ใช้งานในระบบ",
@@ -1008,15 +749,10 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "อุปกรณ์ที่ค้นหาเจอจะปรากฏที่นี่ ทำตามคำแนะนำบนอุปกรณ์ของคุณและให้อุปกรณ์อยู่ในโหมดการจับคู่ด้วย",
-                        "header": "Zigbee Home Automation - เพิ่มอุปกรณ์",
                         "spinner": "กำลังค้นหาอุปกรณ์ ZHA Zigbee ..."
-                    },
-                    "caption": "ZHA",
-                    "description": "การจัดการระบบอัติโนมัติของ Zigbee"
+                    }
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "ดัชนี",
                         "instance": "อิน สแตนซ์",
@@ -1069,14 +805,6 @@
                     }
                 }
             },
-            "history": {
-                "period": "ช่วงเวลา",
-                "showing_entries": "วันที่ต้องการแสดง"
-            },
-            "logbook": {
-                "period": "ช่วงเวลา",
-                "showing_entries": "วันที่ต้องการแสดง"
-            },
             "lovelace": {
                 "cards": {
                     "empty_state": {
@@ -1100,8 +828,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "อัพเดทการกำหนดค่าส่วนแสดงผล Lovelace แล้ว คุณต้องการจะรีเฟรชหน้าหรือไม่",
-                    "refresh": "รีเฟรช"
+                    "message": "อัพเดทการกำหนดค่าส่วนแสดงผล Lovelace แล้ว คุณต้องการจะรีเฟรชหน้าหรือไม่"
                 },
                 "editor": {
                     "card": {
@@ -1176,8 +903,7 @@
                 },
                 "menu": {
                     "configure_ui": "ตั้งค่าการแสดงผล",
-                    "help": "วิธีใช้",
-                    "refresh": "รีเฟรช"
+                    "help": "วิธีใช้"
                 },
                 "reload_lovelace": "โหลดส่วนแสดงผล Lovelace ใหม่",
                 "warning": {
@@ -1267,9 +993,6 @@
                             }
                         },
                         "trusted_networks": {
-                            "abort": {
-                                "not_whitelisted": "คอมพิวเตอร์ของคุณไม่ได้รับสิทธิ์ในการเข้าถึง"
-                            },
                             "step": {
                                 "init": {
                                     "data": {
@@ -1389,15 +1112,12 @@
                     "create": "สร้าง Token ใหม่",
                     "create_failed": "เกิดข้อผิดพลาดในการลบ Access Token",
                     "created": "สร้างเมื่อ {date}",
-                    "created_at": "สร้างเมื่อ {date}",
                     "delete_failed": "เกิดข้อผิดพลาดในการลบ Access Token",
                     "description": "สร้างโทเค็นการเข้าถึงระยะยาวเพื่อให้สคริปต์ของคุณเชื่อมต่อกับ Home Assistant ได้ โดยแต่ละโทเค็นที่สร้างขึ้นจะอยู่ได้ 10 ปีนับจากวันที่สร้าง\nโทเค็นการเข้าถึงระยะยาวต่อไปนี้กำลังถูกใช้ในบัญชีของคุณอยู่..",
                     "empty_state": "คุณยังไม่มีโทเค็นการเข้าถึงระยะยาวเลย",
                     "header": "โทเค็นการเข้าถึงระยะยาว",
-                    "last_used": "ใช้ครั้งล่าสุดเมื่อ {date} จาก {location}",
                     "learn_auth_requests": "เรียนรู้วิธีสร้างคำขอที่มีการรับรองความถูกต้อง",
                     "name": "ชื่อ",
-                    "not_used": "ยังไม่เคยถูกใช้งาน",
                     "prompt_copy_token": "จด Access Token ของคุณไว้ที่อื่นด้วย มันจะไม่แสดงให้เห็นอีกแล้วหลังจากนี้",
                     "prompt_name": "ชื่อ?"
                 },
@@ -1442,11 +1162,6 @@
                 "vibrate": {
                     "header": "สั่น"
                 }
-            },
-            "shopping-list": {
-                "add_item": "เพิ่มรายการใหม่",
-                "clear_completed": "จัดการเรียบร้อย",
-                "microphone_tip": "ลองแตะไมโครโฟนที่ด้านบนขวาและพูดว่า \"เพิ่มลูกอมลงในรายการช้อปปิ้งของฉัน\" ดูสิ!"
             }
         },
         "sidebar": {

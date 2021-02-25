@@ -92,253 +92,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "مصلح شده",
-            "armed_away": "مسلح شده بیرون",
-            "armed_custom_bypass": "بایگانی سفارشی مسلح",
-            "armed_home": "مسلح شده خانه",
-            "armed_night": "مسلح شده شب",
-            "arming": "در حال مسلح کردن",
-            "disarmed": "غیر مسلح",
-            "disarming": "در حال غیر مسلح کردن",
-            "pending": "در انتظار",
-            "triggered": "راه انداخته شده"
-        },
-        "automation": {
-            "off": "خاموش",
-            "on": "فعال"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "عادی",
-                "on": "کم"
-            },
-            "cold": {
-                "off": "عادی",
-                "on": "سرد"
-            },
-            "connectivity": {
-                "off": "قطع",
-                "on": "متصل"
-            },
-            "default": {
-                "off": "خاموش",
-                "on": "روشن"
-            },
-            "door": {
-                "off": "بسته",
-                "on": "باز"
-            },
-            "garage_door": {
-                "off": "بسته",
-                "on": "باز"
-            },
-            "gas": {
-                "off": "عادی",
-                "on": "شناسایی شد"
-            },
-            "heat": {
-                "off": "عادی",
-                "on": "داغ"
-            },
-            "lock": {
-                "off": "قفل",
-                "on": "باز"
-            },
-            "moisture": {
-                "off": "خشک",
-                "on": "مرطوب"
-            },
-            "motion": {
-                "off": "عادی",
-                "on": "شناسایی شد"
-            },
-            "occupancy": {
-                "off": "عادی",
-                "on": "شناسایی شد"
-            },
-            "opening": {
-                "off": "بسته شده",
-                "on": "باز"
-            },
-            "presence": {
-                "off": "بیرون",
-                "on": "خانه"
-            },
-            "problem": {
-                "off": "خوب",
-                "on": "مشکل"
-            },
-            "safety": {
-                "off": "امن",
-                "on": "نا امن"
-            },
-            "smoke": {
-                "off": "عادی",
-                "on": "شناسایی شد"
-            },
-            "sound": {
-                "off": "عادی",
-                "on": "شناسایی شد"
-            },
-            "vibration": {
-                "off": "پاک کردن",
-                "on": "شناسایی شد"
-            },
-            "window": {
-                "off": "بسته",
-                "on": "باز"
-            }
-        },
-        "calendar": {
-            "off": "غیرفعال",
-            "on": "روشن"
-        },
-        "camera": {
-            "idle": "بیکار",
-            "recording": "در حال ضبط",
-            "streaming": "در حال پخش"
-        },
-        "climate": {
-            "cool": "خنک",
-            "dry": "خشک",
-            "fan_only": "فقط پنکه",
-            "heat": "حرارت",
-            "heat_cool": "Incalzire/Racire",
-            "off": "خاموش"
-        },
-        "configurator": {
-            "configure": "پیکربندی",
-            "configured": "پیکربندی شده"
-        },
-        "cover": {
-            "closed": "بسته شده",
-            "closing": "در حال بسته شدن",
-            "open": "باز",
-            "opening": "در حال باز شدن",
-            "stopped": "متوقف"
-        },
         "default": {
             "off": "خاموش",
             "on": "روشن",
             "unavailable": "غیرقابل دسترس",
             "unknown": "نامشخص"
-        },
-        "device_tracker": {
-            "not_home": "بیرون"
-        },
-        "fan": {
-            "off": "خاموش",
-            "on": "روشن"
-        },
-        "group": {
-            "closed": "بسته",
-            "closing": "در حال بسته شدن",
-            "home": "خانه",
-            "locked": "قفل شده",
-            "not_home": "بیرون",
-            "off": "خاموش",
-            "ok": "خوب",
-            "on": "روشن",
-            "open": "باز",
-            "opening": "در حال باز شدن",
-            "problem": "مشکل",
-            "stopped": "متوقف",
-            "unlocked": "باز"
-        },
-        "input_boolean": {
-            "off": "غیرفعال",
-            "on": "روشن"
-        },
-        "light": {
-            "off": "خاموش",
-            "on": "روشن"
-        },
-        "lock": {
-            "locked": "قفل شده",
-            "unlocked": "باز"
-        },
-        "media_player": {
-            "idle": "بیکار",
-            "off": "خاموش",
-            "on": "روشن",
-            "paused": "در حالت مکث",
-            "playing": "در حال پخش",
-            "standby": "آماده به کار"
-        },
-        "person": {
-            "home": "خانه"
-        },
-        "plant": {
-            "ok": "خوب",
-            "problem": "مشکل"
-        },
-        "remote": {
-            "off": "خاموش",
-            "on": "روشن"
-        },
-        "scene": {
-            "scening": "صحنه"
-        },
-        "script": {
-            "off": "خاموش",
-            "on": "فعال"
-        },
-        "sensor": {
-            "off": "خاموش",
-            "on": "فعال"
-        },
-        "sun": {
-            "above_horizon": "بالای افق",
-            "below_horizon": "زیر افق"
-        },
-        "switch": {
-            "off": "خاموش",
-            "on": "روشن"
-        },
-        "timer": {
-            "active": "فعال",
-            "idle": "بیکار ",
-            "paused": "متوقف شد"
-        },
-        "vacuum": {
-            "cleaning": "تمیز کردن",
-            "docked": "متصل",
-            "error": "خطا",
-            "idle": "بیکار",
-            "off": "غیر فعال",
-            "on": "فغال",
-            "paused": "مکث",
-            "returning": "در حال بازگشت به خانه"
-        },
-        "weather": {
-            "clear-night": "پاک، شب",
-            "cloudy": "ابری",
-            "exceptional": "Exceptional",
-            "fog": "مه",
-            "hail": "تگرگ",
-            "lightning": "رعد و برق",
-            "lightning-rainy": "رعد و برق ، بارانی",
-            "partlycloudy": "نیمه ابری",
-            "pouring": "ریختن",
-            "rainy": "بارانی",
-            "snowy": "برفی",
-            "snowy-rainy": "برفی، بارانی",
-            "sunny": "آفتابی",
-            "windy": "باد",
-            "windy-variant": "باد"
-        },
-        "zwave": {
-            "default": {
-                "dead": "مرده",
-                "initializing": "در حال آماده شدن",
-                "ready": "آماده",
-                "sleeping": "در حال خواب"
-            },
-            "query_stage": {
-                "dead": "مرده ({query_stage})",
-                "initializing": "در حال آماده شدن ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -431,8 +189,7 @@
             },
             "script": {
                 "cancel": "لغو",
-                "cancel_multiple": "لغو {number}",
-                "execute": "اجرا کردن"
+                "cancel_multiple": "لغو {number}"
             },
             "service": {
                 "run": "اجرا"
@@ -552,13 +309,6 @@
                 "no_history_found": "هیچ تاریخ وضعیتی پیدا نشد."
             },
             "media-browser": {
-                "content-type": {
-                    "album": "آلبوم",
-                    "artist": "هنرمند",
-                    "library": "کتابخانه",
-                    "playlist": "لیست پخش",
-                    "server": "سرور"
-                },
                 "play": "پخش",
                 "play-media": "پخش رسانه ها"
             },
@@ -575,9 +325,7 @@
                     "second": "{count} {count, plural,\n  one {ثانیه}\n  other {ثانیه ها}\n}",
                     "week": "{count} {count, plural,\n  one {هفته}\n  other {هفته ها}\n}"
                 },
-                "future": "در {time}",
-                "never": "هرگز",
-                "past": "{time} قبل"
+                "never": "هرگز"
             },
             "service-picker": {
                 "service": "سرویس"
@@ -722,9 +470,7 @@
                     "zigbee_information": "مشاهده  اطلاعات Zigbee  دستگاه."
                 },
                 "zha_device_card": {
-                    "area_picker_label": "Zona",
-                    "device_name_placeholder": "Prenume utilizator",
-                    "update_name_button": "Actualizeaza nume"
+                    "device_name_placeholder": "Prenume utilizator"
                 }
             }
         },
@@ -750,10 +496,6 @@
             "service_call_failed": "تماس با سرویس {service} ناموفق بود"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "تقویم های من",
-                "today": "امروز"
-            },
             "config": {
                 "areas": {
                     "caption": "ناحیه ها",
@@ -827,8 +569,7 @@
                                     "label": "Activeaza scena"
                                 },
                                 "service": {
-                                    "label": "خدمات فراخوانی",
-                                    "service_data": "داده های خدمات"
+                                    "label": "خدمات فراخوانی"
                                 },
                                 "wait_template": {
                                     "label": "صبر کنید",
@@ -839,9 +580,6 @@
                             "unsupported_action": "بدون پشتیبانی رابط کاربری برای عمل: {action}"
                         },
                         "alias": "نام",
-                        "blueprint": {
-                            "inputs": "ورودی ها"
-                        },
                         "conditions": {
                             "add": "اضافه کردن شرط",
                             "delete": "حذف",
@@ -1081,7 +819,6 @@
                     "alexa": {
                         "title": "Alexa"
                     },
-                    "caption": "فضای ابری home assistant",
                     "description_features": "کنترل کردن از خانه، یکپارچه با الکسا و Google Assistant.",
                     "description_login": "وارد شده به عنوان {email}",
                     "description_not_login": "وارد نشده اید",
@@ -1327,8 +1064,7 @@
                     "integrations": "یکپارچگی",
                     "issues": "موضوعات",
                     "server": "سرور",
-                    "source": "Sursa:",
-                    "title": "اطلاعات"
+                    "source": "Sursa:"
                 },
                 "integrations": {
                     "add_integration": "اضافه کردن ادغام",
@@ -1342,8 +1078,6 @@
                         "hub": "اتصال از طریق",
                         "manuf": "توسط {manufacturer}",
                         "no_area": "بدون منطقه",
-                        "no_device": "نهادهای بدون دستگاه",
-                        "no_devices": "این یکپارچگی هیچ دستگاهی ندارد.",
                         "options": "گزینه ها",
                         "rename": "تغییر نام",
                         "restart_confirm": "برای حذف کامل این یکپارچگی home assistant را دوباره راهاندازی کنید.",
@@ -1386,8 +1120,7 @@
                 },
                 "introduction": "در اینجا می توانید اجزای خود و صفحه اصلی دستیار را پیکربندی کنید.فعلا ویرایش همه چیز از طریق ویرایش بصری امکان پذیر نیست ، اما ما داریم روی اون کار می کنیم.",
                 "logs": {
-                    "refresh": "تازه کن",
-                    "title": "وقایع"
+                    "refresh": "تازه کن"
                 },
                 "lovelace": {
                     "dashboards": {
@@ -1534,8 +1267,7 @@
                         },
                         "learn_more": "Afla mai multe despre scripturi",
                         "no_scripts": "Nu s-au gasit scripturi editabile",
-                        "show_info": "نمایش اطلاعات در مورد اسکریپت",
-                        "trigger_script": "Declanseaza script"
+                        "show_info": "نمایش اطلاعات در مورد اسکریپت"
                     }
                 },
                 "server_control": {
@@ -1580,9 +1312,7 @@
                     "add_user": {
                         "caption": "افزودن کاربر",
                         "create": "ایجاد",
-                        "name": "نام",
-                        "password": "رمز عبور",
-                        "username": "نام کاربری"
+                        "password": "رمز عبور"
                     },
                     "caption": "کاربران",
                     "description": "مدیریت کاربران",
@@ -1617,21 +1347,12 @@
                 "zha": {
                     "add_device": "افزودن دستگاه",
                     "add_device_page": {
-                        "discovery_text": "دستگاه های کشف شده در اینجا نشان داده می شوند. دستورالعمل های دستگاه (های) خود را دنبال کنید و دستگاه (های) را در حالت جفت قرار دهید.",
-                        "header": "اتوماسیون خانگی Zigbee - افزودن دستگاه ها",
                         "search_again": "جستجوی مجدد",
                         "spinner": "جستجو برای دستگاه های ZHY Zigbee ..."
                     },
-                    "add": {
-                        "caption": "Adauga dispozitive"
-                    },
-                    "caption": "ZHA",
                     "common": {
-                        "add_devices": "افزودن دستگاهها",
-                        "devices": "دستگاه ها",
                         "value": "مقدار"
                     },
-                    "description": "صفحه اصلی اتوماسیون مدیریت شبکه Zigbee",
                     "device_pairing_card": {
                         "CONFIGURED_status_text": "راه اندازی",
                         "PAIRED": "دستگاه پیدا شد"
@@ -1639,7 +1360,6 @@
                     "groups": {
                         "add_group": "افزودن گروه",
                         "add_members": "Adauga membri",
-                        "adding_members": "Se adauga membri",
                         "create": "Creaza grup",
                         "create_group": "Zigbee Home Automation - ایجاد گروه",
                         "creating_group": "Se creaza grup",
@@ -1647,23 +1367,12 @@
                         "group_info": "Informatii Grup",
                         "group_name_placeholder": "Nume grup",
                         "group_not_found": "Nu s-a gasit grup!",
-                        "header": "Zigbee Home Automation - مدیریت گروه",
-                        "introduction": "Creaza si editeaza grupuri zigbee",
                         "members": "Membri",
-                        "remove_groups": "Elimina grupuri",
                         "remove_members": "Elimina membri",
-                        "removing_groups": "Se elimina grupuri",
                         "removing_members": "Se elimina membri"
-                    },
-                    "network_management": {
-                        "header": "مدیریت شبکه",
-                        "introduction": "دستوراتی که روی کل شبکه تأثیر می گذارند"
                     },
                     "network": {
                         "caption": "شبکه"
-                    },
-                    "node_management": {
-                        "header": "مدیریت دستگاه"
                     },
                     "visualization": {
                         "caption": "تجسم",
@@ -1690,7 +1399,6 @@
                 },
                 "zwave": {
                     "button": "پیکربندی",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
                         "instance": "نمونه، مثال",
@@ -1744,9 +1452,6 @@
                         "column_description": "Descriere",
                         "column_example": "Exemplu",
                         "column_parameter": "Parametru",
-                        "no_description": "Nu este disponibila nicio descriere",
-                        "no_parameters": "Acest serviciu nu accepta parametri",
-                        "select_service": "Selecteaza un serviciu pentru a-i vedea descrierea",
                         "title": "خدمات"
                     },
                     "states": {
@@ -1771,24 +1476,19 @@
                 }
             },
             "history": {
-                "period": "دوره زمانی",
                 "ranges": {
                     "this_week": "این هفته",
                     "today": "امروز",
                     "yesterday": "دیروز"
-                },
-                "showing_entries": "نمایش نوشته ها برای"
+                }
             },
             "logbook": {
-                "entries_not_found": "Nu s-au gasit intrari in logbook",
-                "period": "دوره",
                 "ranges": {
                     "last_week": "هفته گذشته",
                     "this_week": "این هفته",
                     "today": "امروز",
                     "yesterday": "دیروز"
-                },
-                "showing_entries": "نمایش نامه برای"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -1797,7 +1497,6 @@
                     "yaml_unsupported": "شما نمی توانید از این عملکرد هنگام استفاده از UI Lovelace در حالت YAML استفاده کنید."
                 },
                 "cards": {
-                    "action_confirmation": "آیا مطمئن هستید که می خواهید اقدام \" {action} \" را اجرا کنید؟",
                     "confirm_delete": "Esti sigur ca vrei sa elimini acest card?",
                     "empty_state": {
                         "go_to_integrations_page": "به صفحه ادغام بروید.",
@@ -1821,8 +1520,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "پیکربندی Lovelace به روز شد، آیا مایل به بروزرسانی  هستید؟",
-                    "refresh": "تازه کردن"
+                    "message": "پیکربندی Lovelace به روز شد، آیا مایل به بروزرسانی  هستید؟"
                 },
                 "components": {
                     "timestamp-display": {
@@ -1925,7 +1623,6 @@
                         },
                         "sensor": {
                             "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
-                            "graph_detail": "نمودار جزئیات",
                             "graph_type": "نوع نمودار",
                             "name": "سنسور"
                         },
@@ -2031,7 +1728,6 @@
                     "close": "Inchide",
                     "configure_ui": "ویرایش داشبورد",
                     "help": "کمک",
-                    "refresh": "تازه کردن",
                     "reload_resources": "بارگذاری مجدد منابع"
                 },
                 "reload_lovelace": "بازنگری Lovelace",
@@ -2141,9 +1837,6 @@
                             }
                         },
                         "trusted_networks": {
-                            "abort": {
-                                "not_whitelisted": "رایانه شما در لیست سفید قرار ندارد."
-                            },
                             "step": {
                                 "init": {
                                     "data": {
@@ -2277,14 +1970,11 @@
                     "confirm_delete": "آیا مطمئن هستید که میخواهید token دسترسی زیر را برای {name} حذف کنید؟",
                     "create": "ایجاد توکن",
                     "create_failed": "رمز دسترسی ایجاد نشد.",
-                    "created_at": "ایجاد شده در {date}",
                     "delete_failed": "کد دسترسی حذف نشد.",
                     "empty_state": "شما هنوز هیچ رمز دسترسی طولانی مدت ندارید.",
                     "header": "توکن های دسترسی به صورت طولانی مدت",
-                    "last_used": "آخرین مورد استفاده در {date} از {location}",
                     "learn_auth_requests": "با نحوه انجام درخواست های تأیید اعتبار آشنا شوید.",
                     "name": "نام",
-                    "not_used": "هرگز استفاده نشده است",
                     "prompt_copy_token": "رمز دسترسی خود را کپی کنید. دوباره نمایش داده نمی شود.",
                     "prompt_name": "به توکن یک اسم بگذارید"
                 },
@@ -2339,11 +2029,6 @@
                     "description": "هنگام کنترل دستگاه، حالت ویبره فعال یا غیرفعال می‌شود.",
                     "header": "ویبره"
                 }
-            },
-            "shopping-list": {
-                "add_item": "اضافه کردن آیتم",
-                "clear_completed": "کامل شده ها را پاک کن",
-                "microphone_tip": "روی میکروفون در بالا سمت راست ضربه بزنید و \"افزودن آب نبات به لیست خرید من\" را بگویید یا تایپ کنید"
             }
         },
         "sidebar": {

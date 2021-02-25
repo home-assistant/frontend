@@ -19,28 +19,6 @@
             "error": "Грешка"
         }
     },
-    "state": {
-        "sun": {
-            "above_horizon": "Iznad horizonta",
-            "below_horizon": "Ispod horizonta"
-        },
-        "switch": {
-            "off": "Isključen"
-        },
-        "timer": {
-            "active": "укључен",
-            "idle": "неактна чекању"
-        },
-        "zwave": {
-            "default": {
-                "ready": "Spreman"
-            },
-            "query_stage": {
-                "dead": " ({query_stage})",
-                "initializing": " ( {query_stage} )"
-            }
-        }
-    },
     "ui": {
         "card": {
             "lock": {
@@ -78,9 +56,6 @@
                         "learn_more": "Сазнајте више о аутоматизацијама"
                     }
                 },
-                "cloud": {
-                    "caption": "Home Assistant Cloud"
-                },
                 "integrations": {
                     "config_flow": {
                         "external_step": {
@@ -96,16 +71,13 @@
                     "add_user": {
                         "caption": "Додај корисника",
                         "create": "Направите",
-                        "name": "Име",
-                        "password": "Лозинка",
-                        "username": "Корисничко име"
+                        "password": "Лозинка"
                     },
                     "editor": {
                         "caption": "Прикажи корисника"
                     }
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "Подесите параметар Цонфиг"
                     }

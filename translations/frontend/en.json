@@ -95,253 +95,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Armed",
-            "armed_away": "Armed away",
-            "armed_custom_bypass": "Armed custom bypass",
-            "armed_home": "Armed home",
-            "armed_night": "Armed night",
-            "arming": "Arming",
-            "disarmed": "Disarmed",
-            "disarming": "Disarming",
-            "pending": "Pending",
-            "triggered": "Triggered"
-        },
-        "automation": {
-            "off": "Off",
-            "on": "On"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normal",
-                "on": "Low"
-            },
-            "cold": {
-                "off": "Normal",
-                "on": "Cold"
-            },
-            "connectivity": {
-                "off": "Disconnected",
-                "on": "Connected"
-            },
-            "default": {
-                "off": "Off",
-                "on": "On"
-            },
-            "door": {
-                "off": "Closed",
-                "on": "Open"
-            },
-            "garage_door": {
-                "off": "Closed",
-                "on": "Open"
-            },
-            "gas": {
-                "off": "Clear",
-                "on": "Detected"
-            },
-            "heat": {
-                "off": "Normal",
-                "on": "Hot"
-            },
-            "lock": {
-                "off": "Locked",
-                "on": "Unlocked"
-            },
-            "moisture": {
-                "off": "Dry",
-                "on": "Wet"
-            },
-            "motion": {
-                "off": "Clear",
-                "on": "Detected"
-            },
-            "occupancy": {
-                "off": "Clear",
-                "on": "Detected"
-            },
-            "opening": {
-                "off": "Closed",
-                "on": "Open"
-            },
-            "presence": {
-                "off": "Away",
-                "on": "Home"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Problem"
-            },
-            "safety": {
-                "off": "Safe",
-                "on": "Unsafe"
-            },
-            "smoke": {
-                "off": "Clear",
-                "on": "Detected"
-            },
-            "sound": {
-                "off": "Clear",
-                "on": "Detected"
-            },
-            "vibration": {
-                "off": "Clear",
-                "on": "Detected"
-            },
-            "window": {
-                "off": "Closed",
-                "on": "Open"
-            }
-        },
-        "calendar": {
-            "off": "Off",
-            "on": "On"
-        },
-        "camera": {
-            "idle": "Idle",
-            "recording": "Recording",
-            "streaming": "Streaming"
-        },
-        "climate": {
-            "cool": "Cool",
-            "dry": "Dry",
-            "fan_only": "Fan only",
-            "heat": "Heat",
-            "heat_cool": "Heat/Cool",
-            "off": "Off"
-        },
-        "configurator": {
-            "configure": "Configure",
-            "configured": "Configured"
-        },
-        "cover": {
-            "closed": "Closed",
-            "closing": "Closing",
-            "open": "Open",
-            "opening": "Opening",
-            "stopped": "Stopped"
-        },
         "default": {
             "off": "Off",
             "on": "On",
             "unavailable": "Unavailable",
             "unknown": "Unknown"
-        },
-        "device_tracker": {
-            "not_home": "Away"
-        },
-        "fan": {
-            "off": "Off",
-            "on": "On"
-        },
-        "group": {
-            "closed": "Closed",
-            "closing": "Closing",
-            "home": "Home",
-            "locked": "Locked",
-            "not_home": "Away",
-            "off": "Off",
-            "ok": "OK",
-            "on": "On",
-            "open": "Open",
-            "opening": "Opening",
-            "problem": "Problem",
-            "stopped": "Stopped",
-            "unlocked": "Unlocked"
-        },
-        "input_boolean": {
-            "off": "Off",
-            "on": "On"
-        },
-        "light": {
-            "off": "Off",
-            "on": "On"
-        },
-        "lock": {
-            "locked": "Locked",
-            "unlocked": "Unlocked"
-        },
-        "media_player": {
-            "idle": "Idle",
-            "off": "Off",
-            "on": "On",
-            "paused": "Paused",
-            "playing": "Playing",
-            "standby": "Standby"
-        },
-        "person": {
-            "home": "Home"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "Problem"
-        },
-        "remote": {
-            "off": "Off",
-            "on": "On"
-        },
-        "scene": {
-            "scening": "Scening"
-        },
-        "script": {
-            "off": "Off",
-            "on": "On"
-        },
-        "sensor": {
-            "off": "Off",
-            "on": "On"
-        },
-        "sun": {
-            "above_horizon": "Above horizon",
-            "below_horizon": "Below horizon"
-        },
-        "switch": {
-            "off": "Off",
-            "on": "On"
-        },
-        "timer": {
-            "active": "active",
-            "idle": "idle",
-            "paused": "paused"
-        },
-        "vacuum": {
-            "cleaning": "Cleaning",
-            "docked": "Docked",
-            "error": "Error",
-            "idle": "Idle",
-            "off": "Off",
-            "on": "On",
-            "paused": "Paused",
-            "returning": "Returning to dock"
-        },
-        "weather": {
-            "clear-night": "Clear, night",
-            "cloudy": "Cloudy",
-            "exceptional": "Exceptional",
-            "fog": "Fog",
-            "hail": "Hail",
-            "lightning": "Lightning",
-            "lightning-rainy": "Lightning, rainy",
-            "partlycloudy": "Partly cloudy",
-            "pouring": "Pouring",
-            "rainy": "Rainy",
-            "snowy": "Snowy",
-            "snowy-rainy": "Snowy, rainy",
-            "sunny": "Sunny",
-            "windy": "Windy",
-            "windy-variant": "Windy"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Dead",
-                "initializing": "Initializing",
-                "ready": "Ready",
-                "sleeping": "Sleeping"
-            },
-            "query_stage": {
-                "dead": "Dead ({query_stage})",
-                "initializing": "Initializing ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -362,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Last triggered",
-                "trigger": "Execute"
+                "trigger": "Run Actions"
             },
             "camera": {
                 "not_available": "Image not available"
@@ -443,7 +201,7 @@
             "script": {
                 "cancel": "Cancel",
                 "cancel_multiple": "Cancel {number}",
-                "execute": "Execute"
+                "run": "Run"
             },
             "service": {
                 "run": "Run"
@@ -643,7 +401,6 @@
             "media-browser": {
                 "audio_not_supported": "Your browser does not support the audio element.",
                 "choose_player": "Choose Player",
-                "choose-source": "Choose Source",
                 "class": {
                     "album": "Album",
                     "app": "App",
@@ -665,13 +422,6 @@
                     "tv_show": "TV Show",
                     "url": "URL",
                     "video": "Video"
-                },
-                "content-type": {
-                    "album": "Album",
-                    "artist": "Artist",
-                    "library": "Library",
-                    "playlist": "Playlist",
-                    "server": "Server"
                 },
                 "documentation": "documentation",
                 "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
@@ -714,7 +464,6 @@
                     "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
                     "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 },
-                "future": "In {time}",
                 "future_duration": {
                     "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
                     "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
@@ -724,7 +473,6 @@
                 },
                 "just_now": "Just now",
                 "never": "Never",
-                "past": "{time} ago",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
                     "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
@@ -860,7 +608,6 @@
                 "crop": "Crop"
             },
             "more_info_control": {
-                "controls": "Controls",
                 "cover": {
                     "close_cover": "Close cover",
                     "close_tile_cover": "Close cover tilt",
@@ -945,7 +692,6 @@
                         "logs": "Logs",
                         "lovelace": "Lovelace Dashboards",
                         "navigate_to": "Navigate to {panel}",
-                        "navigate_to_config": "Navigate to {panel} configuration",
                         "person": "People",
                         "scene": "Scenes",
                         "script": "Scripts",
@@ -1028,9 +774,7 @@
                 },
                 "unknown": "Unknown",
                 "zha_device_card": {
-                    "area_picker_label": "Area",
-                    "device_name_placeholder": "Change device name",
-                    "update_name_button": "Update Name"
+                    "device_name_placeholder": "Change device name"
                 }
             }
         },
@@ -1074,10 +818,6 @@
             "triggered": "Triggered {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "My Calendars",
-                "today": "Today"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Missing config options? Enable advanced mode on",
@@ -1195,8 +935,7 @@
                                     "label": "Activate scene"
                                 },
                                 "service": {
-                                    "label": "Call service",
-                                    "service_data": "Service data"
+                                    "label": "Call service"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Continue on timeout",
@@ -1216,8 +955,6 @@
                         "blueprint": {
                             "blueprint_to_use": "Blueprint to use",
                             "header": "Blueprint",
-                            "inputs": "Inputs",
-                            "manage_blueprints": "Manage Blueprints",
                             "no_blueprints": "You don't have any blueprints",
                             "no_inputs": "This blueprint doesn't have any inputs."
                         },
@@ -1227,7 +964,7 @@
                             "delete_confirm": "Are you sure you want to delete this?",
                             "duplicate": "Duplicate",
                             "header": "Conditions",
-                            "introduction": "Conditions are optional and will prevent further execution unless all conditions are satisfied.",
+                            "introduction": "Conditions are optional and will prevent the automation from running unless all conditions are satisfied.",
                             "learn_more": "Learn more about conditions",
                             "name": "Condition",
                             "type_select": "Condition type",
@@ -1472,7 +1209,6 @@
                         "header": "Import a blueprint",
                         "import_btn": "Preview blueprint",
                         "import_header": "Blueprint \"{name}\"",
-                        "import_introduction": "You can import blueprints of other users from Github and the community forums. Enter the URL of the blueprint below.",
                         "import_introduction_link": "You can import blueprints of other users from Github and the {community_link}. Enter the URL of the blueprint below.",
                         "importing": "Loading blueprint...",
                         "raw_blueprint": "Blueprint content",
@@ -1594,7 +1330,6 @@
                         "not_exposed_entities": "Not exposed entities",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "Control home when away and integrate with Alexa and Google Assistant",
                     "description_login": "Logged in as {email}",
                     "description_not_login": "Not logged in",
@@ -1727,7 +1462,6 @@
                     "pick_attribute": "Pick an attribute to override",
                     "picker": {
                         "documentation": "Customization documentation",
-                        "entity": "Entity",
                         "header": "Customizations",
                         "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
                     },
@@ -1775,7 +1509,6 @@
                         "integration": "Integration",
                         "manufacturer": "Manufacturer",
                         "model": "Model",
-                        "no_area": "No area",
                         "no_devices": "No devices"
                     },
                     "delete": "Delete",
@@ -1932,42 +1665,9 @@
                     "source": "Source:",
                     "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Alexa Enabled",
-                                "can_reach_cert_server": "Reach Certificate Server",
-                                "can_reach_cloud": "Reach Home Assistant Cloud",
-                                "can_reach_cloud_auth": "Reach Authentication Server",
-                                "google_enabled": "Google Enabled",
-                                "logged_in": "Logged In",
-                                "relayer_connected": "Relayer Connected",
-                                "remote_connected": "Remote Connected",
-                                "remote_enabled": "Remote Enabled",
-                                "subscription_expiration": "Subscription Expiration"
-                            },
-                            "homeassistant": {
-                                "arch": "CPU Architecture",
-                                "dev": "Development",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "Installation Type",
-                                "os_name": "Operating System Name",
-                                "os_version": "Operating System Version",
-                                "python_version": "Python Version",
-                                "timezone": "Timezone",
-                                "version": "Version",
-                                "virtualenv": "Virtual Environment"
-                            },
-                            "lovelace": {
-                                "dashboards": "Dashboards",
-                                "mode": "Mode",
-                                "resources": "Resources"
-                            }
-                        },
                         "manage": "Manage",
                         "more_info": "more info"
-                    },
-                    "title": "Info"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "integrations page",
@@ -1981,7 +1681,6 @@
                     "config_entry": {
                         "area": "In {area}",
                         "delete": "Delete",
-                        "delete_button": "Delete {integration}",
                         "delete_confirm": "Are you sure you want to delete this integration?",
                         "device_unavailable": "Device unavailable",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
@@ -2004,8 +1703,6 @@
                         "hub": "Connected via",
                         "manuf": "by {manufacturer}",
                         "no_area": "No Area",
-                        "no_device": "Entities without devices",
-                        "no_devices": "This integration has no devices.",
                         "options": "Options",
                         "reload": "Reload",
                         "reload_confirm": "The integration was reloaded",
@@ -2013,9 +1710,7 @@
                         "rename": "Rename",
                         "restart_confirm": "Restart Home Assistant to finish removing this integration",
                         "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
-                        "settings_button": "Edit settings for {integration}",
                         "system_options": "System options",
-                        "system_options_button": "System options for {integration}",
                         "unnamed_entry": "Unnamed entry"
                     },
                     "config_flow": {
@@ -2087,8 +1782,7 @@
                     "multiple_messages": "message first occurred at {time} and shows up {counter} times",
                     "no_errors": "No errors have been reported.",
                     "no_issues": "There are no new issues!",
-                    "refresh": "Refresh",
-                    "title": "Logs"
+                    "refresh": "Refresh"
                 },
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
@@ -2386,7 +2080,7 @@
                         "id": "Entity ID",
                         "id_already_exists": "This ID already exists",
                         "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it blank to automatically generate one.",
-                        "introduction": "Use scripts to execute a sequence of actions.",
+                        "introduction": "Use scripts to run a sequence of actions.",
                         "link_available_actions": "Learn more about available actions.",
                         "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
                         "max": {
@@ -2419,8 +2113,7 @@
                         "learn_more": "Learn more about scripts",
                         "no_scripts": "We couldn’t find any editable scripts",
                         "run_script": "Run script",
-                        "show_info": "Show info about script",
-                        "trigger_script": "Trigger script"
+                        "show_info": "Show info about script"
                     }
                 },
                 "server_control": {
@@ -2514,11 +2207,9 @@
                     "add_user": {
                         "caption": "Add user",
                         "create": "Create",
-                        "name": "Name",
                         "password": "Password",
                         "password_confirm": "Confirm Password",
-                        "password_not_match": "Passwords don't match",
-                        "username": "Username"
+                        "password_not_match": "Passwords don't match"
                     },
                     "caption": "Users",
                     "description": "Manage the Home Assistant user accounts",
@@ -2562,19 +2253,12 @@
                     "add_device": "Add Device",
                     "add_device_page": {
                         "discovered_text": "Devices will show up here once discovered.",
-                        "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
-                        "header": "Zigbee Home Automation - Add Devices",
                         "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
                         "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
                         "search_again": "Search Again",
                         "spinner": "Searching for ZHA Zigbee devices..."
                     },
-                    "add": {
-                        "caption": "Add Devices",
-                        "description": "Add devices to the Zigbee network"
-                    },
                     "button": "Configure",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributes of the selected cluster",
                         "get_zigbee_attribute": "Get Zigbee Attribute",
@@ -2598,13 +2282,10 @@
                         "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
                     },
                     "common": {
-                        "add_devices": "Add Devices",
                         "clusters": "Clusters",
-                        "devices": "Devices",
                         "manufacturer_code_override": "Manufacturer Code Override",
                         "value": "Value"
                     },
-                    "description": "Zigbee Home Automation network management",
                     "device_pairing_card": {
                         "CONFIGURED": "Configuration Complete",
                         "CONFIGURED_status_text": "Initializing",
@@ -2614,9 +2295,6 @@
                         "INTERVIEW_COMPLETE_status_text": "Configuring",
                         "PAIRED": "Device Found",
                         "PAIRED_status_text": "Starting Interview"
-                    },
-                    "devices": {
-                        "header": "Zigbee Home Automation - Device"
                     },
                     "group_binding": {
                         "bind_button_help": "Bind the selected group to the selected device clusters.",
@@ -2632,48 +2310,24 @@
                     "groups": {
                         "add_group": "Add Group",
                         "add_members": "Add Members",
-                        "adding_members": "Adding Members",
                         "caption": "Groups",
                         "create": "Create Group",
                         "create_group": "Zigbee Home Automation - Create Group",
                         "create_group_details": "Enter the required details to create a new zigbee group",
                         "creating_group": "Creating Group",
-                        "description": "Manage Zigbee groups",
                         "group_details": "Here are all the details for the selected Zigbee group.",
                         "group_id": "Group ID",
                         "group_info": "Group Information",
                         "group_name_placeholder": "Group Name",
                         "group_not_found": "Group not found!",
-                        "group-header": "Zigbee Home Automation - Group Details",
                         "groups": "Groups",
-                        "groups-header": "Zigbee Home Automation - Group Management",
-                        "header": "Zigbee Home Automation - Group Management",
-                        "introduction": "Create and modify zigbee groups",
-                        "manage_groups": "Manage Zigbee Groups",
                         "members": "Members",
-                        "remove_groups": "Remove Groups",
                         "remove_members": "Remove Members",
-                        "removing_groups": "Removing Groups",
-                        "removing_members": "Removing Members",
-                        "zha_zigbee_groups": "ZHA Zigbee Groups"
-                    },
-                    "header": "Configure Zigbee Home Automation",
-                    "introduction": "Here it is possible to configure the ZHA component. Not everything is possible to configure from the UI yet, but we're working on it.",
-                    "network_management": {
-                        "header": "Network Management",
-                        "introduction": "Commands that affect the entire network"
+                        "removing_members": "Removing Members"
                     },
                     "network": {
                         "caption": "Network"
                     },
-                    "node_management": {
-                        "header": "Device Management",
-                        "help_node_dropdown": "Select a device to view per-device options.",
-                        "hint_battery_devices": "Note: Sleepy (battery powered) devices need to be awake when executing commands against them. You can generally wake a sleepy device by triggering it.",
-                        "hint_wakeup": "Some devices such as Xiaomi sensors have a wake up button that you can press at ~5 second intervals that keep devices awake while you interact with them.",
-                        "introduction": "Run ZHA commands that affect a single device. Pick a device to see a list of available commands."
-                    },
-                    "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualization",
                         "header": "Network Visualization",
@@ -2745,7 +2399,6 @@
                         "header": "Manage your Z-Wave Network",
                         "home_id": "Home ID",
                         "introduction": "Manage your Z-Wave network and Z-Wave nodes",
-                        "node_count": "Node Count",
                         "nodes_ready": "Nodes ready",
                         "server_version": "Server Version"
                     },
@@ -2782,7 +2435,6 @@
                 },
                 "zwave": {
                     "button": "Configure",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
                         "instance": "Instance",
@@ -2902,18 +2554,13 @@
                     },
                     "services": {
                         "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`",
-                        "alert_parsing_yaml": "Error parsing YAML: {data}",
                         "all_parameters": "All available parameters",
                         "call_service": "Call Service",
                         "column_description": "Description",
                         "column_example": "Example",
                         "column_parameter": "Parameter",
-                        "data": "Service Data (YAML, optional)",
                         "description": "The service dev tool allows you to call any available service in Home Assistant.",
                         "fill_example_data": "Fill Example Data",
-                        "no_description": "No description is available",
-                        "no_parameters": "This service takes no parameters.",
-                        "select_service": "Select a service to see the description",
                         "title": "Services",
                         "ui_mode": "Go to UI mode",
                         "yaml_mode": "Go to YAML mode",
@@ -2958,25 +2605,20 @@
                 }
             },
             "history": {
-                "period": "Period",
                 "ranges": {
                     "last_week": "Last week",
                     "this_week": "This week",
                     "today": "Today",
                     "yesterday": "Yesterday"
-                },
-                "showing_entries": "Showing entries for"
+                }
             },
             "logbook": {
-                "entries_not_found": "No logbook entries found.",
-                "period": "Period",
                 "ranges": {
                     "last_week": "Last week",
                     "this_week": "This week",
                     "today": "Today",
                     "yesterday": "Yesterday"
-                },
-                "showing_entries": "Showing entries for"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2985,13 +2627,12 @@
                     "yaml_unsupported": "You cannot use this function when using Lovelace UI in YAML mode."
                 },
                 "cards": {
-                    "action_confirmation": "Are you sure you want to exectue action \"{action}\"?",
                     "actions": {
-                        "action_confirmation": "Are you sure you want to execute action \"{action}\"?",
+                        "action_confirmation": "Are you sure you want to run action \"{action}\"?",
                         "no_entity_more_info": "No entity provided for more info dialog",
                         "no_entity_toggle": "No entity provided to toggle",
                         "no_navigation_path": "No navigation path specified",
-                        "no_service": "No service for execution specified",
+                        "no_service": "No service to run specified",
                         "no_url": "No URL to open specified"
                     },
                     "confirm_delete": "Are you sure you want to delete this card?",
@@ -3024,13 +2665,11 @@
                         "reorder_items": "Reorder items"
                     },
                     "starting": {
-                        "description": "Home Assistant is starting, please wait...",
-                        "header": "Home Assistant is starting..."
+                        "description": "Home Assistant is starting, please wait..."
                     }
                 },
                 "changed_toast": {
-                    "message": "The Lovelace UI configuration for this dashboard was updated. Refresh to see changes?",
-                    "refresh": "Refresh"
+                    "message": "The Lovelace UI configuration for this dashboard was updated. Refresh to see changes?"
                 },
                 "components": {
                     "timestamp-display": {
@@ -3049,7 +2688,6 @@
                             "toggle": "Toggle",
                             "url": "URL"
                         },
-                        "editor_service_data": "Service data can only be entered in the code editor",
                         "navigation_path": "Navigation Path",
                         "url_path": "URL Path"
                     },
@@ -3247,7 +2885,6 @@
                         },
                         "sensor": {
                             "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
-                            "graph_detail": "Graph Detail",
                             "graph_type": "Graph Type",
                             "name": "Sensor",
                             "show_more_detail": "Show more detail"
@@ -3418,7 +3055,6 @@
                     "configure_ui": "Edit Dashboard",
                     "exit_edit_mode": "Exit UI edit mode",
                     "help": "Help",
-                    "refresh": "Refresh",
                     "reload_resources": "Reload resources",
                     "start_conversation": "Start conversation"
                 },
@@ -3545,8 +3181,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Your computer is not allowed.",
-                                "not_whitelisted": "Your computer is not whitelisted."
+                                "not_allowed": "Your computer is not allowed."
                             },
                             "step": {
                                 "init": {
@@ -3699,15 +3334,12 @@
                     "create": "Create Token",
                     "create_failed": "Failed to create the access token.",
                     "created": "Created {date}",
-                    "created_at": "Created at {date}",
                     "delete_failed": "Failed to delete the access token.",
                     "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
                     "empty_state": "You have no long-lived access tokens yet.",
                     "header": "Long-Lived Access Tokens",
-                    "last_used": "Last used at {date} from {location}",
                     "learn_auth_requests": "Learn how to make authenticated requests.",
                     "name": "Name",
-                    "not_used": "Has never been used",
                     "prompt_copy_token": "Copy your access token. It will not be shown again.",
                     "prompt_name": "Give the token a name"
                 },
@@ -3772,11 +3404,6 @@
             },
             "shopping_list": {
                 "start_conversation": "Start conversation"
-            },
-            "shopping-list": {
-                "add_item": "Add item",
-                "clear_completed": "Clear completed",
-                "microphone_tip": "Tap the microphone on the top right and say or type “Add candy to my shopping list”"
             }
         },
         "sidebar": {

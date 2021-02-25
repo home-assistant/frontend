@@ -95,253 +95,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "警戒",
-            "armed_away": "离家警戒",
-            "armed_custom_bypass": "自定义区域警戒",
-            "armed_home": "在家警戒",
-            "armed_night": "夜间警戒",
-            "arming": "警戒中",
-            "disarmed": "警戒解除",
-            "disarming": "警戒解除",
-            "pending": "挂起",
-            "triggered": "已触发"
-        },
-        "automation": {
-            "off": "关闭",
-            "on": "开启"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "正常",
-                "on": "低"
-            },
-            "cold": {
-                "off": "正常",
-                "on": "过冷"
-            },
-            "connectivity": {
-                "off": "已断开",
-                "on": "已连接"
-            },
-            "default": {
-                "off": "关闭",
-                "on": "开启"
-            },
-            "door": {
-                "off": "关闭",
-                "on": "开启"
-            },
-            "garage_door": {
-                "off": "关闭",
-                "on": "开启"
-            },
-            "gas": {
-                "off": "正常",
-                "on": "触发"
-            },
-            "heat": {
-                "off": "正常",
-                "on": "过热"
-            },
-            "lock": {
-                "off": "上锁",
-                "on": "解锁"
-            },
-            "moisture": {
-                "off": "干燥",
-                "on": "湿润"
-            },
-            "motion": {
-                "off": "未触发",
-                "on": "触发"
-            },
-            "occupancy": {
-                "off": "未触发",
-                "on": "已触发"
-            },
-            "opening": {
-                "off": "关闭",
-                "on": "开启"
-            },
-            "presence": {
-                "off": "离开",
-                "on": "在家"
-            },
-            "problem": {
-                "off": "正常",
-                "on": "异常"
-            },
-            "safety": {
-                "off": "安全",
-                "on": "危险"
-            },
-            "smoke": {
-                "off": "正常",
-                "on": "触发"
-            },
-            "sound": {
-                "off": "正常",
-                "on": "触发"
-            },
-            "vibration": {
-                "off": "正常",
-                "on": "触发"
-            },
-            "window": {
-                "off": "关闭",
-                "on": "开启"
-            }
-        },
-        "calendar": {
-            "off": "关",
-            "on": "开"
-        },
-        "camera": {
-            "idle": "待机",
-            "recording": "录制中",
-            "streaming": "监控中"
-        },
-        "climate": {
-            "cool": "制冷",
-            "dry": "除湿",
-            "fan_only": "仅送风",
-            "heat": "制热",
-            "heat_cool": "制热/制冷",
-            "off": "关"
-        },
-        "configurator": {
-            "configure": "设置",
-            "configured": "设置成功"
-        },
-        "cover": {
-            "closed": "已关闭",
-            "closing": "正在关闭",
-            "open": "已打开",
-            "opening": "正在打开",
-            "stopped": "已停止"
-        },
         "default": {
             "off": "关",
             "on": "开",
             "unavailable": "不可用",
             "unknown": "未知"
-        },
-        "device_tracker": {
-            "not_home": "离开"
-        },
-        "fan": {
-            "off": "关闭",
-            "on": "开启"
-        },
-        "group": {
-            "closed": "已关闭",
-            "closing": "正在关闭",
-            "home": "在家",
-            "locked": "已锁定",
-            "not_home": "离开",
-            "off": "关闭",
-            "ok": "正常",
-            "on": "开",
-            "open": "开启",
-            "opening": "正在打开",
-            "problem": "异常",
-            "stopped": "已停止",
-            "unlocked": "已解锁"
-        },
-        "input_boolean": {
-            "off": "关",
-            "on": "开"
-        },
-        "light": {
-            "off": "关",
-            "on": "开"
-        },
-        "lock": {
-            "locked": "锁定",
-            "unlocked": "解锁"
-        },
-        "media_player": {
-            "idle": "空闲",
-            "off": "关闭",
-            "on": "开启",
-            "paused": "已暂停",
-            "playing": "正在播放",
-            "standby": "待机"
-        },
-        "person": {
-            "home": "在家"
-        },
-        "plant": {
-            "ok": "正常",
-            "problem": "异常"
-        },
-        "remote": {
-            "off": "关",
-            "on": "开"
-        },
-        "scene": {
-            "scening": "当前场景"
-        },
-        "script": {
-            "off": "关闭",
-            "on": "开"
-        },
-        "sensor": {
-            "off": "关闭",
-            "on": "开启"
-        },
-        "sun": {
-            "above_horizon": "日出",
-            "below_horizon": "日落"
-        },
-        "switch": {
-            "off": "关",
-            "on": "开"
-        },
-        "timer": {
-            "active": "激活",
-            "idle": "空闲",
-            "paused": "暂停"
-        },
-        "vacuum": {
-            "cleaning": "正在清扫",
-            "docked": "停靠",
-            "error": "错误",
-            "idle": "空闲",
-            "off": "关闭",
-            "on": "开启",
-            "paused": "已暂停",
-            "returning": "正在返回"
-        },
-        "weather": {
-            "clear-night": "夜间晴朗",
-            "cloudy": "阴",
-            "exceptional": "特殊",
-            "fog": "雾",
-            "hail": "冰雹",
-            "lightning": "雷电",
-            "lightning-rainy": "雷阵雨",
-            "partlycloudy": "多云",
-            "pouring": "暴雨",
-            "rainy": "雨",
-            "snowy": "雪",
-            "snowy-rainy": "雨夹雪",
-            "sunny": "晴",
-            "windy": "有风",
-            "windy-variant": "有风"
-        },
-        "zwave": {
-            "default": {
-                "dead": "断开",
-                "initializing": "初始化",
-                "ready": "就绪",
-                "sleeping": "休眠"
-            },
-            "query_stage": {
-                "dead": "断开 ({query_stage})",
-                "initializing": "初始化 ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -442,8 +200,7 @@
             },
             "script": {
                 "cancel": "取消",
-                "cancel_multiple": "取消 {number} 个",
-                "execute": "执行"
+                "cancel_multiple": "取消 {number} 个"
             },
             "service": {
                 "run": "运行"
@@ -621,16 +378,15 @@
                     "was_normal": "正常",
                     "was_opened": "已打开",
                     "was_plugged_in": "已插入",
-                    "was_safe": "安全",
+                    "was_safe": "[%key_id:6884522%]",
                     "was_unlocked": "已解锁",
                     "was_unplugged": "已拔出",
-                    "was_unsafe": "危险"
+                    "was_unsafe": "[%key_id:6884523%]"
                 }
             },
             "media-browser": {
                 "audio_not_supported": "您的浏览器不支持音频元素。",
                 "choose_player": "选择播放器",
-                "choose-source": "选择媒体源",
                 "class": {
                     "album": "专辑",
                     "app": "应用",
@@ -652,13 +408,6 @@
                     "tv_show": "电视节目",
                     "url": "网址",
                     "video": "视频"
-                },
-                "content-type": {
-                    "album": "专辑",
-                    "artist": "艺术家",
-                    "library": "媒体库",
-                    "playlist": "播放列表",
-                    "server": "服务器"
                 },
                 "documentation": "文档",
                 "learn_adding_local_media": "请参阅{documentation}以了解更多关于添加媒体的信息。",
@@ -701,7 +450,6 @@
                     "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
                     "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}"
                 },
-                "future": "{time}后",
                 "future_duration": {
                     "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}后",
                     "hour": "{count} {count, plural,\n  one {小时}\n  other {小时}\n}后",
@@ -711,7 +459,6 @@
                 },
                 "just_now": "刚刚",
                 "never": "从未",
-                "past": "{time}前",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}前",
                     "hour": "{count} {count, plural,\none {小时}\nother {小时}\n}前",
@@ -841,7 +588,6 @@
                 "crop": "剪裁"
             },
             "more_info_control": {
-                "controls": "控制项",
                 "cover": {
                     "close_cover": "关闭卷帘",
                     "close_tile_cover": "关闭翻转式卷帘",
@@ -926,7 +672,6 @@
                         "logs": "日志",
                         "lovelace": "Lovelace 仪表盘",
                         "navigate_to": "转到 {panel}",
-                        "navigate_to_config": "转到{panel}配置",
                         "person": "人员",
                         "scene": "场景",
                         "script": "脚本",
@@ -1009,9 +754,7 @@
                 },
                 "unknown": "未知",
                 "zha_device_card": {
-                    "area_picker_label": "区域",
-                    "device_name_placeholder": "更改设备名称",
-                    "update_name_button": "更新名称"
+                    "device_name_placeholder": "更改设备名称"
                 }
             }
         },
@@ -1055,10 +798,6 @@
             "triggered": "已触发 {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "我的日历",
-                "today": "今天"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "缺少某些配置选项？请启用高级模式",
@@ -1176,8 +915,7 @@
                                     "label": "激活场景"
                                 },
                                 "service": {
-                                    "label": "调用服务",
-                                    "service_data": "服务数据"
+                                    "label": "调用服务"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "超时继续",
@@ -1197,8 +935,6 @@
                         "blueprint": {
                             "blueprint_to_use": "要使用的 Blueprint",
                             "header": "Blueprint",
-                            "inputs": "输入",
-                            "manage_blueprints": "管理 Blueprint",
                             "no_blueprints": "您还没有 Blueprint。",
                             "no_inputs": "该 Blueprint 没有任何输入。"
                         },
@@ -1453,7 +1189,6 @@
                         "header": "导入 Blueprint",
                         "import_btn": "预览 Blueprint",
                         "import_header": "Blueprint \"{name}\"",
-                        "import_introduction": "您可以从 Github 和社区论坛导入其他用户的 Blueprint。请在下方输入 Blueprint 的网址。",
                         "import_introduction_link": "您可以从 Github 和{community_link}导入其他用户的 Blueprint。请在下方输入 Blueprint 的 URL。",
                         "importing": "正在导入 Blueprint...",
                         "raw_blueprint": "Blueprint 内容",
@@ -1575,7 +1310,6 @@
                         "not_exposed_entities": "不可发现的实体",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "远程控制智能家居，还可接入 Alexa 和 Google Assistant",
                     "description_login": "登录为 {email}",
                     "description_not_login": "未登录",
@@ -1708,7 +1442,6 @@
                     "pick_attribute": "选择要覆盖的属性",
                     "picker": {
                         "documentation": "自定义文档",
-                        "entity": "实体",
                         "header": "自定义",
                         "introduction": "调整每个实体的属性。添加/编辑的自定义设置将立即生效，删除的自定义设置将在实体更新时生效。"
                     },
@@ -1755,7 +1488,6 @@
                         "integration": "集成",
                         "manufacturer": "制造商",
                         "model": "型号",
-                        "no_area": "没有区域",
                         "no_devices": "没有设备"
                     },
                     "delete": "删除",
@@ -1911,42 +1643,9 @@
                     "source": "源：",
                     "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "已启用 Alexa",
-                                "can_reach_cert_server": "可访问证书服务器",
-                                "can_reach_cloud": "可访问 Home Assistant Cloud",
-                                "can_reach_cloud_auth": "可访问认证服务器",
-                                "google_enabled": "已启用 Google",
-                                "logged_in": "已登录",
-                                "relayer_connected": "通过代理连接",
-                                "remote_connected": "远程连接",
-                                "remote_enabled": "已启用远程控制",
-                                "subscription_expiration": "订阅到期时间"
-                            },
-                            "homeassistant": {
-                                "arch": "CPU 架构",
-                                "dev": "开发版",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "安装类型",
-                                "os_name": "操作系统名称",
-                                "os_version": "操作系统版本",
-                                "python_version": "Python 版本",
-                                "timezone": "时区",
-                                "version": "版本",
-                                "virtualenv": "虚拟环境"
-                            },
-                            "lovelace": {
-                                "dashboards": "仪表盘",
-                                "mode": "模式",
-                                "resources": "资源"
-                            }
-                        },
                         "manage": "管理",
                         "more_info": "更多信息"
-                    },
-                    "title": "信息"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "集成页面",
@@ -1960,7 +1659,6 @@
                     "config_entry": {
                         "area": "位于：{area}",
                         "delete": "删除",
-                        "delete_button": "删除{integration}",
                         "delete_confirm": "您确定要删除此集成吗？",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
@@ -1971,8 +1669,6 @@
                         "hub": "连接于",
                         "manuf": "by {manufacturer}",
                         "no_area": "没有区域",
-                        "no_device": "无设备关联的实体",
-                        "no_devices": "此集成没有设备。",
                         "options": "选项",
                         "reload": "重载",
                         "reload_confirm": "集成已重新加载",
@@ -1980,9 +1676,7 @@
                         "rename": "重命名",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
                         "services": "{count} {count, plural,\n  one {个服务}\n  other {个服务}\n}",
-                        "settings_button": "编辑{integration}设置",
                         "system_options": "系统选项",
-                        "system_options_button": "{integration}系统选项",
                         "unnamed_entry": "未命名条目"
                     },
                     "config_flow": {
@@ -2043,8 +1737,7 @@
                     "multiple_messages": "消息首次出现在 {time}，显示了 {counter} 次",
                     "no_errors": "未报告任何错误。",
                     "no_issues": "没有新问题！",
-                    "refresh": "刷新",
-                    "title": "日志"
+                    "refresh": "刷新"
                 },
                 "lovelace": {
                     "caption": "Lovelace 仪表盘",
@@ -2375,8 +2068,7 @@
                         "learn_more": "详细了解脚本",
                         "no_scripts": "未找到可编辑的脚本",
                         "run_script": "运行脚本",
-                        "show_info": "显示有关脚本的信息",
-                        "trigger_script": "触发脚本"
+                        "show_info": "显示有关脚本的信息"
                     }
                 },
                 "server_control": {
@@ -2470,11 +2162,9 @@
                     "add_user": {
                         "caption": "添加用户",
                         "create": "创建",
-                        "name": "名字",
                         "password": "密码",
                         "password_confirm": "确认密码",
-                        "password_not_match": "密码不匹配",
-                        "username": "用户名"
+                        "password_not_match": "密码不匹配"
                     },
                     "caption": "用户",
                     "description": "管理用户",
@@ -2518,19 +2208,12 @@
                     "add_device": "添加设备",
                     "add_device_page": {
                         "discovered_text": "发现的设备会立即显示在这里。",
-                        "discovery_text": "发现的设备将显示在这里。请按照设备的说明进行操作，将设备置于配对模式。",
-                        "header": "Zigbee 家庭自动化 - 添加设备",
                         "no_devices_found": "未发现设备。请确保设备处于配对模式，并且在搜索设备时保持唤醒。",
                         "pairing_mode": "请确保您的设备处于配对模式。有关如何进入配对模式，请查阅设备说明书。",
                         "search_again": "再次搜索",
                         "spinner": "正在查找 ZHA Zigbee 设备......"
                     },
-                    "add": {
-                        "caption": "添加设备",
-                        "description": "将设备添加到 Zigbee 网络"
-                    },
                     "button": "配置",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "所选簇的属性",
                         "get_zigbee_attribute": "获取 Zigbee 属性",
@@ -2554,13 +2237,10 @@
                         "introduction": "“簇”是 Zigbee 功能的构建基础，它们将功能分成逻辑单元。有客户端和服务器类型，由属性和命令组成。"
                     },
                     "common": {
-                        "add_devices": "添加设备",
                         "clusters": "簇",
-                        "devices": "设备",
                         "manufacturer_code_override": "制造商代码覆盖",
                         "value": "值"
                     },
-                    "description": "Zigbee 智能家居(ZHA) 网络管理",
                     "device_pairing_card": {
                         "CONFIGURED": "配置完成",
                         "CONFIGURED_status_text": "正在初始化",
@@ -2570,9 +2250,6 @@
                         "INTERVIEW_COMPLETE_status_text": "正在配置",
                         "PAIRED": "发现设备",
                         "PAIRED_status_text": "开始协商"
-                    },
-                    "devices": {
-                        "header": "Zigbee 家庭自动化 - 设备"
                     },
                     "group_binding": {
                         "bind_button_help": "将所选群组绑定到所选设备的簇。",
@@ -2588,48 +2265,24 @@
                     "groups": {
                         "add_group": "添加群组",
                         "add_members": "添加成员",
-                        "adding_members": "添加成员中",
                         "caption": "群组",
                         "create": "创建群组",
                         "create_group": "Zigbee 家庭自动化 - 新增群组",
                         "create_group_details": "输入所需的详细信息以创建新的 zigbee 群组",
                         "creating_group": "创建群组中",
-                        "description": "管理 Zigbee 群组",
                         "group_details": "以下是所选 Zigbee 群组的所有详细信息。",
                         "group_id": "群组 ID",
                         "group_info": "群组信息",
                         "group_name_placeholder": "群组名",
                         "group_not_found": "找不到群组！",
-                        "group-header": "Zigbee 家庭自动化 - 群组资讯",
                         "groups": "群组",
-                        "groups-header": "Zigbee 家庭自动化 - 群组管理",
-                        "header": "Zigbee 家庭自动化 - 群组管理",
-                        "introduction": "创建和修改 Zigbee 群组",
-                        "manage_groups": "管理 Zigbee 群组",
                         "members": "成员",
-                        "remove_groups": "删除群组",
                         "remove_members": "删除成员",
-                        "removing_groups": "删除群组中",
-                        "removing_members": "删除成员中",
-                        "zha_zigbee_groups": "ZHA Zigbee 群组"
-                    },
-                    "header": "配置 Zigbee 家庭自动化",
-                    "introduction": "您可以在此配置 ZHA 组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
-                    "network_management": {
-                        "header": "网络管理",
-                        "introduction": "影响整个网络的命令"
+                        "removing_members": "删除成员中"
                     },
                     "network": {
                         "caption": "网络"
                     },
-                    "node_management": {
-                        "header": "设备管理",
-                        "help_node_dropdown": "选择一个设备以查看每个设备的选项。",
-                        "hint_battery_devices": "注意：在睡眠（电池供电）设备执行命令时，它们必须处于唤醒状态。通常，您可以通过触发睡眠设备来唤醒它。",
-                        "hint_wakeup": "小米传感器等某些设备具有唤醒按钮，您可以每隔约 5 秒按一下此按钮，以便在与设备交互时保持设备唤醒。",
-                        "introduction": "运行影响单个设备的 ZHA 命令。请选择设备以查看可用命令列表。"
-                    },
-                    "title": "Zigbee 家庭自动化",
                     "visualization": {
                         "caption": "可视化",
                         "header": "网络可视化",
@@ -2701,7 +2354,6 @@
                         "header": "管理 Z-Wave 网络",
                         "home_id": "家庭 ID",
                         "introduction": "管理 Z-Wave 网络和节点",
-                        "node_count": "节点数量",
                         "nodes_ready": "节点就绪",
                         "server_version": "服务器版本"
                     },
@@ -2738,7 +2390,6 @@
                 },
                 "zwave": {
                     "button": "配置",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "索引",
                         "instance": "实例",
@@ -2857,17 +2508,12 @@
                         "type": "事件类型"
                     },
                     "services": {
-                        "alert_parsing_yaml": "解析YAML时出错： {data}",
                         "call_service": "调用服务",
                         "column_description": "描述",
                         "column_example": "示例",
                         "column_parameter": "参数",
-                        "data": "服务数据（格式为 YAML，选填）",
                         "description": "服务开发工具可让您调用 Home Assistant 中任何可用的服务。",
                         "fill_example_data": "填写示例数据",
-                        "no_description": "没有描述",
-                        "no_parameters": "此服务不带任何参数。",
-                        "select_service": "选择服务以查看其描述",
                         "title": "服务"
                     },
                     "states": {
@@ -2908,25 +2554,20 @@
                 }
             },
             "history": {
-                "period": "日期范围",
                 "ranges": {
                     "last_week": "上周",
                     "this_week": "本周",
                     "today": "今天",
                     "yesterday": "昨天"
-                },
-                "showing_entries": "显示自以下日期的图表"
+                }
             },
             "logbook": {
-                "entries_not_found": "未找到日志条目。",
-                "period": "周期",
                 "ranges": {
                     "last_week": "上周",
                     "this_week": "本周",
                     "today": "今天",
                     "yesterday": "昨天"
-                },
-                "showing_entries": "显示以下日期的条目"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2935,7 +2576,6 @@
                     "yaml_unsupported": "在 YAML 模式下使用 Lovelace 时不能使用此功能。"
                 },
                 "cards": {
-                    "action_confirmation": "您确定要执行动作“{action}”吗？",
                     "actions": {
                         "action_confirmation": "您确定要执行动作“{action}”吗？",
                         "no_entity_more_info": "未指定要显示更多信息的实体",
@@ -2974,13 +2614,11 @@
                         "reorder_items": "重新排序项目"
                     },
                     "starting": {
-                        "description": "Home Assistant 正在启动，请稍候。",
-                        "header": "Home Assistant 正在启动......"
+                        "description": "Home Assistant 正在启动，请稍候。"
                     }
                 },
                 "changed_toast": {
-                    "message": "此仪表盘的 Lovelace 配置已更新。刷新页面以查看更改？",
-                    "refresh": "刷新"
+                    "message": "此仪表盘的 Lovelace 配置已更新。刷新页面以查看更改？"
                 },
                 "components": {
                     "timestamp-display": {
@@ -2999,7 +2637,6 @@
                             "toggle": "切换",
                             "url": "网址"
                         },
-                        "editor_service_data": "服务数据只能在代码编辑器中输入",
                         "navigation_path": "导航路径",
                         "url_path": "网址路径"
                     },
@@ -3197,7 +2834,6 @@
                         },
                         "sensor": {
                             "description": "“传感器”卡片供您快速了解传感器的状态，还提供可选的图表来表示其随时间的变化。",
-                            "graph_detail": "图形详细信息",
                             "graph_type": "图形类型",
                             "name": "传感器",
                             "show_more_detail": "显示更多信息"
@@ -3368,7 +3004,6 @@
                     "configure_ui": "编辑仪表盘",
                     "exit_edit_mode": "退出 UI 编辑模式",
                     "help": "帮助",
-                    "refresh": "刷新",
                     "reload_resources": "重载资源",
                     "start_conversation": "开始对话"
                 },
@@ -3493,8 +3128,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "您的电脑不允许访问。",
-                                "not_whitelisted": "您的电脑不在白名单内。"
+                                "not_allowed": "您的电脑不允许访问。"
                             },
                             "step": {
                                 "init": {
@@ -3647,15 +3281,12 @@
                     "create": "创建令牌",
                     "create_failed": "无法创建访问令牌。",
                     "created": "创建于 {date}",
-                    "created_at": "创建于 {date}",
                     "delete_failed": "无法删除访问令牌。",
                     "description": "创建长期访问令牌以允许脚本与 Home Assistant 实例进行交互。每个令牌在创建后有效期为 10 年。以下是处于激活状态的长期访问令牌。",
                     "empty_state": "您还没有长期访问令牌。",
                     "header": "长期访问令牌",
-                    "last_used": "上次使用于 {date} 来自 {location}",
                     "learn_auth_requests": "了解如何创建经过身份验证的请求。",
                     "name": "名称",
-                    "not_used": "从未使用过",
                     "prompt_copy_token": "请复制您的访问令牌。它不会再显示出来。",
                     "prompt_name": "为令牌指定名称"
                 },
@@ -3720,11 +3351,6 @@
             },
             "shopping_list": {
                 "start_conversation": "开始对话"
-            },
-            "shopping-list": {
-                "add_item": "添加项目",
-                "clear_completed": "清除已完成项目",
-                "microphone_tip": "点击右上角麦克风图标并说 “Add candy to my shopping list”"
             }
         },
         "sidebar": {
