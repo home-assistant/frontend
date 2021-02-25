@@ -131,7 +131,14 @@ export class HaCodeEditor extends UpdatingElement {
           loaded.lineNumbers(),
           loaded.keymap.of([
             ...loaded.defaultKeymap,
-            loaded.defaultTabBinding,
+            {
+              key: "Tab",
+              run: loaded.indentMore,
+            },
+            {
+              key: "Shift-Tab",
+              run: loaded.indentLess,
+            },
             saveKeyBinding,
           ]),
           loaded.tagExtension(modeTag, this._mode),
