@@ -19,6 +19,7 @@ import {
   fetchHassioInfo,
   fetchHassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
+import { fetchSupervisorStore } from "../../src/data/supervisor/store";
 import {
   getSupervisorEventCollection,
   subscribeSupervisorEvents,
@@ -122,6 +123,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       os,
       network,
       resolution,
+      store,
     ] = await Promise.all([
       fetchHassioAddonsInfo(this.hass),
       fetchHassioSupervisorInfo(this.hass),
@@ -131,6 +133,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       fetchHassioHassOsInfo(this.hass),
       fetchNetworkInfo(this.hass),
       fetchHassioResolution(this.hass),
+      fetchSupervisorStore(this.hass),
     ]);
 
     this.supervisor = {
@@ -142,6 +145,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       os,
       network,
       resolution,
+      store,
     };
 
     this.addEventListener("supervisor-update", (ev) =>
