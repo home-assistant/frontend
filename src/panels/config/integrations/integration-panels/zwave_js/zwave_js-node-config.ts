@@ -186,10 +186,6 @@ class ZWaveJSNodeConfig extends LitElement {
         ha-card:last-child {
           margin-bottom: 24px;
         }
-
-        [hidden] {
-          display: none;
-        }
       `,
     ];
   }
