@@ -199,11 +199,11 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: var(--ha-picture-card-background-color, rgba(0, 0, 0, 0.3));
         padding: 16px;
         font-size: 16px;
         line-height: 16px;
-        color: white;
+        color: var(--ha-picture-card-text-color, white);
       }
 
       .both {
