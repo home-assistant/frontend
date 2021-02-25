@@ -4,6 +4,18 @@ import { HomeAssistant } from "../../types";
 import { SupervisorArch } from "../supervisor/supervisor";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
+export type AddonStage = "stable" | "experimental" | "deprecated";
+export type AddonAppArmour = "disable" | "default" | "profile";
+export type AddonRole = "default" | "homeassistant" | "manager" | "admin";
+export type AddonStartup =
+  | "initialize"
+  | "system"
+  | "services"
+  | "application"
+  | "once";
+export type AddonState = "started" | "stopped" | null;
+export type AddonRepository = "core" | "local" | string;
+
 export interface HassioAddonInfo {
   advanced: boolean;
   available: boolean;
@@ -15,10 +27,10 @@ export interface HassioAddonInfo {
   installed: boolean;
   logo: boolean;
   name: string;
-  repository: "core" | "local" | string;
+  repository: AddonRepository;
   slug: string;
-  stage: "stable" | "experimental" | "deprecated";
-  state: "started" | "stopped" | null;
+  stage: AddonStage;
+  state: AddonState;
   update_available: boolean;
   url: string | null;
   version_latest: string;
@@ -26,7 +38,7 @@ export interface HassioAddonInfo {
 }
 
 export interface HassioAddonDetails extends HassioAddonInfo {
-  apparmor: "disable" | "default" | "profile";
+  apparmor: AddonAppArmour;
   arch: SupervisorArch[];
   audio_input: null | string;
   audio_output: null | string;
@@ -44,7 +56,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   full_access: boolean;
   gpio: boolean;
   hassio_api: boolean;
-  hassio_role: "default" | "homeassistant" | "manager" | "admin";
+  hassio_role: AddonRole;
   hostname: string;
   homeassistant_api: boolean;
   host_dbus: boolean;
@@ -68,7 +80,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   schema: HaFormSchema[] | null;
   services_role: string[];
   slug: string;
-  startup: "initialize" | "system" | "services" | "application" | "once";
+  startup: AddonStartup;
   stdin: boolean;
   watchdog: null | boolean;
   webui: null | string;

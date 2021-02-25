@@ -10,6 +10,7 @@ import {
   HassioInfo,
   HassioSupervisorInfo,
 } from "../hassio/supervisor";
+import { SupervisorStore } from "./store";
 
 export const supervisorWSbaseCommand = {
   type: "supervisor/api",
@@ -25,6 +26,7 @@ export const supervisorStore = {
   resolution: "/resolution/info",
   os: "/os/info",
   addon: "/addons",
+  store: "/store",
 };
 
 export type SupervisorArch = "armhf" | "armv7" | "aarch64" | "i386" | "amd64";
@@ -36,7 +38,8 @@ export type SupervisorObject =
   | "network"
   | "resolution"
   | "os"
-  | "addon";
+  | "addon"
+  | "store";
 
 interface supervisorApiRequest {
   endpoint: string;
@@ -61,6 +64,7 @@ export interface Supervisor {
   resolution: HassioResolution;
   os: HassioHassOSInfo;
   addon: HassioAddonsInfo;
+  store: SupervisorStore;
 }
 
 export const supervisorApiWsRequest = <T>(
