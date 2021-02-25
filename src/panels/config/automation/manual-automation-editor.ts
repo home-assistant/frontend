@@ -18,7 +18,7 @@ import {
   Condition,
   ManualAutomationConfig,
   Trigger,
-  triggerAutomation,
+  triggerAutomationActions,
 } from "../../../data/automation";
 import { Action, MODES, MODES_MAX } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
@@ -140,7 +140,7 @@ export class HaManualAutomationEditor extends LitElement {
                     )}
                   </div>
                   <mwc-button
-                    @click=${this._excuteAutomation}
+                    @click=${this._runActions}
                     .stateObj=${this.stateObj}
                   >
                     ${this.hass.localize("ui.card.automation.trigger")}
@@ -240,8 +240,8 @@ export class HaManualAutomationEditor extends LitElement {
       </ha-config-section>`;
   }
 
-  private _excuteAutomation(ev: Event) {
-    triggerAutomation(this.hass, (ev.target as any).stateObj.entity_id);
+  private _runActions(ev: Event) {
+    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
   private _valueChanged(ev: CustomEvent) {

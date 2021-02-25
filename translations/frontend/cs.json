@@ -95,253 +95,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Zabezpečeno",
-            "armed_away": "Režim nepřítomnost",
-            "armed_custom_bypass": "Zabezpečeno uživatelským obejitím",
-            "armed_home": "Režim domov",
-            "armed_night": "Noční režim",
-            "arming": "Zabezpečování",
-            "disarmed": "Nezabezpečeno",
-            "disarming": "Odbezpečování",
-            "pending": "Čekající",
-            "triggered": "Spuštěno"
-        },
-        "automation": {
-            "off": "Vypnuto",
-            "on": "Aktivní"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normální",
-                "on": "Nízký stav"
-            },
-            "cold": {
-                "off": "Normální",
-                "on": "Studený"
-            },
-            "connectivity": {
-                "off": "Odpojeno",
-                "on": "Připojeno"
-            },
-            "default": {
-                "off": "Neaktivní",
-                "on": "Aktivní"
-            },
-            "door": {
-                "off": "Zavřeno",
-                "on": "Otevřeno"
-            },
-            "garage_door": {
-                "off": "Zavřeno",
-                "on": "Otevřeno"
-            },
-            "gas": {
-                "off": "Žádný plyn",
-                "on": "Zjištěn plyn"
-            },
-            "heat": {
-                "off": "Normální",
-                "on": "Horký"
-            },
-            "lock": {
-                "off": "Zamčeno",
-                "on": "Odemčeno"
-            },
-            "moisture": {
-                "off": "Sucho",
-                "on": "Vlhko"
-            },
-            "motion": {
-                "off": "Žádný pohyb",
-                "on": "Zaznamenán pohyb"
-            },
-            "occupancy": {
-                "off": "Volno",
-                "on": "Obsazeno"
-            },
-            "opening": {
-                "off": "Zavřeno",
-                "on": "Otevřeno"
-            },
-            "presence": {
-                "off": "Pryč",
-                "on": "Doma"
-            },
-            "problem": {
-                "off": "V pořádku",
-                "on": "Problém"
-            },
-            "safety": {
-                "off": "Zajištěno",
-                "on": "Nezajištěno"
-            },
-            "smoke": {
-                "off": "Žádný dým",
-                "on": "Zjištěn dým"
-            },
-            "sound": {
-                "off": "Ticho",
-                "on": "Zachycen zvuk"
-            },
-            "vibration": {
-                "off": "Klid",
-                "on": "Zjištěny vibrace"
-            },
-            "window": {
-                "off": "Zavřeno",
-                "on": "Otevřeno"
-            }
-        },
-        "calendar": {
-            "off": "Vypnuto",
-            "on": "Zapnuto"
-        },
-        "camera": {
-            "idle": "Nečinný",
-            "recording": "Záznam",
-            "streaming": "Streamování"
-        },
-        "climate": {
-            "cool": "Chlazení",
-            "dry": "Vysoušení",
-            "fan_only": "Pouze ventilátor",
-            "heat": "Topení",
-            "heat_cool": "Vytápění/Chlazení",
-            "off": "Vypnuto"
-        },
-        "configurator": {
-            "configure": "Nastavit",
-            "configured": "Nastaveno"
-        },
-        "cover": {
-            "closed": "Zavřeno",
-            "closing": "Zavírá se",
-            "open": "Otevřeno",
-            "opening": "Otvírá se",
-            "stopped": "Zastaveno"
-        },
         "default": {
             "off": "Vypnuto",
             "on": "Zapnuto",
             "unavailable": "Není k dispozici",
             "unknown": "Nezjištěno"
-        },
-        "device_tracker": {
-            "not_home": "Pryč"
-        },
-        "fan": {
-            "off": "Vypnuto",
-            "on": "Zapnuto"
-        },
-        "group": {
-            "closed": "Zavřeno",
-            "closing": "Zavírá se",
-            "home": "Doma",
-            "locked": "Zamčeno",
-            "not_home": "Pryč",
-            "off": "Vypnuto",
-            "ok": "V pořádku",
-            "on": "Zapnuto",
-            "open": "Otevřeno",
-            "opening": "Otvírá se",
-            "problem": "Problém",
-            "stopped": "Zastaveno",
-            "unlocked": "Odemčeno"
-        },
-        "input_boolean": {
-            "off": "Neaktivní",
-            "on": "Zapnuto"
-        },
-        "light": {
-            "off": "Vypnuto",
-            "on": "Aktivní"
-        },
-        "lock": {
-            "locked": "Zamčeno",
-            "unlocked": "Odemčeno"
-        },
-        "media_player": {
-            "idle": "Nečinný",
-            "off": "Vypnuto",
-            "on": "Zapnuto",
-            "paused": "Pozastaveno",
-            "playing": "Přehrávání",
-            "standby": "Pohotovostní režim"
-        },
-        "person": {
-            "home": "Doma"
-        },
-        "plant": {
-            "ok": "V pořádku",
-            "problem": "Problém"
-        },
-        "remote": {
-            "off": "Vypnuto",
-            "on": "Zapnuto"
-        },
-        "scene": {
-            "scening": "Scenérie"
-        },
-        "script": {
-            "off": "Vypnuto",
-            "on": "Zapnuto"
-        },
-        "sensor": {
-            "off": "Vypnuto",
-            "on": "Zapnuto"
-        },
-        "sun": {
-            "above_horizon": "Nad horizontem",
-            "below_horizon": "Za horizontem"
-        },
-        "switch": {
-            "off": "Vypnuto",
-            "on": "Zapnuto"
-        },
-        "timer": {
-            "active": "aktivní",
-            "idle": "nečinné",
-            "paused": "pozastaveno"
-        },
-        "vacuum": {
-            "cleaning": "Čistí",
-            "docked": "Ve stanici",
-            "error": "Chyba",
-            "idle": "Nečinný",
-            "off": "Vypnuto",
-            "on": "Zapnuto",
-            "paused": "Pozastaveno",
-            "returning": "Návrat do stanice"
-        },
-        "weather": {
-            "clear-night": "Jasná noc",
-            "cloudy": "Zataženo",
-            "exceptional": "Vyjímečné",
-            "fog": "Mlha",
-            "hail": "Krupobití",
-            "lightning": "Bouře",
-            "lightning-rainy": "Bouře a déšť",
-            "partlycloudy": "Polojasno",
-            "pouring": "Liják",
-            "rainy": "Déšť",
-            "snowy": "Sníh",
-            "snowy-rainy": "Déšť se sněhem",
-            "sunny": "Slunečno",
-            "windy": "Větrno",
-            "windy-variant": "Větrno"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Nereaguje",
-                "initializing": "Inicializace",
-                "ready": "Připraveno",
-                "sleeping": "Úsporný režim"
-            },
-            "query_stage": {
-                "dead": "Nereaguje ({query_stage})",
-                "initializing": "Inicializace ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -442,8 +200,7 @@
             },
             "script": {
                 "cancel": "Zrušit",
-                "cancel_multiple": "Zrušit {number}",
-                "execute": "Vykonat"
+                "cancel_multiple": "Zrušit {number}"
             },
             "service": {
                 "run": "Spustit"
@@ -630,7 +387,6 @@
             "media-browser": {
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
                 "choose_player": "Vyberte přehrávač",
-                "choose-source": "Zvolte zdroj",
                 "class": {
                     "album": "Album",
                     "app": "Aplikace",
@@ -652,13 +408,6 @@
                     "tv_show": "Televizní pořad",
                     "url": "URL adresa",
                     "video": "Video"
-                },
-                "content-type": {
-                    "album": "Album",
-                    "artist": "Umělec",
-                    "library": "Knihovna",
-                    "playlist": "Seznam skladeb",
-                    "server": "Server"
                 },
                 "documentation": "dokumentace",
                 "learn_adding_local_media": "Další informace o přidávání médií naleznete v {documentation}.",
@@ -701,7 +450,6 @@
                     "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekund}\n}",
                     "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
                 },
-                "future": "Za {time}",
                 "future_duration": {
                     "day": "Za {count} {count, plural,\none {den}\nfew {dny}\nother {dní}\n}",
                     "hour": "Za {count} {count, plural,\none {hodinu}\nfew {hodiny}\nother {hodin}\n}",
@@ -711,7 +459,6 @@
                 },
                 "just_now": "Právě teď",
                 "never": "Nikdy",
-                "past": "Před {time}",
                 "past_duration": {
                     "day": "Před {count} {count, plural,\none {dnem}\nother {dny}\n}",
                     "hour": "Před {count} {count, plural,\none {hodinou}\nother {hodinami}\n}",
@@ -719,6 +466,9 @@
                     "second": "Před {count} {count, plural,\none {sekundou}\nother {sekundami}\n}",
                     "week": "Před {count} {count, plural,\none {týdnem}\nother {týdny}\n}"
                 }
+            },
+            "service-control": {
+                "service_data": "Data služby"
             },
             "service-picker": {
                 "service": "Služba"
@@ -841,7 +591,6 @@
                 "crop": "Oříznout"
             },
             "more_info_control": {
-                "controls": "Ovládací prvky",
                 "cover": {
                     "close_cover": "Zavřít",
                     "close_tile_cover": "Snížit náklon",
@@ -926,7 +675,6 @@
                         "logs": "Logy",
                         "lovelace": "Ovládací panely Lovelace",
                         "navigate_to": "Přejít na {panel}",
-                        "navigate_to_config": "Přejít na nastavení {panel}",
                         "person": "Osoby",
                         "scene": "Scény",
                         "script": "Skripty",
@@ -1009,9 +757,7 @@
                 },
                 "unknown": "Neznámý",
                 "zha_device_card": {
-                    "area_picker_label": "Oblast",
-                    "device_name_placeholder": "Změnit název zařízení",
-                    "update_name_button": "Název aktualizace"
+                    "device_name_placeholder": "Změnit název zařízení"
                 }
             }
         },
@@ -1055,10 +801,6 @@
             "triggered": "Spuštěno {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Moje kalendáře",
-                "today": "Dnes"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Chybí vám možnosti nastavení? Zapněte rozšířený režim",
@@ -1176,8 +918,7 @@
                                     "label": "Aktivovat scénu"
                                 },
                                 "service": {
-                                    "label": "Zavolat službu",
-                                    "service_data": "Data služby"
+                                    "label": "Zavolat službu"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Pokračovat po časovém limitu",
@@ -1197,8 +938,6 @@
                         "blueprint": {
                             "blueprint_to_use": "Šablona k použití",
                             "header": "Šablona",
-                            "inputs": "Vstupy",
-                            "manage_blueprints": "Správa šablon",
                             "no_blueprints": "Nemáme žádné šablony",
                             "no_inputs": "Šablona nemá žádné vstupy."
                         },
@@ -1453,7 +1192,6 @@
                         "header": "Import šablony",
                         "import_btn": "Náhled šablony",
                         "import_header": "Šablona \"{name}\"",
-                        "import_introduction": "Můžete importovat šablony od ostatních uživatelů z GitHubu a komunitních fór. Níže zadejte URL adresu šablony.",
                         "import_introduction_link": "Můžete importovat šablony od ostatních uživatelů z GitHubu a {community_link}. Níže zadejte URL adresu šablony.",
                         "importing": "Načítám šablonu...",
                         "raw_blueprint": "Obsah šablony",
@@ -1575,7 +1313,6 @@
                         "not_exposed_entities": "Nevystavené entity",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "Ovládejte, i když nejste doma, a propojte s Alexou a Google Assistantem",
                     "description_login": "Přihlášen jako {email}",
                     "description_not_login": "Nepřihlášen",
@@ -1708,7 +1445,6 @@
                     "pick_attribute": "Vyberte vlastnost, kterou chcete přepsat",
                     "picker": {
                         "documentation": "Dokumentace přizpůsobení",
-                        "entity": "Entita",
                         "header": "Přizpůsobení",
                         "introduction": "Upravit atributy entity. Přídání/úprava bude mít okamžitý efekt. Odebraní se projeví až po aktualizaci entity."
                     },
@@ -1755,7 +1491,6 @@
                         "integration": "Integrace",
                         "manufacturer": "Výrobce",
                         "model": "Model",
-                        "no_area": "Žádná oblast",
                         "no_devices": "Žádná zařízení"
                     },
                     "delete": "Odstranit",
@@ -1911,42 +1646,9 @@
                     "source": "Zdroj:",
                     "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Alexa povolena",
-                                "can_reach_cert_server": "Certifikační server dosažen",
-                                "can_reach_cloud": "Home Assistant Cloud dosažen",
-                                "can_reach_cloud_auth": "Ověřovací server dosažen",
-                                "google_enabled": "Google povolen",
-                                "logged_in": "Přihlášen",
-                                "relayer_connected": "Relayer připojen",
-                                "remote_connected": "Vzdálená správa připojena",
-                                "remote_enabled": "Vzdálená správa povolena",
-                                "subscription_expiration": "Platnost předplatného"
-                            },
-                            "homeassistant": {
-                                "arch": "Architektura CPU",
-                                "dev": "Vývoj",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "Typ instalace",
-                                "os_name": "Jméno operačního systému",
-                                "os_version": "Verze operačního systému",
-                                "python_version": "Verze Pythonu",
-                                "timezone": "Časové pásmo",
-                                "version": "Verze",
-                                "virtualenv": "Virtuální prostředí"
-                            },
-                            "lovelace": {
-                                "dashboards": "Ovládací panely",
-                                "mode": "Režim",
-                                "resources": "Zdroje"
-                            }
-                        },
                         "manage": "Spravovat",
                         "more_info": "více informací"
-                    },
-                    "title": "Informace"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "stránka integrací",
@@ -1960,7 +1662,6 @@
                     "config_entry": {
                         "area": "V {area}",
                         "delete": "Smazat",
-                        "delete_button": "Smazat {integration}",
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
                         "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
@@ -1971,8 +1672,6 @@
                         "hub": "Připojeno přes",
                         "manuf": "od {manufacturer}",
                         "no_area": "Žádná oblast",
-                        "no_device": "Entity bez zařízení",
-                        "no_devices": "Tato integrace nemá žádná zařízení.",
                         "options": "Možnosti",
                         "reload": "Nově načíst",
                         "reload_confirm": "Integrace byla nově načtena",
@@ -1980,9 +1679,7 @@
                         "rename": "Přejmenovat",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "services": "{count} {count, plural,\n  one {služba}\n  few {služby}\n  other {služeb}\n}",
-                        "settings_button": "Upravit nastavení pro {integration}",
                         "system_options": "Více možností",
-                        "system_options_button": "Upravit nastavení pro {integration}",
                         "unnamed_entry": "Nepojmenovaný záznam"
                     },
                     "config_flow": {
@@ -2043,8 +1740,7 @@
                     "multiple_messages": "zpráva se poprvé objevila v {time} a zobrazuje se {counter} krát",
                     "no_errors": "Nebyly hlášeny žádné chyby.",
                     "no_issues": "Nejsou žádné nové problémy!",
-                    "refresh": "Obnovit",
-                    "title": "Logy"
+                    "refresh": "Obnovit"
                 },
                 "lovelace": {
                     "caption": "Ovládací panely Lovelace",
@@ -2375,8 +2071,7 @@
                         "learn_more": "Další informace o skriptech",
                         "no_scripts": "Nemohli jsme najít žádné upravitelné skripty",
                         "run_script": "Spustit skript",
-                        "show_info": "Zobrazit informace o skriptu",
-                        "trigger_script": "Spustit skript"
+                        "show_info": "Zobrazit informace o skriptu"
                     }
                 },
                 "server_control": {
@@ -2470,11 +2165,9 @@
                     "add_user": {
                         "caption": "Přidat uživatele",
                         "create": "Vytvořit",
-                        "name": "Jméno",
                         "password": "Heslo",
                         "password_confirm": "Potvrzení hesla",
-                        "password_not_match": "Hesla se neshodují",
-                        "username": "Uživatelské jméno"
+                        "password_not_match": "Hesla se neshodují"
                     },
                     "caption": "Uživatelé",
                     "description": "Správa uživatelských účtů pro Home Assistant",
@@ -2518,19 +2211,12 @@
                     "add_device": "Přidat zařízení",
                     "add_device_page": {
                         "discovered_text": "Jakmile se objeví nalezne, zobrazí se zde.",
-                        "discovery_text": "Zde se objeví nalezená zařízení. Postupujte dle pokynů pro vaše zařízení a uveďte je do režimu párování.",
-                        "header": "Zigbee Home Automation - Přidat zařízení",
                         "no_devices_found": "Žádná zařízení nalezena, ujistěte se, že jsou v režimu párování a udržujte je zapnuté, zatímco je objevování spuštěno.",
                         "pairing_mode": "Zkontrolujte, zda jsou vaše zařízení v režimu párování. Postupujte podle pokynů svého zařízení.",
                         "search_again": "Hledat znovu",
                         "spinner": "Hledání zařízení ZHA Zigbee ..."
                     },
-                    "add": {
-                        "caption": "Přidat zařízení",
-                        "description": "Přidat zařízení do sítě Zigbee"
-                    },
                     "button": "Nastavit",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributy vybraného klastru",
                         "get_zigbee_attribute": "Získat atribut Zigbee",
@@ -2554,13 +2240,10 @@
                         "introduction": "Clustery jsou stavebními kameny funkčnosti Zigbee. Rozdělují funkčnost na logické jednotky. Existují typy klientů a serverů, které se skládají z atributů a příkazů."
                     },
                     "common": {
-                        "add_devices": "Přidat zařízení",
                         "clusters": "Clustery",
-                        "devices": "Zařízení",
                         "manufacturer_code_override": "Přepsání kódu výrobce",
                         "value": "Hodnota"
                     },
-                    "description": "Správa Zigbee Home Automation",
                     "device_pairing_card": {
                         "CONFIGURED": "Nastavení dokončeno",
                         "CONFIGURED_status_text": "Inicializuji",
@@ -2570,9 +2253,6 @@
                         "INTERVIEW_COMPLETE_status_text": "Nastavuji",
                         "PAIRED": "Zařízení nalezeno",
                         "PAIRED_status_text": "Začínám dotazování"
-                    },
-                    "devices": {
-                        "header": "Zigbee Home Automation - Zařízení"
                     },
                     "group_binding": {
                         "bind_button_help": "Připojit vybranou skupinu s vybranými clustery zařízení.",
@@ -2588,48 +2268,24 @@
                     "groups": {
                         "add_group": "Přidat do skupiny",
                         "add_members": "Přidání členů",
-                        "adding_members": "Přidání členů",
                         "caption": "Skupiny",
                         "create": "Vytvořit skupinu",
                         "create_group": "Zigbee Home Automation - Vytvoření skupiny",
                         "create_group_details": "Zadejte požadované podrobnosti pro vytvoření nové zigbee skupiny",
                         "creating_group": "Vytváření skupiny",
-                        "description": "Správa skupin Zigbee",
                         "group_details": "Zde jsou všechny podrobnosti o vybrané skupině Zigbee.",
                         "group_id": "ID skupiny",
                         "group_info": "Informace o skupině",
                         "group_name_placeholder": "Název skupiny",
                         "group_not_found": "Skupina nenalezena!",
-                        "group-header": "Zigbee Home Automation - Podrobnosti skupiny",
                         "groups": "Skupiny",
-                        "groups-header": "Zigbee Home Automation - Správa skupiny",
-                        "header": "Zigbee Home Automation - Správa skupiny",
-                        "introduction": "Vytvoření a úprava Zigbee skupin",
-                        "manage_groups": "Správa Zigbee skupin",
                         "members": "Členové",
-                        "remove_groups": "Odebrat skupiny",
                         "remove_members": "Odstranit členy",
-                        "removing_groups": "Odstranění skupin",
-                        "removing_members": "Odstranění členů",
-                        "zha_zigbee_groups": "ZHA Zigbee skupiny"
-                    },
-                    "header": "Nastavení Zigbee Home Automation",
-                    "introduction": "Zde je možné nastavit vaše komponenty ZHA a Home Assistant. Z uživatelského rozhraní sice zatím není možné nastavit úplně vše, ale pracujeme na tom.",
-                    "network_management": {
-                        "header": "Správa sítě",
-                        "introduction": "Příkazy, které ovlivňují celou síť"
+                        "removing_members": "Odstranění členů"
                     },
                     "network": {
                         "caption": "Síť"
                     },
-                    "node_management": {
-                        "header": "Správa zařízení",
-                        "help_node_dropdown": "Vyberte zařízení pro zobrazení možností pro jednotlivé zařízení.",
-                        "hint_battery_devices": "Poznámka: Uspávající se (napájené z baterie) zařízení musí být při provádění příkazů vzhůru. Obecně můžete probudit uspávající se zařízení jeho spuštěním.",
-                        "hint_wakeup": "Některá zařízení, jako jsou senzory Xiaomi, mají tlačítko probuzení, které můžete stisknout v intervalu ~ 5 sekund, které udržuje zařízení probuzené, když s nimi komunikujete.",
-                        "introduction": "Spouštějte ZHA příkazy, které ovlivňují specifické zařízení. Vyberte zařízení pro zobrazení seznamu dostupných příkazů."
-                    },
-                    "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Vizualizace",
                         "header": "Vizualizace sítě",
@@ -2701,7 +2357,6 @@
                         "header": "Spravujte svoji síť Z-Wave",
                         "home_id": "ID domácnosti",
                         "introduction": "Správa sítě Z-Wave a uzlů Z-Wave",
-                        "node_count": "Počet uzlů",
                         "nodes_ready": "Uzly připraveny",
                         "server_version": "Verze serveru"
                     },
@@ -2738,7 +2393,6 @@
                 },
                 "zwave": {
                     "button": "Nastavit",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
                         "instance": "Instance",
@@ -2857,17 +2511,12 @@
                         "type": "Typ události"
                     },
                     "services": {
-                        "alert_parsing_yaml": "Chyba při parsování YAML: {data}",
                         "call_service": "Zavolat službu",
                         "column_description": "Popis",
                         "column_example": "Příklad",
                         "column_parameter": "Parametr",
-                        "data": "Data služby (YAML, volitelné)",
                         "description": "Vývojářský nástroj pro služby umožňuje zavolat jakoukoli dostupnou službu v Home Assistant",
                         "fill_example_data": "Vyplnit ukázková data",
-                        "no_description": "Není k dispozici žádný popis",
-                        "no_parameters": "Tato služba nemá žádné parametry.",
-                        "select_service": "Chcete-li zobrazit popis, vyberte službu",
                         "title": "Služby"
                     },
                     "states": {
@@ -2908,25 +2557,20 @@
                 }
             },
             "history": {
-                "period": "Období",
                 "ranges": {
                     "last_week": "Minulý týden",
                     "this_week": "Tento týden",
                     "today": "Dnes",
                     "yesterday": "Včera"
-                },
-                "showing_entries": "Zobrazeny údaje pro"
+                }
             },
             "logbook": {
-                "entries_not_found": "Nebyly nalezeny žádné záznamy v deníku.",
-                "period": "Období",
                 "ranges": {
                     "last_week": "Minulý týden",
                     "this_week": "Tento týden",
                     "today": "Dnes",
                     "yesterday": "Včera"
-                },
-                "showing_entries": "Zobrazeny údaje pro"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2935,7 +2579,6 @@
                     "yaml_unsupported": "Tuto funkci nemůžete použít, když používáte Lovelace v režimu YAML."
                 },
                 "cards": {
-                    "action_confirmation": "Opravdu chcete provést akci \"{action}\"?",
                     "actions": {
                         "action_confirmation": "Opravdu chcete provést akci \"{action}\"?",
                         "no_entity_more_info": "Pro dialog s dalšími informacemi není poskytnuta žádná entita",
@@ -2974,13 +2617,11 @@
                         "reorder_items": "Změnit pořadí položek"
                     },
                     "starting": {
-                        "description": "Home Assistant se spouští, čekejte prosím...",
-                        "header": "Home Assistant se spouští..."
+                        "description": "Home Assistant se spouští, čekejte prosím..."
                     }
                 },
                 "changed_toast": {
-                    "message": "Nastavení Lovelace pro tento ovládací panel bylo aktualizováno. Chcete obnovit stránku?",
-                    "refresh": "Obnovit"
+                    "message": "Nastavení Lovelace pro tento ovládací panel bylo aktualizováno. Chcete obnovit stránku?"
                 },
                 "components": {
                     "timestamp-display": {
@@ -2999,7 +2640,6 @@
                             "toggle": "Přepínač",
                             "url": "URL adresa"
                         },
-                        "editor_service_data": "Data služby lze zadat pouze v editoru kódu",
                         "navigation_path": "Cesta stránky",
                         "url_path": "Cesta URL"
                     },
@@ -3197,7 +2837,6 @@
                         },
                         "sensor": {
                             "description": "Karta Sensor poskytuje rychlý přehled o stavu senzorů s volitelným grafem pro vizualizaci změn v průběhu času.",
-                            "graph_detail": "Detail grafu",
                             "graph_type": "Typ grafu",
                             "name": "Senzor",
                             "show_more_detail": "Zobrazit více podrobností"
@@ -3368,7 +3007,6 @@
                     "configure_ui": "Upravit ovládací panel",
                     "exit_edit_mode": "Ukončit režim úprav uživatelského rozhraní",
                     "help": "Nápověda",
-                    "refresh": "Obnovit",
                     "reload_resources": "Nově načíst zdroje",
                     "start_conversation": "Zahájit konverzaci"
                 },
@@ -3493,8 +3131,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Váš počítač není povolen.",
-                                "not_whitelisted": "Váš počítač není na seznamu povolených."
+                                "not_allowed": "Váš počítač není povolen."
                             },
                             "step": {
                                 "init": {
@@ -3647,15 +3284,12 @@
                     "create": "Vytvořte token",
                     "create_failed": "Nepodařilo se vytvořit přístupový token.",
                     "created": "Vytvořeno {date}",
-                    "created_at": "Vytvořeno {date}",
                     "delete_failed": "Nepodařilo se odstranit přístupový token.",
                     "description": "Vytvořte přístupové tokeny s dlouhou životností, aby vaše skripty mohly komunikovat s instancí Home Assistant. Každý token bude platný po dobu 10 let od vytvoření. Tyto tokeny s dlouhou životností jsou v současné době aktivní.",
                     "empty_state": "Zatím nemáte žádné dlouhodobé přístupové tokeny.",
                     "header": "Tokeny s dlouhou životností",
-                    "last_used": "Naposledy použito {date} z {location}",
                     "learn_auth_requests": "Naučte se, jak posílat ověřené požadavky.",
                     "name": "Název",
-                    "not_used": "Nikdy nebylo použito",
                     "prompt_copy_token": "Zkopírujte přístupový token. Už nikdy nebude znovu zobrazen.",
                     "prompt_name": "Pojmenujte token"
                 },
@@ -3720,11 +3354,6 @@
             },
             "shopping_list": {
                 "start_conversation": "Zahájit konverzaci"
-            },
-            "shopping-list": {
-                "add_item": "Přidat položku",
-                "clear_completed": "Vymazat nakoupené",
-                "microphone_tip": "Klepněte na mikrofon vpravo nahoře a řekněte nebo napište \"Add candy to my shopping list\""
             }
         },
         "sidebar": {

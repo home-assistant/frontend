@@ -95,253 +95,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Élesítve",
-            "armed_away": "Élesítve távol",
-            "armed_custom_bypass": "Élesítve áthidalással",
-            "armed_home": "Élesítve otthon",
-            "armed_night": "Élesítve éjszaka",
-            "arming": "Élesítés",
-            "disarmed": "Hatástalanítva",
-            "disarming": "Hatástalanítás",
-            "pending": "Függőben",
-            "triggered": "Riasztás"
-        },
-        "automation": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normál",
-                "on": "Alacsony"
-            },
-            "cold": {
-                "off": "Normál",
-                "on": "Hideg"
-            },
-            "connectivity": {
-                "off": "Lekapcsolódva",
-                "on": "Kapcsolódva"
-            },
-            "default": {
-                "off": "Ki",
-                "on": "Be"
-            },
-            "door": {
-                "off": "Zárva",
-                "on": "Nyitva"
-            },
-            "garage_door": {
-                "off": "Zárva",
-                "on": "Nyitva"
-            },
-            "gas": {
-                "off": "Normál",
-                "on": "Észlelve"
-            },
-            "heat": {
-                "off": "Normál",
-                "on": "Meleg"
-            },
-            "lock": {
-                "off": "Bezárva",
-                "on": "Kinyitva"
-            },
-            "moisture": {
-                "off": "Száraz",
-                "on": "Nedves"
-            },
-            "motion": {
-                "off": "Normál",
-                "on": "Észlelve"
-            },
-            "occupancy": {
-                "off": "Normál",
-                "on": "Észlelve"
-            },
-            "opening": {
-                "off": "Zárva",
-                "on": "Nyitva"
-            },
-            "presence": {
-                "off": "Távol",
-                "on": "Otthon"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Probléma"
-            },
-            "safety": {
-                "off": "Biztonságos",
-                "on": "Nem biztonságos"
-            },
-            "smoke": {
-                "off": "Normál",
-                "on": "Észlelve"
-            },
-            "sound": {
-                "off": "Normál",
-                "on": "Észlelve"
-            },
-            "vibration": {
-                "off": "Normál",
-                "on": "Észlelve"
-            },
-            "window": {
-                "off": "Zárva",
-                "on": "Nyitva"
-            }
-        },
-        "calendar": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "camera": {
-            "idle": "Tétlen",
-            "recording": "Felvétel",
-            "streaming": "Streamelés"
-        },
-        "climate": {
-            "cool": "Hűtés",
-            "dry": "Száraz",
-            "fan_only": "Csak ventilátor",
-            "heat": "Fűtés",
-            "heat_cool": "Fűtés/Hűtés",
-            "off": "Ki"
-        },
-        "configurator": {
-            "configure": "Beállítás",
-            "configured": "Beállítva"
-        },
-        "cover": {
-            "closed": "Zárva",
-            "closing": "Zárás",
-            "open": "Nyitva",
-            "opening": "Nyitás",
-            "stopped": "Megállítva"
-        },
         "default": {
             "off": "Ki",
             "on": "Be",
             "unavailable": "Nem elérhető",
             "unknown": "Ismeretlen"
-        },
-        "device_tracker": {
-            "not_home": "Távol"
-        },
-        "fan": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "group": {
-            "closed": "Zárva",
-            "closing": "Zárás",
-            "home": "Otthon",
-            "locked": "Bezárva",
-            "not_home": "Távol",
-            "off": "Ki",
-            "ok": "OK",
-            "on": "Be",
-            "open": "Nyitva",
-            "opening": "Nyitás",
-            "problem": "Probléma",
-            "stopped": "Megállítva",
-            "unlocked": "Kinyitva"
-        },
-        "input_boolean": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "light": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "lock": {
-            "locked": "Bezárva",
-            "unlocked": "Kinyitva"
-        },
-        "media_player": {
-            "idle": "Tétlen",
-            "off": "Ki",
-            "on": "Be",
-            "paused": "Szünetel",
-            "playing": "Lejátszás",
-            "standby": "Készenlét"
-        },
-        "person": {
-            "home": "Otthon"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "Probléma"
-        },
-        "remote": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "scene": {
-            "scening": "Jelenet beállítása"
-        },
-        "script": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "sensor": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "sun": {
-            "above_horizon": "Látóhatár felett",
-            "below_horizon": "Látóhatár alatt"
-        },
-        "switch": {
-            "off": "Ki",
-            "on": "Be"
-        },
-        "timer": {
-            "active": "aktív",
-            "idle": "tétlen",
-            "paused": "szüneteltetve"
-        },
-        "vacuum": {
-            "cleaning": "Takarítás",
-            "docked": "Dokkolva",
-            "error": "Hiba",
-            "idle": "Tétlen",
-            "off": "Ki",
-            "on": "Be",
-            "paused": "Szüneteltetve",
-            "returning": "Dokkolás folyamatban"
-        },
-        "weather": {
-            "clear-night": "Tiszta, éjszaka",
-            "cloudy": "Felhős",
-            "exceptional": "Kivételes",
-            "fog": "Köd",
-            "hail": "Jégeső",
-            "lightning": "Vihar",
-            "lightning-rainy": "Viharos, esős",
-            "partlycloudy": "Részben felhős",
-            "pouring": "Szakad",
-            "rainy": "Esős",
-            "snowy": "Havazás",
-            "snowy-rainy": "Havas, esős",
-            "sunny": "Napos",
-            "windy": "Szeles",
-            "windy-variant": "Szeles"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Halott",
-                "initializing": "Inicializálás",
-                "ready": "Kész",
-                "sleeping": "Alvás"
-            },
-            "query_stage": {
-                "dead": "Halott ({query_stage})",
-                "initializing": "Inicializálás ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -442,8 +200,7 @@
             },
             "script": {
                 "cancel": "Mégse",
-                "cancel_multiple": "Mégse {number}",
-                "execute": "Futtatás"
+                "cancel_multiple": "Mégse {number}"
             },
             "service": {
                 "run": "Futtatás"
@@ -625,7 +382,6 @@
             "media-browser": {
                 "audio_not_supported": "A böngésződ nem támogatja az audio elemet.",
                 "choose_player": "Lejátszó kiválasztása",
-                "choose-source": "Forrás kiválasztása",
                 "class": {
                     "album": "Album",
                     "app": "App",
@@ -647,13 +403,6 @@
                     "tv_show": "TV-műsor",
                     "url": "URL",
                     "video": "Videó"
-                },
-                "content-type": {
-                    "album": "Album",
-                    "artist": "Előadó",
-                    "library": "Könyvtár",
-                    "playlist": "Lejátszási lista",
-                    "server": "Szerver"
                 },
                 "documentation": "dokumentáció",
                 "learn_adding_local_media": "Tudj meg többet a média hozzáadásról a {documentation}ban.",
@@ -696,7 +445,6 @@
                     "second": "{count} {count, plural,\n  one {másodperccel}\n  other {másodperccel}\n}",
                     "week": "{count} {count, plural,\n  one {héttel}\n  other {héttel}\n}"
                 },
-                "future": "{time} később",
                 "future_duration": {
                     "day": "{count} {count, plural,\n  one {nap}\n  other {nap}\n} múlva",
                     "hour": "{count} {count, plural,\n  one {óra}\n  other {óra}\n} múlva",
@@ -706,7 +454,6 @@
                 },
                 "just_now": "Éppen most",
                 "never": "Soha",
-                "past": "{time} ezelőtt",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {nappal}\n  other {nappal}\n} ezelőtt",
                     "hour": "{count} {count, plural,\n  one {órával}\n  other {órával}\n} ezelőtt",
@@ -829,7 +576,6 @@
                 "crop": "Kivágás"
             },
             "more_info_control": {
-                "controls": "Vezérlők",
                 "cover": {
                     "close_cover": "Árnyékoló zárása",
                     "close_tile_cover": "Árnyékoló döntésének zárása",
@@ -914,7 +660,6 @@
                         "logs": "Napló",
                         "lovelace": "Lovelace Irányítópultok",
                         "navigate_to": "Ugrás ide: {panel}",
-                        "navigate_to_config": "Ugrás ide: {panel} konfiguráció",
                         "person": "Személyek",
                         "scene": "Jelenetek",
                         "script": "Szkriptek",
@@ -997,9 +742,7 @@
                 },
                 "unknown": "Ismeretlen",
                 "zha_device_card": {
-                    "area_picker_label": "Terület",
-                    "device_name_placeholder": "Eszköznév módosítása",
-                    "update_name_button": "Név frissítése"
+                    "device_name_placeholder": "Eszköznév módosítása"
                 }
             }
         },
@@ -1037,10 +780,6 @@
             "triggered": "Aktiválva {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Saját naptáraim",
-                "today": "Ma"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Hiányzó konfigurációs beállítások? Kapcsold be a haladó üzemmódot",
@@ -1130,8 +869,7 @@
                                 },
                                 "event": {
                                     "event": "Esemény:",
-                                    "label": "Esemény meghívása",
-                                    "service_data": "Szolgáltatás adatai"
+                                    "label": "Esemény meghívása"
                                 },
                                 "repeat": {
                                     "label": "Ismétlés",
@@ -1155,8 +893,7 @@
                                     "label": "Jelenet aktiválása"
                                 },
                                 "service": {
-                                    "label": "Szolgáltatás meghívása",
-                                    "service_data": "Szolgáltatás adatai"
+                                    "label": "Szolgáltatás meghívása"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Folytatás időtúllépéskor",
@@ -1176,8 +913,6 @@
                         "blueprint": {
                             "blueprint_to_use": "Használni kívánt tervrajz",
                             "header": "Tervrajz",
-                            "inputs": "Bemenetek",
-                            "manage_blueprints": "Tervrajzok kezelése",
                             "no_blueprints": "Nincsenek tervrajzaid",
                             "no_inputs": "Ennek a tervrajznak nincsenek bemenetei."
                         },
@@ -1431,7 +1166,6 @@
                         "header": "Tervrajz importálása",
                         "import_btn": "Tervrajz előnézete",
                         "import_header": "\"{name}\" tervrajz",
-                        "import_introduction": "Importálhatod más felhasználók tervrajzait a Githubról és a közösségi fórumról. Írd be alább a terv URL címét.",
                         "import_introduction_link": "Importálhat más felhasználók tervrajzait a Githubból és a {community_link} webhelyről. Írja be alább a terv URL-jét.",
                         "importing": "Tervrajz betöltése...",
                         "raw_blueprint": "Tervrajz tartalma",
@@ -1548,7 +1282,6 @@
                         "not_exposed_entities": "Feltáratlan entitások",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Felhő",
                     "description_features": "Irányítsd az otthonod, amikor távol vagy, és integráld Alexával és a Google Segéddel",
                     "description_login": "Bejelentkezve mint {email}",
                     "description_not_login": "Nincs bejelentkezve",
@@ -1681,7 +1414,6 @@
                     "pick_attribute": "Válassz egy attribútumot a felülbíráláshoz",
                     "picker": {
                         "documentation": "Testreszabási dokumentáció",
-                        "entity": "Entitás",
                         "header": "Testreszabások",
                         "introduction": "Szabd testre az entitások attribútumait. A hozzáadott, szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
                     },
@@ -1728,7 +1460,6 @@
                         "integration": "Integráció",
                         "manufacturer": "Gyártó",
                         "model": "Modell",
-                        "no_area": "Nincs terület",
                         "no_devices": "Nincsenek eszközök"
                     },
                     "delete": "Törlés",
@@ -1884,42 +1615,9 @@
                     "source": "Forrás:",
                     "system_health_error": "A rendszerállapot összetevő nincs betöltve. Add hozzá a 'system_health:' sort a configuration.yaml fájlhoz.",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Alexa engedélyezve",
-                                "can_reach_cert_server": "Tanúsítványkiszolgáló elérése",
-                                "can_reach_cloud": "Home Assistant felhő elérése",
-                                "can_reach_cloud_auth": "Hitelesítési kiszolgáló elérése",
-                                "google_enabled": "Google engedélyezve",
-                                "logged_in": "Bejelentkezve",
-                                "relayer_connected": "Közvetítő csatlakoztatva",
-                                "remote_connected": "Távoli csatlakozás",
-                                "remote_enabled": "Távoli hozzáférés engedélyezve",
-                                "subscription_expiration": "Előfizetés lejárata"
-                            },
-                            "homeassistant": {
-                                "arch": "CPU architektúra",
-                                "dev": "Fejlesztés",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "Telepítés típusa",
-                                "os_name": "Operációs rendszer neve",
-                                "os_version": "Operációs rendszer verziója",
-                                "python_version": "Python verzió",
-                                "timezone": "Időzóna",
-                                "version": "Verzió",
-                                "virtualenv": "Virtuális környezet"
-                            },
-                            "lovelace": {
-                                "dashboards": "Irányítópultok",
-                                "mode": "Mód",
-                                "resources": "Erőforrások"
-                            }
-                        },
                         "manage": "Kezelés",
                         "more_info": "további infók"
-                    },
-                    "title": "Infó"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "integrációk oldal",
@@ -1933,7 +1631,6 @@
                     "config_entry": {
                         "area": "Terület: {area}",
                         "delete": "Törlés",
-                        "delete_button": "Törlés: {integration}",
                         "delete_confirm": "Biztosan törölni szeretnéd ezt az integrációt?",
                         "device_unavailable": "Eszköz nem érhető el",
                         "devices": "{count} {count, plural,\n  one {eszköz}\n  other {eszköz}\n}",
@@ -1944,8 +1641,6 @@
                         "hub": "Kapcsolódva",
                         "manuf": "{manufacturer} által",
                         "no_area": "Nincs Terület",
-                        "no_device": "Eszköz nélküli entitások",
-                        "no_devices": "Ez az integráció nem rendelkezik eszközökkel.",
                         "options": "Opciók",
                         "reload": "Újratöltés",
                         "reload_confirm": "Az integráció újra lett töltve",
@@ -1953,9 +1648,7 @@
                         "rename": "Átnevezés",
                         "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
                         "services": "{count} {count, plural,\n  one {szolgáltatás}\n  other {szolgáltatás}\n}",
-                        "settings_button": "{integration} beállításainak szerkesztése",
                         "system_options": "Rendszerbeállítások",
-                        "system_options_button": "{integration} rendszerbeállításai",
                         "unnamed_entry": "Névtelen bejegyzés"
                     },
                     "config_flow": {
@@ -2015,8 +1708,7 @@
                     "multiple_messages": "az üzenet először a következő időpontban fordult elő: {time}, majd később {counter} alkalommal ismétlődött",
                     "no_errors": "Nem jelentettek hibát.",
                     "no_issues": "Nincsenek új bejegyzések!",
-                    "refresh": "Frissítés",
-                    "title": "Napló"
+                    "refresh": "Frissítés"
                 },
                 "lovelace": {
                     "caption": "Lovelace Irányítópultok",
@@ -2347,8 +2039,7 @@
                         "learn_more": "Tudj meg többet a szkriptekről",
                         "no_scripts": "Nem találtunk szerkeszthető szkripteket",
                         "run_script": "Szkript futtatása",
-                        "show_info": "Információ megjelenítése a szkriptről",
-                        "trigger_script": "Sckript triggerelése"
+                        "show_info": "Információ megjelenítése a szkriptről"
                     }
                 },
                 "server_control": {
@@ -2442,11 +2133,9 @@
                     "add_user": {
                         "caption": "Felhasználó hozzáadása",
                         "create": "Létrehozás",
-                        "name": "Név",
                         "password": "Jelszó",
                         "password_confirm": "Jelszó megerősítése",
-                        "password_not_match": "A jelszavak nem egyeznek",
-                        "username": "Felhasználónév"
+                        "password_not_match": "A jelszavak nem egyeznek"
                     },
                     "caption": "Felhasználók",
                     "description": "Home Assistant felhasználói fiókok kezelése",
@@ -2490,19 +2179,12 @@
                     "add_device": "Eszköz hozzáadása",
                     "add_device_page": {
                         "discovered_text": "Az eszközök itt fognak megjelenni, ha felfedezésre kerültek.",
-                        "discovery_text": "A felfedezett eszközök itt fognak megjelenni. A készülékek használati utasításai alapján állítsd őket párosítási módba.",
-                        "header": "Zigbee Home Automation - Eszközök hozzáadása",
                         "no_devices_found": "Nem találhatóak eszközök. Győződj meg arról, hogy párosítási módban vannak, és tartsd őket ébren, miközben a felfedezés fut.",
                         "pairing_mode": "Győződj meg arról, hogy az eszközeid párosítási módban vannak. Ellenőrizd a készüléked utasításait arról, hogy hogyan kell ezt megtenni.",
                         "search_again": "Keresés Újra",
                         "spinner": "ZHA Zigbee eszközök keresése..."
                     },
-                    "add": {
-                        "caption": "Eszközök hozzáadása",
-                        "description": "Eszközök hozzáadása a Zigbee hálózathoz"
-                    },
                     "button": "Beállítás",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "A kiválasztott klaszter attribútumai",
                         "get_zigbee_attribute": "Zigbee attribútum lekérdezése",
@@ -2526,13 +2208,10 @@
                         "introduction": "A klaszterek a Zigbee funkcionalitásának építőelemei. A funkcionalitást logikai egységekre bontják. Vannak ügyfél- és kiszolgálótípusok, amelyek attribútumokból és parancsokból állnak."
                     },
                     "common": {
-                        "add_devices": "Eszközök hozzáadása",
                         "clusters": "Klaszterek",
-                        "devices": "Eszközök",
                         "manufacturer_code_override": "Gyártói kód felülbírálása",
                         "value": "Érték"
                     },
-                    "description": "Zigbee Home Automation hálózat menedzsment",
                     "device_pairing_card": {
                         "CONFIGURED": "A konfigurálás befejeződött",
                         "CONFIGURED_status_text": "Inicializálás",
@@ -2542,9 +2221,6 @@
                         "INTERVIEW_COMPLETE_status_text": "Konfigurálás",
                         "PAIRED": "Eszköz megtalálva",
                         "PAIRED_status_text": "Interjú indítása"
-                    },
-                    "devices": {
-                        "header": "Zigbee Home Automation - Eszköz"
                     },
                     "group_binding": {
                         "bind_button_help": "Csatlakoztassa a kiválasztott csoportot a kiválasztott eszközfürtökhöz.",
@@ -2560,48 +2236,24 @@
                     "groups": {
                         "add_group": "Csoport hozzáadása",
                         "add_members": "Tagok hozzáadása",
-                        "adding_members": "Tagok hozzáadása",
                         "caption": "Csoportok",
                         "create": "Csoport létrehozása",
                         "create_group": "Zigbee Home Automation - Csoport létrehozása",
                         "create_group_details": "Add meg a szükséges adatokat egy új zigbee csoport létrehozásához",
                         "creating_group": "Csoport létrehozása",
-                        "description": "Zigbee csoportok kezelése",
                         "group_details": "Itt van minden részlet a kiválasztott zigbee csoportról.",
                         "group_id": "Csoport ID",
                         "group_info": "Csoportinformációk",
                         "group_name_placeholder": "Csoport név",
                         "group_not_found": "A csoport nem található!",
-                        "group-header": "Zigbee Home Automation - Csoport részletei",
                         "groups": "Csoportok",
-                        "groups-header": "Zigbee Home Automation - Csoport menedzsment",
-                        "header": "Zigbee Home Automation - Csoport menedzsment",
-                        "introduction": "Zigbee csoportok létrehozása és módosítása",
-                        "manage_groups": "Zigbee csoportok kezelése",
                         "members": "Tagok",
-                        "remove_groups": "Csoportok eltávolítása",
                         "remove_members": "Tagok eltávolítása",
-                        "removing_groups": "Csoportok eltávolítása",
-                        "removing_members": "Tagok eltávolítása",
-                        "zha_zigbee_groups": "ZHA Zigbee csoportok"
-                    },
-                    "header": "Zigbee Home Automation beállítása",
-                    "introduction": "Itt a ZHA komponenst lehet beállítani. Még nem lehet mindent a felületről, de dolgozunk rajta.",
-                    "network_management": {
-                        "header": "Hálózat menedzsment",
-                        "introduction": "Parancsok, amik kihatnak az egész hálózatra"
+                        "removing_members": "Tagok eltávolítása"
                     },
                     "network": {
                         "caption": "Hálózat"
                     },
-                    "node_management": {
-                        "header": "Eszköz kezelés",
-                        "help_node_dropdown": "Válassz egy eszközt az eszközönkénti beállítások megtekintéséhez.",
-                        "hint_battery_devices": "Megjegyzés: alvó üzemmódú (elemmel működő) eszközöket fel kell ébreszteni a parancsok futtatásához. Általában az ébresztés megtörténik a triggereléskor.",
-                        "hint_wakeup": "Egyes eszközöknek, például a Xiaomi szenzoroknak van ébresztő gombjuk, amit kb. 5 másodperces szünetekkel nyomkodva éber állapotban tarthatók a kommunikáció idejére.",
-                        "introduction": "Egy eszközt érintő ZHA parancs futtatása. Válassz ki egy eszközt az elérhető parancsok megtekintéséhez."
-                    },
-                    "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Megjelenítés",
                         "header": "Hálózati megjelenítés",
@@ -2640,7 +2292,6 @@
                 },
                 "zwave": {
                     "button": "Beállítás",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
                         "instance": "Példány",
@@ -2758,17 +2409,12 @@
                         "type": "Esemény típusa"
                     },
                     "services": {
-                        "alert_parsing_yaml": "Hiba a YAML elemzésekor: {data}",
                         "call_service": "Szolgáltatás meghívása",
                         "column_description": "Leírás",
                         "column_example": "Példa",
                         "column_parameter": "Paraméter",
-                        "data": "Szolgáltatás adatai (YAML, opcionális)",
                         "description": "A 'service dev' eszköz lehetővé teszi bármely Home Assistant-ban rendelkezésre álló szolgáltatás meghívását.",
                         "fill_example_data": "Kitöltés példaadatokkal",
-                        "no_description": "Nem áll rendelkezésre leírás",
-                        "no_parameters": "Ennek a szolgáltatásnak nincsenek paraméterei.",
-                        "select_service": "Válassz egy szolgáltatást a leírás megtekintéséhez",
                         "title": "Szolgáltatások"
                     },
                     "states": {
@@ -2809,25 +2455,20 @@
                 }
             },
             "history": {
-                "period": "Időtartam",
                 "ranges": {
                     "last_week": "Múlt hét",
                     "this_week": "Aktuális hét",
                     "today": "Ma",
                     "yesterday": "Tegnap"
-                },
-                "showing_entries": "Bejegyzések megjelenítése"
+                }
             },
             "logbook": {
-                "entries_not_found": "Nincsenek naplóbejegyzések.",
-                "period": "Időszak",
                 "ranges": {
                     "last_week": "Múlt hét",
                     "this_week": "Aktuális hét",
                     "today": "Ma",
                     "yesterday": "Tegnap"
-                },
-                "showing_entries": "Bejegyzések megjelenítése"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2836,7 +2477,6 @@
                     "yaml_unsupported": "Ez a funkció nem elérhető, ha a Lovelace felhasználói felületet YAML módban használod."
                 },
                 "cards": {
-                    "action_confirmation": "Biztosan végrehajtja a (z) \" {action} \" műveletet?",
                     "confirm_delete": "Biztosan törölni szeretnéd ezt a kártyát?",
                     "empty_state": {
                         "go_to_integrations_page": "Ugrás az 'integrációk' oldalra.",
@@ -2867,13 +2507,11 @@
                         "reorder_items": "Tételek átrendezése"
                     },
                     "starting": {
-                        "description": "A Home Assistant indítása folyamatban van, kérlek várj...",
-                        "header": "A Home Assistant indítása folyamatban van..."
+                        "description": "A Home Assistant indítása folyamatban van, kérlek várj..."
                     }
                 },
                 "changed_toast": {
-                    "message": "Az ehhez az irányítópulthoz tartozó Lovelace konfiguráció módosítva lett. Frissítesz az aktualizáláshoz?",
-                    "refresh": "Frissítés"
+                    "message": "Az ehhez az irányítópulthoz tartozó Lovelace konfiguráció módosítva lett. Frissítesz az aktualizáláshoz?"
                 },
                 "components": {
                     "timestamp-display": {
@@ -2892,7 +2530,6 @@
                             "toggle": "Váltás",
                             "url": "URL"
                         },
-                        "editor_service_data": "A szolgáltatási adatokat csak a kódszerkesztőben lehet megadni",
                         "navigation_path": "Navigációs útvonal",
                         "url_path": "URL elérési út"
                     },
@@ -3088,7 +2725,6 @@
                         },
                         "sensor": {
                             "description": "Az Érzékelő kártya gyors áttekintést nyújt az érzékelők állapotáról egy opcionális grafikon segítségével, amely az időbeli változásokat szemlélteti.",
-                            "graph_detail": "Grafikon részletei",
                             "graph_type": "Grafikon típusa",
                             "name": "Érzékelő",
                             "show_more_detail": "További részletek megjelenítése"
@@ -3259,7 +2895,6 @@
                     "configure_ui": "Irányítópult szerkesztése",
                     "exit_edit_mode": "Kilépés a felhasználói felület szerkesztési módból",
                     "help": "Súgó",
-                    "refresh": "Frissítés",
                     "reload_resources": "Erőforrások újratöltése",
                     "start_conversation": "Beszélgetés indítása"
                 },
@@ -3378,8 +3013,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "A számítógéped nem engedélyezett.",
-                                "not_whitelisted": "A számítógéped nem engedélyezett."
+                                "not_allowed": "A számítógéped nem engedélyezett."
                             },
                             "step": {
                                 "init": {
@@ -3531,15 +3165,12 @@
                     "create": "Token Létrehozása",
                     "create_failed": "Nem sikerült létrehozni a hozzáférési tokent.",
                     "created": "Létrehozva: {date}",
-                    "created_at": "Létrehozva: {date}",
                     "delete_failed": "Nem sikerült törölni a hozzáférési tokent.",
                     "description": "Hosszú életű hozzáférési tokenek létrehozásával engedélyezheted a szkriptjeid számára, hogy csatlakozzanak a Home Assistant példányodhoz. Minden token 10 évig érvényes a létrehozástól számítva. Jelenleg a következő hosszú életű hozzáférési tokenek aktívak.",
                     "empty_state": "Még nincsenek hosszú életű hozzáférési tokenjeid.",
                     "header": "Hosszú Életű Hozzáférési Tokenek",
-                    "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "learn_auth_requests": "Tudj meg többet a hitelesített kérelmek létrehozásáról.",
                     "name": "Név",
-                    "not_used": "Sosem használt",
                     "prompt_copy_token": "Most másold ki a hozzáférési tokened! Erre később nem lesz lehetőséged.",
                     "prompt_name": "Adj nevet a tokennek"
                 },
@@ -3604,11 +3235,6 @@
             },
             "shopping_list": {
                 "start_conversation": "Beszélgetés indítása"
-            },
-            "shopping-list": {
-                "add_item": "Tétel hozzáadása",
-                "clear_completed": "Bejelöltek törlése",
-                "microphone_tip": "Koppints a jobb felső sarokban található mikrofonra, és mondd ki vagy írd be: \"Add candy to my shopping list\""
             }
         },
         "sidebar": {

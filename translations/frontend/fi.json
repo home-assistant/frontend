@@ -95,253 +95,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Viritetty",
-            "armed_away": "Viritetty (poissa)",
-            "armed_custom_bypass": "Virityksen ohittaminen",
-            "armed_home": "Viritetty (kotona)",
-            "armed_night": "Viritetty (yö)",
-            "arming": "Viritys",
-            "disarmed": "Viritys pois",
-            "disarming": "Virityksen poisto",
-            "pending": "Odottaa",
-            "triggered": "Lauennut"
-        },
-        "automation": {
-            "off": "Pois",
-            "on": "Päällä"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normaali",
-                "on": "Alhainen"
-            },
-            "cold": {
-                "off": "Normaali",
-                "on": "Kylmä"
-            },
-            "connectivity": {
-                "off": "Ei yhteyttä",
-                "on": "Yhdistetty"
-            },
-            "default": {
-                "off": "Pois",
-                "on": "Päällä"
-            },
-            "door": {
-                "off": "Suljettu",
-                "on": "Auki"
-            },
-            "garage_door": {
-                "off": "Suljettu",
-                "on": "Auki"
-            },
-            "gas": {
-                "off": "Pois",
-                "on": "Havaittu"
-            },
-            "heat": {
-                "off": "Normaali",
-                "on": "Kuuma"
-            },
-            "lock": {
-                "off": "Lukittu",
-                "on": "Auki"
-            },
-            "moisture": {
-                "off": "Kuiva",
-                "on": "Kostea"
-            },
-            "motion": {
-                "off": "Ei liikettä",
-                "on": "Havaittu"
-            },
-            "occupancy": {
-                "off": "Ei liikettä",
-                "on": "Havaittu"
-            },
-            "opening": {
-                "off": "Suljettu",
-                "on": "Auki"
-            },
-            "presence": {
-                "off": "Poissa",
-                "on": "Kotona"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Ongelma"
-            },
-            "safety": {
-                "off": "Turvallinen",
-                "on": "Vaarallinen"
-            },
-            "smoke": {
-                "off": "Ei savua",
-                "on": "Havaittu"
-            },
-            "sound": {
-                "off": "Ei ääntä",
-                "on": "Havaittu"
-            },
-            "vibration": {
-                "off": "Ei värinää",
-                "on": "Havaittu"
-            },
-            "window": {
-                "off": "Suljettu",
-                "on": "Auki"
-            }
-        },
-        "calendar": {
-            "off": "Pois päältä",
-            "on": "Päällä"
-        },
-        "camera": {
-            "idle": "Lepotilassa",
-            "recording": "Tallentaa",
-            "streaming": "Toistaa"
-        },
-        "climate": {
-            "cool": "Jäähdytys",
-            "dry": "Kuivaus",
-            "fan_only": "Tuuletus",
-            "heat": "Lämmitys",
-            "heat_cool": "Lämmitys/jäähdytys",
-            "off": "Pois"
-        },
-        "configurator": {
-            "configure": "Määrittele",
-            "configured": "Määritetty"
-        },
-        "cover": {
-            "closed": "Suljettu",
-            "closing": "Suljetaan",
-            "open": "Auki",
-            "opening": "Avataan",
-            "stopped": "Pysäytetty"
-        },
         "default": {
             "off": "Pois",
             "on": "Päällä",
             "unavailable": "Ei saatavissa",
             "unknown": "Tuntematon"
-        },
-        "device_tracker": {
-            "not_home": "Poissa"
-        },
-        "fan": {
-            "off": "Pois",
-            "on": "Päällä"
-        },
-        "group": {
-            "closed": "Suljettu",
-            "closing": "Suljetaan",
-            "home": "Kotona",
-            "locked": "Lukittu",
-            "not_home": "Poissa",
-            "off": "Pois",
-            "ok": "Ok",
-            "on": "Päällä",
-            "open": "Auki",
-            "opening": "Avataan",
-            "problem": "Ongelma",
-            "stopped": "Pysäytetty",
-            "unlocked": "Avattu"
-        },
-        "input_boolean": {
-            "off": "Pois",
-            "on": "Päällä"
-        },
-        "light": {
-            "off": "Pois",
-            "on": "Päällä"
-        },
-        "lock": {
-            "locked": "Lukittu",
-            "unlocked": "Auki"
-        },
-        "media_player": {
-            "idle": "Lepotilassa",
-            "off": "Pois",
-            "on": "Päällä",
-            "paused": "Pysäytetty",
-            "playing": "Toistaa",
-            "standby": "Lepotilassa"
-        },
-        "person": {
-            "home": "Koti"
-        },
-        "plant": {
-            "ok": "Ok",
-            "problem": "Ongelma"
-        },
-        "remote": {
-            "off": "Pois",
-            "on": "Päällä"
-        },
-        "scene": {
-            "scening": "Skenehallinta"
-        },
-        "script": {
-            "off": "Pois",
-            "on": "Päällä"
-        },
-        "sensor": {
-            "off": "Pois",
-            "on": "Päällä"
-        },
-        "sun": {
-            "above_horizon": "Horisontin yllä",
-            "below_horizon": "Horisontin alapuolella"
-        },
-        "switch": {
-            "off": "Pois",
-            "on": "Päällä"
-        },
-        "timer": {
-            "active": "aktiivinen",
-            "idle": "Lepotilassa",
-            "paused": "Pysäytetty"
-        },
-        "vacuum": {
-            "cleaning": "Imuroi",
-            "docked": "Telakoituna",
-            "error": "Virhe",
-            "idle": "Lepotilassa",
-            "off": "Pois päältä",
-            "on": "Päällä",
-            "paused": "Pysäytetty",
-            "returning": "Palaamassa telakkaan"
-        },
-        "weather": {
-            "clear-night": "Yö, selkeää",
-            "cloudy": "Pilvistä",
-            "exceptional": "Poikkeuksellinen",
-            "fog": "Sumuista",
-            "hail": "Raekuuroja",
-            "lightning": "Ukkoskuuroja",
-            "lightning-rainy": "Ukkosvaara, sateista",
-            "partlycloudy": "Osittain pilvistä",
-            "pouring": "Kaatosadetta",
-            "rainy": "Sateista",
-            "snowy": "Lumisadetta",
-            "snowy-rainy": "Räntäsadetta",
-            "sunny": "Aurinkoista",
-            "windy": "Tuulista",
-            "windy-variant": "Tuulista"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Kuollut",
-                "initializing": "Alustaa",
-                "ready": "Valmis",
-                "sleeping": "Lepotilassa"
-            },
-            "query_stage": {
-                "dead": "Kuollut ({query_stage})",
-                "initializing": "Alustaa ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -442,8 +200,7 @@
             },
             "script": {
                 "cancel": "Peruuta",
-                "cancel_multiple": "Peruuta {number}",
-                "execute": "Suorita"
+                "cancel_multiple": "Peruuta {number}"
             },
             "service": {
                 "run": "Suorita"
@@ -627,7 +384,6 @@
             "media-browser": {
                 "audio_not_supported": "Selaimesi ei tue audioelementtiä.",
                 "choose_player": "Valitse soitin",
-                "choose-source": "Valitse lähde",
                 "class": {
                     "album": "Albumi",
                     "app": "Sovellus",
@@ -649,13 +405,6 @@
                     "tv_show": "TV-ohjelma",
                     "url": "URL",
                     "video": "Video"
-                },
-                "content-type": {
-                    "album": "Albumi",
-                    "artist": "Artisti",
-                    "library": "Kirjasto",
-                    "playlist": "Soittolista",
-                    "server": "Palvelin"
                 },
                 "documentation": "dokumentaatio",
                 "learn_adding_local_media": "Lisätietoja median lisäämisestä  {documentation} .",
@@ -698,7 +447,6 @@
                     "second": "{count} {count, plural,\none {sekunti}\nother {sekuntia}\n}",
                     "week": "{count} {count, plural,\n  one {viikko}\n  other {viikkoa}\n}"
                 },
-                "future": "{time} kuluttua",
                 "future_duration": {
                     "day": "{count} {count, plural,\n  one {päivän}\n  other {päivän}\n} kuluessa",
                     "hour": "{count} {count, plural,\none {tunnin\nother {tunnin}\n} kuluessa",
@@ -708,7 +456,6 @@
                 },
                 "just_now": "Juuri nyt",
                 "never": "Ei koskaan",
-                "past": "{time} sitten",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n} sitten",
                     "hour": "{count} {count, plural,\none {tunti}\nother {tuntia}\n} sitten",
@@ -831,7 +578,6 @@
                 "crop": "Rajaa"
             },
             "more_info_control": {
-                "controls": "Ohjaimet",
                 "details": "Yksityiskohdat",
                 "dismiss": "Sulje ikkuna",
                 "edit": "Muokkaa kohdetta",
@@ -909,7 +655,6 @@
                         "logs": "Lokit",
                         "lovelace": "Lovelace-kojelaudat",
                         "navigate_to": "Siirry kohteeseen {panel}",
-                        "navigate_to_config": "Konfiguroi {panel}",
                         "person": "Henkilöt",
                         "script": "Skriptit",
                         "server_control": "Palvelimen hallinta",
@@ -973,9 +718,7 @@
                 },
                 "unknown": "Tuntematon",
                 "zha_device_card": {
-                    "area_picker_label": "Alue",
-                    "device_name_placeholder": "Vaihda laitteen nimi",
-                    "update_name_button": "Päivitä nimi"
+                    "device_name_placeholder": "Vaihda laitteen nimi"
                 }
             }
         },
@@ -1012,10 +755,6 @@
             "triggered": "Laukaisi kohteen {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Omat kalenterit",
-                "today": "Tänään"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Puuttuvatko asetusvaihtoehdot? Ota edistynyt tila käyttöön",
@@ -1129,8 +868,7 @@
                                     "label": "Aktivoi tilanne"
                                 },
                                 "service": {
-                                    "label": "Kutsu palvelua",
-                                    "service_data": "Palvelun data"
+                                    "label": "Kutsu palvelua"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Jatka odotusajan jälkeen",
@@ -1150,8 +888,6 @@
                         "blueprint": {
                             "blueprint_to_use": "Käytettävä piirustus",
                             "header": "Piirustus",
-                            "inputs": "Syötteet",
-                            "manage_blueprints": "Hallitse piirustuksia",
                             "no_blueprints": "Sinulla ei ole yhtään piirustusta",
                             "no_inputs": "Tällä piirustuksella ei ole syötteitä."
                         },
@@ -1404,7 +1140,6 @@
                         "header": "Tuo piirustus",
                         "import_btn": "Piirustuksen esikatselu",
                         "import_header": "Piirustus \"{name}\"",
-                        "import_introduction": "Voit tuoda muiden käyttäjien piirustuksia Githubista ja yhteisön foorumeista. Kirjoita alle piirustuksen URL-osoite.",
                         "import_introduction_link": "Voit tuoda muiden käyttäjien piirustuksia Githubista ja {community_link}. Kirjoita piirustuksen URL-osoite alle.",
                         "importing": "Lataan piirustusta...",
                         "raw_blueprint": "Piirustuksen sisältö",
@@ -1521,7 +1256,6 @@
                         "not_exposed_entities": "eJulk",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "Ohjaus poissa kotoa Alexan tai Google Assistantin avulla.",
                     "description_login": "Kirjautunut sisään {email}",
                     "description_not_login": "Et ole kirjautunut",
@@ -1654,7 +1388,6 @@
                     "pick_attribute": "Valitse yliajettava määrite",
                     "picker": {
                         "documentation": "Mukautusten dokumentaatio",
-                        "entity": "Kohde",
                         "header": "Räätälöinti",
                         "introduction": "Muotoile ominaisuuksia olemuskohtaisesti. Lisäykset/muokkaukset tulevat välittömästi voimaan. Poistetut mukautukset tulevat voimaan, kun olemus päivitetään."
                     },
@@ -1701,7 +1434,6 @@
                         "integration": "Integraatio",
                         "manufacturer": "Valmistaja",
                         "model": "Malli",
-                        "no_area": "Ei aluetta",
                         "no_devices": "Ei laitteita"
                     },
                     "delete": "Poista",
@@ -1855,42 +1587,9 @@
                     "source": "Lähde:",
                     "system_health_error": "Järjestelmän kunto-komponenttia ei ole ladattu. Lisää 'system_health:' kohteeseen configuration.yaml",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Alexa käytössä",
-                                "can_reach_cert_server": "Tavoita varmennepalvelin",
-                                "can_reach_cloud": "Saavuta Home Assistant Cloud",
-                                "can_reach_cloud_auth": "Saavuta todennuspalvelin",
-                                "google_enabled": "Google käytössä",
-                                "logged_in": "Kirjautunut sisään",
-                                "relayer_connected": "Rele yhdistetty",
-                                "remote_connected": "Kaukosäädin yhdistetty",
-                                "remote_enabled": "Kaukosäädin käytössä",
-                                "subscription_expiration": "Tilauksen vanhentuminen"
-                            },
-                            "homeassistant": {
-                                "arch": "CPU-arkkitehtuuri",
-                                "dev": "Kehitys",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "Asennustyyppi",
-                                "os_name": "Käyttöjärjestelmän nimi",
-                                "os_version": "Käyttöjärjestelmän versio",
-                                "python_version": "Python-versio",
-                                "timezone": "Aikavyöhyke",
-                                "version": "Versio",
-                                "virtualenv": "Virtuaalinen ympäristö"
-                            },
-                            "lovelace": {
-                                "dashboards": "Kojelaudat",
-                                "mode": "Tila",
-                                "resources": "Resurssit"
-                            }
-                        },
                         "manage": "Hallitse",
                         "more_info": "lisätietoja"
-                    },
-                    "title": "Tiedot"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "Integraatiot",
@@ -1904,7 +1603,6 @@
                     "config_entry": {
                         "area": "Alueessa {area}",
                         "delete": "Poista",
-                        "delete_button": "Poista {integration}",
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
                         "device_unavailable": "laite ei saatavissa",
                         "devices": "{count} {count, plural,\n  one {laite}\n  other {laitteet}\n}",
@@ -1915,8 +1613,6 @@
                         "hub": "Yhdistetty kautta",
                         "manuf": "{manufacturer}",
                         "no_area": "Ei aluetta",
-                        "no_device": "Kohteet ilman laitteita",
-                        "no_devices": "Tällä integraatiolla ei ole laitteita.",
                         "options": "Asetukset",
                         "reload": "Lataa uudelleen",
                         "reload_confirm": "Integraatio ladattiin uudelleen",
@@ -1924,9 +1620,7 @@
                         "rename": "Nimeä uudelleen",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "services": "{count} {count, plural,\n  one {palvelut}\n  other {palvelua}\n}",
-                        "settings_button": "Muokkaa {integration}-asetuksia",
                         "system_options": "Järjestelmäasetukset",
-                        "system_options_button": "{integration}-järjestelmän asetukset",
                         "unnamed_entry": "Nimeämätön merkintä"
                     },
                     "config_flow": {
@@ -1986,8 +1680,7 @@
                     "multiple_messages": "Viesti esiintyi ensimmäisen kerran {time} ja tämän jälkeen {counter} kertaa",
                     "no_errors": "Virheitä ei ole ilmoitettu.",
                     "no_issues": "Ei uusia aiheita!",
-                    "refresh": "Päivitä",
-                    "title": "Lokit"
+                    "refresh": "Päivitä"
                 },
                 "lovelace": {
                     "caption": "Lovelace-kojelaudat",
@@ -2318,8 +2011,7 @@
                         "learn_more": "Lisätietoja skripteistä",
                         "no_scripts": "Emme löytäneet muokattavia skriptejä",
                         "run_script": "Suorita komentosarja",
-                        "show_info": "Näytä tietoja skriptistä",
-                        "trigger_script": "Laukaise skripti"
+                        "show_info": "Näytä tietoja skriptistä"
                     }
                 },
                 "server_control": {
@@ -2412,11 +2104,9 @@
                     "add_user": {
                         "caption": "Lisää käyttäjä",
                         "create": "Luo",
-                        "name": "Nimi",
                         "password": "Salasana",
                         "password_confirm": "Vahvista salasana",
-                        "password_not_match": "Salasanat eivät täsmää",
-                        "username": "Käyttäjätunnus"
+                        "password_not_match": "Salasanat eivät täsmää"
                     },
                     "caption": "Käyttäjät",
                     "description": "Käyttäjien hallinta",
@@ -2460,19 +2150,12 @@
                     "add_device": "Lisää laite",
                     "add_device_page": {
                         "discovered_text": "Laitteet tulevat tänne, kun ne löydetään.",
-                        "discovery_text": "Löydetyt laitteet näkyvät täällä. Noudata laitteen (laitteiden) ohjeita ja aseta laite pariliitostilaan.",
-                        "header": "Zigbee Home Automation - Lisää laitteita",
                         "no_devices_found": "Mitään laitteita ei löydy. Varmista, että ne ovat paritustilassa ja pidä ne hereillä havaitsemisen ollessa käynnissä.",
                         "pairing_mode": "Varmista, että laitteesi ovat paritustilassa. Tarkista laitteen ohjeet, kuinka tämä tehdään.",
                         "search_again": "Etsi uudestaan",
                         "spinner": "Etsitään ZHA Zigbee laitteita..."
                     },
-                    "add": {
-                        "caption": "Lisää laitteita",
-                        "description": "Lisää laitteita Zigbee-verkkoon"
-                    },
                     "button": "Määritä",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Valitun klusterin määritteet",
                         "get_zigbee_attribute": "Hae Zigbee-ominaisuus",
@@ -2496,13 +2179,10 @@
                         "introduction": "Klusterit ovat rakennuspalikoita Zigbee-toiminnallisuudelle. Ne erottavat toiminnallisuuden loogisiksi yksiköiksi. On asiakas- ja palvelintyyppejä, jotka koostuvat määritteistä ja komennoista."
                     },
                     "common": {
-                        "add_devices": "Lisää laitteita",
                         "clusters": "Klusterit",
-                        "devices": "Laitteet",
                         "manufacturer_code_override": "Valmistajan koodin yliajo",
                         "value": "Arvo"
                     },
-                    "description": "Zigbee kotiautomaation verkonhallinta",
                     "device_pairing_card": {
                         "CONFIGURED": "Määritys valmis",
                         "CONFIGURED_status_text": "Alustetaan",
@@ -2512,9 +2192,6 @@
                         "INTERVIEW_COMPLETE_status_text": "Määrittää",
                         "PAIRED": "Laite löydetty",
                         "PAIRED_status_text": "Haastattelun aloittaminen"
-                    },
-                    "devices": {
-                        "header": "Zigbee-kotiautomaatio - laite"
                     },
                     "group_binding": {
                         "bind_button_help": "Sido valittu ryhmä valittuihin laiteklustereihin.",
@@ -2530,48 +2207,24 @@
                     "groups": {
                         "add_group": "Lisää ryhmä",
                         "add_members": "Lisää jäseniä",
-                        "adding_members": "Lisätään jäseniä",
                         "caption": "Ryhmät",
                         "create": "Luo ryhmä",
                         "create_group": "Zigbee-kotiautomaatio - Luo ryhmä",
                         "create_group_details": "Kirjoita tarvittavat tiedot uuden Zigbee-ryhmän luomiseksi",
                         "creating_group": "Ryhmän luominen",
-                        "description": "Luo ja muokkaa Zigbee-ryhmiä",
                         "group_details": "Tässä ovat kaikki valitun Zigbee-ryhmän tiedot.",
                         "group_id": "Ryhmän ID",
                         "group_info": "Ryhmätiedot",
                         "group_name_placeholder": "Ryhmän nimi",
                         "group_not_found": "Ryhmää ei löytynyt!",
-                        "group-header": "Zigbee-kotiautomaatio - ryhmätiedot",
                         "groups": "Ryhmät",
-                        "groups-header": "Zigbee-kotiautomaatio - ryhmänhallinta",
-                        "header": "Zigbee-kotiautomaatio - ryhmänhallinta",
-                        "introduction": "Luo ja muokkaa zigbee-ryhmiä",
-                        "manage_groups": "Hallitse Zigbee-ryhmiä",
                         "members": "Jäsenet",
-                        "remove_groups": "Poista ryhmiä",
                         "remove_members": "Poista jäseniä",
-                        "removing_groups": "Ryhmien poistaminen",
-                        "removing_members": "Poistetaan jäseniä",
-                        "zha_zigbee_groups": "ZHA Zigbee -ryhmät"
-                    },
-                    "header": "Määritä Zigbee-kotiautomaatio",
-                    "introduction": "Täällä on mahdollista määrittää ZHA-komponentti. Kaikkia ei ole vielä mahdollista määrittää käyttöliittymästä, mutta työskentelemme sen parissa.",
-                    "network_management": {
-                        "header": "Verkon hallinta",
-                        "introduction": "Koko verkkoon vaikuttavat komennot"
+                        "removing_members": "Poistetaan jäseniä"
                     },
                     "network": {
                         "caption": "Verkko"
                     },
-                    "node_management": {
-                        "header": "Laitehallinta",
-                        "help_node_dropdown": "Valitse laite tarkastellaksesi laitekohtaisia vaihtoehtoja.",
-                        "hint_battery_devices": "Huomautus: Nukkuvien (akkukäyttöisten) laitteiden on oltava hereillä, kun niitä vastaan suoritetaan komentoja. Voit yleensä herättää uneliaan laitteen käynnistämällä sen.",
-                        "hint_wakeup": "Joissakin laitteissa, kuten Xiaomi-antureissa, on herätyspainike, jota voit painaa 5 sekunnin välein, jotka pitävät laitteet hereillä, kun olet vuorovaikutuksessa niiden kanssa.",
-                        "introduction": "Suorita ZHA-komennot, jotka vaikuttavat yhteen laitteeseen. Valitse laite nähdäksesi luettelon käytettävissä olevista komennoista."
-                    },
-                    "title": "Zigbee-kotiautomaatio",
                     "visualization": {
                         "caption": "Visualisointi",
                         "header": "Verkon visualisointi"
@@ -2642,7 +2295,6 @@
                 },
                 "zwave": {
                     "button": "Määritä",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Indeksi",
                         "instance": "Esiintymä",
@@ -2755,17 +2407,12 @@
                         "type": "Tapahtumatyyppi"
                     },
                     "services": {
-                        "alert_parsing_yaml": "Virhe jäsennetettäessä YAML:ää: {data}",
                         "call_service": "Kutsu palvelua",
                         "column_description": "Kuvaus",
                         "column_example": "Esimerkki",
                         "column_parameter": "Parametri",
-                        "data": "Palvelutiedot (YAML, valinnainen)",
                         "description": "Service dev -työkalun avulla voit kutsua mitä tahansa käytettävissä olevaan palvelua Home Assistant -sovelluksessa.",
                         "fill_example_data": "Täytä esimerkkitiedoilla",
-                        "no_description": "Kuvausta ei ole saatavilla",
-                        "no_parameters": "Tämä palvelu ei ota parametreja.",
-                        "select_service": "Valitse palvelu nähdäksesi kuvauksen",
                         "title": "Palvelut"
                     },
                     "states": {
@@ -2804,25 +2451,20 @@
                 }
             },
             "history": {
-                "period": "aikajakso",
                 "ranges": {
                     "last_week": "Viime viikolla",
                     "this_week": "Tällä viikolla",
                     "today": "Tänään",
                     "yesterday": "Eilen"
-                },
-                "showing_entries": "Näytetään tapahtumat alkaen"
+                }
             },
             "logbook": {
-                "entries_not_found": "Lokikirjauksia ei löytynyt.",
-                "period": "aikajakso",
                 "ranges": {
                     "last_week": "Viime viikolla",
                     "this_week": "Tällä viikolla",
                     "today": "Tänään",
                     "yesterday": "Eilen"
-                },
-                "showing_entries": "Näytetään kirjaukset ajalta"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2860,13 +2502,11 @@
                         "drag_and_drop": "Raahaa ja pudota"
                     },
                     "starting": {
-                        "description": "Home Assistant käynnistyy...",
-                        "header": "Home Assistant käynnistyy..."
+                        "description": "Home Assistant käynnistyy..."
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace-asetukset päivitettiin. Haluatko päivittää näkymän?",
-                    "refresh": "Päivitä"
+                    "message": "Lovelace-asetukset päivitettiin. Haluatko päivittää näkymän?"
                 },
                 "editor": {
                     "action-editor": {
@@ -2879,7 +2519,6 @@
                             "toggle": "Vaihda",
                             "url": "URL-osoite"
                         },
-                        "editor_service_data": "Palvelutietoja voi syöttää vain koodieditoriin",
                         "navigation_path": "Navigointipolku",
                         "url_path": "URL-polku"
                     },
@@ -3075,7 +2714,6 @@
                         },
                         "sensor": {
                             "description": "Anturikortti antaa sinulle nopean yleiskatsauksen antureiden tilasta valinnaisella kaaviolla, joka kuvaa muutosta ajan myötä.",
-                            "graph_detail": "Kaavion tiedot",
                             "graph_type": "Kaavion tyyppi",
                             "name": "Sensori",
                             "show_more_detail": "Näytä lisätietoja"
@@ -3246,7 +2884,6 @@
                     "configure_ui": "Muokkaa käyttöliittymää",
                     "exit_edit_mode": "Poistu käyttöliittymän muokkaustilasta",
                     "help": "Apua",
-                    "refresh": "Päivitä",
                     "reload_resources": "Lataa resurssit uudelleen",
                     "start_conversation": "Aloita keskustelu"
                 },
@@ -3365,8 +3002,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Tietokone ei ole sallittu.",
-                                "not_whitelisted": "Tietokonettasi ei ole sallittu."
+                                "not_allowed": "Tietokone ei ole sallittu."
                             },
                             "step": {
                                 "init": {
@@ -3518,15 +3154,12 @@
                     "create": "Luo token",
                     "create_failed": "Käyttötunnussanoman luominen epäonnistui.",
                     "created": "Luotu {date}",
-                    "created_at": "Luotu {date}",
                     "delete_failed": "Käyttötunnussanoman poistaminen epäonnistui.",
                     "description": "Luo pitkäikäisiä käyttöoikeustunnuksia, jotta komentosarjasi voivat vuorovaikuttaa Home Assistantin kanssa. Jokainen tunnus on voimassa 10 vuotta luomisesta. Seuraavat pitkäikäiset käyttöoikeustunnukset ovat tällä hetkellä käytössä.",
                     "empty_state": "Sinulla ei ole vielä pitkäaikaisia käyttötunnussanomia",
                     "header": "Pitkäaikaiset käyttötunnussanomat",
-                    "last_used": "Viimeksi käytetty {date} sijainnista {location}",
                     "learn_auth_requests": "Opi tekemään tunnistautuneita kutsuja.",
                     "name": "Nimi",
-                    "not_used": "Ei ole koskaan käytetty",
                     "prompt_copy_token": "Kopioi käyttöoikeuskoodi. Sitä ei näytetä uudelleen.",
                     "prompt_name": "Nimi?"
                 },
@@ -3591,11 +3224,6 @@
             },
             "shopping_list": {
                 "start_conversation": "Aloita keskustelu"
-            },
-            "shopping-list": {
-                "add_item": "Lisää tavara",
-                "clear_completed": "Poista valmiit",
-                "microphone_tip": "Paina mikrofonia oikeassa yläkulmassa ja sano \"Lisää karkkipussi ostoslistalleni\""
             }
         },
         "sidebar": {

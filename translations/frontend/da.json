@@ -95,253 +95,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Tilkoblet",
-            "armed_away": "Tilkoblet ude",
-            "armed_custom_bypass": "Tilkoblet brugerdefineret bypass",
-            "armed_home": "Tilkoblet hjemme",
-            "armed_night": "Tilkoblet nat",
-            "arming": "Tilkobler",
-            "disarmed": "Frakoblet",
-            "disarming": "Frakobler",
-            "pending": "Afventer",
-            "triggered": "Udløst"
-        },
-        "automation": {
-            "off": "Fra",
-            "on": "Til"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normal",
-                "on": "Lav"
-            },
-            "cold": {
-                "off": "Normal",
-                "on": "Kold"
-            },
-            "connectivity": {
-                "off": "Afbrudt",
-                "on": "Forbundet"
-            },
-            "default": {
-                "off": "Fra",
-                "on": "Til"
-            },
-            "door": {
-                "off": "Lukket",
-                "on": "Åben"
-            },
-            "garage_door": {
-                "off": "Lukket",
-                "on": "Åben"
-            },
-            "gas": {
-                "off": "Ikke registreret",
-                "on": "Registreret"
-            },
-            "heat": {
-                "off": "Normal",
-                "on": "Varm"
-            },
-            "lock": {
-                "off": "Låst",
-                "on": "Ulåst"
-            },
-            "moisture": {
-                "off": "Tør",
-                "on": "Fugtig"
-            },
-            "motion": {
-                "off": "Ikke registreret",
-                "on": "Registreret"
-            },
-            "occupancy": {
-                "off": "Ikke registreret",
-                "on": "Registreret"
-            },
-            "opening": {
-                "off": "Lukket",
-                "on": "Åben"
-            },
-            "presence": {
-                "off": "Ude",
-                "on": "Hjemme"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Problem"
-            },
-            "safety": {
-                "off": "Sikret",
-                "on": "Usikret"
-            },
-            "smoke": {
-                "off": "Ikke registreret",
-                "on": "Registreret"
-            },
-            "sound": {
-                "off": "Ikke registreret",
-                "on": "Registreret"
-            },
-            "vibration": {
-                "off": "Ikke registreret",
-                "on": "Registreret"
-            },
-            "window": {
-                "off": "Lukket",
-                "on": "Åben"
-            }
-        },
-        "calendar": {
-            "off": "Fra",
-            "on": "Til"
-        },
-        "camera": {
-            "idle": "Inaktiv",
-            "recording": "Optager",
-            "streaming": "Streamer"
-        },
-        "climate": {
-            "cool": "Køl",
-            "dry": "Tør",
-            "fan_only": "Kun blæser",
-            "heat": "Varme",
-            "heat_cool": "Opvarm/køl",
-            "off": "Fra"
-        },
-        "configurator": {
-            "configure": "Konfigurer",
-            "configured": "Konfigureret"
-        },
-        "cover": {
-            "closed": "Lukket",
-            "closing": "Lukker",
-            "open": "Åben",
-            "opening": "Åbner",
-            "stopped": "Stoppet"
-        },
         "default": {
             "off": "Fra",
             "on": "Til",
             "unavailable": "Utilgængelig",
             "unknown": "Ukendt"
-        },
-        "device_tracker": {
-            "not_home": "Ude"
-        },
-        "fan": {
-            "off": "Fra",
-            "on": "Til"
-        },
-        "group": {
-            "closed": "Lukket",
-            "closing": "Lukker",
-            "home": "Hjemme",
-            "locked": "Låst",
-            "not_home": "Ude",
-            "off": "Fra",
-            "ok": "OK",
-            "on": "Til",
-            "open": "Åben",
-            "opening": "Åbner",
-            "problem": "Problem",
-            "stopped": "Stoppet",
-            "unlocked": "Ulåst"
-        },
-        "input_boolean": {
-            "off": "Fra",
-            "on": "Til"
-        },
-        "light": {
-            "off": "Fra",
-            "on": "Til"
-        },
-        "lock": {
-            "locked": "Låst",
-            "unlocked": "Ulåst"
-        },
-        "media_player": {
-            "idle": "Inaktiv",
-            "off": "Fra",
-            "on": "Tændt",
-            "paused": "Sat på pause",
-            "playing": "Afspiller",
-            "standby": "Standby"
-        },
-        "person": {
-            "home": "Hjemme"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "Problem"
-        },
-        "remote": {
-            "off": "Slukket",
-            "on": "Tændt"
-        },
-        "scene": {
-            "scening": "Skifter scene"
-        },
-        "script": {
-            "off": "Fra",
-            "on": "Til"
-        },
-        "sensor": {
-            "off": "Fra",
-            "on": "Til"
-        },
-        "sun": {
-            "above_horizon": "Over horisonten",
-            "below_horizon": "Under horisonten"
-        },
-        "switch": {
-            "off": "Fra",
-            "on": "Til"
-        },
-        "timer": {
-            "active": "aktiv",
-            "idle": "inaktiv",
-            "paused": "pause"
-        },
-        "vacuum": {
-            "cleaning": "Gør rent",
-            "docked": "I dock",
-            "error": "Fejl",
-            "idle": "Inaktiv",
-            "off": "Slukket",
-            "on": "Tændt",
-            "paused": "Sat på pause",
-            "returning": "Vender tilbage til dock"
-        },
-        "weather": {
-            "clear-night": "Klart, nat",
-            "cloudy": "Overskyet",
-            "exceptional": "Enestående",
-            "fog": "Tåge",
-            "hail": "Hagl",
-            "lightning": "Lyn",
-            "lightning-rainy": "Lyn, regnvejr",
-            "partlycloudy": "Delvist overskyet",
-            "pouring": "Regnvejr",
-            "rainy": "Regnfuldt",
-            "snowy": "Sne",
-            "snowy-rainy": "Sne, regn",
-            "sunny": "Solrig",
-            "windy": "Blæsende",
-            "windy-variant": "Blæsende"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Død",
-                "initializing": "Initialiserer",
-                "ready": "Klar",
-                "sleeping": "Sover"
-            },
-            "query_stage": {
-                "dead": "Død ({query_stage})",
-                "initializing": "Initialiserer ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -441,8 +199,7 @@
             },
             "script": {
                 "cancel": "Annuller",
-                "cancel_multiple": "Annuller {number}",
-                "execute": "Udløs"
+                "cancel_multiple": "Annuller {number}"
             },
             "service": {
                 "run": "Kør"
@@ -629,7 +386,6 @@
             "media-browser": {
                 "audio_not_supported": "Din browser understøtter ikke lydelementet.",
                 "choose_player": "Vælg afspiller",
-                "choose-source": "Vælg kilde",
                 "class": {
                     "album": "Album",
                     "app": "App",
@@ -651,13 +407,6 @@
                     "tv_show": "TV show",
                     "url": "Webadresse",
                     "video": "Video"
-                },
-                "content-type": {
-                    "album": "Album",
-                    "artist": "Kunstner",
-                    "library": "Bibliotek",
-                    "playlist": "Afspilningsliste",
-                    "server": "Server"
                 },
                 "documentation": "Dokumentation",
                 "learn_adding_local_media": "Få flere oplysninger om tilføjelse af medier i {documentation} .",
@@ -700,7 +449,6 @@
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
                     "week": "{count} {count, plural,\none {uge}\nother {uger}\n}"
                 },
-                "future": "Om {time}",
                 "future_duration": {
                     "day": "Om {count} {count, plural,\n  one {dag}\n  other {dage}\n}",
                     "hour": "Om {count} {count, plural,\n  one {time}\n  other {timer}\n}",
@@ -710,7 +458,6 @@
                 },
                 "just_now": "Lige nu",
                 "never": "Aldrig",
-                "past": "{time} siden",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {dag}\n  other {dage}\n} siden",
                     "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n} siden",
@@ -840,7 +587,6 @@
                 "crop": "Beskær"
             },
             "more_info_control": {
-                "controls": "Kontroller",
                 "cover": {
                     "close_cover": "Luk cover",
                     "close_tile_cover": "Luk cover vippeposition",
@@ -925,7 +671,6 @@
                         "logs": "Logs",
                         "lovelace": "Lovelace-betjeningspaneler",
                         "navigate_to": "Naviger til {panel}",
-                        "navigate_to_config": "Naviger til {panel} konfigurationen",
                         "person": "Personer",
                         "scene": "Scener",
                         "script": "Scripts",
@@ -1008,9 +753,7 @@
                 },
                 "unknown": "Ukendt",
                 "zha_device_card": {
-                    "area_picker_label": "Område",
-                    "device_name_placeholder": "Skift enhedsnavn",
-                    "update_name_button": "Opdater navn"
+                    "device_name_placeholder": "Skift enhedsnavn"
                 }
             }
         },
@@ -1054,10 +797,6 @@
             "triggered": "Udløste {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Mine kalendere",
-                "today": "I dag"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Mangler der konfigurationsindstillinger? Aktivér avanceret tilstand",
@@ -1147,8 +886,7 @@
                                 },
                                 "event": {
                                     "event": "Hændelse:",
-                                    "label": "Afsend hændelse",
-                                    "service_data": "Tjenestesdata"
+                                    "label": "Afsend hændelse"
                                 },
                                 "repeat": {
                                     "label": "Gentag",
@@ -1172,8 +910,7 @@
                                     "label": "Aktivér scene"
                                 },
                                 "service": {
-                                    "label": "Kald tjeneste",
-                                    "service_data": "Tjenestesdata"
+                                    "label": "Kald tjeneste"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Fortsæt ved timeout",
@@ -1193,8 +930,6 @@
                         "blueprint": {
                             "blueprint_to_use": "Tegninger klar til brug",
                             "header": "Tegninger",
-                            "inputs": "Indgange",
-                            "manage_blueprints": "Administrer tegninger",
                             "no_blueprints": "Du har ingen tegninger",
                             "no_inputs": "Dette blueprint har ingen input."
                         },
@@ -1447,7 +1182,6 @@
                         "header": "Importer blueprint",
                         "import_btn": "Forhåndsvisning af blueprint",
                         "import_header": "Blueprint \"{name}\"",
-                        "import_introduction": "Du kan importere skabeloner af andre brugere fra Github og {community_link} . Indtast URL'en til skabelonen nedenfor.",
                         "import_introduction_link": "Du kan importere tegninger af andre brugere fra Github og {community_link} . Indtast webadressen til tegningen nedenfor.",
                         "importing": "Indlæser blueprint ...",
                         "raw_blueprint": "Tegningsindhold",
@@ -1562,7 +1296,6 @@
                         "not_exposed_entities": "Ikke-eksponerede entiteter",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "Betjen når du er væk hjemmefra, integrer med Alexa og Google Assistant.",
                     "description_login": "Logget ind som {email}",
                     "description_not_login": "Ikke logget ind",
@@ -1695,7 +1428,6 @@
                     "pick_attribute": "Vælg en egenskab, du vil tilsidesætte",
                     "picker": {
                         "documentation": "Dokumentation for tilpasning",
-                        "entity": "Entitet",
                         "header": "Tilpasninger",
                         "introduction": "Tilpas entitetsegenskaber. Tilføjede/redigerede tilpasninger træder i kraft med det samme. Fjernede tilpasninger træder i kraft når entiteten opdateres."
                     },
@@ -1742,7 +1474,6 @@
                         "integration": "Integration",
                         "manufacturer": "Producent",
                         "model": "Model",
-                        "no_area": "Intet område",
                         "no_devices": "Ingen enheder"
                     },
                     "delete": "Slet",
@@ -1898,40 +1629,9 @@
                     "source": "Kilde:",
                     "system_health_error": "System Health-komponenten er ikke indlæst. Føj 'system_health:' til 'config.yaml'",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Alexa aktiveret",
-                                "can_reach_cert_server": "Tilkoble certifikatserver",
-                                "can_reach_cloud": "Tilkoble Home Assistant Cloud",
-                                "google_enabled": "Google aktiveret",
-                                "logged_in": "Logget ind",
-                                "remote_connected": "Fjernadgang forbundet",
-                                "remote_enabled": "Fjernadgang aktiveret",
-                                "subscription_expiration": "Udløb af abonnement"
-                            },
-                            "homeassistant": {
-                                "arch": "CPU-arkitektur",
-                                "dev": "Udvikling",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "Installationstype",
-                                "os_name": "Navn på operativsystem",
-                                "os_version": "Styresystem version",
-                                "python_version": "Python version",
-                                "timezone": "Tidszone",
-                                "version": "Version",
-                                "virtualenv": "Virtuelt miljø"
-                            },
-                            "lovelace": {
-                                "dashboards": "Betjeningspaneler",
-                                "mode": "Tilstand",
-                                "resources": "Ressourcer"
-                            }
-                        },
                         "manage": "Administrer",
                         "more_info": "mere info"
-                    },
-                    "title": "Info"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "integrationssiden",
@@ -1945,7 +1645,6 @@
                     "config_entry": {
                         "area": "I {area}",
                         "delete": "Slet",
-                        "delete_button": "Slet {integration}",
                         "delete_confirm": "Er du sikker på, at du vil fjerne denne integration?",
                         "device_unavailable": "Enheden er utilgængelig",
                         "devices": "{count} {count, plural,\n  one {enhed}\n  other {enheder}\n}",
@@ -1956,8 +1655,6 @@
                         "hub": "Forbundet via",
                         "manuf": "af {manufacturer}",
                         "no_area": "Intet område",
-                        "no_device": "Entiteter uden enhed",
-                        "no_devices": "Denne integration har ingen enheder",
                         "options": "Indstillinger",
                         "reload": "Genindlæs",
                         "reload_confirm": "Integrationen blev genindlæst",
@@ -1965,9 +1662,7 @@
                         "rename": "Omdøb",
                         "restart_confirm": "Genstart Home Assistant for at fuldføre fjernelsen af denne integration",
                         "services": "{count} {count, plural,\n  one {tjeneste}\n  other {tjenester}\n}",
-                        "settings_button": "Ret indstillinger for {integration}",
                         "system_options": "Systemindstillinger",
-                        "system_options_button": "Systemindstillinger for {integration}",
                         "unnamed_entry": "Unavngivet post"
                     },
                     "config_flow": {
@@ -2027,8 +1722,7 @@
                     "multiple_messages": "beskeden forekom først kl. {time} og ses {counter} gange",
                     "no_errors": "Der er ikke rapporteret nogen fejl.",
                     "no_issues": "Der er ingen nye problemer!",
-                    "refresh": "Opdater",
-                    "title": "Logs"
+                    "refresh": "Opdater"
                 },
                 "lovelace": {
                     "caption": "Lovelace-betjeningspaneler",
@@ -2336,8 +2030,7 @@
                         "learn_more": "Lær mere om scripts",
                         "no_scripts": "Vi kunne ikke finde nogen redigerbare scripts",
                         "run_script": "Kør script",
-                        "show_info": "Vis info om script",
-                        "trigger_script": "Udløs script"
+                        "show_info": "Vis info om script"
                     }
                 },
                 "server_control": {
@@ -2430,11 +2123,9 @@
                     "add_user": {
                         "caption": "Tilføj bruger",
                         "create": "Opret",
-                        "name": "Navn",
                         "password": "Adgangskode",
                         "password_confirm": "Bekræft adgangskode",
-                        "password_not_match": "Adgangskoderne er ikke ens",
-                        "username": "Brugernavn"
+                        "password_not_match": "Adgangskoderne er ikke ens"
                     },
                     "caption": "Brugere",
                     "description": "Administrer brugere",
@@ -2478,19 +2169,12 @@
                     "add_device": "Tilføj enhed",
                     "add_device_page": {
                         "discovered_text": "Enheder vil dukke op her, når de er fundet.",
-                        "discovery_text": "Fundne enheder vil dukke op her. Følg instruktionerne for din enhed(er) og sæt enhed(erne) i parringstilstand.",
-                        "header": "Zigbee Home Automation - Tilføj enheder",
                         "no_devices_found": "Ingen enheder blev fundet. Sørg for at de er i parringstilstand og hold dem vågne mens der søges.",
                         "pairing_mode": "Sørg for, at dine enheder er i parringstilstand. Se enhedens vejledning i, hvordan du gør dette.",
                         "search_again": "Søg igen",
                         "spinner": "Søger efter ZHA Zigbee-enheder..."
                     },
-                    "add": {
-                        "caption": "Tilføj enheder",
-                        "description": "Føj enheder til Zigbee-netværk"
-                    },
                     "button": "Konfigurer",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Egenskaber for den valgte klynge",
                         "get_zigbee_attribute": "Hent Zigbee-egenskab",
@@ -2514,13 +2198,10 @@
                         "introduction": "Klynger er byggestenene til Zigbee-funktionalitet. De adskiller funktionalitet i logiske enheder. Der er klient- og servertyper, og de består af egenskaber og kommandoer."
                     },
                     "common": {
-                        "add_devices": "Tilføj enheder",
                         "clusters": "Klynger",
-                        "devices": "Enheder",
                         "manufacturer_code_override": "Brugerdefineret producentkode",
                         "value": "Værdi"
                     },
-                    "description": "Zigbee Home Automation-opsætning",
                     "device_pairing_card": {
                         "CONFIGURED": "Konfiguration fuldført",
                         "CONFIGURED_status_text": "Initialiserer",
@@ -2530,9 +2211,6 @@
                         "INTERVIEW_COMPLETE_status_text": "Konfigurerer",
                         "PAIRED": "Enhed fundet",
                         "PAIRED_status_text": "Starter Interview"
-                    },
-                    "devices": {
-                        "header": "Zigbee Home Automation - Enhed"
                     },
                     "group_binding": {
                         "bind_button_help": "Sammenføj den valgte gruppe med de valgte enhedsklynger.",
@@ -2548,48 +2226,24 @@
                     "groups": {
                         "add_group": "Tilføj gruppe",
                         "add_members": "Tilføj medlemmer",
-                        "adding_members": "Tilføjer medlemmer",
                         "caption": "Grupper",
                         "create": "Opret gruppe",
                         "create_group": "Zigbee Home Automation - Opret gruppe",
                         "create_group_details": "Indtast de nødvendige oplysninger for at oprette en ny ZigBee-gruppe",
                         "creating_group": "Opretter gruppe",
-                        "description": "Administrer Zigbee-grupper",
                         "group_details": "Her er alle detaljer for den valgte Zigbee-gruppe.",
                         "group_id": "Gruppe-id",
                         "group_info": "Gruppeoplysninger",
                         "group_name_placeholder": "Gruppenavn",
                         "group_not_found": "Gruppen blev ikke fundet!",
-                        "group-header": "Zigbee Home Automation - Gruppedetaljer",
                         "groups": "Grupper",
-                        "groups-header": "Zigbee Home Automation - Gruppeadministration",
-                        "header": "Zigbee Home Automation - Gruppeadministration",
-                        "introduction": "Opret og rediger Zigbee-grupper",
-                        "manage_groups": "Administrer Zigbee-grupper",
                         "members": "Medlemmer",
-                        "remove_groups": "Fjern grupper",
                         "remove_members": "Fjern medlemmer",
-                        "removing_groups": "Fjerner grupper",
-                        "removing_members": "Fjerner medlemmer",
-                        "zha_zigbee_groups": "ZHA Zigbee-grupper"
-                    },
-                    "header": "Konfigurer Zigbee Home Automation",
-                    "introduction": "Her er det muligt at konfigurere ZHA-komponenten. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
-                    "network_management": {
-                        "header": "Netværksstyring",
-                        "introduction": "Kommandoer, der påvirker hele netværket"
+                        "removing_members": "Fjerner medlemmer"
                     },
                     "network": {
                         "caption": "Netværk"
                     },
-                    "node_management": {
-                        "header": "Enhedshåndtering",
-                        "help_node_dropdown": "Vælg en enhed for at få vist enhedsspecifikke indstillinger.",
-                        "hint_battery_devices": "Bemærk: Søvnige (batteridrevne) enheder skal være vågne, når du udfører kommandoer til dem. Du kan generelt vække en sovende enhed ved at udløse den.",
-                        "hint_wakeup": "Nogle enheder som Xiaomi-sensorer har en vækkeknap, som du kan trykke på med ~5 sekunders intervaller, der holder enheder vågne, mens du interagerer med dem.",
-                        "introduction": "Kør ZHA-kommandoer, der påvirker en enkelt enhed. Vælg en enhed for at se en liste over tilgængelige kommandoer."
-                    },
-                    "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Visualisering",
                         "header": "Netværksvisualisering",
@@ -2628,7 +2282,6 @@
                 },
                 "zwave": {
                     "button": "Konfigurer",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Indeks",
                         "instance": "Instans",
@@ -2741,17 +2394,12 @@
                         "type": "Hændelsestype"
                     },
                     "services": {
-                        "alert_parsing_yaml": "Fejl under afkodning af YAML: {data}",
                         "call_service": "Kald tjeneste",
                         "column_description": "Beskrivelse",
                         "column_example": "Eksempel",
                         "column_parameter": "Parameter",
-                        "data": "Tjenestesdata (YAML, valgfri)",
                         "description": "Tjenesteværktøjet til udviklere giver dig mulighed for at kalde alle tilgængelige tjenester i Home Assistant.",
                         "fill_example_data": "Udfyld eksempeldata",
-                        "no_description": "Ingen beskrivelse er tilgængelig",
-                        "no_parameters": "Denne tjeneste modtager ingen parametre.",
-                        "select_service": "Vælg en tjeneste for at se beskrivelsen",
                         "title": "Tjenester"
                     },
                     "states": {
@@ -2792,25 +2440,20 @@
                 }
             },
             "history": {
-                "period": "Periode",
                 "ranges": {
                     "last_week": "Sidste uge",
                     "this_week": "Denne uge",
                     "today": "I dag",
                     "yesterday": "I går"
-                },
-                "showing_entries": "Viser poster for"
+                }
             },
             "logbook": {
-                "entries_not_found": "Der blev ikke fundet nogen logbogsposter.",
-                "period": "Periode",
                 "ranges": {
                     "last_week": "Sidste uge",
                     "this_week": "Denne uge",
                     "today": "I dag",
                     "yesterday": "I går"
-                },
-                "showing_entries": "Viser poster for"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2819,7 +2462,6 @@
                     "yaml_unsupported": "Du kan ikke bruge denne funktion, når du bruger Lovelace-brugerfladen i YAML-tilstand."
                 },
                 "cards": {
-                    "action_confirmation": "Er du sikker på, at du vil udføre handlingen \"{action}\"?",
                     "confirm_delete": "Er du sikker på, at du vil slette dette kort?",
                     "empty_state": {
                         "go_to_integrations_page": "Gå til integrationssiden.",
@@ -2850,13 +2492,11 @@
                         "reorder_items": "Omarranger varer"
                     },
                     "starting": {
-                        "description": "Home Assistant starter. Vent venligst.",
-                        "header": "Home Assistant starter..."
+                        "description": "Home Assistant starter. Vent venligst."
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace-brugerfladekonfigurationen for dette betjeningspanel blev opdateret. Vil du genindlæse?",
-                    "refresh": "Opdater"
+                    "message": "Lovelace-brugerfladekonfigurationen for dette betjeningspanel blev opdateret. Vil du genindlæse?"
                 },
                 "components": {
                     "timestamp-display": {
@@ -2875,7 +2515,6 @@
                             "toggle": "Skift",
                             "url": "Webadresse"
                         },
-                        "editor_service_data": "Servicedata kan kun indtastes via kodeeditoren",
                         "navigation_path": "Navigationssti",
                         "url_path": "Webadresse"
                     },
@@ -3073,7 +2712,6 @@
                         },
                         "sensor": {
                             "description": "Sensorkortet giver dig et hurtigt overblik over dine sensorers tilstand med en valgfri graf til at visualisere forandringer over tid.",
-                            "graph_detail": "Grafdetaljer",
                             "graph_type": "Graftype",
                             "name": "Sensor",
                             "show_more_detail": "Vis flere detaljer"
@@ -3244,7 +2882,6 @@
                     "configure_ui": "Rediger betjeningspanel",
                     "exit_edit_mode": "Afslut brugerflade-redigeringstilstand",
                     "help": "Hjælp",
-                    "refresh": "Opdater",
                     "reload_resources": "Genindlæs ressourcer",
                     "start_conversation": "Start samtale"
                 },
@@ -3363,8 +3000,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Din computer er ikke tilladt.",
-                                "not_whitelisted": "Din computer er ikke whitelistet."
+                                "not_allowed": "Din computer er ikke tilladt."
                             },
                             "step": {
                                 "init": {
@@ -3517,15 +3153,12 @@
                     "create": "Opret token",
                     "create_failed": "Kunne ikke oprette adgangstoken.",
                     "created": "Oprettet {date}",
-                    "created_at": "Oprettet den {date}",
                     "delete_failed": "Kunne ikke slette adgangstoken.",
                     "description": "Opret langlivede adgangstokens, så dine scripts kan forbinde med din Home Assistant-instans. Hver token er gyldig i 10 år fra oprettelsen. Følgende langlivede adgangstokens er i øjeblikket aktive.",
                     "empty_state": "Du har ingen langlivede adgangstokens endnu.",
                     "header": "Langlivede adgangstokens",
-                    "last_used": "Sidst anvendt den {date} fra {location}",
                     "learn_auth_requests": "Lær, hvordan du laver godkendte forespørgsler.",
                     "name": "Navn",
-                    "not_used": "Har aldrig været brugt",
                     "prompt_copy_token": "Kopier din adgangstoken. Den vil ikke blive vist igen.",
                     "prompt_name": "Navn?"
                 },
@@ -3590,11 +3223,6 @@
             },
             "shopping_list": {
                 "start_conversation": "Start samtale"
-            },
-            "shopping-list": {
-                "add_item": "Tilføj element",
-                "clear_completed": "Rydning udført",
-                "microphone_tip": "Tryk på mikrofonen øverst til højre og sig “Add candy to my shopping list”"
             }
         },
         "sidebar": {

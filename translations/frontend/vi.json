@@ -86,252 +86,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Kích hoạt an ninh",
-            "armed_away": "Bảo vệ đi vắng",
-            "armed_custom_bypass": "Tùy chỉnh bỏ qua An ninh",
-            "armed_home": "Bảo vệ ở nhà",
-            "armed_night": "Ban đêm",
-            "arming": "Kích hoạt",
-            "disarmed": "Vô hiệu hóa",
-            "disarming": "Giải giáp",
-            "pending": "Đang chờ xử lý",
-            "triggered": "Kích hoạt"
-        },
-        "automation": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Bình thường",
-                "on": "Thấp"
-            },
-            "cold": {
-                "off": "Bình thường",
-                "on": "Lạnh"
-            },
-            "connectivity": {
-                "off": "Đã ngắt kết nối",
-                "on": "Đã kết nối"
-            },
-            "default": {
-                "off": "Tắt",
-                "on": "Bật"
-            },
-            "door": {
-                "off": "Đóng",
-                "on": "Mở"
-            },
-            "garage_door": {
-                "off": "Đóng",
-                "on": "Mở"
-            },
-            "gas": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "heat": {
-                "off": "Bình thường",
-                "on": "Nóng"
-            },
-            "lock": {
-                "off": "Đã khoá",
-                "on": "Mở khoá"
-            },
-            "moisture": {
-                "off": "Khô",
-                "on": "Ướt"
-            },
-            "motion": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "occupancy": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "opening": {
-                "off": "Đã đóng",
-                "on": "Mở"
-            },
-            "presence": {
-                "off": "Đi vắng",
-                "on": "Ở nhà"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Có vấn đề"
-            },
-            "safety": {
-                "off": "An toàn",
-                "on": "Không an toàn"
-            },
-            "smoke": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "sound": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "vibration": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "window": {
-                "off": "Đóng",
-                "on": "Mở"
-            }
-        },
-        "calendar": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "camera": {
-            "idle": "Không hoạt động",
-            "recording": "Ghi âm",
-            "streaming": "Phát trực tuyến"
-        },
-        "climate": {
-            "cool": "Mát mẻ",
-            "dry": "Khô",
-            "fan_only": "Chỉ có quạt",
-            "heat": "Nhiệt",
-            "heat_cool": "Nóng/Lạnh",
-            "off": "Tắt"
-        },
-        "configurator": {
-            "configure": "Cấu hình",
-            "configured": "Đã cấu hình"
-        },
-        "cover": {
-            "closed": "Đã đóng",
-            "closing": "Đang đóng",
-            "open": "Mở",
-            "opening": "Đang mở",
-            "stopped": "Đã dừng"
-        },
         "default": {
             "off": "Tắt",
             "on": "Bật",
             "unavailable": "Không có sẵn",
             "unknown": "Chưa biết"
-        },
-        "device_tracker": {
-            "not_home": "Đi vắng"
-        },
-        "fan": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "group": {
-            "closed": "Đã đóng",
-            "closing": "Đang đóng",
-            "home": "Ở nhà",
-            "locked": "Khoá",
-            "not_home": "Đi vắng",
-            "off": "Tắt",
-            "ok": "OK",
-            "on": "Bật",
-            "open": "Mở",
-            "opening": "Đang mở",
-            "problem": "Vấn đề",
-            "stopped": "Đã dừng",
-            "unlocked": "Mở khoá"
-        },
-        "input_boolean": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "light": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "lock": {
-            "locked": "Đã khóa",
-            "unlocked": "Mở khóa"
-        },
-        "media_player": {
-            "idle": "Không hoạt động",
-            "off": "Tắt",
-            "on": "Bật",
-            "paused": "Tạm dừng",
-            "playing": "Đang chơi",
-            "standby": "Chế độ chờ"
-        },
-        "person": {
-            "home": "Ở nhà"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "Vấn đề"
-        },
-        "remote": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "scene": {
-            "scening": "Bối cảnh"
-        },
-        "script": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "sensor": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "sun": {
-            "above_horizon": "Trên đường chân trời",
-            "below_horizon": "Dưới đường chân trời"
-        },
-        "switch": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "timer": {
-            "active": "hoạt động",
-            "idle": "nhàn rỗi",
-            "paused": "tạm dừng"
-        },
-        "vacuum": {
-            "cleaning": "Đang làm sạch",
-            "docked": "Đã vào dock",
-            "error": "Lỗi",
-            "idle": "Không hoạt động",
-            "off": "Tắt",
-            "on": "Bật",
-            "paused": "Tạm dừng",
-            "returning": "Đang trở lại dock"
-        },
-        "weather": {
-            "clear-night": "Trời trong, đêm",
-            "cloudy": "Nhiều mây",
-            "fog": "Sương mù",
-            "hail": "Mưa đá",
-            "lightning": "Sét",
-            "lightning-rainy": "Sét, mưa",
-            "partlycloudy": "Mây rải rác",
-            "pouring": "Mưa lớn",
-            "rainy": "Mưa",
-            "snowy": "Tuyết",
-            "snowy-rainy": "Tuyết, mưa",
-            "sunny": "Nắng đẹp",
-            "windy": "Gió nhẹ",
-            "windy-variant": "Gió nhẹ"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Đã tắt",
-                "initializing": "Khởi tạo",
-                "ready": "Sẵn sàng",
-                "sleeping": "Ngủ"
-            },
-            "query_stage": {
-                "dead": "Đã tắt ({query_stage})",
-                "initializing": "Khởi tạo ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -427,8 +186,7 @@
             },
             "script": {
                 "cancel": "Huỷ Bỏ",
-                "cancel_multiple": "Huỷ Bỏ {number}",
-                "execute": "Thi hành"
+                "cancel_multiple": "Huỷ Bỏ {number}"
             },
             "service": {
                 "run": "Chạy"
@@ -582,7 +340,6 @@
             "media-browser": {
                 "audio_not_supported": "Trình duyệt của bạn không hỗ trợ âm thanh.",
                 "choose_player": "Chọn Bộ phát",
-                "choose-source": "Chọn Nguồn",
                 "class": {
                     "album": "Album",
                     "app": "Ứng dụng",
@@ -604,13 +361,6 @@
                     "tv_show": "Chương trình Truyền hình",
                     "url": "Url",
                     "video": "Video"
-                },
-                "content-type": {
-                    "album": "Album",
-                    "artist": "Nghệ sĩ",
-                    "library": "Thư viện",
-                    "playlist": "Danh sách phát",
-                    "server": "Máy chủ"
                 },
                 "documentation": "tài liệu",
                 "learn_adding_local_media": "Tìm hiểu thêm về cách thêm nội dung đa phương tiện trong {documentation} .",
@@ -653,10 +403,8 @@
                     "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
                     "week": "{count} {count, plural,\n  one { tuần }\n  other { tuần }\n}"
                 },
-                "future": "Trong {time}",
                 "just_now": "Ngay bây giờ",
-                "never": "Không bao giờ",
-                "past": "{time} trước"
+                "never": "Không bao giờ"
             },
             "service-picker": {
                 "service": "Dịch vụ"
@@ -739,7 +487,6 @@
                 "crop": "Cắt bớt"
             },
             "more_info_control": {
-                "controls": "Điều khiển",
                 "details": "Chi tiết",
                 "dismiss": "Bỏ qua hộp thoại",
                 "edit": "Chỉnh sửa thực thể",
@@ -837,10 +584,6 @@
             "starting": "Home Assistant đang khởi động, không phải tất cả mọi thứ đều đã sẵn sàng cho đến khi khởi động hoàn tất."
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Các Lịch của tôi",
-                "today": "Hôm nay"
-            },
             "config": {
                 "advanced_mode": {
                     "link_profile_page": "trang hồ sơ của bạn"
@@ -935,8 +678,7 @@
                                     }
                                 },
                                 "service": {
-                                    "label": "Gọi dịch vụ",
-                                    "service_data": "Dữ liệu dịch vụ"
+                                    "label": "Gọi dịch vụ"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Tiếp tục thực hiện sau quá hạn",
@@ -1167,7 +909,6 @@
                         "manage_domains": "Quản lý các tên miền",
                         "not_exposed": "{selected} không hiển thị"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_login": "Đã đăng nhập với tên {email}",
                     "description_not_login": "Chưa đăng nhập",
                     "google": {
@@ -1216,7 +957,6 @@
                     "different_include": "Có thể qua một miền, một đường dẫn hoặc một bao gồm khác.",
                     "pick_attribute": "Chọn một thuộc tính để ghi đè",
                     "picker": {
-                        "entity": "Thực thể",
                         "header": "Tùy chỉnh",
                         "introduction": "Tinh chỉnh thuộc tính mỗi thực thể. Các tùy chỉnh được thêm / chỉnh sửa sẽ có hiệu lực ngay lập tức. Các tùy chỉnh bị xóa sẽ có hiệu lực khi thực thể được cập nhật."
                     },
@@ -1248,7 +988,6 @@
                         "integration": "Tích hợp",
                         "manufacturer": "Nhà sản xuất",
                         "model": "Dòng sản phẩm",
-                        "no_area": "Không có khu vực",
                         "no_devices": "Không có thiết bị nào"
                     },
                     "delete": "Xóa",
@@ -1367,8 +1106,7 @@
                     "license": "Được xuất bản theo giấy phép Apache 2.0",
                     "path_configuration": "Đường dẫn đến configuration.yaml: {path}",
                     "server": "máy chủ",
-                    "source": "Nguồn:",
-                    "title": "Thông tin"
+                    "source": "Nguồn:"
                 },
                 "integration_panel_move": {
                     "link_integration_page": "trang các tích hợp",
@@ -1381,7 +1119,6 @@
                     "caption": "Các bộ tích hợp",
                     "config_entry": {
                         "delete": "Xóa",
-                        "delete_button": "Xoá {integration}",
                         "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
                         "device_unavailable": "Thiết bị không khả dụng",
                         "devices": "{count} {count, plural,\n  one { thiết bị }\n  other { các thiết bị }\n}",
@@ -1391,8 +1128,6 @@
                         "firmware": "Firmware: {version}",
                         "manuf": "bởi {manufacturer}",
                         "no_area": "Không có khu vực",
-                        "no_device": "Các mục không có thiết bị",
-                        "no_devices": "Bộ tích hợp này chưa có thiết bị nào",
                         "options": "Tùy Chọn",
                         "reload": "Tải lại",
                         "reload_confirm": "Tích hợp đã được tải lại",
@@ -1671,8 +1406,7 @@
                             "name": "Tên"
                         },
                         "run_script": "Chạy kịch bản",
-                        "show_info": "Hiển thị thông tin về kịch bản",
-                        "trigger_script": "Kích hoạt kịch bản"
+                        "show_info": "Hiển thị thông tin về kịch bản"
                     }
                 },
                 "server_control": {
@@ -1759,11 +1493,9 @@
                     "add_user": {
                         "caption": "Thêm người dùng",
                         "create": "Tạo",
-                        "name": "Tên",
                         "password": "Mật khẩu",
                         "password_confirm": "Xác nhận Mật khẩu",
-                        "password_not_match": "Mật khẩu không khớp",
-                        "username": "Tên đăng nhập"
+                        "password_not_match": "Mật khẩu không khớp"
                     },
                     "caption": "Người dùng",
                     "description": "Quản lý Người dùng",
@@ -1796,23 +1528,12 @@
                         "pairing_mode": "Đảm bảo các thiết bị của bạn đang ở chế độ ghép nối. Kiểm tra hướng dẫn đi kèm thiết bị về cách làm điều này.",
                         "spinner": "Tìm kiếm các thiết bị ZHA Zigbee ..."
                     },
-                    "add": {
-                        "caption": "Thêm thiết bị",
-                        "description": "Thêm thiết bị vào mạng ZigBee"
-                    },
                     "button": "Cấu hình",
-                    "caption": "ZHA",
                     "clusters": {
                         "header": "Các Cụm"
                     },
                     "common": {
-                        "add_devices": "Thêm thiết bị",
-                        "devices": "Thiết bị",
                         "value": "Giá trị"
-                    },
-                    "description": "Quản lý mạng Zigbee Home Automation",
-                    "devices": {
-                        "header": "ZigBee Home Automation - Thiết Bị"
                     },
                     "group_binding": {
                         "bind_button_help": "Liên kết nhóm đã chọn vào các cụm thiết bị đã chọn.",
@@ -1827,37 +1548,22 @@
                     },
                     "groups": {
                         "add_members": "Thêm Thành viên",
-                        "adding_members": "Thêm Thành viên",
                         "caption": "Các nhóm",
                         "create": "Tạo Nhóm",
                         "create_group": "Zigbee Home Automation - Tạo Nhóm",
                         "creating_group": "Đang tạo Nhóm",
-                        "description": "Tạo và sửa đổi các nhóm ZigBee",
                         "group_id": "Mã Nhóm",
                         "group_info": "Thông tin Nhóm",
                         "group_name_placeholder": "Tên Nhóm",
                         "group_not_found": "Không tìm thấy nhóm!",
-                        "group-header": "ZigBee Home Automation - Chi tiết Nhóm",
                         "groups": "Nhóm",
-                        "groups-header": "ZigBee Home Automation - Quản Lý Nhóm",
-                        "header": "Zigbee Home Automation - Quản Lý Nhóm",
-                        "introduction": "Tạo và sửa đổi các nhóm zigbee",
-                        "manage_groups": "Quản Lý Các Nhóm Zigbee",
                         "members": "Thành viên",
-                        "remove_groups": "Xoá các Nhóm",
                         "remove_members": "Xóa Thành viên",
-                        "removing_groups": "Đang xoá các Nhóm",
-                        "removing_members": "Xoá các Thành Viên",
-                        "zha_zigbee_groups": "Các Nhóm Zigbee ZHA"
-                    },
-                    "header": "Cấu hình ZigBee Home Automation",
-                    "network_management": {
-                        "header": "Quản lí Mạng"
+                        "removing_members": "Xoá các Thành Viên"
                     },
                     "network": {
                         "caption": "Mạng"
-                    },
-                    "title": "Zigbee Home Automation"
+                    }
                 },
                 "zone": {
                     "add_zone": "Thêm Vùng địa lý",
@@ -1889,7 +1595,6 @@
                 },
                 "zwave": {
                     "button": "Cấu hình",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Mục lục",
                         "value": "Giá trị"
@@ -1957,17 +1662,12 @@
                         "type": "Loại Sự Kiện"
                     },
                     "services": {
-                        "alert_parsing_yaml": "Lỗi phân tích YAML: {data}",
                         "call_service": "Gọi Dịch vụ",
                         "column_description": "Mô tả",
                         "column_example": "Ví dụ",
                         "column_parameter": "Tham số",
-                        "data": "Dữ liệu dịch vụ (YAML, tùy chọn)",
                         "description": "Công cụ hỗ trợ phát triển dịch vụ cho phép bạn gọi các dịch vụ khả dụng trong Home Assistant.",
                         "fill_example_data": "Điền các Dữ liệu Mẫu",
-                        "no_description": "Không có mô tả nào",
-                        "no_parameters": "Dịch vụ này không có tham số.",
-                        "select_service": "Chọn một dịch vụ để xem mô tả",
                         "title": "Dịch vụ"
                     },
                     "states": {
@@ -1999,25 +1699,20 @@
                 }
             },
             "history": {
-                "period": "Giai đoạn",
                 "ranges": {
                     "last_week": "Tuần trước",
                     "this_week": "Tuần này",
                     "today": "Hôm nay",
                     "yesterday": "Hôm qua"
-                },
-                "showing_entries": "Hiển thị mục cho"
+                }
             },
             "logbook": {
-                "entries_not_found": "Không tìm thấy trong sổ nhật ký.",
-                "period": "Giai đoạn",
                 "ranges": {
                     "last_week": "Tuần trước",
                     "this_week": "Tuần này",
                     "today": "Hôm nay",
                     "yesterday": "Hôm qua"
-                },
-                "showing_entries": "Hiển thị mục cho"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2052,13 +1747,11 @@
                         "clear_items": "Xóa các mục đã chọn"
                     },
                     "starting": {
-                        "description": "Home Assistant đang khởi động, vui lòng chờ...",
-                        "header": "Home Assistant đang khởi động"
+                        "description": "Home Assistant đang khởi động, vui lòng chờ..."
                     }
                 },
                 "changed_toast": {
-                    "message": "Cấu hình Lovelace đã được cập nhật, bạn có muốn làm mới không?",
-                    "refresh": "Làm tươi"
+                    "message": "Cấu hình Lovelace đã được cập nhật, bạn có muốn làm mới không?"
                 },
                 "editor": {
                     "action-editor": {
@@ -2071,7 +1764,6 @@
                             "toggle": "Đảo ngược",
                             "url": "Url"
                         },
-                        "editor_service_data": "Dữ liệu cho dịch vụ chỉ có thể được nhập bởi trình soạn thảo mã",
                         "navigation_path": "Đường Dẫn Hướng",
                         "url_path": "Đường dẫn url"
                     },
@@ -2341,7 +2033,6 @@
                     "configure_ui": "Cấu hình giao diện",
                     "exit_edit_mode": "Thoát khỏi chế độ chỉnh sửa với UI",
                     "help": "Trợ giúp",
-                    "refresh": "Làm tươi",
                     "reload_resources": "Tải lại các tài nguyên"
                 },
                 "reload_lovelace": "Tải lại giao diện",
@@ -2459,8 +2150,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Máy tính này không được phép.",
-                                "not_whitelisted": "Máy tính của bạn không nằm trong danh sách trắng."
+                                "not_allowed": "Máy tính này không được phép."
                             },
                             "step": {
                                 "init": {
@@ -2583,15 +2273,12 @@
                     "create": "Tạo Token",
                     "create_failed": "Không thể tạo token truy cập.",
                     "created": "Được tạo {date}",
-                    "created_at": "Được tạo lúc {date}",
                     "delete_failed": "Không thể xóa token truy cập.",
                     "description": "Tạo mã truy cập tồn tại lâu dài để cho phép script của bạn tương tác với Home assistant. Mỗi mã truy cập sẽ có hiệu lực trong 10 năm kể từ khi tạo. Các mã truy cập hiện đang hoạt động được thể hiện trong danh sách sau.",
                     "empty_state": "Bạn hiện tại chưa có token truy cập lâu dài",
                     "header": "Token truy cập thời hạn dài",
-                    "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
                     "learn_auth_requests": "Làm thế nào để thực hiện yêu cầu xác thực.",
                     "name": "Tên",
-                    "not_used": "Chưa bao giờ được sử dụng",
                     "prompt_copy_token": "Sao chép token truy cập của bạn. Nó sẽ không đươc hiển thị nữa.",
                     "prompt_name": "Tên?"
                 },
@@ -2645,11 +2332,6 @@
                     "primary_color": "Màu chính",
                     "reset": "Thiết đặt lại"
                 }
-            },
-            "shopping-list": {
-                "add_item": "Thêm mục",
-                "clear_completed": "Xóa hoàn tất",
-                "microphone_tip": "Chạm vào micrô ở trên cùng bên phải và nói \"Thêm kẹo vào danh sách mua sắm của tôi\""
             }
         },
         "sidebar": {

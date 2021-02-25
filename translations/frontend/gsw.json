@@ -44,217 +44,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Scharf",
-            "armed_away": "Scharf usswerts",
-            "armed_home": "Scharf dihei",
-            "armed_night": "Scharf Nacht",
-            "arming": "Scharf stelä",
-            "disarmed": "Nid scharf",
-            "disarming": "Entsperrä",
-            "pending": "Usstehehnd",
-            "triggered": "Usglösst"
-        },
-        "automation": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normau",
-                "on": "Nidrig"
-            },
-            "connectivity": {
-                "off": "Trennt",
-                "on": "Verbunge"
-            },
-            "default": {
-                "off": "Us",
-                "on": "Ah"
-            },
-            "gas": {
-                "off": "Frei",
-                "on": "Erkännt"
-            },
-            "heat": {
-                "on": "Heiss"
-            },
-            "moisture": {
-                "off": "Trochä",
-                "on": "Nass"
-            },
-            "motion": {
-                "off": "Ok",
-                "on": "Erchänt"
-            },
-            "occupancy": {
-                "off": "Ok",
-                "on": "Erchänt"
-            },
-            "opening": {
-                "off": "Gschlosä",
-                "on": "Offä"
-            },
-            "presence": {
-                "on": "Dahei"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Problem"
-            },
-            "safety": {
-                "off": "Sicher",
-                "on": "Unsicher"
-            },
-            "smoke": {
-                "off": "Ok",
-                "on": "Erchänt"
-            },
-            "sound": {
-                "off": "Ok",
-                "on": "Erchänt"
-            },
-            "vibration": {
-                "off": "Ok",
-                "on": "Erchänt"
-            }
-        },
-        "calendar": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "camera": {
-            "idle": "Läärlauf",
-            "recording": "Nimt uf",
-            "streaming": "Streamt"
-        },
-        "climate": {
-            "cool": "Chüälä",
-            "dry": "Trochä",
-            "fan_only": "Nur Lüfter",
-            "heat": "Heizä",
-            "off": "Us"
-        },
-        "configurator": {
-            "configure": "Konfiguriärä",
-            "configured": "Konfiguriärt"
-        },
-        "cover": {
-            "closed": "Gschlossä",
-            "closing": "Am schliesse",
-            "open": "Offä",
-            "opening": "Am öffnä",
-            "stopped": "Gstoppt"
-        },
         "default": {
             "off": "Aus",
             "on": "An",
             "unavailable": "Nid verfüägbar",
             "unknown": "Unbekannt"
-        },
-        "device_tracker": {
-            "not_home": "Nid Dahei"
-        },
-        "fan": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "group": {
-            "closed": "Gschlossä",
-            "closing": "Schlüssä",
-            "home": "Dahei",
-            "locked": "Gsperrt",
-            "not_home": "Nid Dahei",
-            "off": "Us",
-            "ok": "Ok",
-            "on": "Ah",
-            "open": "Offä",
-            "opening": "Am öffnä",
-            "problem": "Problem",
-            "stopped": "Gstoppt",
-            "unlocked": "Entsperrt"
-        },
-        "input_boolean": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "light": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "lock": {
-            "locked": "Gsperrt",
-            "unlocked": "Entsperrt"
-        },
-        "media_player": {
-            "idle": "Läärlauf",
-            "off": "Us",
-            "on": "Ah",
-            "paused": "Pousiärä",
-            "playing": "Am spilä",
-            "standby": "Standby"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "Problem"
-        },
-        "remote": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "scene": {
-            "scening": "Szenä"
-        },
-        "script": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "sensor": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "sun": {
-            "above_horizon": "Überem Horizont",
-            "below_horizon": "Underem Horizont"
-        },
-        "switch": {
-            "off": "Us",
-            "on": "Ah"
-        },
-        "vacuum": {
-            "cleaning": "Putze",
-            "error": "Fähler",
-            "off": "Us",
-            "on": "I",
-            "paused": "Pause"
-        },
-        "weather": {
-            "clear-night": "Klar, Nacht",
-            "cloudy": "Bedeckt",
-            "fog": "Näbu",
-            "hail": "Hägu",
-            "lightning": "Blitzä",
-            "lightning-rainy": "Blitzä, Räge",
-            "partlycloudy": "Teilwis bedeckt",
-            "pouring": "Schütte",
-            "rainy": "Rägnärisch",
-            "snowy": "Schneie",
-            "snowy-rainy": "Schneie, rägnerisch",
-            "sunny": "sunnig",
-            "windy": "windig",
-            "windy-variant": "windig"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Tod",
-                "initializing": "Inizialisiärä",
-                "ready": "Parat",
-                "sleeping": "Schlafä"
-            },
-            "query_stage": {
-                "dead": "Tod ({query_stage})",
-                "initializing": "Inizialisiärä ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -301,9 +95,6 @@
             },
             "scene": {
                 "activate": "Aktiviere"
-            },
-            "script": {
-                "execute": "Usfüähre"
             },
             "vacuum": {
                 "actions": {
@@ -375,10 +166,6 @@
             "connection_lost": "Vrbindig vrlore. Neu verbinde..."
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Meine Kalender",
-                "today": "Heute"
-            },
             "config": {
                 "automation": {
                     "caption": "Automation",
@@ -470,9 +257,6 @@
                         }
                     }
                 },
-                "cloud": {
-                    "caption": "Home Assistant Cloud"
-                },
                 "devices": {
                     "device_info": "Geräteinformationen",
                     "scripts": "Scripts"
@@ -499,13 +283,7 @@
                     "editor": {
                         "delete_user": "Benutzer lösche"
                     }
-                },
-                "zwave": {
-                    "caption": "Z-Wave"
                 }
-            },
-            "history": {
-                "period": "Periode"
             },
             "mailbox": {
                 "delete_button": "Lösche"

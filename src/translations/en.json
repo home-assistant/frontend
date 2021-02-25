@@ -120,7 +120,7 @@
       },
       "automation": {
         "last_triggered": "Last triggered",
-        "trigger": "Execute"
+        "trigger": "Run Actions"
       },
       "camera": {
         "not_available": "Image not available"
@@ -199,7 +199,7 @@
         "activate": "Activate"
       },
       "script": {
-        "execute": "Execute",
+        "run": "[%key:ui::card::service::run%]",
         "cancel": "Cancel",
         "cancel_multiple": "Cancel {number}"
       },
@@ -1337,7 +1337,7 @@
             "conditions": {
               "name": "Condition",
               "header": "Conditions",
-              "introduction": "Conditions are optional and will prevent further execution unless all conditions are satisfied.",
+              "introduction": "Conditions are optional and will prevent the automation from running unless all conditions are satisfied.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
@@ -1553,7 +1553,6 @@
             "no_scripts": "We couldn’t find any editable scripts",
             "add_script": "Add script",
             "show_info": "Show info about script",
-            "trigger_script": "Trigger script",
             "run_script": "Run script",
             "edit_script": "Edit script",
             "headers": {
@@ -1568,7 +1567,7 @@
             "id": "Entity ID",
             "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it blank to automatically generate one.",
             "id_already_exists": "This ID already exists",
-            "introduction": "Use scripts to execute a sequence of actions.",
+            "introduction": "Use scripts to run a sequence of actions.",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
@@ -2559,12 +2558,12 @@
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
           "actions": {
-            "action_confirmation": "Are you sure you want to execute action \"{action}\"?",
+            "action_confirmation": "Are you sure you want to run action \"{action}\"?",
             "no_entity_more_info": "No entity provided for more info dialog",
             "no_entity_toggle": "No entity provided to toggle",
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
-            "no_service": "No service for execution specified"
+            "no_service": "No service to run specified"
           },
           "empty_state": {
             "title": "Welcome Home",

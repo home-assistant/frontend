@@ -21,9 +21,10 @@ export const theme = CMEditorView.theme({
     backgroundColor:
       "var(--code-editor-background-color, var(--card-background-color))",
     "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.2)" },
-    caretColor: "var(--secondary-text-color)",
     height: "var(--code-mirror-height, auto)",
   },
+
+  $content: { caretColor: "var(--secondary-text-color)" },
 
   $$focused: { outline: "none" },
 
