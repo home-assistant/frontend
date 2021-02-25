@@ -720,6 +720,12 @@
                     "week": "Il y a {count} {count, plural,\n  one {semaine}\n  other {semaines}\n}"
                 }
             },
+            "service-control": {
+                "required": "Ce champ est obligatoire",
+                "service_data": "Données de service",
+                "target": "Cibles",
+                "target_description": "Que doit utiliser ce service comme zones, dispositifs ou entités ciblés."
+            },
             "service-picker": {
                 "service": "Service"
             },
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "Abandonné",
                         "close": "Fermer",
+                        "could_not_load": "Le flux de configuration n'a pas pu être chargé",
                         "created_config": "Configuration créée pour {name}.",
                         "dismiss": "Fermer la boîte de dialogue",
+                        "error": "Erreur",
                         "error_saving_area": "Erreur lors de l'enregistrement de la zone: {error}",
                         "external_step": {
                             "description": "Cette étape nécessite la visite d'un site Web externe pour être complétée.",
@@ -1998,6 +2006,10 @@
                         "finish": "Terminer",
                         "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
+                        "pick_flow_step": {
+                            "new_flow": "Non, configurez une autre instance de {integration}",
+                            "title": "Nous les avons découverts, vous voulez les mettre en place?"
+                        },
                         "submit": "Soumettre"
                     },
                     "configure": "Configurer",
@@ -2857,7 +2869,9 @@
                         "type": "Type d'événement"
                     },
                     "services": {
+                        "accepts_target": "Ce service accepte une cible, par exemple: `entity_id: light.bed_light`",
                         "alert_parsing_yaml": "Erreur d'analyse de YAML : {data}",
+                        "all_parameters": "Tous les paramètres disponibles",
                         "call_service": "Appeler le service",
                         "column_description": "Description",
                         "column_example": "Exemple",
@@ -2868,7 +2882,10 @@
                         "no_description": "Aucune description n'est disponible",
                         "no_parameters": "Ce service ne prend aucun paramètre.",
                         "select_service": "Sélectionnez un service pour voir la description",
-                        "title": "Services"
+                        "title": "Services",
+                        "ui_mode": "Passer en mode UI",
+                        "yaml_mode": "Passez en mode YAML",
+                        "yaml_parameters": "Paramètres disponibles uniquement en mode YAML"
                     },
                     "states": {
                         "alert_entity_field": "L'entité est un champ obligatoire",

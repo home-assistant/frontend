@@ -722,9 +722,9 @@
             },
             "service-control": {
                 "required": "Este campo es obligatorio",
-                "service_data": "Datos de servicio",
-                "target": "Objetivo",
-                "target_description": "¿A qué debería dirigirse esta llamada de servicio?"
+                "service_data": "Datos del servicio",
+                "target": "Objetivos",
+                "target_description": "¿Qué debería utilizar este servicio como áreas, dispositivos o entidades objetivo?"
             },
             "service-picker": {
                 "service": "Servicio"
@@ -734,7 +734,7 @@
                 "add_device_id": "Seleccionar dispositivo",
                 "add_entity_id": "Seleccionar entidad",
                 "expand_area_id": "Expande este área en los dispositivos y entidades independientes que contiene. Después de expandirse, no actualizará los dispositivos y entidades cuando cambie el área.",
-                "expand_device_id": "Expande este dispositivo en entidades separadas. Después de expandirse, no actualizará las entidades cuando cambie el dispositivo.",
+                "expand_device_id": "Expande este dispositivo en las entidades independientes que contiene. Después de expandirse, no actualizará las entidades cuando cambie el dispositivo.",
                 "remove_area_id": "Eliminar área",
                 "remove_device_id": "Eliminar dispositivo",
                 "remove_entity_id": "Eliminar entidad"
@@ -1158,7 +1158,7 @@
                                 "event": {
                                     "event": "Evento:",
                                     "label": "Disparar evento",
-                                    "service_data": "Datos de servicio"
+                                    "service_data": "Datos del servicio"
                                 },
                                 "repeat": {
                                     "label": "Repetir",
@@ -1183,7 +1183,7 @@
                                 },
                                 "service": {
                                     "label": "Llamar servicio",
-                                    "service_data": "Datos de servicio"
+                                    "service_data": "Datos del servicio"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Continuar tras el límite de tiempo",

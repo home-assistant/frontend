@@ -720,6 +720,12 @@
                     "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n} siden"
                 }
             },
+            "service-control": {
+                "required": "Dette feltet er påkrevd",
+                "service_data": "Tjenestedata",
+                "target": "Mål",
+                "target_description": "Hva skal denne tjenesten bruke som målrettede områder, enheter eller enheter."
+            },
             "service-picker": {
                 "service": "Tjeneste"
             },
@@ -727,8 +733,8 @@
                 "add_area_id": "Velg område",
                 "add_device_id": "Velg enhet",
                 "add_entity_id": "Velg entitet",
-                "expand_area_id": "Utvid dette området med de separate enhetene og entitetene det inneholder. Etter utvidelse vil den ikke oppdatere enhetene og entitetene når området endres.",
-                "expand_device_id": "Utvid denne enheten i separate entiteter. Etter utvidelse vil den ikke oppdatere entitetene når enheten endres.",
+                "expand_area_id": "Utvid dette området til de separate enhetene og enhetene det inneholder. Etter utvidelse vil den ikke oppdatere enhetene og enhetene når området endres.",
+                "expand_device_id": "Utvid denne enheten til de separate enhetene den inneholder. Etter utvidelse vil den ikke oppdatere enhetene når enheten endres.",
                 "remove_area_id": "Fjern område",
                 "remove_device_id": "Fjern enhet",
                 "remove_entity_id": "Fjern entitet"
@@ -1988,8 +1994,10 @@
                     "config_flow": {
                         "aborted": "Avbrutt",
                         "close": "Lukk",
+                        "could_not_load": "Konfigurasjonsflyt kunne ikke lastes inn",
                         "created_config": "Opprettet konfigurasjon for {name} .",
                         "dismiss": "Avvis dialog",
+                        "error": "Feil",
                         "error_saving_area": "Feil ved lagring av område: {error}",
                         "external_step": {
                             "description": "Dette trinnet krever at du besøker et eksternt nettsted som skal fylles ut.",
@@ -1998,6 +2006,10 @@
                         "finish": "Fullfør",
                         "loading_first_time": "Vennligst vent mens integrasjonen installeres",
                         "not_all_required_fields": "Ikke alle obligatoriske felt er fylt ut.",
+                        "pick_flow_step": {
+                            "new_flow": "Nei, sett opp en annen forekomst av {integration}",
+                            "title": "Vi oppdaget disse, vil du sette dem opp?"
+                        },
                         "submit": "Send inn"
                     },
                     "configure": "Konfigurer",
@@ -2857,7 +2869,9 @@
                         "type": "Hendelse type"
                     },
                     "services": {
+                        "accepts_target": "Denne tjenesten godtar et mål, for eksempel: `entity_id: light.bed_light`",
                         "alert_parsing_yaml": "Feil ved parsing av YAML: {data}",
+                        "all_parameters": "Alle tilgjengelige parametere",
                         "call_service": "Tilkall tjeneste",
                         "column_description": "Beskrivelse",
                         "column_example": "Eksempel",
@@ -2868,7 +2882,10 @@
                         "no_description": "Ingen beskrivelse er tilgjengelig",
                         "no_parameters": "Denne tjenesten tar ingen parametere.",
                         "select_service": "Velg en tjeneste for å se beskrivelsen",
-                        "title": "Tjenester"
+                        "title": "Tjenester",
+                        "ui_mode": "Gå til UI-modus",
+                        "yaml_mode": "Gå til YAML-modus",
+                        "yaml_parameters": "Parameter er bare tilgjengelig i YAML-modus"
                     },
                     "states": {
                         "alert_entity_field": "Entitet er et obligatorisk felt",
