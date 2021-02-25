@@ -266,6 +266,19 @@
             "yes": "Ya"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Add-on",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Pengambilan add-on menjumpai kesalahan.",
+                        "title": "Terjadi kesalahan saat mengambil add-on"
+                    },
+                    "no_supervisor": {
+                        "description": "Tidak ada Supervisor ditemukan, sehingga add-on tidak dapat dimuat.",
+                        "title": "Tidak ada Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Tambahkan",
@@ -276,23 +289,95 @@
                 },
                 "add_new": "Tambahkan area baru…",
                 "area": "Area",
+                "clear": "Bersihkan",
+                "no_areas": "Anda tidak memiliki area apa pun",
+                "no_match": "Tidak ada area yang cocok ditemukan",
                 "show_areas": "Tampilkan area"
             },
+            "blueprint-picker": {
+                "add_user": "Tambahkan pengguna",
+                "remove_user": "Hapus pengguna",
+                "select_blueprint": "Pilih Blueprint"
+            },
+            "calendar": {
+                "my_calendars": "Kalender Saya",
+                "today": "Hari ini"
+            },
+            "data-table": {
+                "no-data": "Tidak ada data",
+                "search": "Cari"
+            },
+            "date-range-picker": {
+                "end_date": "Tanggal akhir",
+                "select": "Pilih",
+                "start_date": "Tanggal mulai"
+            },
             "device-picker": {
+                "clear": "Hapus",
                 "device": "Perangkat",
-                "show_devices": "Tampilkan perangkat"
+                "no_area": "Tidak ada area",
+                "no_devices": "Anda tidak memiliki perangkat apa pun",
+                "no_match": "Tidak ditemukan perangkat yang cocok",
+                "show_devices": "Tampilkan perangkat",
+                "toggle": "Alihkan"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Atribut",
+                    "show_attributes": "Tampilkan atribut"
+                },
                 "entity-picker": {
+                    "clear": "Hapus",
                     "entity": "Entitas",
+                    "no_match": "Tidak ditemukan entitas yang cocok",
                     "show_entities": "Tampilkan entitas"
                 }
             },
             "history_charts": {
+                "history_disabled": "Integrasi riwayat dinonaktifkan",
                 "loading_history": "Memuat riwayat status…",
                 "no_history_found": "Tidak ada riwayat status ditemukan."
             },
+            "logbook": {
+                "by": "berdasarkan",
+                "by_service": "berdasarkan layanan",
+                "entries_not_found": "Tidak ada entri buku log yang ditemukan.",
+                "messages": {
+                    "was_closed": "telah ditutup",
+                    "was_connected": "telah terhubung",
+                    "was_disconnected": "telah terputus",
+                    "was_locked": "telah terkunci",
+                    "was_low": "rendah",
+                    "was_normal": "normal",
+                    "was_opened": "dibuka",
+                    "was_plugged_in": "telah dicolokkan",
+                    "was_safe": "aman",
+                    "was_unlocked": "tidak terkunci",
+                    "was_unplugged": "telah dicabut",
+                    "was_unsafe": "tidak aman"
+                }
+            },
             "media-browser": {
+                "audio_not_supported": "Browser Anda tidak mendukung elemen audio.",
+                "choose_player": "Pilih Pemutar",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artis",
+                    "channel": "Kanal",
+                    "composer": "Komposer",
+                    "contributing_artist": "Artis yang Berkontribusi",
+                    "directory": "Perpustakaan",
+                    "episode": "Episode",
+                    "game": "Game",
+                    "genre": "Genre",
+                    "image": "Gambar",
+                    "movie": "Film",
+                    "music": "Musik",
+                    "playlist": "Daftar Putar",
+                    "podcast": "Podcast",
+                    "season": "Musim"
+                },
                 "learn_adding_local_media": "Pelajari lebih lanjut tentang menambahkan media di {documentation}."
             },
             "related-items": {
@@ -314,10 +399,34 @@
                     "second": "{count} {count, plural,\n  one { detik }\n  other { detik }\n}",
                     "week": "{count} {count, plural,\n  one { minggu }\n  other { minggu }\n}"
                 },
-                "never": "Tak pernah"
+                "never": "Tak pernah",
+                "past_duration": {
+                    "minute": "{count} {count, plural,\n  one {menit}\n  other {menit}\n} lalu",
+                    "second": "{count} {count, plural,\n  one {detik}\n  other {detik}\n} lalu",
+                    "week": "{count} {count, plural,\n  one {minggu}\n  other {minggu}\n} lalu"
+                }
+            },
+            "service-control": {
+                "required": "Bidang ini wajib diisi",
+                "service_data": "Data layanan",
+                "target": "Target",
+                "target_description": "Yang harus digunakan layanan ini sebagai area, perangkat, atau entitas yang ditargetkan."
             },
             "service-picker": {
                 "service": "Layanan"
+            },
+            "target-picker": {
+                "add_area_id": "Pilih area",
+                "add_device_id": "Pilih perangkat",
+                "add_entity_id": "Pilih entitas",
+                "remove_area_id": "Hapus area",
+                "remove_device_id": "Hapus perangkat",
+                "remove_entity_id": "Hapus entitas"
+            },
+            "user-picker": {
+                "add_user": "Tambahkan pengguna",
+                "no_user": "Tidak ada pengguna",
+                "remove_user": "Hapus pengguna"
             }
         },
         "dialogs": {
@@ -1005,24 +1114,37 @@
                 },
                 "blueprint": {
                     "add": {
+                        "community_forums": "forum komunitas",
                         "error_no_url": "Masukkan URL blueprint",
                         "file_name": "Path Blueprint",
                         "header": "Impor blueprint",
                         "import_btn": "Pratinjau blueprint",
                         "import_header": "Blueprint \"{name}\"",
+                        "import_introduction_link": "Anda dapat mengimpor blueprint pengguna lain dari Github dan {community_link}. Masukkan URL blueprint di bawah ini.",
                         "importing": "Memuat blueprint...",
+                        "raw_blueprint": "Isi blueprint",
                         "save_btn": "Impor blueprint",
                         "saving": "Mengimpor blueprint...",
+                        "unsupported_blueprint": "Blueprint ini tidak didukung",
                         "url": "URL blueprint"
                     },
                     "caption": "Blueprint",
+                    "description": "Kelola blueprint",
                     "overview": {
                         "add_blueprint": "Impor blueprint",
                         "confirm_delete_header": "Hapus blueprint ini?",
                         "confirm_delete_text": "Yakin ingin menghapus blueprint ini?",
+                        "delete_blueprint": "Hapus blueprint",
                         "discover_more": "Temukan blueprint lainnya",
+                        "header": "Editor Blueprint",
+                        "headers": {
+                            "domain": "Domain",
+                            "file_name": "Nama file",
+                            "name": "Nama"
+                        },
                         "introduction": "Konfigurasi blueprint memungkinkan Anda untuk mengimpor dan mengelola blueprint.",
-                        "learn_more": "Pelajari lebih lanjut tentang blueprint"
+                        "learn_more": "Pelajari lebih lanjut tentang blueprint",
+                        "use_blueprint": "Buat otomasi"
                     }
                 },
                 "cloud": {
@@ -1135,10 +1257,34 @@
                         "confirm_disable": "Yakin ingin menghapus webhook ini?",
                         "copied_to_clipboard": "Disalin ke papan klip",
                         "info_disable_webhook": "Jika Anda tidak ingin lagi menggunakan webhook ini, Anda bisa",
-                        "link_disable_webhook": "menonaktifkannya"
+                        "link_disable_webhook": "menonaktifkannya",
+                        "managed_by_integration": "Webhook ini dikelola dengan integrasi dan tidak dapat dinonaktifkan.",
+                        "view_documentation": "Lihat dokumentasi",
+                        "webhook_for": "Webhook untuk {name}"
+                    },
+                    "forgot_password": {
+                        "check_your_email": "Periksa email Anda untuk mendapatkan petunjuk tentang cara mengatur ulang kata sandi Anda.",
+                        "email": "Email",
+                        "email_error_msg": "Email tidak valid",
+                        "instructions": "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.",
+                        "send_reset_email": "Kirim email pengaturan ulang",
+                        "subtitle": "Lupa kata sandi Anda",
+                        "title": "Lupa kata sandi"
                     },
                     "google": {
-                        "not_exposed_entities": "Entitas tidak terekspos"
+                        "banner": "Pengeditan entitas mana yang terpapar melalui antarmuka ini dinonaktifkan karena Anda telah mengonfigurasi filter entitas di configuration.yaml.",
+                        "disable_2FA": "Nonaktifkan autentikasi dua faktor",
+                        "dont_expose_entity": "Jangan paparkan entitas",
+                        "expose": "Paparkan ke Google Assistant",
+                        "expose_entity": "Paparkan entitas",
+                        "exposed": "{selected} terpapar",
+                        "exposed_entities": "Entitas yang terpapar",
+                        "follow_domain": "Ikuti domain",
+                        "manage_domains": "Kelola domain",
+                        "not_exposed": "{selected} tidak terpapar",
+                        "not_exposed_entities": "Entitas tidak terekspos",
+                        "sync_to_google": "Menyinkronkan perubahan ke Google.",
+                        "title": "Google Assistant"
                     },
                     "login": {
                         "alert_email_confirm_necessary": "Anda perlu mengkonfirmasi email Anda sebelum masuk.",
@@ -1172,7 +1318,15 @@
                         "information": "Buat akun untuk memulai uji coba gratis selama satu bulan dengan Home Assistant Cloud. Tidak ada informasi pembayaran yang diperlukan.",
                         "information2": "Uji coba ini akan memberi Anda akses ke semua manfaat Home Assistant Cloud, termasuk:",
                         "information3": "Layanan ini dijalankan oleh mitra kami",
-                        "information3a": ", sebuah perusahaan yang didirikan oleh pendiri Home Assistant dan Hass.io."
+                        "information3a": ", sebuah perusahaan yang didirikan oleh pendiri Home Assistant dan Hass.io.",
+                        "information4": "Dengan mendaftarkan akun, Anda menyetujui syarat dan ketentuan berikut.",
+                        "link_privacy_policy": "Kebijakan Privasi",
+                        "link_terms_conditions": "Syarat dan Ketentuan",
+                        "password": "Kata Sandi",
+                        "password_error_msg": "Panjang minimal kata sandi adalah 8 karakter",
+                        "resend_confirm_email": "Kirim ulang email konfirmasi",
+                        "start_trial": "Mulai Uji Coba",
+                        "title": "Daftar Akun"
                     }
                 },
                 "common": {
@@ -1208,47 +1362,198 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Atribut berikut sudah diatur dalam customize.yaml",
+                    "attributes_not_set": "Atribut berikut belum disetel. Setel jika diinginkan.",
+                    "attributes_outside": "Atribut berikut disesuaikan dari luar customize.yaml",
+                    "attributes_override": "Anda dapat menimpanya jika diinginkan.",
+                    "attributes_set": "Atribut entitas berikut ditetapkan secara terprogram.",
                     "caption": "Penyesuaian",
                     "description": "Sesuaikan entitas anda",
+                    "different_include": "Mungkin melalui domain, glob, atau penyertaan lain.",
+                    "pick_attribute": "Pilih atribut untuk ditimpa",
                     "picker": {
+                        "documentation": "Dokumentasi penyesuaian",
                         "header": "Penyesuaian",
                         "introduction": "Sesuaikan atribut per entitas. Penyesuaian yang ditambahkan/diedit akan segera berlaku. Penyesuaian yang dihapus akan berlaku saat entitas diperbarui."
+                    },
+                    "warning": {
+                        "include_link": "menyertakan customize.yaml dengan benar",
+                        "include_sentence": "Tampaknya configuration.yaml Anda tidak",
+                        "not_applied": "Perubahan yang dilakukan di sini ditulis di dalamnya, tetapi tidak akan diterapkan setelah memuat ulang konfigurasi kecuali jika penyertaan ditetapkan dengan benar."
                     }
                 },
                 "devices": {
+                    "add_prompt": "Belum ada {name} yang ditambahkan menggunakan perangkat ini. Anda dapat menambahkannya dengan mengklik tombol + di atas.",
+                    "automation": {
+                        "actions": {
+                            "caption": "Ketika sesuatu dipicu...",
+                            "no_actions": "Tidak ada aksi",
+                            "unknown_action": "Aksi tidak diketahui"
+                        },
+                        "automations": "Otomatisasi",
+                        "conditions": {
+                            "caption": "Lakukan sesuatu hanya jika...",
+                            "no_conditions": "Tidak ada kondisi",
+                            "unknown_condition": "Kondisi tidak diketahui"
+                        },
+                        "create": "Buat otomatisasi dengan perangkat",
+                        "create_disable": "Tidak dapat membuat otomatisasi dengan perangkat yang dinonaktifkan",
+                        "no_automations": "Tidak ada otomatisasi",
+                        "no_device_automations": "Tidak ada otomatisasi yang tersedia untuk perangkat ini.",
+                        "triggers": {
+                            "caption": "Lakukan sesuatu jika...",
+                            "no_triggers": "Tidak ada pemicu",
+                            "unknown_trigger": "Pemicu tidak diketahui"
+                        },
+                        "unknown_automation": "Otomatisasi tidak diketahui"
+                    },
+                    "cant_edit": "Anda hanya dapat mengedit item yang dibuat di antarmuka.",
                     "caption": "Perangkat",
                     "confirm_delete": "Yakin ingin menghapus perangkat ini?",
                     "confirm_disable_config_entry": "Tidak ada lagi perangkat untuk entri konfigurasi {entry_name}, ingin menonaktifkan entri konfigurasi?",
                     "confirm_rename_entity_ids": "Ingin juga mengganti nama ID entitas Anda?",
                     "confirm_rename_entity_ids_warning": "Ini tidak akan mengubah konfigurasi apa pun (seperti otomasi, skrip, scene, dasbor) yang sedang menggunakan entitas ini! Anda harus memperbaruinya sendiri untuk menggunakan ID entitas baru!",
+                    "data_table": {
+                        "area": "Area",
+                        "battery": "Baterai",
+                        "device": "Perangkat",
+                        "integration": "Integrasi",
+                        "manufacturer": "Pabrikan",
+                        "model": "Model",
+                        "no_devices": "Tidak ada perangkat"
+                    },
+                    "delete": "Hapus",
                     "description": "Kelola perangkat yang dikonfigurasi",
+                    "device_info": "Info perangkat",
+                    "device_not_found": "Perangkat tidak ditemukan.",
+                    "disabled": "Dinonaktifkan",
+                    "disabled_by": {
+                        "config_entry": "Entri konfigurasi",
+                        "integration": "Integrasi",
+                        "user": "Pengguna"
+                    },
+                    "enabled_cause": "Perangkat dinonaktifkan oleh {cause} .",
+                    "enabled_description": "Perangkat yang dinonaktifkan tidak akan ditampilkan dan entitas milik perangkat akan dinonaktifkan dan tidak ditambahkan ke Home Assistant.",
+                    "enabled_label": "Aktifkan perangkat",
                     "entities": {
-                        "add_entities_lovelace": "Tambahkan ke Lovelace"
-                    }
+                        "add_entities_lovelace": "Tambahkan ke Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {entitas dinonaktifkan}\n  other {entitas dinonaktifkan}\n}",
+                        "entities": "Entitas",
+                        "hide_disabled": "Sembunyikan yang dinonaktifkan",
+                        "none": "Perangkat ini tidak memiliki entitas"
+                    },
+                    "name": "Nama",
+                    "no_devices": "Tidak ada perangkat",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter",
+                            "hidden_devices": "{number} {number, plural,\n  one {perangkat}\n  other {perangkat}\n} tersembunyi",
+                            "show_all": "Tampilkan semua",
+                            "show_disabled": "Tampilkan perangkat yang dinonaktifkan"
+                        },
+                        "search": "Cari perangkat"
+                    },
+                    "scene": {
+                        "create": "Buat scene dengan perangkat",
+                        "create_disable": "Tidak dapat membuat scene dengan perangkat yang dinonaktifkan",
+                        "no_scenes": "Tidak ada scene",
+                        "scenes": "Scene"
+                    },
+                    "scenes": "Scene",
+                    "script": {
+                        "create": "Buat skrip dengan perangkat",
+                        "create_disable": "Tidak dapat membuat skrip dengan perangkat yang dinonaktifkan",
+                        "no_scripts": "Tidak ada skrip",
+                        "scripts": "Skrip"
+                    },
+                    "scripts": "Skrip",
+                    "unknown_error": "Kesalahan yang tidak diketahui",
+                    "unnamed_device": "Perangkat tanpa nama",
+                    "update": "Perbarui"
                 },
                 "entities": {
                     "caption": "Entitas",
                     "description": "Kelola entitas yang diketahui",
                     "picker": {
                         "disable_selected": {
+                            "button": "Nonaktifkan yang dipilih",
+                            "confirm_text": "Entitas yang dinonaktifkan tidak akan ditambahkan ke Home Assistant",
                             "confirm_title": "Ingin menonaktifkan {number} {number, plural,\n  one {entitas}\n  other {entitas}\n}?"
                         },
                         "enable_selected": {
+                            "button": "Aktifkan yang dipilih",
+                            "confirm_text": "Ini akan membuatnya tersedia lagi di Home Assistant jika saat ini sedang nonaktif.",
                             "confirm_title": "Ingin mengaktifkan {number} {number, plural,\n  one {entitas}\n  other {entitas}\n}?"
                         },
+                        "filter": {
+                            "filter": "Filter",
+                            "hidden_entities": "{number} {number, plural,\n  one {entitas}\n  other {entitas}\n} tersembunyi",
+                            "show_all": "Tampilkan semua",
+                            "show_disabled": "Tampilkan entitas yang dinonaktifkan",
+                            "show_readonly": "Tampilkan entitas hanya baca",
+                            "show_unavailable": "Tampilkan entitas yang tidak tersedia"
+                        },
                         "header": "Entitas",
+                        "headers": {
+                            "area": "Area",
+                            "entity_id": "ID Entitas",
+                            "integration": "Integrasi",
+                            "name": "Nama",
+                            "status": "Status"
+                        },
+                        "introduction": "Home Assistant menyimpan registri dari setiap entitas yang pernah dilihatnya, yang dapat diidentifikasi secara unik. Masing-masing entitas ini akan memiliki ID entitas yang ditetapkan yang hanya akan digunakan untuk entitas ini.",
                         "introduction2": "Gunakan registri entitas untuk mengganti nama, mengubah ID entitas, atau menghapus entri dari Home Assistant.",
                         "remove_selected": {
+                            "button": "Hapus yang dipilih",
+                            "confirm_partly_text": "Anda hanya dapat menghapus {removable} dari {selected} entitas yang dipilih. Entitas hanya dapat dihapus ketika integrasi tidak lagi menyediakan entitas. Terkadang Anda harus memulai ulang Home Assistant sebelum dapat menghapus entitas integrasi yang dihapus. Yakin ingin menghapus entitas yang bisa dilepas?",
                             "confirm_partly_title": "Hanya {number} {number, plural,\n  one {entitas terpilih}\n  other {entitas terpilih}\n} yang bisa dihapus.",
                             "confirm_text": "Anda harus menghapusnya dari konfigurasi dan otomasi Lovelace yang mengandung entitas ini.",
                             "confirm_title": "Ingin menghapus {number} {number, plural,\n  one {entitas}\n  other {entitas}\n}?"
+                        },
+                        "search": "Cari entitas",
+                        "selected": "{number} dipilih",
+                        "status": {
+                            "disabled": "Dinonaktifkan",
+                            "ok": "Oke",
+                            "readonly": "Hanya baca",
+                            "restored": "Dipulihkan",
+                            "unavailable": "Tidak tersedia"
                         }
                     }
+                },
+                "filtering": {
+                    "clear": "Bersihkan",
+                    "filtering_by": "Filter menurut",
+                    "show": "Tampilkan"
                 },
                 "header": "Mengonfigurasi Home Assistant",
                 "helpers": {
                     "caption": "Pembantu",
-                    "description": "Elemen yang membantu membangun otomasi"
+                    "description": "Elemen yang membantu membangun otomasi",
+                    "dialog": {
+                        "add_helper": "Tambahkan pembantu",
+                        "add_platform": "Tambahkan {platform}",
+                        "create": "Buat"
+                    },
+                    "picker": {
+                        "add_helper": "Tambahkan pembantu",
+                        "headers": {
+                            "editable": "Dapat diedit",
+                            "entity_id": "ID Entitas",
+                            "name": "Nama",
+                            "type": "Jenis"
+                        },
+                        "no_helpers": "Sepertinya Anda belum memiliki pembantu!"
+                    },
+                    "types": {
+                        "counter": "Pencacah",
+                        "input_boolean": "Pengalihan",
+                        "input_datetime": "Tanggal dan/atau waktu",
+                        "input_number": "Bilangan",
+                        "input_select": "Tarik-turun",
+                        "input_text": "Teks",
+                        "timer": "Timer"
+                    }
                 },
                 "info": {
                     "built_using": "Dibangun menggunakan",
@@ -1275,6 +1580,11 @@
                         "more_info": "info lebih lanjut"
                     }
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "halaman integrasi",
+                    "missing_zha": "Panel konfigurasi ZHA tidak ada? Panelnya dipindahkan ke entri ZHA di {integrations_page} .",
+                    "missing_zwave": "Panel konfigurasi Z-Wave tidak ada? Panelnya dipindahkan ke entri Z-Wave di {integrations_page} ."
+                },
                 "integrations": {
                     "add_integration": "Tambahkan integrasi",
                     "attention": "Perlu perhatian",
@@ -1285,6 +1595,7 @@
                         "delete_confirm": "Yakin ingin menghapus integrasi ini?",
                         "device_unavailable": "Perangkat tidak tersedia",
                         "devices": "{count} {count, plural,\n  one {perangkat}\n  other {perangkat}\n}",
+                        "disable_restart_confirm": "Mulai ulang Home Assistant untuk menyelesaikan penonaktifan integrasi ini",
                         "disable": {
                             "disable_confirm": "Yakin ingin menonaktifkan entri konfigurasi ini? Perangkat dan entitasnya akan dinonaktifkan.",
                             "disabled": "Dinonaktifkan",
@@ -1296,6 +1607,7 @@
                             "disabled_cause": "Dinonaktifkan oleh {cause}"
                         },
                         "documentation": "Dokumentasi",
+                        "enable_restart_confirm": "Mulai ulang Home Assistant untuk menyelesaikan pengaktifan integrasi ini",
                         "entities": "{count} {count, plural,\n  one {entitas}\n  other {entitas}\n}",
                         "entity_unavailable": "Entitas tidak tersedia",
                         "firmware": "Firmware: {version}",
@@ -1566,13 +1878,22 @@
                         "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
+                        "battery_note": "Jika node bertenaga baterai, pastikan untuk membangunkannya sebelum melanjutkan",
+                        "button": "Segarkan Node",
+                        "complete": "Penyegaran Node Selesai",
+                        "description": "Ini akan memberi tahu OpenZWave untuk mewawancarai kembali node dan memperbarui kelas, kapabilitas, dan nilai perintah node.",
+                        "node_status": "Status Node",
+                        "refreshing_description": "Menyegarkan informasi node...",
+                        "start_refresh_button": "Mulai Segarkan",
+                        "step": "Langkah",
                         "title": "Segarkan Informasi Node",
                         "wakeup_header": "Instruksi Bangun untuk",
                         "wakeup_instructions_source": "Instruksi bangun bersumber dari basis data perangkat komunitas OpenZWave."
                     },
                     "select_instance": {
                         "header": "Pilih Instans OpenZWave",
-                        "introduction": "Anda memiliki lebih dari satu instans OpenZWave yang berjalan. Instans mana yang ingin dikelola?"
+                        "introduction": "Anda memiliki lebih dari satu instans OpenZWave yang berjalan. Instans mana yang ingin dikelola?",
+                        "none_found": "Kami tidak dapat menemukan instans OpenZWave. Jika ini salah, periksa pengaturan OpenZWave dan MQTT Anda dan pastikan Home Assistant dapat berkomunikasi dengan broker MQTT Anda."
                     },
                     "services": {
                         "add_node": "Tambahkan Node",
@@ -1602,8 +1923,10 @@
                         "name": "Nama",
                         "name_error_msg": "Nama wajib diisi",
                         "new_person": "Orang Baru",
+                        "no_device_tracker_available_intro": "Ketika Anda memiliki perangkat yang menunjukkan kehadiran seseorang, Anda akan dapat menetapkannya kepada seseorang di sini. Anda dapat menambahkan perangkat pertama Anda dengan menambahkan integrasi deteksi kehadiran dari halaman integrasi.",
                         "update": "Perbarui"
                     },
+                    "introduction": "Di sini Anda dapat menentukan setiap orang yang diminati di Home Assistant.",
                     "learn_more": "Pelajari lebih lanjut tentang orang",
                     "no_persons_created_yet": "Sepertinya Anda belum membuat konfigurasi orang.",
                     "note_about_persons_configured_in_yaml": "Catatan: orang yang dikonfigurasi melalui configuration.yaml tidak dapat diedit melalui antarmuka.",
@@ -1953,8 +2276,72 @@
                     "no_zones_created_yet": "Sepertinya Anda belum membuat zona."
                 },
                 "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Batalkan Penyertaan",
+                        "controller_in_inclusion_mode": "Pengontrol Z-Wave Anda sekarang dalam mode penyertaan.",
+                        "follow_device_instructions": "Ikuti petunjuk yang disertakan dengan perangkat Anda untuk memicu pemasangan pada perangkat.",
+                        "inclusion_failed": "Node tidak dapat ditambahkan. Periksa log untuk informasi lebih lanjut.",
+                        "inclusion_finished": "Node telah ditambahkan. Mungkin perlu beberapa menit bagi semua entitas untuk muncul saat kami selesai menyiapkan node di latar belakang.",
+                        "introduction": "Wisaya ini akan memandu Anda menambahkan node ke jaringan Z-Wave.",
+                        "secure_inclusion_warning": "Perangkat aman memerlukan bandwidth tambahan; terlalu banyak perangkat aman yang dapat memperlambat jaringan Z-Wave Anda. Sebaiknya hanya menggunakan inklusi aman untuk perangkat yang memerlukannya, seperti kunci atau pembuka pintu garasi.",
+                        "start_inclusion": "Mulai Penyertaan",
+                        "start_secure_inclusion": "Mulai Penyertaan Aman",
+                        "title": "Tambahkan Node Z-Wave",
+                        "use_secure_inclusion": "Gunakan penyertaan yang aman",
+                        "view_device": "Lihat Perangkat"
+                    },
+                    "button": "Konfigurasikan",
+                    "common": {
+                        "add_node": "Tambahkan Node",
+                        "close": "Tutup",
+                        "home_id": "ID Rumah",
+                        "network": "Jaringan",
+                        "node_id": "ID Node",
+                        "remove_node": "Hapus Node"
+                    },
                     "dashboard": {
-                        "dump_not_ready_title": "Belum semua node siap"
+                        "driver_version": "Versi Driver",
+                        "dump_dead_nodes_text": "Beberapa node Anda tidak merespons dan dianggap mati. Ini tidak akan diekspor sepenuhnya.",
+                        "dump_dead_nodes_title": "Beberapa node Anda mati",
+                        "dump_debug": "Unduh dump jaringan Anda untuk membantu mendiagnosis masalah",
+                        "dump_not_ready_confirm": "Unduh",
+                        "dump_not_ready_text": "Jika Anda membuat ekspor sementara tidak semua node siap, Anda bisa kehilangan data yang dibutuhkan. Berikan waktu pada jaringan Anda untuk menanyakan semua node. Ingin melanjutkan proses dump?",
+                        "dump_not_ready_title": "Belum semua node siap",
+                        "header": "Kelola Jaringan Z-Wave Anda",
+                        "home_id": "ID Rumah",
+                        "introduction": "Kelola jaringan Z-Wave dan node Z-Wave Anda",
+                        "nodes_ready": "Node siap",
+                        "server_version": "Versi Server"
+                    },
+                    "device_info": {
+                        "node_ready": "Node Siap",
+                        "node_status": "Status Node",
+                        "zwave_info": "Info Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Jaringan"
+                    },
+                    "network_status": {
+                        "connected": "Terhubung",
+                        "connecting": "Menghubungkan",
+                        "unknown": "Tidak diketahui"
+                    },
+                    "node_status": {
+                        "alive": "Hidup",
+                        "asleep": "Tertidur",
+                        "awake": "Bangun",
+                        "dead": "Mati",
+                        "unknown": "Tidak diketahui"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Batalkan Pengeluaran",
+                        "controller_in_exclusion_mode": "Pengontrol Z-Wave Anda sekarang dalam mode pengeluaran.",
+                        "exclusion_failed": "Node tidak dapat dihapus. Periksa log untuk informasi lebih lanjut.",
+                        "exclusion_finished": "Node {id} telah dihapus dari jaringan Z-Wave Anda.",
+                        "follow_device_instructions": "Ikuti petunjuk yang disertakan dengan perangkat Anda untuk memicu pengeluaran pada perangkat.",
+                        "introduction": "Hapus node dari jaringan Z-Wave Anda, dan hapus perangkat dan entitas terkait dari Home Assistant.",
+                        "start_exclusion": "Mulai Pengeluaran",
+                        "title": "Hapus Node Z-Wave"
                     }
                 },
                 "zwave": {

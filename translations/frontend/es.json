@@ -3373,10 +3373,10 @@
                     "current_token_tooltip": "No se puede eliminar el token actual",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "description": "Cada token de actualización representa un acceso de sesión. Los tokens de actualización se eliminarán automáticamente al cerrar la sesión. Los siguientes tokens de actualización están actualmente activos para tu cuenta.",
-                    "header": "[%key:ui::panel::lovelace::menu::refresh%] tokens",
+                    "header": "Actualizar tokens",
                     "last_used": "Último uso el {date} desde {location}",
                     "not_used": "Nunca ha sido usado",
-                    "token_title": "[%key:ui::panel::lovelace::menu::refresh%] token para {clientId}"
+                    "token_title": "Actualizar token para {clientId}"
                 },
                 "suspend": {
                     "description": "¿Deberíamos cerrar la conexión con el servidor después de estar oculto durante 5 minutos?",

@@ -831,8 +831,7 @@
                                 },
                                 "event": {
                                     "event": "이벤트:",
-                                    "label": "이벤트 발행",
-                                    "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                                    "label": "이벤트 발행"
                                 },
                                 "repeat": {
                                     "label": "반복",

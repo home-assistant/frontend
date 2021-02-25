@@ -467,6 +467,9 @@
                     "week": "Před {count} {count, plural,\none {týdnem}\nother {týdny}\n}"
                 }
             },
+            "service-control": {
+                "service_data": "Data služby"
+            },
             "service-picker": {
                 "service": "Služba"
             },
@@ -891,7 +894,7 @@
                                 "event": {
                                     "event": "Událost:",
                                     "label": "Spustit událost",
-                                    "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                                    "service_data": "Data služby"
                                 },
                                 "repeat": {
                                     "label": "Opakovaní",

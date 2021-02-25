@@ -61,7 +61,7 @@
                 "comfort": "Komfort",
                 "eco": "Øko",
                 "home": "Hjem",
-                "normal": "[%key:state::binary_sensor::battery::off%]",
+                "normal": "Normal",
                 "sleep": "Sove"
             }
         }
@@ -73,7 +73,7 @@
             "armed_custom_bypass": "Aktivert",
             "armed_home": "Aktivert",
             "armed_night": "Aktivert",
-            "arming": "[%key:state::alarm_control_panel::arming%]",
+            "arming": "Aktivererer",
             "disarmed": "Deaktivere",
             "disarming": "Deaktivere",
             "pending": "Venter",
@@ -87,7 +87,7 @@
         },
         "device_tracker": {
             "home": "Hjemme",
-            "not_home": "[%key:state::device_tracker::not_home%]"
+            "not_home": "Borte"
         },
         "person": {
             "home": "Hjemme",
@@ -357,7 +357,7 @@
             "logbook": {
                 "by": "av",
                 "by_service": "av tjenesten",
-                "entries_not_found": "[%key:ui::panel::logbook::entries_not_found%]",
+                "entries_not_found": "Finner ingen loggbokoppføringer",
                 "messages": {
                     "became_unavailable": "ble utilgjengelig",
                     "changed_to_state": "endret til {state}",
@@ -540,7 +540,7 @@
                 "cancel": "Avbryt",
                 "close": "Lukk",
                 "default_confirmation_title": "Er du sikker?",
-                "ok": "[%key:state::group::ok%]"
+                "ok": "OK"
             },
             "helper_settings": {
                 "counter": {
@@ -1588,7 +1588,7 @@
                         "selected": "{number} valgte",
                         "status": {
                             "disabled": "Deaktivert",
-                            "ok": "[%key:state::group::ok%]",
+                            "ok": "Ok",
                             "readonly": "Skrivebeskyttet",
                             "restored": "Gjennopprettet",
                             "unavailable": "Utilgjengelig"
@@ -2279,7 +2279,7 @@
                         "add_members": "Legg til medlemmer",
                         "caption": "Grupper",
                         "create": "Opprett gruppe",
-                        "create_group": "[%key:ui::panel::config::zha::title%] - Opprett gruppe",
+                        "create_group": "ZigBee Hjemmeautomasjon - Opprett gruppe",
                         "create_group_details": "Angi de nødvendige detaljene for å opprette en ny ZigBee-gruppe",
                         "creating_group": "Oppretter gruppe",
                         "group_details": "Her er alle detaljene for den valgte ZigBee-gruppen.",

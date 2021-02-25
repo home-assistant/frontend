@@ -890,8 +890,7 @@
                                 },
                                 "event": {
                                     "event": "Ereignis:",
-                                    "label": "Ereignis auslösen",
-                                    "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                                    "label": "Ereignis auslösen"
                                 },
                                 "repeat": {
                                     "label": "Wiederholen",

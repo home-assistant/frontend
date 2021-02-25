@@ -896,8 +896,7 @@
                                 },
                                 "event": {
                                     "event": "Zdarzenie:",
-                                    "label": "Wywołanie zdarzenia",
-                                    "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                                    "label": "Wywołanie zdarzenia"
                                 },
                                 "repeat": {
                                     "label": "Powtórzenie",

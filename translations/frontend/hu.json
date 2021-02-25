@@ -869,8 +869,7 @@
                                 },
                                 "event": {
                                     "event": "Esemény:",
-                                    "label": "Esemény meghívása",
-                                    "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                                    "label": "Esemény meghívása"
                                 },
                                 "repeat": {
                                     "label": "Ismétlés",

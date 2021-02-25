@@ -1679,7 +1679,7 @@
                         "devices": "{count} {count, plural,\n  one {apparaat}\n  other {apparaten}\n}",
                         "disable_restart_confirm": "Start Home Assistant opnieuw op om het uitzetten van deze integratie te voltooien",
                         "disable": {
-                            "disable_confirm": "Weet je zeker dat je deze configurie wilt uitschakelen? Al zijn apparaten en entititen zullen worden uitgeschakeld.",
+                            "disable_confirm": "Weet je zeker dat je deze configuratie wilt uitschakelen? Al zijn apparaten en entiteiten zullen worden uitgeschakeld.",
                             "disabled": "Uitgeschakeld",
                             "disabled_by": {
                                 "device": "apparaat",

@@ -284,7 +284,7 @@
                 "editor": {
                     "confirm_delete": "Is u seker dat u hierdie inskrywing wil verwyder?",
                     "delete": "Verwyder",
-                    "enabled_cause": "ge deaktiveer",
+                    "enabled_cause": "ge deaktiveer deur {cause}.",
                     "enabled_description": "Ge deaktiveerde entiteite sal nie by die Huisassistent gevoeg word nie.",
                     "enabled_label": "Aktiveer entiteit",
                     "entity_id": "Entiteit ID",
@@ -295,7 +295,7 @@
                     "unavailable": "Hierdie entiteit is nie tans beskikbaar nie.",
                     "update": "Opdateer"
                 },
-                "no_unique_id": "Hierdie entiteit het nie 'n unieke ID nie, daarom kan die instellings nie vanuit die UI bestuur word nie.",
+                "no_unique_id": "Hierdie entiteit ({entity_id}) het nie 'n unieke ID nie, daarom kan die instellings nie vanuit die UI bestuur word nie.",
                 "related": "Verwante",
                 "settings": "Instellings"
             },
@@ -456,7 +456,7 @@
                                 "event": {
                                     "event": "Gebeurtenis:",
                                     "label": "Vuur geval",
-                                    "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                                    "service_data": "Diens data"
                                 },
                                 "service": {
                                     "label": "Roep diens"
@@ -732,12 +732,12 @@
                         "disable_selected": {
                             "button": "Deaktiveer geselekteerde",
                             "confirm_text": "Ge deaktiveerde entiteite sal nie by die Huisassistent gevoeg word nie.",
-                            "confirm_title": "Wil jy {getal}-instellings verwyder?"
+                            "confirm_title": "Wil jy {number} {number, plural,\n  one {entiteit}\n  other {entiteiten}\n} de-activeren?"
                         },
                         "enable_selected": {
                             "button": "Aktiveer geselekteerde",
                             "confirm_text": "Dit sal dit weer beskikbaar in die huis assistent maak as hulle nou gedeaktiveer is.",
-                            "confirm_title": "Wil jy {getal}-entiteite aktiveer?"
+                            "confirm_title": "Wil jy {number} {number, plural,\n  one {entiteit}\n  other {entiteiten}\n} aktiveer?"
                         },
                         "filter": {
                             "filter": "Filter",
@@ -754,7 +754,7 @@
                         "remove_selected": {
                             "button": "Verwyder geselekteerde",
                             "confirm_text": "Entiteite kan slegs verwyder word as die integrasie nie meer die entiteite bied nie.",
-                            "confirm_title": "Wil jy {getal}-instellings verwyder?"
+                            "confirm_title": "Wil jy {number} {number, plural,\n  one {entiteit}\n  other {entiteiten}\n} verwyder?"
                         },
                         "selected": "{nommer} gekies",
                         "status": {
@@ -822,8 +822,8 @@
                         "not_all_required_fields": "Nie alle vereiste velde is gevul nie.",
                         "submit": "Dien in"
                     },
-                    "configure": "[%key:state::configurator::configure%]",
-                    "configured": "[%key:state::configurator::configured%]",
+                    "configure": "Stel op",
+                    "configured": "Opgestel",
                     "description": "Bestuur gekoppelde toestelle en dienste",
                     "details": "Integrasie besonderhede",
                     "discovered": "Ontdek",
@@ -1009,7 +1009,13 @@
                         "caption": "Bekyk gebruiker",
                         "change_password": "Verander Wagwoord",
                         "deactivate_user": "Deaktiveer gebruiker",
-                        "delete_user": "Skrap gebruiker"
+                        "delete_user": "Skrap gebruiker",
+                        "username": "Gebruikersnaam"
+                    },
+                    "picker": {
+                        "headers": {
+                            "username": "Gebruikersnaam"
+                        }
                     }
                 },
                 "zha": {
@@ -1318,7 +1324,7 @@
                                 "init": {
                                     "data": {
                                         "password": "Wagwoord",
-                                        "username": "[%key:ui::panel::config::users::add_user::username%]"
+                                        "username": "Gebruikersnaam"
                                     }
                                 },
                                 "mfa": {
@@ -1341,7 +1347,7 @@
                                 "init": {
                                     "data": {
                                         "password": "Wagwoord",
-                                        "username": "[%key:ui::panel::config::users::add_user::username%]"
+                                        "username": "Gebruikersnaam"
                                     }
                                 },
                                 "mfa": {
@@ -1390,7 +1396,7 @@
                     "unknown_error": "Iets het skeef geloop",
                     "working": "Wag asseblief"
                 },
-                "initializing": "[%key:state::zwave::default::initializing%]",
+                "initializing": "Inisialiseer",
                 "logging_in_with": "Meld tans aan met **{authProviderName}**.",
                 "pick_auth_provider": "Of meld aan met"
             },
@@ -1458,7 +1464,7 @@
                         "name": "Naam",
                         "password": "Wagwoord",
                         "password_confirm": "Bevestig Wagwoord",
-                        "username": "[%key:ui::panel::config::users::add_user::username%]"
+                        "username": "Gebruikersnaam"
                     },
                     "error": {
                         "password_not_match": "Wagwoorde stem nie ooreen nie",
@@ -1507,7 +1513,7 @@
                     "prompt_name": "Naam?"
                 },
                 "mfa_setup": {
-                    "close": "[%key:state::cover::closed%]",
+                    "close": "Toe",
                     "step_done": "Opstelling gedoen vir {step}",
                     "submit": "Dien in",
                     "title_aborted": "Gestaak",

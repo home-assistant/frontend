@@ -87,7 +87,7 @@
         },
         "device_tracker": {
             "home": "Doma",
-            "not_home": "[%key:state::device_tracker::not_home%]"
+            "not_home": "Odsoten"
         },
         "person": {
             "home": "Doma",
@@ -874,8 +874,7 @@
                                 },
                                 "event": {
                                     "event": "Dogodek:",
-                                    "label": "Požarni dogodek",
-                                    "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
+                                    "label": "Požarni dogodek"
                                 },
                                 "repeat": {
                                     "label": "Ponovite",

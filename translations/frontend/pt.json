@@ -110,10 +110,10 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "[%key:state::alarm_control_panel::armed%] ausente",
+                "arm_away": "Armado ausente",
                 "arm_custom_bypass": "Desvio personalizado",
-                "arm_home": "[%key:state::alarm_control_panel::armed%] casa",
-                "arm_night": "[%key:state::alarm_control_panel::armed%] noite",
+                "arm_home": "Armado casa",
+                "arm_night": "Armado noite",
                 "clear_code": "Apagar",
                 "code": "Código",
                 "disarm": "Desarmar"
@@ -2377,7 +2377,7 @@
                         "value": "Valor",
                         "wakeup_interval": "Intervalo de acordar"
                     },
-                    "description": "Gerir a sua rede [%key:ui::panel::config::zwave::caption%]",
+                    "description": "Gerir a sua rede Z-Wave",
                     "learn_more": "Saiba mais sobre o Z-Wave",
                     "migration": {
                         "ozw": {
@@ -3292,7 +3292,7 @@
                     "description": "Cada \"refresh token\" representa uma sessão de utilizador. Os \"refresh tokens\" serão automaticamente removidos quando clicar em sair. Os seguintes \"refresh tokens\" estão activos para a sua conta.",
                     "header": "Atualizar Tokens",
                     "last_used": "Última utilização a {date} em {location}",
-                    "not_used": "[%key:ui::panel::profile::long_lived_access_tokens::not_used%]",
+                    "not_used": "Nunca foi utilizado",
                     "token_title": "Atualizar o token de {clientId}"
                 },
                 "suspend": {
