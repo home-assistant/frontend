@@ -107,6 +107,10 @@ export class PaperTimeInput extends PolymerElement {
         #millisec {
           width: 38px;
         }
+
+        .no-suffix {
+          margin-left: -2px;
+        }
       </style>
 
       <label hidden$="[[hideLabel]]">[[label]]</label>
@@ -134,6 +138,7 @@ export class PaperTimeInput extends PolymerElement {
 
         <!-- Min Input -->
         <paper-input
+          class$="[[_computeClassNames(enableSecond)]]"
           id="min"
           type="number"
           value="{{min}}"
@@ -155,6 +160,7 @@ export class PaperTimeInput extends PolymerElement {
 
         <!-- Sec Input -->
         <paper-input
+          class$="[[_computeClassNames(enableMillisecond)]]"
           id="sec"
           type="number"
           value="{{sec}}"
@@ -478,6 +484,10 @@ export class PaperTimeInput extends PolymerElement {
 
   _equal(n1, n2) {
     return n1 === n2;
+  }
+
+  _computeClassNames(hasSuffix) {
+    return hasSuffix ? " " : "no-suffix";
   }
 }
 
