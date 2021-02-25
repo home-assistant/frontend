@@ -1,5 +1,6 @@
 import type { StreamLanguage } from "@codemirror/stream-parser";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
+import { indentMore, indentLess } from "@codemirror/commands";
 import {
   customElement,
   internalProperty,
@@ -131,7 +132,14 @@ export class HaCodeEditor extends UpdatingElement {
           loaded.lineNumbers(),
           loaded.keymap.of([
             ...loaded.defaultKeymap,
-            loaded.defaultTabBinding,
+            {
+              key: "Tab",
+              run: indentMore,
+            },
+            {
+              key: "Shift-Tab",
+              run: indentLess,
+            },
             saveKeyBinding,
           ]),
           loaded.tagExtension(modeTag, this._mode),
