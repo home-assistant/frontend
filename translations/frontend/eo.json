@@ -141,10 +141,7 @@
                 },
                 "integrations": {
                     "config_entry": {
-                        "area": "En {area}",
-                        "delete_button": "Forigi {integration}",
-                        "settings_button": "Redakti agordojn por {integration}",
-                        "system_options_button": "Sistemaj opcioj por {integration}"
+                        "area": "En {area}"
                     },
                     "config_flow": {
                         "aborted": "Abortigita",
@@ -242,8 +239,7 @@
                         "sequence_sentence": "La sekvenco de agoj de ĉi tiu skribo."
                     },
                     "picker": {
-                        "edit_script": "Redakti skripton",
-                        "trigger_script": "Ekruli skripton"
+                        "edit_script": "Redakti skripton"
                     }
                 },
                 "users": {
@@ -283,22 +279,9 @@
                         "help_cluster_dropdown": "Elekti grapolon por vidi atributoj kaj komandoj."
                     },
                     "common": {
-                        "add_devices": "Aldoni Aparatojn",
                         "clusters": "Grapoloj",
-                        "devices": "Aparatoj",
                         "manufacturer_code_override": "Fabrikkodo Nuligo",
                         "value": "Valoro"
-                    },
-                    "network_management": {
-                        "header": "Retadministrado",
-                        "introduction": "Komandoj, kiuj efikas sur la tutan reton"
-                    },
-                    "node_management": {
-                        "header": "Administra aparato",
-                        "help_node_dropdown": "Elekti aparato por vidi po-aparato ebloj.",
-                        "hint_battery_devices": "Noto: Dormaj (bateriaj) aparatoj bezonas esti vekitaj kiam vi plenumas komandojn kontraŭ ili. Vi ĝenerale povas veki dormigan aparaton ekigante ĝin.",
-                        "hint_wakeup": "Iuj aparatoj kiel Xiaomi-sensiloj havas butonon de vekiĝo, kiun vi povas premi je ~ 5 duaj intertempoj, kiuj tenas aparatojn vekitaj dum vi interagas kun ili.",
-                        "introduction": "Ruli ZHA-komandojn, kiuj efikas al unuopa aparato. Elektu aparaton por vidi liston de disponeblaj komandoj."
                     }
                 },
                 "zwave": {
@@ -336,17 +319,12 @@
                         "type": "Eventa Tipo"
                     },
                     "services": {
-                        "alert_parsing_yaml": "Eraro dum analizado de YAML: {data}",
                         "call_service": "Voka Servo",
                         "column_description": "Priskribo",
                         "column_example": "Ekzemplo",
                         "column_parameter": "Parametro",
-                        "data": "Servaj Datumoj (YAML, nedeviga)",
                         "description": "La ilo de servo programisto permesas vin vokas ajn servon haveblan en Home Assistant",
-                        "fill_example_data": "Plenigi Ekzemplajn Datumojn",
-                        "no_description": "Neniu priskribo haveblas",
-                        "no_parameters": "Ĉi tiu servo prenas neniujn parametrojn.",
-                        "select_service": "Elektu servon por vidi la priskribon"
+                        "fill_example_data": "Plenigi Ekzemplajn Datumojn"
                     },
                     "states": {
                         "alert_entity_field": "Ento estas deviga kampo",
@@ -372,9 +350,6 @@
                         "unknown_error_template": "Nekonata eraro bildigi ŝablonon"
                     }
                 }
-            },
-            "logbook": {
-                "entries_not_found": "Neniu taglibroj eniroj trovis."
             },
             "lovelace": {
                 "cards": {

@@ -62,239 +62,9 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Arfogi",
-            "armed_away": "Arfog i ffwrdd",
-            "armed_custom_bypass": "Ffordd osgoi larwm personol",
-            "armed_home": "Arfogi gartref",
-            "armed_night": "Arfog nos",
-            "arming": "Arfogi",
-            "disarmed": "Diarfogi",
-            "disarming": "Ddiarfogi",
-            "pending": "Yn yr arfaeth",
-            "triggered": "Sbarduno"
-        },
-        "automation": {
-            "off": "I ffwrdd",
-            "on": "Ar"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Arferol",
-                "on": "Isel"
-            },
-            "cold": {
-                "off": "Arferol",
-                "on": "Oer"
-            },
-            "connectivity": {
-                "off": "Wedi datgysylltu",
-                "on": "Cysylltiedig"
-            },
-            "default": {
-                "off": "i ffwrdd",
-                "on": "Ar"
-            },
-            "door": {
-                "off": "Cau",
-                "on": "Agor"
-            },
-            "garage_door": {
-                "off": "Cau",
-                "on": "Agor"
-            },
-            "gas": {
-                "off": "Clir",
-                "on": "Wedi'i ganfod"
-            },
-            "heat": {
-                "off": "Arferol",
-                "on": "Poeth"
-            },
-            "lock": {
-                "off": "Cloi",
-                "on": "Dad-gloi"
-            },
-            "moisture": {
-                "off": "Sych",
-                "on": "Gwlyb"
-            },
-            "motion": {
-                "off": "Clir",
-                "on": "Wedi'i ganfod"
-            },
-            "occupancy": {
-                "off": "Clir",
-                "on": "Wedi'i ganfod"
-            },
-            "opening": {
-                "off": "Cau",
-                "on": "Agor"
-            },
-            "presence": {
-                "off": "Allan",
-                "on": "Gartref"
-            },
-            "problem": {
-                "off": "iawn",
-                "on": "Problem"
-            },
-            "safety": {
-                "off": "Diogel",
-                "on": "Anniogel"
-            },
-            "smoke": {
-                "off": "Clir",
-                "on": "Wedi'i ganfod"
-            },
-            "sound": {
-                "off": "Clir",
-                "on": "Wedi'i ganfod"
-            },
-            "vibration": {
-                "off": "Clir",
-                "on": "Wedi'i ganfod"
-            },
-            "window": {
-                "off": "Cau",
-                "on": "Agored"
-            }
-        },
-        "calendar": {
-            "off": "i ffwrdd",
-            "on": "Ar"
-        },
-        "camera": {
-            "idle": "Segur",
-            "recording": "Recordio",
-            "streaming": "Ffrydio"
-        },
-        "climate": {
-            "cool": "Sefydlog",
-            "dry": "Sych",
-            "fan_only": "Fan yn unig",
-            "heat": "Gwres",
-            "off": "i ffwrdd"
-        },
-        "configurator": {
-            "configure": "Ffurfweddu",
-            "configured": "Wedi'i ffurfweddu"
-        },
-        "cover": {
-            "closed": "Ar gau",
-            "closing": "Cau",
-            "open": "Agor",
-            "opening": "Yn agor",
-            "stopped": "Stopio"
-        },
         "default": {
             "unavailable": "Ddim ar gael",
             "unknown": "Anhysbys"
-        },
-        "device_tracker": {
-            "not_home": "Diim gartref"
-        },
-        "fan": {
-            "off": "i ffwrdd",
-            "on": "Ar"
-        },
-        "group": {
-            "closed": "Wedi cau",
-            "closing": "Yn cau",
-            "home": "Gartref",
-            "locked": " Cloi",
-            "not_home": "Dim gartref",
-            "off": "I ffwrdd",
-            "ok": "Iawn",
-            "on": "Ar",
-            "open": "Agored",
-            "opening": "Agor",
-            "problem": "Problem",
-            "stopped": "Stopio",
-            "unlocked": "Dadgloi"
-        },
-        "input_boolean": {
-            "off": "i ffwrdd",
-            "on": "Ar"
-        },
-        "light": {
-            "off": "I ffwrdd",
-            "on": "Ar"
-        },
-        "lock": {
-            "locked": "Wedi cloi",
-            "unlocked": "Datgloi"
-        },
-        "media_player": {
-            "idle": "Segur",
-            "off": "I ffwrdd",
-            "on": "Ar",
-            "paused": "Wedi rhewi",
-            "playing": "Chwarae",
-            "standby": "Gorffwys"
-        },
-        "person": {
-            "home": "Gartref"
-        },
-        "plant": {
-            "ok": "Iawn",
-            "problem": "Problem"
-        },
-        "remote": {
-            "off": "i ffwrdd",
-            "on": "Ar"
-        },
-        "scene": {
-            "scening": "Sefyllfa"
-        },
-        "script": {
-            "off": "I ffwrdd",
-            "on": "Ar"
-        },
-        "sensor": {
-            "off": "I ffwrdd",
-            "on": "Ar"
-        },
-        "sun": {
-            "above_horizon": "Dros y gorwel",
-            "below_horizon": "Islaw'r gorwel"
-        },
-        "switch": {
-            "off": "i ffwrdd",
-            "on": "Ar"
-        },
-        "timer": {
-            "active": "gweithredol",
-            "idle": "segur",
-            "paused": "wedi rhewi"
-        },
-        "weather": {
-            "clear-night": "Clir, nos",
-            "cloudy": "Cymylog",
-            "fog": "Niwl",
-            "hail": "Cenllysg",
-            "lightning": "Mellt",
-            "lightning-rainy": "Mellt, glawog",
-            "partlycloudy": "Cymharol gymylog",
-            "pouring": "Arllwys",
-            "rainy": "Glawog",
-            "snowy": "Eira",
-            "snowy-rainy": "Eira, gwlyb",
-            "sunny": "Heulog",
-            "windy": "Gwyntog",
-            "windy-variant": "Gwyntog"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Marw",
-                "initializing": "Ymgychwyn",
-                "ready": "Barod",
-                "sleeping": "Cysgu"
-            },
-            "query_stage": {
-                "dead": "Marw ({query_stage})",
-                "initializing": "Ymgychwyn ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -314,9 +84,6 @@
             },
             "scene": {
                 "activate": "Actifadu"
-            },
-            "script": {
-                "execute": "Gweithredu"
             },
             "water_heater": {
                 "away_mode": "Dull i ffwrdd",
@@ -562,8 +329,7 @@
                                     "service_data": "Data gwasanaeth"
                                 },
                                 "service": {
-                                    "label": "Gwasanaeth galw",
-                                    "service_data": "Data gwasanaeth"
+                                    "label": "Gwasanaeth galw"
                                 },
                                 "wait_template": {
                                     "label": "Aros",
@@ -732,7 +498,6 @@
                     }
                 },
                 "cloud": {
-                    "caption": "Home Assistant Cloud",
                     "description_features": "Rheolaeth oddi cartref, integreiddio gyda Alexa a Google Assistant.",
                     "description_login": "Wedi mewngofnodi fel {email}",
                     "description_not_login": "Heb fewngofnodi"
@@ -835,8 +600,6 @@
                         "hub": "Cysylltiad drwy",
                         "manuf": "gan {manufacturer}",
                         "no_area": "Dim Ardal",
-                        "no_device": "Endidau heb ddyfeisiau",
-                        "no_devices": "Tydi'r integreiddad yma ddim efo dyfeisiadau.",
                         "reload": "Ail-lwytho",
                         "reload_confirm": "Cafodd yr integreiddiad ei ail-lwytho",
                         "reload_restart_confirm": "Ailgychwyn Home Assistant i ddarfod yr integreiddiadau",
@@ -1054,9 +817,7 @@
                     "add_user": {
                         "caption": "Ychwanegu defnyddiwr",
                         "create": "Creu",
-                        "name": "Enw",
-                        "password": "Cyfrinair",
-                        "username": "Enw Defnyddiwr"
+                        "password": "Cyfrinair"
                     },
                     "editor": {
                         "admin": "Gweinyddwr",
@@ -1075,11 +836,8 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "Bydd dyfeisiau a ddarganfuwyd yn ymddangos yma. Dilynwch y cyfarwyddiadau ar gyfer eich dyfais / dyfaisiau a rhowch y ddyfais / dyfeisiau yn y modd paru.",
-                        "header": "Awtomeiddiad Cartref Zigbee - Ychwanegwch Dyfeisiadau",
                         "spinner": "Chwilio am ddyfeisiau ZHA Zigbee ..."
                     },
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Priodoleddau'r clwstwr a ddewiswyd",
                         "get_zigbee_attribute": "Cael Priodoledd Zigbee",
@@ -1099,14 +857,9 @@
                     },
                     "clusters": {
                         "help_cluster_dropdown": "Dewiswch clwstwr i weld priodoleddau a gorchmynion."
-                    },
-                    "description": "Rheoli rhwydwaith awtomatiaeth cartref Zigbee",
-                    "node_management": {
-                        "help_node_dropdown": "Dewiswch ddyfais i weld yr opsiynau fesul dyfais."
                     }
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "description": "Rheoli eich rhwydwaith Z-Wave",
                     "learn_more": "Dysgu mwy am Z-Wave",
                     "node_config": {
@@ -1145,15 +898,6 @@
                     }
                 }
             },
-            "history": {
-                "period": "Cyfnod",
-                "showing_entries": "Dangos cofnodion ar gyfer"
-            },
-            "logbook": {
-                "entries_not_found": "Heb ganfod cofnodion llyfr log.",
-                "period": "Cyfnod",
-                "showing_entries": "Dangos endidau i"
-            },
             "lovelace": {
                 "add_entities": {
                     "yaml_unsupported": "Cewch chi ddim defnyddio'r swyddogaeth hon wrth ddefnyddio UI Lovelace yn modd YAML."
@@ -1179,8 +923,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Diweddarwyd ffurfwedd Lovelace, hoffech adnewyddu?",
-                    "refresh": "Adnewyddu"
+                    "message": "Diweddarwyd ffurfwedd Lovelace, hoffech adnewyddu?"
                 },
                 "editor": {
                     "card": {
@@ -1392,7 +1135,6 @@
                     "configure_ui": "Ffurfweddu rhyngwyneb defnyddiwr",
                     "exit_edit_mode": "Gadael modd golygu UI",
                     "help": "Help",
-                    "refresh": "Adnewyddu",
                     "reload_resources": "Ail-lwytho adnoddau",
                     "start_conversation": "Cychwyn sgwrs"
                 },
@@ -1537,11 +1279,6 @@
                         "title": "Beth ddylid galw'r ddyfais yma?"
                     }
                 }
-            },
-            "shopping-list": {
-                "add_item": "Ychwanegu eitem",
-                "clear_completed": "Clir wedi'i gwblhau",
-                "microphone_tip": "Tarwch y meicroffon ar dde uchaf a dweud \"Add candy to my shopping list\""
             }
         },
         "sidebar": {

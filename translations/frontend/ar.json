@@ -70,248 +70,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "مفعّل",
-            "armed_away": "مفعّل في الخارج",
-            "armed_custom_bypass": "تجاوز التفعيل",
-            "armed_home": "مفعّل في المنزل",
-            "armed_night": "مفعّل ليل",
-            "arming": "جاري التفعيل",
-            "disarmed": "غير مفعّل",
-            "disarming": "إيقاف الإنذار",
-            "pending": "قيد الإنتظار",
-            "triggered": "مفعّل"
-        },
-        "automation": {
-            "off": "إيقاف",
-            "on": "تشغيل"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "طبيعي",
-                "on": "منخفض"
-            },
-            "cold": {
-                "off": "طبيعي",
-                "on": "بارد"
-            },
-            "connectivity": {
-                "off": "مفصول",
-                "on": "متصل"
-            },
-            "default": {
-                "off": "إيقاف",
-                "on": "تشغيل"
-            },
-            "door": {
-                "off": "مغلق",
-                "on": "مفتوح"
-            },
-            "garage_door": {
-                "off": "مغلق",
-                "on": "مفتوح"
-            },
-            "gas": {
-                "off": "لم يتم الكشف",
-                "on": "تم الكشف"
-            },
-            "heat": {
-                "off": "طبيعي",
-                "on": "حار"
-            },
-            "lock": {
-                "off": "مقفل",
-                "on": "غير مقفل"
-            },
-            "moisture": {
-                "off": "جاف",
-                "on": "مبلل"
-            },
-            "motion": {
-                "off": "لم يتم الكشف",
-                "on": "تم الكشف"
-            },
-            "occupancy": {
-                "off": "لم يتم الكشف",
-                "on": "تم الكشف"
-            },
-            "opening": {
-                "off": "مقفل",
-                "on": "مفتوح"
-            },
-            "presence": {
-                "off": "خارج المنزل",
-                "on": "في المنزل"
-            },
-            "problem": {
-                "off": "موافق",
-                "on": "مشكلة"
-            },
-            "safety": {
-                "off": "أمن",
-                "on": "غير أمن"
-            },
-            "smoke": {
-                "off": "لم يتم الكشف",
-                "on": "تم الكشف"
-            },
-            "sound": {
-                "off": "لم يتم الكشف",
-                "on": "تم الكشف"
-            },
-            "vibration": {
-                "off": "لم يتم الكشف",
-                "on": "تم الكشف"
-            },
-            "window": {
-                "off": "مغلق",
-                "on": "مفتوح"
-            }
-        },
-        "calendar": {
-            "off": "إيقاف",
-            "on": "تشغيل"
-        },
-        "camera": {
-            "idle": "خامل",
-            "recording": "جاري التسجيل",
-            "streaming": "جاري البث"
-        },
-        "climate": {
-            "cool": "تبريد",
-            "dry": "جاف",
-            "fan_only": "المروحة فقط",
-            "heat": "تدفئة",
-            "off": "إيقاف"
-        },
-        "configurator": {
-            "configure": "إعداد",
-            "configured": "تم التكوين"
-        },
-        "cover": {
-            "closed": "مغلق",
-            "closing": "جاري الاغلاق",
-            "open": "مفتوح",
-            "opening": "جاري الفتح",
-            "stopped": "موقف"
-        },
         "default": {
             "off": "مطفئ",
             "on": "مشغل",
             "unavailable": "غير متوفر",
             "unknown": "غير معروف"
-        },
-        "device_tracker": {
-            "not_home": "خارج المنزل"
-        },
-        "fan": {
-            "off": "إيقاف",
-            "on": "قيد التشغيل"
-        },
-        "group": {
-            "closed": "مغلق ",
-            "closing": "جاري الاغلاق ",
-            "home": "في المنزل",
-            "locked": "مقفل ",
-            "not_home": "في الخارج",
-            "off": "إيقاف",
-            "ok": "أوكي",
-            "on": "تشغيل",
-            "open": "مفتوح ",
-            "opening": "جاري الفتح ",
-            "problem": "مشكلة",
-            "stopped": "موقف ",
-            "unlocked": "غير مقفل "
-        },
-        "input_boolean": {
-            "off": "إيقاف",
-            "on": "تشغيل"
-        },
-        "light": {
-            "off": "إيقاف",
-            "on": "تشغيل"
-        },
-        "lock": {
-            "locked": "مقفل",
-            "unlocked": "مفتوح"
-        },
-        "media_player": {
-            "idle": "خامل",
-            "off": "إيقاف",
-            "on": "قيد التشغيل",
-            "paused": "موقّف مؤقتا",
-            "playing": "جاري التشغيل",
-            "standby": "وضع الإنتظار"
-        },
-        "person": {
-            "home": "في المنزل"
-        },
-        "plant": {
-            "ok": "أوكي",
-            "problem": "مشكلة"
-        },
-        "remote": {
-            "off": "إيقاف",
-            "on": "قيد التشغيل"
-        },
-        "scene": {
-            "scening": "تشهيد"
-        },
-        "script": {
-            "off": "إيقاف",
-            "on": "قيد التشغيل"
-        },
-        "sensor": {
-            "off": "إيقاف",
-            "on": "قيد التشغيل"
-        },
-        "sun": {
-            "above_horizon": "فوق الأفق",
-            "below_horizon": "تحت الأفق"
-        },
-        "switch": {
-            "off": "إيقاف",
-            "on": "تشغيل"
-        },
-        "timer": {
-            "active": "مفعل",
-            "idle": "خامل",
-            "paused": "موقّف مؤقتا"
-        },
-        "vacuum": {
-            "cleaning": "تنظيف",
-            "error": "خطأ",
-            "off": "مطفئ",
-            "on": "مشغل",
-            "paused": "موقّف مؤقتا",
-            "returning": "العودة"
-        },
-        "weather": {
-            "clear-night": "صافي، ليلا",
-            "cloudy": "Bewolkt",
-            "fog": "Mist",
-            "lightning": "برق",
-            "lightning-rainy": "برق ، ممطر",
-            "partlycloudy": "غائم جزئيا",
-            "pouring": "أمطار غزيرة",
-            "rainy": "ماطر",
-            "snowy": "ثلوج",
-            "snowy-rainy": "ثلوج، ماطر",
-            "sunny": "مشمس",
-            "windy": "عاصف",
-            "windy-variant": "عاصف"
-        },
-        "zwave": {
-            "default": {
-                "dead": "مفصول",
-                "initializing": "قيد الإنشاء",
-                "ready": "جاهز",
-                "sleeping": "نائم"
-            },
-            "query_stage": {
-                "dead": "مفصول ({query_stage})",
-                "initializing": "قيد الإنشاء ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -376,8 +139,7 @@
             },
             "script": {
                 "cancel": "إلغاء",
-                "cancel_multiple": "إلغاء {number}",
-                "execute": "نفذ"
+                "cancel_multiple": "إلغاء {number}"
             },
             "service": {
                 "run": "تشغيل"
@@ -476,7 +238,6 @@
                     "hour": "{count} {count, plural,\none {ساعة}\nother {ساعات}\n}",
                     "minute": "{count} {count, plural,\n  one {دقيقة}\n  other {دقائق}\n}"
                 },
-                "future": "قبل {time}",
                 "never": "Nooit"
             },
             "service-picker": {
@@ -604,10 +365,6 @@
             "starting": "يبدأ برنامج Home Assistant حاليا ، ولن يكون كل شيء متاحًا حتى الانتهاء."
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "تقاويمي",
-                "today": "اليوم"
-            },
             "config": {
                 "areas": {
                     "data_table": {
@@ -663,8 +420,7 @@
                                     "service_data": "بيانات الخدمة"
                                 },
                                 "service": {
-                                    "label": "طلب خدمة",
-                                    "service_data": "بيانات الخدمة"
+                                    "label": "طلب خدمة"
                                 },
                                 "wait_template": {
                                     "label": "الإنتظار",
@@ -850,7 +606,6 @@
                             "try": "حاول"
                         }
                     },
-                    "caption": "سحابة Home Assistant",
                     "description_login": "تم تسجيل الدخول كـ {email}",
                     "description_not_login": "لم يتم تسجيل الدخول",
                     "dialog_cloudhook": {
@@ -879,7 +634,6 @@
                     "caption": "التخصيص",
                     "description": "تخصيص الكيانات الخاصة بك",
                     "picker": {
-                        "entity": "الكيان",
                         "introduction": "تعديل السمات لكل كيان. سيتم تفعيل التخصيصات المضافة / المعدلة على الفور. ستسري التخصيصات التي تمت إزالتها عندما يتم تحديث الكيان."
                     }
                 },
@@ -888,7 +642,6 @@
                     "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الجهاز؟",
                     "data_table": {
                         "integration": "تكامل",
-                        "no_area": "لا مجال",
                         "no_devices": "لا توجد أجهزة"
                     },
                     "delete": "حذف",
@@ -957,7 +710,6 @@
                     "config_entry": {
                         "area": "في {area}",
                         "delete": "حذف",
-                        "delete_button": "حذف {integration}",
                         "delete_confirm": "هل تريد حقا حذف هذا التكامل؟",
                         "device_unavailable": "الجهاز غير متوفر",
                         "devices": "{count} {count, plural,\n  one {جهاز}\n  other {أجهزة}\n}",
@@ -968,14 +720,10 @@
                         "hub": "متصل عبر",
                         "manuf": "بواسطة {manufacturer}",
                         "no_area": "لا توجد منطقة",
-                        "no_device": "كيانات بدون أجهزة",
-                        "no_devices": "هذا التكامل لا يوجد لديه الأجهزة.",
                         "options": "خيارات",
                         "rename": "إعادة تسمية",
                         "restart_confirm": "أعد تشغيل Home Assistant لإنهاء حذف هذا التكامل",
-                        "settings_button": "تحرير الإعدادات لـ {integration}",
                         "system_options": "خيارات النظام",
-                        "system_options_button": "خيارات النظام لـ {integration}",
                         "unnamed_entry": "إدخال بدون اسم"
                     },
                     "config_flow": {
@@ -1164,9 +912,7 @@
                     "add_user": {
                         "caption": "أضف مستخدم",
                         "create": "إنشاء",
-                        "name": "الاسم",
-                        "password": "كلمه السر",
-                        "username": "اسم المستخدم"
+                        "password": "كلمه السر"
                     },
                     "caption": "المستخدمين",
                     "description": "ادارة المستخدمين",
@@ -1199,14 +945,8 @@
                     "clusters": {
                         "header": "عناقيد"
                     },
-                    "groups": {
-                        "zha_zigbee_groups": "مجموعات ZHA Zigbee"
-                    },
                     "network": {
                         "caption": "الشبكة"
-                    },
-                    "node_management": {
-                        "header": "إدارة الجهاز"
                     }
                 },
                 "zone": {
@@ -1242,7 +982,6 @@
                 },
                 "zwave": {
                     "button": "كوِن",
-                    "caption": "Z-Wave",
                     "description": "إدارة شبكة Z-Wave",
                     "migration": {
                         "ozw": {
@@ -1312,14 +1051,12 @@
                 }
             },
             "history": {
-                "period": "المدة",
                 "ranges": {
                     "last_week": "الأسبوع الماضي",
                     "this_week": "هذا الأسبوع",
                     "today": "اليوم",
                     "yesterday": "أمس"
-                },
-                "showing_entries": "عرض الأحداث لـ"
+                }
             },
             "logbook": {
                 "ranges": {
@@ -1327,8 +1064,7 @@
                     "this_week": "هذا الأسبوع",
                     "today": "اليوم",
                     "yesterday": "أمس"
-                },
-                "showing_entries": "عرض الأحداث لـ"
+                }
             },
             "lovelace": {
                 "cards": {
@@ -1343,8 +1079,7 @@
                         "description": "واجه Home Assistant مشكلة أثناء تحميل التكوينات الخاصة بك ويتم تشغيله الآن في الوضع الآمن. أنظر إلى سجل الأخطاء لمعرفة  الخطأ."
                     },
                     "starting": {
-                        "description": "Home Assistant يبدأ، يرجى الانتظار...",
-                        "header": "Home Assistant يبدأ..."
+                        "description": "Home Assistant يبدأ، يرجى الانتظار..."
                     }
                 },
                 "editor": {
@@ -1616,10 +1351,6 @@
                     "header": "اللغة",
                     "link_promo": "ساعد في الترجمة"
                 },
-                "long_lived_access_tokens": {
-                    "last_used": "آخر استخدام بتاريخ {date} من {location}",
-                    "not_used": "لم يتم استخدامها ابدأ"
-                },
                 "mfa_setup": {
                     "close": "إغلاق",
                     "step_done": "تم التنصيب لـ {step}",
@@ -1654,11 +1385,6 @@
                     "header": "التصميم",
                     "link_promo": "تعرف على التصاميم"
                 }
-            },
-            "shopping-list": {
-                "add_item": "أضف عنصر",
-                "clear_completed": "تم المسح",
-                "microphone_tip": "اضغط على الميكروفون في أعلى اليمين وقل \"Add candy to my shopping list\""
             }
         }
     }

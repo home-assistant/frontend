@@ -94,253 +94,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "דרוך",
-            "armed_away": "דרוך לא בבית",
-            "armed_custom_bypass": "מעקף מותאם אישית דרוך",
-            "armed_home": "הבית דרוך",
-            "armed_night": "דרוך לילה",
-            "arming": "מפעיל",
-            "disarmed": "מנוטרל",
-            "disarming": "מנטרל",
-            "pending": "ממתין",
-            "triggered": "הופעל"
-        },
-        "automation": {
-            "off": "כבוי",
-            "on": "דלוק"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "נורמלי",
-                "on": "נמוך"
-            },
-            "cold": {
-                "off": "רגיל",
-                "on": "קַר"
-            },
-            "connectivity": {
-                "off": "מנותק",
-                "on": "מחובר"
-            },
-            "default": {
-                "off": "כבוי",
-                "on": "מופעל"
-            },
-            "door": {
-                "off": "סגורה",
-                "on": "פתוחה"
-            },
-            "garage_door": {
-                "off": "סגורה",
-                "on": "פתוחה"
-            },
-            "gas": {
-                "off": "נקי",
-                "on": "אותר"
-            },
-            "heat": {
-                "off": "רגיל",
-                "on": "חם"
-            },
-            "lock": {
-                "off": "נעול",
-                "on": "לא נעול"
-            },
-            "moisture": {
-                "off": "יבש",
-                "on": "רטוב"
-            },
-            "motion": {
-                "off": "נקי",
-                "on": "זוהה"
-            },
-            "occupancy": {
-                "off": "נקי",
-                "on": "זוהה"
-            },
-            "opening": {
-                "off": "סגור",
-                "on": "פתוח"
-            },
-            "presence": {
-                "off": "לא נמצא",
-                "on": "בבית"
-            },
-            "problem": {
-                "off": "אוקיי",
-                "on": "בעייה"
-            },
-            "safety": {
-                "off": "בטוח",
-                "on": "לא בטוח"
-            },
-            "smoke": {
-                "off": "נקי",
-                "on": "אותר"
-            },
-            "sound": {
-                "off": "נקי",
-                "on": "אותר"
-            },
-            "vibration": {
-                "off": "נקי",
-                "on": "אותר"
-            },
-            "window": {
-                "off": "סגור",
-                "on": "פתוח"
-            }
-        },
-        "calendar": {
-            "off": "כבוי",
-            "on": "מופעל"
-        },
-        "camera": {
-            "idle": "מחכה",
-            "recording": "מקליט",
-            "streaming": "מזרים"
-        },
-        "climate": {
-            "cool": "קרור",
-            "dry": "יבש",
-            "fan_only": "מאוורר בלבד",
-            "heat": "חימום",
-            "heat_cool": "חימום/קירור",
-            "off": "כבוי"
-        },
-        "configurator": {
-            "configure": "הגדר",
-            "configured": "הוגדר"
-        },
-        "cover": {
-            "closed": "נסגר",
-            "closing": "סוגר",
-            "open": "פתוח",
-            "opening": "פותח",
-            "stopped": "עצור"
-        },
         "default": {
             "off": "מופסק",
             "on": "מופעל",
             "unavailable": "לא זמין",
             "unknown": "לא ידוע"
-        },
-        "device_tracker": {
-            "not_home": "לא בבית"
-        },
-        "fan": {
-            "off": "כבוי",
-            "on": "דלוק"
-        },
-        "group": {
-            "closed": "סגור",
-            "closing": "סוגר",
-            "home": "בבית",
-            "locked": "נעול",
-            "not_home": "לא נמצא",
-            "off": "כבוי",
-            "ok": "תקין",
-            "on": "מופעל",
-            "open": "פתוח",
-            "opening": "פותח",
-            "problem": "בעיה",
-            "stopped": "נעצר",
-            "unlocked": "פתוח"
-        },
-        "input_boolean": {
-            "off": "כבוי",
-            "on": "מופעל"
-        },
-        "light": {
-            "off": "כבוי",
-            "on": "מופעל"
-        },
-        "lock": {
-            "locked": "נעול",
-            "unlocked": "פתוח"
-        },
-        "media_player": {
-            "idle": "ממתין",
-            "off": "כבוי",
-            "on": "דלוק",
-            "paused": "מושהה",
-            "playing": "מנגן",
-            "standby": "מצב המתנה"
-        },
-        "person": {
-            "home": "בבית"
-        },
-        "plant": {
-            "ok": "תקין",
-            "problem": "בעיה"
-        },
-        "remote": {
-            "off": "כבוי",
-            "on": "דלוק"
-        },
-        "scene": {
-            "scening": "מפעיל סצנה"
-        },
-        "script": {
-            "off": "כבוי",
-            "on": "דלוק"
-        },
-        "sensor": {
-            "off": "כבוי",
-            "on": "דלוק"
-        },
-        "sun": {
-            "above_horizon": "מעל האופק",
-            "below_horizon": "מתחת לאופק"
-        },
-        "switch": {
-            "off": "כבוי",
-            "on": "מופעל"
-        },
-        "timer": {
-            "active": "פעיל",
-            "idle": "לא פעיל",
-            "paused": "מושהה"
-        },
-        "vacuum": {
-            "cleaning": "מנקה",
-            "docked": "בעגינה",
-            "error": "שגיאה",
-            "idle": "ממתין",
-            "off": "כבוי",
-            "on": "מופעל",
-            "paused": "מושהה",
-            "returning": "חזור לעגינה"
-        },
-        "weather": {
-            "clear-night": "לילה בהיר",
-            "cloudy": "מעונן",
-            "exceptional": "יוצא דופן",
-            "fog": "ערפל",
-            "hail": "ברד",
-            "lightning": "ברק",
-            "lightning-rainy": "ברק, גשום",
-            "partlycloudy": "מעונן חלקית",
-            "pouring": "גשום",
-            "rainy": "גשום",
-            "snowy": "מושלג",
-            "snowy-rainy": "מושלג, גשום",
-            "sunny": "שמשי",
-            "windy": "סוער",
-            "windy-variant": "סוער"
-        },
-        "zwave": {
-            "default": {
-                "dead": "מת",
-                "initializing": "מאתחל",
-                "ready": "מוכן",
-                "sleeping": "ישן"
-            },
-            "query_stage": {
-                "dead": "מת ({query_stage})",
-                "initializing": "מאתחל ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -433,8 +191,7 @@
             },
             "script": {
                 "cancel": "בטל",
-                "cancel_multiple": "בטל {number}",
-                "execute": "הפעל"
+                "cancel_multiple": "בטל {number}"
             },
             "service": {
                 "run": "הפעל"
@@ -631,9 +388,7 @@
                     "second": "{count} {count, plural,\n  one {שנייה}\n  other {שניות}\n}",
                     "week": "{count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
                 },
-                "future": "בעוד {time}",
                 "never": "אף פעם לא",
-                "past": "לפני {time}",
                 "past_duration": {
                     "day": "לפני {count} {count, plural,\n  one {day}\n  other {days}\n}",
                     "hour": "לפני {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
@@ -741,7 +496,6 @@
                 "crop": "חתוך"
             },
             "more_info_control": {
-                "controls": "פקדים",
                 "dismiss": "סגור",
                 "edit": "ערוך יישות",
                 "history": "היסטוריה",
@@ -847,9 +601,7 @@
                 },
                 "unknown": "לא ידוע",
                 "zha_device_card": {
-                    "area_picker_label": "אזור",
-                    "device_name_placeholder": "שנה שם התקן",
-                    "update_name_button": "עדכן שם"
+                    "device_name_placeholder": "שנה שם התקן"
                 }
             }
         },
@@ -880,10 +632,6 @@
             "triggered": "הופעל {שם}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "לוחות השנה שלי",
-                "today": "היום"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "חסרים אפשרויות תצורה? אפשר מצב מתקדם פועל",
@@ -984,8 +732,7 @@
                                     "label": "הפעל סצנה"
                                 },
                                 "service": {
-                                    "label": "קריאה לשירות",
-                                    "service_data": "נתוני שירות"
+                                    "label": "קריאה לשירות"
                                 },
                                 "wait_template": {
                                     "label": "לחכות",
@@ -1321,7 +1068,6 @@
                         "not_exposed_entities": "ישויות לא חשופות",
                         "title": "Alexa"
                     },
-                    "caption": "ענן Home Assistant",
                     "description_features": "שליטה הרחק מהבית, משתלב עם Alexa ו Google Assistant.",
                     "description_login": "מחובר בתור {email} מה",
                     "description_not_login": "לא מחובר",
@@ -1450,7 +1196,6 @@
                     "pick_attribute": "בחר תכונה לדריסה",
                     "picker": {
                         "documentation": "תיעוד התאמה אישית",
-                        "entity": "ישות",
                         "header": "התאמה אישית",
                         "introduction": "כוונן תכונות של כל ישות. ההתאמות הנוספות שנוספו / ייכנסו לתוקף באופן מיידי. התאמות אישיות שהוסרו ייכנסו לתוקף כאשר הישות תעודכן."
                     },
@@ -1489,7 +1234,6 @@
                         "integration": "אינטגרציה",
                         "manufacturer": "יצרן",
                         "model": "מודל",
-                        "no_area": "אין אזור",
                         "no_devices": "אין התקנים"
                     },
                     "delete": "מחיקה",
@@ -1639,8 +1383,7 @@
                     "path_configuration": "נתיב ל - configuration.yaml: {path}",
                     "server": "שרת",
                     "source": "מקור:",
-                    "system_health_error": "רכיב ה System Health אינו טעון. הוסף 'system_health:' ל - configuration.yaml",
-                    "title": "מידע"
+                    "system_health_error": "רכיב ה System Health אינו טעון. הוסף 'system_health:' ל - configuration.yaml"
                 },
                 "integration_panel_move": {
                     "link_integration_page": "עמוד אינטגרציות",
@@ -1653,7 +1396,6 @@
                     "config_entry": {
                         "area": "ב {area}",
                         "delete": "מחק",
-                        "delete_button": "מחק {integration}",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
                         "device_unavailable": "מכשיר אינו זמין",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
@@ -1664,14 +1406,10 @@
                         "hub": "מחובר באמצעות",
                         "manuf": "על ידי {manufacturer}",
                         "no_area": "ללא אזור",
-                        "no_device": "ישויות ללא מכשירים",
-                        "no_devices": "לאינטגרציה זו אין התקנים.",
                         "options": "אפשרויות",
                         "rename": "שנה שם",
                         "restart_confirm": "הפעל מחדש את Home Assistant כדי להשלים את הסרת האינטגרציה",
-                        "settings_button": "ערוך הגדרות עבור {integration}",
                         "system_options": "אפשרויות מערכת",
-                        "system_options_button": "אפשרויות מערכת עבור {integration}",
                         "unnamed_entry": "ערך ללא שם"
                     },
                     "config_flow": {
@@ -1730,8 +1468,7 @@
                     "multiple_messages": "ההודעה התרחשה לראשונה בשעה {time} והיא מופיעה {counter} פעמים",
                     "no_errors": "לא דווחו שגיאות.",
                     "no_issues": "אין נושאים חדשים!",
-                    "refresh": "רענן",
-                    "title": "יומנים"
+                    "refresh": "רענן"
                 },
                 "lovelace": {
                     "caption": "לוחות מחוונים של Lovelace",
@@ -1994,8 +1731,7 @@
                         "learn_more": "למד עוד אודות קבצי סקריפטים",
                         "no_scripts": "לא מצאנו סקריפטים הניתנים לעריכה",
                         "run_script": "הפעל סקריפט",
-                        "show_info": "הצג מידע על התסריט",
-                        "trigger_script": "הפעל סקריפט"
+                        "show_info": "הצג מידע על התסריט"
                     }
                 },
                 "server_control": {
@@ -2066,9 +1802,7 @@
                     "add_user": {
                         "caption": "הוסף משתמש",
                         "create": "צור",
-                        "name": "שם",
-                        "password": "סיסמה",
-                        "username": "שם משתמש"
+                        "password": "סיסמה"
                     },
                     "caption": "משתמשים",
                     "description": "ניהול משתמשים",
@@ -2109,19 +1843,12 @@
                     "add_device": "הוסף מכשיר",
                     "add_device_page": {
                         "discovered_text": "התקנים יופיעו כאן לאחר שהתגלו.",
-                        "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום.",
-                        "header": "אוטומציית Zigbee - הוספת התקנים",
                         "no_devices_found": "לא נמצאו התקנים כלשהם, וודא שהם במצב צימוד והקפד שיהיו פעילים בזמן החיפוש.",
                         "pairing_mode": "ודא שההתקנים שלך נמצאים במצב צימוד. בדוק את הוראות ההתקן כיצד לבצע זאת.",
                         "search_again": "חפש שוב",
                         "spinner": "מחפש מכשירי ZHA Zigbee..."
                     },
-                    "add": {
-                        "caption": "הוסף התקנים",
-                        "description": "הוספת התקנים לרשת Zigbee"
-                    },
                     "button": "הגדר",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "תכונות של האשכול שנבחר",
                         "get_zigbee_attribute": "קבל שדה Zigbee",
@@ -2145,13 +1872,10 @@
                         "introduction": "אשכולות הם אבני הבניין עבור פונקציונליות Zigbee. הן מפרידות את הפונקציונליות ליחידות לוגיות. קיימים סוגים של לקוחות ושרתים הכוללים תכונות ופקודות."
                     },
                     "common": {
-                        "add_devices": "הוסף התקנים",
                         "clusters": "אשכולות",
-                        "devices": "התקנים",
                         "manufacturer_code_override": "עקיפת קוד יצרן",
                         "value": "ערך"
                     },
-                    "description": "ניהול רשת Zigbee לאוטומציה ביתית",
                     "device_pairing_card": {
                         "CONFIGURED": "קביעת התצורה הושלמה",
                         "CONFIGURED_status_text": "מאתחל",
@@ -2161,9 +1885,6 @@
                         "INTERVIEW_COMPLETE_status_text": "הגדרת תצורה",
                         "PAIRED": "התקן נמצא",
                         "PAIRED_status_text": "מתחיל ראיון"
-                    },
-                    "devices": {
-                        "header": "אוטומציה ביתית של Zigbee - מכשיר"
                     },
                     "group_binding": {
                         "bind_button_help": "קשר את הקבוצה שנבחרה לאשכול המכשירים שנבחר.",
@@ -2179,48 +1900,24 @@
                     "groups": {
                         "add_group": "הוסף קבוצה",
                         "add_members": "הוסף חברים",
-                        "adding_members": "מוסיף חברים",
                         "caption": "קבוצות",
                         "create": "צור קבוצה",
                         "create_group": "אוטומציה ביתית של Zigbee - צור קבוצה",
                         "create_group_details": "הזן את הפרטים הדרושים כדי ליצור קבוצת zigbee חדשה",
                         "creating_group": "יוצר קבוצה",
-                        "description": "יצירה ושינוי של קבוצות Zigbee",
                         "group_details": "להלן כל הפרטים עבור קבוצת Zigbee שנבחרה.",
                         "group_id": "מזהה קבוצה",
                         "group_info": "פרטי קבוצה",
                         "group_name_placeholder": "שם קבוצה",
                         "group_not_found": "הקבוצה לא נמצאה!",
-                        "group-header": "אוטומציה ביתית של Zigbee - פרטי קבוצה",
                         "groups": "קבוצות",
-                        "groups-header": "אוטומציה ביתית של Zigbee - ניהול קבוצות",
-                        "header": "אוטומציה ביתית של Zigbee - ניהול קבוצות",
-                        "introduction": "יצירה ושינוי של קבוצות Zigbee",
-                        "manage_groups": "ניהול קבוצות Zigbee",
                         "members": "חברים",
-                        "remove_groups": "הסר קבוצות",
                         "remove_members": "הסר חברים",
-                        "removing_groups": "מסיר קבוצות",
-                        "removing_members": "מסיר חברים",
-                        "zha_zigbee_groups": "קבוצות Zigbee ZHA"
-                    },
-                    "header": "הגדר אוטומציה ביתית של Zigbee",
-                    "introduction": "כאן ניתן לקבוע את התצורה של רכיב ה- ZHA. עדיין לא ניתן להגדיר הכל ממשק המשתמש, אך אנו עובדים על זה.",
-                    "network_management": {
-                        "header": "ניהול רשת",
-                        "introduction": "פקודות שמשפיעות על הרשת כולה"
+                        "removing_members": "מסיר חברים"
                     },
                     "network": {
                         "caption": "רשת"
                     },
-                    "node_management": {
-                        "header": "ניהול מכשירים",
-                        "help_node_dropdown": "בחר מכשיר להצגת האפשרויות.",
-                        "hint_battery_devices": "הערה: מכשירים מנומנמים (מופעלים על סוללות) צריכים להיות ערים בעת ביצוע פקודות מולם. בדרך כלל ניתן להעיר מכשיר מנומנם על ידי ביצוע פקודה מולם.",
-                        "hint_wakeup": "מכשירים מסוימים, כגון חיישני Xiaomi, כוללים כפתור להתעוררות עליו ניתן ללחוץ במרווח של ~5 שניות על מנת להשאיר אותם ערים בזמן שמתקשרים איתם.",
-                        "introduction": "הפעל פקודות ZHA המשפיעות על מכשיר בודד. בחר מכשיר כדי לראות את רשימת הפקודות הזמינות."
-                    },
-                    "title": "אוטומציה ביתית של Zigbee",
                     "visualization": {
                         "caption": "ויזואליזציה",
                         "header": "הדמית רשת",
@@ -2270,7 +1967,6 @@
                 },
                 "zwave": {
                     "button": "הגדר",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "אינדקס",
                         "instance": "פרמטר",
@@ -2383,17 +2079,12 @@
                         "type": "סוג אירוע"
                     },
                     "services": {
-                        "alert_parsing_yaml": "שגיאה בניתוח YAML: {data}",
                         "call_service": "קריאה לשירות",
                         "column_description": "תיאור",
                         "column_example": "דוגמא",
                         "column_parameter": "פרמטר",
-                        "data": "נתוני שירות (YAML, לא חובה)",
                         "description": "כלי הפיתוח של השירותים מאפשר לך לקרוא לכל שירות ב Home Assistant.",
                         "fill_example_data": "מלא נתונים לדוגמה",
-                        "no_description": "אין תיאור זמין",
-                        "no_parameters": "שירות זה אינו מקבל פרמטרים.",
-                        "select_service": "בחר שירות כדי לראות את התיאור",
                         "title": "שירותים"
                     },
                     "states": {
@@ -2424,25 +2115,20 @@
                 }
             },
             "history": {
-                "period": "תקופה",
                 "ranges": {
                     "last_week": "שבוע שעבר",
                     "this_week": "השבוע",
                     "today": "היום",
                     "yesterday": "אתמול"
-                },
-                "showing_entries": "מציג רשומות עבור"
+                }
             },
             "logbook": {
-                "entries_not_found": "לא נמצאו רשומות ביומן.",
-                "period": "תקופה",
                 "ranges": {
                     "last_week": "שבוע שעבר",
                     "this_week": "השבוע",
                     "today": "היום",
                     "yesterday": "אתמול"
-                },
-                "showing_entries": "מציג רשומות עבור"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2451,7 +2137,6 @@
                     "yaml_unsupported": "אינך יכול להשתמש בפונקציה זו כשמשתמשים בממשק המשתמש של Lovelace במצב YAML."
                 },
                 "cards": {
-                    "action_confirmation": "האם אתה בטוח שברצונך לבצע פעולה \" {action} \"?",
                     "actions": {
                         "no_service": "לא צוין שום שירות לביצוע",
                         "no_url": "לא צוין כתובת אתר לפתיחה"
@@ -2486,13 +2171,11 @@
                         "reorder_items": "סדר מחדש פריטים"
                     },
                     "starting": {
-                        "description": "Home Assistant בעלייה. אנא המתן...",
-                        "header": "Home Assistant בעלייה..."
+                        "description": "Home Assistant בעלייה. אנא המתן..."
                     }
                 },
                 "changed_toast": {
-                    "message": "תצורת Lovelace עודכנה, האם ברצונך לרענן?",
-                    "refresh": "רענן"
+                    "message": "תצורת Lovelace עודכנה, האם ברצונך לרענן?"
                 },
                 "components": {
                     "timestamp-display": {
@@ -2692,7 +2375,6 @@
                         },
                         "sensor": {
                             "description": "כרטיס החיישן מעניק לך סקירה מהירה של מצב החיישנים שלך באמצעות גרף אופציונלי להמחשת שינוי לאורך זמן.",
-                            "graph_detail": "פרטי הגרף",
                             "graph_type": "סוג גרף",
                             "name": "חיישן"
                         },
@@ -2825,7 +2507,6 @@
                     "configure_ui": "הגדר UI",
                     "exit_edit_mode": "צא ממצב עריכה של ממשק המשתמש",
                     "help": "עזרה",
-                    "refresh": "רענן",
                     "reload_resources": "רענן משאבים"
                 },
                 "reload_lovelace": "טען מחדש את Lovelace",
@@ -2943,8 +2624,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "המחשב שלך אינו מורשה.",
-                                "not_whitelisted": "המחשב שלך אינו רשום ברשימת ההיתרים."
+                                "not_allowed": "המחשב שלך אינו מורשה."
                             },
                             "step": {
                                 "init": {
@@ -3089,14 +2769,11 @@
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק את אסימון הגישה עבור {name} ?",
                     "create": "צור אסימון",
                     "create_failed": "יצירת אסימון הגישה נכשלה.",
-                    "created_at": "נוצר בתאריך {date}",
                     "delete_failed": "מחיקת אסימון הגישה נכשלה.",
                     "description": "צור אסימוני גישה ארוכי טווח כדי לאפשר לסקריפטים שלך לקיים אינטראקציה עם Home Assistant.\nאסימונים אלו פועלים כיום:",
                     "empty_state": "אין לך עדיין אסימוני גישה ארוכים.",
                     "header": "אסימוני גישה ארוכי חיים",
-                    "last_used": "נעשה שימוש לאחרונה  {date} מ{location}",
                     "learn_auth_requests": "למד כיצד לבצע בקשות מאומתות.",
-                    "not_used": "לא היה בשימוש",
                     "prompt_copy_token": "העתק את אסימון הגישה שלך. הוא לא יוצג שוב.",
                     "prompt_name": "שֵׁם?"
                 },
@@ -3161,11 +2838,6 @@
             },
             "shopping_list": {
                 "start_conversation": "התחל שיחה"
-            },
-            "shopping-list": {
-                "add_item": "הוסף פריט",
-                "clear_completed": "ניקוי הושלם",
-                "microphone_tip": "לחץ על המיקרופון למעלה מצד ימין ותאמר \"הוסף סוכריה לרשימת הקניות שלי\""
             }
         },
         "sidebar": {

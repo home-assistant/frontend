@@ -95,253 +95,11 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Под охраной",
-            "armed_away": "Охрана (не дома)",
-            "armed_custom_bypass": "Охрана с исключениями",
-            "armed_home": "Охрана (дома)",
-            "armed_night": "Охрана (ночь)",
-            "arming": "Постановка на охрану",
-            "disarmed": "Снято с охраны",
-            "disarming": "Снятие с охраны",
-            "pending": "Переход на охрану",
-            "triggered": "Срабатывание"
-        },
-        "automation": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Нормальный",
-                "on": "Низкий"
-            },
-            "cold": {
-                "off": "Норма",
-                "on": "Охлаждение"
-            },
-            "connectivity": {
-                "off": "Отключено",
-                "on": "Подключено"
-            },
-            "default": {
-                "off": "Выкл",
-                "on": "Вкл"
-            },
-            "door": {
-                "off": "Закрыта",
-                "on": "Открыта"
-            },
-            "garage_door": {
-                "off": "Закрыты",
-                "on": "Открыты"
-            },
-            "gas": {
-                "off": "Не обнаружен",
-                "on": "Обнаружен"
-            },
-            "heat": {
-                "off": "Норма",
-                "on": "Нагрев"
-            },
-            "lock": {
-                "off": "Закрыт",
-                "on": "Открыт"
-            },
-            "moisture": {
-                "off": "Сухо",
-                "on": "Влажно"
-            },
-            "motion": {
-                "off": "Нет движения ",
-                "on": "Движение"
-            },
-            "occupancy": {
-                "off": "Не обнаружено",
-                "on": "Обнаружено"
-            },
-            "opening": {
-                "off": "Закрыто",
-                "on": "Открыто"
-            },
-            "presence": {
-                "off": "Не дома",
-                "on": "Дома"
-            },
-            "problem": {
-                "off": "ОК",
-                "on": "Проблема"
-            },
-            "safety": {
-                "off": "Безопасно",
-                "on": "Небезопасно"
-            },
-            "smoke": {
-                "off": "Нет дыма",
-                "on": "Дым"
-            },
-            "sound": {
-                "off": "Не обнаружен",
-                "on": "Обнаружен"
-            },
-            "vibration": {
-                "off": "Не обнаружена",
-                "on": "Обнаружена"
-            },
-            "window": {
-                "off": "Закрыто",
-                "on": "Открыто"
-            }
-        },
-        "calendar": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "camera": {
-            "idle": "Бездействие",
-            "recording": "Запись",
-            "streaming": "Трансляция"
-        },
-        "climate": {
-            "cool": "Охлаждение",
-            "dry": "Осушение",
-            "fan_only": "Вентиляция",
-            "heat": "Обогрев",
-            "heat_cool": "Обогрев / Охлаждение",
-            "off": "Выкл"
-        },
-        "configurator": {
-            "configure": "Настроить",
-            "configured": "Настроено"
-        },
-        "cover": {
-            "closed": "Закрыто",
-            "closing": "Закрывается",
-            "open": "Открыто",
-            "opening": "Открывается",
-            "stopped": "Остановлено"
-        },
         "default": {
             "off": "Выкл",
             "on": "Вкл",
             "unavailable": "Недоступно",
             "unknown": "Неизвестно"
-        },
-        "device_tracker": {
-            "not_home": "Не дома"
-        },
-        "fan": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "group": {
-            "closed": "Закрыто",
-            "closing": "Закрывается",
-            "home": "Дома",
-            "locked": "Заблокирована",
-            "not_home": "Не дома",
-            "off": "Выкл",
-            "ok": "ОК",
-            "on": "Вкл",
-            "open": "Открыто",
-            "opening": "Открывается",
-            "problem": "Проблема",
-            "stopped": "Остановлено",
-            "unlocked": "Разблокирована"
-        },
-        "input_boolean": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "light": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "lock": {
-            "locked": "Закрыт",
-            "unlocked": "Открыт"
-        },
-        "media_player": {
-            "idle": "Ожидание",
-            "off": "Выкл",
-            "on": "Вкл",
-            "paused": "Пауза",
-            "playing": "Воспроизведение",
-            "standby": "Ожидание"
-        },
-        "person": {
-            "home": "Дома"
-        },
-        "plant": {
-            "ok": "ОК",
-            "problem": "Проблема"
-        },
-        "remote": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "scene": {
-            "scening": "Переход к сцене"
-        },
-        "script": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "sensor": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "sun": {
-            "above_horizon": "Над горизонтом",
-            "below_horizon": "За горизонтом"
-        },
-        "switch": {
-            "off": "Выкл",
-            "on": "Вкл"
-        },
-        "timer": {
-            "active": "Отсчёт",
-            "idle": "Ожидание",
-            "paused": "Пауза"
-        },
-        "vacuum": {
-            "cleaning": "Уборка",
-            "docked": "У док-станции",
-            "error": "Ошибка",
-            "idle": "Бездействие",
-            "off": "Выключен",
-            "on": "Включен",
-            "paused": "Приостановлен",
-            "returning": "Возвращается к док-станции"
-        },
-        "weather": {
-            "clear-night": "Ясно, ночь",
-            "cloudy": "Облачно",
-            "exceptional": "Предупреждение",
-            "fog": "Туман",
-            "hail": "Град",
-            "lightning": "Молния",
-            "lightning-rainy": "Молния, дождь",
-            "partlycloudy": "Переменная облачность",
-            "pouring": "Ливень",
-            "rainy": "Дождь",
-            "snowy": "Снег",
-            "snowy-rainy": "Снег с дождем",
-            "sunny": "Ясно",
-            "windy": "Ветрено",
-            "windy-variant": "Ветрено"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Неисправно",
-                "initializing": "Инициализация",
-                "ready": "Готов",
-                "sleeping": "Режим сна"
-            },
-            "query_stage": {
-                "dead": "Неисправно ({query_stage})",
-                "initializing": "Инициализация ({query_stage})"
-            }
         }
     },
     "ui": {
@@ -362,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Последний запуск",
-                "trigger": "Запуск"
+                "trigger": "Запустить действия"
             },
             "camera": {
                 "not_available": "Изображение не доступно"
@@ -443,7 +201,7 @@
             "script": {
                 "cancel": "Отменить",
                 "cancel_multiple": "Отменить {number}",
-                "execute": "Выполнить"
+                "run": "Запустить"
             },
             "service": {
                 "run": "Запустить"
@@ -538,6 +296,19 @@
             "yes": "Да"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Дополнение",
+                "error": {
+                    "fetch_addons": {
+                        "description": "При загрузке дополнений возникла ошибка.",
+                        "title": "Ошибка при загрузке дополнений"
+                    },
+                    "no_supervisor": {
+                        "description": "Supervisor не найден, поэтому не удалось загрузить дополнения.",
+                        "title": "Отсутствует Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Добавить",
@@ -630,7 +401,6 @@
             "media-browser": {
                 "audio_not_supported": "Ваш браузер не поддерживает аудио.",
                 "choose_player": "Выбор медиаплеера",
-                "choose-source": "Выбрать источник",
                 "class": {
                     "album": "Альбом",
                     "app": "Приложение",
@@ -652,13 +422,6 @@
                     "tv_show": "Сериалы",
                     "url": "URL-адрес",
                     "video": "Видео"
-                },
-                "content-type": {
-                    "album": "Альбом",
-                    "artist": "Исполнитель",
-                    "library": "Библиотека",
-                    "playlist": "Плейлист",
-                    "server": "Сервер"
                 },
                 "documentation": "документации",
                 "learn_adding_local_media": "Подробнее о добавлении мультимедиа читайте в {documentation}.",
@@ -701,7 +464,6 @@
                     "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
                     "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}"
                 },
-                "future": "через {time}",
                 "future_duration": {
                     "day": "Через {count} {count, plural,\n  one {д.}\n  other {д.}\n}",
                     "hour": "Через {count} {count, plural,\n  one {ч.}\n  other {ч.}\n}",
@@ -711,7 +473,6 @@
                 },
                 "just_now": "Сейчас",
                 "never": "Никогда",
-                "past": "{time} назад",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n} назад",
                     "hour": "{count} {count, plural,\n  one {ч.}\n  other {ч.}\n} назад",
@@ -847,7 +608,6 @@
                 "crop": "Обрезать"
             },
             "more_info_control": {
-                "controls": "Управление",
                 "cover": {
                     "close_cover": "Закрыть",
                     "close_tile_cover": "Закрыть",
@@ -932,7 +692,6 @@
                         "logs": "Журнал сервера",
                         "lovelace": "Панели Lovelace",
                         "navigate_to": "Открыть \"{panel}\"",
-                        "navigate_to_config": "Перейти в раздел \"{panel}\"",
                         "person": "Люди",
                         "scene": "Сцены",
                         "script": "Сценарии",
@@ -1015,9 +774,7 @@
                 },
                 "unknown": "Неизвестно",
                 "zha_device_card": {
-                    "area_picker_label": "Помещение",
-                    "device_name_placeholder": "Название",
-                    "update_name_button": "Обновить название"
+                    "device_name_placeholder": "Название"
                 }
             }
         },
@@ -1061,10 +818,6 @@
             "triggered": "Сработало от {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Мои календари",
-                "today": "Сегодня"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Хотите больше параметров для конфигурирования? Активируйте расширенный режим на",
@@ -1182,8 +935,7 @@
                                     "label": "Активировать сцену"
                                 },
                                 "service": {
-                                    "label": "Вызов службы",
-                                    "service_data": "Данные"
+                                    "label": "Вызов службы"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Продолжить по истечении времени",
@@ -1203,8 +955,6 @@
                         "blueprint": {
                             "blueprint_to_use": "Используемый проект",
                             "header": "Проект",
-                            "inputs": "Исходные данные",
-                            "manage_blueprints": "Управление проектами",
                             "no_blueprints": "У Вас еще нет проектов.",
                             "no_inputs": "Для этого проекта не требуется указание исходных данных."
                         },
@@ -1214,7 +964,7 @@
                             "delete_confirm": "Вы уверены, что хотите удалить?",
                             "duplicate": "Дублировать",
                             "header": "Условия",
-                            "introduction": "Условия — это необязательная часть правила автоматизации. Действие автоматизации не будет выполнено, пока не будут удовлетворены все условия.",
+                            "introduction": "Условия — это необязательная часть правила автоматизации. Действие автоматизации не будет запущено, пока не будут удовлетворены все условия.",
                             "learn_more": "Узнайте больше об условиях",
                             "name": "Условие",
                             "type_select": "Тип условия",
@@ -1459,7 +1209,6 @@
                         "header": "Импортировать проект",
                         "import_btn": "Предварительный просмотр проекта",
                         "import_header": "Проект \"{name}\"",
-                        "import_introduction": "Вы можете импортировать проекты других пользователей из Github и форумов сообщества. Для этого введите в этом окне URL-адрес проекта.",
                         "import_introduction_link": "Вы можете импортировать проекты других пользователей из Github и {community_link}. Для этого введите в этом окне URL-адрес проекта.",
                         "importing": "Загрузка проекта...",
                         "raw_blueprint": "Состав проекта",
@@ -1581,7 +1330,6 @@
                         "not_exposed_entities": "Объекты, к которым закрыт доступ",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistant Cloud",
                     "description_features": "Удалённый доступ к серверу, интеграция с Alexa и Google Assistant",
                     "description_login": "{email}",
                     "description_not_login": "Вход не выполнен",
@@ -1714,7 +1462,6 @@
                     "pick_attribute": "Выберите атрибут",
                     "picker": {
                         "documentation": "Узнайте больше о кастомизации",
-                        "entity": "Объект",
                         "header": "Кастомизация",
                         "introduction": "Настройка атрибутов объектов. Добавленные или изменённые настройки сразу же вступают в силу. Удалённые настройки вступят в силу после обновления объекта."
                     },
@@ -1752,6 +1499,7 @@
                     "cant_edit": "Вы можете редактировать только созданные в пользовательском интерфейсе элементы.",
                     "caption": "Устройства",
                     "confirm_delete": "Вы уверены, что хотите удалить это устройство?",
+                    "confirm_disable_config_entry": "Для записи конфигурации {entry_name} больше нет устройств. Отключить вместо этого запись конфигурации?",
                     "confirm_rename_entity_ids": "Хотите ли Вы также переименовать идентификаторы объектов?",
                     "confirm_rename_entity_ids_warning": "Переименование повлечёт за собой необходимость вручную обновлять изменённые данные в правилах автоматизации, сценариях, сценах и пользовательском интерфейсе.",
                     "data_table": {
@@ -1761,7 +1509,6 @@
                         "integration": "Интеграция",
                         "manufacturer": "Производитель",
                         "model": "Модель",
-                        "no_area": "Не указано",
                         "no_devices": "Нет устройств"
                     },
                     "delete": "Удалить",
@@ -1865,7 +1612,8 @@
                 },
                 "filtering": {
                     "clear": "Очистить",
-                    "filtering_by": "Отфильтровано по принадлежности к"
+                    "filtering_by": "Отфильтровано по принадлежности к",
+                    "show": "Показать"
                 },
                 "header": "Настройка Home Assistant",
                 "helpers": {
@@ -1917,42 +1665,9 @@
                     "source": "Исходный код:",
                     "system_health_error": "Компонент System Health не загружен. Добавьте 'system_health:' в файл configuration.yaml.",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Интеграция с Alexa",
-                                "can_reach_cert_server": "Доступ к серверу сертификатов",
-                                "can_reach_cloud": "Доступ к Home Assistant Cloud",
-                                "can_reach_cloud_auth": "Доступ к серверу аутентификации",
-                                "google_enabled": "Интеграция с Google",
-                                "logged_in": "Вход в систему",
-                                "relayer_connected": "Relayer подключен",
-                                "remote_connected": "Удалённый доступ подключен",
-                                "remote_enabled": "Удалённый доступ активирован",
-                                "subscription_expiration": "Срок действия подписки"
-                            },
-                            "homeassistant": {
-                                "arch": "Архитектура ЦП",
-                                "dev": "Среда разработки",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "Тип установки",
-                                "os_name": "Название операционной системы",
-                                "os_version": "Версия операционной системы",
-                                "python_version": "Версия Python",
-                                "timezone": "Часовой пояс",
-                                "version": "Версия",
-                                "virtualenv": "Виртуальное окружение"
-                            },
-                            "lovelace": {
-                                "dashboards": "Панели",
-                                "mode": "Режим",
-                                "resources": "Ресурсы"
-                            }
-                        },
                         "manage": "Управление",
                         "more_info": "дополнительная информация"
-                    },
-                    "title": "О системе"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "странице интеграций",
@@ -1966,19 +1681,28 @@
                     "config_entry": {
                         "area": "Помещение: {area}",
                         "delete": "Удалить",
-                        "delete_button": "Удалить интеграцию {integration}",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
                         "device_unavailable": "Устройство недоступно",
                         "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройств}\n}",
+                        "disable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить отключение этой интеграции.",
+                        "disable": {
+                            "disable_confirm": "Вы уверены, что хотите отключить эту запись конфигурации? Её дочерние устройства и объекты будут также отключены.",
+                            "disabled": "Отключено",
+                            "disabled_by": {
+                                "device": "Устройство",
+                                "integration": "Интеграция",
+                                "user": "Пользователь"
+                            },
+                            "disabled_cause": "Инициатор: {cause}"
+                        },
                         "documentation": "Документация",
+                        "enable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить подключение этой интеграции.",
                         "entities": "{count} {count, plural,\n  one {объект}\n  other {объектов}\n}",
                         "entity_unavailable": "Объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
                         "manuf": "{manufacturer}",
                         "no_area": "Не указано",
-                        "no_device": "Объекты без устройств",
-                        "no_devices": "Эта интеграция не имеет устройств",
                         "options": "Настройки",
                         "reload": "Перезагрузить",
                         "reload_confirm": "Перезагрузка интеграции выполнена",
@@ -1986,9 +1710,7 @@
                         "rename": "Переименовать",
                         "restart_confirm": "Перезапустите Home Assistant, чтобы завершить удаление этой интеграции",
                         "services": "{count} {count, plural,\n  one {служба}\n  other {служб}\n}",
-                        "settings_button": "Настройки интеграции {integration}",
                         "system_options": "Настройки интеграции",
-                        "system_options_button": "Системные параметры интеграции {integration}",
                         "unnamed_entry": "Без названия"
                     },
                     "config_flow": {
@@ -2017,6 +1739,11 @@
                     "confirm_new": "Хотите начать настройку интеграции {integration}?",
                     "description": "Управление интеграциями с устройствами или службами",
                     "details": "Детали интеграции",
+                    "disable": {
+                        "disabled_integrations": "Отключено: {number}",
+                        "hide_disabled": "Скрыть отключенные интеграции",
+                        "show_disabled": "Показать отключенные интеграции"
+                    },
                     "discovered": "Обнаружено",
                     "home_assistant_website": "сайте Home Assistant",
                     "ignore": {
@@ -2055,8 +1782,7 @@
                     "multiple_messages": "первое сообщение получено {time} и повторялось {counter} раз",
                     "no_errors": "Нет сообщений об ошибках.",
                     "no_issues": "Нет сообщений о проблемах.",
-                    "refresh": "Обновить",
-                    "title": "Лог"
+                    "refresh": "Обновить"
                 },
                 "lovelace": {
                     "caption": "Панели Lovelace",
@@ -2354,7 +2080,7 @@
                         "id": "ID объекта",
                         "id_already_exists": "Этот ID уже существует",
                         "id_already_exists_save_error": "ID объекта не уникален, укажите другой ID или оставьте поле пустым, чтобы автоматически сгенерировать его.",
-                        "introduction": "Используйте сценарии для выполнения последовательности действий.",
+                        "introduction": "Используйте сценарии для запуска последовательности действий.",
                         "link_available_actions": "Узнайте больше о действиях",
                         "load_error_not_editable": "Доступны для редактирования только сценарии из scripts.yaml.",
                         "max": {
@@ -2387,8 +2113,7 @@
                         "learn_more": "Узнайте больше о сценариях",
                         "no_scripts": "Редактируемые сценарии не найдены",
                         "run_script": "Запустить сценарий",
-                        "show_info": "Показать информацию о сценарии",
-                        "trigger_script": "Запустить сценарий"
+                        "show_info": "Показать информацию о сценарии"
                     }
                 },
                 "server_control": {
@@ -2482,11 +2207,9 @@
                     "add_user": {
                         "caption": "Добавить пользователя",
                         "create": "Добавить",
-                        "name": "Имя",
                         "password": "Пароль",
                         "password_confirm": "Подтвердите пароль",
-                        "password_not_match": "Пароли не совпадают",
-                        "username": "Логин"
+                        "password_not_match": "Пароли не совпадают"
                     },
                     "caption": "Пользователи",
                     "description": "Учётные записи пользователей Home Assistant",
@@ -2530,19 +2253,12 @@
                     "add_device": "Добавить устройство",
                     "add_device_page": {
                         "discovered_text": "Устройства появятся здесь, когда будут обнаружены.",
-                        "discovery_text": "Здесь будут отображаться обнаруженные устройства. Следуйте инструкциям для Вашего устройства, чтобы включить режим сопряжения.",
-                        "header": "Zigbee Home Automation",
                         "no_devices_found": "Устройства не найдены, убедитесь, что они находятся в режиме сопряжения, и держите их активными во время обнаружения.",
                         "pairing_mode": "Убедитесь, что подключаемые устройства находятся в режиме сопряжения. Чтобы узнать, как активировать режим сопряжения, ознакомьтесь с инструкциями для Вашего устройства.",
                         "search_again": "Повторный поиск",
                         "spinner": "Поиск Zigbee устройств..."
                     },
-                    "add": {
-                        "caption": "Добавить устройства",
-                        "description": "Добавить устройства в сеть Zigbee"
-                    },
                     "button": "Настройки",
-                    "caption": "Zigbee Home Automation",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Атрибуты выбранного кластера",
                         "get_zigbee_attribute": "Получить атрибут Zigbee",
@@ -2566,13 +2282,10 @@
                         "introduction": "Кластеры – это блоки, из которых состоит функциональность устройства Zigbee. В структуре кластера существуют элементы клиента и сервера, которые состоят из атрибутов и команд."
                     },
                     "common": {
-                        "add_devices": "Добавить устройства",
                         "clusters": "Кластеры",
-                        "devices": "Устройства",
                         "manufacturer_code_override": "Переназначить код производителя",
                         "value": "Значение"
                     },
-                    "description": "Управление сетью Zigbee Home Automation",
                     "device_pairing_card": {
                         "CONFIGURED": "Настройка завершена",
                         "CONFIGURED_status_text": "Инициализация",
@@ -2582,9 +2295,6 @@
                         "INTERVIEW_COMPLETE_status_text": "Настройка",
                         "PAIRED": "Найдено устройство",
                         "PAIRED_status_text": "Опрос начат"
-                    },
-                    "devices": {
-                        "header": "Zigbee Home Automation - Устройство"
                     },
                     "group_binding": {
                         "bind_button_help": "Привяжите выбранную группу к выбранным кластерам устройств.",
@@ -2600,48 +2310,24 @@
                     "groups": {
                         "add_group": "Добавить группу",
                         "add_members": "Добавить участников",
-                        "adding_members": "Добавление участников",
                         "caption": "Группы",
                         "create": "Создать группу",
                         "create_group": "Создание новой группы",
                         "create_group_details": "Укажите необходимые данные для создания новой группы Zigbee",
                         "creating_group": "Создание группы",
-                        "description": "Управление группами Zigbee",
                         "group_details": "Здесь приведена вся доступная информация о выбранной группе Zigbee.",
                         "group_id": "ID группы",
                         "group_info": "Информация о группе",
                         "group_name_placeholder": "Название группы",
                         "group_not_found": "Группа не найдена!",
-                        "group-header": "Zigbee Home Automation - Информация о группе",
                         "groups": "Группы",
-                        "groups-header": "Zigbee Home Automation - Управление группами",
-                        "header": "Zigbee Home Automation - Управление группами",
-                        "introduction": "Создавайте и изменяйте группы Zigbee",
-                        "manage_groups": "Управление группами Zigbee",
                         "members": "Участники",
-                        "remove_groups": "Удалить группы",
                         "remove_members": "Удалить участников",
-                        "removing_groups": "Удаляем группы",
-                        "removing_members": "Удаление участников",
-                        "zha_zigbee_groups": "Группы ZHA Zigbee"
-                    },
-                    "header": "Настройка Zigbee Home Automation",
-                    "introduction": "Здесь можно настроить компонент ZHA. Пока что не все можно настроить из интерфейса, но мы работаем над этим.",
-                    "network_management": {
-                        "header": "Управление сетью",
-                        "introduction": "Команды, которые влияют на всю сеть"
+                        "removing_members": "Удаление участников"
                     },
                     "network": {
                         "caption": "Сеть"
                     },
-                    "node_management": {
-                        "header": "Управление устройством",
-                        "help_node_dropdown": "Выберите устройство для просмотра индивидуальных параметров.",
-                        "hint_battery_devices": "Примечание:\nСпящие (работающие от батареи) устройства должны быть активны при выполнении команд. Обычно устройство выходит из режима сна, когда срабатывает на изменение внешних условий.",
-                        "hint_wakeup": "Некоторые устройства, такие как датчики Xiaomi, имеют кнопку пробуждения, которую Вы можете нажимать с интервалом ~ 5 секунд, чтобы держать устройства в активном состоянии во время взаимодействия с ними.",
-                        "introduction": "Команды ZHA, которые влияют на одно устройство. Выберите устройство, чтобы увидеть список доступных команд."
-                    },
-                    "title": "Zigbee Home Automation",
                     "visualization": {
                         "caption": "Визуализация",
                         "header": "Визуализация сети",
@@ -2713,7 +2399,6 @@
                         "header": "Управление сетью Z-Wave",
                         "home_id": "ID дома",
                         "introduction": "Управляйте сетью и отдельными узлами Z-Wave",
-                        "node_count": "Количество узлов",
                         "nodes_ready": "Узлы готовы",
                         "server_version": "Версия сервера"
                     },
@@ -2750,7 +2435,6 @@
                 },
                 "zwave": {
                     "button": "Настройки",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Индекс",
                         "instance": "Экземпляр",
@@ -2870,18 +2554,13 @@
                     },
                     "services": {
                         "accepts_target": "Эта служба принимает целевой объект, например: `entity_id: light.bed_light`",
-                        "alert_parsing_yaml": "Ошибка при разборе синтаксиса YAML: {data}",
                         "all_parameters": "Все доступные параметры",
                         "call_service": "Вызвать службу",
                         "column_description": "Описание",
                         "column_example": "Пример",
                         "column_parameter": "Параметр",
-                        "data": "Данные службы в формате YAML (необязательно)",
                         "description": "Здесь Вы можете вызвать любую службу Home Assistant из списка доступных.",
                         "fill_example_data": "Заполнить данными из примера",
-                        "no_description": "Описание недоступно",
-                        "no_parameters": "Нет параметров для этой службы.",
-                        "select_service": "Выберите службу, чтобы увидеть описание.",
                         "title": "Службы",
                         "ui_mode": "Перейти в режим формы ввода",
                         "yaml_mode": "Перейти в режим YAML",
@@ -2890,6 +2569,7 @@
                     "states": {
                         "alert_entity_field": "Укажите объект.",
                         "attributes": "Атрибуты",
+                        "copy_id": "Скопировать ID в буфер обмена",
                         "current_entities": "Список объектов",
                         "description1": "Здесь Вы можете вручную изменить состояние устройства в Home Assistant.",
                         "description2": "Изменённое состояние не будет синхронизировано с устройством.",
@@ -2925,25 +2605,20 @@
                 }
             },
             "history": {
-                "period": "Период",
                 "ranges": {
                     "last_week": "Прошедшая неделя",
                     "this_week": "Эта неделя",
                     "today": "Сегодня",
                     "yesterday": "Вчера"
-                },
-                "showing_entries": "Отображение записей за"
+                }
             },
             "logbook": {
-                "entries_not_found": "В журнале нет записей.",
-                "period": "Период",
                 "ranges": {
                     "last_week": "Прошедшая неделя",
                     "this_week": "Эта неделя",
                     "today": "Сегодня",
                     "yesterday": "Вчера"
-                },
-                "showing_entries": "Отображение записей за"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2952,13 +2627,12 @@
                     "yaml_unsupported": "Вы не можете использовать эту функцию, если пользовательский интерфейс Lovelace работает в режиме YAML."
                 },
                 "cards": {
-                    "action_confirmation": "Вы действительно хотите выполнить действие \"{action}\"?",
                     "actions": {
-                        "action_confirmation": "Вы уверены, что хотите выполнить действие \"{action}\"?",
+                        "action_confirmation": "Вы уверены, что хотите запустить действие \"{action}\"?",
                         "no_entity_more_info": "Не указан объект для диалогового окна с дополнительной информацией",
                         "no_entity_toggle": "Не указан объект для переключения состояния",
                         "no_navigation_path": "Не указан путь навигации",
-                        "no_service": "Не указана служба для выполнения",
+                        "no_service": "Не указана служба для запуска",
                         "no_url": "Не указан URL-адрес"
                     },
                     "confirm_delete": "Вы уверены, что хотите удалить эту карточку?",
@@ -2991,13 +2665,11 @@
                         "reorder_items": "Изменить порядок"
                     },
                     "starting": {
-                        "description": "Home Assistant запускается, пожалуйста, подождите...",
-                        "header": "Запуск Home Assistant..."
+                        "description": "Home Assistant запускается, пожалуйста, подождите..."
                     }
                 },
                 "changed_toast": {
-                    "message": "Конфигурация этой панели Lovelace была изменена, обновить страницу?",
-                    "refresh": "Обновить"
+                    "message": "Конфигурация этой панели Lovelace была изменена, обновить страницу?"
                 },
                 "components": {
                     "timestamp-display": {
@@ -3016,7 +2688,6 @@
                             "toggle": "Переключить",
                             "url": "URL-адрес"
                         },
-                        "editor_service_data": "Данные службы могут быть внесены только в текстовом редакторе",
                         "navigation_path": "Путь навигации",
                         "url_path": "URL-адрес"
                     },
@@ -3214,7 +2885,6 @@
                         },
                         "sensor": {
                             "description": "Дает быстрый обзор состояния сенсоров. Дополнительно может отображать график для визуализации изменений во времени.",
-                            "graph_detail": "Детализация графика",
                             "graph_type": "Тип графика",
                             "name": "Сенсор",
                             "show_more_detail": "Больше деталей на графике"
@@ -3333,7 +3003,7 @@
                         "confirm_remove_config_text": "Если Вы очистите конфигурацию этой панели Lovelace, карточки с Вашими устройствами и помещениями будут создаваться автоматически.",
                         "confirm_remove_config_title": "Вы уверены, что хотите очистить конфигурацию пользовательского интерфейса Lovelace?",
                         "confirm_unsaved_changes": "У вас есть несохраненные изменения. Вы уверены, что хотите выйти?",
-                        "confirm_unsaved_comments": "Ваша конфигурация содержит комментарии, они не будут сохранены. Вы хотите продолжить?",
+                        "confirm_unsaved_comments": "Возможно, Ваша конфигурация содержит комментарии. Они не будут сохранены. Вы хотите продолжить?",
                         "error_invalid_config": "Конфигурация недействительна: {error}",
                         "error_parse_yaml": "Ошибка при разборе синтаксиса YAML: {error}",
                         "error_remove": "Не удалось удалить конфигурацию: {error}",
@@ -3385,7 +3055,6 @@
                     "configure_ui": "Изменить панель",
                     "exit_edit_mode": "Выход из режима редактирования интерфейса",
                     "help": "Справка",
-                    "refresh": "Обновить",
                     "reload_resources": "Перезагрузить ресурсы",
                     "start_conversation": "Начать диалог"
                 },
@@ -3427,8 +3096,10 @@
             },
             "my": {
                 "component_not_loaded": "Это перенаправление не поддерживается Вашим Home Assistant. Настройте интеграцию \"{integration}\" для использования этого перенаправления.",
+                "documentation": "документацией",
                 "error": "Произошла неизвестная ошибка.",
                 "faq_link": "часто задаваемыми вопросами по My Home Assistant",
+                "no_supervisor": "Это перенаправление не поддерживается Вашим Home Assistant. Оно предназначено только для Home Assistant OS или Home Assistant Supervised. Для получения дополнительной информации ознакомьтесь с {docs_link}.",
                 "not_supported": "Это перенаправление не поддерживается Вашим Home Assistant. Ознакомьтесь с {link}, чтобы узнать поддерживаемые перенаправления и версии, в которых они были добавлены."
             },
             "page-authorize": {
@@ -3510,8 +3181,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Доступ с этого устройства запрещён",
-                                "not_whitelisted": "Ваш компьютер не включён в белый список."
+                                "not_allowed": "Доступ с этого устройства запрещён"
                             },
                             "step": {
                                 "init": {
@@ -3664,15 +3334,12 @@
                     "create": "Создать токен",
                     "create_failed": "Не удалось создать токен доступа.",
                     "created": "Создан {date}",
-                    "created_at": "Создан {date}",
                     "delete_failed": "Не удалось удалить токен доступа.",
                     "description": "Создайте долгосрочные токены доступа, чтобы Ваши скрипты могли взаимодействовать с Home Assistant. Каждый токен будет действителен в течение 10 лет с момента создания. Ниже Вы можете просмотреть долгосрочные токены доступа, которые в настоящее время активны.",
                     "empty_state": "У Вас еще нет долгосрочных токенов доступа.",
                     "header": "Долгосрочные токены доступа",
-                    "last_used": "Последнее использование {date} из {location}",
                     "learn_auth_requests": "Узнайте, как выполнять аутентифицированные запросы.",
                     "name": "Название",
-                    "not_used": "Никогда не использовался",
                     "prompt_copy_token": "Скопируйте Ваш токен доступа. Он больше не будет показан.",
                     "prompt_name": "Название токена"
                 },
@@ -3737,11 +3404,6 @@
             },
             "shopping_list": {
                 "start_conversation": "Начать диалог"
-            },
-            "shopping-list": {
-                "add_item": "Добавить элемент",
-                "clear_completed": "Очистить завершенные",
-                "microphone_tip": "Нажмите на микрофон в правом верхнем углу и скажите или напечатайте “Add candy to my shopping list”"
             }
         },
         "sidebar": {

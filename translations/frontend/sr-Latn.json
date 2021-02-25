@@ -8,37 +8,10 @@
         "shopping_list": "Lista za kupovinu",
         "states": "Pregled"
     },
-    "state": {
-        "weather": {
-            "clear-night": "Vedra noć",
-            "cloudy": "Oblačno",
-            "fog": "Magla",
-            "hail": "Grad",
-            "lightning": "Grmljavina",
-            "lightning-rainy": "Grmljavina sa kišom",
-            "partlycloudy": "Delimično oblačno",
-            "pouring": "Pljusak",
-            "rainy": "Kiša",
-            "snowy": "Sneg",
-            "snowy-rainy": "Sneg i kiša",
-            "sunny": "Sunčano",
-            "windy": "Vetrovito",
-            "windy-variant": "Vetrovito"
-        },
-        "zwave": {
-            "query_stage": {
-                "dead": " ({query_stage})",
-                "initializing": " ( {query_stage} )"
-            }
-        }
-    },
     "ui": {
         "card": {
             "scene": {
                 "activate": "Aktiviraj"
-            },
-            "script": {
-                "execute": "Izvrši"
             },
             "weather": {
                 "attributes": {
@@ -99,9 +72,6 @@
                         }
                     }
                 },
-                "cloud": {
-                    "caption": "Home Assistant Cloud"
-                },
                 "entities": {
                     "picker": {
                         "header": "Entiteter"
@@ -111,7 +81,6 @@
                     "title": "MQTT"
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "Подесите параметар Цонфиг"
                     }
