@@ -10,6 +10,7 @@ export interface HassioAddonInfo {
   build: boolean;
   description: string;
   detached: boolean;
+  homeassistant: string;
   icon: boolean;
   installed: boolean;
   logo: boolean;
@@ -46,7 +47,6 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
   hostname: string;
   homeassistant_api: boolean;
-  homeassistant: string;
   host_dbus: boolean;
   host_ipc: boolean;
   host_network: boolean;

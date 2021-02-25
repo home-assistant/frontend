@@ -182,14 +182,14 @@ class HassioAddonInfo extends LitElement {
                       this.addon.arch
                     )
                     ? html`
-                        <p>
+                        <p class="warning">
                           This add-on is not compatible with the processor of
                           your device or the operating system you have installed
                           on your device.
                         </p>
                       `
                     : html`
-                        <p>
+                        <p class="warning">
                           You are running Home Assistant
                           ${this.supervisor.core.version}, to update to this
                           version of the add-on you need at least version
@@ -199,7 +199,10 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               </div>
               <div class="card-actions">
-                <ha-progress-button @click=${this._updateClicked}>
+                <ha-progress-button
+                  .disabled=${!this.addon.available}
+                  @click=${this._updateClicked}
+                >
                   Update
                 </ha-progress-button>
                 ${this.addon.changelog
@@ -551,7 +554,7 @@ class HassioAddonInfo extends LitElement {
             </div>
           </div>
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
-          ${!this.addon.available
+          ${this.addon.installed && !this.addon.available
             ? !addonArchIsSupported(
                 this.supervisor.info.supported_arch,
                 this.addon.arch
