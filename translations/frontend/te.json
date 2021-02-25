@@ -44,232 +44,9 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "భద్రత వుంది",
-            "armed_away": "ఇంట బయట భద్రత",
-            "armed_custom_bypass": "భద్రత కస్టమ్ బైపాస్",
-            "armed_home": "సెక్యూరిటీ సిస్టమ్ ఆన్ చేయబడింది",
-            "armed_night": "రాత్రి పూట భద్రత",
-            "arming": "భద్రించుట",
-            "disarmed": "భద్రత లేదు",
-            "disarming": "భద్రత తీసివేయుట",
-            "pending": "పెండింగ్",
-            "triggered": "ఊపందుకుంది"
-        },
-        "automation": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "సాధారణ",
-                "on": "తక్కువ"
-            },
-            "cold": {
-                "on": "చల్లని"
-            },
-            "connectivity": {
-                "off": "డిస్కనెక్ట్",
-                "on": "కనెక్ట్"
-            },
-            "default": {
-                "off": "ఆఫ్",
-                "on": "ఆన్"
-            },
-            "door": {
-                "off": "మూసుకుంది",
-                "on": "తెరిచివుంది"
-            },
-            "garage_door": {
-                "off": "మూసుకుంది",
-                "on": "తెరిచివుంది"
-            },
-            "gas": {
-                "off": "గ్యాస్ ఆఫ్",
-                "on": "గ్యాస్ ఆన్"
-            },
-            "heat": {
-                "off": "సాధారణ",
-                "on": "వేడి"
-            },
-            "lock": {
-                "off": "లాక్ చేయబడింది",
-                "on": "లాక్ చేయబడలేదు"
-            },
-            "moisture": {
-                "off": "పొడి",
-                "on": "తడి"
-            },
-            "motion": {
-                "off": "కదలిక లేదు",
-                "on": "కదలిక వుంది"
-            },
-            "occupancy": {
-                "off": "ఉనికిడి లేదు",
-                "on": "ఉనికిడి ఉంది"
-            },
-            "opening": {
-                "off": "మూసివుంది",
-                "on": "తెరుచుకుంటోంది"
-            },
-            "presence": {
-                "off": "బయట",
-                "on": "ఇంట"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "సమస్య"
-            },
-            "safety": {
-                "off": "క్షేమం",
-                "on": "క్షేమం కాదు"
-            },
-            "smoke": {
-                "off": "పొగ లేదు",
-                "on": "పొగ వుంది"
-            },
-            "sound": {
-                "off": "శబ్ధం లేదు",
-                "on": "శబ్ధం వుంది"
-            },
-            "vibration": {
-                "off": "కదలట్లేదు",
-                "on": "కదులుతోంది"
-            },
-            "window": {
-                "off": "మూసుకుంది",
-                "on": "తెరిచివుంది"
-            }
-        },
-        "calendar": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "camera": {
-            "idle": "ఐడిల్",
-            "recording": "రికార్డింగ్",
-            "streaming": "ప్రసారం"
-        },
-        "climate": {
-            "cool": "చల్లగా",
-            "dry": "పొడి",
-            "fan_only": "ఫ్యాన్ మాత్రమే",
-            "heat": "వెచ్చగా",
-            "off": "ఆఫ్"
-        },
-        "configurator": {
-            "configure": "కాన్ఫిగర్",
-            "configured": "కాన్ఫిగర్"
-        },
-        "cover": {
-            "closed": "మూసుకుంది",
-            "closing": "మూసుకుంటోంది",
-            "open": "తెరిచివుంది",
-            "opening": "తెరుచుకుంటోంది",
-            "stopped": "ఆగివుంది"
-        },
         "default": {
             "unavailable": "అందుబాటులో లేదు",
             "unknown": "తెలియదు"
-        },
-        "device_tracker": {
-            "not_home": "బయట"
-        },
-        "fan": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "group": {
-            "closed": "మూసుకుంది",
-            "closing": "మూసుకుంటోంది",
-            "home": "ఇంట",
-            "locked": "మూసి వుండు",
-            "not_home": "బయట",
-            "off": "ఆఫ్",
-            "ok": "అలాగే",
-            "on": "ఆన్",
-            "open": "తెరిచివుంది",
-            "opening": "తెరుచుకుంటోంది",
-            "problem": "సమస్య",
-            "stopped": "ఆపివుంది",
-            "unlocked": "తెరుచి వుండు"
-        },
-        "input_boolean": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "light": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "lock": {
-            "locked": "మూసి వుండు",
-            "unlocked": "తెరుచి వుండు"
-        },
-        "media_player": {
-            "idle": "ఐడిల్",
-            "off": "ఆఫ్",
-            "on": "ఆన్",
-            "paused": "ఆపివుంది",
-            "playing": "ఆడుతోంది",
-            "standby": "నిలకడ"
-        },
-        "plant": {
-            "ok": "అలాగే",
-            "problem": "సమస్య"
-        },
-        "remote": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "scene": {
-            "scening": "సీనింగ్"
-        },
-        "script": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "sensor": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "sun": {
-            "above_horizon": "హోరిజోన్ పైన",
-            "below_horizon": "హోరిజోన్ క్రింద"
-        },
-        "switch": {
-            "off": "ఆఫ్",
-            "on": "ఆన్"
-        },
-        "vacuum": {
-            "cleaning": "శుభ్రపరుచుతోంది"
-        },
-        "weather": {
-            "cloudy": "మేఘావృతం",
-            "fog": "పొగమంచు",
-            "hail": "వడగళ్ళు",
-            "lightning": "మెరుపులు",
-            "lightning-rainy": "మెరుపు, వర్షం",
-            "partlycloudy": "పాక్షికంగా మేఘావృతం",
-            "pouring": "కుంభవృష్టి",
-            "rainy": "వర్షం",
-            "snowy": "మంచు",
-            "snowy-rainy": "మంచు, వర్షం",
-            "sunny": "ఎండ",
-            "windy": "గాలులతో",
-            "windy-variant": "గాలులతో"
-        },
-        "zwave": {
-            "default": {
-                "dead": "మృత పరికరం",
-                "initializing": "సిద్ధం అవుతోంది",
-                "ready": "రెడీ",
-                "sleeping": "నిద్రిస్తోంది"
-            },
-            "query_stage": {
-                "dead": "మృత పరికరం ({query_stage})",
-                "initializing": "సిద్ధం అవుతోంది ( {query_stage} )"
-            }
         }
     },
     "ui": {
@@ -303,9 +80,6 @@
             },
             "scene": {
                 "activate": "యాక్టివేట్"
-            },
-            "script": {
-                "execute": "అమలు చేయండి"
             },
             "vacuum": {
                 "actions": {
@@ -493,7 +267,6 @@
                     }
                 },
                 "zwave": {
-                    "caption": "Z-Wave",
                     "description": "మీ Z- వేవ్ నెట్వర్క్ని నిర్వహించండి",
                     "node_config": {
                         "set_config_parameter": "కాన్ఫిగర్ పారామితిని సెట్ చేయండి"
@@ -515,9 +288,6 @@
                         "title": "టెంప్లేట్లు"
                     }
                 }
-            },
-            "history": {
-                "period": "కాలం"
             },
             "mailbox": {
                 "delete_button": "తొలగించు",
@@ -562,9 +332,6 @@
                             }
                         },
                         "trusted_networks": {
-                            "abort": {
-                                "not_whitelisted": "మీ కంప్యూటర్ అనుమతి జాబితాలో లేదు."
-                            },
                             "step": {
                                 "init": {
                                     "data": {
@@ -597,8 +364,6 @@
                     "link_promo": "అనువాదకు సహాయం చెయ్యండి"
                 },
                 "long_lived_access_tokens": {
-                    "created_at": "{date} లో రూపొందించబడింది",
-                    "not_used": "ఎప్పుడూ ఉపయోగించలేదు",
                     "prompt_name": "పేరు?"
                 },
                 "push_notifications": {
@@ -608,11 +373,6 @@
                 "refresh_tokens": {
                     "header": "రిఫ్రెష్ టోకెన్లు"
                 }
-            },
-            "shopping-list": {
-                "add_item": "క్రొత్తది జోడించు",
-                "clear_completed": "పూర్తయినవి తొలిగించు",
-                "microphone_tip": "కుడి వైపున మైక్రోఫోన్ను నొక్కి, “Add candy to my shopping list”"
             }
         }
     }

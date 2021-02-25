@@ -79,251 +79,9 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Զինված",
-            "armed_away": "Զինված",
-            "armed_custom_bypass": "Զինման անհատական կոդ",
-            "armed_home": "Զինված տուն",
-            "armed_night": "Զինված գիշեր",
-            "arming": "Զինել",
-            "disarmed": "Զինաթափված",
-            "disarming": "Զինաթափող",
-            "pending": "Սպասում",
-            "triggered": "Գործարկել է"
-        },
-        "automation": {
-            "off": "Անջատած",
-            "on": "Միացած"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Նորմալ է",
-                "on": "Ցածր"
-            },
-            "cold": {
-                "off": "Նորմալ",
-                "on": "Սառը"
-            },
-            "connectivity": {
-                "off": "Անջատված է",
-                "on": "Կապված"
-            },
-            "default": {
-                "off": "Անջատված",
-                "on": "Միացված"
-            },
-            "door": {
-                "off": "Փակված է",
-                "on": "Բացել"
-            },
-            "garage_door": {
-                "off": "Փակված է",
-                "on": "Բացել"
-            },
-            "gas": {
-                "off": "Մաքրել",
-                "on": "Հայտնաբերվել է"
-            },
-            "heat": {
-                "off": "Նորմալ",
-                "on": "Թեժ"
-            },
-            "lock": {
-                "off": "կողպված",
-                "on": "բացել է"
-            },
-            "moisture": {
-                "off": "Չոր",
-                "on": "Խոնավ"
-            },
-            "motion": {
-                "off": "Մաքրել",
-                "on": "Հայտնաբերվել է"
-            },
-            "occupancy": {
-                "off": "Մաքրել",
-                "on": "Հայտնաբերվել է"
-            },
-            "opening": {
-                "off": "Փակված",
-                "on": "Բաց"
-            },
-            "presence": {
-                "off": "Հեռու",
-                "on": "Տուն"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Խնդիր"
-            },
-            "safety": {
-                "off": "Ապահով",
-                "on": "Անվտանգ"
-            },
-            "smoke": {
-                "off": "Մաքրել",
-                "on": "Հայտնաբերվել է"
-            },
-            "sound": {
-                "off": "Մաքրել",
-                "on": "Հայտնաբերվել է"
-            },
-            "vibration": {
-                "off": "Մաքրել",
-                "on": "Հայտնաբերվել է"
-            },
-            "window": {
-                "off": "Փակված է",
-                "on": "Բացել"
-            }
-        },
-        "calendar": {
-            "off": "Անջատված",
-            "on": "Միացված"
-        },
-        "camera": {
-            "idle": "պարապ",
-            "recording": "Ձայնագրությունը",
-            "streaming": "Հոսք"
-        },
-        "climate": {
-            "cool": "Հովացում",
-            "dry": "Չոր",
-            "fan_only": "Օդափոխիչ",
-            "heat": "Ջերմություն",
-            "heat_cool": "Ջեռուցում/Հովացում",
-            "off": "Անջատված"
-        },
-        "configurator": {
-            "configure": "Կարգավորել",
-            "configured": "Կարգավորված"
-        },
-        "cover": {
-            "closed": "Փակված",
-            "closing": "Փակում",
-            "open": "Բաց",
-            "opening": "Բացում",
-            "stopped": "Դադարեց"
-        },
         "default": {
             "unavailable": "Անհասանելի",
             "unknown": "Անհայտ"
-        },
-        "device_tracker": {
-            "not_home": "Հեռու"
-        },
-        "fan": {
-            "off": "Անջատված",
-            "on": "Միացած"
-        },
-        "group": {
-            "closed": "Փակված",
-            "closing": "Փակում",
-            "home": "Տուն",
-            "locked": "կողպված է",
-            "not_home": "Հեռու",
-            "off": "Անջատած",
-            "ok": "Լավ",
-            "on": "Միացված",
-            "open": "Բացեք",
-            "opening": "Բացում",
-            "problem": "Խնդիր",
-            "stopped": "Դադարեց",
-            "unlocked": "Բացել է"
-        },
-        "input_boolean": {
-            "off": "Անջատված",
-            "on": "Միացված"
-        },
-        "light": {
-            "off": "Անջատած",
-            "on": "Միացված"
-        },
-        "lock": {
-            "locked": "Կողպված է",
-            "unlocked": "Բաց է"
-        },
-        "media_player": {
-            "idle": "Պարապ",
-            "off": "Անջատած",
-            "on": "Միացած",
-            "paused": "Դադար է",
-            "playing": "Խաղում",
-            "standby": "Սպասում"
-        },
-        "person": {
-            "home": "տուն"
-        },
-        "plant": {
-            "ok": "Լավ",
-            "problem": "Խնդիր"
-        },
-        "remote": {
-            "off": "Անջատված",
-            "on": "Միացած"
-        },
-        "scene": {
-            "scening": "Փորագրություն"
-        },
-        "script": {
-            "off": "Անջատած",
-            "on": "Միացած"
-        },
-        "sensor": {
-            "off": "Անջատած",
-            "on": "միացած"
-        },
-        "sun": {
-            "above_horizon": "Հորիզոնի վերևում",
-            "below_horizon": "Հորիզոնի ներքևում"
-        },
-        "switch": {
-            "off": "անջատված",
-            "on": "Միացված"
-        },
-        "timer": {
-            "active": "ակտիվ",
-            "idle": "պարապ",
-            "paused": "դադար "
-        },
-        "vacuum": {
-            "cleaning": "Մաքրում",
-            "docked": "Ծածկված",
-            "error": "Սխալ",
-            "idle": "Պարապ",
-            "off": "անջատված",
-            "on": "վրա",
-            "paused": "Դադար է",
-            "returning": "Վերադառնալով նավահանգիստ"
-        },
-        "weather": {
-            "clear-night": "Մաքրել ստուգված իրերը",
-            "cloudy": "Ամպամած",
-            "exceptional": "Բացառիկ",
-            "fog": "Մառախուղ",
-            "hail": "Կարկուտ",
-            "lightning": "Կայծակ",
-            "lightning-rainy": "Կայծակ, անձրև",
-            "partlycloudy": "Մասամբ ամպամած",
-            "pouring": "Լցնել",
-            "rainy": "Անձրևոտ",
-            "snowy": "Ձյունոտ է",
-            "snowy-rainy": "Ձյունառատ, անձրևոտ",
-            "sunny": "Արևոտ",
-            "windy": "Կամ",
-            "windy-variant": "Քամոտ"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Մեռած",
-                "initializing": "Նախաձեռնող",
-                "ready": "Պատրաստ է",
-                "sleeping": "Քնել"
-            },
-            "query_stage": {
-                "dead": "Մահացած{query_stage})",
-                "initializing": "Նախաձեռնություն({query_stage})"
-            }
         }
     },
     "ui": {
@@ -393,9 +151,6 @@
             },
             "scene": {
                 "activate": "Ակտիվացնել"
-            },
-            "script": {
-                "execute": "Կատարել"
             },
             "timer": {
                 "actions": {
@@ -474,9 +229,7 @@
                     "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
                     "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 },
-                "future": "{time} ընթացքում",
-                "never": "Երբեք",
-                "past": "{time} առաջ"
+                "never": "Երբեք"
             },
             "service-picker": {
                 "service": "Ծառայություն"
@@ -526,9 +279,7 @@
                     "updateDeviceName": "Անվանել սարքը  սարգեքի ռեգիսթրիում"
                 },
                 "zha_device_card": {
-                    "area_picker_label": "Տարածք",
-                    "device_name_placeholder": "Օգտագործողի կողմից տրված անուն",
-                    "update_name_button": "Թարմացնել անունը"
+                    "device_name_placeholder": "Օգտագործողի կողմից տրված անուն"
                 }
             }
         },
@@ -603,8 +354,7 @@
                                     "service_data": "Ծառայության տվյալներ"
                                 },
                                 "service": {
-                                    "label": "Զանգի ծառայություն",
-                                    "service_data": "Ծառայության տվյալները"
+                                    "label": "Զանգի ծառայություն"
                                 },
                                 "wait_template": {
                                     "label": "Սպասեք",
@@ -769,7 +519,6 @@
                     }
                 },
                 "cloud": {
-                    "caption": "Տնային օգնական Cloud",
                     "description_features": "Կառավարեք տնից հեռու, ինտեգրվեք Alexa- ի և Google Assistant- ի հետ:",
                     "description_login": "Մուտք գործեք որպես {email}",
                     "description_not_login": "Մուտք չի  գործել"
@@ -844,9 +593,6 @@
                     }
                 },
                 "header": "Կարգավորել Home Assistant-ը",
-                "info": {
-                    "title": "Ինֆորմացիա"
-                },
                 "integrations": {
                     "caption": "Ինտեգրում",
                     "config_entry": {
@@ -857,8 +603,6 @@
                         "hub": "Միացված է ի օգնությամբ",
                         "manuf": "{manufacturer}ի կողմից",
                         "no_area": "Ոչ մի տարածք",
-                        "no_device": " անձինք`  առանձ սարքերի",
-                        "no_devices": "Այս ինտեգրումը չունի սարքեր:",
                         "restart_confirm": "Վերագործարկել Home Assistant-ը որպեսզի վերջացնել ինտեգրման հեռացման պրոցեսը"
                     },
                     "config_flow": {
@@ -875,9 +619,6 @@
                     "none": "Ոչինչ  տրամադրված  չէ"
                 },
                 "introduction": "Այստեղ հնարավոր է կարգավորել ձեր բաղադրիչները և Home Assistant:Դեռ ամեն ինչ հնարավոր չէ կազմաձևել UI- ից, բայց մենք աշխատում ենք այդ ուղղությամբ",
-                "logs": {
-                    "title": "log-եր"
-                },
                 "mqtt": {
                     "title": "MQTT"
                 },
@@ -929,9 +670,7 @@
                     "add_user": {
                         "caption": "Ավելացնել օգտվող",
                         "create": "Ստեղծել",
-                        "name": "Անուն",
-                        "password": "Գաղտնաբառ",
-                        "username": "Օգտագործողի անունը"
+                        "password": "Գաղտնաբառ"
                     },
                     "caption": "Օգտագործողներ",
                     "description": "Կառավարեք օգտվողներին",
@@ -946,15 +685,10 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "Հայտնաբերված սարքերը կհայտնվեն այստեղ: Հետևեք ձեր սարքի (ների) ցուցումներին և սարքը (ներ) ը տեղադրեք զուգահեռ ռեժիմով:",
-                        "header": "Ավտոմատացում, ավելացնելով",
                         "spinner": "ZHA Zigbee սարքերի որոնում ..."
-                    },
-                    "caption": "ZHA- ն",
-                    "description": "Zigbee տան ավտոմատացման ցանցի կառավարում"
+                    }
                 },
                 "zwave": {
-                    "caption": "Z-Wave ցանց",
                     "common": {
                         "index": "Ինդեքս",
                         "instance": "Օրինակ",
@@ -1018,14 +752,6 @@
                     }
                 }
             },
-            "history": {
-                "period": "Ժամանակահատված",
-                "showing_entries": "Ցուցադրվում է մուտքագրված  գրառումները"
-            },
-            "logbook": {
-                "period": "Ժամանակահատված",
-                "showing_entries": "Ցուցադրվում է մուտքագրված  գրառումները"
-            },
             "lovelace": {
                 "cards": {
                     "empty_state": {
@@ -1048,8 +774,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace կարգավորումը թարմացվել է, կցանկանայի՞ք թարմացնել UI-ը:",
-                    "refresh": "Թարմացնել"
+                    "message": "Lovelace կարգավորումը թարմացվել է, կցանկանայի՞ք թարմացնել UI-ը:"
                 },
                 "editor": {
                     "edit_card": {
@@ -1097,8 +822,7 @@
                 },
                 "menu": {
                     "configure_ui": "Կարգավորել UI- ն",
-                    "help": "Օգնություն",
-                    "refresh": "Թարմացրեք"
+                    "help": "Օգնություն"
                 },
                 "reload_lovelace": "Վերաբեռնել Lovelace-ն",
                 "warning": {
@@ -1188,9 +912,6 @@
                             }
                         },
                         "trusted_networks": {
-                            "abort": {
-                                "not_whitelisted": "Ձեր համակարգիչը սպիտակեցված չէ:"
-                            },
                             "step": {
                                 "init": {
                                     "data": {
@@ -1310,14 +1031,11 @@
                     "confirm_delete": "Համոզվա՞ծ եք, որ ցանկանում եք ջնջել մուտքի նշանը {name} :",
                     "create": "Ստեղծել Մարկեր",
                     "create_failed": "Չի հաջողվեց ստեղծել մուտքի թույլտվություն:",
-                    "created_at": "Ստեղծվել է {date}",
                     "delete_failed": "Չհաջողվեց ջնջել մուտքի նշանը:",
                     "description": "Ստեղծեք երկարատև մուտքի նշաններ, որպեսզի ձեր սցենարները փոխազդեն ձեր Տնային օգնականի օրինակով: Յուրաքանչյուր նշան ուժի մեջ կլինի ստեղծման պահից 10 տարի: Հետևաբար երկարատև մուտքի նշաններն այժմ ակտիվ են:",
                     "empty_state": "չունեք մուտքի նշաններ:",
                     "header": "Երկարատև  մուտքի նշաններ",
-                    "last_used": "Վերջին անգամ օգտագործվել է {date} ից {location}",
                     "learn_auth_requests": "Իմացեք, թե ինչպես անել վավերացման հարցում.",
-                    "not_used": "Երբեք չի օգտագործվել",
                     "prompt_copy_token": "Պատճենեք ձեր մուտքի նշանը: Այն կրկին չի ցուցադրվի:",
                     "prompt_name": "Անուն?"
                 },
@@ -1359,11 +1077,6 @@
                     "header": "Թեմա",
                     "link_promo": "Իմացեք թեմաների մասին"
                 }
-            },
-            "shopping-list": {
-                "add_item": "Ավելացնել իր",
-                "clear_completed": "Մաքրել ավարտվածները",
-                "microphone_tip": "Հպեք խոսափողը վերևի աջ կողմում և ասեք. “Add candy to my shopping list”"
             }
         },
         "sidebar": {
