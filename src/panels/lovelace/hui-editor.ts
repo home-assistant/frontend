@@ -1,3 +1,4 @@
+import { undoDepth } from "@codemirror/history";
 import "@material/mwc-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -148,11 +149,13 @@ class LovelaceFullConfigEditor extends LitElement {
   }
 
   private _yamlChanged() {
-    this._changed = true;
-    if (!window.onbeforeunload) {
+    this._changed = undoDepth(this.yamlEditor.codemirror!.state) > 0;
+    if (this._changed && !window.onbeforeunload) {
       window.onbeforeunload = () => {
         return true;
       };
+    } else if (!this._changed && window.onbeforeunload) {
+      window.onbeforeunload = null;
     }
   }
 
