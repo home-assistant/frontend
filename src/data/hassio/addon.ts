@@ -300,7 +300,7 @@ export const updateHassioAddon = async (
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     await hass.callWS({
       type: "supervisor/api",
-      endpoint: `/addons/${slug}/update`,
+      endpoint: `/store/addons/${slug}/update`,
       method: "post",
       timeout: null,
     });
