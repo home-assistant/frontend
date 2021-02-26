@@ -48,6 +48,7 @@ class DialogSupervisorAddonUpdate extends LitElement {
 
   public closeDialog(): void {
     this._action = null;
+    this._createSnapshot = true;
     this._opened = false;
   }
 
@@ -133,8 +134,10 @@ class DialogSupervisorAddonUpdate extends LitElement {
       this._error = extractApiErrorMessage(err);
       return;
     }
-    fireEvent(this, "supervisor-store-refresh", { store: "addon" });
-    fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
+    fireEvent(this, "supervisor-colllection-refresh", { colllection: "addon" });
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "supervisor",
+    });
     this.closeDialog();
   }
 
