@@ -31,6 +31,7 @@ import {
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import { showDialogSupervisorCoreUpdate } from "../dialogs/core/show-dialog-core-update";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-update")
@@ -134,6 +135,10 @@ export class HassioUpdate extends LitElement {
 
   private async _confirmUpdate(ev): Promise<void> {
     const item = ev.currentTarget;
+    if (item.key === "core") {
+      showDialogSupervisorCoreUpdate(this, { core: this.supervisor.core });
+      return;
+    }
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: `Update ${item.name}`,
