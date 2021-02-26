@@ -142,7 +142,7 @@ class HassioSnapshotDialog extends LitElement {
               <paper-checkbox
                 .checked=${this._restoreHass}
                 @change="${(ev: Event) => {
-                  this._restoreHass = (ev.target as PaperCheckboxElement).checked;
+                  this._restoreHass = (ev.target as PaperCheckboxElement).checked!;
                 }}"
               >
                 Home Assistant ${this._snapshot.homeassistant}
