@@ -2172,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Přidat štítek",
                     "automation_title": "Štítek {name} je naskenován",
                     "caption": "Štítky",

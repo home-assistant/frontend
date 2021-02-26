@@ -2162,7 +2162,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Tambahkan tag",
                     "automation_title": "Tag {name} dipindai",
                     "caption": "Tag",

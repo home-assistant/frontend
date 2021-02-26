@@ -2126,7 +2126,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Tag hinzufügen",
                     "automation_title": "NFC Tag {name} ist gescannt",
                     "caption": "NFC Tags",

@@ -2172,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Aggiungi etichetta",
                     "automation_title": "L'etichetta {name} è scansionata",
                     "caption": "Etichette",

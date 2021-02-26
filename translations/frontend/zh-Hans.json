@@ -2172,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "添加标签",
                     "automation_title": "扫描到标签 {name}",
                     "caption": "标签",

@@ -2102,7 +2102,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Dodaj značko",
                     "automation_title": "Značka {name} se prebira",
                     "caption": "Značke",

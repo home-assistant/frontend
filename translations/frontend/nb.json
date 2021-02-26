@@ -1,7 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "Konfigurer oppføring",
+            "config_entry": "Config-oppføring",
             "device": "Enhet",
             "integration": "Integrasjon",
             "user": "Bruker"
@@ -120,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Sist utløst",
-                "trigger": "Utføre"
+                "trigger": "Kjør handlinger"
             },
             "camera": {
                 "not_available": "Bilde ikke tilgjengelig"
@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Avbryt",
-                "cancel_multiple": "Avbryt {number}"
+                "cancel_multiple": "Avbryt {number}",
+                "run": "Kjør"
             },
             "service": {
                 "run": "Kjør"
@@ -295,6 +296,19 @@
             "yes": "Ja"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Tillegg",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Henting av tillegg returnerte en feil.",
+                        "title": "Feil ved henting av tillegg"
+                    },
+                    "no_supervisor": {
+                        "description": "Ingen Supervisor funnet, så tillegg kunne ikke lastes inn.",
+                        "title": "Ingen Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Legg til",
@@ -950,7 +964,7 @@
                             "delete_confirm": "Er du sikker på at du vil slette dette?",
                             "duplicate": "Dupliser",
                             "header": "Betingelser",
-                            "introduction": "Betingelsene er valgfrie og vil forhindre videre utførelse med mindre alle vilkår er oppfylt.",
+                            "introduction": "Betingelsene er valgfrie og vil hindre at automatiseringen kjøres med mindre alle betingelsene er oppfylt.",
                             "learn_more": "Lær mer om betingelser",
                             "name": "Betingelse",
                             "type_select": "Betingelse",
@@ -1485,6 +1499,7 @@
                     "cant_edit": "Du kan bare redigere elementer som er opprettet i brukergrensesnittet.",
                     "caption": "Enheter",
                     "confirm_delete": "Er du sikker på at du vil slette denne enheten?",
+                    "confirm_disable_config_entry": "Det er ikke flere enheter for konfigurasjonsoppføringen {entry_name} , vil du i stedet deaktivere konfigurasjonsoppføringen?",
                     "confirm_rename_entity_ids": "Vil du også endre enhets-ID-ene til enhetene dine?",
                     "confirm_rename_entity_ids_warning": "Dette vil ikke endre noen konfigurasjon (som automasjoner, skript, scener, dashbord) som for øyeblikket bruker disse enhetene! Du må oppdatere dem selv for å bruke de nye enhets-IDene!",
                     "data_table": {
@@ -1502,7 +1517,7 @@
                     "device_not_found": "Enhet ikke funnet",
                     "disabled": "Deaktivert",
                     "disabled_by": {
-                        "config_entry": "Konfigurer oppføring",
+                        "config_entry": "Config-oppføring",
                         "integration": "Integrasjon",
                         "user": "Bruker"
                     },
@@ -1597,7 +1612,8 @@
                 },
                 "filtering": {
                     "clear": "Tøm",
-                    "filtering_by": "Filtrering etter"
+                    "filtering_by": "Filtrering etter",
+                    "show": "Vis"
                 },
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
@@ -1668,7 +1684,19 @@
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "Enheten er utilgjengelig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
+                        "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringen av denne integreringen",
+                        "disable": {
+                            "disable_confirm": "Er du sikker på at du vil deaktivere denne konfigurasjonsoppføringen? Enhetene og enhetene blir deaktivert.",
+                            "disabled": "Deaktivert",
+                            "disabled_by": {
+                                "device": "enhet",
+                                "integration": "integrasjon",
+                                "user": "bruker"
+                            },
+                            "disabled_cause": "Deaktivert av {cause}"
+                        },
                         "documentation": "Dokumentasjon",
+                        "enable_restart_confirm": "Start Home Assistant på nytt for å fullføre aktiveringen av denne integreringen",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "Enhet utilgjengelig",
                         "firmware": "Fastvare: {version}",
@@ -1711,6 +1739,11 @@
                     "confirm_new": "Vil du sette opp {integration}?",
                     "description": "Administrer integrasjoner med tjenester, enheter, ...",
                     "details": "Integrasjonsdetaljer",
+                    "disable": {
+                        "disabled_integrations": "{number} deaktivert",
+                        "hide_disabled": "Skjul deaktiverte integrasjoner",
+                        "show_disabled": "Vis deaktiverte integrasjoner"
+                    },
                     "discovered": "Oppdaget",
                     "home_assistant_website": "Nettsted for Home Assistant",
                     "ignore": {
@@ -2047,7 +2080,7 @@
                         "id": "Entitets-ID",
                         "id_already_exists": "Denne IDen finnes allerede",
                         "id_already_exists_save_error": "Du kan ikke lagre dette skriptet fordi IDen ikke er unik, velg en annen ID eller la den stå tom for automatisk å generere en.",
-                        "introduction": "Bruk skript til å utføre en sekvens med handlinger.",
+                        "introduction": "Bruk skript for å kjøre en sekvens av handlinger.",
                         "link_available_actions": "Finn ut mer om tilgjengelige handlinger.",
                         "load_error_not_editable": "Bare skript inne i script.yaml kan redigeres.",
                         "max": {
@@ -2139,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Legg til tag",
                     "automation_title": "Tag {name} skannes",
                     "caption": "Tagger",
@@ -2536,6 +2569,7 @@
                     "states": {
                         "alert_entity_field": "Entitet er et obligatorisk felt",
                         "attributes": "Attributter",
+                        "copy_id": "Kopier ID til utklippstavlen",
                         "current_entities": "Gjeldende entiteter",
                         "description1": "Angi representasjonen av en enhet i Home Assistant.",
                         "description2": "Dette vil ikke kommunisere med den faktiske enheten.",
@@ -2594,11 +2628,11 @@
                 },
                 "cards": {
                     "actions": {
-                        "action_confirmation": "Er du sikker på at du vil utføre handlingen \"{action}\"?",
+                        "action_confirmation": "Er du sikker på at du vil kjøre handlingen \"{action}\"?",
                         "no_entity_more_info": "Ingen enhet angitt for mer informasjon dialog",
                         "no_entity_toggle": "Ingen enhet gitt for å veksle",
                         "no_navigation_path": "Ingen navigasjonssti spesifisert",
-                        "no_service": "Ingen tjeneste for utførelse spesifisert",
+                        "no_service": "Ingen tjeneste å kjøre angitt",
                         "no_url": "Ingen URL-adresse å åpne angitt"
                     },
                     "confirm_delete": "Er du sikker på at du vil slette dette kortet?",
@@ -2969,7 +3003,7 @@
                         "confirm_remove_config_text": "Vi vil automatisk opprette Lovelace-visningene dine med områdene og enhetene dine hvis du fjerner Lovelace-konfigurasjonen.",
                         "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace UI-konfigurasjonen?",
                         "confirm_unsaved_changes": "Du har ulagrede endringer, er du sikker på at du vil avslutte?",
-                        "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentarer, disse vil ikke bli lagret. Vil du fortsette?",
+                        "confirm_unsaved_comments": "Konfigurasjonen din kan inneholde kommentarer, disse lagres ikke. Vil du fortsette?",
                         "error_invalid_config": "Konfigurasjonen din er ikke gyldig: {error}",
                         "error_parse_yaml": "Kan ikke analysere YAML: {error}",
                         "error_remove": "Kan ikke fjerne konfigurasjonen: {error}",
@@ -3062,8 +3096,10 @@
             },
             "my": {
                 "component_not_loaded": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Du trenger integrasjonen {integration} å bruke denne viderekoblingen.",
+                "documentation": "dokumentasjon",
                 "error": "Det oppstod en ukjent feil",
                 "faq_link": "Vanlige spørsmål om Min Home Assistant",
+                "no_supervisor": "Denne viderekoblingen støttes ikke av Home Assistant-installasjonen. Det trenger enten installasjonsmetoden Home Assistant eller Home Assistant Supervised. For mer informasjon, se {docs_link} .",
                 "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
             },
             "page-authorize": {

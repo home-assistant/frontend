@@ -2172,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Добавить метку",
                     "automation_title": "Считана метка {name}",
                     "caption": "Метки",

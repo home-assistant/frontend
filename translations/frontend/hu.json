@@ -2098,7 +2098,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Címke hozzáadása",
                     "automation_title": "{name} címke beolvasva",
                     "caption": "Címkék",
