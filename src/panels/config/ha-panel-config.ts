@@ -111,11 +111,10 @@ export const configSections: { [name: string]: PageNavigation[] } = {
   ],
   experimental: [
     {
-      component: "tags",
+      component: "tag",
       path: "/config/tags",
-      translationKey: "ui.panel.config.tags.caption",
+      translationKey: "ui.panel.config.tag.caption",
       iconPath: mdiNfcVariant,
-      core: true,
     },
   ],
   lovelace: [
