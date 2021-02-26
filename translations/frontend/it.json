@@ -120,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Ultima attivazione",
-                "trigger": "Esegui"
+                "trigger": "Esegui azioni"
             },
             "camera": {
                 "not_available": "Immagine non disponibile"
@@ -164,10 +164,10 @@
                 "speed": "Velocità"
             },
             "humidifier": {
-                "humidity": "Target umidità",
+                "humidity": "Umidità desiderata",
                 "mode": "Modalità",
                 "on_entity": "{name} acceso",
-                "target_humidity_entity": "{name} target umidità"
+                "target_humidity_entity": "{name} umidità desiderata"
             },
             "light": {
                 "brightness": "Luminosità",
@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Annulla",
-                "cancel_multiple": "Annulla {number}"
+                "cancel_multiple": "Annulla {number}",
+                "run": "Esegui"
             },
             "service": {
                 "run": "Esegui"
@@ -227,7 +228,7 @@
                 "currently": "Attualmente",
                 "on_off": "Acceso / spento",
                 "operation": "Operazione",
-                "target_temperature": "Temperatura da raggiungere"
+                "target_temperature": "Temperatura desiderata"
             },
             "weather": {
                 "attributes": {
@@ -295,6 +296,19 @@
             "yes": "Sì"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Componente aggiuntivo",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Il recupero dei componenti aggiuntivi ha restituito un errore.",
+                        "title": "Errore durante il recupero dei componenti aggiuntivi"
+                    },
+                    "no_supervisor": {
+                        "description": "Nessun Supervisore trovato, quindi non è stato possibile caricare i componenti aggiuntivi.",
+                        "title": "Nessun Supervisore"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Aggiungi",
@@ -467,6 +481,12 @@
                     "week": "{count} {count, plural,\n  one {settimana}\n  other {settimane}\n} fa"
                 }
             },
+            "service-control": {
+                "required": "Questo campo è obbligatorio",
+                "service_data": "Dati del servizio",
+                "target": "Destinazioni",
+                "target_description": "Cosa deve essere utilizzato da questo servizio come aree, dispositivi o entità di destinazione."
+            },
             "service-picker": {
                 "service": "Servizio"
             },
@@ -474,8 +494,8 @@
                 "add_area_id": "Scegli area",
                 "add_device_id": "Scegli dispositivo",
                 "add_entity_id": "Scegli entità",
-                "expand_area_id": "Espandi quest'area nei dispositivi e nelle entità separate che contiene. Dopo l'espansione non aggiornerà i dispositivi e le entità quando l'area cambia.",
-                "expand_device_id": "Espandi questo dispositivo in entità separate. Dopo l'espansione non aggiornerà le entità quando il dispositivo cambia.",
+                "expand_area_id": "Espandi quest'area nei dispositivi e nelle entità separate che contiene. Dopo l'espansione, non aggiornerà i dispositivi e le entità quando l'area cambia.",
+                "expand_device_id": "Espandi questo dispositivo nelle entità separate che contiene. Dopo l'espansione, non aggiornerà le entità quando il dispositivo cambia.",
                 "remove_area_id": "Rimuovi area",
                 "remove_device_id": "Rimuovi dispositivo",
                 "remove_entity_id": "Rimuovi entità"
@@ -857,7 +877,7 @@
                             "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Azioni",
-                            "introduction": "Le azioni sono ciò che Home Assistant eseguirà quando un'attivazione (o trigger) avvia un'automazione.",
+                            "introduction": "Le Azioni sono ciò che Home Assistant eseguirà quando un'attivazione (o trigger) avvia un'automazione.",
                             "learn_more": "Per saperne di più sulle azioni",
                             "name": "Azione",
                             "type_select": "Tipo di azione",
@@ -890,7 +910,8 @@
                                 },
                                 "event": {
                                     "event": "Evento:",
-                                    "label": "Attiva Evento"
+                                    "label": "Attiva evento",
+                                    "service_data": "Dati del servizio"
                                 },
                                 "repeat": {
                                     "label": "Ripetere",
@@ -943,10 +964,10 @@
                             "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
-                            "introduction": "Le condizioni sono facoltative e impediranno un'ulteriore esecuzione se non saranno soddisfatte tutte.",
+                            "introduction": "Le Condizioni sono facoltative e impediranno l'esecuzione dell'automazione a meno che non siano soddisfatte tutte.",
                             "learn_more": "Per saperne di più sulle condizioni",
                             "name": "Condizione",
-                            "type_select": "Tipo di Condizione",
+                            "type_select": "Tipo di condizione",
                             "type": {
                                 "and": {
                                     "label": "E"
@@ -1014,7 +1035,7 @@
                             "unsupported_condition": "Nessun supporto dell'Interfaccia Utente per la condizione: {condition}"
                         },
                         "copy_to_clipboard": "Copia negli Appunti",
-                        "default_name": "Nuova Automazione",
+                        "default_name": "Nuova automazione",
                         "description": {
                             "label": "Descrizione",
                             "placeholder": "Descrizione facoltativa"
@@ -1042,15 +1063,15 @@
                         "move_up": "Sposta sopra",
                         "save": "Salva",
                         "triggers": {
-                            "add": "Aggiungi Attivazione",
+                            "add": "Aggiungi attivazione",
                             "delete": "Elimina",
                             "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
-                            "header": "Attivazioni (o Triggers)",
+                            "header": "Attivazioni (o Trigger)",
                             "introduction": "L'Attivazione (o Trigger) avvia l'elaborazione di una regola di automazione. È possibile specificare più Attivazioni per una stessa regola di automazione. Una volta avviata una Attivazione, Home Assistant convaliderà le Condizioni, se presenti, ed eseguirà l'Azione.",
-                            "learn_more": "Per saperne di più sulle Attivazioni (o Triggers)",
+                            "learn_more": "Per saperne di più sulle attivazioni (o trigger)",
                             "name": "Attivazione",
-                            "type_select": "Tipo di Attivazione",
+                            "type_select": "Tipo di attivazione",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1066,8 +1087,8 @@
                                     "context_user_pick": "Seleziona utente",
                                     "context_user_picked": "Evento di attivazione dell'utente",
                                     "context_users": "Limita agli eventi attivati da",
-                                    "event_data": "Dati dell'Evento",
-                                    "event_type": "Tipo di Evento",
+                                    "event_data": "Dati dell'evento",
+                                    "event_type": "Tipo di evento",
                                     "label": "Evento"
                                 },
                                 "geo_location": {
@@ -1274,7 +1295,7 @@
                                 "example_message": "Ciao {name}, puoi riprodurre qualsiasi testo su qualsiasi lettore multimediale supportato!",
                                 "header": "Prova la sintesi vocale",
                                 "play": "Riproduci",
-                                "target": "Bersaglio",
+                                "target": "Destinazione",
                                 "target_browser": "Browser"
                             },
                             "female": "Donna",
@@ -1478,6 +1499,7 @@
                     "cant_edit": "È possibile modificare solo gli elementi creati nell'Interfaccia Utente.",
                     "caption": "Dispositivi",
                     "confirm_delete": "Sei sicuro di voler eliminare questo dispositivo?",
+                    "confirm_disable_config_entry": "Non ci sono più dispositivi per la voce di configurazione {entry_name}, vuoi disabilitare invece la voce di configurazione?",
                     "confirm_rename_entity_ids": "Vuoi anche rinominare gli ID entità delle tue entità?",
                     "confirm_rename_entity_ids_warning": "Questo non cambierà alcuna configurazione (come automazioni, script, scene, plance) che sta attualmente utilizzando queste entità, dovrai aggiornarle tu stesso per utilizzare i nuovi ID entità!",
                     "data_table": {
@@ -1590,7 +1612,8 @@
                 },
                 "filtering": {
                     "clear": "Cancella",
-                    "filtering_by": "Filtraggio per"
+                    "filtering_by": "Filtraggio per",
+                    "show": "Mostra"
                 },
                 "header": "Configura Home Assistant",
                 "helpers": {
@@ -1661,7 +1684,19 @@
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
                         "device_unavailable": "Dispositivo non disponibile",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
+                        "disable_restart_confirm": "Riavvia Home Assistant per terminare la disabilitazione di questa integrazione",
+                        "disable": {
+                            "disable_confirm": "Sei sicuro di voler disabilitare questa voce di configurazione? I suoi dispositivi ed entità saranno disabilitati.",
+                            "disabled": "Disabilitato",
+                            "disabled_by": {
+                                "device": "dispositivo",
+                                "integration": "Integrazione",
+                                "user": "utente"
+                            },
+                            "disabled_cause": "Disabilitato da {causa}"
+                        },
                         "documentation": "Documentazione",
+                        "enable_restart_confirm": "Riavvia Home Assistant per completare l'attivazione di questa integrazione",
                         "entities": "{count} {count, plural, \none {entità}\nother {entità }\n}",
                         "entity_unavailable": "Entità non disponibile",
                         "firmware": "Firmware: {version}",
@@ -1681,8 +1716,10 @@
                     "config_flow": {
                         "aborted": "Terminato",
                         "close": "Chiudi",
+                        "could_not_load": "Impossibile caricare il flusso di configurazione",
                         "created_config": "Configurazione creata per {name}.",
                         "dismiss": "Chiudi finestra di dialogo",
+                        "error": "Errore",
                         "error_saving_area": "Errore durante il salvataggio dell'area: {error}",
                         "external_step": {
                             "description": "Questo passaggio richiede di visitare un sito Web esterno per essere completato.",
@@ -1691,6 +1728,10 @@
                         "finish": "Finito",
                         "loading_first_time": "Si prega di attendere durante l'installazione dell'integrazione",
                         "not_all_required_fields": "Non tutti i campi obbligatori sono compilati.",
+                        "pick_flow_step": {
+                            "new_flow": "No, configura un'altra istanza di {integration}",
+                            "title": "Rilevati questi, li vuoi configurare?"
+                        },
                         "submit": "Invia"
                     },
                     "configure": "Configura",
@@ -1698,6 +1739,11 @@
                     "confirm_new": "Vuoi configurare {integration}?",
                     "description": "Gestisci le integrazioni con servizi, dispositivi, ...",
                     "details": "Dettagli dell'integrazione",
+                    "disable": {
+                        "disabled_integrations": "{number} disabilitate",
+                        "hide_disabled": "Nascondi integrazioni disabilitate",
+                        "show_disabled": "Mostra integrazioni disabilitate"
+                    },
                     "discovered": "Rilevato",
                     "home_assistant_website": "Sito Web di Home Assistant",
                     "ignore": {
@@ -2034,7 +2080,7 @@
                         "id": "ID Entità",
                         "id_already_exists": "Questo ID esiste già",
                         "id_already_exists_save_error": "Non è possibile salvare questo script perché l'ID non è univoco, scegliere un altro ID o lasciarlo vuoto per generarne automaticamente uno.",
-                        "introduction": "Utilizza gli Script per eseguire una sequenza di azioni.",
+                        "introduction": "Usa gli script per eseguire una sequenza di azioni.",
                         "link_available_actions": "Ulteriori informazioni sulle azioni disponibili.",
                         "load_error_not_editable": "Solo gli script all'interno di scripts.yaml sono modificabili.",
                         "max": {
@@ -2315,7 +2361,7 @@
                     "edit_home_zone_narrow": "Il raggio della zona Casa non può ancora essere modificato dal frontend. La posizione può essere modificata dalla configurazione generale.",
                     "go_to_core_config": "Passare alla configurazione generale?",
                     "home_zone_core_config": "La posizione della zona Casa è modificabile dalla pagina di configurazione generale. Il raggio della zona iniziale non può ancora essere modificato dal frontend. Vuoi andare alla configurazione generale?",
-                    "introduction": "Le Zone consentono di specificare determinate regioni sulla Terra. Quando una persona si trova all'interno di una Zona, nel suo Stato ci sarà il nome dalla Zona. Le Zone possono anche essere utilizzate come Attivazioni (o Triggers) o Condizioni all'interno delle impostazioni di Automazione.",
+                    "introduction": "Le Zone consentono di specificare determinate regioni sulla Terra. Quando una persona si trova all'interno di una Zona, nel suo Stato ci sarà il nome dalla Zona. Le Zone possono anche essere utilizzate come Attivazioni (o Trigger) o Condizioni all'interno delle impostazioni di Automazione.",
                     "no_zones_created_yet": "Sembra che tu non abbia ancora creato nessuna zona."
                 },
                 "zwave_js": {
@@ -2507,17 +2553,23 @@
                         "type": "Tipo di Evento"
                     },
                     "services": {
+                        "accepts_target": "Questo servizio accetta una destinazione, per esempio: `entity_id: light.bed_light`.",
+                        "all_parameters": "Tutti i parametri disponibili",
                         "call_service": "Chiama il Servizio",
                         "column_description": "Descrizione",
                         "column_example": "Esempio",
                         "column_parameter": "Parametro",
                         "description": "Lo strumento di sviluppo del servizio consente di chiamare qualsiasi servizio disponibile in Home Assistant.",
                         "fill_example_data": "Inserisci dati di esempio",
-                        "title": "Servizi"
+                        "title": "Servizi",
+                        "ui_mode": "Vai in modalità Interfaccia Utente",
+                        "yaml_mode": "Vai in modalità YAML",
+                        "yaml_parameters": "Parametri disponibili solo in modalità YAML"
                     },
                     "states": {
                         "alert_entity_field": "Entità è un campo obbligatorio",
                         "attributes": "Attributi",
+                        "copy_id": "Copia ID negli appunti",
                         "current_entities": "Entità correnti",
                         "description1": "Impostare la rappresentazione di un dispositivo all'interno di Home Assistant.",
                         "description2": "Questo non comunicherà con il dispositivo attuale.",
@@ -2580,7 +2632,7 @@
                         "no_entity_more_info": "Nessuna entità fornita per la finestra di dialogo con ulteriori informazioni",
                         "no_entity_toggle": "Nessuna entità fornita per attivare / disattivare",
                         "no_navigation_path": "Nessun percorso di navigazione specificato",
-                        "no_service": "Nessun servizio per l'esecuzione specificato",
+                        "no_service": "Nessun servizio da eseguire specificato",
                         "no_url": "Nessun URL da aprire specificato"
                     },
                     "confirm_delete": "Sei sicuro di voler cancellare questa scheda?",
@@ -2951,7 +3003,7 @@
                         "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia utente di Lovelace con le tue aree e dispositivi se rimuovi la tua configurazione dell'interfaccia utente di Lovelace.",
                         "confirm_remove_config_title": "Sei sicuro di voler rimuovere la tua configurazione dell'Interfaccia Utente di Lovelace?",
                         "confirm_unsaved_changes": "Hai delle modifiche non salvate, sei sicuro di voler uscire?",
-                        "confirm_unsaved_comments": "La tua configurazione contiene commenti, questi non verranno salvati. Vuoi continuare?",
+                        "confirm_unsaved_comments": "La tua configurazione potrebbe contenere dei commenti, questi non saranno salvati. Vuoi continuare?",
                         "error_invalid_config": "La tua configurazione non è valida: {error}",
                         "error_parse_yaml": "Impossibile analizzare YAML: {error}",
                         "error_remove": "Impossibile rimuovere la configurazione: {error}",
@@ -3044,8 +3096,10 @@
             },
             "my": {
                 "component_not_loaded": "Questo reindirizzamento non è supportato dalla tua istanza di Home Assistant. È necessaria l'integrazione {integration} per utilizzare questo reindirizzamento.",
+                "documentation": "documentazione",
                 "error": "Si è verificato un errore sconosciuto",
                 "faq_link": "My Home Assistant FAQ",
+                "no_supervisor": "Questo reindirizzamento non è supportato dalla tua installazione di Home Assistant. E' necessario il metodo di installazione Home Assistant Operating System oppure Home Assistant Supervised. Per maggiori informazioni, vedi {docs_link}.",
                 "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
             },
             "page-authorize": {

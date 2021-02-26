@@ -1,10 +1,10 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "Конфигурация",
+            "config_entry": "конфигурацией",
             "device": "Устройство",
-            "integration": "Интеграция",
-            "user": "Пользователь"
+            "integration": "интеграцией",
+            "user": "пользователем"
         }
     },
     "groups": {
@@ -529,7 +529,7 @@
                     "confirm_delete": "Вы уверены, что хотите удалить эту запись?",
                     "delete": "Удалить",
                     "device_disabled": "Родительское устройство этого объекта скрыто.",
-                    "enabled_cause": "Инициатор: {cause}.",
+                    "enabled_cause": "Скрыто {cause}.",
                     "enabled_delay_confirm": "Объекты будут добавлены в Home Assistant через {delay} секунд",
                     "enabled_description": "Скрытые объекты не будут доступны в Home Assistant.",
                     "enabled_label": "Отображать объект",
@@ -1517,11 +1517,11 @@
                     "device_not_found": "Устройство не найдено",
                     "disabled": "Скрыто",
                     "disabled_by": {
-                        "config_entry": "Конфигурация",
-                        "integration": "Интеграция",
-                        "user": "Пользователь"
+                        "config_entry": "конфигурацией",
+                        "integration": "интеграцией",
+                        "user": "пользователем"
                     },
-                    "enabled_cause": "Инициатор: {cause}.",
+                    "enabled_cause": "Устройство скрыто {cause}.",
                     "enabled_description": "Скрытые устройства и их дочерние объекты не будут доступны в Home Assistant.",
                     "enabled_label": "Отображать устройство",
                     "entities": {
@@ -1689,11 +1689,11 @@
                             "disable_confirm": "Вы уверены, что хотите отключить эту запись конфигурации? Её дочерние устройства и объекты будут также отключены.",
                             "disabled": "Отключено",
                             "disabled_by": {
-                                "device": "Устройство",
-                                "integration": "Интеграция",
-                                "user": "Пользователь"
+                                "device": "устройством",
+                                "integration": "интеграцией",
+                                "user": "пользователем"
                             },
-                            "disabled_cause": "Инициатор: {cause}"
+                            "disabled_cause": "Отключено {cause}"
                         },
                         "documentation": "Документация",
                         "enable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить подключение этой интеграции.",

@@ -40,6 +40,27 @@
                 "heating": "Memanaskan",
                 "idle": "Diam",
                 "off": "Mati"
+            },
+            "preset_mode": {
+                "activity": "Aktivitas",
+                "away": "Keluar",
+                "comfort": "Nyaman",
+                "eco": "Eco",
+                "home": "Rumah",
+                "none": "Tidak ada",
+                "sleep": "Tidur"
+            }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Otomatis",
+                "away": "Keluar",
+                "baby": "Bayi",
+                "comfort": "Nyaman",
+                "eco": "Eco",
+                "home": "Rumah",
+                "normal": "Normal",
+                "sleep": "Tidur"
             }
         }
     },
@@ -58,6 +79,7 @@
         },
         "default": {
             "entity_not_found": "Entitas tidak ditemukan",
+            "error": "Kesalahan",
             "unavailable": "Tak Tersedia",
             "unknown": "Tak Diketahui"
         },
@@ -171,7 +193,8 @@
             },
             "script": {
                 "cancel": "Batalkan",
-                "cancel_multiple": "Batalkan {number}"
+                "cancel_multiple": "Batalkan {number}",
+                "run": "Jalankan"
             },
             "service": {
                 "run": "Jalankan"
@@ -343,6 +366,16 @@
                 "by_service": "berdasarkan layanan",
                 "entries_not_found": "Tidak ada entri buku log yang ditemukan.",
                 "messages": {
+                    "became_unavailable": "menjadi tidak tersedia",
+                    "changed_to_state": "berubah menjadi {state}",
+                    "cleared_device_class": "dibersihkan (tidak ada {device_class} yang terdeteksi)",
+                    "detected_device_class": "terdeteksi {device_class}",
+                    "set": "disetel",
+                    "turned_off": "dimatikan",
+                    "turned_on": "dinyalakan",
+                    "was_at_home": "terdeteksi di rumah",
+                    "was_at_state": "terdeteksi pada {state}",
+                    "was_away": "terdeteksi keluar",
                     "was_closed": "telah ditutup",
                     "was_connected": "telah terhubung",
                     "was_disconnected": "telah terputus",
@@ -376,9 +409,33 @@
                     "music": "Musik",
                     "playlist": "Daftar Putar",
                     "podcast": "Podcast",
-                    "season": "Musim"
+                    "season": "Musim",
+                    "track": "Lacak",
+                    "tv_show": "Acara TV",
+                    "url": "URL",
+                    "video": "Video"
                 },
-                "learn_adding_local_media": "Pelajari lebih lanjut tentang menambahkan media di {documentation}."
+                "documentation": "dokumentasi",
+                "learn_adding_local_media": "Pelajari lebih lanjut tentang menambahkan media di {documentation}.",
+                "local_media_files": "Tempatkan file video, audio, dan gambar Anda di direktori media untuk dapat menelusuri dan memutarnya di browser atau pada pemutar media yang didukung.",
+                "media_browsing_error": "Kesalahan Browser Media",
+                "media_not_supported": "Pemutar Media Browser tidak mendukung jenis media ini",
+                "media_player": "Pemutar Media",
+                "media-player-browser": "Browser Pemutar Media",
+                "no_items": "Tidak ada item",
+                "no_local_media_found": "Tidak ditemukan media lokal",
+                "no_media_folder": "Sepertinya Anda belum membuat direktori media.",
+                "pick": "Pilih",
+                "pick-media": "Pilih Media",
+                "play": "Putar",
+                "play-media": "Putar Media",
+                "setup_local_help": "Periksa {documentation} tentang cara menyiapkan media lokal.",
+                "video_not_supported": "Browser Anda tidak mendukung elemen video.",
+                "web-browser": "Browser Web"
+            },
+            "picture-upload": {
+                "label": "Gambar",
+                "unsupported_format": "Format tidak didukung, pilih gambar JPEG, PNG, atau GIF."
             },
             "related-items": {
                 "area": "Area",
@@ -399,8 +456,18 @@
                     "second": "{count} {count, plural,\n  one { detik }\n  other { detik }\n}",
                     "week": "{count} {count, plural,\n  one { minggu }\n  other { minggu }\n}"
                 },
+                "future_duration": {
+                    "day": "Dalam {count} {count, plural,\n  one {hari}\n  other {hari}\n}",
+                    "hour": "Dalam {count} {count, plural,\n  one {jam}\n  other {jam}\n}",
+                    "minute": "Dalam {count} {count, plural,\n  one {menit}\n  other {menit}\n}",
+                    "second": "Dalam {count} {count, plural,\n  one {detik}\n  other {detik}\n}",
+                    "week": "Dalam {count} {count, plural,\n  one {minggu}\n  other {minggu}\n}"
+                },
+                "just_now": "Baru saja",
                 "never": "Tak pernah",
                 "past_duration": {
+                    "day": "{count} {count, plural,\n  one {hari}\n  other {hari}\n} lalu",
+                    "hour": "{count} {count, plural,\n  one {jam}\n  other {jam}\n} lalu",
                     "minute": "{count} {count, plural,\n  one {menit}\n  other {menit}\n} lalu",
                     "second": "{count} {count, plural,\n  one {detik}\n  other {detik}\n} lalu",
                     "week": "{count} {count, plural,\n  one {minggu}\n  other {minggu}\n} lalu"
@@ -711,6 +778,12 @@
         "errors": {
             "config": {
                 "edit_in_yaml_supported": "Anda masih dapat mengedit konfigurasi Anda di YAML.",
+                "editor_not_available": "Tidak ada editor visual yang tersedia untuk tipe \"{type}\".",
+                "editor_not_supported": "Editor visual tidak didukung untuk konfigurasi ini",
+                "error_detected": "Kesalahan konfigurasi terdeteksi",
+                "key_missing": "Kunci yang diperlukan \"{key}\" tidak ada.",
+                "key_not_expected": "Kunci \"{key}\" tidak diharapkan atau tidak didukung oleh editor visual.",
+                "key_wrong_type": "Nilai yang disediakan untuk \"{key}\" tidak didukung oleh editor visual. Kami mendukung ({type_correct}) tetapi diterima ({type_wrong}).",
                 "no_type_provided": "Tidak ada tipe yang tersedia."
             }
         },
@@ -721,12 +794,18 @@
         },
         "notification_drawer": {
             "click_to_configure": "Klik tombol untuk mengonfigurasi {entity}",
+            "close": "Tutup",
+            "dismiss_all": "Tutup semua",
             "empty": "Tidak Ada Notifikasi",
             "title": "Notifikasi"
         },
         "notification_toast": {
             "connection_lost": "Koneksi terputus. Menghubungkan kembali…",
-            "service_call_failed": "Gagal memanggil layanan {service}."
+            "dismiss": "Tutup",
+            "service_call_failed": "Gagal memanggil layanan {service}.",
+            "started": "Home Assistant telah dimulai!",
+            "starting": "Home Assistant sedang dimulai, belum semuanya akan tersedia hingga selesai.",
+            "triggered": "Dipicu {name}"
         },
         "panel": {
             "config": {
@@ -2434,22 +2513,85 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Ini akan memiliki akses ke semua data di Home Assistant.",
+                    "question_trust": "Apakah Anda mempercayai panel eksternal {name} di {link}?"
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
-                        "title": "Peristiwa"
+                        "alert_event_type": "Jenis peristiwa adalah bidang wajib diisi",
+                        "available_events": "Peristiwa yang Tersedia",
+                        "data": "Data Peristiwa (YAML, opsional)",
+                        "documentation": "Dokumentasi Peristiwa.",
+                        "title": "Peristiwa",
+                        "type": "Jenis Peristiwa"
                     },
                     "services": {
-                        "title": "Layanan"
+                        "accepts_target": "Layanan ini menerima target, misalnya: 'entity_id: light.bed_light'",
+                        "all_parameters": "Semua parameter yang tersedia",
+                        "call_service": "Panggil Layanan",
+                        "column_description": "Deskripsi",
+                        "column_example": "Contoh",
+                        "column_parameter": "Parameter",
+                        "description": "Alat pengembang untuk layanan memungkinkan Anda memanggil layanan apa pun yang tersedia di Home Assistant.",
+                        "fill_example_data": "Isi dengan Data Contoh",
+                        "title": "Layanan",
+                        "ui_mode": "Masuk ke mode antarmuka",
+                        "yaml_mode": "Masuk ke mode YAML",
+                        "yaml_parameters": "Parameter hanya tersedia dalam mode YAML"
                     },
                     "states": {
+                        "alert_entity_field": "Entitas adalah bidang wajib",
+                        "attributes": "Atribut",
+                        "copy_id": "Salin ID ke papan klip",
+                        "current_entities": "Entitas saat ini",
+                        "description2": "Ini tidak akan berkomunikasi dengan perangkat yang sebenarnya.",
+                        "entity": "Entitas",
+                        "filter_attributes": "Filter atribut",
+                        "filter_entities": "Filter entitas",
+                        "filter_states": "Filter status",
+                        "last_changed": "Terakhir diubah",
+                        "last_updated": "Terakhir diperbarui",
+                        "more_info": "Info Lebih Lanjut",
+                        "no_entities": "Tidak ada entitas",
+                        "set_state": "Setel Status",
+                        "state": "Status",
+                        "state_attributes": "Atribut status (YAML, opsional)",
                         "title": "Status"
                     },
                     "templates": {
+                        "description": "Template dirender menggunakan mesin templat Jinja2 dengan beberapa ekstensi khusus Home Assistant.",
+                        "domain": "Domain",
+                        "editor": "Editor templat",
+                        "entity": "Entitas",
+                        "jinja_documentation": "Dokumentasi templat Jinja2",
                         "no_listeners": "Templat ini tidak mendengarkan peristiwa apa pun dan tidak akan diperbarui secara otomatis.",
+                        "reset": "Setel ulang ke template demo",
+                        "result_type": "Jenis hasil",
+                        "template_extensions": "Ekstensi templat Home Assistant",
                         "time": "Templat ini diperbarui pada awal setiap menit.",
-                        "title": "Templat"
+                        "title": "Templat",
+                        "unknown_error_template": "Kesalahan tidak diketahui saat merender templat"
                     }
+                }
+            },
+            "history": {
+                "ranges": {
+                    "last_week": "Minggu lalu",
+                    "this_week": "Minggu ini",
+                    "today": "Hari ini",
+                    "yesterday": "Kemarin"
+                }
+            },
+            "logbook": {
+                "ranges": {
+                    "last_week": "Minggu lalu",
+                    "this_week": "Minggu ini",
+                    "today": "Hari ini",
+                    "yesterday": "Kemarin"
                 }
             },
             "lovelace": {
@@ -2926,10 +3068,20 @@
                 "empty": "Anda tidak memiliki pesan apa pun",
                 "playback_title": "Pemutaran pesan"
             },
+            "my": {
+                "component_not_loaded": "Pengalihan ini tidak didukung oleh instans Home Assistant Anda. Anda memerlukan integrasi {integrasi} untuk menggunakan pengalihan ini.",
+                "documentation": "dokumentasi",
+                "error": "Terjadi kesalahan yang tidak diketahui",
+                "faq_link": "FAQ Home Assistant Saya",
+                "no_supervisor": "Pengalihan ini tidak didukung oleh instalasi Home Assistant Anda. Pengalihan ini memerlukan metode instalasi Home Assistant Operating System atau Home Assistant Supervised. Untuk informasi selengkapnya, lihat {docs_link}.",
+                "not_supported": "Pengalihan ini tidak didukung oleh instans Home Assistant Anda. Periksa {link} tentang pengalihan yang didukung dan versi mana mulai diperkenalkan."
+            },
             "page-authorize": {
                 "abort_intro": "Proses masuk dibatalkan",
                 "authorizing_client": "Anda akan memberi akses {clientId} ke instans Home Assistant Anda.",
                 "form": {
+                    "error": "Kesalahan: {error}",
+                    "next": "Berikutnya",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -3002,6 +3154,9 @@
                             }
                         },
                         "trusted_networks": {
+                            "abort": {
+                                "not_allowed": "Komputer Anda tidak diperbolehkan."
+                            },
                             "step": {
                                 "init": {
                                     "data": {
@@ -3012,33 +3167,91 @@
                             }
                         }
                     },
+                    "start_over": "Mulai dari awal",
                     "unknown_error": "Ada yang salah",
                     "working": "Mohon tunggu"
                 },
                 "initializing": "Inisialisasi",
+                "logging_in_to_with": "Masuk ke **{locationName}** dengan **{authProviderName}**.",
                 "logging_in_with": "Masuk dengan **{authProviderName}**.",
                 "pick_auth_provider": "Atau masuk dengan"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "oleh {name}",
+                        "introduction": "Selamat datang di rumah! Anda berhasil membuka demo Home Assistant, tempat kami menampilkan antarmuka terbaik yang dibuat oleh komunitas kami.",
+                        "learn_more": "Pelajari lebih lanjut tentang Home Assistant",
+                        "next_demo": "Demo berikutnya"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "labels": {
+                            "activity": "Aktivitas",
+                            "air": "Udara",
+                            "commute_home": "Perjalanan ke Rumah",
+                            "entertainment": "Hiburan",
+                            "hdmi_input": "Input HDMI",
+                            "hdmi_switcher": "Pengalih HDMI",
+                            "information": "Informasi",
+                            "lights": "Lampu",
+                            "morning_commute": "Perjalanan Pagi",
+                            "total_tv_time": "Total Waktu TV",
+                            "turn_tv_off": "Matikan Televisi",
+                            "volume": "Volume"
+                        },
+                        "names": {
+                            "family_room": "Ruang Keluarga",
+                            "hallway": "Lorong",
+                            "kitchen": "Dapur",
+                            "left": "Kiri",
+                            "master_bedroom": "Kamar Tidur Utama",
+                            "mirror": "Cermin",
+                            "patio": "Teras",
+                            "right": "Kanan",
+                            "temperature_study": "Studi Suhu",
+                            "upstairs": "Atas"
+                        },
+                        "unit": {
+                            "minutes_abbr": "min",
+                            "watching": "menonton"
+                        }
+                    }
+                }
             },
             "page-onboarding": {
                 "core-config": {
                     "button_detect": "Deteksi",
                     "finish": "Berikutnya",
                     "intro": "Halo {name}, selamat datang di Home Assistant. Nama apa yang ingin diberikan untuk rumah Anda?",
+                    "intro_location": "Kami ingin mengetahui tempat tinggal Anda. Informasi ini akan membantu menampilkan informasi dan menyiapkan otomatisasi berbasis matahari. Data ini tidak pernah dibagikan di luar jaringan Anda.",
                     "intro_location_detect": "Kami dapat membantu Anda mengisi informasi ini dengan membuat permintaan satu kali ke layanan eksternal.",
+                    "location_name": "Beri nama instalasi Home Assistant Anda",
                     "location_name_default": "Rumah"
                 },
                 "integration": {
-                    "finish": "Selesai"
+                    "finish": "Selesai",
+                    "intro": "Perangkat dan layanan diwakili di Home Assistant sebagai integrasi. Anda dapat mengaturnya sekarang, atau melakukannya nanti dari layar konfigurasi.",
+                    "more_integrations": "Lebih Lanjut"
                 },
                 "intro": "Siap untuk membuat rumah Anda lebih hidup, merebut kembali privasi Anda, dan bergabung dengan komunitas pemikir di seluruh dunia?",
+                "restore": {
+                    "description": "Atau, Anda dapat memulihkan dari snapshot sebelumnya.",
+                    "hide_log": "Sembunyikan log lengkap",
+                    "in_progress": "Pemulihan sedang berlangsung",
+                    "show_log": "Tampilkan log lengkap"
+                },
                 "user": {
                     "create_account": "Buat Akun",
                     "data": {
                         "name": "Nama",
                         "password": "Kata Sandi",
+                        "password_confirm": "Konfirmasi Kata Sandi",
                         "username": "Nama Pengguna"
                     },
                     "error": {
+                        "password_not_match": "Kata sandi tidak cocok",
                         "required_fields": "Isi semua bidang yang wajib diisi"
                     },
                     "intro": "Mari kita mulai dengan membuat akun pengguna.",
@@ -3046,28 +3259,82 @@
                 }
             },
             "profile": {
+                "advanced_mode": {
+                    "description": "Temukan fitur lanjutan.",
+                    "link_promo": "Pelajari lebih lanjut",
+                    "title": "Mode Tingkat Lanjut"
+                },
+                "change_password": {
+                    "confirm_new_password": "Konfirmasi Kata Sandi Baru",
+                    "current_password": "Kata Sandi Saat Ini",
+                    "error_new_is_old": "Kata sandi baru harus berbeda dari kata sandi saat ini",
+                    "error_new_mismatch": "Kata sandi baru yang dimasukkan tidak sama",
+                    "error_required": "Wajib",
+                    "header": "Ubah Kata Sandi",
+                    "new_password": "Kata Sandi Baru",
+                    "submit": "Kirimkan",
+                    "success": "Kata sandi berhasil diubah"
+                },
+                "current_user": "Anda saat ini masuk sebagai {fullName} .",
+                "customize_sidebar": {
+                    "button": "Edit",
+                    "description": "Anda juga dapat menekan dan menahan header bilah samping untuk mengaktifkan mode edit.",
+                    "header": "Ubah urutan dan sembunyikan item dari bilah samping"
+                },
+                "dashboard": {
+                    "description": "Pilih dasbor baku untuk perangkat ini.",
+                    "dropdown_label": "Dasbor",
+                    "header": "Dasbor"
+                },
+                "enable_shortcuts": {
+                    "description": "Aktifkan atau nonaktifkan pintasan keyboard untuk melakukan berbagai tindakan di antarmuka.",
+                    "header": "Pintasan Keyboard"
+                },
+                "force_narrow": {
+                    "description": "Ini akan menyembunyikan bilah samping secara baku, mirip dengan pengalaman seluler.",
+                    "header": "Selalu sembunyikan bilah samping"
+                },
+                "is_owner": "Anda adalah pemilik.",
                 "language": {
                     "dropdown_label": "Bahasa",
                     "header": "Bahasa",
                     "link_promo": "Bantu menerjemahkan"
                 },
+                "logout": "Keluar",
                 "logout_text": "Yakin ingin keluar?",
+                "logout_title": "Keluar?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Yakin ingin menghapus token akses untuk {name}?",
                     "create": "Buat Token",
                     "create_failed": "Gagal membuat token akses.",
+                    "created": "Dibuat pada {date}",
                     "delete_failed": "Gagal menghapus token akses.",
                     "description": "Buat token akses yang berumur panjang untuk memungkinkan skrip Anda berinteraksi dengan Home Assistant. Setiap token akan berlaku selama 10 tahun sejak pembuatan. Berikut adalah token akses yang berumur panjang yang saat ini aktif.",
                     "empty_state": "Anda belum memiliki token akses yang berumur panjang.",
                     "header": "Token Akses yang Berumur Panjang",
                     "learn_auth_requests": "Pelajari cara membuat permintaan yang diautentikasi.",
+                    "name": "Nama",
                     "prompt_copy_token": "Salin token akses Anda. Ini tidak akan ditampilkan lagi.",
                     "prompt_name": "Beri nama token"
                 },
+                "mfa_setup": {
+                    "close": "Tutup",
+                    "step_done": "Penyiapan selesai untuk {step}",
+                    "submit": "Kirimkan",
+                    "title_aborted": "Dibatalkan",
+                    "title_success": "Sukses!"
+                },
                 "mfa": {
-                    "confirm_disable": "Yakin ingin menonaktifkan {name}?"
+                    "confirm_disable": "Yakin ingin menonaktifkan {name}?",
+                    "disable": "Nonaktifkan",
+                    "enable": "Aktifkan",
+                    "header": "Modul Autentikasi Multifaktor"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nama perangkat",
+                        "title": "Apa nama perangkat ini?"
+                    },
                     "description": "Kirim notifikasi ke perangkat ini.",
                     "error_load_platform": "Konfigurasi notify.html5.",
                     "error_use_https": "SSL harus diaktifkan untuk antarmuka.",
@@ -3086,16 +3353,37 @@
                     "not_used": "Belum pernah digunakan",
                     "token_title": "Buat token baru untuk {clientId}"
                 },
+                "suspend": {
+                    "description": "Haruskah koneksi ke server ditutup setelah disembunyikan selama 5 menit?",
+                    "header": "Tutup koneksi secara otomatis"
+                },
                 "themes": {
+                    "accent_color": "Warna aksen",
+                    "dark_mode": {
+                        "auto": "Otomatis",
+                        "dark": "Gelap",
+                        "light": "Terang"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Tidak ada tema yang tersedia.",
                     "header": "Tema",
-                    "link_promo": "Pelajari tentang tema"
+                    "link_promo": "Pelajari tentang tema",
+                    "primary_color": "Warna primer",
+                    "reset": "Setel ulang"
+                },
+                "vibrate": {
+                    "description": "Aktifkan atau nonaktifkan getaran pada perangkat ini saat mengontrol perangkat.",
+                    "header": "Bergetar"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Mulai percakapan"
             }
         },
         "sidebar": {
-            "external_app_configuration": "Konfigurasi Aplikasi"
+            "done": "Selesai",
+            "external_app_configuration": "Konfigurasi Aplikasi",
+            "sidebar_toggle": "Alihkan Bilah Samping"
         }
     }
 }
