@@ -340,7 +340,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await updateOS(this.hass);
-      fireEvent(this, "supervisor-store-refresh", { store: "os" });
+      fireEvent(this, "supervisor-colllection-refresh", { colllection: "os" });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update",
@@ -369,7 +369,9 @@ class HassioHostInfo extends LitElement {
     if (hostname && hostname !== curHostname) {
       try {
         await changeHostOptions(this.hass, { hostname });
-        fireEvent(this, "supervisor-store-refresh", { store: "host" });
+        fireEvent(this, "supervisor-colllection-refresh", {
+          colllection: "host",
+        });
       } catch (err) {
         showAlertDialog(this, {
           title: "Setting hostname failed",
@@ -382,7 +384,9 @@ class HassioHostInfo extends LitElement {
   private async _importFromUSB(): Promise<void> {
     try {
       await configSyncOS(this.hass);
-      fireEvent(this, "supervisor-store-refresh", { store: "host" });
+      fireEvent(this, "supervisor-colllection-refresh", {
+        colllection: "host",
+      });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to import from USB",
@@ -393,7 +397,9 @@ class HassioHostInfo extends LitElement {
 
   private async _loadData(): Promise<void> {
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      fireEvent(this, "supervisor-store-refresh", { store: "network" });
+      fireEvent(this, "supervisor-colllection-refresh", {
+        colllection: "network",
+      });
     } else {
       const network = await fetchNetworkInfo(this.hass);
       fireEvent(this, "supervisor-update", { network });
