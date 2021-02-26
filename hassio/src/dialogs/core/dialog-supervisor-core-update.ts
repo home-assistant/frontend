@@ -130,9 +130,11 @@ class DialogSupervisorCoreUpdate extends LitElement {
     try {
       await updateCore(this.hass);
     } catch (err) {
-      this._error = extractApiErrorMessage(err);
-      this._action = null;
-      return;
+      if (this.hass.connection.connected) {
+        this._error = extractApiErrorMessage(err);
+        this._action = null;
+        return;
+      }
     }
     fireEvent(this, "supervisor-colllection-refresh", { colllection: "core" });
     this.closeDialog();

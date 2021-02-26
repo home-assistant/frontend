@@ -342,10 +342,12 @@ class HassioHostInfo extends LitElement {
       await updateOS(this.hass);
       fireEvent(this, "supervisor-colllection-refresh", { colllection: "os" });
     } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to update",
-        text: extractApiErrorMessage(err),
-      });
+      if (this.hass.connection.connected) {
+        showAlertDialog(this, {
+          title: "Failed to update",
+          text: extractApiErrorMessage(err),
+        });
+      }
     }
     button.progress = false;
   }
