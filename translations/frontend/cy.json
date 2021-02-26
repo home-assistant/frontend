@@ -806,7 +806,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "detail": {
                         "companion_apps": "apiau cydymaith",
                         "usage": "Gall tag sbarduno awtomeiddiad wrth ei sganio, gallwch ddefnyddio tagiau NFC, codau QR neu unrhyw fath arall o dag. Defnyddiwch ein {companion_link} i ysgrifennu'r tag hwn i dag NFC rhaglenadwy neu i greu cod QR isod."

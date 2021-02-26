@@ -664,7 +664,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "detail": {
                         "companion_apps": "papildomos programos",
                         "usage": "Nuskaitant žymą galima suaktyvinti automatizavimą, galite naudoti NFC žymes, QR kodus ar bet kokios kitos rūšies žymą. Naudokite mūsų {companion_link}, jei norite parašyti šią žymą į programuojamą NFC žymę arba sukurti QR kodą žemiau."

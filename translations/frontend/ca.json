@@ -2139,7 +2139,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Afegeix etiqueta",
                     "automation_title": "S'escanegi l'etiqueta {name}",
                     "caption": "Etiquetes",

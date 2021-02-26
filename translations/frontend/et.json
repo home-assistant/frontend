@@ -2172,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Lisa TAG",
                     "automation_title": "TAG {name} on skannitud",
                     "caption": "TAGid",

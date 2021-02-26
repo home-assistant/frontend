@@ -2172,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Add tag",
                     "automation_title": "Tag {name} is scanned",
                     "caption": "Tags",

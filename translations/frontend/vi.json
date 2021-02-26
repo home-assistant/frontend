@@ -1463,7 +1463,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Thêm thẻ",
                     "automation_title": "Thẻ {name} được quét",
                     "caption": "Thẻ",

@@ -2172,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Etiket ekleyin",
                     "automation_title": "{name} etiketi tarandı",
                     "caption": "Etiketler",

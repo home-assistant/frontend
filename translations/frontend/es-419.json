@@ -2172,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Añadir etiqueta",
                     "automation_title": "La etiqueta {name} ha sido escaneada",
                     "caption": "Etiquetas",

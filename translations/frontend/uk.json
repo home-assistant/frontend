@@ -2082,7 +2082,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Додати тег",
                     "automation_title": "Тег {name} відсканований",
                     "caption": "Теги",

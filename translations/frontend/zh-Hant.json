@@ -120,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "上次觸發",
-                "trigger": "執行"
+                "trigger": "執行自動化"
             },
             "camera": {
                 "not_available": "無法載入影像"
@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "取消",
-                "cancel_multiple": "取消 {number}"
+                "cancel_multiple": "取消 {number}",
+                "run": "執行"
             },
             "service": {
                 "run": "執行"
@@ -963,7 +964,7 @@
                             "delete_confirm": "確定要刪除嗎？",
                             "duplicate": "複製",
                             "header": "觸發判斷",
-                            "introduction": "「觸發判斷」為自動化規則中，選項使用的部分。可以用以避免誤觸發某些動作。",
+                            "introduction": "「觸發判斷」為自動化規則中，選項使用的部分。可以用於滿足所有條件方執行、以避免誤觸發自動化。",
                             "learn_more": "詳細了解觸發判斷",
                             "name": "判斷式",
                             "type_select": "觸發判斷類別",
@@ -2171,7 +2172,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "新增標籤",
                     "automation_title": "標籤 {name} 已掃描",
                     "caption": "標籤",
@@ -2631,7 +2632,7 @@
                         "no_entity_more_info": "未提供獲得更詳細資料對話實體",
                         "no_entity_toggle": "未提供實體進行切換",
                         "no_navigation_path": "未提供指定導航路徑",
-                        "no_service": "未提供指定執行服務",
+                        "no_service": "未指定執行服務",
                         "no_url": "未提供指定開啟 URL"
                     },
                     "confirm_delete": "確定要刪除此面板？",
