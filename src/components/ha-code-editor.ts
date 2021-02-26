@@ -129,27 +129,24 @@ export class HaCodeEditor extends UpdatingElement {
         doc: this._value,
         extensions: [
           loaded.lineNumbers(),
+          loaded.history(),
+          loaded.highlightSelectionMatches(),
           loaded.keymap.of([
             ...loaded.defaultKeymap,
-            {
-              key: "Tab",
-              run: loaded.indentMore,
-            },
-            {
-              key: "Shift-Tab",
-              run: loaded.indentLess,
-            },
+            ...loaded.searchKeymap,
+            ...loaded.historyKeymap,
+            ...loaded.tabKeyBindings,
             saveKeyBinding,
           ]),
           loaded.tagExtension(modeTag, this._mode),
           loaded.theme,
           loaded.Prec.fallback(loaded.highlightStyle),
-          loaded.EditorView.updateListener.of((update) =>
-            this._onUpdate(update)
-          ),
           loaded.tagExtension(
             readOnlyTag,
             loaded.EditorView.editable.of(!this.readOnly)
+          ),
+          loaded.EditorView.updateListener.of((update) =>
+            this._onUpdate(update)
           ),
         ],
       }),
