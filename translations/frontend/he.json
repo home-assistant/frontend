@@ -1771,7 +1771,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "הוסף תג",
                     "automation_title": "התג {name} נסרק",
                     "caption": "תגים",

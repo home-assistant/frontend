@@ -2139,7 +2139,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Ajouter une balise",
                     "automation_title": "La balise {name} est analysée",
                     "caption": "Balises",

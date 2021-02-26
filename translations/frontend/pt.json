@@ -2118,7 +2118,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Adicionar etiqueta",
                     "automation_title": "A etiqueta {name} é lida",
                     "caption": "Etiquetas",

@@ -2070,7 +2070,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Lisää tunniste",
                     "automation_title": "Tunniste {name} skannataan",
                     "caption": "Tunnisteet",

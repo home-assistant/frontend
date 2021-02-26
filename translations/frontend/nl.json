@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Annuleer",
-                "cancel_multiple": "Annuleer {number}"
+                "cancel_multiple": "Annuleer {number}",
+                "run": "Uitvoeren"
             },
             "service": {
                 "run": "Uitvoeren"
@@ -2165,7 +2166,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Tag toevoegen",
                     "automation_title": "Tag {name} is gescand",
                     "caption": "Tags",

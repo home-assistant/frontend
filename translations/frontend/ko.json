@@ -2040,7 +2040,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "태그 추가",
                     "automation_title": "{name} 태그가 검색되었습니다",
                     "caption": "태그",

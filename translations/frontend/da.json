@@ -2089,7 +2089,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Tilføj tag",
                     "automation_title": "Tag {name} blev scannet",
                     "caption": "Tags",

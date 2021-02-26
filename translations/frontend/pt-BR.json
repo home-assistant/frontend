@@ -1872,7 +1872,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Adicionar etiqueta",
                     "caption": "Etiquetas",
                     "create_automation": "Criar automação com a etiqueta",

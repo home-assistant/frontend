@@ -2027,7 +2027,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Adaugați etichetă",
                     "automation_title": "Eticheta {name} este scanată",
                     "caption": "Etichete",
