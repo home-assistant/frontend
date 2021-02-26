@@ -50,6 +50,7 @@ class DialogSupervisorAddonUpdate extends LitElement {
     this._action = null;
     this._createSnapshot = true;
     this._opened = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   public focus(): void {
