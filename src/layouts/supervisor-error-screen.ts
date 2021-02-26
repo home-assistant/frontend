@@ -16,18 +16,14 @@ import "./hass-subpage";
 class SupervisorErrorScreen extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public toolbar = true;
-
   protected render(): TemplateResult {
     return html`
-      ${this.toolbar
-        ? html`<div class="toolbar">
-            <ha-icon-button-arrow-prev
-              .hass=${this.hass}
-              @click=${this._handleBack}
-            ></ha-icon-button-arrow-prev>
-          </div>`
-        : ""}
+      <div class="toolbar">
+        <ha-icon-button-arrow-prev
+          .hass=${this.hass}
+          @click=${this._handleBack}
+        ></ha-icon-button-arrow-prev>
+      </div>
       <div class="content">
         <div class="title">Could not load the Supervisor panel!</div>
         <ha-card header="Troubleshooting">
