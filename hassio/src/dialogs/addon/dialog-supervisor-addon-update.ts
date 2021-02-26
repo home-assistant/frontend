@@ -114,8 +114,8 @@ class DialogSupervisorAddonUpdate extends LitElement {
 
   private async _update() {
     if (this._createSnapshot) {
+      this._action = "snapshot";
       try {
-        this._action = "snapshot";
         await createHassioPartialSnapshot(this.hass, {
           name: `addon_${this.addon.slug}_${this.addon.version}`,
           addons: [this.addon.slug],
@@ -123,15 +123,17 @@ class DialogSupervisorAddonUpdate extends LitElement {
         });
       } catch (err) {
         this._error = extractApiErrorMessage(err);
+        this._action = null;
         return;
       }
     }
 
+    this._action = "update";
     try {
-      this._action = "update";
       await updateHassioAddon(this.hass, this.addon.slug);
     } catch (err) {
       this._error = extractApiErrorMessage(err);
+      this._action = null;
       return;
     }
     fireEvent(this, "supervisor-colllection-refresh", { colllection: "addon" });
