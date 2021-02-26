@@ -75,15 +75,11 @@ async function processEvent(
   event: SupervisorEvent,
   key: string
 ) {
-  if (
-    !event.data ||
-    event.data.event !== "supervisor-update" ||
-    event.data.update_key !== key
-  ) {
+  if (event.event !== "supervisor-update" || event.update_key !== key) {
     return;
   }
 
-  if (Object.keys(event.data.data).length === 0) {
+  if (Object.keys(event.data).length === 0) {
     const data = await supervisorApiWsRequest<any>(conn, {
       endpoint: supervisorStore[key],
     });
@@ -98,7 +94,7 @@ async function processEvent(
 
   store.setState({
     ...state,
-    ...event.data.data,
+    ...event.data,
   });
 }
 
@@ -107,9 +103,11 @@ const subscribeSupervisorEventUpdates = (
   store: Store<unknown>,
   key: string
 ) =>
-  conn.subscribeEvents(
+  conn.subscribeMessage(
     (event) => processEvent(conn, store, event as SupervisorEvent, key),
-    "supervisor_event"
+    {
+      type: "supervisor/subscribe",
+    }
   );
 
 export const getSupervisorEventCollection = (
