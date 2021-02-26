@@ -9,7 +9,7 @@ import "../resources/safari-14-attachshadow-patch";
 import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
-import { supervisorErrorPage } from "../../hassio/src/util/errorpage";
+import { HomeAssistant } from "../types";
 
 declare global {
   interface Window {
@@ -88,11 +88,49 @@ function initialize(
       (err) => {
         // eslint-disable-next-line
         console.error(err, panel);
-        if (panel.url_path === "hassio2") {
-          document.body.innerHTML = supervisorErrorPage.getHTML();
+        let errorScreen;
+        if (panel.url_path === "hassio") {
+          import("../layouts/supervisor-error-screen");
+          errorScreen = document.createElement(
+            "supervisor-error-screen"
+          ) as any;
         } else {
-          alert(`Unable to load the panel source: ${err}.`);
+          import("../layouts/hass-error-screen");
+          errorScreen = document.createElement("hass-error-screen") as any;
+          errorScreen.error = `Unable to load the panel source: ${err}.`;
         }
+        const errorStyle = document.createElement("style");
+        errorStyle.innerHTML = `body{
+          ${
+            (properties.hass as HomeAssistant).themes.darkMode
+              ? `
+              --primary-text-color: #e1e1e1;
+              --primary-background-color: #111111;
+              --card-background-color: #1c1c1c;
+              --app-header-text-color: #e1e1e1;
+              --primary-color: #0288d1;
+              --app-header-background-color: #101e24;`
+              : `
+              --primary-text-color: #212121;
+              --primary-background-color: #fafafa;
+              --card-background-color: #ffffff;
+              --app-header-text-color: #ffffff;
+              --primary-color: #03a9f4;
+              --app-header-background-color: var(--primary-color);`
+          }
+          --mdc-theme-primary: var(--primary-color);
+          --header-height: 56px;
+          font-family: Roboto, sans-serif;
+          display: block;
+          background-color: var(--primary-background-color);
+          color: var(--primary-text-color);
+          height: calc(100vh - 32px);
+          width: 100vw;
+        }`;
+        document.body.appendChild(errorStyle);
+
+        errorScreen.hass = properties.hass;
+        document.body.appendChild(errorScreen);
       }
     );
 }
