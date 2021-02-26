@@ -14,21 +14,19 @@ import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import {
-  HassioAddonDetails,
-  updateHassioAddon,
-} from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
+import { HassioHomeAssistantInfo } from "../../../../src/data/hassio/supervisor";
+import { updateCore } from "../../../../src/data/supervisor/core";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import { SupervisorDialogSupervisorAddonUpdateParams } from "./show-dialog-addon-update";
+import { SupervisorDialogSupervisorCoreUpdateParams } from "./show-dialog-core-update";
 
-@customElement("dialog-supervisor-addon-update")
-class DialogSupervisorAddonUpdate extends LitElement {
+@customElement("dialog-supervisor-core-update")
+class DialogSupervisorCoreUpdate extends LitElement {
   public hass!: HomeAssistant;
 
-  public addon!: HassioAddonDetails;
+  public core!: HassioHomeAssistantInfo;
 
   @internalProperty() private _opened = false;
 
@@ -39,10 +37,10 @@ class DialogSupervisorAddonUpdate extends LitElement {
   @internalProperty() private _error?: string;
 
   public async showDialog(
-    params: SupervisorDialogSupervisorAddonUpdateParams
+    params: SupervisorDialogSupervisorCoreUpdateParams
   ): Promise<void> {
     this._opened = true;
-    this.addon = params.addon;
+    this.core = params.core;
     await this.updateComplete;
   }
 
@@ -64,24 +62,24 @@ class DialogSupervisorAddonUpdate extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-dialog
-        .heading="Update ${this.addon.name}"
         .open=${this._opened}
+        heading="Update Home Assistant Core"
         scrimClickAction
         escapeKeyAction
         @closing=${this.closeDialog}
       >
         ${this._action === null
           ? html`<div>
-                Are you sure you want to update this add-on to version
-                ${this.addon.version_latest}?
+                Are you sure you want to update Home Assistant Core to version
+                ${this.core.version_latest}?
               </div>
 
-              <ha-settings-row>
+              <ha-settings-row three-rows>
                 <span slot="heading">
                   Snapshot
                 </span>
                 <span slot="description">
-                  Create a snapshot of the add-on before updating
+                  Create a snapshot of Home Assistant Core before updating
                 </span>
                 <ha-switch
                   .checked=${this._createSnapshot}
@@ -101,7 +99,7 @@ class DialogSupervisorAddonUpdate extends LitElement {
               </ha-circular-progress>
               <p class="progress-text">
                 ${this._action === "update"
-                  ? `Update to version ${this.addon.version_latest} in progress`
+                  ? `Update to version ${this.core.version_latest} in progress`
                   : "Creating snapshot in progress"}
               </p>`}
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -118,9 +116,9 @@ class DialogSupervisorAddonUpdate extends LitElement {
       this._action = "snapshot";
       try {
         await createHassioPartialSnapshot(this.hass, {
-          name: `addon_${this.addon.slug}_${this.addon.version}`,
-          addons: [this.addon.slug],
-          homeassistant: false,
+          name: `core_${this.core.version}`,
+          folders: ["homeassistant"],
+          homeassistant: true,
         });
       } catch (err) {
         this._error = extractApiErrorMessage(err);
@@ -131,16 +129,13 @@ class DialogSupervisorAddonUpdate extends LitElement {
 
     this._action = "update";
     try {
-      await updateHassioAddon(this.hass, this.addon.slug);
+      await updateCore(this.hass);
     } catch (err) {
       this._error = extractApiErrorMessage(err);
       this._action = null;
       return;
     }
-    fireEvent(this, "supervisor-colllection-refresh", { colllection: "addon" });
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "supervisor",
-    });
+    fireEvent(this, "supervisor-colllection-refresh", { colllection: "core" });
     this.closeDialog();
   }
 
@@ -174,6 +169,6 @@ class DialogSupervisorAddonUpdate extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-supervisor-addon-update": DialogSupervisorAddonUpdate;
+    "dialog-supervisor-core-update": DialogSupervisorCoreUpdate;
   }
 }
