@@ -120,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Última activación",
-                "trigger": "Ejecutar"
+                "trigger": "Ejecutar acciones"
             },
             "camera": {
                 "not_available": "Imagen no disponible"
@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Cancelar",
-                "cancel_multiple": "Cancelar {number}"
+                "cancel_multiple": "Cancelar {number}",
+                "run": "Ejecutar"
             },
             "service": {
                 "run": "Ejecutar"
@@ -963,7 +964,7 @@
                             "delete_confirm": "¿Estás seguro de que quieres eliminarlo?",
                             "duplicate": "Duplicar",
                             "header": "Condiciones",
-                            "introduction": "Las condiciones son opcionales e impedirán cualquier\nejecución posterior a menos que se cumplan todas las condiciones.",
+                            "introduction": "Las condiciones son opcionales y evitarán que la automatización funcione a menos que se cumplan todas las condiciones.",
                             "learn_more": "Aprende más sobre las condiciones",
                             "name": "Condición",
                             "type_select": "Tipo de condición",

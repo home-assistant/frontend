@@ -1,7 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "Config Girişi",
+            "config_entry": "Yapılandırma girişi",
             "device": "Cihaz",
             "integration": "Entegrasyon",
             "user": "Kullanıcı"
@@ -120,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Son tetiklenme",
-                "trigger": "Yürüt"
+                "trigger": "Eylemleri Çalıştırın"
             },
             "camera": {
                 "not_available": "Resim mevcut değil"
@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "İptal",
-                "cancel_multiple": "{number} iptal et"
+                "cancel_multiple": "{number} iptal et",
+                "run": "Çalıştır"
             },
             "service": {
                 "run": "Çalıştır"
@@ -295,6 +296,19 @@
             "yes": "Evet"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Eklenti",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Eklentiler getirilirken bir hata döndürüldü.",
+                        "title": "Eklentiler getirilirken hata oluştu"
+                    },
+                    "no_supervisor": {
+                        "description": "Süpervizör bulunamadı, bu nedenle eklentiler yüklenemedi.",
+                        "title": "Süpervizör Yok"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Ekle",
@@ -950,7 +964,7 @@
                             "delete_confirm": "Silmek istediğinizden emin misiniz?",
                             "duplicate": "Kopya",
                             "header": "Koşullar",
-                            "introduction": "Koşullar isteğe bağlıdır ve tüm koşullar yerine getirilmediği sürece daha fazla yürütmeyi engeller.",
+                            "introduction": "Koşullar isteğe bağlıdır ve tüm koşullar yerine getirilmediği sürece otomasyonun çalışmasını engeller.",
                             "learn_more": "Koşullar hakkında daha fazla bilgi edinin",
                             "name": "Şart",
                             "type_select": "Koşul türü",
@@ -1485,6 +1499,7 @@
                     "cant_edit": "Yalnızca kullanıcı arayüzünde oluşturulan öğeleri düzenleyebilirsiniz.",
                     "caption": "Cihazlar",
                     "confirm_delete": "Bu cihazı silmek istediğinizden emin misiniz?",
+                    "confirm_disable_config_entry": "Yapılandırma girişi {entry_name} için başka cihaz yok, bunun yerine yapılandırma girişini devre dışı bırakmak ister misiniz?",
                     "confirm_rename_entity_ids": "Varlıklarınızın varlık kimliklerini de yeniden adlandırmak istiyor musunuz?",
                     "confirm_rename_entity_ids_warning": "Bu, şu anda bu varlıkları kullanan herhangi bir yapılandırmayı (otomasyonlar, komut dosyaları, sahneler, kontrol panelleri gibi) değiştirmeyecektir! Yeni varlık kimliklerini kullanmak için bunları kendiniz güncellemeniz gerekecek!",
                     "data_table": {
@@ -1502,7 +1517,7 @@
                     "device_not_found": "Cihaz bulunamadı.",
                     "disabled": "Devre dışı",
                     "disabled_by": {
-                        "config_entry": "Yapılandırma Girişi",
+                        "config_entry": "Yapılandırma girişi",
                         "integration": "Entegrasyon",
                         "user": "Kullanıcı"
                     },
@@ -1597,7 +1612,8 @@
                 },
                 "filtering": {
                     "clear": "Temizle",
-                    "filtering_by": "Filtreleme ölçütü"
+                    "filtering_by": "Filtreleme ölçütü",
+                    "show": "Göster"
                 },
                 "header": "Home Assistant'ı yapılandır",
                 "helpers": {
@@ -1668,7 +1684,19 @@
                         "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
                         "device_unavailable": "Cihaz kullanılamıyor",
                         "devices": "{count} {count, plural,\n  one {cihaz}\n  other {cihazlar}\n}",
+                        "disable_restart_confirm": "Bu entegrasyonu devre dışı bırakmayı tamamlamak için Home Assistant'ı yeniden başlatın",
+                        "disable": {
+                            "disable_confirm": "Bu yapılandırma girişini devre dışı bırakmak istediğinizden emin misiniz? Cihazlar ve varlıklar devre dışı bırakılacak.",
+                            "disabled": "Devre dışı",
+                            "disabled_by": {
+                                "device": "cihaz",
+                                "integration": "entegrasyon",
+                                "user": "kullanıcı"
+                            },
+                            "disabled_cause": "{cause} tarafından devre dışı bırakıldı"
+                        },
                         "documentation": "Dökümanlar",
+                        "enable_restart_confirm": "Bu entegrasyonu etkinleştirmeyi tamamlamak için Home Assistant'ı yeniden başlatın",
                         "entities": "{count} {count, plural,\n  one {varlık}\n  other {varlıklar}\n}",
                         "entity_unavailable": "Varlık kullanılamıyor",
                         "firmware": "Aygıt yazılımı: {version}",
@@ -1711,6 +1739,11 @@
                     "confirm_new": "{integration} kurmak istiyor musunuz?",
                     "description": "Bağlı aygıtları ve hizmetleri yönetin",
                     "details": "Entegrasyon detayları",
+                    "disable": {
+                        "disabled_integrations": "{number} devre dışı bırakıldı",
+                        "hide_disabled": "Devre dışı bırakılan entegrasyonları gizle",
+                        "show_disabled": "Devre dışı bırakılan entegrasyonları göster"
+                    },
                     "discovered": "Bulundu",
                     "home_assistant_website": "Home Assistant web sitesi",
                     "ignore": {
@@ -2047,7 +2080,7 @@
                         "id": "Varlık kimliği",
                         "id_already_exists": "Bu ID zaten var",
                         "id_already_exists_save_error": "Kimlik benzersiz olmadığından bu komut dosyasını kaydedemezsiniz, başka bir kimlik seçin veya otomatik olarak bir tane oluşturmak için boş bırakın.",
-                        "introduction": "Bir dizi eylemi yürütmek için komut dosyalarını kullanın.",
+                        "introduction": "Bir dizi eylemi çalıştırmak için komut dosyalarını kullanın.",
                         "link_available_actions": "Kullanılabilir aksiyonlar hakkında daha fazla bilgi edinin.",
                         "load_error_not_editable": "Yalnızca scripts.yaml içindeki senaryolar düzenlenebilir.",
                         "max": {
@@ -2536,6 +2569,7 @@
                     "states": {
                         "alert_entity_field": "Varlık zorunlu bir alandır",
                         "attributes": "Nitelikler",
+                        "copy_id": "Kimliği panoya kopyala",
                         "current_entities": "Mevcut varlıklar",
                         "description1": "Home Assistant içersindeki bir cihazın görünümü ayarlayın.",
                         "description2": "Bu, gerçek cihaz ile iletişim kurmayacaktır.",
@@ -2594,11 +2628,11 @@
                 },
                 "cards": {
                     "actions": {
-                        "action_confirmation": "\"{action}\" eylemini yürütmek istediğinizden emin misiniz?",
+                        "action_confirmation": "\"{action}\" eylemini çalıştırmak istediğinizden emin misiniz?",
                         "no_entity_more_info": "Daha fazla bilgi iletişim kutusu için varlık sağlanmadı",
                         "no_entity_toggle": "Geçiş yapmak için varlık sağlanmadı",
                         "no_navigation_path": "Gezinme yolu belirtilmedi",
-                        "no_service": "Yürütme için hizmet belirtilmedi",
+                        "no_service": "Çalıştırılacak hizmet belirtilmedi",
                         "no_url": "Açılacak URL belirtilmedi"
                     },
                     "confirm_delete": "Bu kartı silmek istediğinizden emin misiniz?",
@@ -2969,7 +3003,7 @@
                         "confirm_remove_config_text": "Lovelace kullanıcı arayüzü yapılandırmanızı kaldırırsanız, Lovelace kullanıcı arayüzü, görünümleriniz alanlarınız ve cihazlarınız otomatik olarak oluşturulacatır.",
                         "confirm_remove_config_title": "Lovelace UI yapılandırmanızı kaldırmak istediğinizden emin misiniz?",
                         "confirm_unsaved_changes": "Kaydedilmemiş değişiklikleriniz var, çıkmak istediğinize emin misiniz?",
-                        "confirm_unsaved_comments": "Yapılandırmanız yorum(lar) içerir, bunlar kaydedilmez. Devam etmek istiyor musun?",
+                        "confirm_unsaved_comments": "Yapılandırmanız yorum (lar) içerebilir, bunlar kaydedilmeyecektir. Devam etmek istiyor musun?",
                         "error_invalid_config": "Yapılandırmanız geçerli değil: {error}",
                         "error_parse_yaml": "YAML alınamadı: {error}",
                         "error_remove": "Yapılandırma kaldırılamıyor: {error}",
@@ -3062,8 +3096,10 @@
             },
             "my": {
                 "component_not_loaded": "Bu yeniden yönlendirme, Ev Yardımcısı örneğiniz tarafından desteklenmiyor. Bu yeniden yönlendirmeyi kullanmak için {integration} tümleştirmesine ihtiyacınız var.",
+                "documentation": "dokümantasyon",
                 "error": "Bilinmeyen bir hata oluştu",
                 "faq_link": "Home Assistant SSS",
+                "no_supervisor": "Bu yönlendirme, Home Assistant kurulumunuz tarafından desteklenmiyor. Ev Asistanı İşletim Sistemi veya Ev Yardımcısı Denetimli kurulum yöntemine ihtiyaç duyar. Daha fazla bilgi için bkz. {docs_link} .",
                 "not_supported": "Bu yönlendirme, Home Assistant örneğiniz tarafından desteklenmiyor. Desteklenen yönlendirmeler ve bunların sunulduğu sürüm için {link} kontrol edin."
             },
             "page-authorize": {
