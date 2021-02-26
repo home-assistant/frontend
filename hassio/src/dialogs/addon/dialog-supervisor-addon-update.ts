@@ -68,7 +68,6 @@ class DialogSupervisorAddonUpdate extends LitElement {
         .open=${this._opened}
         scrimClickAction
         escapeKeyAction
-        @closing=${this.closeDialog}
       >
         ${this._action === null
           ? html`<div>
