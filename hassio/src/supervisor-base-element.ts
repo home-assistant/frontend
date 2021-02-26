@@ -33,7 +33,7 @@ import { urlSyncMixin } from "../../src/state/url-sync-mixin";
 declare global {
   interface HASSDomEvents {
     "supervisor-update": Partial<Supervisor>;
-    "supervisor-store-refresh": { store: SupervisorObject };
+    "supervisor-colllection-refresh": { colllection: SupervisorObject };
   }
 }
 
@@ -66,40 +66,40 @@ export class SupervisorBaseElement extends urlSyncMixin(
   }
 
   private async _handleSupervisorStoreRefreshEvent(ev) {
-    const store = ev.detail.store;
+    const colllection = ev.detail.colllection;
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      this._collections[store].refresh();
+      this._collections[colllection].refresh();
       return;
     }
 
     const response = await this.hass.callApi<HassioResponse<any>>(
       "GET",
-      `hassio${supervisorCollection[store]}`
+      `hassio${supervisorCollection[colllection]}`
     );
-    this._updateSupervisor({ [store]: response.data });
+    this._updateSupervisor({ [colllection]: response.data });
   }
 
   private async _initSupervisor(): Promise<void> {
     this.addEventListener(
-      "supervisor-store-refresh",
+      "supervisor-colllection-refresh",
       this._handleSupervisorStoreRefreshEvent
     );
 
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      Object.keys(supervisorCollection).forEach((store) => {
-        this._unsubs[store] = subscribeSupervisorEvents(
+      Object.keys(supervisorCollection).forEach((colllection) => {
+        this._unsubs[colllection] = subscribeSupervisorEvents(
           this.hass,
-          (data) => this._updateSupervisor({ [store]: data }),
-          store,
-          supervisorCollection[store]
+          (data) => this._updateSupervisor({ [colllection]: data }),
+          colllection,
+          supervisorCollection[colllection]
         );
-        if (this._collections[store]) {
-          this._collections[store].refresh();
+        if (this._collections[colllection]) {
+          this._collections[colllection].refresh();
         } else {
-          this._collections[store] = getSupervisorEventCollection(
+          this._collections[colllection] = getSupervisorEventCollection(
             this.hass.connection,
-            store,
-            supervisorCollection[store]
+            colllection,
+            supervisorCollection[colllection]
           );
         }
       });

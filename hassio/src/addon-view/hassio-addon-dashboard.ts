@@ -190,7 +190,9 @@ class HassioAddonDashboard extends LitElement {
     const path: string = pathSplit[pathSplit.length - 1];
 
     if (["uninstall", "install", "update", "start", "stop"].includes(path)) {
-      fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
+      fireEvent(this, "supervisor-colllection-refresh", {
+        colllection: "supervisor",
+      });
     }
 
     if (path === "uninstall") {

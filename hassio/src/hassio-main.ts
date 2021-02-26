@@ -78,7 +78,7 @@ export class HassioMain extends SupervisorBaseElement {
 
     if (
       Object.keys(supervisorCollection).some(
-        (store) => !this.supervisor![store]
+        (colllection) => !this.supervisor![colllection]
       )
     ) {
       return html`<hass-loading-screen></hass-loading-screen>`;
