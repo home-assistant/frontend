@@ -156,9 +156,10 @@ class HassioAddonInfo extends LitElement {
   );
 
   protected render(): TemplateResult {
-    const addonStoreInfo = !this.addon.detached
-      ? this._addonStoreInfo(this.addon.slug, this.supervisor.store.addons)
-      : undefined;
+    const addonStoreInfo =
+      !this.addon.detached && !this.addon.available
+        ? this._addonStoreInfo(this.addon.slug, this.supervisor.store.addons)
+        : undefined;
     const metrics = [
       {
         description: "Add-on CPU Usage",
