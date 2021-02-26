@@ -14,7 +14,6 @@ import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import { updateHassioAddon } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
 import { HassioHomeAssistantInfo } from "../../../../src/data/hassio/supervisor";
