@@ -167,7 +167,9 @@ class HassioCoreInfo extends LitElement {
 
     try {
       await updateCore(this.hass);
-      fireEvent(this, "supervisor-store-refresh", { store: "core" });
+      fireEvent(this, "supervisor-colllection-refresh", {
+        colllection: "core",
+      });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update Home Assistant Core",

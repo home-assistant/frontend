@@ -25,6 +25,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
@@ -57,6 +58,7 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../../src/data/hassio/common";
+import { StoreAddon } from "../../../../src/data/supervisor/store";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -148,7 +150,16 @@ class HassioAddonInfo extends LitElement {
 
   @internalProperty() private _error?: string;
 
+  private _addonStoreInfo = memoizeOne(
+    (slug: string, storeAddons: StoreAddon[]) =>
+      storeAddons.find((addon) => addon.slug === slug)
+  );
+
   protected render(): TemplateResult {
+    const addonStoreInfo =
+      !this.addon.detached && !this.addon.available
+        ? this._addonStoreInfo(this.addon.slug, this.supervisor.store.addons)
+        : undefined;
     const metrics = [
       {
         description: "Add-on CPU Usage",
@@ -176,30 +187,33 @@ class HassioAddonInfo extends LitElement {
                   icon=${mdiArrowUpBoldCircle}
                   iconClass="update"
                 ></hassio-card-content>
-                ${!this.addon.available
+                ${!this.addon.available && addonStoreInfo
                   ? !addonArchIsSupported(
                       this.supervisor.info.supported_arch,
                       this.addon.arch
                     )
                     ? html`
-                        <p>
+                        <p class="warning">
                           This add-on is not compatible with the processor of
                           your device or the operating system you have installed
                           on your device.
                         </p>
                       `
                     : html`
-                        <p>
+                        <p class="warning">
                           You are running Home Assistant
                           ${this.supervisor.core.version}, to update to this
                           version of the add-on you need at least version
-                          ${this.addon.homeassistant} of Home Assistant
+                          ${addonStoreInfo.homeassistant} of Home Assistant
                         </p>
                       `
                   : ""}
               </div>
               <div class="card-actions">
-                <ha-progress-button @click=${this._updateClicked}>
+                <ha-progress-button
+                  .disabled=${!this.addon.available}
+                  @click=${this._updateClicked}
+                >
                   Update
                 </ha-progress-button>
                 ${this.addon.changelog
@@ -551,7 +565,7 @@ class HassioAddonInfo extends LitElement {
             </div>
           </div>
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
-          ${!this.addon.available
+          ${!this.addon.version && addonStoreInfo && !this.addon.available
             ? !addonArchIsSupported(
                 this.supervisor.info.supported_arch,
                 this.addon.arch
@@ -567,8 +581,8 @@ class HassioAddonInfo extends LitElement {
                   <p class="warning">
                     You are running Home Assistant
                     ${this.supervisor.core.version}, to install this add-on you
-                    need at least version ${this.addon.homeassistant} of Home
-                    Assistant
+                    need at least version ${addonStoreInfo!.homeassistant} of
+                    Home Assistant
                   </p>
                 `
             : ""}

@@ -19,12 +19,13 @@ import {
   fetchHassioInfo,
   fetchHassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
+import { fetchSupervisorStore } from "../../src/data/supervisor/store";
 import {
   getSupervisorEventCollection,
   subscribeSupervisorEvents,
   Supervisor,
   SupervisorObject,
-  supervisorStore,
+  supervisorCollection,
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
@@ -32,7 +33,7 @@ import { urlSyncMixin } from "../../src/state/url-sync-mixin";
 declare global {
   interface HASSDomEvents {
     "supervisor-update": Partial<Supervisor>;
-    "supervisor-store-refresh": { store: SupervisorObject };
+    "supervisor-colllection-refresh": { colllection: SupervisorObject };
   }
 }
 
@@ -65,40 +66,40 @@ export class SupervisorBaseElement extends urlSyncMixin(
   }
 
   private async _handleSupervisorStoreRefreshEvent(ev) {
-    const store = ev.detail.store;
+    const colllection = ev.detail.colllection;
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      this._collections[store].refresh();
+      this._collections[colllection].refresh();
       return;
     }
 
     const response = await this.hass.callApi<HassioResponse<any>>(
       "GET",
-      `hassio${supervisorStore[store]}`
+      `hassio${supervisorCollection[colllection]}`
     );
-    this._updateSupervisor({ [store]: response.data });
+    this._updateSupervisor({ [colllection]: response.data });
   }
 
   private async _initSupervisor(): Promise<void> {
     this.addEventListener(
-      "supervisor-store-refresh",
+      "supervisor-colllection-refresh",
       this._handleSupervisorStoreRefreshEvent
     );
 
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      Object.keys(supervisorStore).forEach((store) => {
-        this._unsubs[store] = subscribeSupervisorEvents(
+      Object.keys(supervisorCollection).forEach((colllection) => {
+        this._unsubs[colllection] = subscribeSupervisorEvents(
           this.hass,
-          (data) => this._updateSupervisor({ [store]: data }),
-          store,
-          supervisorStore[store]
+          (data) => this._updateSupervisor({ [colllection]: data }),
+          colllection,
+          supervisorCollection[colllection]
         );
-        if (this._collections[store]) {
-          this._collections[store].refresh();
+        if (this._collections[colllection]) {
+          this._collections[colllection].refresh();
         } else {
-          this._collections[store] = getSupervisorEventCollection(
+          this._collections[colllection] = getSupervisorEventCollection(
             this.hass.connection,
-            store,
-            supervisorStore[store]
+            colllection,
+            supervisorCollection[colllection]
           );
         }
       });
@@ -122,6 +123,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       os,
       network,
       resolution,
+      store,
     ] = await Promise.all([
       fetchHassioAddonsInfo(this.hass),
       fetchHassioSupervisorInfo(this.hass),
@@ -131,6 +133,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       fetchHassioHassOsInfo(this.hass),
       fetchNetworkInfo(this.hass),
       fetchHassioResolution(this.hass),
+      fetchSupervisorStore(this.hass),
     ]);
 
     this.supervisor = {
@@ -142,6 +145,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       os,
       network,
       resolution,
+      store,
     };
 
     this.addEventListener("supervisor-update", (ev) =>

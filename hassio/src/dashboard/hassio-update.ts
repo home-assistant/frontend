@@ -148,7 +148,9 @@ export class HassioUpdate extends LitElement {
     }
     try {
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
-      fireEvent(this, "supervisor-store-refresh", { store: item.key });
+      fireEvent(this, "supervisor-colllection-refresh", {
+        colllection: item.key,
+      });
     } catch (err) {
       // Only show an error if the status code was not expected (user behind proxy)
       // or no status at all(connection terminated)
