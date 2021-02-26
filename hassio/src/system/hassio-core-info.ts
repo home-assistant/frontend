@@ -140,10 +140,12 @@ class HassioCoreInfo extends LitElement {
     try {
       await restartCore(this.hass);
     } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to restart Home Assistant Core",
-        text: extractApiErrorMessage(err),
-      });
+      if (this.hass.connection.connected) {
+        showAlertDialog(this, {
+          title: "Failed to restart Home Assistant Core",
+          text: extractApiErrorMessage(err),
+        });
+      }
     } finally {
       button.progress = false;
     }
