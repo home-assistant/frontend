@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "取消",
-                "cancel_multiple": "取消 {number} 个"
+                "cancel_multiple": "取消 {number} 个",
+                "run": "运行"
             },
             "service": {
                 "run": "运行"
@@ -295,6 +296,19 @@
             "yes": "是"
         },
         "components": {
+            "addon-picker": {
+                "addon": "加载项",
+                "error": {
+                    "fetch_addons": {
+                        "description": "获取加载项时返回错误。",
+                        "title": "获取加载项时出错"
+                    },
+                    "no_supervisor": {
+                        "description": "未找到 Supervisor，因此无法载入加载项。",
+                        "title": "未找到 Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "添加",
@@ -466,6 +480,12 @@
                     "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}前",
                     "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}前"
                 }
+            },
+            "service-control": {
+                "required": "此字段为必填字段",
+                "service_data": "服务数据",
+                "target": "目标",
+                "target_description": "该服务作用于哪些区域、设备或实体。"
             },
             "service-picker": {
                 "service": "服务"
@@ -1479,6 +1499,7 @@
                     "cant_edit": "您只能编辑在 UI 中创建的项目。",
                     "caption": "设备",
                     "confirm_delete": "您确定要删除此设备吗？",
+                    "confirm_disable_config_entry": "配置条目 {entry_name} 没有更多设备了，是否要转而禁用整个配置条目？",
                     "confirm_rename_entity_ids": "是否要将实体 ID 一并重命名？",
                     "confirm_rename_entity_ids_warning": "此操作不会改变正在使用这些实体的配置（如自动化、脚本、场景、仪表盘），您必须手动更新它们以便使用新的实体 ID。",
                     "data_table": {
@@ -1591,7 +1612,8 @@
                 },
                 "filtering": {
                     "clear": "清除",
-                    "filtering_by": "正在筛选:"
+                    "filtering_by": "正在筛选:",
+                    "show": "显示"
                 },
                 "header": "配置 Home Assistant",
                 "helpers": {
@@ -1662,7 +1684,19 @@
                         "delete_confirm": "您确定要删除此集成吗？",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
+                        "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
+                        "disable": {
+                            "disable_confirm": "您确定要禁用此配置条目吗？其设备和实体也将被禁用。",
+                            "disabled": "已禁用",
+                            "disabled_by": {
+                                "device": "设备",
+                                "integration": "集成",
+                                "user": "用户"
+                            },
+                            "disabled_cause": "通过{cause}禁用"
+                        },
                         "documentation": "文档",
+                        "enable_restart_confirm": "重启 Home Assistant 以完成此集成的启用",
                         "entities": "{count} {count, plural,\n  one {个实体}\n  other {个实体}\n}",
                         "entity_unavailable": "实体不可用",
                         "firmware": "固件：{version}",
@@ -1682,8 +1716,10 @@
                     "config_flow": {
                         "aborted": "中止",
                         "close": "关闭",
+                        "could_not_load": "无法加载配置向导",
                         "created_config": "为 {name} 创建了配置。",
                         "dismiss": "关闭对话框",
+                        "error": "错误",
                         "error_saving_area": "保存区域时发生错误：{error}",
                         "external_step": {
                             "description": "此步骤需要访问外部网站才能完成。",
@@ -1692,6 +1728,10 @@
                         "finish": "完成",
                         "loading_first_time": "正在安装集成，请稍候",
                         "not_all_required_fields": "请填写所有必填字段",
+                        "pick_flow_step": {
+                            "new_flow": "否，设置另一个 {integration} 实例",
+                            "title": "已发现以下集成，要设置它们吗？"
+                        },
                         "submit": "提交"
                     },
                     "configure": "配置",
@@ -1699,6 +1739,11 @@
                     "confirm_new": "您想要配置 {integration} 吗？",
                     "description": "管理集成",
                     "details": "集成详细信息",
+                    "disable": {
+                        "disabled_integrations": "{number} 个已禁用",
+                        "hide_disabled": "隐藏禁用的集成",
+                        "show_disabled": "显示禁用的集成"
+                    },
                     "discovered": "已发现",
                     "home_assistant_website": "Home Assistant 网站",
                     "ignore": {
@@ -2508,17 +2553,23 @@
                         "type": "事件类型"
                     },
                     "services": {
+                        "accepts_target": "该服务接受一个目标，例如：`entity_id: light.bed_light`",
+                        "all_parameters": "所有可用的参数",
                         "call_service": "调用服务",
                         "column_description": "描述",
                         "column_example": "示例",
                         "column_parameter": "参数",
                         "description": "服务开发工具可让您调用 Home Assistant 中任何可用的服务。",
                         "fill_example_data": "填写示例数据",
-                        "title": "服务"
+                        "title": "服务",
+                        "ui_mode": "进入 UI 模式",
+                        "yaml_mode": "进入 YAML 模式",
+                        "yaml_parameters": "只能在 YAML 模式下使用的参数"
                     },
                     "states": {
                         "alert_entity_field": "实体是必填字段",
                         "attributes": "属性",
+                        "copy_id": "将 ID 复制到剪贴板",
                         "current_entities": "现有实体",
                         "description1": "设置设备在 Home Assistant 中的呈现方式。",
                         "description2": "这将不影响实际设备。",
@@ -3045,8 +3096,10 @@
             },
             "my": {
                 "component_not_loaded": "您的 Home Assistant 不支持此重定向。需要使用 {integration} 集成才能使用它。",
+                "documentation": "文档",
                 "error": "发生未知错误",
                 "faq_link": "我的 Home Assistant 常见问题",
+                "no_supervisor": "您的 Home Assistant 不支持此重定向。它需要 Home Assistant OS 或 Home Assistant Supervised 安装方法。有关更多信息，请参阅 {docs_link} 。",
                 "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
             },
             "page-authorize": {

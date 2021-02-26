@@ -120,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Viimati käivitatud",
-                "trigger": "Käivita"
+                "trigger": "Käivita toimingud"
             },
             "camera": {
                 "not_available": "Kujutis pole saadaval"
@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Loobu",
-                "cancel_multiple": "Loobu {number}"
+                "cancel_multiple": "Loobu {number}",
+                "run": "Käivita"
             },
             "service": {
                 "run": "Käivita"
@@ -963,7 +964,7 @@
                             "delete_confirm": "Oled kindel, et soovid kustutada?",
                             "duplicate": "Duubelda",
                             "header": "Tingimused",
-                            "introduction": "Tingimused on automatiseeringu valikuline osa ja neid saab kasutada, et vältida tegevuse käivitumist päästiku vallandumisel. Tingimused tunduvad väga sarnased päästikutele, kuid on siiski erinevad. Päästik jälgib süsteemis toimuvaid sündmusi, tingimus jälgib ainult süsteem praegust olekut. Päästik võib märgata, et lülitit ollakse parasjagu lülitamas. Tingimus võib näha ainult seda, kas lüliti on praegu sisse või välja lülitatud.",
+                            "introduction": "Tingimused on valikulised ja takistavad automatiseerimise käivitamist, välja arvatud juhul kui kõik tingimused on täidetud.",
                             "learn_more": "Lisateave tingimuste kohta",
                             "name": "Tingimus",
                             "type_select": "Tingimuse tüüp",
@@ -2079,7 +2080,7 @@
                         "id": "Olemi ID",
                         "id_already_exists": "See ID on juba olemas",
                         "id_already_exists_save_error": "Te ei saa seda skripti salvestada kuna ID pole kordumatu. Valige mõni teine ID või jätke see väli tühjaks, et see automaatselt luua.",
-                        "introduction": "Skriptide abil saate käivitada toimingute jada.",
+                        "introduction": "Skriptide abil saad käivitada toimingute jada.",
                         "link_available_actions": "Vaadake lisateavet saadaolevate toimingute kohta.",
                         "load_error_not_editable": "Ainult scripts.yaml failis asuvad skriptid on muudetavad.",
                         "max": {
@@ -2631,7 +2632,7 @@
                         "no_entity_more_info": "Lisateabe kuvamise olem puudub",
                         "no_entity_toggle": "Lülitamiseks vajalik olem puudub",
                         "no_navigation_path": "Navigeerimisteed pole määratud",
-                        "no_service": "Täitmiseks pole teenust määratud",
+                        "no_service": "Käivitamiseks pole teenust määratud",
                         "no_url": "Avamiseks vajalik link puudub"
                     },
                     "confirm_delete": "Oled kindel, et soovid selle kaardi kustutada?",

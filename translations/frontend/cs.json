@@ -120,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Naposledy spuštěno",
-                "trigger": "Spustit"
+                "trigger": "Spustit akce"
             },
             "camera": {
                 "not_available": "Obrázek není k dispozici"
@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Zrušit",
-                "cancel_multiple": "Zrušit {number}"
+                "cancel_multiple": "Zrušit {number}",
+                "run": "Spustit"
             },
             "service": {
                 "run": "Spustit"
@@ -295,6 +296,19 @@
             "yes": "Ano"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Doplněk",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Načítání doplňků skončilo chybou.",
+                        "title": "Chyba při načítání doplňků"
+                    },
+                    "no_supervisor": {
+                        "description": "Nebyl nalezen žádný Supervisor, takže doplňky nelze načíst.",
+                        "title": "Žádný Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Přidat",
@@ -468,7 +482,10 @@
                 }
             },
             "service-control": {
-                "service_data": "Data služby"
+                "required": "Toto pole je povinné",
+                "service_data": "Data služby",
+                "target": "Cíle",
+                "target_description": "Co by tato služba měla používat jako cílové oblasti, zařízení nebo entity."
             },
             "service-picker": {
                 "service": "Služba"
@@ -478,7 +495,7 @@
                 "add_device_id": "Vyberte zařízení",
                 "add_entity_id": "Vyberte entitu",
                 "expand_area_id": "Rozdělit tuto oblast na jednotlivá zařízení a entity, které obsahuje. Po rozdělení nebudou zařízení a entity aktualizovány, pokud dojde ke změnám oblasti.",
-                "expand_device_id": "Rozdělit toto zařízení na jednotlivé entity. Po rozdělení nebudou entity aktualizovány, pokud dojde ke změnám zařízení.",
+                "expand_device_id": "Rozdělit toto zařízení na jednotlivé entity, které obsahuje. Po rozdělení nebudou entity aktualizovány, pokud dojde ke změnám zařízení.",
                 "remove_area_id": "Odebrat oblast",
                 "remove_device_id": "Odebrat zařízení",
                 "remove_entity_id": "Odebrat entitu"
@@ -1482,6 +1499,7 @@
                     "cant_edit": "Můžete upravovat pouze položky, které jsou vytvořeny v uživatelském rozhraní.",
                     "caption": "Zařízení",
                     "confirm_delete": "Opravdu chcete toto zařízení odstranit?",
+                    "confirm_disable_config_entry": "Pro položku konfigurace {entry_name} nejsou k dispozici žádná další zařízení, chcete položku konfigurace místo toho zakázat?",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit?",
                     "confirm_rename_entity_ids_warning": "Žádná nastavení (např. automatizace, skripty, scény, ovládací panely), která tyto entity aktuálně používá, nebudou změněna! Vše budete muset aktualizovat sami, aby se používaly nová ID entit!",
                     "data_table": {
@@ -1594,7 +1612,8 @@
                 },
                 "filtering": {
                     "clear": "Vymazat",
-                    "filtering_by": "Filtrování podle"
+                    "filtering_by": "Filtrování podle",
+                    "show": "Zobrazit"
                 },
                 "header": "Nastavení Home Assistant",
                 "helpers": {
@@ -1665,7 +1684,19 @@
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
                         "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
+                        "disable_restart_confirm": "Restartujte Home Assistant pro dokončení odstranění této integrace",
+                        "disable": {
+                            "disable_confirm": "Opravdu chcete zakázat tuto položku konfigurace? Její zařízení a entity budou zakázány.",
+                            "disabled": "Zakázáno",
+                            "disabled_by": {
+                                "device": "zařízením",
+                                "integration": "integrací",
+                                "user": "uživatelem"
+                            },
+                            "disabled_cause": "Zakázáno {cause}"
+                        },
                         "documentation": "Dokumentace",
+                        "enable_restart_confirm": "Restartujte Home Assistant pro dokončení přidání této integrace",
                         "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
                         "entity_unavailable": "Entita není dostupná",
                         "firmware": "Firmware: {version}",
@@ -1685,8 +1716,10 @@
                     "config_flow": {
                         "aborted": "Přerušeno",
                         "close": "Zavřít",
+                        "could_not_load": "Konfiguraci nelze načíst",
                         "created_config": "Bylo vytvořeno nastavení pro {name}.",
                         "dismiss": "Zavřít dialog",
+                        "error": "Chyba",
                         "error_saving_area": "Chyba při ukládání oblasti: {error}",
                         "external_step": {
                             "description": "K dokončení tohoto kroku je nutné navštívit externí webovou stránku.",
@@ -1695,6 +1728,10 @@
                         "finish": "Dokončit",
                         "loading_first_time": "Počkejte prosím, než bude integrace nainstalována.",
                         "not_all_required_fields": "Nejsou vyplněna všechna povinná pole.",
+                        "pick_flow_step": {
+                            "new_flow": "Ne, nastavit další instanci integrace {integration}",
+                            "title": "Objevili jsme tyto integrace, chcete je nastavit?"
+                        },
                         "submit": "Odeslat"
                     },
                     "configure": "Nastavit",
@@ -1702,6 +1739,11 @@
                     "confirm_new": "Chcete nastavit {integration}?",
                     "description": "Správa integrací a jejich služeb, zařízení, ...",
                     "details": "Podrobnosti o integraci",
+                    "disable": {
+                        "disabled_integrations": "{number} zakázáno",
+                        "hide_disabled": "Skrýt zakázané integrace",
+                        "show_disabled": "Zobrazit zakázané integrace"
+                    },
                     "discovered": "Objeveno",
                     "home_assistant_website": "stránky Home Assistant",
                     "ignore": {
@@ -2511,17 +2553,23 @@
                         "type": "Typ události"
                     },
                     "services": {
+                        "accepts_target": "Tato služba přijímá cíl, například: `entity_id: light.bed_light`",
+                        "all_parameters": "Všechny dostupné parametry",
                         "call_service": "Zavolat službu",
                         "column_description": "Popis",
                         "column_example": "Příklad",
                         "column_parameter": "Parametr",
                         "description": "Vývojářský nástroj pro služby umožňuje zavolat jakoukoli dostupnou službu v Home Assistant",
                         "fill_example_data": "Vyplnit ukázková data",
-                        "title": "Služby"
+                        "title": "Služby",
+                        "ui_mode": "Přejít do režimu uživatelského rozhraní",
+                        "yaml_mode": "Přejít do režimu YAML",
+                        "yaml_parameters": "Parametry jsou dostupné pouze v režimu YAML"
                     },
                     "states": {
                         "alert_entity_field": "Entita je povinné pole",
                         "attributes": "Atributy",
+                        "copy_id": "Zkopírovat ID do schránky",
                         "current_entities": "Současné entity",
                         "description1": "Nastavte stav zařízení v Home Assistant.",
                         "description2": "Stav skutečného zařízení se nezmění.",
@@ -3048,8 +3096,10 @@
             },
             "my": {
                 "component_not_loaded": "Toto přesměrování není vaší instancí Home Assistant podporováno. Potřebujete integraci \"{integration}\", aby šlo použít toto přesměrování.",
+                "documentation": "dokumentace",
                 "error": "Nastala neznámá chyba",
                 "faq_link": "Časté dotazy týkající se My Home Assistant",
+                "no_supervisor": "Toto přesměrování není podporováno vaší instalací Home Assistant. Potřebuje buď operační systém Home Assistant, nebo metodu instalace Home Assistant Supervised. Další informace naleznete na {docs_link}.",
                 "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
             },
             "page-authorize": {
