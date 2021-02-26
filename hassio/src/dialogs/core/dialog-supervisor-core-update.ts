@@ -70,8 +70,8 @@ class DialogSupervisorCoreUpdate extends LitElement {
       >
         ${this._action === null
           ? html`<div>
-                Are you sure you want to update this Home Assistant core to
-                version ${this.core.version_latest}?
+                Are you sure you want to update Home Assistant core to version
+                ${this.core.version_latest}?
               </div>
 
               <ha-settings-row three-rows>
