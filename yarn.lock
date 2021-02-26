@@ -1938,6 +1938,14 @@
     lezer-tree "^0.13.0"
     style-mod "^3.2.0"
 
+"@codemirror/history@^0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@codemirror/history/-/history-0.17.2.tgz#d94273af95f7dbd8a0c41c370984e4bbf55d54e8"
+  integrity sha512-ML/FA6VJMMwsQrx7HFXaOAg/LqrLxUktE5pu230UOn0u5bxIPxbX0lLGs34994s9HPruqbCqIikSc+IfjLkFcA==
+  dependencies:
+    "@codemirror/state" "^0.17.0"
+    "@codemirror/view" "^0.17.0"
+
 "@codemirror/language@^0.17.0":
   version "0.17.5"
   resolved "https://registry.yarnpkg.com/@codemirror/language/-/language-0.17.5.tgz#77b551680f0bb8a6e40de7659e518de1e0c637a0"
@@ -1966,12 +1974,32 @@
     "@codemirror/view" "^0.17.0"
     lezer-tree "^0.13.0"
 
+"@codemirror/panel@^0.17.0":
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/@codemirror/panel/-/panel-0.17.1.tgz#9dfd3b464c537caebec43fffbd8a283b0210d4c1"
+  integrity sha512-2it2Sk02eF4WFwPVoRLhr9lPGq9lwwwHZFyb4olqI6tOyTPwk6leZ4ntabYrhvjRc7gD6S6vM14KhOtjm4hjqg==
+  dependencies:
+    "@codemirror/state" "^0.17.0"
+    "@codemirror/view" "^0.17.0"
+
 "@codemirror/rangeset@^0.17.0":
   version "0.17.1"
   resolved "https://registry.yarnpkg.com/@codemirror/rangeset/-/rangeset-0.17.1.tgz#41066bcf4b70b2c7595cb1363780688cc3f1235b"
   integrity sha512-Qv8a8C5CZiUdXGvxniWdULJzXDiz5uSP5ddHFEmekGa9nNVCgdr05nH7R+h3NgJ2P40UEEOPykqXZyy8EHGggw==
   dependencies:
     "@codemirror/state" "^0.17.0"
+
+"@codemirror/search@^0.17.1":
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/@codemirror/search/-/search-0.17.1.tgz#eb6ae529093b09f92b1d62c4d0ad8d09c4e218f7"
+  integrity sha512-wY0KP9my/0uKQk9AU39EqmkY6zMVv2Erej5b1rRBksM78JZXzjNUl4gyhtx1/0om84IZ1ocmW8MRElkAY6r1rw==
+  dependencies:
+    "@codemirror/panel" "^0.17.0"
+    "@codemirror/rangeset" "^0.17.0"
+    "@codemirror/state" "^0.17.0"
+    "@codemirror/text" "^0.17.0"
+    "@codemirror/view" "^0.17.0"
+    crelt "^1.0.5"
 
 "@codemirror/state@^0.17.0", "@codemirror/state@^0.17.1":
   version "0.17.2"
@@ -6198,6 +6226,11 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     ripemd160 "^2.0.0"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+crelt@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/crelt/-/crelt-1.0.5.tgz#57c0d52af8c859e354bace1883eb2e1eb182bb94"
+  integrity sha512-+BO9wPPi+DWTDcNYhr/W90myha8ptzftZT+LwcmUbbok0rcP/fequmFYCw8NMoH7pkAZQzU78b3kYrlua5a9eA==
 
 cropperjs@^1.5.7:
   version "1.5.7"
