@@ -50,7 +50,6 @@ import {
   startHassioAddon,
   stopHassioAddon,
   uninstallHassioAddon,
-  updateHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import {
@@ -69,6 +68,7 @@ import { HomeAssistant } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
+import { showDialogSupervisorAddonUpdate } from "../../dialogs/addon/show-dialog-addon-update";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
 import { addonArchIsSupported } from "../../util/addon";
@@ -210,12 +210,9 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               </div>
               <div class="card-actions">
-                <ha-progress-button
-                  .disabled=${!this.addon.available}
-                  @click=${this._updateClicked}
-                >
+                <mwc-button @click=${this._updateClicked}>
                   Update
-                </ha-progress-button>
+                </mwc-button>
                 ${this.addon.changelog
                   ? html`
                       <mwc-button @click=${this._openChangelog}>
@@ -936,38 +933,8 @@ class HassioAddonInfo extends LitElement {
     button.progress = false;
   }
 
-  private async _updateClicked(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.addon.name,
-      text: "Are you sure you want to update this add-on?",
-      confirmText: "update add-on",
-      dismissText: "no",
-    });
-
-    if (!confirmed) {
-      button.progress = false;
-      return;
-    }
-
-    this._error = undefined;
-    try {
-      await updateHassioAddon(this.hass, this.addon.slug);
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "update",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to update addon",
-        text: extractApiErrorMessage(err),
-      });
-    }
-    button.progress = false;
+  private async _updateClicked(): Promise<void> {
+    showDialogSupervisorAddonUpdate(this, { addon: this.addon });
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
