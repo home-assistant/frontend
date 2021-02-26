@@ -1383,7 +1383,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "detail": {
                         "create": "Stofna",
                         "delete": "Eyða",

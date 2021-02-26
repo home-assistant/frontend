@@ -2138,7 +2138,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Dodaj tag",
                     "automation_title": "Tag {name} jest skanowany",
                     "caption": "Tagi",

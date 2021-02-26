@@ -1750,7 +1750,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Pridať značku",
                     "caption": "Značky",
                     "description": "Spustiť automatizácie pri naskenovaní značky NFC, QR kódu atď.",

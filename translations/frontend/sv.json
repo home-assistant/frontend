@@ -2126,7 +2126,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Lägg till tagg",
                     "automation_title": "Taggen {name} är skannad",
                     "caption": "Taggar",

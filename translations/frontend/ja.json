@@ -2119,7 +2119,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "タグを追加する",
                     "automation_title": "{name}タグのスキャン",
                     "caption": "タグ",
