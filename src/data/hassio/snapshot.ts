@@ -32,6 +32,7 @@ export interface HassioPartialSnapshotCreateParams {
   folders?: string[];
   addons?: string[];
   password?: string;
+  homeassistant?: boolean;
 }
 
 export const fetchHassioSnapshots = async (

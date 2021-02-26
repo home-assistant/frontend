@@ -118,6 +118,7 @@ class DialogSupervisorAddonUpdate extends LitElement {
         await createHassioPartialSnapshot(this.hass, {
           name: `addon_${this.addon.slug}_${this.addon.version}`,
           addons: [this.addon.slug],
+          homeassistant: false,
         });
       } catch (err) {
         this._error = extractApiErrorMessage(err);
