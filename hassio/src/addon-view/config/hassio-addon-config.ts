@@ -15,11 +15,15 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
+import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
 import {
@@ -48,6 +52,8 @@ class HassioAddonConfig extends LitElement {
 
   @internalProperty() private _canShowSchema = false;
 
+  @internalProperty() private _showOptional = false;
+
   @internalProperty() private _error?: string;
 
   @internalProperty() private _options?: Record<string, unknown>;
@@ -56,7 +62,21 @@ class HassioAddonConfig extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
+  private _filteredShchema = memoizeOne(
+    (options: Record<string, unknown>, schema: HaFormSchema[]) => {
+      return schema.filter((entry) => entry.name in options || entry.required);
+    }
+  );
+
   protected render(): TemplateResult {
+    const showForm =
+      !this._yamlMode && this._canShowSchema && this.addon.schema;
+    const hasHiddenOptions =
+      showForm &&
+      JSON.stringify(this.addon.schema) !==
+        JSON.stringify(
+          this._filteredShchema(this.addon.options, this.addon.schema!)
+        );
     return html`
       <h1>${this.addon.name}</h1>
       <ha-card>
@@ -78,11 +98,16 @@ class HassioAddonConfig extends LitElement {
         </div>
 
         <div class="card-content">
-          ${!this._yamlMode && this._canShowSchema && this.addon.schema
+          ${showForm
             ? html`<ha-form
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
-                .schema=${this.addon.schema}
+                .schema=${this._showOptional
+                  ? this.addon.schema!
+                  : this._filteredShchema(
+                      this.addon.options,
+                      this.addon.schema!
+                    )}
               ></ha-form>`
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}
@@ -94,6 +119,18 @@ class HassioAddonConfig extends LitElement {
             ? ""
             : html` <div class="errors">Invalid YAML</div> `}
         </div>
+        ${hasHiddenOptions
+          ? html`<ha-formfield
+              class="show-additional"
+              label="Show unused optional configuration options"
+            >
+              <ha-switch
+                @change=${this._toggleOptional}
+                .checked=${this._showOptional}
+              >
+              </ha-switch>
+            </ha-formfield>`
+          : ""}
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
@@ -144,6 +181,10 @@ class HassioAddonConfig extends LitElement {
         this._resetTapped(ev);
         break;
     }
+  }
+
+  private _toggleOptional() {
+    this._showOptional = !this._showOptional;
   }
 
   private _configChanged(ev): void {
@@ -274,6 +315,10 @@ class HassioAddonConfig extends LitElement {
         }
         .card-actions.right {
           justify-content: flex-end;
+        }
+
+        .show-additional {
+          padding: 16px;
         }
       `,
     ];
