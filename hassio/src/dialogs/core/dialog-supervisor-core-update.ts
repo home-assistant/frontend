@@ -66,7 +66,6 @@ class DialogSupervisorCoreUpdate extends LitElement {
         heading="Update Home Assistant Core"
         scrimClickAction
         escapeKeyAction
-        @closing=${this.closeDialog}
       >
         ${this._action === null
           ? html`<div>
