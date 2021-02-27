@@ -6,10 +6,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import { atLeastVersion } from "../../src/common/config/version";
-import {
-  computeLocalize,
-  LocalizeFunc,
-} from "../../src/common/translations/localize";
+import { computeLocalize } from "../../src/common/translations/localize";
 import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";
 import { HassioResponse } from "../../src/data/hassio/common";
 import {
@@ -42,14 +39,10 @@ declare global {
   }
 }
 
-const empty = () => "";
-
 export class SupervisorBaseElement extends urlSyncMixin(
   ProvideHassLitMixin(LitElement)
 ) {
-  @property({ attribute: false }) public supervisor?: Supervisor;
-
-  @internalProperty() private _localize: LocalizeFunc = empty;
+  @property({ attribute: false }) public supervisor: Partial<Supervisor> = {};
 
   @internalProperty() private _unsubs: Record<string, UnsubscribeFunc> = {};
 
@@ -58,13 +51,45 @@ export class SupervisorBaseElement extends urlSyncMixin(
     Collection<unknown>
   > = {};
 
+  @internalProperty() private _resources?: Record<string, any>;
+
   @internalProperty() private _language = "en";
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._initializeLocalize();
+  }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     Object.keys(this._unsubs).forEach((unsub) => {
       this._unsubs[unsub]();
     });
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has("_language")) {
+      if (changedProperties.get("_language") !== this._language) {
+        this._initializeLocalize();
+      }
+    }
+
+    if (
+      this._language &&
+      this._resources &&
+      (changedProperties.has("_language") ||
+        changedProperties.has("_resources"))
+    ) {
+      computeLocalize(
+        this.constructor.prototype,
+        this._language,
+        this._resources
+      ).then((localize) => {
+        this.supervisor.localize = localize;
+      });
+    }
   }
 
   protected _updateSupervisor(obj: Partial<Supervisor>): void {
@@ -74,27 +99,19 @@ export class SupervisorBaseElement extends urlSyncMixin(
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this._language = this.hass.language;
+    this._initializeLocalize();
     this._initSupervisor();
   }
 
-  private async _initLocalize() {
+  private async _initializeLocalize() {
     const { language, data } = await getTranslation(
-      "supervisor",
+      null,
       this._language,
-      true
+      "/api/hassio/app/static/translations"
     );
 
-    this._localize = await computeLocalize(
-      this.constructor.prototype,
-      this._language,
-      {
-        [language]: data,
-      }
-    );
-
-    this.supervisor = {
-      ...this.supervisor!,
-      localize: (key: string, ...args: any[]) => this._localize(key, ...args),
+    this._resources = {
+      [language]: data,
     };
   }
 
@@ -137,13 +154,16 @@ export class SupervisorBaseElement extends urlSyncMixin(
         }
       });
 
-      if (this.supervisor === undefined) {
-        Object.keys(this._collections).forEach((collection) =>
+      Object.keys(this._collections).forEach((collection) => {
+        if (
+          this.supervisor === undefined ||
+          this.supervisor[collection] === undefined
+        ) {
           this._updateSupervisor({
             [collection]: this._collections[collection].state,
-          })
-        );
-      }
+          });
+        }
+      });
     } else {
       const [
         addon,
@@ -168,7 +188,6 @@ export class SupervisorBaseElement extends urlSyncMixin(
       ]);
 
       this.supervisor = {
-        ...this.supervisor!,
         addon,
         supervisor,
         host,
@@ -178,9 +197,8 @@ export class SupervisorBaseElement extends urlSyncMixin(
         network,
         resolution,
         store,
+        localize: () => "",
       };
-
-      this._initLocalize();
 
       this.addEventListener("supervisor-update", (ev) =>
         this._updateSupervisor(ev.detail)

@@ -19,7 +19,7 @@ import { Constructor, ServiceCallResponse } from "../types";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
-import { getLocalLanguage } from "../util/common-translation";
+import { getLocalLanguage } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(

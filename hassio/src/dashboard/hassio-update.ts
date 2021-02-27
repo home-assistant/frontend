@@ -68,17 +68,12 @@ export class HassioUpdate extends LitElement {
     return html`
       <div class="content">
         <h1>
-          ${updatesAvailable > 1
-            ? this.supervisor.localize(
-                "dashboard.updates_available",
-                "icon",
-                "🎉"
-              )
-            : this.supervisor.localize(
-                "dashboard.update_available",
-                "icon",
-                "🎉"
-              )}
+          ${this.supervisor.localize(
+            "dashboard.update_available",
+            "count",
+            updatesAvailable
+          )}
+          🎉
         </h1>
         <div class="card-group">
           ${this._renderUpdateCard(

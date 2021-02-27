@@ -3440,7 +3440,7 @@
       "addon_stopped": "Add-on is stopped",
       "addons": "Add-ons",
       "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
-      "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending {icon}"
+      "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending"
     },
     "error": {
       "unknown": "Unknown error",
