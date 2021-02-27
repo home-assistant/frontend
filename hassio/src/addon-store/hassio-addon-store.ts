@@ -69,7 +69,8 @@ class HassioAddonStore extends LitElement {
     if (this.supervisor.addon.repositories) {
       repos = this.addonRepositories(
         this.supervisor.addon.repositories,
-        this.supervisor.addon.addons
+        this.supervisor.addon.addons,
+        this._filter
       );
     }
 
@@ -140,7 +141,11 @@ class HassioAddonStore extends LitElement {
   }
 
   private addonRepositories = memoizeOne(
-    (repositories: HassioAddonRepository[], addons: HassioAddonInfo[]) => {
+    (
+      repositories: HassioAddonRepository[],
+      addons: HassioAddonInfo[],
+      filter?: string
+    ) => {
       return repositories.sort(sortRepos).map((repo) => {
         const filteredAddons = addons.filter(
           (addon) => addon.repository === repo.slug
@@ -152,7 +157,7 @@ class HassioAddonStore extends LitElement {
                 .hass=${this.hass}
                 .repo=${repo}
                 .addons=${filteredAddons}
-                .filter=${this._filter!}
+                .filter=${filter!}
               ></hassio-addon-repository>
             `
           : html``;
