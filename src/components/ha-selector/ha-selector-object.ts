@@ -11,8 +11,14 @@ export class HaObjectSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public placeholder?: string;
+
+  @property({ type: Boolean }) public disabled = false;
+
   protected render() {
     return html`<ha-yaml-editor
+      .disabled=${this.disabled}
+      .placeholder=${this.placeholder}
       .defaultValue=${this.value}
       @value-changed=${this._handleChange}
     ></ha-yaml-editor>`;

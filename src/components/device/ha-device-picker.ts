@@ -6,6 +6,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -107,8 +108,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property({ type: Boolean })
-  private _opened?: boolean;
+  @property({ type: Boolean }) public disabled?: boolean;
+
+  @internalProperty() private _opened?: boolean;
 
   @query("ha-combo-box", true) private _comboBox!: HaComboBox;
 
@@ -290,6 +292,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
           : this.label}
         .value=${this._value}
         .renderer=${rowRenderer}
+        .disabled=${this.disabled}
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"

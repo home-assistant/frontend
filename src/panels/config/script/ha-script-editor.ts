@@ -299,12 +299,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                     <mwc-button
                                       @click=${this._runScript}
                                       title="${this.hass.localize(
-                                        "ui.panel.config.script.picker.activate_script"
+                                        "ui.panel.config.script.picker.run_script"
                                       )}"
                                       ?disabled=${this._dirty}
                                     >
                                       ${this.hass.localize(
-                                        "ui.card.script.execute"
+                                        "ui.panel.config.script.picker.run_script"
                                       )}
                                     </mwc-button>
                                   </div>
@@ -375,11 +375,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                             <mwc-button
                               @click=${this._runScript}
                               title="${this.hass.localize(
-                                "ui.panel.config.script.picker.activate_script"
+                                "ui.panel.config.script.picker.run_script"
                               )}"
                               ?disabled=${this._dirty}
                             >
-                              ${this.hass.localize("ui.card.script.execute")}
+                              ${this.hass.localize(
+                                "ui.panel.config.script.picker.run_script"
+                              )}
                             </mwc-button>
                           </div>
                         `

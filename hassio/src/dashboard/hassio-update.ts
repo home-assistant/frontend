@@ -36,6 +36,7 @@ import {
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import { showDialogSupervisorCoreUpdate } from "../dialogs/core/show-dialog-core-update";
 import { hassioStyle } from "../resources/hassio-style";
 
 const computeVersion = (key: string, version: string): string => {
@@ -167,6 +168,10 @@ export class HassioUpdate extends LitElement {
 
   private async _confirmUpdate(ev): Promise<void> {
     const item = ev.currentTarget;
+    if (item.key === "core") {
+      showDialogSupervisorCoreUpdate(this, { core: this.supervisor.core });
+      return;
+    }
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: this.supervisor.localize(
@@ -199,11 +204,17 @@ export class HassioUpdate extends LitElement {
       } else {
         await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
       }
-      fireEvent(this, "supervisor-store-refresh", { store: item.key });
+      fireEvent(this, "supervisor-colllection-refresh", {
+        colllection: item.key,
+      });
     } catch (err) {
       // Only show an error if the status code was not expected (user behind proxy)
       // or no status at all(connection terminated)
-      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+      if (
+        this.hass.connection.connected &&
+        err.status_code &&
+        !ignoredStatusCodes.has(err.status_code)
+      ) {
         showAlertDialog(this, {
           title: this.supervisor.localize("error.update_failed"),
           text: extractApiErrorMessage(err),

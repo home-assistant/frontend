@@ -117,6 +117,8 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @property() public entityFilter?: (entity: EntityRegistryEntry) => boolean;
 
+  @property({ type: Boolean }) public disabled?: boolean;
+
   @internalProperty() private _areas?: AreaRegistryEntry[];
 
   @internalProperty() private _devices?: DeviceRegistryEntry[];
@@ -138,7 +140,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         this._devices = devices;
       }),
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities;
+        this._entities = entities.filter((entity) => entity.area_id);
       }),
     ];
   }
@@ -191,11 +193,14 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           deviceEntityLookup[entity.device_id].push(entity);
         }
         inputDevices = devices;
-        inputEntities = entities.filter((entity) => entity.area_id);
-      } else if (deviceFilter) {
-        inputDevices = devices;
-      } else if (entityFilter) {
-        inputEntities = entities.filter((entity) => entity.area_id);
+        inputEntities = entities;
+      } else {
+        if (deviceFilter) {
+          inputDevices = devices;
+        }
+        if (entityFilter) {
+          inputEntities = entities;
+        }
       }
 
       if (includeDomains) {
@@ -339,6 +344,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         item-label-path="name"
         .value=${this._value}
         .renderer=${rowRenderer}
+        .disabled=${this.disabled}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._areaChanged}
       >
@@ -349,6 +355,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           .placeholder=${this.placeholder
             ? this._area(this.placeholder)?.name
             : undefined}
+          .disabled=${this.disabled}
           class="input"
           autocapitalize="none"
           autocomplete="off"
