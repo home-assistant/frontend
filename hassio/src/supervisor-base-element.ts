@@ -87,7 +87,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
         this._language,
         this._resources
       ).then((localize) => {
-        this.supervisor.localize = localize;
+        this.supervisor = { ...this.supervisor, localize };
       });
     }
   }
@@ -98,9 +98,12 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this._language = this.hass.language;
-    this._initializeLocalize();
+    if (this._language !== this.hass.language) {
+      this._language = this.hass.language;
+    }
+
     this._initSupervisor();
+    this._initializeLocalize();
   }
 
   private async _initializeLocalize() {
@@ -197,7 +200,6 @@ export class SupervisorBaseElement extends urlSyncMixin(
         network,
         resolution,
         store,
-        localize: () => "",
       };
 
       this.addEventListener("supervisor-update", (ev) =>
