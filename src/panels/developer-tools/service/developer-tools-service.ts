@@ -102,7 +102,7 @@ class HaPanelDevService extends LitElement {
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
                   showAdvanced
-                  @value-changed=${this._serviceControlChanged}
+                  @value-changed=${this._serviceDataChanged}
                 ></ha-service-control></div
             ></ha-card>`}
       </div>
@@ -271,10 +271,10 @@ class HaPanelDevService extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    this._serviceControlChanged(ev);
+    this._serviceDataChanged(ev);
   }
 
-  private _serviceControlChanged(ev) {
+  private _serviceDataChanged(ev) {
     this._serviceData = ev.detail.value;
   }
 
