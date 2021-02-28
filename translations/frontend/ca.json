@@ -120,7 +120,7 @@
             },
             "automation": {
                 "last_triggered": "Última execució",
-                "trigger": "Executar"
+                "trigger": "Executar accions"
             },
             "camera": {
                 "not_available": "Imatge no disponible"
@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Cancel·la",
-                "cancel_multiple": "Cancel·la {number}"
+                "cancel_multiple": "Cancel·la {number}",
+                "run": "Executa"
             },
             "service": {
                 "run": "Executa"
@@ -295,6 +296,19 @@
             "yes": "Sí"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Complement",
+                "error": {
+                    "fetch_addons": {
+                        "description": "L'obtenció dels complements ha retornat un error.",
+                        "title": "S'ha produït un error en l'obtenció dels complements"
+                    },
+                    "no_supervisor": {
+                        "description": "No s'ha trobat cap Supervisor, per tant, no es poden carregar complements.",
+                        "title": "Sense Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Afegeix",
@@ -682,6 +696,7 @@
                         "scene": "Escenes",
                         "script": "Programació (scripts)",
                         "server_control": "Controls del servidor",
+                        "tag": "Etiquetes",
                         "tags": "Etiquetes",
                         "users": "Usuaris",
                         "zone": "Zones"
@@ -950,7 +965,7 @@
                             "delete_confirm": "Segur que vols eliminar-ho?",
                             "duplicate": "Duplica",
                             "header": "Condicions",
-                            "introduction": "Les condicions són opcionals i impedeixen que continui l'execució mentre totes elles no es satisfacin.",
+                            "introduction": "Les condicions són opcionals i impedeixen que s'executi l'automatització tret de que totes elles se satisfacin.",
                             "learn_more": "Més informació sobre les condicions",
                             "name": "Condició",
                             "type_select": "Tipus de condició",
@@ -1485,6 +1500,7 @@
                     "cant_edit": "Només pots editar els elements creats a la interfície d'usuari (UI).",
                     "caption": "Dispositius",
                     "confirm_delete": "Estàs segur que vols eliminar aquest dispositiu?",
+                    "confirm_disable_config_entry": "No hi ha més dispositius per a l'entrada de configuració {entry_name}. En comptes, vols desactivar l'entrada de configuració?",
                     "confirm_rename_entity_ids": "Vols, també, canviar el nom dels ID's de les entitats?",
                     "confirm_rename_entity_ids_warning": "Això no canviarà cap configuració (com automatitzacions, scripts, escenes, panells) que estigui utilitzant aquestes entitats. Les hauràs d'actualitzar tu mateix per utilitzar els nous identificadors.",
                     "data_table": {
@@ -1597,7 +1613,8 @@
                 },
                 "filtering": {
                     "clear": "Esborra",
-                    "filtering_by": "Filtratge per"
+                    "filtering_by": "Filtratge per",
+                    "show": "Mostra"
                 },
                 "header": "Configuració de Home Assistant",
                 "helpers": {
@@ -1668,7 +1685,19 @@
                         "delete_confirm": "Estàs segur que vols eliminar aquesta integració?",
                         "device_unavailable": "Dispositiu no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositiu}\n  other {dispositius}\n}",
+                        "disable_restart_confirm": "Reinicia Home Assistant per acabar de desactivar aquesta integració",
+                        "disable": {
+                            "disable_confirm": "Estàs segur que vols desactivar aquesta entrada de configuració? Els seus dispositius i entitats es desactivaran.",
+                            "disabled": "Desactivada",
+                            "disabled_by": {
+                                "device": "dispositiu",
+                                "integration": "integració",
+                                "user": "usuari"
+                            },
+                            "disabled_cause": "Desactivada per {cause}"
+                        },
                         "documentation": "Documentació",
+                        "enable_restart_confirm": "Reinicia Home Assistant per acabar d'activar aquesta integració",
                         "entities": "{count} {count, plural,\n  one {entitat}\n  other {entitats}\n}",
                         "entity_unavailable": "Entitat no disponible",
                         "firmware": "Firmware: {version}",
@@ -1711,6 +1740,11 @@
                     "confirm_new": "Vols configurar {integration}?",
                     "description": "Gestiona les integracions amb serveis, dispositius, ...",
                     "details": "Detalls de la integració",
+                    "disable": {
+                        "disabled_integrations": "{number} desactivada/es",
+                        "hide_disabled": "Amaga integracions desactivades",
+                        "show_disabled": "Mostra integracions desactivades"
+                    },
                     "discovered": "Descobertes",
                     "home_assistant_website": "lloc web de Home Assistant",
                     "ignore": {
@@ -2047,7 +2081,7 @@
                         "id": "ID de l'entitat",
                         "id_already_exists": "Aquest ID ja existeix",
                         "id_already_exists_save_error": "No pots desar aquest script perquè l'ID no és únic, tria'n un altre o deixa-ho en blanc perquè se'n generi un automàticament.",
-                        "introduction": "Utilitza els scripts per executar seqüències d'accions.",
+                        "introduction": "Utilitza els scripts per executar una seqüència d'accions.",
                         "link_available_actions": "Més informació sobre les accions disponibles.",
                         "load_error_not_editable": "Només es poden editar els scripts del fitxer scripts.yaml.",
                         "max": {
@@ -2536,6 +2570,7 @@
                     "states": {
                         "alert_entity_field": "L'entitat és un camp obligatori",
                         "attributes": "Atributs",
+                        "copy_id": "Copia l'identificador al porta-retalls",
                         "current_entities": "Entitats actuals",
                         "description1": "Defineix la representació d'un dispositiu a Home Assistant.",
                         "description2": "No hi haurà cap comunicació amb el dispositiu real.",
@@ -2594,11 +2629,11 @@
                 },
                 "cards": {
                     "actions": {
-                        "action_confirmation": "Estàs segur que vols exectuar l'acció \"{action}\"?",
+                        "action_confirmation": "Estàs segur que vols executar l'acció \"{action}\"?",
                         "no_entity_more_info": "No s'ha proporcionat cap entitat per mostrar el diàleg de més informació",
                         "no_entity_toggle": "No s'ha proporcionat cap entitat a commutar",
                         "no_navigation_path": "No s'ha especificat cap ruta de navegació",
-                        "no_service": "No s'ha especificat cap servei per a l'execució",
+                        "no_service": "No s'ha especificat cap servei a executar",
                         "no_url": "No s'ha especificat cap URL per obrir"
                     },
                     "confirm_delete": "Estàs segur que vols eliminar aquesta targeta?",
@@ -2969,7 +3004,7 @@
                         "confirm_remove_config_text": "Si elimines la configuració de la interfície d'usuari Lovelace es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
                         "confirm_remove_config_title": "Estàs segur que vols eliminar la configuració de la interfície d'usuari Lovelace?",
                         "confirm_unsaved_changes": "Hi han canvis no desats. Segur que vols sortir?",
-                        "confirm_unsaved_comments": "La configuració conté comentaris que es descartaran. Vols continuar?",
+                        "confirm_unsaved_comments": "La configuració pot contenir comentaris que no es desaran. Vols continuar?",
                         "error_invalid_config": "La configuració no és vàlida: {error}",
                         "error_parse_yaml": "No es pot analitzar YAML: {error}",
                         "error_remove": "No s'ha pogut eliminar la configuració: {error}",
@@ -3062,8 +3097,10 @@
             },
             "my": {
                 "component_not_loaded": "La instància de Home Assistant no admet aquesta redirecció. Necessites la integració {integration} per poder fer aquesta redirecció.",
+                "documentation": "documentació",
                 "error": "S'ha produït un error desconegut",
                 "faq_link": "Preguntes freqüents de Home Assistant",
+                "no_supervisor": "La teva instal·lació de Home Assistant no admet aquesta redirecció. Necessites tenir instal·lat o bé el Sistema Operatiu Home Assistant o Home Assistant Supervisat. Per a més informació, consulta {docs_link}.",
                 "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
             },
             "page-authorize": {

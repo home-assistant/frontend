@@ -696,6 +696,7 @@
                         "scene": "Stseenid",
                         "script": "Scriptid",
                         "server_control": "Serveri juhtimine",
+                        "tag": "Märgised",
                         "tags": "Märgised",
                         "users": "Kasutajad",
                         "zone": "Tsoonid"
@@ -2173,12 +2174,12 @@
                     }
                 },
                 "tag": {
-                    "add_tag": "Lisa TAG",
-                    "automation_title": "TAG {name} on skannitud",
-                    "caption": "TAGid",
+                    "add_tag": "Lisa märgis",
+                    "automation_title": "Märgis {name} on skannitud",
+                    "caption": "Märgised",
                     "confirm_remove": "Kas soovid kindlasti eemaldada märgise {tag}?",
                     "confirm_remove_title": "Kas kustutan märgise?",
-                    "create_automation": "Lisa automatiseering TAG abil",
+                    "create_automation": "Lisa automatiseering märgise abil",
                     "description": "Käivita automaatiseering NFC-sildi, QR-koodi jne. skännimisel",
                     "detail": {
                         "companion_apps": "mobiilirakendused",
@@ -2187,8 +2188,8 @@
                         "delete": "Kustuta",
                         "description": "Kirjeldus",
                         "name": "Nimi",
-                        "new_tag": "Uus TAG",
-                        "tag_id": "TAG ID",
+                        "new_tag": "Uus märgis",
+                        "tag_id": "Märgise ID",
                         "tag_id_placeholder": "Tühjaks jätmise korral luuakse automaatselt",
                         "update": "Uuenda",
                         "usage": "Silt võib skannimisel käivitada automaatiseeringu. Võite kasutada NFC-silte, QR-koode või muud tüüpi silte. Kasutage meie äppi {companion_link}, et kirjutada see silt programmeeritavale NFC-märgendile või luua allpool QR-kood."
@@ -2199,9 +2200,9 @@
                         "name": "Nimi"
                     },
                     "learn_more": "Lisateave märgiste kohta",
-                    "never_scanned": "TAGe pole skaneeritud",
-                    "no_tags": "TAGe pole",
-                    "write": "Salvesta TAG"
+                    "never_scanned": "Märgiseid pole skännitud",
+                    "no_tags": "Märgiseid pole",
+                    "write": "Salvesta märgis"
                 },
                 "users": {
                     "add_user": {
