@@ -25,11 +25,9 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-svg-icon";
-import { fetchDevices, ZHADevice } from "../../../../../data/zha";
-import "../../../../../layouts/hass-subpage";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
-import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
+import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -141,7 +139,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.zha.visualization.zoom_label"
             )}
-            .includeDomains="['zha']"
+            .deviceFilter=${(device) => this._filterDevices(device)}
             @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
           <mwc-button @click=${this._refreshTopology}
@@ -312,6 +310,20 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   private async _refreshTopology(): Promise<void> {
     await refreshTopology(this.hass);
+  }
+
+  private _filterDevices(device: DeviceRegistryEntry): boolean {
+    if (!this.hass) {
+      return false;
+    }
+    for (const parts of device.identifiers) {
+      for (const part of parts) {
+        if (part === "zha") {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   static get styles(): CSSResult[] {
