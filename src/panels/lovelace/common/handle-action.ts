@@ -1,6 +1,4 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { ActionConfig } from "../../../data/lovelace";
@@ -54,11 +52,10 @@ export const handleAction = async (
 
     let serviceName;
     if (actionConfig.action === "call-service") {
-      const domain = computeDomain(actionConfig.service);
-      const serviceId = computeObjectId(actionConfig.service);
+      const [domain, service] = actionConfig.service.split(".", 2);
       const serviceDomains = hass.services;
-      if (domain in serviceDomains && serviceId in serviceDomains[domain]) {
-        serviceName = serviceDomains[domain][serviceId].name;
+      if (domain in serviceDomains && service in serviceDomains[domain]) {
+        serviceName = serviceDomains[domain][service].name;
       }
     }
 
