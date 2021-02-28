@@ -85,13 +85,6 @@ class ZWaveJSNodeConfig extends LitElement {
             ${this.hass.localize(
               "ui.panel.config.zwave_js.node_config.introduction"
             )}
-            <p>
-              <em
-                >${this.hass.localize(
-                  "ui.panel.config.zwave_js.node_config.read_only_notice"
-                )}</em
-              >
-            </p>
           </div>
           ${this._config
             ? html`
