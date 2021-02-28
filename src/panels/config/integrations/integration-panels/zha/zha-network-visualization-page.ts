@@ -21,7 +21,6 @@ import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import { Network, Edge, Node, EdgeOptions } from "vis-network";
 import "../../../../../common/search/search-input";
-import "../../../../../components/ha-button-menu";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-svg-icon";
