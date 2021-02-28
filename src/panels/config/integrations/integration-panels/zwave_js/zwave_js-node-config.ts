@@ -14,9 +14,10 @@ import {
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-switch";
 import {
+  fetchDeviceFromNode,
   fetchNodeConfigParameters,
-  fetchNodeStatus,
   ZWaveJSNode,
   ZWaveJSNodeConfigParams,
 } from "../../../../../data/zwave_js";
@@ -25,6 +26,10 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
+import {
+  DeviceRegistryEntry,
+  computeDeviceName,
+} from "../../../../../data/device_registry";
 
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends LitElement {
@@ -40,7 +45,9 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @property({ type: Number }) public nodeId?: number;
 
-  @internalProperty() private _node?: ZWaveJSNode;
+  // @internalProperty() private _node?: ZWaveJSNode;
+
+  @internalProperty() private _device?: DeviceRegistryEntry;
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
 
@@ -67,6 +74,14 @@ class ZWaveJSNodeConfig extends LitElement {
           </div>
 
           <div slot="introduction">
+            ${this._device
+              ? html`
+                  <div class="device-info">
+                    <h2>${computeDeviceName(this._device, this.hass)}</h2>
+                    <p>${this._device.manufacturer} ${this._device.model}</p>
+                  </div>
+                `
+              : ``}
             ${this.hass.localize(
               "ui.panel.config.zwave_js.node_config.introduction"
             )}
@@ -78,48 +93,18 @@ class ZWaveJSNodeConfig extends LitElement {
               >
             </p>
           </div>
-          ${this._node
+          ${this._config
             ? html`
-                ${this._config
-                  ? html`
-                      ${Object.values(this._config).map(
-                        (item) => html`
-                          ${item.value
-                            ? html`
-                                <ha-card class="content">
-                                  <div class="card-content">
-                                    <div class="flex">
-                                      <div class="config-label">
-                                        <b>${item.metadata.label}</b>
-                                      </div>
-                                      <div class="tech-info secondary">
-                                        Property ${item.property}
-                                      </div>
-                                    </div>
-                                    <span class="secondary">
-                                      ${item.metadata.description}
-                                    </span>
-
-                                    ${item.metadata.states
-                                      ? html`
-                                          <p>
-                                            ${item.metadata.states[
-                                              item.value
-                                            ]}<br />
-                                            <span class="secondary tech-info">
-                                              Value ${item.value}
-                                            </span>
-                                          </p>
-                                        `
-                                      : html`<p>${item.value}</p>`}
-                                  </div>
-                                </ha-card>
-                              `
-                            : ``}
-                        `
-                      )}
-                    `
-                  : ``}
+                ${Object.entries(this._config).map(
+                  ([id, item]) => html` <ha-card
+                    class="content config-item"
+                    .configId=${id}
+                  >
+                    <div class="card-content">
+                      ${this._generateConfigBox(id, item)}
+                    </div>
+                  </ha-card>`
+                )}
               `
             : ``}
         </ha-config-section>
@@ -127,11 +112,71 @@ class ZWaveJSNodeConfig extends LitElement {
     `;
   }
 
+  private _generateConfigBox(id, item) {
+    const labelAndDescription = html`
+      <div class="config-label">
+        <b>${item.metadata.label}</b><br />
+        <span class="secondary">
+          ${item.metadata.description}
+        </span>
+      </div>
+    `;
+
+    // Numeric entries with a min value of 0 and max of 1 are considered boolean
+    if (
+      (item.configuration_value_type === "range" &&
+        item.metadata.min === 0 &&
+        item.metadata.max === 1) ||
+      this._isEnumeratedBool(item)
+    ) {
+      return html`
+        <div class="flex">
+          ${labelAndDescription}
+          <div class="toggle">
+            <ha-switch .id=${id} .checked=${item.value === 1}></ha-switch>
+          </div>
+        </div>
+      `;
+    }
+
+    return html` ${labelAndDescription}
+    ${item.metadata.states
+      ? html`
+          <p>
+            ${item.metadata.states[item.value]}<br />
+            <span class="secondary tech-info">
+              Value ${item.value}
+            </span>
+          </p>
+        `
+      : html`<p>${item.value}</p>`}`;
+  }
+
+  private _isEnumeratedBool(item) {
+    // Some Z-Wave config values use a states list with two options where index 0 = Disabled and 1 = Enabled
+    // We want those to be considered boolean and show a toggle switch
+    if (item.configuration_value_type !== "enumerated") {
+      return false;
+    }
+    if (!("states" in item.metadata)) {
+      return false;
+    }
+    if (
+      (item.metadata.states[0] === "Disable" ||
+        item.metadata.states[0] === "Disabled") &&
+      (item.metadata.states[1] === "Enable" ||
+        item.metadata.states[1] === "Enabled")
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   private async _fetchData() {
     if (!this.configEntryId || !this.nodeId) {
       return;
     }
-    this._node = await fetchNodeStatus(
+    this._device = await fetchDeviceFromNode(
       this.hass,
       this.configEntryId,
       this.nodeId
@@ -164,13 +209,22 @@ class ZWaveJSNodeConfig extends LitElement {
           flex: 1;
         }
 
-        .flex .tech-info {
+        .flex .tech-info,
+        .flex .toggle {
           width: 80px;
           text-align: right;
         }
 
         .content {
           margin-top: 24px;
+        }
+
+        .device-info h2 {
+          margin-bottom: 0px;
+        }
+
+        .device-info p {
+          margin-top: 0px;
         }
 
         .sectionHeader {
