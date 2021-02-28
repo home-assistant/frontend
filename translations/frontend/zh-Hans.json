@@ -696,6 +696,7 @@
                         "scene": "场景",
                         "script": "脚本",
                         "server_control": "服务控制",
+                        "tag": "标签",
                         "tags": "标签",
                         "users": "用户",
                         "zone": "地点"
