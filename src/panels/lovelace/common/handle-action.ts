@@ -43,16 +43,6 @@ export const handleAction = async (
     };
   }
 
-  let serviceName;
-  if (actionConfig.action === "call-service") {
-    const domain = computeDomain(actionConfig.service);
-    const serviceId = computeObjectId(actionConfig.service);
-    const serviceDomains = hass.services;
-    if (domain in serviceDomains && serviceId in serviceDomains[domain]) {
-      serviceName = serviceDomains[domain][serviceId].name;
-    }
-  }
-
   if (
     actionConfig.confirmation &&
     (!actionConfig.confirmation.exemptions ||
@@ -61,6 +51,16 @@ export const handleAction = async (
       ))
   ) {
     forwardHaptic("warning");
+
+    let serviceName;
+    if (actionConfig.action === "call-service") {
+      const domain = computeDomain(actionConfig.service);
+      const serviceId = computeObjectId(actionConfig.service);
+      const serviceDomains = hass.services;
+      if (domain in serviceDomains && serviceId in serviceDomains[domain]) {
+        serviceName = serviceDomains[domain][serviceId].name;
+      }
+    }
 
     if (
       !(await showConfirmationDialog(node, {
