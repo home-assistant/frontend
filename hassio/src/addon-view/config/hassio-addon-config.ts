@@ -62,6 +62,14 @@ class HassioAddonConfig extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
+  public computeLabel = (entry: HaFormSchema): string => {
+    return (
+      this.addon.translations[this.hass.language]?.[entry.name]?.name ||
+      this.addon.translations.en?.[entry.name].name ||
+      entry.name
+    );
+  };
+
   private _filteredShchema = memoizeOne(
     (options: Record<string, unknown>, schema: HaFormSchema[]) => {
       return schema.filter((entry) => entry.name in options || entry.required);
@@ -102,6 +110,7 @@ class HassioAddonConfig extends LitElement {
             ? html`<ha-form
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
+                .computeLabel=${this.computeLabel}
                 .schema=${this._showOptional
                   ? this.addon.schema!
                   : this._filteredShchema(
