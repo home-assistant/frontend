@@ -16,13 +16,13 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { navigate } from "../common/navigate";
+import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
-import { Supervisor } from "../data/supervisor/supervisor";
 import { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
@@ -41,7 +41,9 @@ export interface PageNavigation {
 class HassTabsSubpage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public supervisor?: Supervisor;
+  @property({ type: Boolean }) public supervisor = false;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
@@ -49,9 +51,9 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public tabs!: PageNavigation[];
+  @property({ attribute: false }) public tabs!: PageNavigation[];
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -72,7 +74,8 @@ class HassTabsSubpage extends LitElement {
       showAdvanced: boolean | undefined,
       _components,
       _language,
-      _narrow
+      _narrow,
+      localizeFunc
     ) => {
       const shownTabs = tabs.filter(
         (page) =>
@@ -92,9 +95,7 @@ class HassTabsSubpage extends LitElement {
               .active=${page === activeTab}
               .narrow=${this.narrow}
               .name=${page.translationKey
-                ? this.supervisor
-                  ? this.supervisor.localize(page.translationKey)
-                  : this.hass.localize(page.translationKey)
+                ? localizeFunc(page.translationKey)
                 : page.name}
             >
               ${page.iconPath
@@ -133,7 +134,8 @@ class HassTabsSubpage extends LitElement {
       this.hass.userData?.showAdvanced,
       this.hass.config.components,
       this.hass.language,
-      this.narrow
+      this.narrow,
+      this.localizeFunc || this.hass.localize
     );
     const showTabs = tabs.length > 1 || !this.narrow;
     return html`
@@ -141,7 +143,7 @@ class HassTabsSubpage extends LitElement {
         ${this.mainPage
           ? html`
               <ha-menu-button
-                .hassio=${this.supervisor !== undefined}
+                .hassio=${this.supervisor}
                 .hass=${this.hass}
                 .narrow=${this.narrow}
               ></ha-menu-button>

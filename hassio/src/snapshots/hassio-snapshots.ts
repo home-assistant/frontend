@@ -104,11 +104,12 @@ class HassioSnapshots extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .supervisor=${this.supervisor}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
-        main-page
         .route=${this.route}
         .tabs=${supervisorTabs}
+        main-page
+        supervisor
       >
         <span slot="header">
           ${this.supervisor.localize("panel.snapshots")}

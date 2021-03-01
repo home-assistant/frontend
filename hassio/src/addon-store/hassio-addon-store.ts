@@ -76,11 +76,12 @@ class HassioAddonStore extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .supervisor=${this.supervisor}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .route=${this.route}
-        main-page
         .tabs=${supervisorTabs}
+        main-page
+        supervisor
       >
         <span slot="header">
           ${this.supervisor.localize("panel.store")}

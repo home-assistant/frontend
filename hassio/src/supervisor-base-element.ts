@@ -42,7 +42,9 @@ declare global {
 export class SupervisorBaseElement extends urlSyncMixin(
   ProvideHassLitMixin(LitElement)
 ) {
-  @property({ attribute: false }) public supervisor: Partial<Supervisor> = {};
+  @property({ attribute: false }) public supervisor: Partial<Supervisor> = {
+    localize: () => "",
+  };
 
   @internalProperty() private _unsubs: Record<string, UnsubscribeFunc> = {};
 

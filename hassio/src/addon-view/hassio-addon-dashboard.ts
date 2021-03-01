@@ -117,11 +117,12 @@ class HassioAddonDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .supervisor=${this.supervisor}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
         .route=${route}
         .tabs=${addonTabs}
+        supervisor
       >
         <span slot="header">${this.addon.name}</span>
         <hassio-addon-router

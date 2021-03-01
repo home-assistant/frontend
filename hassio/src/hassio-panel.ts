@@ -25,7 +25,7 @@ class HassioPanel extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   protected render(): TemplateResult {
-    if (!this.supervisor.localize || !this.hass) {
+    if (!this.hass) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
