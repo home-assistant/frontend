@@ -600,8 +600,8 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "script": {
-          "last_action": "Last Action",
-          "last_triggered": "Last Triggered"
+          "last_action": "Last action",
+          "last_triggered": "Last triggered"
         },
         "sun": {
           "elevation": "Elevation",
