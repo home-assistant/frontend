@@ -745,7 +745,8 @@
           "remove": "Remove Device",
           "clusters": "Manage Clusters",
           "reconfigure": "Reconfigure Device",
-          "zigbee_information": "Zigbee device signature"
+          "zigbee_information": "Zigbee device signature",
+          "view_in_visualization": "View in Visualization"
         },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
@@ -2365,7 +2366,8 @@
             "header": "Network Visualization",
             "caption": "Visualization",
             "highlight_label": "Highlight Devices",
-            "zoom_label": "Zoom To Device"
+            "zoom_label": "Zoom To Device",
+            "refresh_topology": "Refresh Topology"
           },
           "group_binding": {
             "header": "Group Binding",
