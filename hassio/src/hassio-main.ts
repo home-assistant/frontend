@@ -77,18 +77,6 @@ export class HassioMain extends SupervisorBaseElement {
   }
 
   protected render() {
-    if (!this.supervisor.localize || !this.hass) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
-    }
-
-    if (
-      Object.keys(supervisorCollection).some(
-        (colllection) => !this.supervisor![colllection]
-      )
-    ) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
-    }
-
     return html`
       <hassio-router
         .hass=${this.hass}

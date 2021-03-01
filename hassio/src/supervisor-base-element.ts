@@ -75,25 +75,10 @@ export class SupervisorBaseElement extends urlSyncMixin(
         this._initializeLocalize();
       }
     }
-
-    if (
-      this._language &&
-      this._resources &&
-      (changedProperties.has("_language") ||
-        changedProperties.has("_resources"))
-    ) {
-      computeLocalize(
-        this.constructor.prototype,
-        this._language,
-        this._resources
-      ).then((localize) => {
-        this.supervisor = { ...this.supervisor, localize };
-      });
-    }
   }
 
   protected _updateSupervisor(obj: Partial<Supervisor>): void {
-    this.supervisor = { ...this.supervisor!, ...obj };
+    this.supervisor = { ...this.supervisor, ...obj };
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {
@@ -101,9 +86,8 @@ export class SupervisorBaseElement extends urlSyncMixin(
     if (this._language !== this.hass.language) {
       this._language = this.hass.language;
     }
-
-    this._initSupervisor();
     this._initializeLocalize();
+    this._initSupervisor();
   }
 
   private async _initializeLocalize() {
@@ -115,6 +99,15 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
     this._resources = {
       [language]: data,
+    };
+
+    this.supervisor = {
+      ...this.supervisor,
+      localize: await computeLocalize(
+        this.constructor.prototype,
+        this._language,
+        this._resources
+      ),
     };
   }
 
