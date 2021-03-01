@@ -216,7 +216,6 @@ export const getLogbookMessage = (
         case "cold":
         case "gas":
         case "heat":
-        case "colightld":
         case "moisture":
         case "motion":
         case "occupancy":
@@ -246,9 +245,17 @@ export const getLogbookMessage = (
     }
 
     case "cover":
-      return state === "open"
-        ? hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`)
-        : hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
+      switch (state) {
+        case "open":
+          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
+        case "opening":
+          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.is_opening`);
+        case "closing":
+          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.is_closing`);
+        case "closed":
+          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
+      }
+      break;
 
     case "lock":
       if (state === "unlocked") {
