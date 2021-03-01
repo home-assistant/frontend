@@ -266,6 +266,7 @@ gulp.task(taskName, function () {
         TRANSLATION_FRAGMENTS.forEach((fragment) => {
           delete data.ui.panel[fragment];
         });
+        delete data.supervisor;
         return data;
       })
     )
@@ -342,6 +343,62 @@ gulp.task(
   }
 );
 
+gulp.task("build-translation-fragment-supervisor", function () {
+  return gulp
+    .src(fullDir + "/*.json")
+    .pipe(transform((data) => data.supervisor))
+    .pipe(gulp.dest(workDir + "/supervisor"));
+});
+
+gulp.task("build-translation-flatten-supervisor", function () {
+  return gulp
+    .src(workDir + "/supervisor/*.json")
+    .pipe(
+      transform(function (data) {
+        // Polymer.AppLocalizeBehavior requires flattened json
+        return flatten(data);
+      })
+    )
+    .pipe(gulp.dest(outDir));
+});
+
+gulp.task("build-translation-write-metadata", function writeMetadata() {
+  return gulp
+    .src(
+      [
+        path.join(paths.translations_src, "translationMetadata.json"),
+        workDir + "/testMetadata.json",
+        workDir + "/translationFingerprints.json",
+      ],
+      { allowEmpty: true }
+    )
+    .pipe(merge({}))
+    .pipe(
+      transform(function (data) {
+        const newData = {};
+        Object.entries(data).forEach(([key, value]) => {
+          // Filter out translations without native name.
+          if (value.nativeName) {
+            newData[key] = value;
+          } else {
+            console.warn(
+              `Skipping language ${key}. Native name was not translated.`
+            );
+          }
+        });
+        return newData;
+      })
+    )
+    .pipe(
+      transform((data) => ({
+        fragments: TRANSLATION_FRAGMENTS,
+        translations: data,
+      }))
+    )
+    .pipe(rename("translationMetadata.json"))
+    .pipe(gulp.dest(workDir));
+});
+
 gulp.task(
   "build-translations",
   gulp.series(
@@ -353,41 +410,20 @@ gulp.task(
     gulp.parallel(...splitTasks),
     "build-flattened-translations",
     "build-translation-fingerprints",
-    function writeMetadata() {
-      return gulp
-        .src(
-          [
-            path.join(paths.translations_src, "translationMetadata.json"),
-            workDir + "/testMetadata.json",
-            workDir + "/translationFingerprints.json",
-          ],
-          { allowEmpty: true }
-        )
-        .pipe(merge({}))
-        .pipe(
-          transform(function (data) {
-            const newData = {};
-            Object.entries(data).forEach(([key, value]) => {
-              // Filter out translations without native name.
-              if (value.nativeName) {
-                newData[key] = value;
-              } else {
-                console.warn(
-                  `Skipping language ${key}. Native name was not translated.`
-                );
-              }
-            });
-            return newData;
-          })
-        )
-        .pipe(
-          transform((data) => ({
-            fragments: TRANSLATION_FRAGMENTS,
-            translations: data,
-          }))
-        )
-        .pipe(rename("translationMetadata.json"))
-        .pipe(gulp.dest(workDir));
-    }
+    "build-translation-write-metadata"
+  )
+);
+
+gulp.task(
+  "build-supervisor-translations",
+  gulp.series(
+    "clean-translations",
+    "ensure-translations-build-dir",
+    "build-master-translation",
+    "build-merged-translations",
+    "build-translation-fragment-supervisor",
+    "build-translation-flatten-supervisor",
+    "build-translation-fingerprints",
+    "build-translation-write-metadata"
   )
 );
