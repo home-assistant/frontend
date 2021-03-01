@@ -1,5 +1,5 @@
 import { HighlightStyle, tags } from "@codemirror/highlight";
-import { EditorView as CMEditorView } from "@codemirror/view";
+import { EditorView as CMEditorView, KeyBinding } from "@codemirror/view";
 import { StreamLanguage } from "@codemirror/stream-parser";
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
@@ -18,7 +18,7 @@ export const langs = {
   yaml: StreamLanguage.define(yaml),
 };
 
-export const tabKeyBindings = [
+export const tabKeyBindings: KeyBinding[] = [
   { key: "Tab", run: indentMore },
   {
     key: "Shift-Tab",
