@@ -86,10 +86,15 @@ class HaPanelDevService extends LitElement {
         </p>
 
         ${this._yamlMode
-          ? html`<ha-yaml-editor
-              .defaultValue=${this._serviceData}
-              @value-changed=${this._yamlChanged}
-            ></ha-yaml-editor>`
+          ? html`<ha-service-picker
+                .hass=${this.hass}
+                .value=${this._serviceData?.service}
+                @value-changed=${this._serviceChanged}
+              ></ha-service-picker>
+              <ha-yaml-editor
+                .defaultValue=${this._serviceData}
+                @value-changed=${this._yamlChanged}
+              ></ha-yaml-editor>`
           : html`<ha-card
               ><div>
                 <ha-service-control
@@ -97,7 +102,7 @@ class HaPanelDevService extends LitElement {
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
                   showAdvanced
-                  @value-changed=${this._serviceChanged}
+                  @value-changed=${this._serviceDataChanged}
                 ></ha-service-control></div
             ></ha-card>`}
       </div>
@@ -266,11 +271,17 @@ class HaPanelDevService extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    this._serviceChanged(ev);
+    this._serviceDataChanged(ev);
+  }
+
+  private _serviceDataChanged(ev) {
+    this._serviceData = ev.detail.value;
   }
 
   private _serviceChanged(ev) {
-    this._serviceData = ev.detail.value;
+    ev.stopPropagation();
+    this._serviceData = { service: ev.detail.value || "", data: {} };
+    this._yamlEditor?.setValue(this._serviceData);
   }
 
   private _fillExampleData() {
