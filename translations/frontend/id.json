@@ -66,14 +66,14 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed": "Armed",
-            "armed_away": "Armed",
-            "armed_custom_bypass": "Armed",
-            "armed_home": "Armed",
-            "armed_night": "Armed",
-            "arming": "Arming",
-            "disarmed": "Disarm",
-            "disarming": "Disarm",
+            "armed": "Diaktifkan",
+            "armed_away": "Diaktifkan",
+            "armed_custom_bypass": "Diaktifkan",
+            "armed_home": "Diaktifkan",
+            "armed_night": "Diaktifkan",
+            "arming": "Mengaktifkan",
+            "disarmed": "Nonaktif",
+            "disarming": "Nonaktif",
             "pending": "Tunda",
             "triggered": "Picu"
         },
@@ -108,8 +108,12 @@
         },
         "card": {
             "alarm_control_panel": {
+                "arm_away": "Aktifkan utk keluar",
+                "arm_home": "Aktifkan utk di rumah",
+                "arm_night": "Aktifkan utk malam",
                 "clear_code": "Hapus",
-                "code": "Kode"
+                "code": "Kode",
+                "disarm": "Nonaktifkan"
             },
             "automation": {
                 "last_triggered": "Terakhir terpicu",
@@ -119,7 +123,7 @@
                 "not_available": "Gambar tidak tersedia"
             },
             "climate": {
-                "aux_heat": "Aux panas",
+                "aux_heat": "Pemanasan tambahan",
                 "away_mode": "Mode keluar rumah",
                 "cooling": "Pendinginan {name}",
                 "current_temperature": "Suhu {name} saat ini",
@@ -134,8 +138,8 @@
                 "swing_mode": "Mode ayunan",
                 "target_humidity": "Target kelembaban",
                 "target_temperature": "Target suhu",
-                "target_temperature_entity": "target suhu {name}",
-                "target_temperature_mode": "{nama} target suhu {mode}"
+                "target_temperature_entity": "Target suhu {name}",
+                "target_temperature_mode": "Target suhu {name} {mode}"
             },
             "counter": {
                 "actions": {
@@ -370,7 +374,8 @@
                     "changed_to_state": "berubah menjadi {state}",
                     "cleared_device_class": "dibersihkan (tidak ada {device_class} yang terdeteksi)",
                     "detected_device_class": "terdeteksi {device_class}",
-                    "set": "disetel",
+                    "rose": "terbit",
+                    "set": "terbenam",
                     "turned_off": "dimatikan",
                     "turned_on": "dinyalakan",
                     "was_at_home": "terdeteksi di rumah",
@@ -439,7 +444,7 @@
             },
             "related-items": {
                 "area": "Area",
-                "automation": "Bagian dari otomatisasi berikut",
+                "automation": "Bagian dari otomasi berikut",
                 "device": "Perangkat",
                 "entity": "Entitas terkait",
                 "group": "Bagian dari grup berikut",
@@ -670,7 +675,7 @@
                 "commands": {
                     "navigation": {
                         "areas": "Area",
-                        "automation": "Otomatisasi",
+                        "automation": "Otomasi",
                         "blueprint": "Blueprint",
                         "core": "Umum",
                         "customize": "Penyesuaian",
@@ -692,7 +697,7 @@
                         "zone": "Zona"
                     },
                     "reload": {
-                        "automation": "Muat ulang otomatisasi",
+                        "automation": "Muat ulang otomasi",
                         "command_line": "Muat ulang entitas baris perintah",
                         "core": "Muat ulang lokasi & penyesuaian",
                         "filesize": "Muat ulang entitas ukuran file",
@@ -845,7 +850,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Otomatisasi",
+                    "caption": "Otomasi",
                     "description": "Buat aturan perilaku khusus untuk rumah Anda",
                     "dialog_new": {
                         "blueprint": {
@@ -1159,10 +1164,10 @@
                     },
                     "picker": {
                         "add_automation": "Tambah otomasi",
-                        "delete_automation": "Hapus otomatisasi",
-                        "delete_confirm": "Yakin ingin menghapus otomatisasi ini?",
+                        "delete_automation": "Hapus otomasi",
+                        "delete_confirm": "Yakin ingin menghapus otomasi ini?",
                         "duplicate": "Gandakan",
-                        "duplicate_automation": "Gandakan otomatisasi",
+                        "duplicate_automation": "Gandakan otomasi",
                         "edit_automation": "Edit otomasi",
                         "header": "Editor Otomasi",
                         "headers": {
@@ -1173,7 +1178,7 @@
                         "no_automations": "Kami tidak dapat menemukan otomasi yang dapat diedit",
                         "only_editable": "Hanya otomasi yang didefinisikan di automations.yaml yang bisa diedit.",
                         "pick_automation": "Pilih otomasi untuk diedit",
-                        "show_info_automation": "Tampilkan info tentang otomatisasi"
+                        "show_info_automation": "Tampilkan info tentang otomasi"
                     },
                     "thingtalk": {
                         "create": "Buat otomasi",
@@ -1184,10 +1189,10 @@
                         },
                         "task_selection": {
                             "error_empty": "Masukkan perintah atau ketuk lewati.",
-                            "error_unsupported": "Kami tidak dapat membuat otomatisasi untuk itu (belum?).",
+                            "error_unsupported": "Kami (masih?) belum dapat membuat otomasi untuk itu.",
                             "for_example": "Misalnya:",
-                            "header": "Buat otomatisasi baru",
-                            "introduction": "Ketik di bawah ini apa yang harus dilakukan oleh otomatisasi ini, dan kami akan mencoba mengubahnya menjadi otomatisasi Home Assistant.",
+                            "header": "Buat otomasi baru",
+                            "introduction": "Ketik di bawah ini apa yang harus dilakukan oleh otomasi ini, dan kami akan mencoba mengubahnya menjadi otomasi Home Assistant.",
                             "language_note": "Catatan: Saat ini hanya bahasa Inggris yang didukung."
                         }
                     }
@@ -1201,10 +1206,10 @@
                         "import_btn": "Pratinjau blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction_link": "Anda dapat mengimpor blueprint pengguna lain dari Github dan {community_link}. Masukkan URL blueprint di bawah ini.",
-                        "importing": "Memuat blueprint...",
+                        "importing": "Memuat blueprint…",
                         "raw_blueprint": "Isi blueprint",
                         "save_btn": "Impor blueprint",
-                        "saving": "Mengimpor blueprint...",
+                        "saving": "Mengimpor blueprint…",
                         "unsupported_blueprint": "Blueprint ini tidak didukung",
                         "url": "URL blueprint"
                     },
@@ -1279,7 +1284,7 @@
                             "title": "Kontrol Jarak Jauh"
                         },
                         "sign_out": "Keluar",
-                        "thank_you_note": "Terima kasih telah menjadi bagian dari Home Assistant Cloud. Berkat orang-orang seperti Anda, kami dapat membuat pengalaman otomatisasi rumah yang hebat untuk semua orang. Terima kasih!",
+                        "thank_you_note": "Terima kasih telah menjadi bagian dari Home Assistant Cloud. Berkat orang-orang seperti Anda, kami dapat membuat pengalaman otomasi rumah yang hebat untuk semua orang. Terima kasih!",
                         "tts": {
                             "default_language": "Bahasa baku untuk digunakan",
                             "dialog": {
@@ -1290,7 +1295,7 @@
                                 "target_browser": "Browser"
                             },
                             "female": "Perempuan",
-                            "info": "Bawa kepribadian ke rumah Anda dengan memintanya berbicara kepada Anda dengan menggunakan layanan Teks ke Ucapan kami. Anda dapat menggunakan ini dalam otomatisasi dan skrip dengan menggunakan layanan {service}.",
+                            "info": "Bawa kepribadian ke rumah Anda dengan memintanya berbicara kepada Anda dengan menggunakan layanan Teks ke Ucapan kami. Anda dapat menggunakan ini dalam otomasi dan skrip dengan menggunakan layanan {service}.",
                             "male": "Pria",
                             "title": "Teks ke Ucapan",
                             "try": "Coba"
@@ -1298,11 +1303,11 @@
                         "webhooks": {
                             "disable_hook_error_msg": "Gagal menonaktifkan webhook:",
                             "info": "Semua yang dikonfigurasi untuk dipicu oleh webhook dapat ditetapkan URL-nya, yang dapat diakses publik untuk memungkinkan Anda mengirim data kembali ke Home Assistant dari mana saja, tanpa mengekspos instans Anda ke internet.",
-                            "link_learn_more": "Pelajari lebih lanjut tentang membuat otomatisasi yang didukung webhook.",
-                            "loading": "Memuat...",
+                            "link_learn_more": "Pelajari lebih lanjut tentang membuat otomasi yang didukung webhook.",
+                            "loading": "Memuat…",
                             "manage": "Kelola",
                             "no_hooks_yet": "Sepertinya Anda belum memiliki webhook. Mulailah dengan mengonfigurasi",
-                            "no_hooks_yet_link_automation": "otomatisasi webhook",
+                            "no_hooks_yet_link_automation": "otomasi webhook",
                             "no_hooks_yet_link_integration": "integrasi berbasis webhook",
                             "no_hooks_yet2": " atau dengan membuat ",
                             "title": "Webhook"
@@ -1466,26 +1471,26 @@
                     "add_prompt": "Belum ada {name} yang ditambahkan menggunakan perangkat ini. Anda dapat menambahkannya dengan mengklik tombol + di atas.",
                     "automation": {
                         "actions": {
-                            "caption": "Ketika sesuatu dipicu...",
+                            "caption": "Ketika sesuatu dipicu…",
                             "no_actions": "Tidak ada aksi",
                             "unknown_action": "Aksi tidak diketahui"
                         },
-                        "automations": "Otomatisasi",
+                        "automations": "Otomasi",
                         "conditions": {
-                            "caption": "Lakukan sesuatu hanya jika...",
+                            "caption": "Lakukan sesuatu hanya jika…",
                             "no_conditions": "Tidak ada kondisi",
                             "unknown_condition": "Kondisi tidak diketahui"
                         },
-                        "create": "Buat otomatisasi dengan perangkat",
-                        "create_disable": "Tidak dapat membuat otomatisasi dengan perangkat yang dinonaktifkan",
-                        "no_automations": "Tidak ada otomatisasi",
-                        "no_device_automations": "Tidak ada otomatisasi yang tersedia untuk perangkat ini.",
+                        "create": "Buat otomasi dengan perangkat",
+                        "create_disable": "Tidak dapat membuat otomasi dengan perangkat yang dinonaktifkan",
+                        "no_automations": "Tidak ada otomasi",
+                        "no_device_automations": "Tidak ada otomasi yang tersedia untuk perangkat ini.",
                         "triggers": {
-                            "caption": "Lakukan sesuatu jika...",
+                            "caption": "Lakukan sesuatu jika…",
                             "no_triggers": "Tidak ada pemicu",
                             "unknown_trigger": "Pemicu tidak diketahui"
                         },
-                        "unknown_automation": "Otomatisasi tidak diketahui"
+                        "unknown_automation": "Otomasi tidak diketahui"
                     },
                     "cant_edit": "Anda hanya dapat mengedit item yang dibuat di antarmuka.",
                     "caption": "Perangkat",
@@ -1769,7 +1774,7 @@
                     "description": "Lihat log Home Assistant",
                     "details": "Detail Log ({level})",
                     "load_full_log": "Muat Log Lengkap Home Assistant",
-                    "loading_log": "Memuat log kesalahan...",
+                    "loading_log": "Memuat log kesalahan…",
                     "multiple_messages": "pesan pertama kali muncul pada {time} dan muncul {counter} kali",
                     "no_errors": "Tidak ada kesalahan yang dilaporkan.",
                     "no_issues": "Tidak ada masalah baru!",
@@ -1963,7 +1968,7 @@
                         "complete": "Penyegaran Node Selesai",
                         "description": "Ini akan memberi tahu OpenZWave untuk mewawancarai kembali node dan memperbarui kelas, kapabilitas, dan nilai perintah node.",
                         "node_status": "Status Node",
-                        "refreshing_description": "Menyegarkan informasi node...",
+                        "refreshing_description": "Menyegarkan informasi node…",
                         "start_refresh_button": "Mulai Segarkan",
                         "step": "Langkah",
                         "title": "Segarkan Informasi Node",
@@ -2112,7 +2117,7 @@
                     "description": "Mulai ulang dan hentikan server Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Muat ulang otomatisasi",
+                            "automation": "Muat ulang otomasi",
                             "command_line": "Muat ulang entitas baris perintah",
                             "core": "Muat ulang lokasi & penyesuaian",
                             "filesize": "Muat ulang entitas ukuran file",
@@ -2169,7 +2174,7 @@
                     "caption": "Tag",
                     "confirm_remove": "Yakin ingin menghapus tag {tag}?",
                     "confirm_remove_title": "Hapus tag?",
-                    "create_automation": "Buat otomatisasi dengan tag",
+                    "create_automation": "Buat otomasi dengan tag",
                     "description": "Picu otomasi ketika tag NFC, kode QR, dll dipindai",
                     "detail": {
                         "companion_apps": "aplikasi pendamping",
@@ -2182,7 +2187,7 @@
                         "tag_id": "ID Tag",
                         "tag_id_placeholder": "Dibuat otomatis saat dibiarkan kosong",
                         "update": "Perbarui",
-                        "usage": "Tag dapat memicu otomatisasi saat dipindai, Anda dapat menggunakan tag NFC, kode QR, atau jenis tag lainnya. Gunakan {companion_link} untuk menulis tag ini ke tag NFC yang dapat diprogram atau buat kode QR di bawah ini."
+                        "usage": "Tag dapat memicu otomasi saat dipindai, Anda dapat menggunakan tag NFC, kode QR, atau jenis tag lainnya. Gunakan {companion_link} untuk menulis tag ini ke tag NFC yang dapat diprogram atau buat kode QR di bawah ini."
                     },
                     "edit": "Edit",
                     "headers": {
@@ -2247,7 +2252,7 @@
                         "no_devices_found": "Tidak ada perangkat yang ditemukan, pastikan perangkat dalam mode pairing dan tetap aktifkan saat pencarian sedang berjalan.",
                         "pairing_mode": "Pastikan perangkat Anda dalam mode pairing. Periksa petunjuk perangkat Anda tentang cara melakukannya.",
                         "search_again": "Cari Lagi",
-                        "spinner": "Mencari perangkat ZHA Zigbee..."
+                        "spinner": "Mencari perangkat ZHA Zigbee…"
                     },
                     "button": "Konfigurasikan",
                     "cluster_attributes": {
@@ -2352,7 +2357,7 @@
                     "edit_home_zone_narrow": "Radius zona Rumah belum dapat diedit dari antarmuka. Lokasi dapat diubah dari konfigurasi umum.",
                     "go_to_core_config": "Buka konfigurasi umum?",
                     "home_zone_core_config": "Lokasi zona rumah Anda dapat diedit dari halaman konfigurasi umum. Radius zona Rumah belum dapat diedit dari antarmuka. Apakah Anda ingin membuka konfigurasi umum?",
-                    "introduction": "Zona memungkinkan Anda untuk menentukan wilayah tertentu di bumi. Ketika seseorang berada dalam zona, status akan mengambil nama dari zona tersebut. Zona juga dapat digunakan sebagai pemicu atau kondisi di dalam pengaturan otomatisasi.",
+                    "introduction": "Zona memungkinkan Anda untuk menentukan wilayah tertentu di bumi. Ketika seseorang berada dalam zona, status akan mengambil nama dari zona tersebut. Zona juga dapat digunakan sebagai pemicu atau kondisi di dalam pengaturan otomasi.",
                     "no_zones_created_yet": "Sepertinya Anda belum membuat zona."
                 },
                 "zwave_js": {
@@ -2449,7 +2454,7 @@
                         "network_started": "Jaringan Z-Wave Dimulai",
                         "network_started_note_all_queried": "Semua node telah dikueri.",
                         "network_started_note_some_queried": "Semua node yang bangun telah dikueri. Node yang tidur akan dikueri ketika nodenya bangun.",
-                        "network_starting": "Memulai Jaringan Z-Wave...",
+                        "network_starting": "Memulai Jaringan Z-Wave…",
                         "network_starting_note": "Ini mungkin memakan waktu cukup lama tergantung pada ukuran jaringan Anda.",
                         "network_stopped": "Jaringan Z-Wave Berhenti"
                     },
@@ -2486,6 +2491,7 @@
                     },
                     "ozw_log": {
                         "header": "OZW Log",
+                        "introduction": "Tampilkan log. Nilai 0 adalah nilai minimum (memuat keselurukan log) dan 1000 adalah nilai maksimum. Tombol Muat akan menampilkan log secara statis dan tombol Lihat Terakhir akan memperbarui secara otomatis dengan jumlah baris terlihat sesuai dengan yang Anda pilih.",
                         "last_log_lines": "Jumlah baris log terakhir",
                         "load": "Muat",
                         "tail": "Lihat Terakhir"
@@ -2527,8 +2533,10 @@
                     "events": {
                         "alert_event_type": "Jenis peristiwa adalah bidang wajib diisi",
                         "available_events": "Peristiwa yang Tersedia",
+                        "count_listeners": " ({count}  listener)",
                         "data": "Data Peristiwa (YAML, opsional)",
                         "documentation": "Dokumentasi Peristiwa.",
+                        "listen_to_events": "Dengarkan ",
                         "title": "Peristiwa",
                         "type": "Jenis Peristiwa"
                     },
@@ -2642,7 +2650,7 @@
                         "reorder_items": "Susun ulang item"
                     },
                     "starting": {
-                        "description": "Home Assistant sedang memulai, harap tunggu..."
+                        "description": "Home Assistant sedang memulai, harap tunggu…"
                     }
                 },
                 "changed_toast": {
@@ -3165,7 +3173,7 @@
                                     "data": {
                                         "user": "Pengguna"
                                     },
-                                    "description": "Pilih pengguna yang ingin login sebagai:"
+                                    "description": "Pilih pengguna yang diinginkan untuk masuk:"
                                 }
                             }
                         }
@@ -3228,7 +3236,7 @@
                     "button_detect": "Deteksi",
                     "finish": "Berikutnya",
                     "intro": "Halo {name}, selamat datang di Home Assistant. Nama apa yang ingin diberikan untuk rumah Anda?",
-                    "intro_location": "Kami ingin mengetahui tempat tinggal Anda. Informasi ini akan membantu menampilkan informasi dan menyiapkan otomatisasi berbasis matahari. Data ini tidak pernah dibagikan di luar jaringan Anda.",
+                    "intro_location": "Kami ingin mengetahui tempat tinggal Anda. Informasi ini akan membantu menampilkan informasi dan menyiapkan otomasi berbasis matahari. Data ini tidak pernah dibagikan di luar jaringan Anda.",
                     "intro_location_detect": "Kami dapat membantu Anda mengisi informasi ini dengan membuat permintaan satu kali ke layanan eksternal.",
                     "location_name": "Beri nama instalasi Home Assistant Anda",
                     "location_name_default": "Rumah"
