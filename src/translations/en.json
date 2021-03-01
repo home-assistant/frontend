@@ -612,7 +612,7 @@
           "title": "Update Instructions"
         },
         "remote": {
-          "activity": "Current Activity"
+          "activity": "Current activity"
         },
         "restored": {
           "not_provided": "This entity is currently unavailable and is an orphan to a removed, changed or dysfunctional integration or device.",
