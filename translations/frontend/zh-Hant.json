@@ -696,6 +696,7 @@
                         "scene": "場景",
                         "script": "腳本",
                         "server_control": "伺服器控制",
+                        "tag": "標籤",
                         "tags": "標籤",
                         "users": "使用者",
                         "zone": "區域"
@@ -791,8 +792,8 @@
                 "editor_not_available": "類型 \"{type}\" 沒有可供使用的視覺化編輯器。",
                 "editor_not_supported": "此設定不支援視覺化編輯器",
                 "error_detected": "發現設定錯誤",
-                "key_missing": "缺少所需的密鑰 \"{key}\"。",
-                "key_not_expected": "視覺化編輯器不支援密鑰 \"{key}\"。",
+                "key_missing": "缺少所需的權杖 \"{key}\"。",
+                "key_not_expected": "視覺化編輯器不支援權杖 \"{key}\"。",
                 "key_wrong_type": "視覺化編輯器不支援所提供的 \"{key}\" 數值。支援 ({type_correct}) 但卻收到 ({type_wrong})。",
                 "no_type_provided": "未提供類型。"
             }
@@ -3169,7 +3170,7 @@
                                     "data": {
                                         "password": "API 密碼"
                                     },
-                                    "description": "請輸入 Http 設定中的 API 密鑰："
+                                    "description": "請輸入 Http 設定中的 API 權杖："
                                 },
                                 "mfa": {
                                     "data": {
@@ -3330,18 +3331,18 @@
                 "logout_text": "確定要登出？",
                 "logout_title": "登出？",
                 "long_lived_access_tokens": {
-                    "confirm_delete": "確定要刪除{name}存取密鑰嗎？",
-                    "create": "創建密鑰",
-                    "create_failed": "創建存取密鑰失敗。",
+                    "confirm_delete": "確定要刪除{name}存取權杖嗎？",
+                    "create": "創建權杖",
+                    "create_failed": "創建存取權杖失敗。",
                     "created": "新增日期：{date}",
-                    "delete_failed": "刪除存取密鑰失敗。",
-                    "description": "創建長效存取密鑰，可供運用腳本與 Home Assistant 實體進行互動。每個密鑰於創建後，有效期為十年。目前已啟用之永久有效密鑰如下。",
-                    "empty_state": "尚未創建永久有效存取密鑰。",
-                    "header": "永久有效存取密鑰",
+                    "delete_failed": "刪除存取權杖失敗。",
+                    "description": "創建長效存取權杖，可供運用腳本與 Home Assistant 實體進行互動。每個權杖於創建後，有效期為十年。目前已啟用之永久有效權杖如下。",
+                    "empty_state": "尚未創建永久有效存取權杖。",
+                    "header": "永久有效存取權杖",
                     "learn_auth_requests": "學習如何進行驗證請求。",
                     "name": "名稱",
                     "prompt_copy_token": "複製存取密鑰，將不會再次顯示。",
-                    "prompt_name": "為密鑰命名"
+                    "prompt_name": "為權杖命名"
                 },
                 "mfa_setup": {
                     "close": "關閉",
@@ -3369,15 +3370,15 @@
                     "push_notifications": "通知推送"
                 },
                 "refresh_tokens": {
-                    "confirm_delete": "確定要刪除{name}更新密鑰嗎？",
+                    "confirm_delete": "確定要刪除{name}更新權杖嗎？",
                     "created_at": "於{date}創建",
-                    "current_token_tooltip": "無法刪除目前更新密鑰",
-                    "delete_failed": "刪除更新密鑰失敗。",
-                    "description": "每一個更新密鑰標示為一次登錄活動。當點選登出時，更新密鑰將會自動移除。目前你的帳號已啟用之更新密鑰如下。",
-                    "header": "更新密鑰",
+                    "current_token_tooltip": "無法刪除目前更新權杖",
+                    "delete_failed": "刪除更新權杖失敗。",
+                    "description": "每一個更新權杖標示為一次登錄活動。當點選登出時，更新權杖將會自動移除。目前你的帳號已啟用之更新權杖如下。",
+                    "header": "更新權杖",
                     "last_used": "上次使用：於{date}、位置{location}",
                     "not_used": "從未使用過",
-                    "token_title": "{clientId}更新密鑰"
+                    "token_title": "{clientId}更新權杖"
                 },
                 "suspend": {
                     "description": "於隱藏五分鐘後關閉連線？",

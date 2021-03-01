@@ -494,8 +494,8 @@
                 "add_area_id": "选择区域",
                 "add_device_id": "选择设备",
                 "add_entity_id": "选择实体",
-                "expand_area_id": "在它包含的单独设备和实体中展开此区域。展开后，当区域发生更改时，它不会更新设备和实体。",
-                "expand_device_id": "在单独的实体中展开此设备。展开后，设备发生变化时不会更新实体。",
+                "expand_area_id": "将此区域展开为单独的设备和实体。展开后，当区域发生变化时，将不会更新设备和实体。",
+                "expand_device_id": "将此设备展开为单独的实体。展开后，设备发生变化时将不会更新实体。",
                 "remove_area_id": "删除区域",
                 "remove_device_id": "删除设备",
                 "remove_entity_id": "删除实体"
@@ -2565,7 +2565,7 @@
                         "title": "服务",
                         "ui_mode": "进入 UI 模式",
                         "yaml_mode": "进入 YAML 模式",
-                        "yaml_parameters": "只能在 YAML 模式下使用的参数"
+                        "yaml_parameters": "以下参数只能在 YAML 模式下使用"
                     },
                     "states": {
                         "alert_entity_field": "实体是必填字段",
