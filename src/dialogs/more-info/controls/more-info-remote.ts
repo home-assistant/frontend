@@ -15,6 +15,8 @@ import "../../../components/ha-paper-dropdown-menu";
 import { RemoteEntity, REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
 import { HomeAssistant } from "../../../types";
 
+const filterExtraAttributes = "activity_list,current_activity";
+
 @customElement("more-info-remote")
 class MoreInfoRemote extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -27,8 +29,6 @@ class MoreInfoRemote extends LitElement {
     }
 
     const stateObj = this.stateObj;
-
-    const filterExtraAttributes = "activity_list,current_activity";
 
     return html`
       ${supportsFeature(stateObj, REMOTE_SUPPORT_ACTIVITY)
