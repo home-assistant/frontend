@@ -1,8 +1,8 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { HassioHomeAssistantInfo } from "../../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 export interface SupervisorDialogSupervisorCoreUpdateParams {
-  core: HassioHomeAssistantInfo;
+  supervisor: Supervisor;
 }
 
 export const showDialogSupervisorCoreUpdate = (

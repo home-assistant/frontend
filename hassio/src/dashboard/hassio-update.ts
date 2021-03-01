@@ -136,7 +136,7 @@ export class HassioUpdate extends LitElement {
   private async _confirmUpdate(ev): Promise<void> {
     const item = ev.currentTarget;
     if (item.key === "core") {
-      showDialogSupervisorCoreUpdate(this, { core: this.supervisor.core });
+      showDialogSupervisorCoreUpdate(this, { supervisor: this.supervisor });
       return;
     }
     item.progress = true;

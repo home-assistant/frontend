@@ -6,6 +6,7 @@ import {
   html,
   internalProperty,
   LitElement,
+  property,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -19,6 +20,7 @@ import {
   updateHassioAddon,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -26,6 +28,8 @@ import { SupervisorDialogSupervisorAddonUpdateParams } from "./show-dialog-addon
 
 @customElement("dialog-supervisor-addon-update")
 class DialogSupervisorAddonUpdate extends LitElement {
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   public hass!: HomeAssistant;
 
   public addon!: HassioAddonDetails;
@@ -43,6 +47,7 @@ class DialogSupervisorAddonUpdate extends LitElement {
   ): Promise<void> {
     this._opened = true;
     this.addon = params.addon;
+    this.supervisor = params.supervisor;
     await this.updateComplete;
   }
 
@@ -50,6 +55,7 @@ class DialogSupervisorAddonUpdate extends LitElement {
     this._action = null;
     this._createSnapshot = true;
     this._opened = false;
+    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -94,7 +100,12 @@ class DialogSupervisorAddonUpdate extends LitElement {
               <mwc-button @click=${this.closeDialog} slot="secondaryAction">
                 Cancel
               </mwc-button>
-              <mwc-button @click=${this._update} slot="primaryAction">
+              <mwc-button
+                .disabled=${this._error !== undefined ||
+                this.supervisor.info.state !== "running"}
+                @click=${this._update}
+                slot="primaryAction"
+              >
                 Update
               </mwc-button>`
           : html`<ha-circular-progress alt="Updating" size="large" active>

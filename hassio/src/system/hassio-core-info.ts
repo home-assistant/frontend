@@ -152,7 +152,7 @@ class HassioCoreInfo extends LitElement {
   }
 
   private async _coreUpdate(): Promise<void> {
-    showDialogSupervisorCoreUpdate(this, { core: this.supervisor.core });
+    showDialogSupervisorCoreUpdate(this, { supervisor: this.supervisor });
   }
 
   static get styles(): CSSResult[] {

@@ -934,7 +934,10 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _updateClicked(): Promise<void> {
-    showDialogSupervisorAddonUpdate(this, { addon: this.addon });
+    showDialogSupervisorAddonUpdate(this, {
+      addon: this.addon,
+      supervisor: this.supervisor,
+    });
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {

@@ -6,6 +6,7 @@ import {
   html,
   internalProperty,
   LitElement,
+  property,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -16,17 +17,17 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
-import { HassioHomeAssistantInfo } from "../../../../src/data/hassio/supervisor";
 import { updateCore } from "../../../../src/data/supervisor/core";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { SupervisorDialogSupervisorCoreUpdateParams } from "./show-dialog-core-update";
 
 @customElement("dialog-supervisor-core-update")
 class DialogSupervisorCoreUpdate extends LitElement {
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
-  public core!: HassioHomeAssistantInfo;
+  public hass!: HomeAssistant;
 
   @internalProperty() private _opened = false;
 
@@ -40,7 +41,7 @@ class DialogSupervisorCoreUpdate extends LitElement {
     params: SupervisorDialogSupervisorCoreUpdateParams
   ): Promise<void> {
     this._opened = true;
-    this.core = params.core;
+    this.supervisor = params.supervisor;
     await this.updateComplete;
   }
 
@@ -48,6 +49,7 @@ class DialogSupervisorCoreUpdate extends LitElement {
     this._action = null;
     this._createSnapshot = true;
     this._opened = false;
+    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -70,7 +72,7 @@ class DialogSupervisorCoreUpdate extends LitElement {
               </slot>
               <div>
                 Are you sure you want to update Home Assistant Core to version
-                ${this.core.version_latest}?
+                ${this.supervisor.core.version_latest}?
               </div>
 
               <ha-settings-row three-rows>
@@ -91,14 +93,19 @@ class DialogSupervisorCoreUpdate extends LitElement {
               <mwc-button @click=${this.closeDialog} slot="secondaryAction">
                 Cancel
               </mwc-button>
-              <mwc-button @click=${this._update} slot="primaryAction">
+              <mwc-button
+                .disabled=${this._error !== undefined ||
+                this.supervisor.info.state !== "running"}
+                @click=${this._update}
+                slot="primaryAction"
+              >
                 Update
               </mwc-button>`
           : html`<ha-circular-progress alt="Updating" size="large" active>
               </ha-circular-progress>
               <p class="progress-text">
                 ${this._action === "update"
-                  ? `Updating Home Assistant Core to version ${this.core.version_latest}`
+                  ? `Updating Home Assistant Core to version ${this.supervisor.core.version_latest}`
                   : "Creating snapshot of Home Assistant Core"}
               </p>`}
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -115,7 +122,7 @@ class DialogSupervisorCoreUpdate extends LitElement {
       this._action = "snapshot";
       try {
         await createHassioPartialSnapshot(this.hass, {
-          name: `core_${this.core.version}`,
+          name: `core_${this.supervisor.core.version}`,
           folders: ["homeassistant"],
           homeassistant: true,
         });
