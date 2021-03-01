@@ -80,7 +80,7 @@ class HaSlider extends PaperSliderClass {
   }
 
   _setImmediateValue(newImmediateValue) {
-    super._setImmediateValue(Math.round(newImmediateValue));
+    super._setImmediateValue(newImmediateValue);
   }
 
   _calcStep(value) {
