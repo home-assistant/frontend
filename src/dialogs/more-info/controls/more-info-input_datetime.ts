@@ -34,8 +34,8 @@ class DatetimeInput extends LitElement {
     return html`
       <div
         class="more-info-input_datetime ${classMap({
-          "has-has_time": "has_time" in this.stateObj.attributes,
-          "has-has_date": "has_date" in this.stateObj.attributes,
+          "has-has_time": !!this.stateObj.attributes.has_time,
+          "has-has_date": !!this.stateObj.attributes.has_date,
         })}"
       >
         ${this.stateObj.attributes.has_date
