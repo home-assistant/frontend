@@ -89,6 +89,11 @@ export const reconfigureNode = (
     ieee: ieeeAddress,
   });
 
+export const refreshTopology = (hass: HomeAssistant): Promise<void> =>
+  hass.callWS({
+    type: "zha/topology/update",
+  });
+
 export const fetchAttributesForCluster = (
   hass: HomeAssistant,
   ieeeAddress: string,
