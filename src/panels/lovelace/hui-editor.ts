@@ -11,11 +11,13 @@ import {
   internalProperty,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-circular-progress";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
@@ -29,6 +31,7 @@ import {
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { showToast } from "../../util/toast";
 import type { Lovelace } from "./types";
 
 const lovelaceStruct = type({
@@ -101,8 +104,35 @@ class LovelaceFullConfigEditor extends LitElement {
     `;
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
     this.yamlEditor.value = safeDump(this.lovelace!.config);
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    const oldLovelace = changedProps.get("lovelace") as Lovelace | undefined;
+    if (
+      oldLovelace &&
+      this.lovelace &&
+      oldLovelace.config !== this.lovelace.config &&
+      !deepEqual(oldLovelace.config, this.lovelace.config)
+    ) {
+      showToast(this, {
+        message: this.hass!.localize(
+          "ui.panel.lovelace.editor.raw_editor.lovelace_changed"
+        ),
+        action: {
+          action: () => {
+            this.yamlEditor.value = safeDump(this.lovelace!.config);
+          },
+          text: this.hass!.localize(
+            "ui.panel.lovelace.editor.raw_editor.reload"
+          ),
+        },
+        duration: 0,
+        dismissable: false,
+      });
+    }
   }
 
   static get styles(): CSSResult[] {
