@@ -3420,6 +3420,11 @@
   },
   "supervisor": {
     "addon": {
+      "state": {
+        "installed": "Add-on is installed",
+        "not_installed": "Add-on is not installed",
+        "not_available": "Add-on is not available on your system"
+      },
       "panel": {
         "configuration": "Configuration",
         "documentation": "Documentation",
@@ -3430,6 +3435,7 @@
     "common": {
       "cancel": "Cancel",
       "newest_version": "Newest Version",
+      "new_version_available": "New version available",
       "release_notes": "Release notes",
       "update": "Update",
       "version": "Version"
@@ -3451,6 +3457,9 @@
     "error": {
       "unknown": "Unknown error",
       "update_failed": "Update failed"
+    },
+    "store": {
+      "no_results_found": "No results found in {repository}."
     },
     "panel": {
       "dashboard": "Dashboard",

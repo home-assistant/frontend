@@ -161,6 +161,7 @@ class HassioAddonStore extends LitElement {
                 .repo=${repo}
                 .addons=${filteredAddons}
                 .filter=${filter!}
+                .supervisor=${this.supervisor}
               ></hassio-addon-repository>
             `
           : html``;
