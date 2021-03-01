@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Annuler",
-                "cancel_multiple": "Annuler {number}"
+                "cancel_multiple": "Annuler {number}",
+                "run": "Exécuter"
             },
             "service": {
                 "run": "Exécuter"
@@ -295,6 +296,19 @@
             "yes": "Oui"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Modules complémentaires",
+                "error": {
+                    "fetch_addons": {
+                        "description": "La récupération des modules complémentaires a renvoyé une erreur.",
+                        "title": "Erreur lors de la récupération des modules complémentaires"
+                    },
+                    "no_supervisor": {
+                        "description": "Aucun Superviseur n'a été trouvé, donc les modules complémentaires n'ont pas pu être chargés.",
+                        "title": "Aucun superviseur"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Ajouter",
@@ -682,6 +696,7 @@
                         "scene": "Scènes",
                         "script": "Scripts",
                         "server_control": "Contrôle du serveur",
+                        "tag": "Balises",
                         "tags": "Balises",
                         "users": "Utilisateurs",
                         "zone": "Zones"
@@ -1485,6 +1500,7 @@
                     "cant_edit": "Vous ne pouvez modifier que les éléments créés dans l'interface utilisateur.",
                     "caption": "Appareils",
                     "confirm_delete": "Voulez-vous vraiment supprimer cet appareil ?",
+                    "confirm_disable_config_entry": "Il n'y a plus de périphériques pour l'entrée de configuration {entry_name} , voulez-vous à la place désactiver l'entrée de configuration?",
                     "confirm_rename_entity_ids": "Voulez-vous aussi renommer les ID de vos entités?",
                     "confirm_rename_entity_ids_warning": "Cela ne changera aucune configuration (comme les automatisations, les scripts, les scènes, Lovelace) qui utilisent actuellement ces entités, vous devrez les mettre à jour vous-même.",
                     "data_table": {
@@ -1597,7 +1613,8 @@
                 },
                 "filtering": {
                     "clear": "Effacer",
-                    "filtering_by": "Filtrage par"
+                    "filtering_by": "Filtrage par",
+                    "show": "Montrer"
                 },
                 "header": "Configurer Home Assistant",
                 "helpers": {
@@ -1668,7 +1685,19 @@
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
                         "device_unavailable": "Appareil non disponible",
                         "devices": "{count} {count, plural,\n  zero {appareil}\n  one {appareil}\n  other {appareils}\n}",
+                        "disable_restart_confirm": "Redémarrez Home Assistant pour terminer la désactivation de cette intégration",
+                        "disable": {
+                            "disable_confirm": "Voulez-vous vraiment désactiver cette entrée de configuration? Ses appareils et entités seront désactivés.",
+                            "disabled": "Désactivé",
+                            "disabled_by": {
+                                "device": "appareil",
+                                "integration": "intégration",
+                                "user": "utilisateur"
+                            },
+                            "disabled_cause": "Désactivé par {cause}"
+                        },
                         "documentation": "Documentation",
+                        "enable_restart_confirm": "Redémarrez Home Assistant pour terminer l'activation de cette intégration",
                         "entities": "{count} {count, plural,\n  zero {entité}\n  one {entité}\n  other {entités}\n}",
                         "entity_unavailable": "Entité indisponible",
                         "firmware": "Firmware: {version}",
@@ -1711,6 +1740,11 @@
                     "confirm_new": "Voulez-vous configurer {intégration} ?",
                     "description": "Gérer les appareils et services connectés",
                     "details": "Détails de l'intégration",
+                    "disable": {
+                        "disabled_integrations": "{number} désactivé",
+                        "hide_disabled": "Masquer les intégrations désactivées",
+                        "show_disabled": "Afficher les intégrations désactivées"
+                    },
                     "discovered": "Découvert",
                     "home_assistant_website": "site web de Home Assistant",
                     "ignore": {
@@ -2536,6 +2570,7 @@
                     "states": {
                         "alert_entity_field": "L'entité est un champ obligatoire",
                         "attributes": "Attributs",
+                        "copy_id": "Copier l'ID dans le presse-papiers",
                         "current_entities": "Entités actuelles",
                         "description1": "Définir la représentation d'un périphérique dans Home Assistant.",
                         "description2": "Cela ne communiquera pas avec le périphérique réel.",
@@ -3062,8 +3097,10 @@
             },
             "my": {
                 "component_not_loaded": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vous avez besoin de l'intégration {integration} pour utiliser cette redirection.",
+                "documentation": "documentation",
                 "error": "Une erreur inconnue est survenue",
                 "faq_link": "Ma Home Assistant FAQ",
+                "no_supervisor": "Cette redirection n'est pas prise en charge par votre installation Home Assistant. Il nécessite soit le système d'exploitation Home Assistant, soit la méthode d'installation supervisée par Home Assistant. Pour plus d'informations, consultez le {docs_link} .",
                 "not_supported": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vérifiez le {link} pour les redirections prises en charge et la version dans laquelle elles ont été introduites."
             },
             "page-authorize": {

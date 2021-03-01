@@ -300,12 +300,12 @@
                 "addon": "Tillegg",
                 "error": {
                     "fetch_addons": {
-                        "description": "Henting av tillegg returnerte en feil.",
+                        "description": "Henting av tillegg returnerte en feil",
                         "title": "Feil ved henting av tillegg"
                     },
                     "no_supervisor": {
-                        "description": "Ingen Supervisor funnet, så tillegg kunne ikke lastes inn.",
-                        "title": "Ingen Supervisor"
+                        "description": "Ingen supervisor funnet, så tillegg kunne ikke lastes inn.",
+                        "title": "Ingen supervisor"
                     }
                 }
             },
@@ -696,6 +696,7 @@
                         "scene": "Scener",
                         "script": "Skript",
                         "server_control": "Server-kontroller",
+                        "tag": "Tagger",
                         "tags": "Tagger",
                         "users": "Brukere",
                         "zone": "Soner"
@@ -1499,7 +1500,7 @@
                     "cant_edit": "Du kan bare redigere elementer som er opprettet i brukergrensesnittet.",
                     "caption": "Enheter",
                     "confirm_delete": "Er du sikker på at du vil slette denne enheten?",
-                    "confirm_disable_config_entry": "Det er ikke flere enheter for konfigurasjonsoppføringen {entry_name} , vil du i stedet deaktivere konfigurasjonsoppføringen?",
+                    "confirm_disable_config_entry": "Det er ikke flere enheter for konfigurasjonsoppføringen {entry_name}, vil du i stedet deaktivere konfigurasjonsoppføringen?",
                     "confirm_rename_entity_ids": "Vil du også endre enhets-ID-ene til enhetene dine?",
                     "confirm_rename_entity_ids_warning": "Dette vil ikke endre noen konfigurasjon (som automasjoner, skript, scener, dashbord) som for øyeblikket bruker disse enhetene! Du må oppdatere dem selv for å bruke de nye enhets-IDene!",
                     "data_table": {
@@ -3099,7 +3100,7 @@
                 "documentation": "dokumentasjon",
                 "error": "Det oppstod en ukjent feil",
                 "faq_link": "Vanlige spørsmål om Min Home Assistant",
-                "no_supervisor": "Denne viderekoblingen støttes ikke av Home Assistant-installasjonen. Det trenger enten installasjonsmetoden Home Assistant eller Home Assistant Supervised. For mer informasjon, se {docs_link} .",
+                "no_supervisor": "Denne viderekoblingen støttes ikke av Home Assistant-installasjonen. Det trenger enten installasjonsmetoden Home Assistant OS eller Home Assistant Supervised. For mer informasjon, se {docs_link}.",
                 "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
             },
             "page-authorize": {

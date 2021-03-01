@@ -69,10 +69,10 @@
     "state_badge": {
         "alarm_control_panel": {
             "armed": "Etkin",
-            "armed_away": "Etkin",
-            "armed_custom_bypass": "Etkin",
-            "armed_home": "Devrede",
-            "armed_night": "Etkin",
+            "armed_away": "Aktif",
+            "armed_custom_bypass": "Aktif",
+            "armed_home": "Aktif",
+            "armed_night": "Aktif",
             "arming": "Etkinleştir",
             "disarmed": "Etkisiz",
             "disarming": "Etkisiz",
@@ -696,6 +696,7 @@
                         "scene": "Sahneler",
                         "script": "Senaryolar",
                         "server_control": "Sunucu Kontrolleri",
+                        "tag": "Etiketler",
                         "tags": "Etiketler",
                         "users": "Kullanıcılar",
                         "zone": "Bölgeler"
@@ -911,7 +912,7 @@
                                 "event": {
                                     "event": "Olay:",
                                     "label": "Olayı Çalıştır",
-                                    "service_data": "Servis Verisi"
+                                    "service_data": "Hizmet Verisi"
                                 },
                                 "repeat": {
                                     "label": "Tekrar",

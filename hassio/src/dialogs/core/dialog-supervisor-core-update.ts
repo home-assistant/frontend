@@ -61,14 +61,14 @@ class DialogSupervisorCoreUpdate extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-dialog
-        .open=${this._opened}
-        heading="Update Home Assistant Core"
-        scrimClickAction
-        escapeKeyAction
-      >
+      <ha-dialog .open=${this._opened} scrimClickAction escapeKeyAction>
         ${this._action === null
-          ? html`<div>
+          ? html`<slot name="heading">
+                <h2 id="title" class="header_title">
+                  Update Home Assistant Core
+                </h2>
+              </slot>
+              <div>
                 Are you sure you want to update Home Assistant Core to version
                 ${this.core.version_latest}?
               </div>
@@ -98,8 +98,8 @@ class DialogSupervisorCoreUpdate extends LitElement {
               </ha-circular-progress>
               <p class="progress-text">
                 ${this._action === "update"
-                  ? `Update to version ${this.core.version_latest} in progress`
-                  : "Creating snapshot in progress"}
+                  ? `Updating Home Assistant Core to version ${this.core.version_latest}`
+                  : "Creating snapshot of Home Assistant Core"}
               </p>`}
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
       </ha-dialog>
