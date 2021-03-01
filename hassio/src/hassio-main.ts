@@ -3,10 +3,7 @@ import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
-import {
-  Supervisor,
-  supervisorCollection,
-} from "../../src/data/supervisor/supervisor";
+import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import "../../src/layouts/hass-loading-screen";
 import { HomeAssistant, Route } from "../../src/types";
