@@ -63,16 +63,16 @@ class DialogSupervisorAddonUpdate extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-dialog
-        .heading="Update ${this.addon.name}"
-        .open=${this._opened}
-        scrimClickAction
-        escapeKeyAction
-      >
+      <ha-dialog .open=${this._opened} scrimClickAction escapeKeyAction>
         ${this._action === null
-          ? html`<div>
-                Are you sure you want to update this add-on to version
-                ${this.addon.version_latest}?
+          ? html`<slot name="heading">
+                <h2 id="title" class="header_title">
+                  Update ${this.addon.name}
+                </h2>
+              </slot>
+              <div>
+                Are you sure you want to update the ${this.addon.name} add-on to
+                version ${this.addon.version_latest}?
               </div>
 
               <ha-settings-row>
@@ -80,7 +80,8 @@ class DialogSupervisorAddonUpdate extends LitElement {
                   Snapshot
                 </span>
                 <span slot="description">
-                  Create a snapshot of the add-on before updating
+                  Create a snapshot of the ${this.addon.name} add-on before
+                  updating
                 </span>
                 <ha-switch
                   .checked=${this._createSnapshot}
@@ -100,8 +101,8 @@ class DialogSupervisorAddonUpdate extends LitElement {
               </ha-circular-progress>
               <p class="progress-text">
                 ${this._action === "update"
-                  ? `Update to version ${this.addon.version_latest} in progress`
-                  : "Creating snapshot in progress"}
+                  ? `Updating ${this.addon.name} to version ${this.addon.version_latest}`
+                  : "Creating snapshot of Home Assistant Core"}
               </p>`}
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
       </ha-dialog>

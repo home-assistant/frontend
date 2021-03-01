@@ -137,7 +137,7 @@ export class HaCodeEditor extends UpdatingElement {
             ...loaded.historyKeymap,
             ...loaded.tabKeyBindings,
             saveKeyBinding,
-          ]),
+          ] as KeyBinding[]),
           loaded.tagExtension(modeTag, this._mode),
           loaded.theme,
           loaded.Prec.fallback(loaded.highlightStyle),

@@ -145,12 +145,10 @@ class HassioAddonConfig extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._canShowSchema =
-      Object.keys(this.addon.options).length !== 0 &&
-      !this.addon.schema!.find(
-        // @ts-ignore
-        (entry) => !SUPPORTED_UI_TYPES.includes(entry.type) || entry.multiple
-      );
+    this._canShowSchema = !this.addon.schema!.find(
+      // @ts-ignore
+      (entry) => !SUPPORTED_UI_TYPES.includes(entry.type) || entry.multiple
+    );
     this._yamlMode = !this._canShowSchema;
   }
 

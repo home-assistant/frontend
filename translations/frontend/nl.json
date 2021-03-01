@@ -481,6 +481,12 @@
                     "week": "{count} {count, plural,\n  one {week}\n  other {weken}\n} geleden"
                 }
             },
+            "service-control": {
+                "required": "Dit veld is verplicht",
+                "service_data": "Service data",
+                "target": "Doelen",
+                "target_description": "Wat moet deze dienst gebruiken als doelgebieden, apparaten of entiteiten."
+            },
             "service-picker": {
                 "service": "Service"
             },
@@ -690,6 +696,7 @@
                         "scene": "Scènes",
                         "script": "Scripts",
                         "server_control": "Server Controls",
+                        "tag": "Tags",
                         "tags": "Tags",
                         "users": "Gebruikers",
                         "zone": "Zones"
@@ -2360,11 +2367,17 @@
                 },
                 "zwave_js": {
                     "add_node": {
+                        "cancel_inclusion": "Opname annuleren",
+                        "controller_in_inclusion_mode": "Uw Z-Wave controller bevindt zich nu in de opnamemodus.",
                         "follow_device_instructions": "Volg de aanwijzingen die bij het apparaat zijn geleverd om de koppeling van het apparaat te activeren.",
                         "inclusion_failed": "Het knooppunt kon niet worden toegevoegd. Controleer de logs voor meer informatie.",
                         "inclusion_finished": "Het knooppunt is toegevoegd. Het kan een paar minuten duren voordat alle entiteiten zichtbaar zijn, omdat we het opzetten van het knooppunt op de achtergrond afwerken.",
                         "introduction": "Deze wizard begeleidt u bij het toevoegen van een knooppunt aan uw Z-Wave netwerk.",
+                        "secure_inclusion_warning": "Beveiligde apparaten vereisen extra bandbreedte; te veel beveiligde apparaten kunnen uw Z-Wave-netwerk vertragen. We raden aan om alleen veilige opname te gebruiken voor apparaten die dat vereisen, zoals sloten of garagedeuropeners.",
+                        "start_inclusion": "Start Opname",
+                        "start_secure_inclusion": "Start Veilige Opname",
                         "title": "Voeg een Z-Wave knooppunt toe",
+                        "use_secure_inclusion": "Gebruik veilige opname",
                         "view_device": "Bekijk apparaat"
                     },
                     "button": "Configureer",
@@ -2412,8 +2425,10 @@
                     },
                     "remove_node": {
                         "cancel_exclusion": "Uitsluiting annuleren",
+                        "controller_in_exclusion_mode": "Uw Z-Wave controller bevindt zich nu in de uitsluitingsmodus.",
                         "exclusion_failed": "Het knooppunt kon niet worden verwijderd. Controleer de logboeken voor meer informatie.",
                         "exclusion_finished": "Knooppunt {id} is verwijderd uit het Z-Wave-netwerk.",
+                        "follow_device_instructions": "Volg de instructies die bij uw apparaat zijn geleverd om uitsluiting op het apparaat te activeren.",
                         "introduction": "Verwijder een knooppunt uit uw Z-Wave-netwerk en verwijder het gekoppelde apparaat met bijbehorende entiteiten uit Home Assistant.",
                         "start_exclusion": "Start uitsluiting",
                         "title": "Een Z-Wave Node verwijderen"
@@ -3081,8 +3096,10 @@
                 "playback_title": "Bericht afspelen"
             },
             "my": {
+                "component_not_loaded": "Deze omleiding wordt niet ondersteund door uw Home Assistant-instantie. U heeft de integratie {integration} nodig om deze omleiding te gebruiken.",
                 "documentation": "documentatie",
                 "error": "Er is een onbekende fout opgetreden",
+                "faq_link": "My Home Assistant FAQ",
                 "no_supervisor": "Deze omleiding wordt niet ondersteund door uw Home Assistant-installatie. Het vereist ofwel het Home Assistant besturingssysteem of de Home Assistant gecontroleerde installatiemethode. Voor meer informatie, zie de {docs_link}.",
                 "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
             },
