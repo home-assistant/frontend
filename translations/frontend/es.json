@@ -696,6 +696,7 @@
                         "scene": "Escenas",
                         "script": "Scripts",
                         "server_control": "Controles del servidor",
+                        "tag": "Etiquetas",
                         "tags": "Etiquetas",
                         "users": "Usuarios",
                         "zone": "Zonas"

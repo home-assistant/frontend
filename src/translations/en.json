@@ -311,6 +311,8 @@
           "was_disconnected": "was disconnected",
           "was_opened": "was opened",
           "was_closed": "was closed",
+          "is_opening": "is opening",
+          "is_closing": "is closing",
           "was_unlocked": "was unlocked",
           "was_locked": "was locked",
           "was_plugged_in": "was plugged in",
@@ -598,8 +600,8 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "script": {
-          "last_action": "Last Action",
-          "last_triggered": "Last Triggered"
+          "last_action": "Last action",
+          "last_triggered": "Last triggered"
         },
         "sun": {
           "elevation": "Elevation",
@@ -743,7 +745,8 @@
           "remove": "Remove Device",
           "clusters": "Manage Clusters",
           "reconfigure": "Reconfigure Device",
-          "zigbee_information": "Zigbee device signature"
+          "zigbee_information": "Zigbee device signature",
+          "view_in_visualization": "View in Visualization"
         },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
@@ -2363,7 +2366,8 @@
             "header": "Network Visualization",
             "caption": "Visualization",
             "highlight_label": "Highlight Devices",
-            "zoom_label": "Zoom To Device"
+            "zoom_label": "Zoom To Device",
+            "refresh_topology": "Refresh Topology"
           },
           "group_binding": {
             "header": "Group Binding",
@@ -2650,6 +2654,8 @@
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
+            "reload": "Reload",
+            "lovelace_changed": "The Lovelace config was updated, do you want to load the updated config in the editor and lose your current changes?",
             "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",

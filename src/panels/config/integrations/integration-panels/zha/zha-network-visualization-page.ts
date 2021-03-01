@@ -9,23 +9,33 @@ import {
   PropertyValues,
   query,
 } from "lit-element";
-import { Edge, EdgeOptions, Network, Node } from "vis-network";
+
+import "@material/mwc-button";
 import { navigate } from "../../../../../common/navigate";
+import {
+  fetchDevices,
+  refreshTopology,
+  ZHADevice,
+} from "../../../../../data/zha";
+import "../../../../../layouts/hass-subpage";
+import type { HomeAssistant } from "../../../../../types";
+import { Network, Edge, Node, EdgeOptions } from "vis-network";
 import "../../../../../common/search/search-input";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-svg-icon";
-import { fetchDevices, ZHADevice } from "../../../../../data/zha";
-import "../../../../../layouts/hass-subpage";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
-import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
+import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property()
+  public zoomedDeviceId?: string;
 
   @query("#visualization", true)
   private _visualization?: HTMLElement;
@@ -44,9 +54,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @internalProperty()
   private _filter?: string;
-
-  @internalProperty()
-  private _zoomedDeviceId?: string;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -98,6 +105,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
         }
       }
     });
+
+    this._network.on("stabilized", () => {
+      if (this.zoomedDeviceId) {
+        this._zoomToDevice();
+      }
+    });
   }
 
   protected render() {
@@ -121,13 +134,18 @@ export class ZHANetworkVisualizationPage extends LitElement {
           </search-input>
           <ha-device-picker
             .hass=${this.hass}
-            .value=${this._zoomedDeviceId}
+            .value=${this.zoomedDeviceId}
             .label=${this.hass.localize(
               "ui.panel.config.zha.visualization.zoom_label"
             )}
-            .includeDomains="['zha']"
-            @value-changed=${this._zoomToDevice}
+            .deviceFilter=${(device) => this._filterDevices(device)}
+            @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
+          <mwc-button @click=${this._refreshTopology}
+            >${this.hass!.localize(
+              "ui.panel.config.zha.visualization.refresh_topology"
+            )}</mwc-button
+          >
         </div>
         <div id="visualization"></div>
       </hass-subpage>
@@ -248,7 +266,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           filteredNodeIds.push(node.id!);
         }
       });
-      this._zoomedDeviceId = "";
+      this.zoomedDeviceId = "";
       this._zoomOut();
       this._network.selectNodes(filteredNodeIds, true);
     } else {
@@ -256,21 +274,25 @@ export class ZHANetworkVisualizationPage extends LitElement {
     }
   }
 
-  private _zoomToDevice(event: PolymerChangedEvent<string>) {
+  private _onZoomToDevice(event: PolymerChangedEvent<string>) {
     event.stopPropagation();
-    this._zoomedDeviceId = event.detail.value;
+    this.zoomedDeviceId = event.detail.value;
     if (!this._network) {
       return;
     }
+    this._zoomToDevice();
+  }
+
+  private _zoomToDevice() {
     this._filter = "";
-    if (!this._zoomedDeviceId) {
+    if (!this.zoomedDeviceId) {
       this._zoomOut();
     } else {
       const device: ZHADevice | undefined = this._devicesByDeviceId.get(
-        this._zoomedDeviceId
+        this.zoomedDeviceId
       );
       if (device) {
-        this._network.fit({
+        this._network!.fit({
           nodes: [device.ieee],
           animation: { duration: 500, easingFunction: "easeInQuad" },
         });
@@ -283,6 +305,24 @@ export class ZHANetworkVisualizationPage extends LitElement {
       nodes: [],
       animation: { duration: 500, easingFunction: "easeOutQuad" },
     });
+  }
+
+  private async _refreshTopology(): Promise<void> {
+    await refreshTopology(this.hass);
+  }
+
+  private _filterDevices(device: DeviceRegistryEntry): boolean {
+    if (!this.hass) {
+      return false;
+    }
+    for (const parts of device.identifiers) {
+      for (const part of parts) {
+        if (part === "zha") {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   static get styles(): CSSResult[] {
@@ -299,29 +339,58 @@ export class ZHANetworkVisualizationPage extends LitElement {
           line-height: var(--paper-font-display1_-_line-height);
           opacity: var(--dark-primary-opacity);
         }
+
         .table-header {
           border-bottom: 1px solid --divider-color;
           padding: 0 16px;
           display: flex;
           align-items: center;
+          flex-direction: row;
           height: var(--header-height);
         }
+
+        :host([narrow]) .table-header {
+          flex-direction: column;
+          align-items: stretch;
+          height: var(--header-height) * 3;
+        }
+
         .search-toolbar {
           display: flex;
           align-items: center;
           color: var(--secondary-text-color);
           padding: 0 16px;
         }
+
         search-input {
           position: relative;
           top: 2px;
           flex: 1;
         }
+
+        :host(:not([narrow])) search-input {
+          margin: 5px;
+        }
+
         search-input.header {
           left: -8px;
         }
+
         ha-device-picker {
           flex: 1;
+        }
+
+        :host(:not([narrow])) ha-device-picker {
+          margin: 5px;
+        }
+
+        mwc-button {
+          font-weight: 500;
+          color: var(--primary-color);
+        }
+
+        :host(:not([narrow])) mwc-button {
+          margin: 5px;
         }
       `,
     ];

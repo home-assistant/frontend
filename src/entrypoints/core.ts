@@ -48,10 +48,19 @@ const authProm = isExternal
 const connProm = async (auth) => {
   try {
     const conn = await createConnection({ auth });
-
-    // Clear url if we have been able to establish a connection
+    // Clear auth data from url if we have been able to establish a connection
     if (location.search.includes("auth_callback=1")) {
-      history.replaceState(null, "", location.pathname);
+      const searchParams = new URLSearchParams(location.search);
+      // https://github.com/home-assistant/home-assistant-js-websocket/blob/master/lib/auth.ts
+      // Remove all data from QueryCallbackData type
+      searchParams.delete("auth_callback");
+      searchParams.delete("code");
+      searchParams.delete("state");
+      history.replaceState(
+        null,
+        "",
+        `${location.pathname}?${searchParams.toString()}`
+      );
     }
 
     return { auth, conn };

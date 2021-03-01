@@ -1,5 +1,5 @@
 import { HighlightStyle, tags } from "@codemirror/highlight";
-import { EditorView as CMEditorView } from "@codemirror/view";
+import { EditorView as CMEditorView, KeyBinding } from "@codemirror/view";
 import { StreamLanguage } from "@codemirror/stream-parser";
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
@@ -18,7 +18,7 @@ export const langs = {
   yaml: StreamLanguage.define(yaml),
 };
 
-export const tabKeyBindings = [
+export const tabKeyBindings: KeyBinding[] = [
   { key: "Tab", run: indentMore },
   {
     key: "Shift-Tab",
@@ -34,6 +34,8 @@ export const theme = CMEditorView.theme({
     "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.3)" },
     height: "var(--code-mirror-height, auto)",
   },
+
+  $scroller: { outline: "none" },
 
   $content: { caretColor: "var(--secondary-text-color)" },
 
@@ -51,34 +53,43 @@ export const theme = CMEditorView.theme({
   "$panels.top": { borderBottom: "1px solid var(--divider-color)" },
   "$panels.bottom": { borderTop: "1px solid var(--divider-color)" },
 
-  "$panel.search": {
-    padding: "2px 6px 4px",
-    position: "relative",
-    "& [name=close]": {
-      position: "absolute",
-      top: "0",
-      right: "4px",
-      backgroundColor: "inherit",
-      border: "none",
-      font: "inherit",
-      padding: "4px",
-      margin: 0,
-      outline: "none",
-      fontSize: "150%",
-    },
-  },
+  "$panel.search input": { margin: "4px 4px 0" },
 
   $button: {
     border: "1px solid var(--primary-color)",
-    padding: "8px",
+    padding: "0px 16px",
     textTransform: "uppercase",
     margin: "4px",
     background: "none",
+    color: "var(--primary-color)",
+    fontFamily:
+      "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))",
+    fontSize: "var(--mdc-typography-button-font-size, 0.875rem)",
+    height: "36px",
+    fontWeight: "var(--mdc-typography-button-font-weight, 500)",
+    borderRadius: "4px",
+    letterSpacing: "var(--mdc-typography-button-letter-spacing, 0.0892857em)",
   },
 
   $textfield: {
-    backgroundColor: "var(--secondary-background-color)",
-    padding: "8px",
+    padding: "4px 0px 5px",
+    borderRadius: "0",
+    fontSize: "16px",
+    color: "var(--primary-text-color)",
+    border: "0",
+    background: "none",
+    fontFamily: "Roboto",
+    borderBottom:
+      "1px solid var(--paper-input-container-color, var(--secondary-text-color))",
+    margin: "4px 4px 0",
+    "& ::placeholder": {
+      color: "var(--paper-input-container-color, var(--secondary-text-color))",
+    },
+    "&:focus": {
+      outline: "none",
+      borderBottom: "2px solid var(--primary-color)",
+      paddingBottom: "4px",
+    },
   },
 
   $selectionMatch: {

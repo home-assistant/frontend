@@ -378,14 +378,13 @@ gulp.task("build-translation-write-metadata", function writeMetadata() {
         const newData = {};
         Object.entries(data).forEach(([key, value]) => {
           // Filter out translations without native name.
-          if (data[key].nativeName) {
-            newData[key] = data[key];
+          if (value.nativeName) {
+            newData[key] = value;
           } else {
             console.warn(
               `Skipping language ${key}. Native name was not translated.`
             );
           }
-          if (data[key]) newData[key] = value;
         });
         return newData;
       })

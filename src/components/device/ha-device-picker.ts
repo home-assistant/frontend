@@ -34,7 +34,8 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import { HaComboBox } from "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
+import "../ha-combo-box";
 
 interface Device {
   name: string;
