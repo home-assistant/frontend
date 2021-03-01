@@ -161,8 +161,8 @@ export class HaConfigDevicePage extends LitElement {
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
-    const batteryIsBinary = batteryState
-      && computeStateDomain(batteryState) === "binary_sensor";
+    const batteryIsBinary =
+      batteryState && computeStateDomain(batteryState) === "binary_sensor";
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;

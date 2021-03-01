@@ -16,6 +16,10 @@ export type AddonStartup =
 export type AddonState = "started" | "stopped" | null;
 export type AddonRepository = "core" | "local" | string;
 
+interface AddonTranslations {
+  [key: string]: Record<string, Record<string, Record<string, string>>>;
+}
+
 export interface HassioAddonInfo {
   advanced: boolean;
   available: boolean;
@@ -82,6 +86,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
+  translations: AddonTranslations;
   watchdog: null | boolean;
   webui: null | string;
 }

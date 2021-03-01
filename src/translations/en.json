@@ -3417,5 +3417,46 @@
         }
       }
     }
+  },
+  "supervisor": {
+    "addon": {
+      "panel": {
+        "configuration": "Configuration",
+        "documentation": "Documentation",
+        "info": "Info",
+        "log": "Log"
+      }
+    },
+    "common": {
+      "cancel": "Cancel",
+      "newest_version": "Newest Version",
+      "release_notes": "Release notes",
+      "update": "Update",
+      "version": "Version"
+    },
+    "confirm": {
+      "update": {
+        "title": "Update ${name}",
+        "text": "Are you sure you want to update {name} to version {version}?"
+      }
+    },
+    "dashboard": {
+      "addon_new_version": "New version available",
+      "addon_running": "Add-on is running",
+      "addon_stopped": "Add-on is stopped",
+      "addons": "Add-ons",
+      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
+      "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending"
+    },
+    "error": {
+      "unknown": "Unknown error",
+      "update_failed": "Update failed"
+    },
+    "panel": {
+      "dashboard": "Dashboard",
+      "snapshots": "Snapshots",
+      "store": "Add-on Store",
+      "system": "System"
+    }
   }
 }
