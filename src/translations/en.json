@@ -611,6 +611,9 @@
         "updater": {
           "title": "Update Instructions"
         },
+        "remote": {
+          "activity": "Current Activity"
+        },
         "restored": {
           "not_provided": "This entity is currently unavailable and is an orphan to a removed, changed or dysfunctional integration or device.",
           "remove_intro": "If the entity is no longer in use, you can clean it up by removing it.",
