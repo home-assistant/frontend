@@ -64,8 +64,9 @@ class HassioAddonConfig extends LitElement {
 
   public computeLabel = (entry: HaFormSchema): string => {
     return (
-      this.addon.translations[this.hass.language]?.[entry.name]?.name ||
-      this.addon.translations.en?.[entry.name].name ||
+      this.addon.translations[this.hass.language]?.configuration?.[entry.name]
+        ?.name ||
+      this.addon.translations.en?.configuration?.[entry.name].name ||
       entry.name
     );
   };

@@ -17,7 +17,7 @@ export type AddonState = "started" | "stopped" | null;
 export type AddonRepository = "core" | "local" | string;
 
 interface AddonTranslations {
-  [key: string]: Record<string, Record<string, string>>;
+  [key: string]: Record<string, Record<string, Record<string, string>>>;
 }
 
 export interface HassioAddonInfo {
