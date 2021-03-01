@@ -26,16 +26,15 @@ class HassioAddonConfigDashboard extends LitElement {
     if (!this.addon) {
       return html`<ha-circular-progress active></ha-circular-progress>`;
     }
-    const hasOptions =
-      this.addon.options && Object.keys(this.addon.options).length;
-    const hasSchema =
-      hasOptions && this.addon.schema && Object.keys(this.addon.schema).length;
+    const hasConfiguration =
+      (this.addon.options && Object.keys(this.addon.options).length) ||
+      (this.addon.schema && Object.keys(this.addon.schema).length);
 
     return html`
       <div class="content">
-        ${hasOptions || hasSchema || this.addon.network || this.addon.audio
+        ${hasConfiguration || this.addon.network || this.addon.audio
           ? html`
-              ${hasOptions || hasSchema
+              ${hasConfiguration
                 ? html`
                     <hassio-addon-config
                       .hass=${this.hass}
