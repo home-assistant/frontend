@@ -3086,7 +3086,7 @@
                     "entity_non_numeric": "Объект не является числом: {entity}",
                     "entity_not_found": "Объект {entity} недоступен.",
                     "entity_unavailable": "Объект \"{entity}\" сейчас недоступен",
-                    "starting": "Home Assistant запускается, пока что не всё может быть доступно"
+                    "starting": "Home Assistant запускается..."
                 }
             },
             "mailbox": {

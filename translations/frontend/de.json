@@ -200,7 +200,8 @@
             },
             "script": {
                 "cancel": "Abbrechen",
-                "cancel_multiple": "Abbrechen {number}"
+                "cancel_multiple": "Abbrechen {number}",
+                "run": "Ausführen"
             },
             "service": {
                 "run": "Ausführen"
@@ -295,6 +296,19 @@
             "yes": "Ja"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Add-on",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Das Abrufen von Add-ons hat einen Fehler zurückgegeben.",
+                        "title": "Fehler beim Abrufen der Add-ons"
+                    },
+                    "no_supervisor": {
+                        "description": "Kein Supervisor gefunden, daher konnten Add-ons nicht geladen werden.",
+                        "title": "Kein Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Hinzufügen",
@@ -466,6 +480,12 @@
                     "second": "Vor {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
                     "week": "Vor {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
                 }
+            },
+            "service-control": {
+                "required": "Dieses Feld ist erforderlich",
+                "service_data": "Dienstdaten",
+                "target": "Ziele",
+                "target_description": "Was dieser Dienst als Bereiche, Geräte oder Entitäten verwenden soll."
             },
             "service-picker": {
                 "service": "Dienst"
@@ -676,6 +696,7 @@
                         "scene": "Szenen",
                         "script": "Skripte",
                         "server_control": "Serversteuerung",
+                        "tag": "NFC Tags",
                         "tags": "Tags",
                         "users": "Benutzer",
                         "zone": "Zonen"
@@ -890,7 +911,8 @@
                                 },
                                 "event": {
                                     "event": "Ereignis:",
-                                    "label": "Ereignis auslösen"
+                                    "label": "Ereignis auslösen",
+                                    "service_data": "Dienstdaten"
                                 },
                                 "repeat": {
                                     "label": "Wiederholen",
@@ -1478,6 +1500,7 @@
                     "cant_edit": "Du kannst nur Elemente bearbeiten, die in der Benutzeroberfläche erstellt wurden.",
                     "caption": "Geräte",
                     "confirm_delete": "Möchtest du dieses Gerät wirklich löschen?",
+                    "confirm_disable_config_entry": "Es gibt keine Geräte mehr für den Konfigurationseintrag {entry_name}. Möchtest du stattdessen den Konfigurationseintrag deaktivieren?",
                     "confirm_rename_entity_ids": "Möchten Sie auch die Entitäts-IDs Ihrer Entitäten umbenennen?",
                     "confirm_rename_entity_ids_warning": "Dies ändert keine Konfiguration (wie Automatisierungen, Skripte, Szenen, Dashboards), die derzeit diese Entitäten verwendet! Du musst sie selbst aktualisieren, um die neuen Entitäts-IDs zu verwenden!",
                     "data_table": {
@@ -1590,7 +1613,8 @@
                 },
                 "filtering": {
                     "clear": "Leeren",
-                    "filtering_by": "Filtern nach"
+                    "filtering_by": "Filtern nach",
+                    "show": "Anzeigen"
                 },
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
@@ -1661,7 +1685,19 @@
                         "delete_confirm": "Möchtest du diese Integration wirklich löschen?",
                         "device_unavailable": "Gerät nicht verfügbar",
                         "devices": "{count} {count, plural,\n one {Gerät}\n other {Geräte}\n}",
+                        "disable_restart_confirm": "Home Assistant neu starten, um das Deaktivieren dieser Integration abzuschließen",
+                        "disable": {
+                            "disable_confirm": "Möchtest du diesen Konfigurationseintrag wirklich deaktivieren? Die Geräte und Entitäten werden deaktiviert.",
+                            "disabled": "Deaktiviert",
+                            "disabled_by": {
+                                "device": "Gerät",
+                                "integration": "Integration",
+                                "user": "Benutzer"
+                            },
+                            "disabled_cause": "Deaktiviert durch {cause}."
+                        },
                         "documentation": "Dokumentation",
+                        "enable_restart_confirm": "Home Assistant neu starten, um das Aktivieren dieser Integration abzuschließen",
                         "entities": "{count} {count, plural,\none {Entität}\nother {Entitäten}\n}",
                         "entity_unavailable": "Entität nicht verfügbar",
                         "firmware": "Firmware: {version}",
@@ -1681,8 +1717,10 @@
                     "config_flow": {
                         "aborted": "Abgebrochen",
                         "close": "Schließen",
+                        "could_not_load": "Der Konfigurationsfluss konnte nicht geladen werden",
                         "created_config": "Erstellte Konfiguration für {name}.",
                         "dismiss": "Dialog schließen",
+                        "error": "Fehler",
                         "error_saving_area": "Fehler beim Speichern des Bereichs: {error}",
                         "external_step": {
                             "description": "Für diesen Schritt müssen Sie eine externe Website besuchen, um den Vorgang abzuschließen.",
@@ -1691,6 +1729,10 @@
                         "finish": "Fertig",
                         "loading_first_time": "Bitte warten, während die Integration installiert wird",
                         "not_all_required_fields": "Nicht alle Pflichtfelder sind ausgefüllt.",
+                        "pick_flow_step": {
+                            "new_flow": "Nein, richte eine andere Instanz von {integration} ein",
+                            "title": "Wir haben diese entdeckt, willst du sie einrichten?"
+                        },
                         "submit": "Absenden"
                     },
                     "configure": "Konfigurieren",
@@ -1698,6 +1740,11 @@
                     "confirm_new": "Möchtest du {integration} einrichten?",
                     "description": "Integrationen zu Diensten, Geräten, usw. verwalten",
                     "details": "Details zur Integration",
+                    "disable": {
+                        "disabled_integrations": "{number} deaktiviert",
+                        "hide_disabled": "Deaktivierte Integrationen ausblenden",
+                        "show_disabled": "Deaktivierte Integrationen anzeigen"
+                    },
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
                     "ignore": {
@@ -2331,6 +2378,7 @@
                     "common": {
                         "add_node": "Knoten hinzufügen",
                         "close": "Schließen",
+                        "home_id": "Heim-ID",
                         "network": "Netzwerk",
                         "node_id": "Knoten-ID",
                         "remove_node": "Node entfernen"
@@ -2344,6 +2392,7 @@
                         "dump_not_ready_text": "Wenn du einen Export erstellst, während nicht alle Knoten bereit sind, können benötigte Daten fehlen. Gib deinem Netzwerk etwas Zeit, um alle Knoten abzufragen. Möchtest du mit dem Dump fortfahren?",
                         "dump_not_ready_title": "Es sind noch nicht alle Knoten bereit",
                         "header": "Verwalte dein Z-Wave-Netzwerk",
+                        "home_id": "Heim-ID",
                         "introduction": "Verwalte dein Z-Wave-Netzwerk und Z-Wave-Knoten",
                         "nodes_ready": "Knoten bereit",
                         "server_version": "Serverversion"
@@ -2495,17 +2544,23 @@
                         "type": "Ereignistyp"
                     },
                     "services": {
+                        "accepts_target": "Dieser Dienst akzeptiert ein Ziel, zum Beispiel: \"entity_id: light.bed_light\"",
+                        "all_parameters": "Alle verfügbare Parameter",
                         "call_service": "Dienst ausführen",
                         "column_description": "Beschreibung",
                         "column_example": "Beispiel",
                         "column_parameter": "Parameter",
                         "description": "Mit dem Dienstentwicklungstool kannst du jeden verfügbaren Dienst in Home Assistant aufrufen.",
                         "fill_example_data": "Mit Beispieldaten füllen",
-                        "title": "Dienste"
+                        "title": "Dienste",
+                        "ui_mode": "Zum UI Modus",
+                        "yaml_mode": "Zum YAML Modus",
+                        "yaml_parameters": "Parameter nur im YAML Modus verfügbar"
                     },
                     "states": {
                         "alert_entity_field": "Die Entität ist ein Pflichtfeld",
                         "attributes": "Attribute",
+                        "copy_id": "ID in die Zwischenablage kopieren",
                         "current_entities": "Aktuelle Entitäten",
                         "description1": "Stelle die Darstellung eines Geräts in Home Assistant ein.",
                         "description2": "Dies führt nicht zur Kommunikation mit dem eigentlichen Gerät.",
@@ -3031,8 +3086,11 @@
                 "playback_title": "Nachrichtenwiedergabe"
             },
             "my": {
+                "component_not_loaded": "Diese Weiterleitung wird von deiner Home Assistant-Instanz nicht unterstützt. Du benötigst die Integration {integration}, um diese Weiterleitung zu verwenden.",
+                "documentation": "Dokumentation",
                 "error": "Ein unbekannter Fehler ist aufgetreten.",
                 "faq_link": "Meine Home Assistant FAQ",
+                "no_supervisor": "Diese Weiterleitung wird von deiner Home Assistant-Installation nicht unterstützt. Benötigt entweder das Home Assistant-Betriebssystem oder die Home Assistant Supervised-Installationsmethode. Weitere Informationen finden Sie unter {docs_link}.",
                 "not_supported": "Diese Weiterleitung wird von deiner Home Assistant-Instanz nicht unterstützt. Überprüfe den {link} auf die unterstützten Weiterleitungen und die Version, in der sie eingeführt wurden."
             },
             "page-authorize": {

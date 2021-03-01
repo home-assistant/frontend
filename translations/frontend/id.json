@@ -113,7 +113,7 @@
             },
             "automation": {
                 "last_triggered": "Terakhir terpicu",
-                "trigger": "Picu"
+                "trigger": "Jalankan Aksi"
             },
             "camera": {
                 "not_available": "Gambar tidak tersedia"
@@ -686,6 +686,7 @@
                         "scene": "Scene",
                         "script": "Skrip",
                         "server_control": "Kontrol Server",
+                        "tag": "Tag",
                         "tags": "Tag",
                         "users": "Pengguna",
                         "zone": "Zona"
@@ -2070,7 +2071,7 @@
                         "id": "ID Entitas",
                         "id_already_exists": "ID ini sudah ada",
                         "id_already_exists_save_error": "Anda tidak dapat menyimpan skrip ini karena ID tidak unik, pilih ID lain atau biarkan kosong untuk membuat ID secara otomatis.",
-                        "introduction": "Gunakan skrip untuk menjalankan serangkaian tindakan berurutan.",
+                        "introduction": "Gunakan skrip untuk menjalankan serangkaian aksi berurutan.",
                         "link_available_actions": "Pelajari lebih lanjut tentang tindakan yang tersedia.",
                         "load_error_not_editable": "Hanya skrip di dalam scripts.yaml yang dapat diedit.",
                         "max": {
@@ -2447,6 +2448,7 @@
                     "network_status": {
                         "network_started": "Jaringan Z-Wave Dimulai",
                         "network_started_note_all_queried": "Semua node telah dikueri.",
+                        "network_started_note_some_queried": "Semua node yang bangun telah dikueri. Node yang tidur akan dikueri ketika nodenya bangun.",
                         "network_starting": "Memulai Jaringan Z-Wave...",
                         "network_starting_note": "Ini mungkin memakan waktu cukup lama tergantung pada ukuran jaringan Anda.",
                         "network_stopped": "Jaringan Z-Wave Berhenti"
@@ -2516,6 +2518,7 @@
             "custom": {
                 "external_panel": {
                     "complete_access": "Ini akan memiliki akses ke semua data di Home Assistant.",
+                    "hide_message": "Periksa dokumentasi komponen panel_custom untuk menyembunyikan pesan ini",
                     "question_trust": "Apakah Anda mempercayai panel eksternal {name} di {link}?"
                 }
             },

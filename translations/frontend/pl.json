@@ -1667,7 +1667,18 @@
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
                         "device_unavailable": "Urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
+                        "disable": {
+                            "disable_confirm": "Czy na pewno chcesz wyłączyć ten wpis? Jego urządzenia i instancje zostaną wyłączone.",
+                            "disabled": "Wyłączone",
+                            "disabled_by": {
+                                "device": "Urządzenie",
+                                "integration": "integracja",
+                                "user": "Użytkownik"
+                            },
+                            "disabled_cause": "Wyłączone przez {cause}."
+                        },
                         "documentation": "Dokumentacja",
+                        "enable_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć uruchamianie tej integracji",
                         "entities": "{count} {count, plural,\n  one {encja}\n  few {encje}\n  many {encji}\n  other {encji}\n}",
                         "entity_unavailable": "encja niedostępna",
                         "firmware": "oprogramowanie: {version}",
@@ -2535,6 +2546,7 @@
                     "states": {
                         "alert_entity_field": "Encja jest polem obowiązkowym",
                         "attributes": "Atrybuty",
+                        "copy_id": "Skopiuj ID do schowka",
                         "current_entities": "Bieżące encje",
                         "description1": "Ustaw stany encji urządzeń Home Assistanta.",
                         "description2": "Nie wpłynie to na rzeczywiste urządzenia.",

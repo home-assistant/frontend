@@ -1269,7 +1269,7 @@
                             "manage_entities": "Halda olemeid",
                             "security_devices": "Turvaseadmed",
                             "sync_entities": "Sünkrooni olemid Google'iga",
-                            "sync_entities_404_message": "Teie olemite Google'iga sünkroonimine ebaõnnestus, paluge Google'il teie olemite sünkroonimiseks \"Hey Google, sync my devices\".",
+                            "sync_entities_404_message": "Teie olemite Google'iga sünkroonimine ebaõnnestus, paluge Google'il teie olemite sünkroonimist \"Hey Google, sync my devices\".",
                             "title": "Google Assistant"
                         },
                         "integrations": "Sidumised",
@@ -1282,9 +1282,9 @@
                         "remote": {
                             "access_is_being_prepared": "Kaugjuurdepääs on ettevalmistamisel. Teavitame teid, kui see on valmis.",
                             "certificate_info": "Sertifikaadi teave",
-                            "info": "Home Assistant Cloud pakub turvalist kaugühendust teie Home Assistantiga kodust eemal olles.",
+                            "info": "Home Assistant Cloud pakub turvalist kaugühendust Home Assistantiga kodust eemal olles.",
                             "instance_is_available": "Teie Home Assistant on saadaval aadressil",
-                            "instance_will_be_available": "Teie Home Assistanti on aadressiks saab",
+                            "instance_will_be_available": "Teie Home Assistanti aadressiks saab",
                             "link_learn_how_it_works": "Loe kuidas see töötab",
                             "title": "Kaugjuhtimine"
                         },
@@ -1468,7 +1468,7 @@
                     },
                     "warning": {
                         "include_link": "kaasa customize.yaml",
-                        "include_sentence": "Tundub, et teie configuration.yaml ei tee õigesti",
+                        "include_sentence": "Tundub, et Teie configuration.yaml ei tee õigesti",
                         "not_applied": "Siin tehtud muudatused on salvestatud kuid neid ei rakendata enne konfiguratsiooni uuesti laadimist kui kaasamine pole paigas."
                     }
                 },
@@ -1748,7 +1748,7 @@
                     "discovered": "Leitud",
                     "home_assistant_website": "Home Assistant veebisait",
                     "ignore": {
-                        "confirm_delete_ignore": "See muudab sidumiseteie avastatudsidumistes uuesti ilmnema kui see avastatakse. See võib vajada taaskäivitamist või võtta veidi aega.",
+                        "confirm_delete_ignore": "See muudab sidumise teie avastatud sidumistes uuesti ilmnema kui see avastatakse. See võib vajada taaskäivitamist või võtta veidi aega.",
                         "confirm_delete_ignore_title": "Kas lõpetada {name} eiramine?",
                         "confirm_ignore": "Olete Te kindel, et ei soovi seda integratsiooni seadistada? Selle saate tagasi võtta klõpsates paremas ülanurgas menüüs valikul „Kuva ignoreeritud sidumised”.",
                         "confirm_ignore_title": "Kas eirata {name} avastamist?",
@@ -3252,7 +3252,7 @@
                     "button_detect": "Tuvasta",
                     "finish": "Edasi",
                     "intro": "Tere tulemast Home Assistant'i kasutama, {name}. Kuidas sa soovid oma kodu nimetada?",
-                    "intro_location": "Soovime teada, kus sa elad. See teave aitab informatsiooni kuvamisel ja päikesepõhiste automatiseeringute loomisel. Neid andmeid ei jagata kunagi väljaspool teie võrku.",
+                    "intro_location": "Soovime teada kus sa elad. See teave aitab teabe kuvamisel ja päikesepõhiste automatiseeringute loomisel. Neid andmeid ei jagata kunagi väljaspool teie võrku.",
                     "intro_location_detect": "Me saame aidata sul seda teavet leida, tehes ühekordse päringu välisele teenusele.",
                     "location_name": "Sinu Home Assistant paigalduse nimi",
                     "location_name_default": "Kodu"
