@@ -81,7 +81,7 @@ class HaSlider extends PaperSliderClass {
 
   _setImmediateValue(newImmediateValue) {
     super._setImmediateValue(
-      this.step > 1
+      this.step >= 1
         ? Math.round(newImmediateValue)
         : Math.round(newImmediateValue * 100) / 100
     );
