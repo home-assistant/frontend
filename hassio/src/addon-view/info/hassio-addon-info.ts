@@ -1002,9 +1002,12 @@ class HassioAddonInfo extends LitElement {
     fireEvent(this, "supervisor-colllection-refresh", {
       colllection: "addon",
     });
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "supervisor",
-    });
+    const eventdata = {
+      success: true,
+      response: undefined,
+      path: "update",
+    };
+    fireEvent(this, "hass-api-called", eventdata);
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
