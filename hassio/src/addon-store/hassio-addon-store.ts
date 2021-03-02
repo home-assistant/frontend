@@ -189,7 +189,7 @@ class HassioAddonStore extends LitElement {
 
   private async _manageRepositories() {
     showRepositoriesDialog(this, {
-      repos: this.supervisor.addon.repositories,
+      supervisor: this.supervisor,
       loadData: () => this._loadData(),
     });
   }

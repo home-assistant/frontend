@@ -3792,6 +3792,11 @@
         "remove": "Remove",
         "failed_to_add": "Failed to add registry",
         "failed_to_remove": "Failed to remove registry"
+      },
+      "repositories": {
+        "title": "Manage add-on repositories",
+        "add": "Add",
+        "remove": "Remove"
       }
     }
   }
