@@ -3703,7 +3703,29 @@
           "docker": "The Docker environment is not working properly"
         }
       },
-      "host": {},
+      "host": {
+        "failed_to_get_hardware_list": "Failed to get hardware list",
+        "failed_to_reboot": "Failed to reboot the host",
+        "failed_to_shutdown": "Failed to shutdown the host",
+        "failed_to_set_hostname": "Setting hostname failed",
+        "failed_to_import_from_usb": "Failed to import from USB",
+        "used_space": "Used space",
+        "hostname": "Hostname",
+        "change_hostname": "Change Hostname",
+        "new_hostname": "Please enter a new hostname:",
+        "ip_address": "IP Address",
+        "change": "Change",
+        "operating_system": "Operating System",
+        "docker_version": "Docker version",
+        "deployment": "Deployment",
+        "emmc_lifetime_used": "eMMC Lifetime Used",
+        "reboot_host": "Reboot host",
+        "confirm_reboot": "Are you sure you want to reboot the host?",
+        "confirm_shutdown": "Are you sure you want to shutdown the host?",
+        "shutdown_host": "Shutdown host",
+        "hardware": "Hardware",
+        "import_from_usb": "Import from USB"
+      },
       "core": {
         "cpu_usage": "Core CPU Usage",
         "ram_usage": "Core RAM Usage"
