@@ -51,12 +51,16 @@ class HassioAddonAudio extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card header="Audio">
+      <ha-card
+        header="${this.supervisor.localize("addon.configuration.audio.header")}"
+      >
         <div class="card-content">
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
           <paper-dropdown-menu
-            label="Input"
+            label="${this.supervisor.localize(
+              "addon.configuration.audio.input"
+            )}"
             @iron-select=${this._setInputDevice}
           >
             <paper-listbox
@@ -75,7 +79,9 @@ class HassioAddonAudio extends LitElement {
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-dropdown-menu
-            label="Output"
+            label="${this.supervisor.localize(
+              "addon.configuration.audio.output"
+            )}"
             @iron-select=${this._setOutputDevice}
           >
             <paper-listbox
@@ -96,7 +102,7 @@ class HassioAddonAudio extends LitElement {
         </div>
         <div class="card-actions">
           <ha-progress-button @click=${this._saveSettings}>
-            Save
+            ${this.supervisor.localize("common.save")}
           </ha-progress-button>
         </div>
       </ha-card>

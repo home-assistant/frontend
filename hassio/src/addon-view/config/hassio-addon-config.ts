@@ -94,7 +94,7 @@ class HassioAddonConfig extends LitElement {
       <ha-card>
         <div class="header">
           <h2>
-            ${this.supervisor.localize("addon.configuration.config.options")}
+            ${this.supervisor.localize("addon.configuration.options.header")}
           </h2>
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
@@ -104,10 +104,10 @@ class HassioAddonConfig extends LitElement {
               <mwc-list-item .disabled=${!this._canShowSchema}>
                 ${this._yamlMode
                   ? this.supervisor.localize(
-                      "addon.configuration.config.edit_in_ui"
+                      "addon.configuration.options.edit_in_ui"
                     )
                   : this.supervisor.localize(
-                      "addon.configuration.config.edit_in_yaml"
+                      "addon.configuration.options.edit_in_yaml"
                     )}
               </mwc-list-item>
               <mwc-list-item class="warning">
@@ -141,7 +141,7 @@ class HassioAddonConfig extends LitElement {
             : html`
                 <div class="errors">
                   ${this.supervisor.localize(
-                    "addon.configuration.config.invalid_yaml"
+                    "addon.configuration.options.invalid_yaml"
                   )}
                 </div>
               `}
@@ -150,7 +150,7 @@ class HassioAddonConfig extends LitElement {
           ? html`<ha-formfield
               class="show-additional"
               label="${this.supervisor.localize(
-                "addon.configuration.config.show_unused_optional"
+                "addon.configuration.options.show_unused_optional"
               )}"
             >
               <ha-switch
@@ -165,7 +165,7 @@ class HassioAddonConfig extends LitElement {
             @click=${this._saveTapped}
             .disabled=${!this._configHasChanged || !this._valid}
           >
-            Save
+            Save ${this.supervisor.localize("common.save")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -230,7 +230,7 @@ class HassioAddonConfig extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: this.addon.name,
+      title: this.supervisor.localize("confirm.reset_options.title"),
       text: this.supervisor.localize("confirm.reset_options.text"),
       confirmText: this.supervisor.localize("common.reset_options"),
       dismissText: this.supervisor.localize("common.cancel"),
@@ -256,7 +256,7 @@ class HassioAddonConfig extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       this._error = this.supervisor.localize(
-        "addon.configuration.config.failed_to_reset_addon_configuration",
+        "addon.configuration.options.failed_to_reset",
         "error",
         extractApiErrorMessage(err)
       );
@@ -287,7 +287,7 @@ class HassioAddonConfig extends LitElement {
       }
     } catch (err) {
       this._error = this.supervisor.localize(
-        "addon.configuration.config.failed_to_save_addon_configuration",
+        "addon.configuration.options.failed_to_save",
         "error",
         extractApiErrorMessage(err)
       );

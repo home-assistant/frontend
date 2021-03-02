@@ -3434,30 +3434,47 @@
       "configuration": {
         "no_configuration": "This add-on does not expose configuration for you to mess with...",
         "audio": {
-          "default": "Default"
+          "header": "Audio",
+          "default": "Default",
+          "input": "Input",
+          "output": "Output"
         },
-        "config": {
-          "options": "Options",
+        "options": {
+          "header": "Options",
           "edit_in_ui": "Edit in UI",
           "edit_in_yaml": "Edit in YAML",
           "invalid_yaml": "Invalid YAML",
           "show_unused_optional": "Show unused optional configuration options",
-          "failed_to_reset_addon_configuration": "Failed to reset add-on configuration, {error}",
-          "failed_to_save_addon_configuration": "Failed to save add-on configuration, {error}"
+          "failed_to_reset": "Failed to reset add-on configuration, {error}",
+          "failed_to_save": "Failed to save add-on configuration, {error}"
         },
-        "network": {}
+        "network": {
+          "container": "Container",
+          "disabled": "Disabled",
+          "header": "Network",
+          "host": "Host",
+          "failed_to_reset": "Failed to reset add-on network configuration, {error}",
+          "failed_to_save": "Failed to save add-on network configuration, {error}"
+        }
       }
     },
     "common": {
       "cancel": "Cancel",
+      "description": "Description",
       "newest_version": "Newest Version",
       "new_version_available": "New version available",
       "release_notes": "Release notes",
       "reload": "Reload",
       "reset_defaults": "Reset to defaults",
       "reset_options": "Reset options",
+      "save": "Save",
       "update": "Update",
-      "version": "Version"
+      "version": "Version",
+
+      "error": {
+        "unknown": "Unknown error",
+        "update_failed": "Update failed"
+      }
     },
     "confirm": {
       "update": {
@@ -3465,6 +3482,7 @@
         "text": "Are you sure you want to update {name} to version {version}?"
       },
       "reset_options": {
+        "title": "Reset options",
         "text": "Are you sure you want to reset all your options?"
       }
     },
@@ -3475,10 +3493,6 @@
       "addons": "Add-ons",
       "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending"
-    },
-    "error": {
-      "unknown": "Unknown error",
-      "update_failed": "Update failed"
     },
     "store": {
       "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
