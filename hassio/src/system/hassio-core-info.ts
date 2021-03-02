@@ -10,6 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -19,7 +20,7 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../src/data/hassio/common";
-import { restartCore } from "../../../src/data/supervisor/core";
+import { restartCore, updateCore } from "../../../src/data/supervisor/core";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -29,7 +30,7 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { bytesToString } from "../../../src/util/bytes-to-string";
 import "../components/supervisor-metric";
-import { showDialogSupervisorCoreUpdate } from "../dialogs/core/show-dialog-core-update";
+import { showDialogSupervisorUpdate } from "../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-core-info")
@@ -168,7 +169,24 @@ class HassioCoreInfo extends LitElement {
   }
 
   private async _coreUpdate(): Promise<void> {
-    showDialogSupervisorCoreUpdate(this, { core: this.supervisor.core });
+    showDialogSupervisorUpdate(this, {
+      supervisor: this.supervisor,
+      name: "Home Assistant Core",
+      version: this.supervisor.core.version,
+      snapshotParams: {
+        name: `core_${this.supervisor.core.version}`,
+        folders: ["homeassistant"],
+        homeassistant: true,
+      },
+      updateHandler: async () => await this._updateCore(),
+    });
+  }
+
+  private async _updateCore(): Promise<void> {
+    await updateCore(this.hass);
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "core",
+    });
   }
 
   static get styles(): CSSResult[] {

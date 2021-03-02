@@ -14,8 +14,7 @@ export const updateCore = async (hass: HomeAssistant) => {
       method: "post",
       timeout: null,
     });
-    return;
+  } else {
+    await hass.callApi<HassioResponse<void>>("POST", `hassio/core/update`);
   }
-
-  await hass.callApi<HassioResponse<void>>("POST", `hassio/core/update`);
 };

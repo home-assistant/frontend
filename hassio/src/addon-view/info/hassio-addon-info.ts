@@ -50,6 +50,7 @@ import {
   startHassioAddon,
   stopHassioAddon,
   uninstallHassioAddon,
+  updateHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import {
@@ -68,8 +69,8 @@ import { HomeAssistant } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
-import { showDialogSupervisorAddonUpdate } from "../../dialogs/addon/show-dialog-addon-update";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
+import { showDialogSupervisorUpdate } from "../../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../../resources/hassio-style";
 import { addonArchIsSupported } from "../../util/addon";
 
@@ -983,7 +984,27 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _updateClicked(): Promise<void> {
-    showDialogSupervisorAddonUpdate(this, { addon: this.addon });
+    showDialogSupervisorUpdate(this, {
+      supervisor: this.supervisor,
+      name: this.addon.name,
+      version: this.addon.version_latest,
+      snapshotParams: {
+        name: `addon_${this.addon.slug}_${this.addon.version}`,
+        addons: [this.addon.slug],
+        homeassistant: false,
+      },
+      updateHandler: async () => await this._updateAddon(),
+    });
+  }
+
+  private async _updateAddon(): Promise<void> {
+    await updateHassioAddon(this.hass, this.addon.slug);
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "addon",
+    });
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "supervisor",
+    });
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {

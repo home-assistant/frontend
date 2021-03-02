@@ -26,6 +26,7 @@ import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
+import { updateCore } from "../../../src/data/supervisor/core";
 import {
   Supervisor,
   supervisorApiWsRequest,
@@ -36,7 +37,7 @@ import {
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
-import { showDialogSupervisorCoreUpdate } from "../dialogs/core/show-dialog-core-update";
+import { showDialogSupervisorUpdate } from "../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../resources/hassio-style";
 
 const computeVersion = (key: string, version: string): string => {
@@ -164,7 +165,17 @@ export class HassioUpdate extends LitElement {
   private async _confirmUpdate(ev): Promise<void> {
     const item = ev.currentTarget;
     if (item.key === "core") {
-      showDialogSupervisorCoreUpdate(this, { core: this.supervisor.core });
+      showDialogSupervisorUpdate(this, {
+        supervisor: this.supervisor,
+        name: "Home Assistant Core",
+        version: this.supervisor.core.version,
+        snapshotParams: {
+          name: `core_${this.supervisor.core.version}`,
+          folders: ["homeassistant"],
+          homeassistant: true,
+        },
+        updateHandler: async () => this._updateCore(),
+      });
       return;
     }
     item.progress = true;
@@ -217,6 +228,13 @@ export class HassioUpdate extends LitElement {
       }
     }
     item.progress = false;
+  }
+
+  private async _updateCore(): Promise<void> {
+    await updateCore(this.hass);
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "core",
+    });
   }
 
   static get styles(): CSSResult[] {
