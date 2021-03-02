@@ -3642,6 +3642,12 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]"
+    },
+    "system": {
+      "log": {
+        "log_provider": "Log Provider",
+        "get_logs": "Failed to get {provider} logs, {error}"
+      }
     }
   }
 }
