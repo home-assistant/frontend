@@ -81,7 +81,7 @@ class LovelaceFullConfigEditor extends LitElement {
             </div>
             <mwc-button
               raised
-              @click="${this._handleSave}"
+              @click=${this._handleSave}
               .disabled=${!this._changed}
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.raw_editor.save"
@@ -95,8 +95,8 @@ class LovelaceFullConfigEditor extends LitElement {
             autofocus
             .rtl=${computeRTL(this.hass)}
             .hass=${this.hass}
-            @value-changed="${this._yamlChanged}"
-            @editor-save="${this._handleSave}"
+            @value-changed=${this._yamlChanged}
+            @editor-save=${this._handleSave}
           >
           </ha-code-editor>
         </div>
@@ -112,6 +112,7 @@ class LovelaceFullConfigEditor extends LitElement {
   protected updated(changedProps: PropertyValues) {
     const oldLovelace = changedProps.get("lovelace") as Lovelace | undefined;
     if (
+      !this._saving &&
       oldLovelace &&
       this.lovelace &&
       oldLovelace.config !== this.lovelace.config &&
@@ -305,8 +306,8 @@ class LovelaceFullConfigEditor extends LitElement {
       });
     }
     window.onbeforeunload = null;
-    this._saving = false;
     this._changed = false;
+    this._saving = false;
   }
 
   private get yamlEditor(): HaCodeEditor {
