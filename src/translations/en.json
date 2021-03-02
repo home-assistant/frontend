@@ -3620,6 +3620,10 @@
         "title": "Update {name}",
         "text": "Are you sure you want to update {name} to version {version}?"
       },
+      "restart": {
+        "title": "[%key:supervisor::common::restart_name%]",
+        "text": "Are you sure you want to restart {name}?"
+      },
       "reset_options": {
         "title": "Reset options",
         "text": "Are you sure you want to reset all your options?"
@@ -3655,6 +3659,8 @@
         "get_logs": "Failed to get {provider} logs, {error}"
       },
       "supervisor": {
+        "cpu_usage": "Supervisor CPU Usage",
+        "ram_usage": "Supervisor RAM Usage",
         "failed_to_set_option": "Failed to set Supervisor option",
         "failed_to_reload": "Failed to reload the Supervisor",
         "failed_to_update": "Failed to update the Supervisor",
@@ -3695,12 +3701,13 @@
           "supervisor": "Supervisor was not able to update",
           "setup": "Setup of the Supervisor failed",
           "docker": "The Docker environment is not working properly"
-        },
-        "cpu_usage": "Supervisor CPU Usage",
-        "ram_usage": "Supervisor RAM Usage"
+        }
       },
       "host": {},
-      "core": {}
+      "core": {
+        "cpu_usage": "Core CPU Usage",
+        "ram_usage": "Core RAM Usage"
+      }
     }
   }
 }

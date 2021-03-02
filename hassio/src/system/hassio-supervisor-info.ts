@@ -328,11 +328,15 @@ class HassioSupervisorInfo extends LitElement {
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.supervisor.localize(
-        "common.restart_name",
+        "confirm.restart.title",
         "name",
         "Supervisor"
       ),
-      text: "Are you sure you want to restart the Supervisor",
+      text: this.supervisor.localize(
+        "confirm.restart.text",
+        "name",
+        "Supervisor"
+      ),
       confirmText: this.supervisor.localize("common.restart"),
       dismissText: this.supervisor.localize("common.cancel"),
     });
