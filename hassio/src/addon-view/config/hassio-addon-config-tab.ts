@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import "../../../../src/components/ha-circular-progress";
 import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -19,6 +20,8 @@ import "./hassio-addon-network";
 @customElement("hassio-addon-config-tab")
 class HassioAddonConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
@@ -39,6 +42,7 @@ class HassioAddonConfigDashboard extends LitElement {
                     <hassio-addon-config
                       .hass=${this.hass}
                       .addon=${this.addon}
+                      .supervisor=${this.supervisor}
                     ></hassio-addon-config>
                   `
                 : ""}
@@ -47,6 +51,7 @@ class HassioAddonConfigDashboard extends LitElement {
                     <hassio-addon-network
                       .hass=${this.hass}
                       .addon=${this.addon}
+                      .supervisor=${this.supervisor}
                     ></hassio-addon-network>
                   `
                 : ""}
@@ -55,11 +60,12 @@ class HassioAddonConfigDashboard extends LitElement {
                     <hassio-addon-audio
                       .hass=${this.hass}
                       .addon=${this.addon}
+                      .supervisor=${this.supervisor}
                     ></hassio-addon-audio>
                   `
                 : ""}
             `
-          : "This add-on does not expose configuration for you to mess with.... 👋"}
+          : this.supervisor.localize("addon.configuration.no_configuration")}
       </div>
     `;
   }

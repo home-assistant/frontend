@@ -57,7 +57,10 @@ class HassioSystem extends LitElement {
               .supervisor=${this.supervisor}
             ></hassio-host-info>
           </div>
-          <hassio-supervisor-log .hass=${this.hass}></hassio-supervisor-log>
+          <hassio-supervisor-log
+            .hass=${this.hass}
+            .supervisor=${this.supervisor}
+          ></hassio-supervisor-log>
         </div>
       </hass-tabs-subpage>
     `;
