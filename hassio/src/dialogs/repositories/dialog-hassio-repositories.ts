@@ -18,7 +18,7 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import "../../../../src/components/ha-circular-progress";
-import "../../../../src/components/ha-dialog";
+import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
 import {
   fetchHassioAddonsInfo,
@@ -26,6 +26,7 @@ import {
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
@@ -33,6 +34,8 @@ import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) private _repos: HassioAddonRepository[] = [];
 
@@ -47,9 +50,11 @@ class HassioRepositoriesDialog extends LitElement {
 
   @internalProperty() private _error?: string;
 
-  public async showDialog(_dialogParams: any): Promise<void> {
-    this._dialogParams = _dialogParams;
-    this._repos = _dialogParams.repos;
+  public async showDialog(
+    dialogParams: HassioRepositoryDialogParams
+  ): Promise<void> {
+    this._dialogParams = dialogParams;
+    this.supervisor = dialogParams.supervisor;
     this._opened = true;
     await this.updateComplete;
   }
@@ -66,14 +71,19 @@ class HassioRepositoriesDialog extends LitElement {
   );
 
   protected render(): TemplateResult {
-    const repositories = this._filteredRepositories(this._repos);
+    const repositories = this._filteredRepositories(
+      this.supervisor.addon.repositories
+    );
     return html`
       <ha-dialog
         .open=${this._opened}
         @closing=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        heading="Manage add-on repositories"
+        .heading=${createCloseHeading(
+          this.hass,
+          this.supervisor.localize("dialog.repositories.title")
+        )}
       >
         ${this._error ? html`<div class="error">${this._error}</div>` : ""}
         <div class="form">
@@ -88,7 +98,9 @@ class HassioRepositoriesDialog extends LitElement {
                     </paper-item-body>
                     <mwc-icon-button
                       .slug=${repo.slug}
-                      title="Remove"
+                      .title=${this.supervisor.localize(
+                        "dialog.repositories.remove"
+                      )}
                       @click=${this._removeRepository}
                     >
                       <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
@@ -105,13 +117,13 @@ class HassioRepositoriesDialog extends LitElement {
             <paper-input
               class="flex-auto"
               id="repository_input"
-              label="Add repository"
+              .label=${this.supervisor.localize("dialog.repositories.add")}
               @keydown=${this._handleKeyAdd}
             ></paper-input>
             <mwc-button @click=${this._addRepository}>
               ${this._prosessing
                 ? html`<ha-circular-progress active></ha-circular-progress>`
-                : "Add"}
+                : this.supervisor.localize("dialog.repositories.add")}
             </mwc-button>
           </div>
         </div>
