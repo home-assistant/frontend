@@ -3432,6 +3432,7 @@
         "log": "Log"
       },
       "configuration": {
+        "no_configuration": "This add-on does not expose configuration for you to mess with...",
         "audio": {
           "default": "Default"
         },

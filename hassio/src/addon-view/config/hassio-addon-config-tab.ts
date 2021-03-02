@@ -65,7 +65,7 @@ class HassioAddonConfigDashboard extends LitElement {
                   `
                 : ""}
             `
-          : "This add-on does not expose configuration for you to mess with.... 👋"}
+          : this.supervisor.localize("addon.configuration.no_configuration")}
       </div>
     `;
   }
