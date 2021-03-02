@@ -52,7 +52,7 @@ class HassioAddonAudio extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
-        header="${this.supervisor.localize("addon.configuration.audio.header")}"
+        .header=${this.supervisor.localize("addon.configuration.audio.header")}
       >
         <div class="card-content">
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}

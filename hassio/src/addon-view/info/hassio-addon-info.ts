@@ -120,7 +120,7 @@ class HassioAddonInfo extends LitElement {
       ${this.addon.update_available
         ? html`
             <ha-card
-              header="${this.supervisor.localize(
+              .header="${this.supervisor.localize(
                 "common.update_available",
                 "count",
                 1
@@ -216,18 +216,18 @@ class HassioAddonInfo extends LitElement {
                     ${this._computeIsRunning
                       ? html`
                           <ha-svg-icon
-                            title="${this.supervisor.localize(
+                            .title=${this.supervisor.localize(
                               "dashboard.addon_running"
-                            )}"
+                            )}
                             class="running"
                             .path=${mdiCircle}
                           ></ha-svg-icon>
                         `
                       : html`
                           <ha-svg-icon
-                            title="${this.supervisor.localize(
+                            .title=${this.supervisor.localize(
                               "dashboard.addon_stopped"
-                            )}"
+                            )}
                             class="stopped"
                             .path=${mdiCircle}
                           ></ha-svg-icon>

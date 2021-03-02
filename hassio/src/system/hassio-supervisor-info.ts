@@ -101,9 +101,9 @@ class HassioSupervisorInfo extends LitElement {
               ${this.supervisor.supervisor.update_available
                 ? html`
                     <ha-progress-button
-                      title="${this.supervisor.localize(
+                      .title=${this.supervisor.localize(
                         "system.supervisor.update_supervisor"
-                      )}"
+                      )}
                       @click=${this._supervisorUpdate}
                     >
                       ${this.supervisor.localize("common.update")}
@@ -122,9 +122,9 @@ class HassioSupervisorInfo extends LitElement {
                 ? html`
                     <ha-progress-button
                       @click=${this._toggleBeta}
-                      title="${this.supervisor.localize(
+                      .title=${this.supervisor.localize(
                         "system.supervisor.leave_beta_description"
-                      )}"
+                      )}
                     >
                       ${this.supervisor.localize(
                         "system.supervisor.leave_beta_action"
@@ -135,9 +135,9 @@ class HassioSupervisorInfo extends LitElement {
                 ? html`
                     <ha-progress-button
                       @click=${this._toggleBeta}
-                      title="${this.supervisor.localize(
+                      .title=${this.supervisor.localize(
                         "system.supervisor.join_beta_description"
-                      )}"
+                      )}
                     >
                       ${this.supervisor.localize(
                         "system.supervisor.join_beta_action"
@@ -160,7 +160,7 @@ class HassioSupervisorInfo extends LitElement {
                     )}
                     <button
                       class="link"
-                      title="${this.supervisor.localize("common.show_more")}"
+                      .title=${this.supervisor.localize("common.show_more")}
                       @click=${this._diagnosticsInformationDialog}
                     >
                       ${this.supervisor.localize("common.learn_more")}
@@ -178,7 +178,7 @@ class HassioSupervisorInfo extends LitElement {
                   )}
                   <button
                     class="link"
-                    title="${this.supervisor.localize("common.learn_more")}"
+                    .title=${this.supervisor.localize("common.learn_more")}
                     @click=${this._unsupportedDialog}
                   >
                     Learn more
@@ -191,7 +191,7 @@ class HassioSupervisorInfo extends LitElement {
                   )}
                   <button
                     class="link"
-                    title="${this.supervisor.localize("common.learn_more")}"
+                    .title=${this.supervisor.localize("common.learn_more")}
                     @click=${this._unhealthyDialog}
                   >
                     Learn more
@@ -215,20 +215,20 @@ class HassioSupervisorInfo extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             @click=${this._supervisorReload}
-            title="${this.supervisor.localize(
+            .title=${this.supervisor.localize(
               "system.supervisor.reload_supervisor"
-            )}"
+            )}
           >
             ${this.supervisor.localize("system.supervisor.reload_supervisor")}
           </ha-progress-button>
           <ha-progress-button
             class="warning"
             @click=${this._supervisorRestart}
-            title="${this.supervisor.localize(
+            .title=${this.supervisor.localize(
               "common.restart_name",
               "name",
               "Supervisor"
-            )}"
+            )}
           >
             ${this.supervisor.localize(
               "common.restart_name",

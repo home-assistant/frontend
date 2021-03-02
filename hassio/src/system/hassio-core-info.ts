@@ -77,7 +77,7 @@ class HassioCoreInfo extends LitElement {
               ${this.supervisor.core.update_available
                 ? html`
                     <ha-progress-button
-                      title="${this.supervisor.localize("common.update")}"
+                      .title=${this.supervisor.localize("common.update")}
                       @click=${this._coreUpdate}
                     >
                       ${this.supervisor.localize("common.update")}
@@ -104,11 +104,11 @@ class HassioCoreInfo extends LitElement {
             slot="primaryAction"
             class="warning"
             @click=${this._coreRestart}
-            title="${this.supervisor.localize(
+            .title=${this.supervisor.localize(
               "common.restart_name",
               "name",
               "Core"
-            )}"
+            )}
           >
             ${this.supervisor.localize("common.restart_name", "name", "Core")}
           </ha-progress-button>

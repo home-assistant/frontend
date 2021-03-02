@@ -26,7 +26,7 @@ class SupervisorMetric extends LitElement {
       <span slot="heading">
         ${this.description}
       </span>
-      <div slot="description" title="${this.tooltip ?? ""}">
+      <div slot="description" .title=${this.tooltip ?? ""}>
         <span class="value">
           ${roundedValue}%
         </span>

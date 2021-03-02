@@ -120,9 +120,9 @@ class HassioRegistriesDialog extends LitElement {
                           >
                           <mwc-icon-button
                             .entry=${entry}
-                            title="${this.supervisor.localize(
+                            .title=${this.supervisor.localize(
                               "dialog.registries.remove"
-                            )}"
+                            )}
                             slot="meta"
                             @click=${this._removeRegistry}
                           >

@@ -218,13 +218,13 @@ class HassioSnapshots extends LitElement {
               <div class="card-actions">
                 <ha-progress-button
                   @click=${this._createSnapshot}
-                  title="${this.supervisor.info.state !== "running"
+                  .title=${this.supervisor.info.state !== "running"
                     ? this.supervisor.localize(
                         "snapshot.create_blocked_not_running",
                         "state",
                         this.supervisor.info.state
                       )
-                    : ""}"
+                    : ""}
                   .disabled=${this.supervisor.info.state !== "running"}
                 >
                   ${this.supervisor.localize("snapshot.create")}

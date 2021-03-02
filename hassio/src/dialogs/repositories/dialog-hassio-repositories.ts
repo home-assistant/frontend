@@ -98,9 +98,9 @@ class HassioRepositoriesDialog extends LitElement {
                     </paper-item-body>
                     <mwc-icon-button
                       .slug=${repo.slug}
-                      title="${this.supervisor.localize(
+                      .title=${this.supervisor.localize(
                         "dialog.repositories.remove"
-                      )}"
+                      )}
                       @click=${this._removeRepository}
                     >
                       <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
