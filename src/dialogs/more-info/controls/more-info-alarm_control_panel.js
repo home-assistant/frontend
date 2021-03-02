@@ -26,6 +26,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
           flex-direction: column;
         }
         .pad mwc-button {
+          padding: 8px;
           width: 80px;
         }
         .actions mwc-button {
@@ -53,21 +54,21 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="1"
-                raised
+                outlined
                 >1</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="4"
-                raised
+                outlined
                 >4</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="7"
-                raised
+                outlined
                 >7</mwc-button
               >
             </div>
@@ -76,28 +77,28 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="2"
-                raised
+                outlined
                 >2</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="5"
-                raised
+                outlined
                 >5</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="8"
-                raised
+                outlined
                 >8</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="0"
-                raised
+                outlined
                 >0</mwc-button
               >
             </div>
@@ -106,27 +107,27 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="3"
-                raised
+                outlined
                 >3</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="6"
-                raised
+                outlined
                 >6</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="9"
-                raised
+                outlined
                 >9</mwc-button
               >
               <mwc-button
                 on-click="_clearEnteredCode"
                 disabled="[[!_inputEnabled]]"
-                raised
+                outlined
               >
                 [[localize('ui.card.alarm_control_panel.clear_code')]]
               </mwc-button>
