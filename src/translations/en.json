@@ -3797,6 +3797,10 @@
         "title": "Manage add-on repositories",
         "add": "Add",
         "remove": "Remove"
+      },
+      "restart_addon": {
+        "confirm_text": "Restart add-on",
+        "text": "Do you want to restart the add-on with your changes?"
       }
     }
   }

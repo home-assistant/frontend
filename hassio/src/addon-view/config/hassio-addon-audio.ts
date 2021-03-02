@@ -198,7 +198,7 @@ class HassioAddonAudio extends LitElement {
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
       if (this.addon?.state === "started") {
-        await suggestAddonRestart(this, this.hass, this.addon);
+        await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch {
       this._error = "Failed to set addon audio device";
