@@ -184,6 +184,12 @@ class DialogBox extends LitElement {
         .warning {
           color: var(--warning-color);
         }
+        @media (max-width: 450px), (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-height: auto;
+            --mdc-dialog-max-height: auto;
+          }
+        }
       `,
     ];
   }
