@@ -1,3 +1,6 @@
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiRefresh } from "@mdi/js";
@@ -132,33 +135,56 @@ class ZWaveJSNodeConfig extends LitElement {
       `;
     }
 
-    return html` ${labelAndDescription}
-    ${item.metadata.states
-      ? html`
-          <p>
-            ${item.metadata.states[item.value]}<br />
-            <span class="secondary tech-info">
-              Value ${item.value}
-            </span>
-          </p>
-        `
-      : html`<p>${item.value}</p>`}`;
+    if (item.configuration_value_type === "range") {
+      return html`${labelAndDescription}
+        <paper-input
+          type="number"
+          .value=${item.value}
+          .min=${item.metadata.min}
+          .max=${item.metadata.max}
+        >
+        </paper-input> `;
+    }
+
+    if (item.configuration_value_type === "enumerated") {
+      return html`
+        ${labelAndDescription}
+        <div class="flex">
+          <paper-dropdown-menu dynamic-align>
+            <paper-listbox slot="dropdown-content" .selected=${item.value}>
+              ${Object.entries(item.metadata.states).map(
+                ([key, state]) => html`
+                  <paper-item .id=${key}>${state}</paper-item>
+                `
+              )}
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+      `;
+    }
+
+    return html`${labelAndDescription}
+      <p>${item.value}</p>`;
   }
 
   private _isEnumeratedBool(item) {
     // Some Z-Wave config values use a states list with two options where index 0 = Disabled and 1 = Enabled
     // We want those to be considered boolean and show a toggle switch
+    const disabledStates = ["disable", "disabled"];
+    const enabledStates = ["enable", "enabled"];
+
     if (item.configuration_value_type !== "enumerated") {
       return false;
     }
     if (!("states" in item.metadata)) {
       return false;
     }
+    if (!(0 in item.metadata.states) || !(1 in item.metadata.states)) {
+      return false;
+    }
     if (
-      (item.metadata.states[0] === "Disable" ||
-        item.metadata.states[0] === "Disabled") &&
-      (item.metadata.states[1] === "Enable" ||
-        item.metadata.states[1] === "Enabled")
+      disabledStates.includes(item.metadata.states[0].toLowerCase()) &&
+      enabledStates.includes(item.metadata.states[1].toLowerCase())
     ) {
       return true;
     }
@@ -198,7 +224,8 @@ class ZWaveJSNodeConfig extends LitElement {
           display: flex;
         }
 
-        .flex .config-label {
+        .flex .config-label,
+        .flex paper-dropdown-menu {
           flex: 1;
         }
 
