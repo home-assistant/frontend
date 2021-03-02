@@ -69,7 +69,7 @@ export class HassioUpdate extends LitElement {
       <div class="content">
         <h1>
           ${this.supervisor.localize(
-            "dashboard.update_available",
+            "common.update_available",
             "count",
             updatesAvailable
           )}

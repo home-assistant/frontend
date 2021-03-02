@@ -179,7 +179,7 @@ class HassioAddonNetwork extends LitElement {
       }
     } catch (err) {
       this._error = this.supervisor.localize(
-        "addon.configuration.network.failed_to_reset",
+        "addon.failed_to_reset",
         "error",
         extractApiErrorMessage(err)
       );
@@ -215,7 +215,7 @@ class HassioAddonNetwork extends LitElement {
       }
     } catch (err) {
       this._error = this.supervisor.localize(
-        "addon.configuration.network.failed_to_save",
+        "addon.failed_to_save",
         "error",
         extractApiErrorMessage(err)
       );

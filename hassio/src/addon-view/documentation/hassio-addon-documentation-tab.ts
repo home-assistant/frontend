@@ -1,3 +1,4 @@
+import "../../../../src/components/ha-card";
 import {
   css,
   CSSResult,
