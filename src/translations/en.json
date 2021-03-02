@@ -3589,20 +3589,22 @@
       }
     },
     "common": {
-      "cancel": "Cancel",
+      "cancel": "[%key:ui::common::cancel%]",
+      "yes": "[%key:ui::common::yes%]",
+      "no": "[%key:ui::common::no%]",
       "description": "Description",
       "failed_to_restart_name": "Failed to restart {name}",
       "failed_to_update_name": "Failed to update {name}",
       "learn_more": "Learn more",
       "new_version_available": "New version available",
       "newest_version": "Newest Version",
-      "refresh": "Refresh",
+      "refresh": "[%key:ui::common::refresh%]",
       "release_notes": "Release notes",
       "reload": "Reload",
       "reset_defaults": "Reset to defaults",
       "reset_options": "Reset options",
       "restart_name": "Restart {name}",
-      "restart": "",
+      "restart": "Restart",
       "running_version": "You are currently running version {version}",
       "save": "Save",
       "show_more": "Show more information about this",
@@ -3758,6 +3760,25 @@
         "share": "Share",
         "media": "Media",
         "addons/local": "Local add-ons"
+      }
+    },
+    "dialog": {
+      "network": {
+        "title": "Network settings",
+        "connected_to": "Connected to {ssid}",
+        "scan_ap": "Scan for accesspoints",
+        "open": "Open",
+        "wep": "WEP",
+        "wpa": "wpa-psk",
+        "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
+        "static": "Static",
+        "dhcp": "DHCP",
+        "disabled": "Disabled",
+        "ip_netmask": "IP address/Netmask",
+        "gateway": "Gateway address",
+        "dns_servers": "DNS Servers",
+        "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
+        "failed_to_change": "Failed to change network settings"
       }
     }
   }

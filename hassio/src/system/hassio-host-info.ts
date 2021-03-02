@@ -360,7 +360,7 @@ class HassioHostInfo extends LitElement {
 
   private async _changeNetworkClicked(): Promise<void> {
     showNetworkDialog(this, {
-      network: this.supervisor.network!,
+      supervisor: this.supervisor,
       loadData: () => this._loadData(),
     });
   }
