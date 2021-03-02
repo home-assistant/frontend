@@ -96,15 +96,15 @@ class HassioAddonStore extends LitElement {
             <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item>
-            Repositories
+            ${this.supervisor.localize("store.repositories")}
           </mwc-list-item>
           <mwc-list-item>
-            Reload
+            ${this.supervisor.localize("common.reload")}
           </mwc-list-item>
           ${this.hass.userData?.showAdvanced &&
           atLeastVersion(this.hass.config.version, 0, 117)
             ? html`<mwc-list-item>
-                Registries
+                ${this.supervisor.localize("store.registries")}
               </mwc-list-item>`
             : ""}
         </ha-button-menu>
@@ -125,11 +125,9 @@ class HassioAddonStore extends LitElement {
         ${!this.hass.userData?.showAdvanced
           ? html`
               <div class="advanced">
-                Missing add-ons? Enable advanced mode on
                 <a href="/profile" target="_top">
-                  your profile page
+                  ${this.supervisor.localize("store.missing_addons")}
                 </a>
-                .
               </div>
             `
           : ""}

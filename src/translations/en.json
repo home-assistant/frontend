@@ -3437,6 +3437,7 @@
       "newest_version": "Newest Version",
       "new_version_available": "New version available",
       "release_notes": "Release notes",
+      "reload": "Reload",
       "update": "Update",
       "version": "Version"
     },
@@ -3459,7 +3460,10 @@
       "update_failed": "Update failed"
     },
     "store": {
-      "no_results_found": "No results found in {repository}."
+      "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
+      "no_results_found": "No results found in {repository}.",
+      "registries": "Registries",
+      "repositories": "Repositories"
     },
     "panel": {
       "dashboard": "Dashboard",
