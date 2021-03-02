@@ -3591,17 +3591,23 @@
     "common": {
       "cancel": "Cancel",
       "description": "Description",
-      "newest_version": "Newest Version",
+      "failed_to_restart_name": "Failed to restart {name}",
+      "failed_to_update_name": "Failed to update {name}",
+      "learn_more": "Learn more",
       "new_version_available": "New version available",
+      "newest_version": "Newest Version",
       "refresh": "Refresh",
       "release_notes": "Release notes",
       "reload": "Reload",
       "reset_defaults": "Reset to defaults",
       "reset_options": "Reset options",
-      "running_version": "You are currently running version {}",
+      "restart_name": "Restart {name}",
+      "restart": "",
+      "running_version": "You are currently running version {version}",
       "save": "Save",
-      "update": "Update",
+      "show_more": "Show more information about this",
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending",
+      "update": "Update",
       "version": "Version",
 
       "error": {
@@ -3611,7 +3617,7 @@
     },
     "confirm": {
       "update": {
-        "title": "Update ${name}",
+        "title": "Update {name}",
         "text": "Are you sure you want to update {name} to version {version}?"
       },
       "reset_options": {
@@ -3647,7 +3653,54 @@
       "log": {
         "log_provider": "Log Provider",
         "get_logs": "Failed to get {provider} logs, {error}"
-      }
+      },
+      "supervisor": {
+        "failed_to_set_option": "Failed to set Supervisor option",
+        "failed_to_reload": "Failed to reload the Supervisor",
+        "failed_to_update": "Failed to update the Supervisor",
+        "unsupported_title": "You are running an unsupported installation",
+        "unsupported_description": "Below is a list of issues found with your installation, click on the links to learn how you can resolve the issues.",
+        "unhealthy_title": "Your installation is unhealthy",
+        "unhealthy_description": "Running an unhealthy installation will cause issues. Below is a list of issues found with your installation, click on the links to learn how you can resolve the issues.",
+        "update_supervisor": "Update the Supervisor",
+        "channel": "Channel",
+        "leave_beta_action": "Leave beta channel",
+        "leave_beta_description": "Get stable updates for Home Assistant, Supervisor and host",
+        "join_beta_action": "Join beta channel",
+        "join_beta_description": "Get beta updates for Home Assistant (RCs), Supervisor and host",
+        "share_diagnostics": "Share Diagnostics",
+        "share_diagnostics_description": "Share crash reports and diagnostic information.",
+        "reload_supervisor": "Reload Supervisor",
+        "warning": "WARNING",
+        "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
+        "beta_backup": "Make sure you have backups of your data before you activate this feature.",
+        "beta_release_items": "This includes beta releases for:",
+        "beta_join_confirm": "Do you want to join the beta channel?",
+        "share_diagonstics_title": "Help Improve Home Assistant",
+        "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
+        "unsupported_reason": {
+          "container": "Containers known to cause issues",
+          "dbus": "DBUS",
+          "docker_configuration": "Docker Configuration",
+          "docker_version": "Docker Version",
+          "job_conditions": "Ignored job conditions",
+          "lxc": "LXC",
+          "network_manager": "Network Manager",
+          "os": "Operating System",
+          "privileged": "Supervisor is not privileged",
+          "systemd": "Systemd"
+        },
+        "unhealthy_reason": {
+          "privileged": "Supervisor is not privileged",
+          "supervisor": "Supervisor was not able to update",
+          "setup": "Setup of the Supervisor failed",
+          "docker": "The Docker environment is not working properly"
+        },
+        "cpu_usage": "Supervisor CPU Usage",
+        "ram_usage": "Supervisor RAM Usage"
+      },
+      "host": {},
+      "core": {}
     }
   }
 }
