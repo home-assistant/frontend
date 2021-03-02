@@ -372,6 +372,7 @@ class HassioHostInfo extends LitElement {
       inputLabel: this.supervisor.localize("system.host.new_hostname"),
       inputType: "string",
       defaultValue: curHostname,
+      confirmText: this.supervisor.localize("common.update"),
     });
 
     if (hostname && hostname !== curHostname) {

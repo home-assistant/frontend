@@ -3730,6 +3730,35 @@
         "cpu_usage": "Core CPU Usage",
         "ram_usage": "Core RAM Usage"
       }
+    },
+    "snapshot": {
+      "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
+      "available_snapshots": "Available Snapshots",
+      "no_snapshots": "You don't have any snapshots yet.",
+      "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
+      "could_not_create": "Could not create snapshot",
+      "upload_snapshot": "Upload snapshot",
+      "create_snapshot": "Create snapshot",
+      "create": "Create",
+      "name": "Name",
+      "type": "Type",
+      "security": "Security",
+      "full_snapshot": "Full snapshot",
+      "partial_snapshot": "Partial snapshot",
+      "addons": "Add-ons",
+      "folders": "Folders",
+      "password": "Password",
+      "password_protection": "Password protection",
+      "password_protected": "password protected",
+      "enter_password": "Please enter a password.",
+
+      "folder": {
+        "homeassistant": "Home Assistant configuration",
+        "ssl": "SSL",
+        "share": "Share",
+        "media": "Media",
+        "addons/local": "Local add-ons"
+      }
     }
   }
 }
