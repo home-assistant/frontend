@@ -3801,6 +3801,12 @@
       "restart_addon": {
         "confirm_text": "Restart add-on",
         "text": "Do you want to restart the add-on with your changes?"
+      },
+      "update": {
+        "snapshot": "Snapshot",
+        "create_snapshot": "Create a snapshot of {name} before updating",
+        "updating": "Updating {name} to version {version}",
+        "snapshotting": "Creating snapshot of {name}"
       }
     }
   }

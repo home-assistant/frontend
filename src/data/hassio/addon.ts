@@ -309,13 +309,12 @@ export const updateHassioAddon = async (
       method: "post",
       timeout: null,
     });
-    return;
+  } else {
+    await hass.callApi<HassioResponse<void>>(
+      "POST",
+      `hassio/addons/${slug}/update`
+    );
   }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    `hassio/addons/${slug}/update`
-  );
 };
 
 export const restartHassioAddon = async (

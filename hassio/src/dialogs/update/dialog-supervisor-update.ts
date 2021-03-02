@@ -16,17 +16,13 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
-import { HassioHomeAssistantInfo } from "../../../../src/data/hassio/supervisor";
-import { updateCore } from "../../../../src/data/supervisor/core";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import { SupervisorDialogSupervisorCoreUpdateParams } from "./show-dialog-core-update";
+import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
 
-@customElement("dialog-supervisor-core-update")
-class DialogSupervisorCoreUpdate extends LitElement {
+@customElement("dialog-supervisor-update")
+class DialogSupervisorUpdate extends LitElement {
   public hass!: HomeAssistant;
-
-  public core!: HassioHomeAssistantInfo;
 
   @internalProperty() private _opened = false;
 
@@ -36,18 +32,22 @@ class DialogSupervisorCoreUpdate extends LitElement {
 
   @internalProperty() private _error?: string;
 
+  @internalProperty()
+  private _dialogParams?: SupervisorDialogSupervisorUpdateParams;
+
   public async showDialog(
-    params: SupervisorDialogSupervisorCoreUpdateParams
+    params: SupervisorDialogSupervisorUpdateParams
   ): Promise<void> {
     this._opened = true;
-    this.core = params.core;
+    this._dialogParams = params;
     await this.updateComplete;
   }
 
   public closeDialog(): void {
     this._action = null;
     this._createSnapshot = true;
-    this._opened = false;
+    this._error = undefined;
+    this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -60,46 +60,77 @@ class DialogSupervisorCoreUpdate extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this._dialogParams) {
+      return html``;
+    }
     return html`
       <ha-dialog .open=${this._opened} scrimClickAction escapeKeyAction>
         ${this._action === null
           ? html`<slot name="heading">
                 <h2 id="title" class="header_title">
-                  Update Home Assistant Core
+                  ${this._dialogParams.supervisor.localize(
+                    "confirm.update.title",
+                    "name",
+                    this._dialogParams.name
+                  )}
                 </h2>
               </slot>
               <div>
-                Are you sure you want to update Home Assistant Core to version
-                ${this.core.version_latest}?
+                ${this._dialogParams.supervisor.localize(
+                  "confirm.update.text",
+                  "name",
+                  this._dialogParams.name,
+                  "version",
+                  this._dialogParams.version
+                )}
               </div>
 
-              <ha-settings-row three-rows>
+              <ha-settings-row>
                 <span slot="heading">
-                  Snapshot
+                  ${this._dialogParams.supervisor.localize(
+                    "dialog.update.snapshot"
+                  )}
                 </span>
                 <span slot="description">
-                  Create a snapshot of Home Assistant Core before updating
+                  ${this._dialogParams.supervisor.localize(
+                    "dialog.update.create_snapshot",
+                    "name",
+                    this._dialogParams.name
+                  )}
                 </span>
                 <ha-switch
                   .checked=${this._createSnapshot}
                   haptic
-                  title="Create snapshot"
                   @click=${this._toggleSnapshot}
                 >
                 </ha-switch>
               </ha-settings-row>
               <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-                Cancel
+                ${this._dialogParams.supervisor.localize("common.cancel")}
               </mwc-button>
-              <mwc-button @click=${this._update} slot="primaryAction">
-                Update
+              <mwc-button
+                .disabled=${this._error !== undefined}
+                @click=${this._update}
+                slot="primaryAction"
+              >
+                ${this._dialogParams.supervisor.localize("common.update")}
               </mwc-button>`
           : html`<ha-circular-progress alt="Updating" size="large" active>
               </ha-circular-progress>
               <p class="progress-text">
                 ${this._action === "update"
-                  ? `Updating Home Assistant Core to version ${this.core.version_latest}`
-                  : "Creating snapshot of Home Assistant Core"}
+                  ? this._dialogParams.supervisor.localize(
+                      "dialog.update.updating",
+                      "name",
+                      this._dialogParams.name,
+                      "version",
+                      this._dialogParams.version
+                    )
+                  : this._dialogParams.supervisor.localize(
+                      "dialog.update.snapshotting",
+                      "name",
+                      this._dialogParams.name
+                    )}
               </p>`}
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
       </ha-dialog>
@@ -114,11 +145,10 @@ class DialogSupervisorCoreUpdate extends LitElement {
     if (this._createSnapshot) {
       this._action = "snapshot";
       try {
-        await createHassioPartialSnapshot(this.hass, {
-          name: `core_${this.core.version}`,
-          folders: ["homeassistant"],
-          homeassistant: true,
-        });
+        await createHassioPartialSnapshot(
+          this.hass,
+          this._dialogParams!.snapshotParams
+        );
       } catch (err) {
         this._error = extractApiErrorMessage(err);
         this._action = null;
@@ -128,15 +158,13 @@ class DialogSupervisorCoreUpdate extends LitElement {
 
     this._action = "update";
     try {
-      await updateCore(this.hass);
+      await this._dialogParams!.updateHandler!();
     } catch (err) {
-      if (this.hass.connection.connected) {
-        this._error = extractApiErrorMessage(err);
-        this._action = null;
-        return;
-      }
+      this._error = extractApiErrorMessage(err);
+      this._action = null;
+      return;
     }
-    fireEvent(this, "supervisor-colllection-refresh", { colllection: "core" });
+
     this.closeDialog();
   }
 
@@ -170,6 +198,6 @@ class DialogSupervisorCoreUpdate extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-supervisor-core-update": DialogSupervisorCoreUpdate;
+    "dialog-supervisor-update": DialogSupervisorUpdate;
   }
 }
