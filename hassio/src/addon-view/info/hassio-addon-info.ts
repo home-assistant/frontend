@@ -912,7 +912,7 @@ class HassioAddonInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
-          "addon.dashboard.action_error.get_chnagelog"
+          "addon.dashboard.action_error.get_changelog"
         ),
         text: extractApiErrorMessage(err),
       });
