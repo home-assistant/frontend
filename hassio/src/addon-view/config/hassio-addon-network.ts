@@ -19,6 +19,7 @@ import {
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
@@ -38,6 +39,8 @@ interface NetworkItemInput extends PaperInputElement {
 class HassioAddonNetwork extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @internalProperty() private _error?: string;
@@ -55,16 +58,30 @@ class HassioAddonNetwork extends LitElement {
     }
 
     return html`
-      <ha-card header="Network">
+      <ha-card
+        .header=${this.supervisor.localize(
+          "addon.configuration.network.header"
+        )}
+      >
         <div class="card-content">
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
           <table>
             <tbody>
               <tr>
-                <th>Container</th>
-                <th>Host</th>
-                <th>Description</th>
+                <th>
+                  ${this.supervisor.localize(
+                    "addon.configuration.network.container"
+                  )}
+                </th>
+                <th>
+                  ${this.supervisor.localize(
+                    "addon.configuration.network.host"
+                  )}
+                </th>
+                <th>
+                  ${this.supervisor.localize("common.description")}
+                </th>
               </tr>
               ${this._config!.map((item) => {
                 return html`
@@ -73,13 +90,15 @@ class HassioAddonNetwork extends LitElement {
                     <td>
                       <paper-input
                         @value-changed=${this._configChanged}
-                        placeholder="disabled"
+                        placeholder="${this.supervisor.localize(
+                          "addon.configuration.network.disabled"
+                        )}"
                         .value=${item.host ? String(item.host) : ""}
                         .container=${item.container}
                         no-label-float
                       ></paper-input>
                     </td>
-                    <td>${item.description}</td>
+                    <td>${this._computeDescription(item)}</td>
                   </tr>
                 `;
               })}
@@ -88,10 +107,10 @@ class HassioAddonNetwork extends LitElement {
         </div>
         <div class="card-actions">
           <ha-progress-button class="warning" @click=${this._resetTapped}>
-            Reset to defaults
+            ${this.supervisor.localize("common.reset_defaults")}
           </ha-progress-button>
           <ha-progress-button @click=${this._saveTapped}>
-            Save
+            ${this.supervisor.localize("common.save")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -104,6 +123,15 @@ class HassioAddonNetwork extends LitElement {
       this._setNetworkConfig();
     }
   }
+
+  private _computeDescription = (item: NetworkItem): string => {
+    return (
+      this.addon.translations[this.hass.language]?.network?.[item.container]
+        ?.description ||
+      this.addon.translations.en?.network?.[item.container]?.description ||
+      item.description
+    );
+  };
 
   private _setNetworkConfig(): void {
     const network = this.addon.network || {};
@@ -147,12 +175,14 @@ class HassioAddonNetwork extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
       if (this.addon?.state === "started") {
-        await suggestAddonRestart(this, this.hass, this.addon);
+        await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err) {
-      this._error = `Failed to set addon network configuration, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.failed_to_reset",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
 
     button.progress = false;
@@ -181,12 +211,14 @@ class HassioAddonNetwork extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
       if (this.addon?.state === "started") {
-        await suggestAddonRestart(this, this.hass, this.addon);
+        await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err) {
-      this._error = `Failed to set addon network configuration, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.failed_to_save",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
     button.progress = false;
   }

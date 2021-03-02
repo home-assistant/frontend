@@ -102,6 +102,47 @@
             "unknown": "Unknown"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "configuration": "Configuration",
+                "documentation": "Documentation",
+                "info": "Info",
+                "log": "Log"
+            }
+        },
+        "common": {
+            "cancel": "Cancel",
+            "newest_version": "Newest Version",
+            "release_notes": "Release notes",
+            "update": "Update",
+            "version": "Version"
+        },
+        "confirm": {
+            "update": {
+                "text": "Are you sure you want to update {name} to version {version}?",
+                "title": "Update ${name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "New version available",
+            "addon_running": "Add-on is running",
+            "addon_stopped": "Add-on is stopped",
+            "addons": "Add-ons",
+            "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
+            "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending"
+        },
+        "error": {
+            "unknown": "Unknown error",
+            "update_failed": "Update failed"
+        },
+        "panel": {
+            "dashboard": "Dashboard",
+            "snapshots": "Snapshots",
+            "store": "Add-on Store",
+            "system": "System"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Do you want to stay logged in?",
@@ -377,6 +418,8 @@
                     "changed_to_state": "changed to {state}",
                     "cleared_device_class": "cleared (no {device_class} detected)",
                     "detected_device_class": "detected {device_class}",
+                    "is_closing": "is closing",
+                    "is_opening": "is opening",
                     "rose": "rose",
                     "set": "set",
                     "turned_off": "turned off",
@@ -632,8 +675,8 @@
                     "remove_intro": "If the entity is no longer in use, you can clean it up by removing it."
                 },
                 "script": {
-                    "last_action": "Last Action",
-                    "last_triggered": "Last Triggered"
+                    "last_action": "Last action",
+                    "last_triggered": "Last triggered"
                 },
                 "settings": "Entity settings",
                 "sun": {
@@ -756,6 +799,7 @@
                     "clusters": "Manage Clusters",
                     "reconfigure": "Reconfigure Device",
                     "remove": "Remove Device",
+                    "view_in_visualization": "View in Visualization",
                     "zigbee_information": "Zigbee device signature"
                 },
                 "confirmations": {
@@ -2333,6 +2377,7 @@
                         "caption": "Visualization",
                         "header": "Network Visualization",
                         "highlight_label": "Highlight Devices",
+                        "refresh_topology": "Refresh Topology",
                         "zoom_label": "Zoom To Device"
                     }
                 },
@@ -3010,6 +3055,8 @@
                         "error_remove": "Unable to remove configuration: {error}",
                         "error_save_yaml": "Unable to save YAML: {error}",
                         "header": "Edit Configuration",
+                        "lovelace_changed": "The Lovelace config was updated, do you want to load the updated config in the editor and lose your current changes?",
+                        "reload": "Reload",
                         "resources_moved": "Resources should no longer be added to the Lovelace configuration but can be added in the Lovelace config panel.",
                         "save": "Save",
                         "saved": "Saved",
