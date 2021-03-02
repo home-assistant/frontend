@@ -993,8 +993,17 @@ class HassioAddonInfo extends LitElement {
         addons: [this.addon.slug],
         homeassistant: false,
       },
-      updateHandler: async () =>
-        await updateHassioAddon(this, this.hass, this.addon.slug),
+      updateHandler: async () => await this._updateAddon(),
+    });
+  }
+
+  private async _updateAddon(): Promise<void> {
+    await updateHassioAddon(this.hass, this.addon.slug);
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "addon",
+    });
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "supervisor",
     });
   }
 

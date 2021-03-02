@@ -10,6 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -177,7 +178,14 @@ class HassioCoreInfo extends LitElement {
         folders: ["homeassistant"],
         homeassistant: true,
       },
-      updateHandler: async () => await updateCore(this, this.hass),
+      updateHandler: async () => await this._updateCore(),
+    });
+  }
+
+  private async _updateCore(): Promise<void> {
+    await updateCore(this.hass);
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "core",
     });
   }
 

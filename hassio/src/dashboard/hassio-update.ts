@@ -174,7 +174,7 @@ export class HassioUpdate extends LitElement {
           folders: ["homeassistant"],
           homeassistant: true,
         },
-        updateHandler: async () => await updateCore(this, this.hass),
+        updateHandler: async () => this._updateCore(),
       });
       return;
     }
@@ -228,6 +228,13 @@ export class HassioUpdate extends LitElement {
       }
     }
     item.progress = false;
+  }
+
+  private async _updateCore(): Promise<void> {
+    await updateCore(this.hass);
+    fireEvent(this, "supervisor-colllection-refresh", {
+      colllection: "core",
+    });
   }
 
   static get styles(): CSSResult[] {

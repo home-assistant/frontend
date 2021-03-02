@@ -1,5 +1,4 @@
 import { atLeastVersion } from "../../common/config/version";
-import { fireEvent } from "../../common/dom/fire_event";
 import { HaFormSchema } from "../../components/ha-form/ha-form";
 import { HomeAssistant } from "../../types";
 import { SupervisorArch } from "../supervisor/supervisor";
@@ -300,7 +299,6 @@ export const installHassioAddon = async (
 };
 
 export const updateHassioAddon = async (
-  element: HTMLElement,
   hass: HomeAssistant,
   slug: string
 ): Promise<void> => {
@@ -317,13 +315,6 @@ export const updateHassioAddon = async (
       `hassio/addons/${slug}/update`
     );
   }
-
-  fireEvent(element, "supervisor-colllection-refresh", {
-    colllection: "addon",
-  });
-  fireEvent(element, "supervisor-colllection-refresh", {
-    colllection: "supervisor",
-  });
 };
 
 export const restartHassioAddon = async (
