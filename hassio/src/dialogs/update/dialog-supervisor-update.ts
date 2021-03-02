@@ -16,7 +16,6 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
@@ -24,8 +23,6 @@ import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
 @customElement("dialog-supervisor-update")
 class DialogSupervisorUpdate extends LitElement {
   public hass!: HomeAssistant;
-
-  @internalProperty() private supervisor!: Supervisor;
 
   @internalProperty() private _opened = false;
 
@@ -42,7 +39,6 @@ class DialogSupervisorUpdate extends LitElement {
     params: SupervisorDialogSupervisorUpdateParams
   ): Promise<void> {
     this._opened = true;
-    this.supervisor = params.supervisor;
     this._dialogParams = params;
     await this.updateComplete;
   }
@@ -72,7 +68,7 @@ class DialogSupervisorUpdate extends LitElement {
         ${this._action === null
           ? html`<slot name="heading">
                 <h2 id="title" class="header_title">
-                  ${this.supervisor.localize(
+                  ${this._dialogParams.supervisor.localize(
                     "confirm.update.title",
                     "name",
                     this._dialogParams.name
@@ -80,7 +76,7 @@ class DialogSupervisorUpdate extends LitElement {
                 </h2>
               </slot>
               <div>
-                ${this.supervisor.localize(
+                ${this._dialogParams.supervisor.localize(
                   "confirm.update.text",
                   "name",
                   this._dialogParams.name,
@@ -91,10 +87,12 @@ class DialogSupervisorUpdate extends LitElement {
 
               <ha-settings-row>
                 <span slot="heading">
-                  ${this.supervisor.localize("dialog.update.snapshot")}
+                  ${this._dialogParams.supervisor.localize(
+                    "dialog.update.snapshot"
+                  )}
                 </span>
                 <span slot="description">
-                  ${this.supervisor.localize(
+                  ${this._dialogParams.supervisor.localize(
                     "dialog.update.create_snapshot",
                     "name",
                     this._dialogParams.name
@@ -108,27 +106,27 @@ class DialogSupervisorUpdate extends LitElement {
                 </ha-switch>
               </ha-settings-row>
               <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-                ${this.supervisor.localize("common.cancel")}
+                ${this._dialogParams.supervisor.localize("common.cancel")}
               </mwc-button>
               <mwc-button
                 .disabled=${this._error !== undefined}
                 @click=${this._update}
                 slot="primaryAction"
               >
-                ${this.supervisor.localize("common.update")}
+                ${this._dialogParams.supervisor.localize("common.update")}
               </mwc-button>`
           : html`<ha-circular-progress alt="Updating" size="large" active>
               </ha-circular-progress>
               <p class="progress-text">
                 ${this._action === "update"
-                  ? this.supervisor.localize(
+                  ? this._dialogParams.supervisor.localize(
                       "dialog.update.updating",
                       "name",
                       this._dialogParams.name,
                       "version",
                       this._dialogParams.version
                     )
-                  : this.supervisor.localize(
+                  : this._dialogParams.supervisor.localize(
                       "dialog.update.snapshotting",
                       "name",
                       this._dialogParams.name
