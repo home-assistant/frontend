@@ -7,7 +7,10 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { Supervisor } from "../../src/data/supervisor/supervisor";
+import {
+  Supervisor,
+  supervisorCollection,
+} from "../../src/data/supervisor/supervisor";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
 
@@ -22,6 +25,17 @@ class HassioPanel extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   protected render(): TemplateResult {
+    if (!this.hass) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
+    if (
+      Object.keys(supervisorCollection).some(
+        (colllection) => !this.supervisor[colllection]
+      )
+    ) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
     return html`
       <hassio-panel-router
         .hass=${this.hass}

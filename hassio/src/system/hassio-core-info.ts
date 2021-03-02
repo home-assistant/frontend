@@ -43,11 +43,11 @@ class HassioCoreInfo extends LitElement {
   protected render(): TemplateResult | void {
     const metrics = [
       {
-        description: "Core CPU Usage",
+        description: this.supervisor.localize("system.core.cpu_usage"),
         value: this._metrics?.cpu_percent,
       },
       {
-        description: "Core RAM Usage",
+        description: this.supervisor.localize("system.core.ram_usage"),
         value: this._metrics?.memory_percent,
         tooltip: `${bytesToString(this._metrics?.memory_usage)}/${bytesToString(
           this._metrics?.memory_limit
@@ -61,7 +61,7 @@ class HassioCoreInfo extends LitElement {
           <div>
             <ha-settings-row>
               <span slot="heading">
-                Version
+                ${this.supervisor.localize("common.version")}
               </span>
               <span slot="description">
                 core-${this.supervisor.core.version}
@@ -69,7 +69,7 @@ class HassioCoreInfo extends LitElement {
             </ha-settings-row>
             <ha-settings-row>
               <span slot="heading">
-                Newest Version
+                ${this.supervisor.localize("common.newest_version")}
               </span>
               <span slot="description">
                 core-${this.supervisor.core.version_latest}
@@ -77,10 +77,10 @@ class HassioCoreInfo extends LitElement {
               ${this.supervisor.core.update_available
                 ? html`
                     <ha-progress-button
-                      title="Update the core"
+                      .title=${this.supervisor.localize("common.update")}
                       @click=${this._coreUpdate}
                     >
-                      Update
+                      ${this.supervisor.localize("common.update")}
                     </ha-progress-button>
                   `
                 : ""}
@@ -104,9 +104,13 @@ class HassioCoreInfo extends LitElement {
             slot="primaryAction"
             class="warning"
             @click=${this._coreRestart}
-            title="Restart Home Assistant Core"
+            .title=${this.supervisor.localize(
+              "common.restart_name",
+              "name",
+              "Core"
+            )}
           >
-            Restart Core
+            ${this.supervisor.localize("common.restart_name", "name", "Core")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -126,10 +130,18 @@ class HassioCoreInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Restart Home Assistant Core",
-      text: "Are you sure you want to restart Home Assistant Core",
-      confirmText: "restart",
-      dismissText: "cancel",
+      title: this.supervisor.localize(
+        "confirm.restart.title",
+        "name",
+        "Home Assistant Core"
+      ),
+      text: this.supervisor.localize(
+        "confirm.restart.text",
+        "name",
+        "Home Assistant Core"
+      ),
+      confirmText: this.supervisor.localize("common.restart"),
+      dismissText: this.supervisor.localize("common.cancel"),
     });
 
     if (!confirmed) {
@@ -142,7 +154,11 @@ class HassioCoreInfo extends LitElement {
     } catch (err) {
       if (this.hass.connection.connected) {
         showAlertDialog(this, {
-          title: "Failed to restart Home Assistant Core",
+          title: this.supervisor.localize(
+            "common.failed_to_restart_name",
+            "name",
+            "Home AssistantCore"
+          ),
           text: extractApiErrorMessage(err),
         });
       }

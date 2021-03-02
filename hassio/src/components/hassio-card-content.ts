@@ -44,7 +44,7 @@ class HassioCardContent extends LitElement {
       ${this.iconImage
         ? html`
             <div class="icon_image ${this.iconClass}">
-              <img src="${this.iconImage}" title="${this.iconTitle}" />
+              <img src="${this.iconImage}" .title=${this.iconTitle} />
               <div></div>
             </div>
           `

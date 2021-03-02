@@ -3,22 +3,22 @@ import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
 
 export const supervisorTabs: PageNavigation[] = [
   {
-    name: "Dashboard",
+    translationKey: "panel.dashboard",
     path: `/hassio/dashboard`,
     iconPath: mdiViewDashboard,
   },
   {
-    name: "Add-on Store",
+    translationKey: "panel.store",
     path: `/hassio/store`,
     iconPath: mdiStore,
   },
   {
-    name: "Snapshots",
+    translationKey: "panel.snapshots",
     path: `/hassio/snapshots`,
     iconPath: mdiBackupRestore,
   },
   {
-    name: "System",
+    translationKey: "panel.system",
     path: `/hassio/system`,
     iconPath: mdiCogs,
   },

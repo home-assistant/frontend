@@ -37,54 +37,24 @@ import { documentationUrl } from "../../../src/util/documentation-url";
 import "../components/supervisor-metric";
 import { hassioStyle } from "../resources/hassio-style";
 
-const UNSUPPORTED_REASON = {
-  container: {
-    title: "Containers known to cause issues",
-    url: "/more-info/unsupported/container",
-  },
-  dbus: { title: "DBUS", url: "/more-info/unsupported/dbus" },
-  docker_configuration: {
-    title: "Docker Configuration",
-    url: "/more-info/unsupported/docker_configuration",
-  },
-  docker_version: {
-    title: "Docker Version",
-    url: "/more-info/unsupported/docker_version",
-  },
-  job_conditions: {
-    title: "Ignored job conditions",
-    url: "/more-info/unsupported/job_conditions",
-  },
-  lxc: { title: "LXC", url: "/more-info/unsupported/lxc" },
-  network_manager: {
-    title: "Network Manager",
-    url: "/more-info/unsupported/network_manager",
-  },
-  os: { title: "Operating System", url: "/more-info/unsupported/os" },
-  privileged: {
-    title: "Supervisor is not privileged",
-    url: "/more-info/unsupported/privileged",
-  },
-  systemd: { title: "Systemd", url: "/more-info/unsupported/systemd" },
+const UNSUPPORTED_REASON_URL = {
+  container: "/more-info/unsupported/container",
+  dbus: "/more-info/unsupported/dbus",
+  docker_configuration: "/more-info/unsupported/docker_configuration",
+  docker_version: "/more-info/unsupported/docker_version",
+  job_conditions: "/more-info/unsupported/job_conditions",
+  lxc: "/more-info/unsupported/lxc",
+  network_manager: "/more-info/unsupported/network_manager",
+  os: "/more-info/unsupported/os",
+  privileged: "/more-info/unsupported/privileged",
+  systemd: "/more-info/unsupported/systemd",
 };
 
-const UNHEALTHY_REASON = {
-  privileged: {
-    title: "Supervisor is not privileged",
-    url: "/more-info/unsupported/privileged",
-  },
-  supervisor: {
-    title: "Supervisor was not able to update",
-    url: "/more-info/unhealthy/supervisor",
-  },
-  setup: {
-    title: "Setup of the Supervisor failed",
-    url: "/more-info/unhealthy/setup",
-  },
-  docker: {
-    title: "The Docker environment is not working properly",
-    url: "/more-info/unhealthy/docker",
-  },
+const UNHEALTHY_REASON_URL = {
+  privileged: "/more-info/unsupported/privileged",
+  supervisor: "/more-info/unhealthy/supervisor",
+  setup: "/more-info/unhealthy/setup",
+  docker: "/more-info/unhealthy/docker",
 };
 
 @customElement("hassio-supervisor-info")
@@ -98,11 +68,11 @@ class HassioSupervisorInfo extends LitElement {
   protected render(): TemplateResult | void {
     const metrics = [
       {
-        description: "Supervisor CPU Usage",
+        description: this.supervisor.localize("system.supervisor.cpu_usage"),
         value: this._metrics?.cpu_percent,
       },
       {
-        description: "Supervisor RAM Usage",
+        description: this.supervisor.localize("system.supervisor.ram_usage"),
         value: this._metrics?.memory_percent,
         tooltip: `${bytesToString(this._metrics?.memory_usage)}/${bytesToString(
           this._metrics?.memory_limit
@@ -115,7 +85,7 @@ class HassioSupervisorInfo extends LitElement {
           <div>
             <ha-settings-row>
               <span slot="heading">
-                Version
+                ${this.supervisor.localize("common.version")}
               </span>
               <span slot="description">
                 supervisor-${this.supervisor.supervisor.version}
@@ -123,7 +93,7 @@ class HassioSupervisorInfo extends LitElement {
             </ha-settings-row>
             <ha-settings-row>
               <span slot="heading">
-                Newest Version
+                ${this.supervisor.localize("common.newest_version")}
               </span>
               <span slot="description">
                 supervisor-${this.supervisor.supervisor.version_latest}
@@ -131,17 +101,19 @@ class HassioSupervisorInfo extends LitElement {
               ${this.supervisor.supervisor.update_available
                 ? html`
                     <ha-progress-button
-                      title="Update the supervisor"
+                      .title=${this.supervisor.localize(
+                        "system.supervisor.update_supervisor"
+                      )}
                       @click=${this._supervisorUpdate}
                     >
-                      Update
+                      ${this.supervisor.localize("common.update")}
                     </ha-progress-button>
                   `
                 : ""}
             </ha-settings-row>
             <ha-settings-row>
               <span slot="heading">
-                Channel
+                ${this.supervisor.localize("system.supervisor.channel")}
               </span>
               <span slot="description">
                 ${this.supervisor.supervisor.channel}
@@ -150,18 +122,26 @@ class HassioSupervisorInfo extends LitElement {
                 ? html`
                     <ha-progress-button
                       @click=${this._toggleBeta}
-                      title="Get stable updates for Home Assistant, supervisor and host"
+                      .title=${this.supervisor.localize(
+                        "system.supervisor.leave_beta_description"
+                      )}
                     >
-                      Leave beta channel
+                      ${this.supervisor.localize(
+                        "system.supervisor.leave_beta_action"
+                      )}
                     </ha-progress-button>
                   `
                 : this.supervisor.supervisor.channel === "stable"
                 ? html`
                     <ha-progress-button
                       @click=${this._toggleBeta}
-                      title="Get beta updates for Home Assistant (RCs), supervisor and host"
+                      .title=${this.supervisor.localize(
+                        "system.supervisor.join_beta_description"
+                      )}
                     >
-                      Join beta channel
+                      ${this.supervisor.localize(
+                        "system.supervisor.join_beta_action"
+                      )}
                     </ha-progress-button>
                   `
                 : ""}
@@ -170,16 +150,20 @@ class HassioSupervisorInfo extends LitElement {
             ${this.supervisor.supervisor.supported
               ? html` <ha-settings-row three-line>
                   <span slot="heading">
-                    Share Diagnostics
+                    ${this.supervisor.localize(
+                      "system.supervisor.share_diagnostics"
+                    )}
                   </span>
                   <div slot="description" class="diagnostics-description">
-                    Share crash reports and diagnostic information.
+                    ${this.supervisor.localize(
+                      "system.supervisor.share_diagnostics_description"
+                    )}
                     <button
                       class="link"
-                      title="Show more information about this"
+                      .title=${this.supervisor.localize("common.show_more")}
                       @click=${this._diagnosticsInformationDialog}
                     >
-                      Learn more
+                      ${this.supervisor.localize("common.learn_more")}
                     </button>
                   </div>
                   <ha-switch
@@ -189,10 +173,12 @@ class HassioSupervisorInfo extends LitElement {
                   ></ha-switch>
                 </ha-settings-row>`
               : html`<div class="error">
-                  You are running an unsupported installation.
+                  ${this.supervisor.localize(
+                    "system.supervisor.unsupported_title"
+                  )}
                   <button
                     class="link"
-                    title="Learn more about how you can make your system compliant"
+                    .title=${this.supervisor.localize("common.learn_more")}
                     @click=${this._unsupportedDialog}
                   >
                     Learn more
@@ -200,10 +186,12 @@ class HassioSupervisorInfo extends LitElement {
                 </div>`}
             ${!this.supervisor.supervisor.healthy
               ? html`<div class="error">
-                  Your installation is running in an unhealthy state.
+                  ${this.supervisor.localize(
+                    "system.supervisor.unhealthy_title"
+                  )}
                   <button
                     class="link"
-                    title="Learn more about why your system is marked as unhealthy"
+                    .title=${this.supervisor.localize("common.learn_more")}
                     @click=${this._unhealthyDialog}
                   >
                     Learn more
@@ -227,16 +215,26 @@ class HassioSupervisorInfo extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             @click=${this._supervisorReload}
-            title="Reload parts of the Supervisor"
+            .title=${this.supervisor.localize(
+              "system.supervisor.reload_supervisor"
+            )}
           >
-            Reload Supervisor
+            ${this.supervisor.localize("system.supervisor.reload_supervisor")}
           </ha-progress-button>
           <ha-progress-button
             class="warning"
             @click=${this._supervisorRestart}
-            title="Restart the Supervisor"
+            .title=${this.supervisor.localize(
+              "common.restart_name",
+              "name",
+              "Supervisor"
+            )}
           >
-            Restart Supervisor
+            ${this.supervisor.localize(
+              "common.restart_name",
+              "name",
+              "Supervisor"
+            )}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -257,23 +255,23 @@ class HassioSupervisorInfo extends LitElement {
 
     if (this.supervisor.supervisor.channel === "stable") {
       const confirmed = await showConfirmationDialog(this, {
-        title: "WARNING",
-        text: html` Beta releases are for testers and early adopters and can
-          contain unstable code changes.
+        title: this.supervisor.localize("system.supervisor.warning"),
+        text: html`${this.supervisor.localize("system.supervisor.beta_warning")}
           <br />
           <b>
-            Make sure you have backups of your data before you activate this
-            feature.
+            ${this.supervisor.localize("system.supervisor.beta_backup")}
           </b>
           <br /><br />
-          This includes beta releases for:
+          ${this.supervisor.localize("system.supervisor.beta_release_items")}
           <li>Home Assistant Core</li>
           <li>Home Assistant Supervisor</li>
           <li>Home Assistant Operating System</li>
           <br />
-          Do you want to join the beta channel?`,
-        confirmText: "join beta",
-        dismissText: "no",
+          ${this.supervisor.localize("system.supervisor.join_beta_action")}`,
+        confirmText: this.supervisor.localize(
+          "system.supervisor.beta_join_confirm"
+        ),
+        dismissText: this.supervisor.localize("common.cancel"),
       });
 
       if (!confirmed) {
@@ -291,7 +289,9 @@ class HassioSupervisorInfo extends LitElement {
       await this._reloadSupervisor();
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to set supervisor option",
+        title: this.supervisor.localize(
+          "system.supervisor.failed_to_set_option"
+        ),
         text: extractApiErrorMessage(err),
       });
     } finally {
@@ -307,7 +307,7 @@ class HassioSupervisorInfo extends LitElement {
       await this._reloadSupervisor();
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to reload the supervisor",
+        title: this.supervisor.localize("system.supervisor.failed_to_reload"),
         text: extractApiErrorMessage(err),
       });
     } finally {
@@ -327,10 +327,18 @@ class HassioSupervisorInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Restart the Supervisor",
-      text: "Are you sure you want to restart the Supervisor",
-      confirmText: "restart",
-      dismissText: "cancel",
+      title: this.supervisor.localize(
+        "confirm.restart.title",
+        "name",
+        "Supervisor"
+      ),
+      text: this.supervisor.localize(
+        "confirm.restart.text",
+        "name",
+        "Supervisor"
+      ),
+      confirmText: this.supervisor.localize("common.restart"),
+      dismissText: this.supervisor.localize("common.cancel"),
     });
 
     if (!confirmed) {
@@ -342,7 +350,11 @@ class HassioSupervisorInfo extends LitElement {
       await restartSupervisor(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to restart the supervisor",
+        title: this.supervisor.localize(
+          "common.failed_to_restart_name",
+          "name",
+          "Supervisor"
+        ),
         text: extractApiErrorMessage(err),
       });
     } finally {
@@ -355,10 +367,16 @@ class HassioSupervisorInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Update Supervisor",
-      text: `Are you sure you want to update supervisor to version ${this.supervisor.supervisor.version_latest}?`,
-      confirmText: "update",
-      dismissText: "cancel",
+      title: this.supervisor.localize("confirm.update", "name", "Supervisor"),
+      text: this.supervisor.localize(
+        "confirm.text",
+        "name",
+        "Supervisor",
+        "version",
+        this.supervisor.supervisor.version_latest
+      ),
+      confirmText: this.supervisor.localize("common.update"),
+      dismissText: this.supervisor.localize("common.cancel"),
     });
 
     if (!confirmed) {
@@ -373,7 +391,11 @@ class HassioSupervisorInfo extends LitElement {
       });
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to update the supervisor",
+        title: this.supervisor.localize(
+          "common.failed_to_update_name",
+          "name",
+          "Supervisor"
+        ),
         text: extractApiErrorMessage(err),
       });
     } finally {
@@ -383,40 +405,41 @@ class HassioSupervisorInfo extends LitElement {
 
   private async _diagnosticsInformationDialog(): Promise<void> {
     await showAlertDialog(this, {
-      title: "Help Improve Home Assistant",
-      text: html`Would you want to automatically share crash reports and
-        diagnostic information when the supervisor encounters unexpected errors?
-        <br /><br />
-        This will allow us to fix the problems, the information is only
-        accessible to the Home Assistant Core team and will not be shared with
-        others.
-        <br /><br />
-        The data does not include any private/sensitive information and you can
-        disable this in settings at any time you want.`,
+      title: this.supervisor.localize(
+        "system.supervisor.share_diagonstics_title"
+      ),
+      text: this.supervisor.localize(
+        "system.supervisor.share_diagonstics_description",
+        "line_break",
+        html`<br /><br />`
+      ),
     });
   }
 
   private async _unsupportedDialog(): Promise<void> {
     await showAlertDialog(this, {
-      title: "You are running an unsupported installation",
-      text: html`Below is a list of issues found with your installation, click
-        on the links to learn how you can resolve the issues. <br /><br />
+      title: this.supervisor.localize("system.supervisor.unsupported_title"),
+      text: html`${this.supervisor.localize(
+          "system.supervisor.unsupported_description"
+        )} <br /><br />
         <ul>
           ${this.supervisor.resolution.unsupported.map(
-            (issue) => html`
+            (reason) => html`
               <li>
-                ${UNSUPPORTED_REASON[issue]
+                ${UNSUPPORTED_REASON_URL[reason]
                   ? html`<a
                       href="${documentationUrl(
                         this.hass,
-                        UNSUPPORTED_REASON[issue].url
+                        UNSUPPORTED_REASON_URL[reason]
                       )}"
                       target="_blank"
                       rel="noreferrer"
                     >
-                      ${UNSUPPORTED_REASON[issue].title}
+                      ${this.supervisor.localize(
+                        `system.supervisor.unsupported_reason.${reason}`
+                      ) || reason}
                     </a>`
-                  : issue}
+                  : reason}
               </li>
             `
           )}
@@ -426,26 +449,28 @@ class HassioSupervisorInfo extends LitElement {
 
   private async _unhealthyDialog(): Promise<void> {
     await showAlertDialog(this, {
-      title: "Your installation is unhealthy",
-      text: html`Running an unhealthy installation will cause issues. Below is a
-        list of issues found with your installation, click on the links to learn
-        how you can resolve the issues. <br /><br />
+      title: this.supervisor.localize("system.supervisor.unhealthy_title"),
+      text: html`${this.supervisor.localize(
+          "system.supervisor.unhealthy_description"
+        )} <br /><br />
         <ul>
           ${this.supervisor.resolution.unhealthy.map(
-            (issue) => html`
+            (reason) => html`
               <li>
-                ${UNHEALTHY_REASON[issue]
+                ${UNHEALTHY_REASON_URL[reason]
                   ? html`<a
                       href="${documentationUrl(
                         this.hass,
-                        UNHEALTHY_REASON[issue].url
+                        UNHEALTHY_REASON_URL[reason]
                       )}"
                       target="_blank"
                       rel="noreferrer"
                     >
-                      ${UNHEALTHY_REASON[issue].title}
+                      ${this.supervisor.localize(
+                        `system.supervisor.unhealthy_reason.${reason}`
+                      ) || reason}
                     </a>`
-                  : issue}
+                  : reason}
               </li>
             `
           )}
@@ -461,7 +486,9 @@ class HassioSupervisorInfo extends LitElement {
       await setSupervisorOption(this.hass, data);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to set supervisor option",
+        title: this.supervisor.localize(
+          "system.supervisor.failed_to_set_option"
+        ),
         text: extractApiErrorMessage(err),
       });
     }
