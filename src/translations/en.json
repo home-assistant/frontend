@@ -3430,6 +3430,13 @@
         "documentation": "Documentation",
         "info": "Info",
         "log": "Log"
+      },
+      "configuration": {
+        "audio": {
+          "default": "Default"
+        },
+        "config": {},
+        "network": {}
       }
     },
     "common": {

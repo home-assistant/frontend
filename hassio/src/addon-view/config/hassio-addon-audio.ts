@@ -25,6 +25,7 @@ import {
   fetchHassioHardwareAudio,
   HassioHardwareAudioDevice,
 } from "../../../../src/data/hassio/hardware";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
@@ -33,6 +34,8 @@ import { hassioStyle } from "../../resources/hassio-style";
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
@@ -64,9 +67,9 @@ class HassioAddonAudio extends LitElement {
               ${this._inputDevices &&
               this._inputDevices.map((item) => {
                 return html`
-                  <paper-item device=${item.device || ""}
-                    >${item.name}</paper-item
-                  >
+                  <paper-item device=${item.device || ""}>
+                    ${item.name}
+                  </paper-item>
                 `;
               })}
             </paper-listbox>
@@ -152,7 +155,7 @@ class HassioAddonAudio extends LitElement {
 
     const noDevice: HassioHardwareAudioDevice = {
       device: "default",
-      name: "Default",
+      name: this.supervisor.localize("addon.configuration.audio.default"),
     };
 
     try {
