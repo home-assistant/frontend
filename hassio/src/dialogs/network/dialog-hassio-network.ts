@@ -192,9 +192,9 @@ export class DialogHassioNetwork extends LitElement
                   ? html`
                       <div class="radio-row">
                         <ha-formfield
-                          label="${this.supervisor.localize(
+                          .label=${this.supervisor.localize(
                             "dialog.network.open"
-                          )}"
+                          )}
                         >
                           <ha-radio
                             @change=${this._handleRadioValueChangedAp}
@@ -208,9 +208,9 @@ export class DialogHassioNetwork extends LitElement
                           </ha-radio>
                         </ha-formfield>
                         <ha-formfield
-                          label="${this.supervisor.localize(
+                          .label=${this.supervisor.localize(
                             "dialog.network.wep"
-                          )}"
+                          )}
                         >
                           <ha-radio
                             @change=${this._handleRadioValueChangedAp}
@@ -222,9 +222,9 @@ export class DialogHassioNetwork extends LitElement
                           </ha-radio>
                         </ha-formfield>
                         <ha-formfield
-                          label="${this.supervisor.localize(
+                          .label=${this.supervisor.localize(
                             "dialog.network.wpa"
-                          )}"
+                          )}
                         >
                           <ha-radio
                             @change=${this._handleRadioValueChangedAp}
@@ -265,7 +265,7 @@ export class DialogHassioNetwork extends LitElement
       </div>
       <div class="buttons">
         <mwc-button
-          label="${this.supervisor.localize("common.cancel")}"
+          .label=${this.supervisor.localize("common.cancel")}
           @click=${this.closeDialog}
         >
         </mwc-button>
@@ -311,7 +311,7 @@ export class DialogHassioNetwork extends LitElement
       >
         <div class="radio-row">
           <ha-formfield
-            label="${this.supervisor.localize("dialog.network.dhcp")}"
+            .label=${this.supervisor.localize("dialog.network.dhcp")}
           >
             <ha-radio
               @change=${this._handleRadioValueChanged}
@@ -323,7 +323,7 @@ export class DialogHassioNetwork extends LitElement
             </ha-radio>
           </ha-formfield>
           <ha-formfield
-            label="${this.supervisor.localize("dialog.network.static")}"
+            .label=${this.supervisor.localize("dialog.network.static")}
           >
             <ha-radio
               @change=${this._handleRadioValueChanged}
@@ -335,7 +335,7 @@ export class DialogHassioNetwork extends LitElement
             </ha-radio>
           </ha-formfield>
           <ha-formfield
-            label="${this.supervisor.localize("dialog.network.disabled")}"
+            .label=${this.supervisor.localize("dialog.network.disabled")}
             class="warning"
           >
             <ha-radio
@@ -353,7 +353,7 @@ export class DialogHassioNetwork extends LitElement
               <paper-input
                 class="flex-auto"
                 id="address"
-                label="${this.supervisor.localize("dialog.network.ip_netmask")}"
+                .label=${this.supervisor.localize("dialog.network.ip_netmask")}
                 .version=${version}
                 .value=${this._toString(this._interface![version].address)}
                 @value-changed=${this._handleInputValueChanged}
@@ -362,7 +362,7 @@ export class DialogHassioNetwork extends LitElement
               <paper-input
                 class="flex-auto"
                 id="gateway"
-                label="${this.supervisor.localize("dialog.network.gateway")}"
+                .label=${this.supervisor.localize("dialog.network.gateway")}
                 .version=${version}
                 .value=${this._interface![version].gateway}
                 @value-changed=${this._handleInputValueChanged}
@@ -371,9 +371,7 @@ export class DialogHassioNetwork extends LitElement
               <paper-input
                 class="flex-auto"
                 id="nameservers"
-                label="${this.supervisor.localize(
-                  "dialog.network.dns_servers"
-                )}"
+                .label=${this.supervisor.localize("dialog.network.dns_servers")}
                 .version=${version}
                 .value=${this._toString(this._interface![version].nameservers)}
                 @value-changed=${this._handleInputValueChanged}

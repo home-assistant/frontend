@@ -117,7 +117,7 @@ class HassioRepositoriesDialog extends LitElement {
             <paper-input
               class="flex-auto"
               id="repository_input"
-              label="${this.supervisor.localize("dialog.repositories.add")}"
+              .label=${this.supervisor.localize("dialog.repositories.add")}
               @keydown=${this._handleKeyAdd}
             ></paper-input>
             <mwc-button @click=${this._addRepository}>

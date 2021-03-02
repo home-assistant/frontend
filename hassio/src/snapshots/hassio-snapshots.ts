@@ -143,7 +143,7 @@ class HassioSnapshots extends LitElement {
               <div class="card-content">
                 <paper-input
                   autofocus
-                  label="${this.supervisor.localize("snapshot.name")}"
+                  .label=${this.supervisor.localize("snapshot.name")}
                   name="snapshotName"
                   .value=${this._snapshotName}
                   @value-changed=${this._handleTextValueChanged}
@@ -203,7 +203,7 @@ class HassioSnapshots extends LitElement {
                 ${this._snapshotHasPassword
                   ? html`
                       <paper-input
-                        label="${this.supervisor.localize("snapshot.password")}"
+                        .label=${this.supervisor.localize("snapshot.password")}
                         type="password"
                         name="snapshotPassword"
                         .value=${this._snapshotPassword}

@@ -284,9 +284,9 @@ class HassioAddonInfo extends LitElement {
                       })}
                       @click=${this._showMoreInfo}
                       id="stage"
-                      label="${this.supervisor.localize(
+                      .label=${this.supervisor.localize(
                         "addon.dashboard.capability.label.stage"
-                      )}"
+                      )}
                       description=""
                     >
                       <ha-svg-icon
@@ -312,9 +312,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="host_network"
-                        label="${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.host"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiNetwork}></ha-svg-icon>
@@ -326,9 +326,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="full_access"
-                        label="${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.hardware"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiChip}></ha-svg-icon>
@@ -340,9 +340,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="homeassistant_api"
-                        label="${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.hass"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
@@ -354,9 +354,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="hassio_api"
-                        label="${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.hassio"
-                        )}"
+                        )}
                         .description=${this.supervisor.localize(
                           `addon.dashboard.capability.role.${this.addon.hassio_role}`
                         ) || this.addon.hassio_role}
@@ -370,7 +370,7 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="docker_api"
-                        label="${this.supervisor.localize(
+                        .label=".${this.supervisor.localize(
                           "addon.dashboard.capability.label.docker"
                         )}"
                         description=""
@@ -384,9 +384,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="host_pid"
-                        label="${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.host_pid"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiPound}></ha-svg-icon>
@@ -399,9 +399,9 @@ class HassioAddonInfo extends LitElement {
                         @click=${this._showMoreInfo}
                         class=${this._computeApparmorClassName}
                         id="apparmor"
-                        label="${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.apparmor"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiShield}></ha-svg-icon>
@@ -413,9 +413,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="auth_api"
-                        label="${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.auth"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiKey}></ha-svg-icon>
@@ -427,9 +427,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="ingress"
-                        label="${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.ingress"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon

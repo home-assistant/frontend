@@ -70,9 +70,9 @@ class HassioRegistriesDialog extends LitElement {
                   @value-changed=${this._inputChanged}
                   class="flex-auto"
                   name="registry"
-                  label="${this.supervisor.localize(
+                  .label=${this.supervisor.localize(
                     "dialog.registries.registry"
-                  )}"
+                  )}
                   required
                   auto-validate
                 ></paper-input>
@@ -80,9 +80,9 @@ class HassioRegistriesDialog extends LitElement {
                   @value-changed=${this._inputChanged}
                   class="flex-auto"
                   name="username"
-                  label="${this.supervisor.localize(
+                  .label=${this.supervisor.localize(
                     "dialog.registries.username"
-                  )}"
+                  )}
                   required
                   auto-validate
                 ></paper-input>
@@ -90,9 +90,9 @@ class HassioRegistriesDialog extends LitElement {
                   @value-changed=${this._inputChanged}
                   class="flex-auto"
                   name="password"
-                  label="${this.supervisor.localize(
+                  .label=${this.supervisor.localize(
                     "dialog.registries.password"
-                  )}"
+                  )}
                   type="password"
                   required
                   auto-validate

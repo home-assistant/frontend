@@ -79,7 +79,7 @@ class HassioSupervisorLog extends LitElement {
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-dropdown-menu
-                label="${this.supervisor.localize("system.log.log_provider")}"
+                .label=${this.supervisor.localize("system.log.log_provider")}
                 @iron-select=${this._setLogProvider}
               >
                 <paper-listbox

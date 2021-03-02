@@ -58,9 +58,9 @@ class HassioAddonAudio extends LitElement {
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
           <paper-dropdown-menu
-            label="${this.supervisor.localize(
+            .label=${this.supervisor.localize(
               "addon.configuration.audio.input"
-            )}"
+            )}
             @iron-select=${this._setInputDevice}
           >
             <paper-listbox
@@ -79,9 +79,9 @@ class HassioAddonAudio extends LitElement {
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-dropdown-menu
-            label="${this.supervisor.localize(
+            .label=${this.supervisor.localize(
               "addon.configuration.audio.output"
-            )}"
+            )}
             @iron-select=${this._setOutputDevice}
           >
             <paper-listbox

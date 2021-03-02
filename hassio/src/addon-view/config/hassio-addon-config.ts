@@ -149,9 +149,9 @@ class HassioAddonConfig extends LitElement {
         ${hasHiddenOptions
           ? html`<ha-formfield
               class="show-additional"
-              label="${this.supervisor.localize(
+              .label=${this.supervisor.localize(
                 "addon.configuration.options.show_unused_optional"
-              )}"
+              )}
             >
               <ha-switch
                 @change=${this._toggleOptional}
