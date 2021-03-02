@@ -177,8 +177,7 @@ class HassioCoreInfo extends LitElement {
         folders: ["homeassistant"],
         homeassistant: true,
       },
-      updateHandler: async () => await updateCore(this.hass),
-      type: "core",
+      updateHandler: async () => await updateCore(this, this.hass),
     });
   }
 

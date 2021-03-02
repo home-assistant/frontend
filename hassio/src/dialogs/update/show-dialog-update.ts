@@ -6,7 +6,6 @@ export interface SupervisorDialogSupervisorUpdateParams {
   name: string;
   version: string;
   snapshotParams: any;
-  type: "core" | "addon";
   updateHandler: () => Promise<void>;
 }
 

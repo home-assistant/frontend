@@ -994,8 +994,7 @@ class HassioAddonInfo extends LitElement {
         homeassistant: false,
       },
       updateHandler: async () =>
-        await updateHassioAddon(this.hass, this.addon.slug),
-      type: "addon",
+        await updateHassioAddon(this, this.hass, this.addon.slug),
     });
   }
 

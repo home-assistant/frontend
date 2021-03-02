@@ -35,26 +35,15 @@ class DialogSupervisorUpdate extends LitElement {
 
   @internalProperty() private _error?: string;
 
-  @internalProperty() private _name?: string;
-
-  @internalProperty() private _version?: string;
-
-  @internalProperty() private _type?: "core" | "addon";
-
-  @internalProperty() private _updateHandler?: () => Promise<void>;
-
-  @internalProperty() private _snapshotParams?: any;
+  @internalProperty()
+  private _dialogParams?: SupervisorDialogSupervisorUpdateParams;
 
   public async showDialog(
     params: SupervisorDialogSupervisorUpdateParams
   ): Promise<void> {
     this._opened = true;
     this.supervisor = params.supervisor;
-    this._name = params.name;
-    this._type = params.type;
-    this._updateHandler = params.updateHandler;
-    this._version = params.version;
-    this._snapshotParams = params.snapshotParams;
+    this._dialogParams = params;
     await this.updateComplete;
   }
 
@@ -62,12 +51,7 @@ class DialogSupervisorUpdate extends LitElement {
     this._action = null;
     this._createSnapshot = true;
     this._error = undefined;
-    this._name = undefined;
-    this._opened = false;
-    this._snapshotParams = undefined;
-    this._type = undefined;
-    this._updateHandler = undefined;
-    this._version = undefined;
+    this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -80,6 +64,9 @@ class DialogSupervisorUpdate extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this._dialogParams) {
+      return html``;
+    }
     return html`
       <ha-dialog .open=${this._opened} scrimClickAction escapeKeyAction>
         ${this._action === null
@@ -88,7 +75,7 @@ class DialogSupervisorUpdate extends LitElement {
                   ${this.supervisor.localize(
                     "confirm.update.title",
                     "name",
-                    this._name
+                    this._dialogParams.name
                   )}
                 </h2>
               </slot>
@@ -96,9 +83,9 @@ class DialogSupervisorUpdate extends LitElement {
                 ${this.supervisor.localize(
                   "confirm.update.text",
                   "name",
-                  this._name,
+                  this._dialogParams.name,
                   "version",
-                  this._version
+                  this._dialogParams.version
                 )}
               </div>
 
@@ -110,7 +97,7 @@ class DialogSupervisorUpdate extends LitElement {
                   ${this.supervisor.localize(
                     "dialog.update.create_snapshot",
                     "name",
-                    this._name
+                    this._dialogParams.name
                   )}
                 </span>
                 <ha-switch
@@ -137,14 +124,14 @@ class DialogSupervisorUpdate extends LitElement {
                   ? this.supervisor.localize(
                       "dialog.update.updating",
                       "name",
-                      this._name,
+                      this._dialogParams.name,
                       "version",
-                      this._version
+                      this._dialogParams.version
                     )
                   : this.supervisor.localize(
                       "dialog.update.snapshotting",
                       "name",
-                      this._name
+                      this._dialogParams.name
                     )}
               </p>`}
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -160,7 +147,10 @@ class DialogSupervisorUpdate extends LitElement {
     if (this._createSnapshot) {
       this._action = "snapshot";
       try {
-        await createHassioPartialSnapshot(this.hass, this._snapshotParams);
+        await createHassioPartialSnapshot(
+          this.hass,
+          this._dialogParams!.snapshotParams
+        );
       } catch (err) {
         this._error = extractApiErrorMessage(err);
         this._action = null;
@@ -170,23 +160,11 @@ class DialogSupervisorUpdate extends LitElement {
 
     this._action = "update";
     try {
-      await this._updateHandler!();
+      await this._dialogParams!.updateHandler!();
     } catch (err) {
       this._error = extractApiErrorMessage(err);
       this._action = null;
       return;
-    }
-    if (this._type === "addon") {
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "addon",
-      });
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "supervisor",
-      });
-    } else {
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "core",
-      });
     }
 
     this.closeDialog();
