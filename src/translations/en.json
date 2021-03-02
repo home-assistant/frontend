@@ -3436,7 +3436,15 @@
         "audio": {
           "default": "Default"
         },
-        "config": {},
+        "config": {
+          "options": "Options",
+          "edit_in_ui": "Edit in UI",
+          "edit_in_yaml": "Edit in YAML",
+          "invalid_yaml": "Invalid YAML",
+          "show_unused_optional": "Show unused optional configuration options",
+          "failed_to_reset_addon_configuration": "Failed to reset add-on configuration, {error}",
+          "failed_to_save_addon_configuration": "Failed to save add-on configuration, {error}"
+        },
         "network": {}
       }
     },
@@ -3446,6 +3454,8 @@
       "new_version_available": "New version available",
       "release_notes": "Release notes",
       "reload": "Reload",
+      "reset_defaults": "Reset to defaults",
+      "reset_options": "Reset options",
       "update": "Update",
       "version": "Version"
     },
@@ -3453,6 +3463,9 @@
       "update": {
         "title": "Update ${name}",
         "text": "Are you sure you want to update {name} to version {version}?"
+      },
+      "reset_options": {
+        "text": "Are you sure you want to reset all your options?"
       }
     },
     "dashboard": {

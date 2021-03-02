@@ -211,7 +211,7 @@ export class HassioUpdate extends LitElement {
         !ignoredStatusCodes.has(err.status_code)
       ) {
         showAlertDialog(this, {
-          title: this.supervisor.localize("error.update_failed"),
+          title: this.supervisor.localize("common.error.update_failed"),
           text: extractApiErrorMessage(err),
         });
       }
