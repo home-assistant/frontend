@@ -3779,6 +3779,19 @@
         "dns_servers": "DNS Servers",
         "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
         "failed_to_change": "Failed to change network settings"
+      },
+      "registries": {
+        "title_add": "Add New Container Registry",
+        "title_manage": "Manage Container Registries",
+        "registry": "Registry",
+        "username": "Username",
+        "password": "Password",
+        "no_registries": "No registries configured",
+        "add_registry": "Add registry",
+        "add_new_registry": "Add new registry",
+        "remove": "Remove",
+        "failed_to_add": "Failed to add registry",
+        "failed_to_remove": "Failed to remove registry"
       }
     }
   }

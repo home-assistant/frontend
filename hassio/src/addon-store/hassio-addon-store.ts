@@ -195,7 +195,7 @@ class HassioAddonStore extends LitElement {
   }
 
   private async _manageRegistries() {
-    showRegistriesDialog(this);
+    showRegistriesDialog(this, { supervisor: this.supervisor });
   }
 
   private async _loadData() {
