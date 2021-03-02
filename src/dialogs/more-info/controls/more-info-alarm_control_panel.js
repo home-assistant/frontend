@@ -5,6 +5,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { FORMAT_NUMBER } from "../../../data/alarm_control_panel";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
@@ -44,6 +45,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
           label="[[localize('ui.card.alarm_control_panel.code')]]"
           value="{{_enteredCode}}"
           type="password"
+          inputmode="[[_inputMode]]"
           disabled="[[!_inputEnabled]]"
         ></paper-input>
 
@@ -202,6 +204,10 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
+      _inputMode: {
+        type: String,
+        computed: "_getInputMode(_codeFormat)",
+      },
     };
   }
 
@@ -238,8 +244,12 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
     }
   }
 
+  _getInputMode(format) {
+    return this._isNumber(format) ? "numeric" : "text";
+  }
+
   _isNumber(format) {
-    return format === "number";
+    return format === FORMAT_NUMBER;
   }
 
   _validateCode(code, format, armVisible, codeArmRequired) {
