@@ -239,7 +239,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
   }
 
   _isNumber(format) {
-    return format === "Number";
+    return format === "number";
   }
 
   _validateCode(code, format, armVisible, codeArmRequired) {
