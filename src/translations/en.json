@@ -3581,6 +3581,9 @@
           "get_changelog": "Failed to get add-on changelog"
         }
       },
+      "documentation": {
+        "get_documentation": "Failed to get add-on documentation, {error}"
+      },
       "logs": {
         "get_logs": "Failed to get add-on logs, {error}"
       }
