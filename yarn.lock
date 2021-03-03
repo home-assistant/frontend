@@ -2026,9 +2026,9 @@
   integrity sha512-KL+cM+uJPW5skyuTRoW43lOaSQq3YDNEPx5z0V/9Wsz9R9dK4kVP5NIRMUFgl9MUCQ9UxIotvgPDpz65j9wjuA==
 
 "@codemirror/view@^0.17.0":
-  version "0.17.12"
-  resolved "https://registry.yarnpkg.com/@codemirror/view/-/view-0.17.12.tgz#3720323d32ad359372621f0b16f8e25a3d17a933"
-  integrity sha512-sHA57N2yfFQTgoOfF5OneHPAltupcSH4ps4cD3fj91F2EhWLqfzryImom8RxhJrwiE+3Kv3MiRtOXPthHIbswg==
+  version "0.17.13"
+  resolved "https://registry.yarnpkg.com/@codemirror/view/-/view-0.17.13.tgz#e805ccaa31c22fcff87f0a1c88c143ff17960458"
+  integrity sha512-TWmQF2OMzWYY51gvzcq0ECvW1EyhEVpy//dmu1MDvJrv8nDZWGY/a414fUCc+v6DKNpujg7IIpP9sD2izYJFpg==
   dependencies:
     "@codemirror/rangeset" "^0.17.0"
     "@codemirror/state" "^0.17.0"
