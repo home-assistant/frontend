@@ -33,6 +33,7 @@ export const theme = CMEditorView.theme({
       "var(--code-editor-background-color, var(--card-background-color))",
     "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.3)" },
     height: "var(--code-mirror-height, auto)",
+    maxHeight: "var(--code-mirror-max-height, unset)",
   },
 
   $scroller: { outline: "none" },
