@@ -477,7 +477,7 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <span slot="description">
                                 ${this.supervisor.localize(
-                                  "addon.dashboard.option.boot.description"
+                                  "addon.dashboard.option.watchdog.description"
                                 )}
                               </span>
                               <ha-switch
@@ -499,7 +499,7 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <span slot="description">
                                 ${this.supervisor.localize(
-                                  "addon.dashboard.option.boot.description"
+                                  "addon.dashboard.option.auto_update.description"
                                 )}
                               </span>
                               <ha-switch
