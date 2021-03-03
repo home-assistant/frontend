@@ -21,6 +21,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   lock: () => import("./controls/more-info-lock"),
   media_player: () => import("./controls/more-info-media_player"),
   person: () => import("./controls/more-info-person"),
+  remote: () => import("./controls/more-info-remote"),
   script: () => import("./controls/more-info-script"),
   sun: () => import("./controls/more-info-sun"),
   timer: () => import("./controls/more-info-timer"),
