@@ -359,6 +359,9 @@ export abstract class HuiElementEditor<T> extends LitElement {
       .yaml-editor {
         padding: 8px 0px;
       }
+      ha-code-editor {
+        --code-mirror-max-height: calc(100vh - 245px);
+      }
       .error,
       .warning,
       .info {
