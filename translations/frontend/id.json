@@ -100,6 +100,42 @@
             "unknown": "Tidak diketahui"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "configuration": "Konfigurasi",
+                "documentation": "Dokumentasi",
+                "info": "Info",
+                "log": "Log"
+            }
+        },
+        "common": {
+            "cancel": "Batalkan",
+            "newest_version": "Versi Terbaru",
+            "release_notes": "Catatan rilis",
+            "update": "Perbarui",
+            "version": "Versi:"
+        },
+        "confirm": {
+            "update": {
+                "text": "Yakin ingin memperbarui {name} ke versi {version}?",
+                "title": "Perbarui {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Versi baru tersedia",
+            "addon_running": "Add-on sedang berjalan",
+            "addon_stopped": "Add-on dihentikan",
+            "addons": "Add-on",
+            "no_addons": "Anda belum memasang add-on apa pun. Kunjungi toko add-on untuk memulai!"
+        },
+        "panel": {
+            "dashboard": "Dasbor",
+            "snapshots": "Snapshot",
+            "store": "Toko Add-on",
+            "system": "Sistem"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Ingin menyimpan login ini?",
@@ -374,6 +410,8 @@
                     "changed_to_state": "berubah menjadi {state}",
                     "cleared_device_class": "dibersihkan (tidak ada {device_class} yang terdeteksi)",
                     "detected_device_class": "terdeteksi {device_class}",
+                    "is_closing": "menutup",
+                    "is_opening": "membuka",
                     "rose": "terbit",
                     "set": "terbenam",
                     "turned_off": "dimatikan",
@@ -692,7 +730,6 @@
                         "script": "Skrip",
                         "server_control": "Kontrol Server",
                         "tag": "Tag",
-                        "tags": "Tag",
                         "users": "Pengguna",
                         "zone": "Zona"
                     },
@@ -751,6 +788,7 @@
                     "clusters": "Kelola Cluster",
                     "reconfigure": "Konfigurasi Ulang Perangkat",
                     "remove": "Hapus Perangkat",
+                    "view_in_visualization": "Tampilkan dalam Visualisasi",
                     "zigbee_information": "Tanda tangan perangkat Zigbee"
                 },
                 "confirmations": {
@@ -2328,6 +2366,7 @@
                         "caption": "Visualisasi",
                         "header": "Visualisasi Jaringan",
                         "highlight_label": "Sorot Perangkat",
+                        "refresh_topology": "Segarkan Topologi",
                         "zoom_label": "Perbesar Ke Perangkat"
                     }
                 },
@@ -2994,6 +3033,8 @@
                         "error_remove": "Tidak dapat menghapus konfigurasi: {error}",
                         "error_save_yaml": "Tidak dapat menyimpan YAML: {error}",
                         "header": "Edit Konfigurasi",
+                        "lovelace_changed": "Konfigurasi Lovelace telah diperbarui. Ingin memuat konfigurasi yang diperbarui di editor dan kehilangan perubahan Anda saat ini?",
+                        "reload": "Muat Ulang",
                         "resources_moved": "Sumber daya seharusnya tidak lagi ditambahkan ke konfigurasi Lovelace tetapi dapat ditambahkan di panel konfigurasi Lovelace.",
                         "save": "Simpan",
                         "saved": "Disimpan",
