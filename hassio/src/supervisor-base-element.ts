@@ -23,7 +23,6 @@ import {
 import { fetchSupervisorStore } from "../../src/data/supervisor/store";
 import {
   getSupervisorEventCollection,
-  subscribeSupervisorEvents,
   Supervisor,
   SupervisorObject,
   supervisorCollection,
