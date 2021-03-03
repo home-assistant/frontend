@@ -102,6 +102,42 @@
             "unknown": "未知"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "configuration": "設定",
+                "documentation": "相關文件",
+                "info": "資訊",
+                "log": "日誌"
+            }
+        },
+        "common": {
+            "cancel": "取消",
+            "newest_version": "最新版本",
+            "release_notes": "發行說明",
+            "update": "更新",
+            "version": "版本"
+        },
+        "confirm": {
+            "update": {
+                "text": "確定要更新 {name} 至 {version} 版？",
+                "title": "更新 {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "新版本可供下載",
+            "addon_running": "附加元件執行中",
+            "addon_stopped": "附加元件已停止",
+            "addons": "附加元件",
+            "no_addons": "目前似乎沒有安裝任何附加元件。點選下方附加元件商店以新增！"
+        },
+        "panel": {
+            "dashboard": "主面板",
+            "snapshots": "系統備份",
+            "store": "附加元件商店",
+            "system": "系統"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "是否要保持登錄狀態？",
@@ -297,14 +333,14 @@
         },
         "components": {
             "addon-picker": {
-                "addon": "Add-on",
+                "addon": "附加元件",
                 "error": {
                     "fetch_addons": {
-                        "description": "取得 Add-on 回報錯誤",
-                        "title": "取得 Add-on 錯誤"
+                        "description": "取得附加元件回報錯誤",
+                        "title": "取得附加元件錯誤"
                     },
                     "no_supervisor": {
-                        "description": "找不到 Supervisor、因此 Add-on 無法載入。",
+                        "description": "找不到 Supervisor、因此附加元件無法載入。",
                         "title": "找不到 Supervisor"
                     }
                 }
@@ -377,6 +413,8 @@
                     "changed_to_state": "變更為{state}",
                     "cleared_device_class": "安全（未偵測到 {device_class}）",
                     "detected_device_class": "偵測到 {device_class}",
+                    "is_closing": "關閉中",
+                    "is_opening": "開啟中",
                     "rose": "升高",
                     "set": "設定",
                     "turned_off": "關閉",
@@ -697,7 +735,6 @@
                         "script": "腳本",
                         "server_control": "伺服器控制",
                         "tag": "標籤",
-                        "tags": "標籤",
                         "users": "使用者",
                         "zone": "區域"
                     },
@@ -756,6 +793,7 @@
                     "clusters": "管理叢集",
                     "reconfigure": "重新設定裝置",
                     "remove": "移除裝置",
+                    "view_in_visualization": "網路形象化",
                     "zigbee_information": "Zigbee 裝置簽章"
                 },
                 "confirmations": {
@@ -2333,6 +2371,7 @@
                         "caption": "形象化",
                         "header": "網路形象化",
                         "highlight_label": "高亮顯示裝置",
+                        "refresh_topology": "更新拓樸",
                         "zoom_label": "縮放到裝置"
                     }
                 },
@@ -3010,6 +3049,8 @@
                         "error_remove": "無法移除設定：{error}",
                         "error_save_yaml": "無法儲存 YAML：{error}",
                         "header": "編輯設定",
+                        "lovelace_changed": "Lovelace 設定已更新，是否要於編輯器中載入更新設定，並放棄目前變更？",
+                        "reload": "重新載入",
                         "resources_moved": "無法再透過 Lovelace 設定新增資源，需透過 Lovelace 設定面板進行新增。",
                         "save": "儲存",
                         "saved": "已儲存",

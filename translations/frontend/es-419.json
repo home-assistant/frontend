@@ -102,6 +102,23 @@
             "unknown": "Desconocido"
         }
     },
+    "supervisor": {
+        "common": {
+            "version": "Versión"
+        },
+        "confirm": {
+            "update": {
+                "text": "¿Estás seguro de actualizar {name} a la versión {version}?"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Nueva versión disponible",
+            "addon_running": "El complemento se está ejecutando"
+        },
+        "panel": {
+            "system": "Sistema"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "¿Desea permanecer conectado?",
@@ -696,7 +713,6 @@
                         "scene": "Escenas",
                         "script": "",
                         "server_control": "Controles del servidor",
-                        "tags": "Etiquetas",
                         "users": "Usuarios",
                         "zone": "Zonas"
                     },

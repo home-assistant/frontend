@@ -102,6 +102,40 @@
             "unknown": "Unbekannt"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "configuration": "Konfiguration",
+                "documentation": "Dokumentation",
+                "info": "Informationen",
+                "log": "Protokoll"
+            }
+        },
+        "common": {
+            "cancel": "Abbrechen",
+            "newest_version": "Neueste Version",
+            "release_notes": "Versionshinweise",
+            "update": "Aktualisieren"
+        },
+        "confirm": {
+            "update": {
+                "text": "Sind Sie sicher, dass Sie {name} auf Version {version} aktualisieren möchten?",
+                "title": "Aktualisiere {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Neue Version verfügbar",
+            "addon_running": "Add-on wird ausgeführt",
+            "addon_stopped": "Add-on ist gestoppt",
+            "no_addons": "Sie haben noch keine Add-Ons installiert. Gehen Sie zum Add-on-Shop, um loszulegen!"
+        },
+        "panel": {
+            "dashboard": "Dashboard",
+            "snapshots": "Datensicherungen",
+            "store": "Add-on Shop",
+            "system": "System"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Möchtest du angemeldet bleiben?",
@@ -377,6 +411,8 @@
                     "changed_to_state": "wechselte zu {state}",
                     "cleared_device_class": "zurückgesetzt (kein(e) {device_class} erkannt)",
                     "detected_device_class": "{device_class} erkannt",
+                    "is_closing": "wird geschlossen",
+                    "is_opening": "wird geöffnet",
                     "rose": "aufgegangen",
                     "set": "untergegangen",
                     "turned_off": "ausgeschaltet",
@@ -697,7 +733,6 @@
                         "script": "Skripte",
                         "server_control": "Serversteuerung",
                         "tag": "NFC Tags",
-                        "tags": "Tags",
                         "users": "Benutzer",
                         "zone": "Zonen"
                     },
@@ -2371,7 +2406,9 @@
                         "inclusion_failed": "Der Knoten konnte nicht hinzugefügt werden. Bitte überprüfe die Protokolle für weitere Informationen.",
                         "inclusion_finished": "Der Knoten wurde hinzugefügt. Es kann einige Minuten dauern, bis alle Einheiten angezeigt werden, da der Knoten im Hintergrund fertig eingerichtet wird.",
                         "introduction": "Dieser Assistent führt dich durch das Hinzufügen eines Knotens zu deinem Z-Wave-Netzwerk.",
+                        "secure_inclusion_warning": "Sichere Geräte benötigen zusätzliche Bandbreite; zu viele sichere Geräte können Ihr Z-Wave-Netzwerk ausbremsen. Wir empfehlen, die sichere Einbindung nur für Geräte zu verwenden, die sie benötigen, wie Schlösser oder Garagentoröffner.",
                         "title": "Z-Wave-Knoten hinzufügen",
+                        "use_secure_inclusion": "Sichere Einbindung verwenden",
                         "view_device": "Gerät anzeigen"
                     },
                     "button": "Konfigurieren",
@@ -2420,6 +2457,7 @@
                     "remove_node": {
                         "exclusion_failed": "Der Knoten konnte nicht entfernt werden. Bitte in den Logs nach mehr Informationen suchen.",
                         "exclusion_finished": "Der Knoten {id} wurde aus deinem Z-Wave-Netzwerk entfernt.",
+                        "follow_device_instructions": "Befolge die mit dem Gerät gelieferten Anweisungen, um die Kopplung am Gerät auszulösen.",
                         "introduction": "Entferne einen Knoten aus deinem Z-Wave-Netzwerk und entferne die zugehörigen Geräte und Entitäten aus Home Assistant.",
                         "title": "Z-Wave-Knoten entfernen"
                     }
@@ -3000,6 +3038,7 @@
                         "error_remove": "Konfiguration konnte nicht entfernt werden: {error}",
                         "error_save_yaml": "YAML konnte nicht gespeichert werden: {error}",
                         "header": "Konfiguration bearbeiten",
+                        "reload": "Neu laden",
                         "resources_moved": "Ressourcen sollten nicht mehr zur Lovelace-Konfiguration hinzugefügt werden, sondern können im Lovelace-Konfigurationsfenster hinzugefügt werden.",
                         "save": "Speichern",
                         "saved": "Gespeichert",

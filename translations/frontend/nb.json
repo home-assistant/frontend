@@ -102,6 +102,42 @@
             "unknown": "Ukjent"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "configuration": "Konfigurasjon",
+                "documentation": "Dokumentasjon",
+                "info": "Info",
+                "log": "Logg"
+            }
+        },
+        "common": {
+            "cancel": "Avbryt",
+            "newest_version": "Nyeste versjon",
+            "release_notes": "Utgivelsesmerknader",
+            "update": "Oppdater",
+            "version": "Versjon"
+        },
+        "confirm": {
+            "update": {
+                "text": "Er du sikker på at du vil oppdatere {name} til version {version} ?",
+                "title": "Oppdater {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Ny versjon tilgjengelig",
+            "addon_running": "Tillegget kjører",
+            "addon_stopped": "Tillegget er stoppet",
+            "addons": "Tillegg",
+            "no_addons": "Du har ikke installert tilleggsprogrammer ennå. Gå over til tilleggsbutikken for å komme i gang!"
+        },
+        "panel": {
+            "dashboard": "Dashboard",
+            "snapshots": "Snapshots",
+            "store": "Tilleggsbutikk",
+            "system": "System"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Vil du forbli innlogget på denne enheten?",
@@ -377,6 +413,8 @@
                     "changed_to_state": "endret til {state}",
                     "cleared_device_class": "klar (ingen {device_class} oppdaget)",
                     "detected_device_class": "oppdaget {device_class}",
+                    "is_closing": "stenger",
+                    "is_opening": "åpner",
                     "rose": "soloppgang",
                     "set": "solnedgang",
                     "turned_off": "slått av",
@@ -697,7 +735,6 @@
                         "script": "Skript",
                         "server_control": "Server-kontroller",
                         "tag": "Tagger",
-                        "tags": "Tagger",
                         "users": "Brukere",
                         "zone": "Soner"
                     },
@@ -756,6 +793,7 @@
                     "clusters": "Behandle Clusters",
                     "reconfigure": "Rekonfigurer enhet",
                     "remove": "Fjern enhet",
+                    "view_in_visualization": "Visning i visualisering",
                     "zigbee_information": "ZigBee-enhetssignatur"
                 },
                 "confirmations": {
@@ -2333,6 +2371,7 @@
                         "caption": "Visualisering",
                         "header": "Nettverksvisualisering",
                         "highlight_label": "Fremhev enheter",
+                        "refresh_topology": "Oppdater topologi",
                         "zoom_label": "Zoom til enhet"
                     }
                 },
@@ -3010,6 +3049,8 @@
                         "error_remove": "Kan ikke fjerne konfigurasjonen: {error}",
                         "error_save_yaml": "Kan ikke lagre YAML: {error}",
                         "header": "Rediger konfigurasjon",
+                        "lovelace_changed": "Lovelace-konfigurasjonen ble oppdatert, vil du laste den oppdaterte konfigurasjonen i redigeringsprogrammet og miste gjeldende endringer?",
+                        "reload": "Last inn på nytt",
                         "resources_moved": "Ressurser skal ikke lenger legges til Lovelace-konfigurasjonen, men kan legges til i Lovelace-konfigurasjonspanelet.",
                         "save": "Lagre",
                         "saved": "Lagret",

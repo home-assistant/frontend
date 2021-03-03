@@ -102,6 +102,37 @@
             "unknown": "Onbekend"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "option": {
+                    "boot": {
+                        "title": "Start bij opstarten"
+                    },
+                    "ingress_panel": {
+                        "title": "Weergeven in zijbalk"
+                    }
+                }
+            }
+        },
+        "common": {
+            "description": "Omschrijving",
+            "learn_more": "Meer informatie",
+            "new_version_available": "Nieuwe versie beschikbaar"
+        },
+        "dialog": {
+            "update": {
+                "snapshotting": "Maak een snapshot van {name}"
+            }
+        },
+        "system": {
+            "supervisor": {
+                "beta_join_confirm": "Wil je meedoen met de bèta releases?",
+                "reload_supervisor": "Herlaad de Supervisor",
+                "share_diagonstics_title": "Help Home Assistant te verbeteren"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Wil je ingelogd blijven?",
@@ -697,7 +728,6 @@
                         "script": "Scripts",
                         "server_control": "Server Controls",
                         "tag": "Tags",
-                        "tags": "Tags",
                         "users": "Gebruikers",
                         "zone": "Zones"
                     },

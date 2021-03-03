@@ -102,6 +102,139 @@
             "unknown": "Bilinmeyen"
         }
     },
+    "supervisor": {
+        "common": {
+            "cancel": "İptal"
+        },
+        "confirm": {
+            "update": {
+                "title": "{name} güncelleyin"
+            }
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "{ssid} bağlantı kuruldu",
+                "dhcp": "DHCP",
+                "disabled": "Devre dışı",
+                "dns_servers": "DNS Sunucuları",
+                "failed_to_change": "Ağ ayarları değiştirilemedi",
+                "gateway": "Ağ geçidi adresi",
+                "ip_netmask": "IP adresi / Ağ maskesi",
+                "open": "Açık",
+                "scan_ap": "Erişim noktalarını tara",
+                "static": "Statik",
+                "title": "Ağ ayarları",
+                "unsaved": "Kaydedilmemiş değişiklikleriniz var, sekmeleri değiştirirseniz bunlar kaybolacak, devam etmek istiyor musunuz?",
+                "warning": "Wi-Fi, IP veya ağ geçidi adreslerini değiştirirseniz, bağlantıyı kaybedebilirsiniz!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Yeni kayıt ekle",
+                "add_registry": "Kayıt ekle",
+                "failed_to_add": "Kayıt eklenemedi",
+                "failed_to_remove": "Kayıt kaldırılamadı",
+                "no_registries": "Yapılandırılmış kayıt yok",
+                "password": "Parola",
+                "registry": "Kayıt",
+                "remove": "Kaldır",
+                "title_add": "Yeni Kapsayıcı Kaydı Ekle",
+                "title_manage": "Kapsayıcı Kayıtlarını Yönetin",
+                "username": "Kullanıcı adı"
+            },
+            "repositories": {
+                "add": "Ekle",
+                "remove": "Kaldır",
+                "title": "Eklenti depolarını yönetme"
+            },
+            "restart_addon": {
+                "confirm_text": "Eklentiyi yeniden başlatın",
+                "text": "Eklentiyi değişikliklerinizle yeniden başlatmak istiyor musunuz?"
+            },
+            "update": {
+                "create_snapshot": "Güncellemeden önce {name} anlık görüntüsünü oluşturun",
+                "snapshot": "Anlık görüntü",
+                "snapshotting": "{name} anlık görüntüsü oluşturuluyor",
+                "updating": "{name} , {version} sürümüne güncelleniyor"
+            }
+        },
+        "snapshot": {
+            "addons": "Eklentiler",
+            "available_snapshots": "Kullanılabilir Anlık Görüntüler",
+            "could_not_create": "Anlık görüntü oluşturulamadı",
+            "create": "Oluştur",
+            "create_blocked_not_running": "{state} durumunda olduğundan şu anda anlık görüntü oluşturmak mümkün değil.",
+            "create_snapshot": "Anlık görüntü oluştur",
+            "description": "Anlık görüntüler, Home Assistant örneğinizin tüm verilerini kolayca yedeklemenizi ve geri yüklemenizi sağlar.",
+            "enter_password": "Lütfen bir parola girin.",
+            "folder": {
+                "addons/local": "Yerel eklentiler",
+                "homeassistant": "Home Assistant yapılandırması",
+                "media": "Medya",
+                "share": "Paylaş",
+                "ssl": "SSL"
+            },
+            "folders": "Klasörler",
+            "full_snapshot": "Tam anlık görüntü",
+            "name": "Ad",
+            "no_snapshots": "Henüz anlık görüntünüz yok.",
+            "partial_snapshot": "Kısmi anlık görüntü",
+            "password": "Parola",
+            "password_protected": "parola korumalı",
+            "password_protection": "Parola koruması",
+            "security": "Güvenlik",
+            "type": "Tür",
+            "upload_snapshot": "Anlık görüntü yükle"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Çekirdek CPU Kullanımı",
+                "ram_usage": "Çekirdek RAM Kullanımı"
+            },
+            "host": {
+                "change": "Değişiklik",
+                "change_hostname": "Ana Bilgisayar Adını Değiştirin",
+                "confirm_reboot": "Ana bilgisayarı yeniden başlatmak istediğinizden emin misiniz?",
+                "confirm_shutdown": "Ana bilgisayarı kapatmak istediğinizden emin misiniz?",
+                "deployment": "Dağıtım",
+                "docker_version": "Docker sürümü",
+                "emmc_lifetime_used": "eMMC Kullanım Ömrü",
+                "failed_to_get_hardware_list": "Donanım listesi alınamadı",
+                "failed_to_import_from_usb": "USB'den içe aktarılamadı",
+                "failed_to_reboot": "Ana bilgisayar yeniden başlatılamadı",
+                "failed_to_set_hostname": "Ana bilgisayar adı ayarlanamadı",
+                "failed_to_shutdown": "Ana bilgisayar kapatılamadı",
+                "hardware": "Donanım",
+                "hostname": "Ana bilgisayar adı",
+                "import_from_usb": "USB'den içe aktar",
+                "ip_address": "IP Adresi",
+                "new_hostname": "Lütfen yeni bir ana bilgisayar adı girin:",
+                "operating_system": "İşletim sistemi",
+                "reboot_host": "Ana bilgisayarı yeniden başlatın",
+                "shutdown_host": "Ana bilgisayarı kapat",
+                "used_space": "Kullanılan alan"
+            },
+            "supervisor": {
+                "unhealthy_reason": {
+                    "docker": "Docker ortamı düzgün çalışmıyor",
+                    "privileged": "Süpervizör ayrıcalıklı değil",
+                    "setup": "Süpervizörün kurulumu başarısız oldu",
+                    "supervisor": "Süpervizör güncellenemedi"
+                },
+                "unsupported_reason": {
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker Yapılandırması",
+                    "docker_version": "Docker Sürümü",
+                    "job_conditions": "Yoksayılan iş koşulları",
+                    "lxc": "LXC",
+                    "network_manager": "Ağ yöneticisi",
+                    "os": "İşletim sistemi",
+                    "privileged": "Süpervizör ayrıcalıklı değil",
+                    "systemd": "Systemd"
+                }
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Oturumunuzun açık kalmasını istiyor musunuz?",
@@ -632,7 +765,7 @@
                     "remove_intro": "Varlık artık kullanılmıyorsa, kaldırarak temizleyebilirsiniz."
                 },
                 "script": {
-                    "last_action": "Son Eylem",
+                    "last_action": "Son eylem",
                     "last_triggered": "Son Tetiklenen"
                 },
                 "settings": "Varlık ayarları",
@@ -697,7 +830,6 @@
                         "script": "Senaryolar",
                         "server_control": "Sunucu Kontrolleri",
                         "tag": "Etiketler",
-                        "tags": "Etiketler",
                         "users": "Kullanıcılar",
                         "zone": "Bölgeler"
                     },

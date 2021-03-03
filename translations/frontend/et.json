@@ -102,6 +102,42 @@
             "unknown": "Teadmata"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "configuration": "Seaded",
+                "documentation": "Dokumentatsioon",
+                "info": "Info",
+                "log": "Logikirjed"
+            }
+        },
+        "common": {
+            "cancel": "Loobu",
+            "newest_version": "Uusim versioon",
+            "release_notes": "Väljalaske teave",
+            "update": "Uuenda",
+            "version": "Versioon"
+        },
+        "confirm": {
+            "update": {
+                "text": "Kas soovid kindlasti värskendada {name} versioonile {version}?",
+                "title": "Uuenda {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Uus versioon on saadaval",
+            "addon_running": "Lisandmoodul töötab",
+            "addon_stopped": "Lisandmoodul on peatatud",
+            "addons": "Lisandmoodulid",
+            "no_addons": "Ühtegi lisandmoodulit pole veel paigaldatud. Alustamiseks mine lisandmoodulite hoidlasse!"
+        },
+        "panel": {
+            "dashboard": "Kasutajaliidese vaade",
+            "snapshots": "Hetke varukoopia",
+            "store": "Lisandmoodulite hoidla",
+            "system": "Süsteem"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Kas Te soovite jääda sisselogituks selles seadmes?",
@@ -377,6 +413,8 @@
                     "changed_to_state": "muutus olekusse {state}",
                     "cleared_device_class": "lõpetatud ( {device_class} ei leitud)",
                     "detected_device_class": "tuvastati {device_class}",
+                    "is_closing": "sulgub",
+                    "is_opening": "avaneb",
                     "rose": "tõusis",
                     "set": "määratud",
                     "turned_off": "lülitus välja",
@@ -632,8 +670,8 @@
                     "remove_intro": "Kui olemit enam ei kasutata, võid selle eemaldada."
                 },
                 "script": {
-                    "last_action": "Viimane tegevus",
-                    "last_triggered": "Viimati vallandunud"
+                    "last_action": "Viimatine tegevus",
+                    "last_triggered": "Viimati käivitatud"
                 },
                 "settings": "Olemi seaded",
                 "sun": {
@@ -697,7 +735,6 @@
                         "script": "Scriptid",
                         "server_control": "Serveri juhtimine",
                         "tag": "Märgised",
-                        "tags": "Märgised",
                         "users": "Kasutajad",
                         "zone": "Tsoonid"
                     },
@@ -756,6 +793,7 @@
                     "clusters": "Halda seadmekobaraid",
                     "reconfigure": "Muuda seadme sätteid",
                     "remove": "Eemalda seade",
+                    "view_in_visualization": "Visualiseeri",
                     "zigbee_information": "Zigbee seadme tunnus"
                 },
                 "confirmations": {
@@ -2333,6 +2371,7 @@
                         "caption": "Visualiseerimine",
                         "header": "Võrgu visualiseerimine",
                         "highlight_label": "Tõsta seadmed esile",
+                        "refresh_topology": "Värskenda seadmete kaarti",
                         "zoom_label": "Näita seadet"
                     }
                 },
@@ -3010,6 +3049,8 @@
                         "error_remove": "Konfiguratsiooni ei saa eemaldada: {error}",
                         "error_save_yaml": "YAML-i ei saa salvestada: {error}",
                         "header": "Muuda seadeid",
+                        "lovelace_changed": "Lovelace'i konfiguratsiooni värskendati, kas soovid uuendatud konfiguratsiooni redaktorisse laadida ja oma praegused muudatused kaotada?",
+                        "reload": "Taaslae",
                         "resources_moved": "Ressursse ei tohiks enam lisada Lovelace konfiguratsiooni kuid saab lisada Lovelace config paneeli.",
                         "save": "Salvesta",
                         "saved": "Salvestatud",

@@ -96,6 +96,16 @@
             "unknown": "不明"
         }
     },
+    "supervisor": {
+        "common": {
+            "cancel": "キャンセル"
+        },
+        "confirm": {
+            "update": {
+                "title": "{name}更新"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "このログインの保存をよろしいですか？",
@@ -459,6 +469,9 @@
                     "week": "{count} {count, plural,\n  one {週}\n  other {週}前\n}"
                 }
             },
+            "service-control": {
+                "target": "ターゲット"
+            },
             "service-picker": {
                 "service": "サービス"
             },
@@ -668,7 +681,6 @@
                         "scene": "シーン",
                         "script": "スクリプト",
                         "server_control": "サーバーコントロール",
-                        "tags": "タグ",
                         "users": "ユーザー",
                         "zone": "場所"
                     },
