@@ -185,7 +185,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
         fetchSupervisorStore(this.hass),
       ]);
 
-      this.supervisor = {
+      this._updateSupervisor({
         addon,
         supervisor,
         host,
@@ -195,7 +195,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
         network,
         resolution,
         store,
-      };
+      });
 
       this.addEventListener("supervisor-update", (ev) =>
         this._updateSupervisor(ev.detail)
