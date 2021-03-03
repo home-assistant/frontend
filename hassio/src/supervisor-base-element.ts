@@ -91,13 +91,13 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
     if (changedProperties.has("_collections")) {
       if (this._collections) {
+        const unsubs = Object.keys(this._unsubs);
         for (const collection of Object.keys(this._collections)) {
-          if (!Object.keys(this._unsubs).includes(collection)) {
-            this._unsubs[collection] = subscribeSupervisorEvents(
-              this.hass,
-              (data) => this._updateSupervisor({ [collection]: data }),
-              collection,
-              supervisorCollection[collection]
+          if (!unsubs.includes(collection)) {
+            this._unsubs[collection] = this._collections[
+              collection
+            ].subscribe((data) =>
+              this._updateSupervisor({ [collection]: data })
             );
           }
         }
