@@ -210,8 +210,8 @@ export class HassioUpdate extends LitElement {
       } else {
         await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
       }
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: item.key,
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: item.key,
       });
     } catch (err) {
       // Only show an error if the status code was not expected (user behind proxy)
@@ -232,8 +232,8 @@ export class HassioUpdate extends LitElement {
 
   private async _updateCore(): Promise<void> {
     await updateCore(this.hass);
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "core",
+    fireEvent(this, "supervisor-collection-refresh", {
+      collection: "core",
     });
   }
 
