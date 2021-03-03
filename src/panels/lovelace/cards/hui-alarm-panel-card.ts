@@ -191,7 +191,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 id="alarmCode"
                 .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
                 type="password"
-                inputmode=${stateObj.attributes.code_format === FORMAT_NUMBER
+                .inputmode=${stateObj.attributes.code_format === FORMAT_NUMBER
                   ? "numeric"
                   : "text"}
               ></paper-input>
