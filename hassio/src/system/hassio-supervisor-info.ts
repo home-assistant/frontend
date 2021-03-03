@@ -317,8 +317,8 @@ class HassioSupervisorInfo extends LitElement {
 
   private async _reloadSupervisor(): Promise<void> {
     await reloadSupervisor(this.hass);
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "supervisor",
+    fireEvent(this, "supervisor-collection-refresh", {
+      collection: "supervisor",
     });
   }
 
@@ -386,8 +386,8 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       await updateSupervisor(this.hass);
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "supervisor",
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "supervisor",
       });
     } catch (err) {
       showAlertDialog(this, {

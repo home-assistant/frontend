@@ -184,8 +184,8 @@ class HassioCoreInfo extends LitElement {
 
   private async _updateCore(): Promise<void> {
     await updateCore(this.hass);
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "core",
+    fireEvent(this, "supervisor-collection-refresh", {
+      collection: "core",
     });
   }
 

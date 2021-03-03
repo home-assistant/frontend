@@ -31,7 +31,7 @@ class HassioPanel extends LitElement {
 
     if (
       Object.keys(supervisorCollection).some(
-        (colllection) => !this.supervisor[colllection]
+        (collection) => !this.supervisor[collection]
       )
     ) {
       return html`<hass-loading-screen></hass-loading-screen>`;

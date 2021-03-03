@@ -199,9 +199,9 @@ class HassioAddonStore extends LitElement {
   }
 
   private async _loadData() {
-    fireEvent(this, "supervisor-colllection-refresh", { colllection: "addon" });
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "supervisor",
+    fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
+    fireEvent(this, "supervisor-collection-refresh", {
+      collection: "supervisor",
     });
   }
 
