@@ -367,9 +367,13 @@ class HassioSupervisorInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: this.supervisor.localize("confirm.update", "name", "Supervisor"),
+      title: this.supervisor.localize(
+        "confirm.update.title",
+        "name",
+        "Supervisor"
+      ),
       text: this.supervisor.localize(
-        "confirm.text",
+        "confirm.update.text",
         "name",
         "Supervisor",
         "version",
