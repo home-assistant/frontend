@@ -73,6 +73,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
     if (changedProperties.has("hass")) {
       const oldHass = changedProperties.get("hass") as HomeAssistant;
       if (
+        oldHass !== undefined &&
         oldHass.language !== undefined &&
         oldHass.language !== this.hass.language
       ) {
