@@ -342,7 +342,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await updateOS(this.hass);
-      fireEvent(this, "supervisor-colllection-refresh", { colllection: "os" });
+      fireEvent(this, "supervisor-collection-refresh", { collection: "os" });
     } catch (err) {
       if (this.hass.connection.connected) {
         showAlertDialog(this, {
@@ -378,8 +378,8 @@ class HassioHostInfo extends LitElement {
     if (hostname && hostname !== curHostname) {
       try {
         await changeHostOptions(this.hass, { hostname });
-        fireEvent(this, "supervisor-colllection-refresh", {
-          colllection: "host",
+        fireEvent(this, "supervisor-collection-refresh", {
+          collection: "host",
         });
       } catch (err) {
         showAlertDialog(this, {
@@ -393,8 +393,8 @@ class HassioHostInfo extends LitElement {
   private async _importFromUSB(): Promise<void> {
     try {
       await configSyncOS(this.hass);
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "host",
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "host",
       });
     } catch (err) {
       showAlertDialog(this, {
@@ -408,8 +408,8 @@ class HassioHostInfo extends LitElement {
 
   private async _loadData(): Promise<void> {
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "network",
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "network",
       });
     } else {
       const network = await fetchNetworkInfo(this.hass);

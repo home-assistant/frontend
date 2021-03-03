@@ -999,8 +999,8 @@ class HassioAddonInfo extends LitElement {
 
   private async _updateAddon(): Promise<void> {
     await updateHassioAddon(this.hass, this.addon.slug);
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "addon",
+    fireEvent(this, "supervisor-collection-refresh", {
+      collection: "addon",
     });
     const eventdata = {
       success: true,
