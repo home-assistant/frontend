@@ -30,6 +30,7 @@ import {
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
+import { HomeAssistant } from "../../src/types";
 import { getTranslation } from "../../src/util/common-translation";
 
 declare global {
@@ -53,8 +54,6 @@ export class SupervisorBaseElement extends urlSyncMixin(
     Collection<unknown>
   > = {};
 
-  @internalProperty() private _resources?: Record<string, any>;
-
   @internalProperty() private _language = "en";
 
   public connectedCallback(): void {
@@ -71,6 +70,15 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as HomeAssistant;
+      if (
+        oldHass.language !== undefined &&
+        oldHass.language !== this.hass.language
+      ) {
+        this._language = this.hass.language;
+      }
+    }
 
     if (changedProperties.has("_language")) {
       if (changedProperties.get("_language") !== this._language) {
@@ -85,7 +93,10 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    if (this._language !== this.hass.language) {
+    if (
+      this._language !== this.hass.language &&
+      this.hass.language !== undefined
+    ) {
       this._language = this.hass.language;
     }
     this._initializeLocalize();
@@ -99,17 +110,11 @@ export class SupervisorBaseElement extends urlSyncMixin(
       "/api/hassio/app/static/translations"
     );
 
-    this._resources = {
-      [language]: data,
-    };
-
     this.supervisor = {
       ...this.supervisor,
-      localize: await computeLocalize(
-        this.constructor.prototype,
-        this._language,
-        this._resources
-      ),
+      localize: await computeLocalize(this.constructor.prototype, language, {
+        [language]: data,
+      }),
     };
   }
 
