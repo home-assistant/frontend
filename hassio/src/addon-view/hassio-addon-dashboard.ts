@@ -21,6 +21,7 @@ import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
 import {
   fetchHassioAddonInfo,
+  fetchHassioAddonsInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -173,9 +174,21 @@ class HassioAddonDashboard extends LitElement {
 
   protected async firstUpdated(): Promise<void> {
     if (this.route.path === "") {
-      const addon = extractSearchParam("addon");
-      if (addon) {
-        navigate(this, `/hassio/addon/${addon}`, true);
+      const requestedAddon = extractSearchParam("addon");
+      if (requestedAddon) {
+        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+        const validAddon = addonsInfo.addons
+          .map((addon) => addon.slug)
+          .includes(requestedAddon);
+        if (!validAddon) {
+          this._error = this.supervisor.localize(
+            "my.error_not_valid_addon_slug",
+            "slug",
+            requestedAddon
+          );
+        } else {
+          navigate(this, `/hassio/addon/${requestedAddon}`, true);
+        }
       }
     }
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
