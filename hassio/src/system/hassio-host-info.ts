@@ -21,7 +21,7 @@ import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
-  ignoredStatusCodes,
+  ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
@@ -274,7 +274,7 @@ class HassioHostInfo extends LitElement {
       await rebootHost(this.hass);
     } catch (err) {
       // Ignore connection errors, these are all expected
-      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
           title: this.supervisor.localize("system.host.failed_to_reboot"),
           text: extractApiErrorMessage(err),
@@ -304,7 +304,7 @@ class HassioHostInfo extends LitElement {
       await shutdownHost(this.hass);
     } catch (err) {
       // Ignore connection errors, these are all expected
-      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
           title: this.supervisor.localize("system.host.failed_to_shutdown"),
           text: extractApiErrorMessage(err),
