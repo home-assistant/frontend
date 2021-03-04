@@ -105,6 +105,7 @@ export const createHassioFullSnapshot = async (
       endpoint: "/snapshots/new/full",
       method: "post",
       timeout: null,
+      data,
     });
     return;
   }
