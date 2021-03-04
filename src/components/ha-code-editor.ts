@@ -1,4 +1,3 @@
-import type { StreamLanguage } from "@codemirror/stream-parser";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import {
   customElement,
@@ -15,10 +14,6 @@ declare global {
     "editor-save": undefined;
   }
 }
-
-const modeTag = Symbol("mode");
-
-const readOnlyTag = Symbol("readOnly");
 
 const saveKeyBinding: KeyBinding = {
   key: "Mod-s",
@@ -42,7 +37,7 @@ export class HaCodeEditor extends UpdatingElement {
 
   @internalProperty() private _value = "";
 
-  @internalProperty() private _langs?: Record<string, StreamLanguage<unknown>>;
+  private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
   public set value(value: string) {
     this._value = value;
@@ -71,16 +66,16 @@ export class HaCodeEditor extends UpdatingElement {
 
     if (changedProps.has("mode")) {
       this.codemirror.dispatch({
-        reconfigure: {
-          [modeTag]: this._mode,
-        },
+        effects: this._loadedCodeMirror!.langCompartment!.reconfigure(
+          this._mode
+        ),
       });
     }
     if (changedProps.has("readOnly")) {
       this.codemirror.dispatch({
-        reconfigure: {
-          [readOnlyTag]: !this.readOnly,
-        },
+        effects: this._loadedCodeMirror!.readonlyCompartment!.reconfigure(
+          this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
+        ),
       });
     }
     if (changedProps.has("_value") && this._value !== this.value) {
@@ -104,13 +99,11 @@ export class HaCodeEditor extends UpdatingElement {
   }
 
   private get _mode() {
-    return this._langs![this.mode];
+    return this._loadedCodeMirror!.langs[this.mode];
   }
 
   private async _load(): Promise<void> {
-    const loaded = await loadCodeMirror();
-
-    this._langs = loaded.langs;
+    this._loadedCodeMirror = await loadCodeMirror();
 
     const shadowRoot = this.attachShadow({ mode: "open" });
 
@@ -124,28 +117,32 @@ export class HaCodeEditor extends UpdatingElement {
 
     shadowRoot.appendChild(container);
 
-    this.codemirror = new loaded.EditorView({
-      state: loaded.EditorState.create({
+    this.codemirror = new this._loadedCodeMirror.EditorView({
+      state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
         extensions: [
-          loaded.lineNumbers(),
-          loaded.history(),
-          loaded.highlightSelectionMatches(),
-          loaded.keymap.of([
-            ...loaded.defaultKeymap,
-            ...loaded.searchKeymap,
-            ...loaded.historyKeymap,
-            ...loaded.tabKeyBindings,
+          this._loadedCodeMirror.lineNumbers(),
+          this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
+          this._loadedCodeMirror.history(),
+          this._loadedCodeMirror.highlightSelectionMatches(),
+          this._loadedCodeMirror.highlightActiveLine(),
+          this._loadedCodeMirror.rectangularSelection(),
+          this._loadedCodeMirror.keymap.of([
+            ...this._loadedCodeMirror.defaultKeymap,
+            ...this._loadedCodeMirror.searchKeymap,
+            ...this._loadedCodeMirror.historyKeymap,
+            ...this._loadedCodeMirror.tabKeyBindings,
             saveKeyBinding,
           ] as KeyBinding[]),
-          loaded.tagExtension(modeTag, this._mode),
-          loaded.theme,
-          loaded.Prec.fallback(loaded.highlightStyle),
-          loaded.tagExtension(
-            readOnlyTag,
-            loaded.EditorView.editable.of(!this.readOnly)
+          this._loadedCodeMirror.langCompartment.of(this._mode),
+          this._loadedCodeMirror.theme,
+          this._loadedCodeMirror.Prec.fallback(
+            this._loadedCodeMirror.highlightStyle
           ),
-          loaded.EditorView.updateListener.of((update) =>
+          this._loadedCodeMirror.readonlyCompartment.of(
+            this._loadedCodeMirror.EditorView.editable.of(!this.readOnly)
+          ),
+          this._loadedCodeMirror.EditorView.updateListener.of((update) =>
             this._onUpdate(update)
           ),
         ],
