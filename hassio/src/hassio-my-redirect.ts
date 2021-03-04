@@ -22,6 +22,9 @@ import { HomeAssistant, Route } from "../../src/types";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 
 const REDIRECTS: Redirects = {
+  supervisor: {
+    redirect: "/hassio/dashboard",
+  },
   supervisor_logs: {
     redirect: "/hassio/system",
   },
@@ -34,13 +37,16 @@ const REDIRECTS: Redirects = {
   supervisor_store: {
     redirect: "/hassio/store",
   },
-  supervisor: {
-    redirect: "/hassio/dashboard",
-  },
   supervisor_addon: {
     redirect: "/hassio/addon",
     params: {
       addon: "string",
+    },
+  },
+  supervisor_add_addon_repository: {
+    redirect: "/hassio/store",
+    params: {
+      repository_url: "url",
     },
   },
 };
