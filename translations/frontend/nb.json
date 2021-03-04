@@ -104,21 +104,206 @@
     },
     "supervisor": {
         "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Standard",
+                    "header": "Lyd",
+                    "input": "Inngang",
+                    "output": "Utgang"
+                },
+                "network": {
+                    "container": "Container",
+                    "disabled": "Deaktivert",
+                    "header": "Nettverk",
+                    "host": "Vert"
+                },
+                "no_configuration": "Dette tillegget utsetter ikke konfigurasjon for deg til å tulle med...",
+                "options": {
+                    "edit_in_ui": "Rediger i brukergrensesnittet",
+                    "edit_in_yaml": "Rediger i YAML",
+                    "header": "Alternativer",
+                    "invalid_yaml": "Ugyldig YAML",
+                    "show_unused_optional": "Vis ubrukte valgfrie konfigurasjonsalternativer"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "Kunne ikke hente endringslogg for tillegg",
+                    "go_to_config": "Kunne ikke starte tillegget - validering av konfigurasjon mislyktes!",
+                    "install": "Kunne ikke installere tillegget",
+                    "restart": "Kunne ikke starte tillegget på nytt",
+                    "start": "Kunne ikke starte tillegget",
+                    "start_invalid_config": "Gå til konfigurasjon",
+                    "stop": "Kunne ikke stoppe tillegget",
+                    "uninstall": "Kunne ikke avinstallere tillegget",
+                    "validate_config": "Kunne ikke validere tilleggskonfigurasjonen"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') er en sikkerhetsmodul for Linux-kjernen som begrenser tilleggsfunksjoner som nettverkstilgang, rå socket-tilgang og tillatelse til å lese, skrive eller kjøre bestemte filer.\n\nTilleggsforfattere kan oppgi sikkerhetsprofilene sine, optimalisert for tillegget, eller be om at det deaktiveres. Hvis AppArmor er deaktivert, vil det øke sikkerhetsrisikoen og har derfor en negativ innvirkning på sikkerhetspoengsummen for tillegget.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Et tillegg kan autentisere brukere mot Home Assistant, slik at tillegg kan gi brukerne muligheten til å logge på applikasjoner som kjører i tillegg, ved hjelp av brukernavnet / passordet til Home Assistant. Dette merket indikerer om tilleggsforfatteren ber om denne muligheten.",
+                        "title": "Godkjenning av Home Assistant"
+                    },
+                    "docker_api": {
+                        "description": "Tilleggsforfatteren har bedt om at tillegget skal ha ledertilgang til Docker-forekomsten som kjører på systemet ditt. Denne modusen gir tilleggsprogrammet full tilgang og kontroll til hele ditt Home Assistant system, noe som gir sikkerhetsrisiko og kan skade systemet ditt når det misbrukes. Derfor påvirker denne funksjonen tilleggssikkerhetspoengene negativt.\n\nDette tilgangsnivået gis ikke automatisk og må bekreftes av deg. For å gjøre dette må du deaktivere beskyttelsesmodus på tillegget manuelt. Deaktiver bare beskyttelsesmodus hvis du vet, trenger OG stoler på kilden til dette tillegget.",
+                        "title": "Full Docker-tilgang"
+                    },
+                    "full_access": {
+                        "description": "Dette tillegget får full tilgang til maskinvaren til systemet ditt, på forespørsel fra tilleggsforfatteren. Tilgang er sammenlignbar med den privilegerte modusen i Docker. Siden dette åpner mulige sikkerhetsrisikoer, påvirker denne funksjonen tilleggssikkerhetspoengene negativt. \n\nDette tilgangsnivået gis ikke automatisk og må bekreftes av deg. For å gjøre dette må du deaktivere beskyttelsesmodus på tillegget manuelt. Deaktiver bare beskyttelsesmodus hvis du vet, trenger OG stoler på kilden til dette tillegget.",
+                        "title": "Full maskinvaretilgang"
+                    },
+                    "hassio_api": {
+                        "description": "Tillegget ble gitt tilgang til Supervisor API, på forespørsel fra tilleggsforfatteren. Som standard kan tillegget få tilgang til generell versjonsinformasjon om systemet ditt. Når tillegget ber om \"manager\" eller \"admin\" nivå tilgang til API, vil det få tilgang til å kontrollere flere deler av Home Assistant-systemet. Denne tillatelsen er angitt av dette merket og vil påvirke tilleggssikkerhetspoengene for tillegget negativt.",
+                        "title": "Supervisor API-tilgang"
+                    },
+                    "homeassistant_api": {
+                        "description": "Dette tillegget har tilgang til den kjørende Home Assistant forekomsten direkte via Home Assistant API. Denne modusen håndterer også autentisering for tillegget, som gjør det mulig for et tillegg å samhandle med Home Assistant uten behov for ekstra autentiseringstokener.",
+                        "title": "Home Assistant API-tilgang"
+                    },
+                    "host_network": {
+                        "description": "Tillegg kjøres vanligvis i sitt eget isolerte nettverkslag, noe som forhindrer dem i å få tilgang til nettverket til vertsoperativsystemet. I noen tilfeller kan denne nettverksisolasjonen begrense tillegg når det gjelder å tilby sine tjenester, og isolasjonen kan derfor løftes av tilleggsforfatteren, noe som gir tilleggsprogrammet full tilgang til vertsmaskinens nettverksfunksjoner. Dette gir tilleggsprogrammet flere nettverksmuligheter, men senker sikkerheten, og derfor vil sikkerhetsvurderingen av tillegget senkes når dette alternativet brukes av tillegget.",
+                        "title": "Vertsnettverk"
+                    },
+                    "host_pid": {
+                        "description": "Vanligvis er prosessene tillegget kjører, isolert fra alle andre systemprosesser. Tilleggsforfatteren har bedt tillegget om å ha tilgang til systemprosessene som kjører på vertssystemforekomsten, og la tillegget gyte prosesser på vertssystemet også. Denne modusen gir tillegget full tilgang og kontroll til hele Home Assistant-systemet, som legger til sikkerhetsrisikoer, og kan skade systemet når det misbrukes. Denne funksjonen påvirker derfor sikkerhetspoengsummen negativt.\n\nDette tilgangsnivået gis ikke automatisk og må bekreftes av deg. Hvis du vil gjøre dette, må du deaktivere beskyttelsesmodus på tillegget manuelt. Deaktiver bare beskyttelsesmodus hvis du vet, trenger og stoler på kilden til dette tillegget.",
+                        "title": "Vert behandler navneområdet"
+                    },
+                    "ingress": {
+                        "description": "Dette tillegget bruker Ingress til å bygge grensesnittet sikkert inn i Home Assistant.",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "Auth",
+                        "docker": "Docker",
+                        "hardware": "Maskinvare",
+                        "hass": "Hass",
+                        "hassio": "HassIO",
+                        "host": "Vert",
+                        "host_pid": "vert pid",
+                        "ingress": "ingress",
+                        "rating": "Vurdering",
+                        "stage": "Nivå"
+                    },
+                    "rating": {
+                        "description": "Home Assistant gir en sikkerhetsvurdering for hvert av tilleggene, som indikerer risikoen ved bruk av dette tillegget. Jo mer tilgang et tillegg krever på systemet ditt, desto lavere poengsum, og dermed øker den mulige sikkerhetsrisikoen.\n\nEn poengsum er på en skala fra 1 til 6. Der 1 er den laveste poengsummen (ansett som den mest usikre og høyeste risikoen) og en score på 6 er den høyeste poengsummen (regnes som den sikreste og laveste risikoen).",
+                        "title": "Sikkerhetsvurdering for tillegg"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "sikkerhetskopi",
+                        "default": "Standard",
+                        "homeassistant": "hjemmeassistent",
+                        "manager": "Manager"
+                    },
+                    "stage": {
+                        "description": "Tillegg kan ha en av tre trinn: \n\n{icon_stable} ** Stabil **: Disse er tillegg som er klare til å brukes i produksjon.\n\n{icon_experimental} ** Eksperimentell **: Disse kan inneholde feil og kan være uferdige.\n\n{icon_deprecated} ** Utdatert **: Disse tilleggene mottar ikke lenger noen oppdateringer.",
+                        "title": "Tilleggstrinn"
+                    }
+                },
+                "changelog": "Endringslogg",
+                "cpu_usage": "Tillegg CPU forbruk",
+                "hostname": "Vertsnavn",
+                "install": "Installer",
+                "new_update_available": "{name} {version} er tilgjengelig",
+                "not_available_arch": "Dette tillegget er ikke kompatibelt med prosessoren på enheten din eller operativsystemet du har installert på enheten",
+                "not_available_version": "Du kjører Home Assistant {core_version_installed} , for å oppdatere til denne versjonen av tillegget trenger du minst versjon {core_version_needed} av Home Assistant",
+                "open_web_ui": "Åpne nettgrensesnitt",
+                "option": {
+                    "auto_update": {
+                        "description": "Oppdater tillegget automatisk når det er en ny versjon tilgjengelig",
+                        "title": "Automatisk oppdatering"
+                    },
+                    "boot": {
+                        "description": "Få tillegget til å starte under en systemoppstart",
+                        "title": "Start ved oppstart"
+                    },
+                    "ingress_panel": {
+                        "description": "Legg til dette tillegget i sidepanelet",
+                        "title": "Vis i sidepanelet"
+                    },
+                    "protected": {
+                        "description": "Blokkerer forhøyet systemtilgang fra tillegget",
+                        "title": "Beskyttelsesmodus"
+                    },
+                    "watchdog": {
+                        "description": "Dette vil starte tillegget hvis det krasjer",
+                        "title": "Vakthund"
+                    }
+                },
+                "protection_mode": {
+                    "content": "Beskyttelsesmodus på dette tillegget er deaktivert! Dette gir tillegget full tilgang til hele systemet, noe som utgjør en sikkerhetsrisiko, og kan skade systemet ditt om det brukes feil. Deaktiver bare beskyttelsesmodus hvis du vet, trenger OG stoler på kilden til dette tillegget.",
+                    "enable": "Aktiver beskyttelsesmodus",
+                    "title": "Advarsel: Beskyttelsesmodus er deaktivert!"
+                },
+                "ram_usage": "Tillegg RAM forbruk",
+                "rebuild": "Gjenoppbygg",
+                "restart": "Omstart",
+                "start": "Start",
+                "stop": "Stopp",
+                "uninstall": "Avinstaller",
+                "visit_addon_page": "Gå til {name}-siden for flere detaljer"
+            },
+            "documentation": {
+                "get_documentation": "Kunne ikke hente tilleggsdokumentasjon, {error}"
+            },
+            "failed_to_reset": "Kunne ikke tilbakestille tilleggskonfigurasjonen, {error}",
+            "failed_to_save": "Kunne ikke lagre tilleggskonfigurasjonen, {error}",
+            "logs": {
+                "get_logs": "Kunne ikke hente tilleggslogger, {error}"
+            },
             "panel": {
                 "configuration": "Konfigurasjon",
                 "documentation": "Dokumentasjon",
                 "info": "Info",
                 "log": "Logg"
+            },
+            "state": {
+                "installed": "Tillegget er installert",
+                "not_available": "Tillegget er ikke tilgjengelig for systemet ditt",
+                "not_installed": "Tillegget er ikke installert"
             }
         },
         "common": {
             "cancel": "Avbryt",
+            "description": "Beskrivelse",
+            "error": {
+                "unknown": "Ukjent feil",
+                "update_failed": "Oppdatering mislyktes"
+            },
+            "failed_to_restart_name": "Kan ikke starte {name} på nytt",
+            "failed_to_update_name": "Kunne ikke oppdatere {name}",
+            "learn_more": "Lær mer",
+            "new_version_available": "Ny versjon tilgjengelig",
             "newest_version": "Nyeste versjon",
+            "no": "Nei",
+            "refresh": "Oppdater",
             "release_notes": "Utgivelsesmerknader",
+            "reload": "Last inn på nytt",
+            "reset_defaults": "Tilbakestill til standardinnstillinger",
+            "reset_options": "Tilbakestill innstillinger",
+            "restart": "Omstart",
+            "restart_name": "Start {name} på nytt",
+            "running_version": "Du kjører for øyeblikket versjon {version}",
+            "save": "Lagre",
+            "show_more": "Vis mer informasjon om dette",
             "update": "Oppdater",
-            "version": "Versjon"
+            "update_available": "{count, plural,\n  one {Oppdatering}\n  other {{count} Oppdateringer}\n} venter",
+            "version": "Versjon",
+            "yes": "Ja"
         },
         "confirm": {
+            "reset_options": {
+                "text": "Er du sikker på at du vil tilbakestille alle instillingene dine?",
+                "title": "Tilbakestill instillinger"
+            },
+            "restart": {
+                "text": "Er du sikker på at du vil starte {name} på nytt?",
+                "title": "Start {name} på nytt"
+            },
             "update": {
                 "text": "Er du sikker på at du vil oppdatere {name} til version {version} ?",
                 "title": "Oppdater {name}"
@@ -131,11 +316,175 @@
             "addons": "Tillegg",
             "no_addons": "Du har ikke installert tilleggsprogrammer ennå. Gå over til tilleggsbutikken for å komme i gang!"
         },
+        "dialog": {
+            "network": {
+                "connected_to": "Koblet til {ssid}",
+                "dhcp": "",
+                "disabled": "Deaktivert",
+                "dns_servers": "DNS-servere",
+                "failed_to_change": "Kunne ikke endre nettverksinnstillingene",
+                "gateway": "Gateway-adresse",
+                "ip_netmask": "IP-adresse / nettmaske",
+                "open": "Åpen",
+                "scan_ap": "Søk etter tilgangspunkter",
+                "static": "Statisk",
+                "title": "Nettverksinnstillinger",
+                "unsaved": "Du har ikke lagrede endringer, disse vil gå tapt hvis du bytter fane, vil du fortsette?",
+                "warning": "Hvis du endrer Wi-Fi, IP eller gateway-adressene, kan du miste tilkoblingen!",
+                "wep": "WEP",
+                "wpa": "WPA-PSK"
+            },
+            "registries": {
+                "add_new_registry": "Legg til nytt register",
+                "add_registry": "Legg til register",
+                "failed_to_add": "Kunne ikke legge til registeret",
+                "failed_to_remove": "Kunne ikke fjerne registeret",
+                "no_registries": "Ingen registre er konfigurert",
+                "password": "Passord",
+                "registry": "Register",
+                "remove": "Fjern",
+                "title_add": "Legg til nytt containerregister",
+                "title_manage": "Behandle containerregistre",
+                "username": "Brukernavn"
+            },
+            "repositories": {
+                "add": "Legg til",
+                "remove": "Fjern",
+                "title": "Behandle tilleggspakkelagre"
+            },
+            "restart_addon": {
+                "confirm_text": "Start tillegg på nytt",
+                "text": "Ønsker du å starte tillegget på nytt med endringene dine?"
+            },
+            "update": {
+                "create_snapshot": "Lag en sikkerhetskopi av {name} før du oppdaterer",
+                "snapshot": "Sikkerhetskopi",
+                "snapshotting": "Oppretter sikkerhetskopi av {name}",
+                "updating": "Oppdaterer {name} til version {version}"
+            }
+        },
+        "my": {
+            "error": "Det oppstod en ukjent feil",
+            "faq_link": "Vanlige spørsmål om Min Home Assistant",
+            "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
+        },
         "panel": {
             "dashboard": "Dashboard",
             "snapshots": "Snapshots",
             "store": "Tilleggsbutikk",
             "system": "System"
+        },
+        "snapshot": {
+            "addons": "Tillegg",
+            "available_snapshots": "Tilgjengelige sikkerhetskopier",
+            "could_not_create": "Kunne ikke opprette sikkerhetskopi",
+            "create": "Opprett",
+            "create_blocked_not_running": "Å lage en sikkerhetskopi er ikke mulig akkurat nå fordi systemet er i {state} status",
+            "create_snapshot": "Opprett sikkerhetskopi",
+            "description": "Sikkerhetskopier lar deg enkelt sikkerhetskopiere og gjenopprette alle dataene fra din Home Assistant forekomst",
+            "enter_password": "Vennligst skriv inn et passord",
+            "folder": {
+                "addons/local": "Lokale tillegg",
+                "homeassistant": "Home Assistant-konfigurasjon",
+                "media": "",
+                "share": "Delt",
+                "ssl": ""
+            },
+            "folders": "Mapper",
+            "full_snapshot": "Full sikkerhetskopi",
+            "name": "Navn",
+            "no_snapshots": "Du har ingen sikkerhetskopier ennå",
+            "partial_snapshot": "Delvis sikkerhetskopi",
+            "password": "Passord",
+            "password_protected": "Passordbeskyttet",
+            "password_protection": "Passordbeskyttelse",
+            "security": "Sikkerhet",
+            "type": "",
+            "upload_snapshot": "Last opp sikkerhetskopi"
+        },
+        "store": {
+            "missing_addons": "Manglende tillegg? Aktivere avansert modus på din brukerprofilside",
+            "no_results_found": "Ingen resultater funnet i {repository}",
+            "registries": "Registre",
+            "repositories": "Datalagre"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Core CPU forbruk",
+                "ram_usage": "Core RAM forbruk"
+            },
+            "host": {
+                "change": "Endre",
+                "change_hostname": "Endre vertsnavn",
+                "confirm_reboot": "Er du sikker på at du vil starte verten på nytt?",
+                "confirm_shutdown": "Er du sikker på at du vil slå av verten?",
+                "deployment": "Distribusjon",
+                "docker_version": "Docker versjon",
+                "emmc_lifetime_used": "eMMC levetid brukt",
+                "failed_to_get_hardware_list": "Kunne ikke hente maskinvarelisten",
+                "failed_to_import_from_usb": "Kunne ikke importere fra USB",
+                "failed_to_reboot": "Kunne ikke starte verten på nytt",
+                "failed_to_set_hostname": "Angi vertsnavn mislyktes",
+                "failed_to_shutdown": "Kunne ikke slå av verten",
+                "hardware": "Maskinvare",
+                "hostname": "Vertsnavn",
+                "import_from_usb": "Importer fra USB",
+                "ip_address": "IP adresse",
+                "new_hostname": "Vennligst skriv inn et nytt vertsnavn:",
+                "operating_system": "Operativsystem",
+                "reboot_host": "Start verten på nytt",
+                "shutdown_host": "Slå av verten",
+                "used_space": "Brukt lagringsplass"
+            },
+            "log": {
+                "get_logs": "Kunne ikke hente {provider}-logger, {error}",
+                "log_provider": "Loggleverandør"
+            },
+            "supervisor": {
+                "beta_backup": "Forsikre deg om at du har sikkerhetskopier av dataene dine før du aktiverer denne funksjonen",
+                "beta_join_confirm": "Vil du bli med i beta-kanalen?",
+                "beta_release_items": "Dette inkluderer betaversjoner for:",
+                "beta_warning": "Betautgivelser er for testere og tidlige brukere og kan inneholde ustabile kodeendringer",
+                "channel": "Kanal",
+                "cpu_usage": "Supervisor CPU forbruk",
+                "failed_to_reload": "Kunne ikke laste inn Supervisor på nytt",
+                "failed_to_set_option": "Kan ikke sette Supervisor instilling",
+                "failed_to_update": "Kunne ikke oppdatere Supervisor",
+                "join_beta_action": "Bli med i beta-kanalen",
+                "join_beta_description": "Få beta-oppdateringer for Home Assistant (RCs), Supervisor og vert",
+                "leave_beta_action": "Forlat beta-kanalen",
+                "leave_beta_description": "Få stabile oppdateringer for Home Assistant, Supervisor og vert",
+                "ram_usage": "Supervisor RAM forbruk",
+                "reload_supervisor": "Last inn Supervisor på nytt",
+                "share_diagnostics": "Del diagnostikk",
+                "share_diagnostics_description": "Del krasjrapporter og diagnoseinformasjon",
+                "share_diagonstics_description": "Vil du automatisk dele krasjrapporter og diagnostisk informasjon når Supervisor møter på uventede feil? {line_break} Dette vil tillate oss å løse problemene, informasjonen er bare tilgjengelig for Home Assistant Core-teamet og deles ikke med andre. {line_break} Dataene inkluderer ikke privat / sensitiv informasjon, og du kan deaktivere dette i innstillingene når som helst.",
+                "share_diagonstics_title": "Hjelp med å forbedre Home Assistant",
+                "unhealthy_description": "Å kjøre en usunn installasjon vil forårsake problemer. Nedenfor er en liste over problemer som er funnet med installasjonen din. Klikk på lenkene for å lære hvordan du kan løse problemene.",
+                "unhealthy_reason": {
+                    "docker": "Docker-miljøet fungerer ikke som det skal",
+                    "privileged": "Supervisor er ikke privilegert",
+                    "setup": "Installasjonen av Supervisor mislyktes",
+                    "supervisor": "Supervisor kunne ikke oppdatere"
+                },
+                "unhealthy_title": "Installasjonen din er usunn",
+                "unsupported_description": "Nedenfor er en liste over problemer som er funnet med installasjonen din. Klikk på lenkene for å lære hvordan du kan løse problemene.",
+                "unsupported_reason": {
+                    "container": "Containere som er kjent for å forårsake problemer",
+                    "dbus": "",
+                    "docker_configuration": "Docker-konfigurasjon",
+                    "docker_version": "Docker-versjon",
+                    "job_conditions": "Ignorerte arbeidsforhold",
+                    "lxc": "",
+                    "network_manager": "Nettverksbehandler",
+                    "os": "Operativsystem",
+                    "privileged": "Supervisor er ikke privilegert",
+                    "systemd": ""
+                },
+                "unsupported_title": "Du kjører en installasjon som ikke støttes",
+                "update_supervisor": "Oppdater Supervisor",
+                "warning": "ADVARSEL"
+            }
         }
     },
     "ui": {

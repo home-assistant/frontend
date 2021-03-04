@@ -102,6 +102,231 @@
             "unknown": "Nezjištěno"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Výchozí",
+                    "header": "Zvuk",
+                    "input": "Vstup",
+                    "output": "Výstup"
+                },
+                "network": {
+                    "disabled": "Zakázáno",
+                    "header": "Síť",
+                    "host": "Hostitel"
+                },
+                "options": {
+                    "edit_in_ui": "Upravit v uživatelském rozhraní",
+                    "edit_in_yaml": "Upravit přímo YAML",
+                    "header": "Možnosti",
+                    "invalid_yaml": "Neplatný YAML"
+                }
+            },
+            "dashboard": {
+                "capability": {
+                    "apparmor": {
+                        "title": "AppArmor"
+                    },
+                    "label": {
+                        "docker": "docker",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "hostitel"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "záloha",
+                        "default": "výchozí",
+                        "homeassistant": "homeassistant",
+                        "manager": "správce"
+                    }
+                },
+                "changelog": "Seznam změn",
+                "hostname": "Název hostitele",
+                "open_web_ui": "Otevřít webové rozhraní",
+                "option": {
+                    "boot": {
+                        "title": "Spustit při spuštění"
+                    },
+                    "watchdog": {
+                        "title": "Hlídací pes"
+                    }
+                }
+            },
+            "panel": {
+                "configuration": "Nastavení",
+                "documentation": "Dokumentace",
+                "info": "Informace",
+                "log": "Log"
+            },
+            "state": {
+                "installed": "Doplněk je nainstalován",
+                "not_installed": "Doplněk není nainstalován"
+            }
+        },
+        "common": {
+            "cancel": "Zrušit",
+            "description": "Popis",
+            "error": {
+                "unknown": "Neznámá chyba"
+            },
+            "learn_more": "Další informace",
+            "new_version_available": "K dispozici je nová verze",
+            "newest_version": "Nejnovější verze",
+            "no": "Ne",
+            "refresh": "Obnovit",
+            "release_notes": "Poznámky k vydání",
+            "reload": "Nově načíst",
+            "restart": "Restartovat",
+            "restart_name": "Restartovat {name}",
+            "save": "Uložit",
+            "update": "Aktualizovat",
+            "update_available": "{count, plural,\n  one {Aktualizace}\n  few {{count} aktualizace}\n  other {{count} aktualizací}\n}",
+            "version": "Verze",
+            "yes": "Ano"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Opravdu chcete obnovit všechny možnosti?",
+                "title": "Obnovit možnosti"
+            },
+            "restart": {
+                "title": "Restartovat {name}"
+            },
+            "update": {
+                "text": "Opravdu chcete aktualizovat {name} na verzi {version}?",
+                "title": "Aktualizovat {název}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "K dispozici je nová verze",
+            "addon_running": "Doplněk je spuštěn",
+            "addon_stopped": "Doplněk je zastaven",
+            "addons": "Doplňky"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Připojeno k {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Zakázáno",
+                "dns_servers": "Servery DNS",
+                "gateway": "IP adresa brány",
+                "ip_netmask": "IP adresa/Maska sítě",
+                "open": "Otevřít",
+                "static": "Statická",
+                "title": "Nastavení sítě",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Přidat nový registr",
+                "add_registry": "Přidat registr",
+                "failed_to_add": "Nepodařilo se přidat registr",
+                "failed_to_remove": "Odebrání registru se nezdařilo",
+                "no_registries": "Nejsou nastaveny žádné registry",
+                "password": "Heslo",
+                "registry": "Registr",
+                "remove": "Odebrat",
+                "username": "Uživatelské jméno"
+            },
+            "repositories": {
+                "add": "Přidat",
+                "remove": "Odebrat",
+                "title": "Správa úložišť doplňků"
+            },
+            "restart_addon": {
+                "confirm_text": "Restartovat doplněk",
+                "text": "Chcete doplněk restartovat se svými změnami?"
+            },
+            "update": {
+                "create_snapshot": "Vytvořit zálohu \"{name}\" před aktualizací",
+                "snapshot": "Záloha",
+                "snapshotting": "Vytváří se záloha \"{name}\"",
+                "updating": "Aktualizuje se \"{name}\" na verzi {version}"
+            }
+        },
+        "my": {
+            "error": "Nastala neznámá chyba",
+            "faq_link": "Časté dotazy týkající se My Home Assistant",
+            "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
+        },
+        "panel": {
+            "dashboard": "Ovládací panel",
+            "snapshots": "Zálohy",
+            "store": "Obchod s doplňky",
+            "system": "Systém"
+        },
+        "snapshot": {
+            "addons": "Doplňky",
+            "available_snapshots": "Dostupné zálohy",
+            "could_not_create": "Nelze vytvořit zálohu",
+            "create": "Vytvořit",
+            "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
+            "create_snapshot": "Vytvořit zálohu",
+            "enter_password": "Prosím zadejte heslo.",
+            "folder": {
+                "addons/local": "Místní doplňky",
+                "homeassistant": "Nastavení Home Asistent",
+                "media": "Média",
+                "share": "Sdílení",
+                "ssl": "SSL"
+            },
+            "folders": "Složky",
+            "full_snapshot": "Úplná záloha",
+            "name": "Název",
+            "no_snapshots": "Zatím nemáte žádné zálohy.",
+            "partial_snapshot": "Částečná záloha",
+            "password": "Heslo",
+            "password_protected": "chráněno heslem",
+            "password_protection": "Ochrana heslem",
+            "security": "Zabezpečení",
+            "type": "Typ",
+            "upload_snapshot": "Nahrát zálohu"
+        },
+        "store": {
+            "registries": "Registry",
+            "repositories": "Repozitáře"
+        },
+        "system": {
+            "host": {
+                "change": "Změnit",
+                "change_hostname": "Změnit název hostitele",
+                "docker_version": "Verze Dockeru",
+                "hardware": "Hardware",
+                "hostname": "Název hostitele",
+                "import_from_usb": "Importovat z USB",
+                "ip_address": "IP adresa",
+                "new_hostname": "Zadejte prosím nový název hostitele:",
+                "operating_system": "Operační systém",
+                "reboot_host": "Restartovat hostitele",
+                "shutdown_host": "Vypnout hostitele",
+                "used_space": "Použité místo"
+            },
+            "supervisor": {
+                "beta_backup": "Před aktivací této funkce se ujistěte, že máte zálohy svých dat.",
+                "beta_join_confirm": "Chcete se připojit k beta kanálu?",
+                "beta_release_items": "To zahrnuje beta verze pro:",
+                "channel": "Kanál",
+                "failed_to_reload": "Nové načtení Supervisora se nezdařilo",
+                "failed_to_update": "Aktualizace Supervisora se nezdařila",
+                "join_beta_action": "Připojit se k beta kanálu",
+                "leave_beta_action": "Opustit beta kanál",
+                "reload_supervisor": "Nově načíst Supervisor",
+                "share_diagnostics": "Sdílet diagnostické informace",
+                "share_diagonstics_title": "Pomozte vylepšit Home Asistent",
+                "unsupported_reason": {
+                    "dbus": "DBUS",
+                    "docker_version": "Verze Dockeru",
+                    "network_manager": "Správce sítě",
+                    "os": "Operační systém",
+                    "systemd": "Systemd"
+                },
+                "update_supervisor": "Aktualizovat Supervisor",
+                "warning": "VAROVÁNÍ"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Chcete toto přihlášení uložit?",
@@ -377,6 +602,8 @@
                     "changed_to_state": "změněno na {state}",
                     "cleared_device_class": "zrušeno (nebylo zjištěno {device_class})",
                     "detected_device_class": "zjištěno {device_class}",
+                    "is_closing": "se zavírá",
+                    "is_opening": "se otevírá",
                     "rose": "vyšlo",
                     "set": "zapadlo",
                     "turned_off": "vypnuto",
@@ -3009,6 +3236,7 @@
                         "error_remove": "Nelze odstranit nastavení: {error}",
                         "error_save_yaml": "Nelze uložit YAML: {error}",
                         "header": "Upravit nastavení",
+                        "reload": "Nově načíst",
                         "resources_moved": "Zdroje by již neměly být přidávány do konfigurace Lovelace, ale mohou být přidávány v panelu nastavení Lovelace.",
                         "save": "Uložit",
                         "saved": "Uloženo",

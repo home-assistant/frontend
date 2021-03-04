@@ -1011,6 +1011,9 @@
                 "person": {
                     "create_zone": "Create zone from current location"
                 },
+                "remote": {
+                    "activity": "Current activity"
+                },
                 "restored": {
                     "confirm_remove_text": "Are you sure you want to remove this entity?",
                     "confirm_remove_title": "Remove entity?",

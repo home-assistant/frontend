@@ -102,6 +102,42 @@
             "unknown": "未知"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "configuration": "配置",
+                "documentation": "文档",
+                "info": "信息",
+                "log": "日志"
+            }
+        },
+        "common": {
+            "cancel": "取消",
+            "newest_version": "最新版本",
+            "release_notes": "发行说明",
+            "update": "更新",
+            "version": "版本"
+        },
+        "confirm": {
+            "update": {
+                "text": "您确定要更新 {name} 至版本 {version} 吗？",
+                "title": "更新 {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "发现新版本",
+            "addon_running": "加载项正在运行",
+            "addon_stopped": "加载项已停止",
+            "addons": "加载项",
+            "no_addons": "您尚未安装任何加载项。去加载项商店看看吧！"
+        },
+        "panel": {
+            "dashboard": "仪表盘",
+            "snapshots": "快照",
+            "store": "加载项商店",
+            "system": "系统"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "保持登录状态吗？",
@@ -377,6 +413,8 @@
                     "changed_to_state": "变为 {state}",
                     "cleared_device_class": "未检测到 {device_class}",
                     "detected_device_class": "检测到 {device_class}",
+                    "is_closing": "正在关闭",
+                    "is_opening": "正在打开",
                     "rose": "升起",
                     "set": "落下",
                     "turned_off": "已关闭",
@@ -755,6 +793,7 @@
                     "clusters": "管理簇",
                     "reconfigure": "重新配置设备",
                     "remove": "删除设备",
+                    "view_in_visualization": "可视化查看",
                     "zigbee_information": "Zigbee 设备签名"
                 },
                 "confirmations": {
@@ -2332,6 +2371,7 @@
                         "caption": "可视化",
                         "header": "网络可视化",
                         "highlight_label": "高亮显示设备",
+                        "refresh_topology": "刷新拓扑结构",
                         "zoom_label": "缩放到设备"
                     }
                 },
@@ -3009,6 +3049,8 @@
                         "error_remove": "无法删除配置：{error}",
                         "error_save_yaml": "无法保存 YAML：{error}",
                         "header": "编辑配置",
+                        "lovelace_changed": "Lovelace 配置已更新，是否要放弃当前更改并载入更新后的配置？",
+                        "reload": "重新加载",
                         "resources_moved": "资源(resources)不应再添加到 Lovelace 配置中，而是在 Lovelace 配置面板中添加。",
                         "save": "保存",
                         "saved": "已保存",

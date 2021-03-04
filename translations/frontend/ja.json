@@ -97,12 +97,387 @@
         }
     },
     "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "デフォルト",
+                    "header": "オーディオ",
+                    "input": "入力",
+                    "output": "出力"
+                },
+                "network": {
+                    "container": "コンテナ",
+                    "disabled": "無効",
+                    "header": "ネットワーク",
+                    "host": "ホスト"
+                },
+                "no_configuration": "このアドオンは、設定を公開していません...",
+                "options": {
+                    "edit_in_ui": "UIで編集",
+                    "edit_in_yaml": "YAMLで編集",
+                    "header": "オプション",
+                    "invalid_yaml": "無効なYAML",
+                    "show_unused_optional": "未使用のオプション構成オプションを表示する"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "アドオンの変更ログを取得できませんでした",
+                    "go_to_config": "アドオンの起動に失敗しました - 構成検証に失敗しました。",
+                    "install": "アドオンのインストールに失敗しました",
+                    "restart": "アドオンの再起動に失敗しました",
+                    "start": "アドオンの開始に失敗しました",
+                    "start_invalid_config": "設定に移動",
+                    "stop": "アドオンの停止に失敗しました",
+                    "uninstall": "アドオンのアンインストールに失敗しました",
+                    "validate_config": "アドオン構成の検証に失敗しました"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') は Linux カーネルのセキュリティモジュールで、ネットワークアクセス、生のソケットアクセス、特定のファイルの読み取り、書き込み、実行の許可などのアドオン機能を制限します。\n\nアドオンの作成者は、アドオン用に最適化されたセキュリティプロファイルを提供するか、無効化を要求することができます。AppArmorを無効にすると、セキュリティリスクが高まるため、アドオンのセキュリティスコアに悪影響を及ぼします。",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "アドオンはホームアシスタントに対してユーザーを認証することができ、ユーザーはホームアシスタントのユーザー名/パスワードを使用して、アドオン内で実行されているアプリケーションにログインすることができます。このバッジは、アドオンの作成者がこの機能を要求しているかどうかを示します。",
+                        "title": "HomeAssistant認証"
+                    },
+                    "docker_api": {
+                        "description": "アドオンの作成者は、システムで実行されている Docker インスタンスへの管理アクセスを持つアドオンを要求しました。このモードでは、アドオンはホームアシスタントシステム全体にフルアクセスと制御を提供し、セキュリティリスクを追加し、誤用時にシステムに損害を与える可能性があります。したがって、この機能はアドオンのセキュリティ スコアに悪影響を与えます。\n\nこのレベルのアクセスは自動的には付与されず、ユーザーが確認する必要があります。これを行うには、アドオンの保護モードを手動で無効にする必要があります。あなたが知っている場合にのみ、保護モードを無効にし、このアドオンのソースを信頼し、必要とします。",
+                        "title": "Dockerへのフルアクセス"
+                    },
+                    "full_access": {
+                        "description": "このアドオンは、アドオンの作成者の要求によって、システムのハードウェアへのフルアクセスが与えられます。アクセスは、Docker の特権モードと同等です。これにより、セキュリティリスクが生じる可能性があるため、この機能はアドオンのセキュリティ スコアに悪影響を及ぼします。\n\nこのレベルのアクセスは自動的には付与されず、ユーザーが確認する必要があります。これを行うには、アドオンの保護モードを手動で無効にする必要があります。あなたが知っている場合にのみ、保護モードを無効にし、このアドオンのソースを信頼し、必要とします。",
+                        "title": "フル ハードウェア アクセス"
+                    },
+                    "hassio_api": {
+                        "description": "アドオンは、アドオン作成者の要求によって、スーパーバイザ API へのアクセス権を与えられました。既定では、アドオンはシステムの一般的なバージョン情報にアクセスできます。アドオンが API への「マネージャー」または「管理者」レベルのアクセスを要求すると、ホームアシスタントシステムの複数の部分を制御するアクセス権を取得します。このアクセス許可はこのバッジによって示され、アドオンのセキュリティ スコアに悪影響を与えます。",
+                        "title": "SupervisorAPIアクセス"
+                    },
+                    "homeassistant_api": {
+                        "description": "このアドオンは、ホームアシスタント API を介して直接、実行中のホームアシスタントインスタンスにアクセスできます。このモードはアドオンの認証も処理するため、アドオンは追加の認証トークンを必要とせずにホームアシスタントと対話できます。",
+                        "title": "Home AssistantAPIアクセス"
+                    },
+                    "host_network": {
+                        "description": "アドオンは通常、独自の隔離されたネットワークレイヤーで実行され、ホストオペレーティングシステムのネットワークにアクセスすることができません。場合によっては、このネットワーク隔離によってアドオンのサービス提供が制限されることがあります。そのため、アドオンの作者が隔離を解除して、アドオンがホストマシンのネットワーク機能にフルアクセスできるようにすることができます。これにより、アドオンはより多くのネットワーク機能を得ることができますが、セキュリティが低下するため、アドオンでこのオプションを使用すると、アドオンのセキュリティ評価が低くなります。",
+                        "title": "ホスト ネットワーク"
+                    },
+                    "host_pid": {
+                        "description": "通常、アドオンが実行するプロセスは、他のすべてのシステムプロセスから分離されます。アドオン作成者は、ホスト システム インスタンスで実行されているシステム プロセスにアクセスし、ホスト システム上のプロセスを生成できるようにアドオンを要求しました。このモードでは、アドオンはホームアシスタントシステム全体にフルアクセスと制御を提供し、セキュリティリスクを追加し、誤用時にシステムに損害を与える可能性があります。したがって、この機能はアドオンのセキュリティ スコアに悪影響を与えます。\n\nこのレベルのアクセスは自動的には付与されず、ユーザーが確認する必要があります。これを行うには、アドオンの保護モードを手動で無効にする必要があります。あなたが知っている場合にのみ、保護モードを無効にし、このアドオンのソースを信頼し、必要とします。",
+                        "title": "ホストプロセスの名前空間"
+                    },
+                    "ingress": {
+                        "description": "このアドオンは、Ingressを使用して、インターフェイスをHomeAssistantに安全に埋め込みます。",
+                        "title": "イングレス"
+                    },
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "認証",
+                        "docker": "docker",
+                        "hardware": "ハードウェア",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "ホスト",
+                        "host_pid": "ホスト PID",
+                        "ingress": "イングレス",
+                        "rating": "評価",
+                        "stage": "ステージ"
+                    },
+                    "rating": {
+                        "description": "ホーム アシスタントは、各アドオンにセキュリティ評価を提供します。アドオンがシステムに必要なアクセスが多いほどスコアが低くなり、セキュリティリスクが高くなる可能性があります。\n\nスコアは1から6までのスケールです。1 が最も低いスコア (最も安全で最も高いリスクと見なされる) で、スコア 6 が最高スコア (最も安全で最も低いリスクと見なされます) です。",
+                        "title": "アドオンのセキュリティ評価"
+                    },
+                    "role": {
+                        "admin": "管理者",
+                        "backup": "バックアップ",
+                        "default": "デフォルト",
+                        "homeassistant": "homeassistant",
+                        "manager": "マネージャー"
+                    },
+                    "stage": {
+                        "description": "アドオンには、次の 3 つのステージのいずれかを設定できます。\n\n{icon_stable} **安定** : これらは、運用環境で使用する準備ができているアドオンです。\n\n{icon_experimental} **実験**: バグが含まれている可能性があり、未完成の可能性があります。\n\n{icon_deprecated} **非推奨**: これらのアドオンは、更新プログラムを受信しなくなります。",
+                        "title": "アドオンステージ"
+                    }
+                },
+                "changelog": "Changelog",
+                "cpu_usage": "アドオンCPU使用率",
+                "hostname": "ホスト名",
+                "install": "インストール",
+                "new_update_available": "{name} {version}が利用可能です",
+                "not_available_arch": "このアドオンは、デバイスのプロセッサまたはデバイスにインストールされているオペレーティングシステムと互換性がありません。",
+                "not_available_version": "ホーム アシスタント {core_version_installed} を無効にして、このバージョンのアドオンに更新するには、少なくともバージョン {core_version_needed} のホーム アシストが必要です",
+                "open_web_ui": "Web UI を開く",
+                "option": {
+                    "auto_update": {
+                        "description": "新しいバージョンが利用可能になったときにアドオンを自動更新します",
+                        "title": "自動更新"
+                    },
+                    "boot": {
+                        "description": "システムブート時にアドオンを起動する",
+                        "title": "起動時に開始"
+                    },
+                    "ingress_panel": {
+                        "description": "このアドオンをサイドバーに追加する",
+                        "title": "サイドバーに表示"
+                    },
+                    "protected": {
+                        "description": "アドオンからのシステムアクセスの昇格をブロックします。",
+                        "title": "保護モード"
+                    },
+                    "watchdog": {
+                        "description": "これはクラッシュした場合にアドオンを起動します。",
+                        "title": "ウォッチドッグ"
+                    }
+                },
+                "protection_mode": {
+                    "content": "このアドオンの保護モードは無効になっています。これによりアドオンはシステム全体へのフルアクセスが可能になり、セキュリティリスクが追加され、誤って使用された場合にはシステムにダメージを与える可能性があります。保護モードを無効にするのは、このアドオンのソースを知り、必要とし、信頼している場合のみにしてください。",
+                    "enable": "保護モードを有効にする",
+                    "title": "警告: 保護モードは無効です。"
+                },
+                "ram_usage": "アドオンのRAM使用量",
+                "rebuild": "再構築",
+                "restart": "再起動",
+                "start": "開始",
+                "stop": "停止",
+                "uninstall": "アンインストール",
+                "visit_addon_page": "詳細については、 {name}ページにアクセスしてください"
+            },
+            "documentation": {
+                "get_documentation": " {error}アドオンドキュメントの取得に失敗しました"
+            },
+            "failed_to_reset": "{error}アドオン構成のリセットに失敗しました",
+            "failed_to_save": " {error}アドオン構成の保存に失敗しました",
+            "logs": {
+                "get_logs": " {error}アドオンログの取得に失敗しました"
+            },
+            "panel": {
+                "configuration": "構成",
+                "documentation": "ドキュメント",
+                "info": "情報",
+                "log": "ログ"
+            },
+            "state": {
+                "installed": "アドオンがインストールされている",
+                "not_available": "アドオンはお使いのシステムでは利用できません",
+                "not_installed": "アドオンがインストールされていません"
+            }
+        },
         "common": {
-            "cancel": "キャンセル"
+            "cancel": "キャンセル",
+            "description": "説明",
+            "error": {
+                "unknown": "不明なエラー",
+                "update_failed": "更新に失敗しました"
+            },
+            "failed_to_restart_name": "{name} を再起動できませんでした",
+            "failed_to_update_name": "{name} を更新できませんでした",
+            "learn_more": "詳細情報",
+            "new_version_available": "新しいバージョンが利用可能",
+            "newest_version": "最新バージョン",
+            "no": "いいえ",
+            "refresh": "リフレッシュ",
+            "release_notes": "リリースノート",
+            "reload": "リロード",
+            "reset_defaults": "デフォルトにリセット",
+            "reset_options": "リセットオプション",
+            "restart": "再起動",
+            "restart_name": "{name}を再起動します",
+            "running_version": "現在 {version} を実行しています",
+            "save": "保存",
+            "show_more": "この詳細情報を表示する",
+            "update": "更新",
+            "update_available": "{count, plural,\n  one {アップデート}\n  other {{count} アップデート}\n} 保留中",
+            "version": "バージョン",
+            "yes": "はい"
         },
         "confirm": {
+            "reset_options": {
+                "text": "すべてのオプションをリセットしてもよろしいですか？",
+                "title": "リセットオプション"
+            },
+            "restart": {
+                "text": "{name}を再起動してもよろしいですか？",
+                "title": " {name}を再起動"
+            },
             "update": {
+                "text": "{name}をバージョン{version}に更新してもよろしいですか？",
                 "title": "{name}更新"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "新しいバージョンが利用可能",
+            "addon_running": "アドオンが実行されています",
+            "addon_stopped": "アドオンが停止しています",
+            "addons": "アドオン",
+            "no_addons": "まだアドオンがインストールされていません。アドオンストアにアクセスして始めましょう!"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "{ssid}に接続しました",
+                "dhcp": "DHCP",
+                "disabled": "無効",
+                "dns_servers": "DNSサーバー",
+                "failed_to_change": "ネットワーク設定の変更に失敗しました",
+                "gateway": "ゲートウェイアドレス",
+                "ip_netmask": "IPアドレス/ネットマスク",
+                "open": "開く",
+                "scan_ap": "アクセスポイントのスキャン",
+                "static": "静的",
+                "title": "ネットワーク設定",
+                "unsaved": "保存されていない変更があります。タブを変更するとこれらは失われます。続行しますか？",
+                "warning": "Wi-Fi、IP、またはゲートウェイアドレスを変更すると、接続が失われる可能性があります。",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "新しいレジストリの追加",
+                "add_registry": "レジストリの追加",
+                "failed_to_add": "レジストリを追加できませんでした",
+                "failed_to_remove": "レジストリを削除できませんでした",
+                "no_registries": "レジストリが構成されていません",
+                "password": "パスワード",
+                "registry": "レジストリ",
+                "remove": "削除",
+                "title_add": "新しいコンテナレジストリの追加",
+                "title_manage": "コンテナレジストリの管理",
+                "username": "ユーザー名"
+            },
+            "repositories": {
+                "add": "追加",
+                "remove": "削除",
+                "title": "アドオンリポジトリの管理"
+            },
+            "restart_addon": {
+                "confirm_text": "アドオンの再起動",
+                "text": "変更を保存してアドオンを再起動しますか？"
+            },
+            "update": {
+                "create_snapshot": "更新前に{name}のスナップショットを作成する",
+                "snapshot": "スナップショット",
+                "snapshotting": "{name} のスナップショットの作成",
+                "updating": "{name}をバージョン{version}に更新しています"
+            }
+        },
+        "my": {
+            "error": "不明なエラーが発生しました",
+            "faq_link": "マイホームアシスタントFAQ",
+            "not_supported": "このリダイレクトは、HomeAssistantインスタンスではサポートされていません。 サポートされているリダイレクトとそれらが導入されたバージョンについては、{link}を確認してください。"
+        },
+        "panel": {
+            "dashboard": "ダッシュボード",
+            "snapshots": "スナップショット",
+            "store": "アドオンストア",
+            "system": "システム"
+        },
+        "snapshot": {
+            "addons": "アドオン",
+            "available_snapshots": "利用可能なスナップショット",
+            "could_not_create": "スナップショットを作成できませんでした。",
+            "create": "作成",
+            "create_blocked_not_running": "システムが {state} 状態であるため、スナップショットの作成は現在できません。",
+            "create_snapshot": "スナップショットの作成",
+            "description": "スナップショットでは、Home Assistantインスタンスのすべてのデータを簡単にバックアップして復元することができます。",
+            "enter_password": "パスワードを入力してください。",
+            "folder": {
+                "addons/local": "ローカルアドオン",
+                "homeassistant": "HomeAssistantの設定",
+                "media": "メディア",
+                "share": "共有",
+                "ssl": "SSL"
+            },
+            "folders": "フォルダー",
+            "full_snapshot": "フルスナップショット",
+            "name": "名前",
+            "no_snapshots": "スナップショットはまだありません。",
+            "partial_snapshot": "部分的なスナップショット",
+            "password": "パスワード",
+            "password_protected": "パスワードで保護された",
+            "password_protection": "パスワード保護",
+            "security": "セキュリティ",
+            "type": "タイプ",
+            "upload_snapshot": "スナップショットのアップロード"
+        },
+        "store": {
+            "missing_addons": "アドオンがありませんか？ユーザープロファイルページで詳細モードを有効にする",
+            "no_results_found": "{repository}に結果が見つかりません。",
+            "registries": "レジストリ",
+            "repositories": "リポジトリ"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "コアCPU使用率",
+                "ram_usage": "コアRAMの使用量"
+            },
+            "host": {
+                "change": "変更",
+                "change_hostname": "ホスト名の変更",
+                "confirm_reboot": "ホストを再起動しますか?",
+                "confirm_shutdown": "ホストをシャットダウンしてもよろしいですか？",
+                "deployment": "展開",
+                "docker_version": "Dockerバージョン",
+                "emmc_lifetime_used": "eMMC の有効期間が使用されます",
+                "failed_to_get_hardware_list": "ハードウェア一覧を取得できませんでした",
+                "failed_to_import_from_usb": "USBからのインポートに失敗しました",
+                "failed_to_reboot": "ホストの再起動に失敗しました",
+                "failed_to_set_hostname": "ホスト名の設定に失敗しました",
+                "failed_to_shutdown": "ホストのシャットダウンに失敗しました",
+                "hardware": "ハードウェア",
+                "hostname": "ホスト名",
+                "import_from_usb": "USBからインポート",
+                "ip_address": "IPアドレス",
+                "new_hostname": "新しいホスト名を入力してください:",
+                "operating_system": "オペレーティングシステム",
+                "reboot_host": "ホストの再起動",
+                "shutdown_host": "ホストをシャットダウンします",
+                "used_space": "使用済みスペース"
+            },
+            "log": {
+                "get_logs": "{error},{provider}ログの取得に失敗しました",
+                "log_provider": "ログプロバイダー"
+            },
+            "supervisor": {
+                "beta_backup": "この機能をアクティブ化する前に、データのバックアップを作成してください。",
+                "beta_join_confirm": "ベータチャンネルに参加しますか?",
+                "beta_release_items": "これには、次のベータリリースが含まれます。",
+                "beta_warning": "ベータ版はテスターと早期導入者向けであり、不安定なコード変更を含むことができます",
+                "channel": "チャネル",
+                "cpu_usage": "SupervisorのCPU使用率",
+                "failed_to_reload": "スーパーバイザのリロードに失敗しました",
+                "failed_to_set_option": "Supervisorオプションの設定に失敗しました",
+                "failed_to_update": "Supervisorの更新に失敗しました",
+                "join_beta_action": "ベータチャンネルに参加",
+                "join_beta_description": "Home Assistant（RC）、Supervisor、ホストのベータ版アップデートを入手する",
+                "leave_beta_action": "ベータチャンネルを離れる",
+                "leave_beta_description": "Home Assistant、Supervisor、およびホストの安定した更新を取得する",
+                "ram_usage": "SupervisorのRAM使用量",
+                "reload_supervisor": "リロード Supervisor",
+                "share_diagnostics": "診断の共有",
+                "share_diagnostics_description": "クラッシュ レポートと診断情報を共有します。",
+                "share_diagonstics_description": "スーパーバイザで予期しないエラーが発生したときに、クラッシュ レポートと診断情報を自動的に共有しますか?{line_break}これにより、問題を解決することができ、情報はホームアシスタントコアチームにのみアクセス可能であり、他の人と共有されません。{line_break}データには、個人情報や機密情報は含まれていないので、いつでも設定でこれを無効にすることができます。",
+                "share_diagonstics_title": "HomeAssistantの改善にご協力ください",
+                "unhealthy_description": "正常でないインストールを実行すると、問題が発生します。以下は、インストールに関する問題の一覧です。",
+                "unhealthy_reason": {
+                    "docker": "Docker 環境が正常に動作していません",
+                    "privileged": "Supervisorには特権がありません",
+                    "setup": "Supervisorのセットアップに失敗しました",
+                    "supervisor": "Supervisorを更新できませんでした"
+                },
+                "unhealthy_title": "インストールが正常でない",
+                "unsupported_description": "以下は、インストールに関する問題の一覧です。",
+                "unsupported_reason": {
+                    "container": "問題が発生することが知られているコンテナ",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Dockerの設定",
+                    "docker_version": "Dockerのバージョン",
+                    "job_conditions": "無視されたジョブ条件",
+                    "lxc": "LXC",
+                    "network_manager": "ネットワークマネージャー",
+                    "os": "オペレーティング システム",
+                    "privileged": "Supervisorには特権がありません",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "サポートされていないインストールを実行しています",
+                "update_supervisor": "スーパーバイザーの更新",
+                "warning": "警告"
             }
         }
     },
@@ -202,7 +577,8 @@
             },
             "script": {
                 "cancel": "キャンセル",
-                "cancel_multiple": "キャンセル"
+                "cancel_multiple": "キャンセル",
+                "run": "実行"
             },
             "service": {
                 "run": "実行"
@@ -297,6 +673,19 @@
             "yes": "はい"
         },
         "components": {
+            "addon-picker": {
+                "addon": "アドオン",
+                "error": {
+                    "fetch_addons": {
+                        "description": "アドオンを取得するとエラーが返されました。",
+                        "title": "アドオンの取得中にエラーが発生しました"
+                    },
+                    "no_supervisor": {
+                        "description": "Supervisorが見つからなかったため、アドオンを読み込めませんでした。",
+                        "title": "Supervisorなし"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "追加",
@@ -365,6 +754,8 @@
                     "changed_to_state": "{state}に変更されました",
                     "cleared_device_class": "クリアされました ({device_class} 未検出)",
                     "detected_device_class": "{device_class} が検出されました",
+                    "is_closing": "閉じてます",
+                    "is_opening": "開いています",
                     "rose": "ローズ",
                     "set": "セット",
                     "turned_off": "オフになりました",
@@ -470,7 +861,10 @@
                 }
             },
             "service-control": {
-                "target": "ターゲット"
+                "required": "この項目は必須です",
+                "service_data": "サービスデータ",
+                "target": "ターゲット",
+                "target_description": "このサービスは、対象となる領域、デバイス、またはエンティティとして使用する必要があります。"
             },
             "service-picker": {
                 "service": "サービス"
@@ -681,6 +1075,7 @@
                         "scene": "シーン",
                         "script": "スクリプト",
                         "server_control": "サーバーコントロール",
+                        "tag": "タグ",
                         "users": "ユーザー",
                         "zone": "場所"
                     },
@@ -739,6 +1134,7 @@
                     "clusters": "クラスタの管理",
                     "reconfigure": "デバイスを再設定",
                     "remove": "デバイスを削除",
+                    "view_in_visualization": "ビジュアライゼーションで表示",
                     "zigbee_information": "Zigbee 情報"
                 },
                 "confirmations": {
@@ -1483,6 +1879,7 @@
                     "cant_edit": "編集できるのは、UI で作成された項目のみです。",
                     "caption": "デバイス",
                     "confirm_delete": "このデバイスを削除してもよろしいですか？",
+                    "confirm_disable_config_entry": "{entry_name}デバイスはもうありません。設定エントリを無効にしますか？",
                     "confirm_rename_entity_ids": "エンティティの ID も変更しますか？",
                     "confirm_rename_entity_ids_warning": "この場合、これらのエンティティを現在使用している構成 (オートメーション、スクリプト、シーン、Lovelace など) は変更されません。",
                     "data_table": {
@@ -1595,7 +1992,8 @@
                 },
                 "filtering": {
                     "clear": "消去",
-                    "filtering_by": "フィルタリング"
+                    "filtering_by": "フィルタリング",
+                    "show": "表示"
                 },
                 "header": "Home Assistant の設定",
                 "helpers": {
@@ -1666,7 +2064,18 @@
                         "delete_confirm": "この統合を削除しますか?",
                         "device_unavailable": "デバイスを利用できません",
                         "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
+                        "disable_restart_confirm": "Homeassistantを再起動して、このintegrationを無効にします。",
+                        "disable": {
+                            "disabled": "無効",
+                            "disabled_by": {
+                                "device": "デバイス",
+                                "integration": "インテグレーション",
+                                "user": "ユーザー"
+                            },
+                            "disabled_cause": "{cause}によって無効化"
+                        },
                         "documentation": "ドキュメント",
+                        "enable_restart_confirm": "Home Assistantを再起動して、このintegrationを有効にします",
                         "entities": "{count} {count, plural,\n  one {エンティティ}\n  other {エントリー}\n}",
                         "entity_unavailable": "エンティティは利用できません",
                         "firmware": "ファームウェア： {version}",
@@ -1686,8 +2095,10 @@
                     "config_flow": {
                         "aborted": "中止",
                         "close": "閉じる",
+                        "could_not_load": "構成フローを読み込めませんでした",
                         "created_config": "{name} の構成が作成しました。",
                         "dismiss": "ダイアログを閉じる",
+                        "error": "エラー",
                         "error_saving_area": "エリアを保存できません: {error}",
                         "external_step": {
                             "description": "この手順を完了するには、外部のウエブサイトにアクセスする必要があります。",
@@ -1696,6 +2107,10 @@
                         "finish": "完了",
                         "loading_first_time": "インテグレーションのインストールを完了するまでお待ちください",
                         "not_all_required_fields": "必須フィールドの一覧に入力するわけではありません。",
+                        "pick_flow_step": {
+                            "new_flow": "いいえ、{integration} の他のインスタンスを設定します",
+                            "title": "これらを発見しました。設定しますか？"
+                        },
                         "submit": "送信"
                     },
                     "configure": "構成",
@@ -1703,6 +2118,11 @@
                     "confirm_new": "{integration}を設定しますか？",
                     "description": "インテグレーションの管理とセットアップ",
                     "details": "インテグレーションの詳細",
+                    "disable": {
+                        "disabled_integrations": "{number}は無効",
+                        "hide_disabled": "無視されたインテグレーションを表示",
+                        "show_disabled": "無効なintegrationを表示"
+                    },
                     "discovered": "発見",
                     "home_assistant_website": "Home Assistant のウェブサイト",
                     "ignore": {
@@ -2291,6 +2711,7 @@
                         "caption": "可視化",
                         "header": "ネットワークの視覚化",
                         "highlight_label": "デバイスを強調表示",
+                        "refresh_topology": "トポロジの更新",
                         "zoom_label": "デバイスにズーム"
                     }
                 },
@@ -2512,13 +2933,18 @@
                         "type": "イベントの種類"
                     },
                     "services": {
+                        "accepts_target": "このサービスは、ターゲットを受け入れます。例： `entity_id：light.bed_light`",
+                        "all_parameters": "利用可能なすべてのパラメータ",
                         "call_service": "サービスの呼び出し",
                         "column_description": "説明",
                         "column_example": "例",
                         "column_parameter": "パラメータ",
                         "description": "サービス開発ツールを使用すると、ホームアシスタントで利用可能なサービスを呼び出すことができます。",
                         "fill_example_data": "データ記入例",
-                        "title": "サービス"
+                        "title": "サービス",
+                        "ui_mode": "UIモードに移動します",
+                        "yaml_mode": "YAMLモードに移動します",
+                        "yaml_parameters": "YAMLモードでのみ使用可能なパラメータ"
                     },
                     "states": {
                         "alert_entity_field": "エンティティは必須フィールドです",
@@ -2962,6 +3388,8 @@
                         "error_remove": "構成を削除できません： {error}",
                         "error_save_yaml": "YAMLを保存できません: {error}",
                         "header": "設定を編集",
+                        "lovelace_changed": "Lovelace 構成が更新されましたが、エディタで更新された構成をロードして、現在の変更を失いますか?",
+                        "reload": "リロード",
                         "resources_moved": "リソースはLovelace構成に追加されなくなりましたが、Lovelace構成パネルで追加できます。",
                         "save": "保存",
                         "saved": "保存しました",
@@ -3048,8 +3476,11 @@
                 "playback_title": "メッセージの再生"
             },
             "my": {
+                "component_not_loaded": "このリダイレクトは、ホーム アシスタント インスタンスではサポートされていません。このリダイレクトを使用するには、integration {integration} が必要です。",
+                "documentation": "ドキュメント",
                 "error": "不明なエラーが発生しました",
                 "faq_link": "マイホームアシスタントFAQ",
+                "no_supervisor": "このリダイレクトは、ホーム アシスタントのインストールではサポートされていません。ホームアシスタントオペレーティングシステムまたはホームアシスタントの監視インストール方法のいずれかが必要です。詳細については、{docs_link}を参照してください。",
                 "not_supported": "このリダイレクトは、HomeAssistantインスタンスではサポートされていません。サポートされているリダイレクトとそれらが導入されたバージョンについては、 {link}を確認してください。"
             },
             "page-authorize": {

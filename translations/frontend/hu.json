@@ -102,6 +102,50 @@
             "unknown": "Ismeretlen"
         }
     },
+    "supervisor": {
+        "dialog": {
+            "network": {
+                "dhcp": "DHCP",
+                "disabled": "Letiltva",
+                "dns_servers": "DNS Szerverek",
+                "failed_to_change": "Nem sikerült megváltoztatni a hálózati beállításokat",
+                "gateway": "Átjáró címe",
+                "ip_netmask": "IP-cím/Netmaszk",
+                "static": "Statikus",
+                "title": "Hálózati beállítások",
+                "unsaved": "Vannak nem mentett módosítások, amik elvesznek ha másik fülre váltasz, biztosan ki akarsz lépni?",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "password": "Jelszó",
+                "remove": "Eltávolítás",
+                "username": "Felhasználónév"
+            },
+            "repositories": {
+                "add": "Hozzáadás",
+                "remove": "Eltávolítás"
+            },
+            "restart_addon": {
+                "confirm_text": "Add-on újraindítása"
+            }
+        },
+        "snapshot": {
+            "create": "Létrehozás",
+            "enter_password": "Add meg a jelszót",
+            "folder": {
+                "homeassistant": "Home Assistant konfiguráció",
+                "media": "Média",
+                "ssl": "SSL"
+            },
+            "folders": "Mappák",
+            "name": "Név",
+            "password": "Jelszó",
+            "password_protected": "jelszóval védett",
+            "password_protection": "Jelszóvédelem",
+            "security": "Biztonság",
+            "type": "Típus"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Bejelentkezve szeretnél maradni?",
@@ -200,7 +244,8 @@
             },
             "script": {
                 "cancel": "Mégse",
-                "cancel_multiple": "Mégse {number}"
+                "cancel_multiple": "Mégse {number}",
+                "run": "Futtatás"
             },
             "service": {
                 "run": "Futtatás"
