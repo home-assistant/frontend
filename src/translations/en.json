@@ -3657,7 +3657,7 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
-      "error_not_valid_addon_slug": "{slug} is not a valid add-on slug"
+      "error_addon_not_found": "Add-on not found"
     },
     "system": {
       "log": {
