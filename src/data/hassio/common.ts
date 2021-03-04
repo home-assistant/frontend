@@ -29,16 +29,17 @@ export const extractApiErrorMessage = (error: any): string => {
 };
 
 const ignoredStatusCodes = new Set([502, 503, 504]);
-const ignoredErrorMessages = (message): boolean =>
-  message.includes("ERR_CONNECTION_CLOSED") ||
-  message.includes("ERR_CONNECTION_RESET");
 
 export const ignoreSupervisorError = (error): boolean => {
   if (error && error.status_code && ignoredStatusCodes.has(error.status_code)) {
     return true;
   }
-
-  if (error && error.message && ignoredErrorMessages(error.message)) {
+  if (
+    error &&
+    error.message &&
+    (error.message.includes("ERR_CONNECTION_CLOSED") ||
+      error.message.includes("ERR_CONNECTION_RESET"))
+  ) {
     return true;
   }
   return false;
