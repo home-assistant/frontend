@@ -4,10 +4,11 @@ import { StreamLanguage } from "@codemirror/stream-parser";
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import { indentLess, indentMore } from "@codemirror/commands";
+import { Compartment } from "@codemirror/state";
 
 export { keymap } from "@codemirror/view";
 export { CMEditorView as EditorView };
-export { EditorState, Prec, tagExtension } from "@codemirror/state";
+export { EditorState, Prec } from "@codemirror/state";
 export { defaultKeymap } from "@codemirror/commands";
 export { lineNumbers } from "@codemirror/gutter";
 export { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
@@ -18,6 +19,9 @@ export const langs = {
   yaml: StreamLanguage.define(yaml),
 };
 
+export const langCompartment = new Compartment();
+export const readonlyCompartment = new Compartment();
+
 export const tabKeyBindings: KeyBinding[] = [
   { key: "Tab", run: indentMore },
   {
@@ -27,7 +31,7 @@ export const tabKeyBindings: KeyBinding[] = [
 ];
 
 export const theme = CMEditorView.theme({
-  $: {
+  "&": {
     color: "var(--primary-text-color)",
     backgroundColor:
       "var(--code-editor-background-color, var(--card-background-color))",
@@ -36,27 +40,28 @@ export const theme = CMEditorView.theme({
     maxHeight: "var(--code-mirror-max-height, unset)",
   },
 
-  $scroller: { outline: "none" },
-
-  $content: { caretColor: "var(--secondary-text-color)" },
-
-  $$focused: { outline: "none" },
-
-  "$$focused $cursor": { borderLeftColor: "#var(--secondary-text-color)" },
-  "$$focused $selectionBackground, $selectionBackground": {
+  "&.cm-focused": { outline: "none" },
+  "&.cm-focused .cm-cursor": {
+    borderLeftColor: "#var(--secondary-text-color)",
+  },
+  "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
     backgroundColor: "rgba(var(--rgb-primary-color), 0.3)",
   },
 
-  $panels: {
+  ".cm-scroller": { outline: "none" },
+
+  ".cm-content": { caretColor: "var(--secondary-text-color)" },
+
+  ".cm-panels": {
     backgroundColor: "var(--primary-background-color)",
     color: "var(--primary-text-color)",
   },
-  "$panels.top": { borderBottom: "1px solid var(--divider-color)" },
-  "$panels.bottom": { borderTop: "1px solid var(--divider-color)" },
+  ".cm-panels.top": { borderBottom: "1px solid var(--divider-color)" },
+  ".cm-panels.bottom": { borderTop: "1px solid var(--divider-color)" },
 
-  "$panel.search input": { margin: "4px 4px 0" },
+  ".cm-panel.search input": { margin: "4px 4px 0" },
 
-  $button: {
+  ".cm-button": {
     border: "1px solid var(--primary-color)",
     padding: "0px 16px",
     textTransform: "uppercase",
@@ -72,7 +77,7 @@ export const theme = CMEditorView.theme({
     letterSpacing: "var(--mdc-typography-button-letter-spacing, 0.0892857em)",
   },
 
-  $textfield: {
+  ".cm-textfield": {
     padding: "4px 0px 5px",
     borderRadius: "0",
     fontSize: "16px",
@@ -93,20 +98,20 @@ export const theme = CMEditorView.theme({
     },
   },
 
-  $selectionMatch: {
+  ".cm-selectionMatch": {
     backgroundColor: "rgba(var(--rgb-primary-color), 0.1)",
   },
 
-  $searchMatch: {
+  ".cm-searchMatch": {
     backgroundColor: "rgba(var(--rgb-accent-color), .2)",
     outline: "1px solid rgba(var(--rgb-accent-color), .4)",
   },
-  "$searchMatch.selected": {
+  ".cm-searchMatch.selected": {
     backgroundColor: "rgba(var(--rgb-accent-color), .4)",
     outline: "1px solid var(--accent-color)",
   },
 
-  $gutters: {
+  ".cm-gutters": {
     backgroundColor:
       "var(--paper-dialog-background-color, var(--primary-background-color))",
     color: "var(--paper-dialog-color, var(--secondary-text-color))",
@@ -115,15 +120,15 @@ export const theme = CMEditorView.theme({
       "1px solid var(--paper-input-container-color, var(--secondary-text-color))",
     paddingRight: "1px",
   },
-  "$$focused $gutters": {
+  "&.cm-focused cm-gutters": {
     borderRight:
       "2px solid var(--paper-input-container-focus-color, var(--primary-color))",
     paddingRight: "0",
   },
-  "$gutterElementags.lineNumber": { color: "inherit" },
+  ".cm-gutterElementags.lineNumber": { color: "inherit" },
 });
 
-export const highlightStyle = HighlightStyle.define(
+export const highlightStyle = HighlightStyle.define([
   { tag: tags.keyword, color: "var(--codemirror-keyword, #6262FF)" },
   {
     tag: [
@@ -194,5 +199,5 @@ export const highlightStyle = HighlightStyle.define(
   { tag: tags.processingInstruction, color: "var(--secondary-text-color)" },
   { tag: tags.string, color: "var(--codemirror-string, #07a)" },
   { tag: tags.inserted, color: "var(--codemirror-string2, #07a)" },
-  { tag: tags.invalid, color: "var(--error-color)" }
-);
+  { tag: tags.invalid, color: "var(--error-color)" },
+]);
