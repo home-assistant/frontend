@@ -69,11 +69,11 @@
     "state_badge": {
         "alarm_control_panel": {
             "armed": "uzbr",
-            "armed_away": "uzbr",
+            "armed_away": "uzbrojony",
             "armed_custom_bypass": "uzbr",
-            "armed_home": "uzbr",
-            "armed_night": "uzbr",
-            "arming": "uzbr",
+            "armed_home": "uzbrojony",
+            "armed_night": "uzbrojony",
+            "arming": "uzbrajanie",
             "disarmed": "rozbr",
             "disarming": "rozbr",
             "pending": "oczek",
@@ -136,7 +136,7 @@
                     "start_invalid_config": "Przejdź do konfiguracji",
                     "stop": "Nie udało się zatrzymać dodatku",
                     "uninstall": "Nie udało się odinstalować dodatku",
-                    "validate_config": "Nie powiodło się sprawdzenie konfiguracji dodatku."
+                    "validate_config": "Nie powiodło się sprawdzenie konfiguracji dodatku"
                 },
                 "capability": {
                     "apparmor": {
@@ -148,11 +148,11 @@
                         "title": "Uwierzytelnianie Home Assistant"
                     },
                     "docker_api": {
-                        "description": "Autor dodatku zażądał, aby dodatek miał dostęp administracyjny do Dockera działającej w Twoim systemie. Ten tryb zapewnia dodatkowi pełny dostęp i kontrolę nad całym systemem Home Assistant, co zwiększa ryzyko bezpieczeństwa i może uszkodzić system w przypadku niewłaściwego użycia. Dlatego ta funkcja negatywnie wpływa na ocenę zabezpieczeń dodatku. \n\nTen poziom dostępu nie jest przyznawany automatycznie i musi zostać potwierdzony przez Ciebie. Aby to zrobić, musisz ręcznie wyłączyć tryb ochrony w dodatku. Wyłącz tryb ochrony tylko wtedy, gdy znasz, potrzebujesz i ufasz źródłowi tego dodatku.",
-                        "title": "Pełny dostęp do Dockera"
+                        "description": "Autor dodatku zażądał, aby dodatek miał dostęp administracyjny do dockera działającej w Twoim systemie. Ten tryb zapewnia dodatkowi pełny dostęp i kontrolę nad całym systemem Home Assistant, co zwiększa ryzyko bezpieczeństwa i może uszkodzić system w przypadku niewłaściwego użycia. Dlatego ta funkcja negatywnie wpływa na ocenę zabezpieczeń dodatku. \n\nTen poziom dostępu nie jest przyznawany automatycznie i musi zostać potwierdzony przez Ciebie. Aby to zrobić, musisz ręcznie wyłączyć tryb ochrony w dodatku. Wyłącz tryb ochrony tylko wtedy, gdy znasz, potrzebujesz i ufasz źródłowi tego dodatku.",
+                        "title": "Pełny dostęp do dockera"
                     },
                     "full_access": {
-                        "description": "Ten dodatek otrzymuje pełny dostęp do sprzętu Twojego systemu, na żądanie autora dodatku. Dostęp jest porównywalny z trybem uprzywilejowanym w Dockerze. Ponieważ otwiera to potencjalne zagrożenia bezpieczeństwa, ta funkcja negatywnie wpływa na wynik zabezpieczeń dodatku. \n\nTen poziom dostępu nie jest przyznawany automatycznie i musi zostać potwierdzony przez Ciebie. Aby to zrobić, musisz ręcznie wyłączyć tryb ochrony w dodatku. Wyłącz tryb ochrony tylko wtedy, gdy znasz, potrzebujesz i ufasz źródłowi tego dodatku.",
+                        "description": "Ten dodatek otrzymuje pełny dostęp do sprzętu Twojego systemu, na żądanie autora dodatku. Dostęp jest porównywalny z trybem uprzywilejowanym w dockerze. Ponieważ otwiera to potencjalne zagrożenia bezpieczeństwa, ta funkcja negatywnie wpływa na ocenę zabezpieczeń dodatku. \n\nTen poziom dostępu nie jest przyznawany automatycznie i musi zostać potwierdzony przez Ciebie. Aby to zrobić, musisz ręcznie wyłączyć tryb ochrony w dodatku. Wyłącz tryb ochrony tylko wtedy, gdy znasz, potrzebujesz i ufasz źródłowi tego dodatku.",
                         "title": "Pełny dostęp do sprzętu"
                     },
                     "hassio_api": {
@@ -189,7 +189,7 @@
                         "stage": "etap"
                     },
                     "rating": {
-                        "description": "Home Assistant zapewnia ocenę bezpieczeństwa dla każdego z dodatków, która wskazuje ryzyko związane z używaniem tego dodatku. Im większy dostęp wymaga w systemie dodatek, tym niższy wynik, a tym samym zwiększa potencjalne zagrożenie bezpieczeństwa. \n\nWynik jest w skali od 1 do 6, gdzie 1 to najniższy wynik (uważany za najbardziej niepewny i najwyższy poziom ryzyka), a wynik 6 to najwyższy wynik (uważany za najbardziej bezpieczny i najniższy poziom ryzyka).",
+                        "description": "Home Assistant zapewnia ocenę bezpieczeństwa dla każdego z dodatków, która wskazuje ryzyko związane z używaniem tego dodatku. Im większy dostęp wymaga w systemie dodatek, tym niższa ocena, a tym samym zwiększa potencjalne zagrożenie bezpieczeństwa. \n\nOcena jest w skali od 1 do 6, gdzie 1 to najniższa ocena (uważany za najbardziej niepewny i najwyższy poziom ryzyka), a 6 to najwyższa ocena (uważany za najbardziej bezpieczny i najniższy poziom ryzyka).",
                         "title": "Ocena bezpieczeństwa dodatku"
                     },
                     "role": {
@@ -200,7 +200,7 @@
                         "manager": "menedżer"
                     },
                     "stage": {
-                        "description": "Dodatki mogą mieć jeden z trzech etapów: \n\n {icon_stable} **Stabilny**: to dodatki gotowe do użycia w środowisku produkcyjnym. \n\n {icon_experimental} **Eksperymentalny**: mogą zawierać błędy i być niedokończone. \n\n {icon_deprecated} **Wycofane**: te dodatki nie będą już otrzymywać żadnych aktualizacji.",
+                        "description": "Dodatki mogą mieć jeden z trzech etapów: \n\n {icon_stable} **Stabilny**: to dodatki gotowe do użycia w środowisku produkcyjnym\n\n {icon_experimental} **Eksperymentalny**: mogą zawierać błędy i być niedokończone\n\n {icon_deprecated} **Wycofane**: te dodatki nie będą już otrzymywać żadnych aktualizacji",
                         "title": "Etap dodatku"
                     }
                 },
@@ -218,19 +218,19 @@
                         "title": "Automatyczna aktualizacja"
                     },
                     "boot": {
-                        "description": "Uruchom dodatek podczas rozruchu systemu",
+                        "description": "Uruchom dodatek podczas startu systemu",
                         "title": "Uruchamianie przy starcie"
                     },
                     "ingress_panel": {
                         "description": "Dodaj ten dodatek do bocznego paska",
-                        "title": "Na pasku bocznym"
+                        "title": "Pokaż na pasku bocznym"
                     },
                     "protected": {
                         "description": "Blokuje podwyższony dostęp do systemu z poziomu dodatku",
                         "title": "Tryb ochrony"
                     },
                     "watchdog": {
-                        "description": "Spowoduje to uruchomienie dodatku, jeśli się zawiesi",
+                        "description": "Ponowne uruchomienie dodatku, jeśli się zawiesi",
                         "title": "Obserwator"
                     }
                 },
@@ -291,7 +291,7 @@
             "save": "Zapisz",
             "show_more": "Pokaż więcej informacji na ten temat",
             "update": "Aktualizuj",
-            "update_available": "{count, plural,\n  one {oczekująca aktualizacja}\n  few {oczekujące aktualizacje}\n  many {oczekujących aktualizacji}\n  other {{count} oczekujące aktualizacje}\n}",
+            "update_available": "{count, plural,\n  one {Oczekująca aktualizacja}\n  few {Oczekujące aktualizacje}\n  many {Oczekujących aktualizacji}\n  other {{count} Oczekujące aktualizacje}\n}",
             "version": "Wersja",
             "yes": "Tak"
         },
@@ -306,7 +306,7 @@
             },
             "update": {
                 "text": "Czy na pewno chcesz zaktualizować {name} do wersji {version}?",
-                "title": "Zaktualizuj {name}"
+                "title": "Aktualizacja {name}"
             }
         },
         "dashboard": {
@@ -360,7 +360,7 @@
                 "create_snapshot": "Utwórz snapshot {name} przed aktualizacją",
                 "snapshot": "Snapshot",
                 "snapshotting": "Tworzę snapshot {name}",
-                "updating": "Aktualizuję {name} do wersji {version}"
+                "updating": "Aktualizacja {name} do wersji {version}"
             }
         },
         "my": {
@@ -382,7 +382,7 @@
             "create_blocked_not_running": "Tworzenie snapshota nie jest teraz możliwe, ponieważ system jest w {state}.",
             "create_snapshot": "Utwórz snapshot",
             "description": "Snapshoty umożliwiają łatwe tworzenie kopii zapasowych i przywracanie wszystkich danych instancji Home Assistant.",
-            "enter_password": "Proszę wprowadzić hasło.",
+            "enter_password": "Proszę wprowadzić hasło",
             "folder": {
                 "addons/local": "Folder Local add-ons",
                 "homeassistant": "Folder konfiguracji Home Assistant",
@@ -419,7 +419,7 @@
                 "confirm_reboot": "Czy na pewno chcesz ponownie uruchomić hosta?",
                 "confirm_shutdown": "Czy na pewno chcesz zamknąć hosta?",
                 "deployment": "Wdrożenie",
-                "docker_version": "Wersja Dockera",
+                "docker_version": "Wersja dockera",
                 "emmc_lifetime_used": "Czas zużycia eMMC",
                 "failed_to_get_hardware_list": "Nie udało się pobrać listy sprzętu",
                 "failed_to_import_from_usb": "Nie udało się zaimportować z USB",
@@ -451,9 +451,9 @@
                 "failed_to_set_option": "Nie udało się ustawić opcji Supervisora",
                 "failed_to_update": "Nie udało się zaktualizować Supervisora",
                 "join_beta_action": "Dołącz do kanału beta",
-                "join_beta_description": "Pobierz aktualizacje beta dla Home Assistant (RC), Supervisora i hosta",
+                "join_beta_description": "Pobieraj aktualizacje beta dla Home Assistanta (RC), Supervisora i hosta",
                 "leave_beta_action": "Opuść kanał beta",
-                "leave_beta_description": "Uzyskaj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
+                "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
                 "ram_usage": "Zużycie pamięci przez Supervisora",
                 "reload_supervisor": "Przeładuj Supervisora",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
@@ -462,7 +462,7 @@
                 "share_diagonstics_title": "Pomóż ulepszyć Home Assistanta",
                 "unhealthy_description": "Używanie \"niezdrowej\" instalacji spowoduje problemy. Poniżej znajduje się lista problemów z Twoją instalacją. Kliknij łącza, aby dowiedzieć się, jak możesz je rozwiązać.",
                 "unhealthy_reason": {
-                    "docker": "Środowisko Dockera nie działa poprawnie",
+                    "docker": "Środowisko dockera nie działa poprawnie",
                     "privileged": "Supervisor nie jest uprzywilejowany",
                     "setup": "Konfiguracja Supervisora nie powiodła się",
                     "supervisor": "Supervisor nie mógł się zaktualizować"
@@ -472,8 +472,8 @@
                 "unsupported_reason": {
                     "container": "Kontenery, o których wiadomo, że powodują problemy",
                     "dbus": "DBUS",
-                    "docker_configuration": "Konfiguracja Dockera",
-                    "docker_version": "Wersja Dockera",
+                    "docker_configuration": "Konfiguracja dockera",
+                    "docker_version": "Wersja dockera",
                     "job_conditions": "Zignorowane warunki pracy",
                     "lxc": "LXC",
                     "network_manager": "Menedżer sieci",

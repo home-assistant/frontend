@@ -241,9 +241,9 @@
                 },
                 "ram_usage": "Utilizzo RAM componente aggiuntivo",
                 "rebuild": "ricostruisci",
-                "restart": "Riavvia",
+                "restart": "riavvia",
                 "start": "avvia",
-                "stop": "ferma",
+                "stop": "arresta",
                 "uninstall": "disinstalla",
                 "visit_addon_page": "Visita la pagina di {name} per maggiori dettagli"
             },
@@ -291,7 +291,7 @@
             "save": "Salva",
             "show_more": "Ulteriori informazioni al riguardo",
             "update": "Aggiorna",
-            "update_available": "{count, plural,\n  one {aggiornamento}\n  other {{count} aggiornamenti}\n} in sospeso",
+            "update_available": "{count, plural,\n  one {Aggiornamento}\n  other {{count} aggiornamenti}\n} in sospeso",
             "version": "Versione",
             "yes": "Sì"
         },

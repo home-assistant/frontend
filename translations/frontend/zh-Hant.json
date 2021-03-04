@@ -104,21 +104,206 @@
     },
     "supervisor": {
         "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "預設值",
+                    "header": "音效",
+                    "input": "輸入",
+                    "output": "輸出"
+                },
+                "network": {
+                    "container": "Container",
+                    "disabled": "已關閉",
+                    "header": "網路",
+                    "host": "主機"
+                },
+                "no_configuration": "此附加元件未公開設定以避免造成不正常工作...",
+                "options": {
+                    "edit_in_ui": "以 UI 編輯",
+                    "edit_in_yaml": "以 YAML 編輯",
+                    "header": "選項",
+                    "invalid_yaml": "YAML 無效",
+                    "show_unused_optional": "顯示未使用的設定選項"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "取得附加元件變更日誌失敗",
+                    "go_to_config": "啟動附加元件失敗 - 設定驗證失敗！",
+                    "install": "安裝附加元件失敗",
+                    "restart": "重啟附加元件失敗",
+                    "start": "啟動附加元件失敗",
+                    "start_invalid_config": "切換至設定",
+                    "stop": "停止附加元件失敗",
+                    "uninstall": "移除附加元件失敗",
+                    "validate_config": "附加元件設定驗證失敗"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') 為 Linux kernel 核心安全模組、限制了附加元件對於網路存取、原始封包存取與存取執行特定檔案的權限。\n\n附加元件作者可以提供其安全性設定檔、為附加元件最佳化、或者請求關閉。假如 AppArmor 關閉的話、將會提高安全風險，對於附加元件的安全評等得分也會有負面影響。",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "附加元件可通過 Home Assistant 驗證使用者、進而允許附加元件給予使用者、使用 Home Asssistant 使用者名稱/密碼以登入至附加元件執行中的應用程式。此標誌表示附加元件作者是否要求此存取權。",
+                        "title": "Home Assistant 認證"
+                    },
+                    "docker_api": {
+                        "description": "根據作者請求、此附加元件將具備系統 Docker 的管理者存取權限。此模式將具備整個 Home Assistant 系統的完全存取與控制權，增加安全風險、於不當使用下可能損害系統。因此、此功能將影響附加元件的安全評等分數。\n\n此程度存取將無法自動獲得，需要經過您的授權。欲進行此操作、需要手動關閉附加元件的保護模式。僅於您清楚知道、需要並信任此附加元件時才關閉。",
+                        "title": "Docker 完全存取"
+                    },
+                    "full_access": {
+                        "description": "根據作者的請求、此附加元件將具備系統硬體的完全存取權限。存取權與 Docker 中的特權模式相當。由於此功能提高了安全風險，將會影響附加元件的安全評等分數。\n\n此程度存取將無法自動獲得，需要經過您的授權。欲進行此操作、需要手動關閉附加元件的保護模式。僅於您清楚知道、需要並信任此附加元件時才關閉。",
+                        "title": "完全硬體存取"
+                    },
+                    "hassio_api": {
+                        "description": "根據作者的請求、此附加元將具備 Supervisor API 存取權。預設值、附加元件能夠存取系統的一般版本資訊。當附加元件請求 '管理者' 或 'admin' API 等級存取時，將可以獲得 Home Assistant 多個部份的控制權。此標誌表示該存取權、並將對於附加元件的安全評等得分也會有負面影響。",
+                        "title": "Supervisor API 存取"
+                    },
+                    "homeassistant_api": {
+                        "description": "此附加元件允許藉由 Home Assistant API 直接存取執行中的 Home Assistant 實例。此模式同時需處理附加元件的認證、開啟附加元件與 Home Assistant 無須額外認證權杖而進行互動。",
+                        "title": "Home Assistant API 存取"
+                    },
+                    "host_network": {
+                        "description": "附加元件通常於其獨立的網路層執行、避免存取主機作業系統的網路。在某些情況下、網路隔離可能限制附加元件提供其服務功能、因此附加元件作者可以解除其隔離、賦予附加元件對於主機的網路完全存取權。此狀況將給予附加元件更多的網路功能、但降低了其安全相。因此、使用類似附加元件選項時、安全評等將會降低。",
+                        "title": "主機網路"
+                    },
+                    "host_pid": {
+                        "description": "通常附加元件執行程序會隔離於所以其他系統的執行程序。根據作者的請求、此附加元件將擁有主機端系統執行程序的存取權、可允許附加元件於系統生成程序。此模式將具備整個 Home Assistant 系統的完全存取與控制權，增加安全風險、於不當使用下可能損害系統。因此、此功能將影響附加元件的安全評等分數。\n\n此程度存取將無法自動獲得，需要經過您的授權。欲進行此操作、需要手動關閉附加元件的保護模式。僅於您清楚知道、需要並信任此附加元件時才關閉。",
+                        "title": "主機處理命名空間"
+                    },
+                    "ingress": {
+                        "description": "此附加元件使用 Ingress 以加密內嵌其介面至 Home Assistant。",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "認證",
+                        "docker": "docker",
+                        "hardware": "硬體",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "主機",
+                        "host_pid": "主機 pid",
+                        "ingress": "ingress",
+                        "rating": "評等",
+                        "stage": "階段"
+                    },
+                    "rating": {
+                        "description": "Home Assistant 提供每一個附加元件安全性評等、指示使用此附加元件所可能產生風險等級。附加元件存取系統的程度越高、所獲得的分數越低，即可能增加安全風險。\n\n分數由 1 至 6。1 為最低分（被認為是最不安全與最高風險）、而 6 為最高分（被認為為最安全與最低風險）。",
+                        "title": "附加元件安全評等"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "備份",
+                        "default": "預設值",
+                        "homeassistant": "homeassistant",
+                        "manager": "管理員"
+                    },
+                    "stage": {
+                        "description": "附加元件可為下列三個階段：\n\n{icon_stable} **穩定**：此些附加元件可於正常使用。\n\n{icon_experimental} **實驗**：可能包含一些臭蟲、或者尚未完成。\n\n{icon_deprecated} **閒置**：附加元件已經不再有任何更新。",
+                        "title": "附加元件階段"
+                    }
+                },
+                "changelog": "變更日誌",
+                "cpu_usage": "附加元件 CPU 使用率",
+                "hostname": "主機名稱",
+                "install": "安裝",
+                "new_update_available": "{name} {version} 可供下載",
+                "not_available_arch": "此附加元件與裝置的處理器或裝置所安裝的作業系統不相容。",
+                "not_available_version": "正在執行 Home Assistant {core_version_installed} 版、欲更新此版本附加元件，至少需要 Home Assistan {core_version_needed} 版",
+                "open_web_ui": "開啟 web UI",
+                "option": {
+                    "auto_update": {
+                        "description": "當有新版本可使用時、自動更新附加元件",
+                        "title": "自動更新"
+                    },
+                    "boot": {
+                        "description": "於系統開機時，啟動附加元件",
+                        "title": "於啟動時開啟"
+                    },
+                    "ingress_panel": {
+                        "description": "新增附加元件至側邊欄",
+                        "title": "於側邊列顯示"
+                    },
+                    "protected": {
+                        "description": "阻擋來自附加元件的劇升系統存取",
+                        "title": "保護模式"
+                    },
+                    "watchdog": {
+                        "description": "假如當機時，將啟動附加元件",
+                        "title": "Watchdog"
+                    }
+                },
+                "protection_mode": {
+                    "content": "附加元件的保護模式已關閉！將給予附加元件對於整個系統的完全存取權、可能存在安全風險，當不當使用時可能導致系統受損。僅於您清楚知道、需要並信任此附加元件時才關閉。",
+                    "enable": "開啟保護模式",
+                    "title": "警告：保護模式已關閉！"
+                },
+                "ram_usage": "附加元件 RAM 使用率",
+                "rebuild": "重建",
+                "restart": "重啟",
+                "start": "開始",
+                "stop": "停止",
+                "uninstall": "移除",
+                "visit_addon_page": "參閱 {name} 頁面以獲得更詳細資訊"
+            },
+            "documentation": {
+                "get_documentation": "取得附加元件文件失敗，{error}"
+            },
+            "failed_to_reset": "重置附加元件設定失敗，{error}",
+            "failed_to_save": "儲存附加元件設定失敗，{error}",
+            "logs": {
+                "get_logs": "取得附加元件日誌失敗，{error}"
+            },
             "panel": {
                 "configuration": "設定",
                 "documentation": "相關文件",
                 "info": "資訊",
                 "log": "日誌"
+            },
+            "state": {
+                "installed": "附加元件已安裝",
+                "not_available": "無法於此系統使用附加元件",
+                "not_installed": "附加元件未安裝"
             }
         },
         "common": {
             "cancel": "取消",
+            "description": "說明",
+            "error": {
+                "unknown": "未知錯誤",
+                "update_failed": "更新失敗"
+            },
+            "failed_to_restart_name": "重啟{name}失敗",
+            "failed_to_update_name": "更新{name}失敗",
+            "learn_more": "了解更多",
+            "new_version_available": "新版本可供下載",
             "newest_version": "最新版本",
+            "no": "否",
+            "refresh": "更新",
             "release_notes": "發行說明",
+            "reload": "重新載入",
+            "reset_defaults": "重置為預設值",
+            "reset_options": "重置選項",
+            "restart": "重啟",
+            "restart_name": "重啟{name}",
+            "running_version": "目前執行為 {version} 版",
+            "save": "儲存",
+            "show_more": "顯示關於此更詳細資訊",
             "update": "更新",
-            "version": "版本"
+            "update_available": "{count, plural,\n  one {個更新}\n  other {{count} 個更新}\n}等候中",
+            "version": "版本",
+            "yes": "是"
         },
         "confirm": {
+            "reset_options": {
+                "text": "確定要重置所有選項？",
+                "title": "重置選項"
+            },
+            "restart": {
+                "text": "確定要重啟 {name}？",
+                "title": "重啟{name}"
+            },
             "update": {
                 "text": "確定要更新 {name} 至 {version} 版？",
                 "title": "更新 {name}"
@@ -131,11 +316,175 @@
             "addons": "附加元件",
             "no_addons": "目前似乎沒有安裝任何附加元件。點選下方附加元件商店以新增！"
         },
+        "dialog": {
+            "network": {
+                "connected_to": "已連線至 {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "已關閉",
+                "dns_servers": "DNS 伺服器",
+                "failed_to_change": "變更網路設定失敗",
+                "gateway": "閘道器位址",
+                "ip_netmask": "IP 位址/網路遮罩",
+                "open": "開放",
+                "scan_ap": "掃描 AP",
+                "static": "靜態",
+                "title": "網路設定",
+                "unsaved": "變更尚未儲存，假如變更頁面將會喪失變更。確定要繼續？",
+                "warning": "假如變更 Wi-Fi、IP 或閘道器位址，可能會失去連線！",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "新增登錄檔",
+                "add_registry": "新增登錄檔",
+                "failed_to_add": "新增登錄檔失敗",
+                "failed_to_remove": "移除登錄檔失敗",
+                "no_registries": "未設定登錄檔",
+                "password": "密碼",
+                "registry": "登錄檔",
+                "remove": "移除",
+                "title_add": "新增 Container 登錄檔",
+                "title_manage": "管理 Container 登錄檔",
+                "username": "使用者名稱"
+            },
+            "repositories": {
+                "add": "新增",
+                "remove": "移除",
+                "title": "管理附加元件儲存機制"
+            },
+            "restart_addon": {
+                "confirm_text": "重啟附加元件",
+                "text": "是否要套用變更重啟附加元件？"
+            },
+            "update": {
+                "create_snapshot": "於更新前製作 {name} 系統備份",
+                "snapshot": "系統備份",
+                "snapshotting": "製作 {name} 系統備份",
+                "updating": "更新 {name} 至 {version} 版"
+            }
+        },
+        "my": {
+            "error": "發生未知錯誤",
+            "faq_link": "Home Assistant 常見問答集",
+            "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
+        },
         "panel": {
             "dashboard": "主面板",
             "snapshots": "系統備份",
             "store": "附加元件商店",
             "system": "系統"
+        },
+        "snapshot": {
+            "addons": "附加元件",
+            "available_snapshots": "可用系統備份",
+            "could_not_create": "無法製作系統備份",
+            "create": "新增",
+            "create_blocked_not_running": "由於系統為 {state} 狀態，無法製作系統備份。",
+            "create_snapshot": "製作系統備份",
+            "description": "系統備份可供您快速的備份與還原 Home Assistant 所有資料。",
+            "enter_password": "請輸入密碼。",
+            "folder": {
+                "addons/local": "本地附加元件",
+                "homeassistant": "Home Assistant 設定",
+                "media": "媒體",
+                "share": "共享",
+                "ssl": "SSL"
+            },
+            "folders": "資料夾",
+            "full_snapshot": "全系統備份",
+            "name": "名稱",
+            "no_snapshots": "目前沒有任何系統備份",
+            "partial_snapshot": "部分系統備份",
+            "password": "密碼",
+            "password_protected": "密碼保護未顯示",
+            "password_protection": "密碼保護",
+            "security": "加密",
+            "type": "類型",
+            "upload_snapshot": "上傳系統備份"
+        },
+        "store": {
+            "missing_addons": "找不到附加元件？於個人頁面中開啟進階模式",
+            "no_results_found": "於 {repository} 找不到相符結果。",
+            "registries": "登錄檔",
+            "repositories": "儲存機制"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Core CPU 使用率",
+                "ram_usage": "Core RAM 使用率"
+            },
+            "host": {
+                "change": "變更",
+                "change_hostname": "變更主機名稱",
+                "confirm_reboot": "確定要重啟主機？",
+                "confirm_shutdown": "確定要關閉主機？",
+                "deployment": "部署方式",
+                "docker_version": "Docker 版本",
+                "emmc_lifetime_used": "已使用 eMMC 壽命",
+                "failed_to_get_hardware_list": "取得硬體列表失敗",
+                "failed_to_import_from_usb": "由 USB 匯入失敗",
+                "failed_to_reboot": "重啟主機失敗",
+                "failed_to_set_hostname": "設定主機名稱失敗",
+                "failed_to_shutdown": "關閉主機失敗",
+                "hardware": "硬體",
+                "hostname": "主機名稱",
+                "import_from_usb": "由 USB 匯入",
+                "ip_address": "IP 位址",
+                "new_hostname": "請輸入新主機名稱：",
+                "operating_system": "作業系統",
+                "reboot_host": "重啟主機",
+                "shutdown_host": "關閉主機",
+                "used_space": "已使用空間"
+            },
+            "log": {
+                "get_logs": "取得 {provider} 日誌失敗，{error}",
+                "log_provider": "日誌提供者"
+            },
+            "supervisor": {
+                "beta_backup": "請於啟用此功能前確定已經備份所有資料。",
+                "beta_join_confirm": "是否要加入測試版本測試？",
+                "beta_release_items": "包含測試版本：",
+                "beta_warning": "Beta 測試版本為供測試人員與所需人員使用、因此可能會有不穩定的狀況",
+                "channel": "頻道",
+                "cpu_usage": "Supervisor CPU 使用率",
+                "failed_to_reload": "重載 Supervisor 失敗",
+                "failed_to_set_option": "設定 Supervisor 選項失敗",
+                "failed_to_update": "更新 Supervisor 失敗",
+                "join_beta_action": "參與測試",
+                "join_beta_description": "取得 Home Assistant、Supervisor 與主機測試版",
+                "leave_beta_action": "退出測試",
+                "leave_beta_description": "取得 Home Assistant、Supervisor 與主機穩定更新版",
+                "ram_usage": "Supervisor RAM 使用率",
+                "reload_supervisor": "重新載入 Supervisor",
+                "share_diagnostics": "分享診斷資料",
+                "share_diagnostics_description": "分享當機回報與診斷資訊。",
+                "share_diagonstics_description": "是否要於 Supervisor 遭遇未知錯誤時、自動分享當機回報與診斷資訊？{line_break} 此些訊息將協助我們修正問題、所提供的資訊僅供 Home Assistant Core 團隊分析使用、將不會與其他人員共享。{line_break} 所提供的資料並不包含任何私人/敏感資訊，您可以於之後隨時關閉此設定。",
+                "share_diagonstics_title": "協助改進 Home Assistant",
+                "unhealthy_description": "執行不健康的安裝版本可能會導致問題。下方列表為安裝問題清單，點選連結以了解如何解決問題。",
+                "unhealthy_reason": {
+                    "docker": "Docker 環境未正常工作",
+                    "privileged": "Supervisor 不允許",
+                    "setup": "設定 Supervisor 失敗",
+                    "supervisor": "Supervisor 無法進行更新"
+                },
+                "unhealthy_title": "安裝版本不健康",
+                "unsupported_description": "執行不健康的安裝版本可能會導致問題。下方列表為安裝問題清單，點選連結以了解如何解決問題。",
+                "unsupported_reason": {
+                    "container": "已知造成問題的 Container",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker 設定",
+                    "docker_version": "Docker 版本",
+                    "job_conditions": "已忽略工作條件",
+                    "lxc": "LXC",
+                    "network_manager": "網路管理員",
+                    "os": "作業系統",
+                    "privileged": "Supervisor 不允許",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "所執行的安裝方式不支援",
+                "update_supervisor": "更新 Supervisor",
+                "warning": "警告"
+            }
         }
     },
     "ui": {

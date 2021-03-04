@@ -101,6 +101,39 @@
             "unknown": "알수없음"
         }
     },
+    "supervisor": {
+        "common": {
+            "cancel": "취소",
+            "failed_to_restart_name": "{name} 을(를) 다시 시작하지 못했습니다",
+            "restart_name": "{name} 다시 시작"
+        },
+        "confirm": {
+            "restart": {
+                "text": "{name} 을(를) 다시 시작하시겠습니까?",
+                "title": "{name} 다시 시작"
+            },
+            "update": {
+                "title": "{name} 업데이트"
+            }
+        },
+        "dialog": {
+            "repositories": {
+                "add": "추가하기",
+                "remove": "제거하기",
+                "title": "추가 기능 저장소 관리"
+            },
+            "restart_addon": {
+                "confirm_text": "추가 기능 다시 시작",
+                "text": "변경 사항과 함께 추가 기능을 다시 시작하시겠습니까?"
+            },
+            "update": {
+                "create_snapshot": "업데이트하기 전에 {name}의 스냅샷을 만들기",
+                "snapshot": "스냅샷",
+                "snapshotting": "{name} 스냅샷을 만드는 중",
+                "updating": "{name} 을(를) {version} 버전으로 업데이트 중"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "로그인 상태를 유지하시겠습니까?",
@@ -119,7 +152,7 @@
             },
             "automation": {
                 "last_triggered": "최근 트리거 됨",
-                "trigger": "실행"
+                "trigger": "동작 실행"
             },
             "camera": {
                 "not_available": "이미지 사용 불가"
@@ -199,7 +232,8 @@
             },
             "script": {
                 "cancel": "취소",
-                "cancel_multiple": "{number} 개 취소"
+                "cancel_multiple": "{number} 개 취소",
+                "run": "실행"
             },
             "service": {
                 "run": "실행"
@@ -296,13 +330,13 @@
         "components": {
             "area-picker": {
                 "add_dialog": {
-                    "add": "추가",
+                    "add": "추가하기",
                     "failed_create_area": "영역을 만들지 못했습니다.",
                     "name": "이름",
                     "text": "새로운 영역의 이름을 입력해주세요.",
-                    "title": "새로운 영역 추가"
+                    "title": "새로운 영역 추가하기"
                 },
-                "add_new": "새로운 영역 추가...",
+                "add_new": "새로운 영역 추가하기",
                 "area": "영역",
                 "clear": "지우기",
                 "show_areas": "영역 표시"
@@ -455,9 +489,9 @@
                 "service": "서비스"
             },
             "user-picker": {
-                "add_user": "사용자 추가",
+                "add_user": "사용자 추가하기",
                 "no_user": "사용자 없음",
-                "remove_user": "사용자 제거"
+                "remove_user": "사용자 제거하기"
             }
         },
         "dialogs": {
@@ -529,8 +563,8 @@
                     "unit_of_measurement": "측정 단위"
                 },
                 "input_select": {
-                    "add": "추가",
-                    "add_option": "옵션 추가",
+                    "add": "추가하기",
+                    "add_option": "옵션 추가하기",
                     "no_options": "아직 옵션이 없습니다.",
                     "options": "옵션"
                 },
@@ -571,7 +605,7 @@
                     "confirm_remove_text": "이 구성요소를 제거하시겠습니까?",
                     "confirm_remove_title": "구성요소를 제거하시겠습니까?",
                     "not_provided": "이 구성요소는 현재 사용할 수 없습니다. 기기의 남겨진 잔여 데이터 이거나 제거, 변경 또는 기능 장애가 있는 통합 구성요소일 수 있습니다.",
-                    "remove_action": "구성요소 제거",
+                    "remove_action": "구성요소 제거하기",
                     "remove_intro": "구성요소를 더 이상 사용하지 않는 경우, 이를 제거하여 정리할 수 있습니다."
                 },
                 "script": {
@@ -638,6 +672,7 @@
                         "scene": "씬",
                         "script": "스크립트",
                         "server_control": "서버 제어",
+                        "tag": "태그",
                         "users": "사용자",
                         "zone": "지역"
                     },
@@ -692,10 +727,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "이 기기를 통해 기기 추가",
+                    "add": "이 기기를 통해 기기 추가하기",
                     "clusters": "클러스터 관리",
                     "reconfigure": "기기 재설정",
-                    "remove": "기기 제거",
+                    "remove": "기기 제거하기",
                     "zigbee_information": "Zigbee 기기 서명"
                 },
                 "confirmations": {
@@ -794,8 +829,8 @@
                     },
                     "editor": {
                         "actions": {
-                            "add": "동작 추가",
-                            "delete": "삭제",
+                            "add": "동작 추가하기",
+                            "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "duplicate": "복제",
                             "header": "동작",
@@ -805,12 +840,12 @@
                             "type_select": "동작 유형",
                             "type": {
                                 "choose": {
-                                    "add_option": "옵션 추가",
+                                    "add_option": "옵션 추가하기",
                                     "conditions": "조건",
                                     "default": "기본 동작",
                                     "label": "선택",
                                     "option": "옵션 {number}",
-                                    "remove_option": "옵션 제거",
+                                    "remove_option": "옵션 제거하기",
                                     "sequence": "동작"
                                 },
                                 "condition": {
@@ -878,12 +913,12 @@
                             "no_inputs": "이 블루프린트에는 입력이 없습니다."
                         },
                         "conditions": {
-                            "add": "조건 추가",
-                            "delete": "삭제",
+                            "add": "조건 추가하기",
+                            "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "duplicate": "복제",
                             "header": "조건",
-                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 설정된 모든 조건이 충족되지 않으면 동작되지 않도록 사용할 수 있습니다.",
+                            "introduction": "조건은 선택 사항이며 자동화가 트리거 될 때 설정된 모든 조건이 충족되지 않으면 동작되지 않도록 할 수 있습니다.",
                             "learn_more": "조건에 대해 더 알아보기",
                             "name": "조건",
                             "type_select": "조건 유형",
@@ -982,8 +1017,8 @@
                         "move_up": "위로 이동",
                         "save": "저장하기",
                         "triggers": {
-                            "add": "트리거 추가",
-                            "delete": "삭제",
+                            "add": "트리거 추가하기",
+                            "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "duplicate": "복제",
                             "header": "트리거",
@@ -1424,8 +1459,11 @@
                     "description": "구성된 기기를 관리합니다",
                     "device_info": "기기 정보",
                     "device_not_found": "기기를 찾을 수 없습니다.",
+                    "disabled_by": {
+                        "config_entry": "구성 항목"
+                    },
                     "entities": {
-                        "add_entities_lovelace": "Lovelace 에 추가",
+                        "add_entities_lovelace": "Lovelace 에 추가하기",
                         "disabled_entities": "+{count} {count, plural,\n  one {비활성화 된 구성요소}\n  other {비활성화 된 구성요소}\n}",
                         "entities": "구성요소",
                         "hide_disabled": "비활성화 된 구성요소 숨김",
@@ -1487,7 +1525,7 @@
                         "introduction": "Home Assistant 는 구성요소의 식별을 위해 모든 구성요소에 고유한 레지스트리를 부여합니다. 각각의 구성요소들은 자신만의 고유한 구성요소 ID 를 가집니다.",
                         "introduction2": "구성요소 레지스트리를 사용하여 이름을 대체하거나 구성요소 ID 변경 또는 Home Assistant 에서 항목을 제거할 수 있습니다.",
                         "remove_selected": {
-                            "button": "선택된 구성요소 제거",
+                            "button": "선택된 구성요소 제거하기",
                             "confirm_partly_text": "선택한 {selected} 개의 구성요소 중 {removable} 개의 구성요소를 제거할 수 있습니다. 통합 구성요소가 더 이상 구성요소를 제공하지 않는 경우에만 구성요소를 제거할 수 있으며, 제거된 통합 구성요소의 구성요소를 제거하기 전에 Home Assistant 를 다시 시작해야 할 수 있습니다. 제거 가능한 구성요소를 제거하시겠습니까?",
                             "confirm_partly_title": "선택된 {number} {number, plural,\n  one { 개의 구성요소}\n  other { 개의 구성요소}\n} 만 제거할 수 있습니다.",
                             "confirm_text": "이러한 구성요소가 포함된 경우 Lovelace 구성 및 자동화에서 제거해야 합니다.",
@@ -1513,12 +1551,12 @@
                     "caption": "도우미",
                     "description": "자동화 구축에 도움이 되는 요소를 관리합니다",
                     "dialog": {
-                        "add_helper": "도우미 추가",
-                        "add_platform": "{platform} 추가",
+                        "add_helper": "도우미 추가하기",
+                        "add_platform": "{platform} 추가하기",
                         "create": "만들기"
                     },
                     "picker": {
-                        "add_helper": "도우미 추가",
+                        "add_helper": "도우미 추가하기",
                         "headers": {
                             "editable": "수정 가능",
                             "entity_id": "구성요소 ID",
@@ -1566,7 +1604,7 @@
                     "missing_zwave": "Z-Wave 구성 패널이 보이지 않으신가요? {integrations_page} 의 ZHA 항목으로 이동되었습니다."
                 },
                 "integrations": {
-                    "add_integration": "통합 구성요소 추가",
+                    "add_integration": "통합 구성요소 추가하기",
                     "attention": "주의 필요",
                     "caption": "통합 구성요소",
                     "config_entry": {
@@ -1670,8 +1708,8 @@
                             "dismiss": "닫기",
                             "edit_dashboard": "대시보드 편집",
                             "icon": "아이콘",
-                            "new_dashboard": "새로운 대시보드 추가",
-                            "remove_default": "이 기기에서 기본값으로 제거",
+                            "new_dashboard": "새로운 대시보드 추가하기",
+                            "remove_default": "이 기기에서 기본값으로 제거하기",
                             "require_admin": "관리자 전용",
                             "set_default": "이 기기에서 기본값으로 설정",
                             "show_sidebar": "사이드바에 표시",
@@ -1682,7 +1720,7 @@
                             "url_error_msg": "URL 은 - 를 포함해야 하며 _ 및 - 를 제외한 공백이나 특수 문자를 포함할 수 없습니다"
                         },
                         "picker": {
-                            "add_dashboard": "대시보드 추가",
+                            "add_dashboard": "대시보드 추가하기",
                             "headers": {
                                 "conf_mode": "구성 방법",
                                 "default": "기본값",
@@ -1703,7 +1741,7 @@
                             "create": "만들기",
                             "delete": "삭제",
                             "dismiss": "닫기",
-                            "new_resource": "새로운 리소스 추가",
+                            "new_resource": "새로운 리소스 추가하기",
                             "type": "리소스 유형",
                             "update": "업데이트",
                             "url": "URL",
@@ -1712,7 +1750,7 @@
                             "warning_text": "리소스를 추가하는 것은 위험할 수 있습니다. 리소스의 출처를 알고 신뢰할 수 있는지 확인해주세요. 잘못된 리소스는 시스템에 심각한 손상을 줄 수 있습니다."
                         },
                         "picker": {
-                            "add_resource": "새로운 리소스 추가",
+                            "add_resource": "새로운 리소스 추가하기",
                             "headers": {
                                 "type": "유형",
                                 "url": "URL"
@@ -1853,9 +1891,9 @@
                         "none_found": "OpenZWave 인스턴스를 찾을 수 없습니다. 이 상황이 잘못되었다고 생각되시면 OpenZWave 및 MQTT 설정을 확인하고 Home Assistant 가 MQTT 브로커와 통신할 수 있는지 확인해주세요."
                     },
                     "services": {
-                        "add_node": "노드 추가",
+                        "add_node": "노드 추가하기",
                         "cancel_command": "명령 취소",
-                        "remove_node": "노드 제거"
+                        "remove_node": "노드 제거하기"
                     }
                 },
                 "person": {
@@ -1897,13 +1935,13 @@
                     "editor": {
                         "default_name": "새로운 씬",
                         "devices": {
-                            "add": "기기 추가",
+                            "add": "기기 추가하기",
                             "delete": "기기 삭제",
                             "header": "기기",
                             "introduction": "씬에 포함시키려는 기기를 추가해주세요. 모든 기기를 이 씬에 원하는 상태로 설정해주세요."
                         },
                         "entities": {
-                            "add": "구성요소 추가",
+                            "add": "구성요소 추가하기",
                             "delete": "구성요소 삭제",
                             "device_entities": "기기에 속하는 구성요소를 추가하면 해당 기기가 추가됩니다.",
                             "header": "구성요소",
@@ -1919,7 +1957,7 @@
                         "unsaved_confirm": "변경된 내용을 저장하지 않았습니다. 이 페이지를 떠나시겠습니까?"
                     },
                     "picker": {
-                        "add_scene": "씬 추가",
+                        "add_scene": "씬 추가하기",
                         "delete_confirm": "이 씬을 삭제하시겠습니까?",
                         "delete_scene": "씬 삭제",
                         "edit_scene": "씬 편집",
@@ -1948,7 +1986,7 @@
                         "id": "구성요소 ID",
                         "id_already_exists": "ID 가 이미 존재합니다",
                         "id_already_exists_save_error": "고유한 ID 가 아니므로 이 스크립트를 저장할 수 없습니다. 다른 ID 를 선택하거나 자동생성하려면 비워두세요.",
-                        "introduction": "스크립트를 사용하여 동작의 시퀀스를 실행합니다.",
+                        "introduction": "스크립트를 사용하여 일련의 동작을 실행합니다.",
                         "link_available_actions": "사용가능한 동작에 대해 더 알아보기.",
                         "load_error_not_editable": "scripts.yaml 의 스크립트만 편집할 수 있습니다.",
                         "max": {
@@ -1969,7 +2007,7 @@
                         "sequence_sentence": "이 스크립트의 동작 시퀀스."
                     },
                     "picker": {
-                        "add_script": "스크립트 추가",
+                        "add_script": "스크립트 추가하기",
                         "duplicate": "복제",
                         "edit_script": "스크립트 편집",
                         "header": "스크립트 편집기",
@@ -2040,7 +2078,7 @@
                     }
                 },
                 "tag": {
-                    "add_tag": "태그 추가",
+                    "add_tag": "태그 추가하기",
                     "automation_title": "{name} 태그가 검색되었습니다",
                     "caption": "태그",
                     "confirm_remove": "{tag} 태그를 제거하시겠습니까?",
@@ -2088,7 +2126,7 @@
                         "change_password": "비밀번호 변경",
                         "confirm_user_deletion": "{name} 을(를) 삭제하시겠습니까?",
                         "deactivate_user": "사용자 비활성화",
-                        "delete_user": "사용자 삭제",
+                        "delete_user": "사용자 삭제하기",
                         "group": "그룹",
                         "id": "ID",
                         "name": "표시 이름",
@@ -2103,7 +2141,7 @@
                         "username": "사용자 이름"
                     },
                     "picker": {
-                        "add_user": "사용자 추가",
+                        "add_user": "사용자 추가하기",
                         "headers": {
                             "group": "그룹",
                             "is_active": "활성화",
@@ -2116,7 +2154,7 @@
                     "users_privileges_note": "사용자 그룹 기능은 현재 작업 중이며, 사용자는 UI 를 통해 인스턴스를 관리할 수 없습니다. 모든 사용자 관리 API 엔드포인트가 관리자에 대한 액세스를 올바르게 제한하는지를 확인하는 중입니다."
                 },
                 "zha": {
-                    "add_device": "기기 추가",
+                    "add_device": "기기 추가하기",
                     "add_device_page": {
                         "discovered_text": "기기가 발견되면 여기에 표시됩니다.",
                         "no_devices_found": "발견된 기기가 없습니다. 기기를 검색하는 동안 기기가 페어링 모드 상태이고 절전모드가 해제되어있는지 확인해주세요.",
@@ -2174,8 +2212,8 @@
                         "unbind_button_label": "그룹 바인딩 해제"
                     },
                     "groups": {
-                        "add_group": "그룹 추가",
-                        "add_members": "구성 기기 추가",
+                        "add_group": "그룹 추가하기",
+                        "add_members": "구성 기기 추가하기",
                         "caption": "그룹",
                         "create": "그룹 생성",
                         "create_group": "Zigbee Home Automation - 그룹 만들기",
@@ -2188,8 +2226,8 @@
                         "group_not_found": "그룹을 찾을 수 없습니다!",
                         "groups": "그룹",
                         "members": "구성 기기",
-                        "remove_members": "구성 기기 제거",
-                        "removing_members": "구성 기기 제거"
+                        "remove_members": "구성 기기 제거하기",
+                        "removing_members": "구성 기기 제거하기"
                     },
                     "network": {
                         "caption": "네트워크"
@@ -2200,7 +2238,7 @@
                     }
                 },
                 "zone": {
-                    "add_zone": "지역 추가",
+                    "add_zone": "지역 추가하기",
                     "caption": "지역",
                     "configured_in_yaml": "configuration.yaml 에서 구성된 지역은 UI 에서 편집할 수 없습니다.",
                     "confirm_delete": "이 지역을 삭제하시겠습니까?",
@@ -2268,7 +2306,7 @@
                         "true": "참"
                     },
                     "node_management": {
-                        "add_to_group": "그룹에 추가",
+                        "add_to_group": "그룹에 추가하기",
                         "entities": "이 노드의 구성요소",
                         "entity_info": "구성요소 정보",
                         "exclude_entity": "Home Assistant 에서 이 구성요소 제외",
@@ -2284,8 +2322,8 @@
                         "nodes_in_group": "이 그룹의 다른 노드:",
                         "pooling_intensity": "폴링 강도",
                         "protection": "보호",
-                        "remove_broadcast": "송출 제거",
-                        "remove_from_group": "그룹에서 제거",
+                        "remove_broadcast": "송출 제거하기",
+                        "remove_from_group": "그룹에서 제거하기",
                         "set_protection": "보호 설정"
                     },
                     "ozw_log": {
@@ -2296,8 +2334,8 @@
                         "tail": "로그의 끝 부분"
                     },
                     "services": {
-                        "add_node": "노드 추가",
-                        "add_node_secure": "노드 보안 추가",
+                        "add_node": "노드 추가하기",
+                        "add_node_secure": "노드 보안 추가하기",
                         "cancel_command": "명령 취소",
                         "heal_network": "네트워크 복구",
                         "heal_node": "노드 복구",
@@ -2305,8 +2343,8 @@
                         "print_node": "노드 출력",
                         "refresh_entity": "구성요소 새로고침",
                         "refresh_node": "노드 새로고침",
-                        "remove_failed_node": "실패한 노드 제거",
-                        "remove_node": "노드 제거",
+                        "remove_failed_node": "실패한 노드 제거하기",
+                        "remove_node": "노드 제거하기",
                         "replace_failed_node": "실패한 노드 교체",
                         "save_config": "구성 저장",
                         "soft_reset": "소프트 리셋",
@@ -2416,6 +2454,10 @@
                     "yaml_unsupported": "YAML 모드에서 Lovelace UI 를 사용하는 경우 이 기능은 사용할 수 없습니다."
                 },
                 "cards": {
+                    "actions": {
+                        "action_confirmation": "\"{action}\" 동작을 실행하시겠습니까?",
+                        "no_service": "실행할 서비스가 지정되지 않았습니다"
+                    },
                     "confirm_delete": "이 카드를 삭제하시겠습니까?",
                     "empty_state": {
                         "go_to_integrations_page": "통합 페이지로 이동하기.",
@@ -2439,7 +2481,7 @@
                         "header": "안전 모드 활성화"
                     },
                     "shopping-list": {
-                        "add_item": "항목 추가",
+                        "add_item": "항목 추가하기",
                         "checked_items": "선택한 항목",
                         "clear_items": "선택한 항목 삭제"
                     },
@@ -2716,7 +2758,7 @@
                         "title": "제목"
                     },
                     "edit_view": {
-                        "add": "뷰 추가",
+                        "add": "뷰 추가하기",
                         "delete": "뷰 삭제",
                         "edit": "뷰 편집",
                         "header": "구성 보기",
@@ -2778,7 +2820,7 @@
                         "header": "뷰 선택"
                     },
                     "suggest_card": {
-                        "add": "Lovelace UI 에 추가",
+                        "add": "Lovelace UI 에 추가하기",
                         "create_own": "다른 카드 선택",
                         "header": "제안 드리는 카드"
                     },
@@ -2829,7 +2871,7 @@
                 }
             },
             "mailbox": {
-                "delete_button": "삭제",
+                "delete_button": "삭제하기",
                 "delete_prompt": "이 메시지를 삭제하시겠습니까?",
                 "empty": "메시지가 존재하지 않습니다",
                 "playback_title": "메시지 재생"

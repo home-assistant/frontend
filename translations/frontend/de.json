@@ -104,20 +104,206 @@
     },
     "supervisor": {
         "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Standard",
+                    "header": "Audio",
+                    "input": "Audioeingang",
+                    "output": "Audioausgang"
+                },
+                "network": {
+                    "container": "Container",
+                    "disabled": "Deaktiviert",
+                    "header": "Netzwerk",
+                    "host": "Host"
+                },
+                "no_configuration": "Für dieses Add-on gibt es keine Konfiguration. Also nichts mit dem Du Dich herumschlagen musst...",
+                "options": {
+                    "edit_in_ui": "Mit der Benutzeroberfläche bearbeiten",
+                    "edit_in_yaml": "Als YAML bearbeiten",
+                    "header": "Optionen",
+                    "invalid_yaml": "Ungültige YAML",
+                    "show_unused_optional": "Nicht verwendete optionale Konfigurationsoptionen anzeigen"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "Add-On-Änderungsprotokoll konnte nicht abgerufen werden",
+                    "go_to_config": "Starten fehlgeschlagen - Validierung der Addon-Konfiguration nicht erfolgreich",
+                    "install": "Addon konnte nicht installiert werden",
+                    "restart": "Neustart des Addons fehlgeschlagen",
+                    "start": "Starten des Addon fehlgeschlagen",
+                    "start_invalid_config": "Zur Konfiguration gehen",
+                    "stop": "Stoppen des Addon fehlgeschlagen",
+                    "uninstall": "Addon konnte nicht deinstalliert werden",
+                    "validate_config": "Validierung der Addon-Konfiguration fehlgeschlagen"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') ist ein Linux-Kernel-Sicherheitsmodul, das Add-On-Funktionen wie Netzwerkzugriff, Raw-Socket-Zugriff und die Berechtigung zum Lesen, Schreiben oder Ausführen bestimmter Dateien einschränkt. \n\nAdd-On-Autoren können ihre Sicherheitsprofile bereitstellen, die für das Add-On optimiert sind, oder die Deaktivierung anfordern. Wenn AppArmor deaktiviert ist, erhöht dies das Sicherheitsrisiko und wirkt sich daher negativ auf die Sicherheitsbewertung des Add-Ons aus.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Ein Add-On kann Benutzer gegen Home Assistant authentifizieren, sodass Add-Ons Benutzern die Möglichkeit bieten, sich mit ihrem Home Assistant-Benutzernamen/-Kennwort bei Anwendungen anzumelden, die in Add-Ons ausgeführt werden. Dieses Abzeichen zeigt an, ob der Add-On-Autor diese Berechtigung anfordert.",
+                        "title": "Home Assistant-Authentifizierung"
+                    },
+                    "docker_api": {
+                        "description": "Der Add-On-Autor hat das Add-On angefordert, um Verwaltungszugriff auf die Docker-Instanz zu haben, die auf Deinem System ausgeführt wird. Dieser Modus gibt dem Add-On vollen Zugriff und Kontrolle auf Dein gesamtes Home Assistant-System, was Sicherheitsrisiken erhöht und Dein System beschädigen kann, wenn es missbraucht wird. Daher wirkt sich diese Funktion negativ auf den Add-On-Sicherheitsbewertung aus.\n\nDiese Zugriffsebene wird nicht automatisch gewährt und muss von Dir bestätigt werden. Dazu musst Du den Schutzmodus für das Add-On manuell deaktivieren. Deaktiviere den Schutzmodus nur, wenn Du es wirklich musst UND der Quelle dieses Add-Ons vertraust.",
+                        "title": "Vollständiger Docker-Zugriff"
+                    },
+                    "full_access": {
+                        "description": "Dieses Add-on erhält auf Wunsch des Add-On-Autors vollen Zugriff auf die Hardware Deines Systems. Der Zugriff ist mit dem privilegierten Modus in Docker vergleichbar. Da dies mögliche Sicherheitsrisiken eröffnet, wirkt sich diese Funktion negativ auf den Add-On-Sicherheitsbewertung aus.\n\nDiese Zugriffsebene wird nicht automatisch gewährt und muss von Dir bestätigt werden. Dazu musst Du den Schutzmodus für das Add-On manuell deaktivieren. Deaktiviere den Schutzmodus nur, wenn Du es wirklich musst UND der Quelle dieses Add-Ons vertraust.",
+                        "title": "Voller Hardware-Zugriff"
+                    },
+                    "hassio_api": {
+                        "description": "Dem Add-On wurde Zugriff auf die Supervisor-API gewährt, wie es der Add-On-Autors angefordert hat. Standardmäßig kann das Add-On auf allgemeine Versionsinformationen von Deinem System zugreifen. Wenn das Add-On Zugriff auf die API mit \"Manager\"- oder \"Admin\"-Rechten anfordert, erhält es Zugriff auf mehrere Teile Ihres Home Assistant-Systems. Diese Berechtigung wird durch dieses Badge angezeigt und wirkt sich negativ auf die Sicherheitsbewertung des Add-Ons aus.",
+                        "title": "Supervisor-API-Zugriff"
+                    },
+                    "homeassistant_api": {
+                        "description": "Dieses Add-On kann direkt über die Home Assistant-API auf Ihre ausgeführte Home Assistant-Instanz zugreifen. Dieser Modus behandelt auch die Authentifizierung für das Add-On, wodurch ein Add-On mit dem Home-Assistenten interagieren kann, ohne dass zusätzliche Authentifizierungstoken erforderlich sind.",
+                        "title": "Home Assistant API-Zugriff"
+                    },
+                    "host_network": {
+                        "description": "Add-Ons werden in der Regel auf ihrer eigenen isolierten Netzwerkschicht ausgeführt, wodurch sie daran gehindert werden, auf das Netzwerk des Hostbetriebssystems zuzugreifen. In einigen Fällen kann diese Netzwerkisolation, Add-Ons bei der Bereitstellung ihrer Dienste einschränken. Daher kann die Isolierung vom Add-On-Autor aufgehoben werden, sodass das Add-On vollen Zugriff auf die Netzwerkfunktionen Deines Hostcomputers hat. Dadurch erhält das Add-On mehr Netzwerkfunktionen, verringert jedoch die Sicherheit! Daher wird die Sicherheitsbewertung des Add-Ons verringert, wenn diese Option vom Add-On verwendet wird.",
+                        "title": "Host-Netzwerk"
+                    },
+                    "host_pid": {
+                        "description": "In der Regel sind die Prozesse, die das Add-On ausführt, von allen anderen Systemprozessen isoliert. Der Add-On-Autor hat das Add-On aufgefordert, einen Zugriff auf die auf der Hostsysteminstanz ausgeführten Systemprozesse zu haben und dem Add-On auch das Erstellen von Prozessen auf dem Hostsystem zu ermöglichen. Dieser Modus gibt dem Add-On vollen Zugriff und Kontrolle auf Ihr gesamtes Home Assistant-System, was Sicherheitsrisiken erhöht und Ihr System beschädigen kann, wenn es missbraucht wird. Daher wirkt sich diese Funktion negativ auf den Add-On-Sicherheitsbewertung aus.\n\nDiese Zugriffsebene wird nicht automatisch gewährt und muss von Dir bestätigt werden. Dazu musst Du den Schutzmodus für das Add-On manuell deaktivieren. Deaktiviere den Schutzmodus nur, wenn Du es wirklich musst UND der Quelle dieses Add-Ons vertraust.",
+                        "title": "Namespace für Host-Prozesse"
+                    },
+                    "ingress": {
+                        "description": "Dieses Addon verwendet Ingress, um seine Benutzeroberfläche sicher in Home Assistant einzubetten.",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "AppArmor",
+                        "auth": "genehmigen",
+                        "docker": "Docker",
+                        "hardware": "Hardware",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "Host",
+                        "host_pid": "Host-PID",
+                        "ingress": "Ingress",
+                        "rating": "Bewertung",
+                        "stage": "Phase"
+                    },
+                    "rating": {
+                        "description": "Home Assistant bietet eine Sicherheitsbewertung für jedes Add-On, welche die Risiken aufzeigen, die bei der Verwendung dieses Add-Ons verbunden sind. Je mehr Zugriff ein Add-On auf Ihr System benötigt, desto niedriger ist die Punktzahl, wodurch die möglichen Sicherheitsrisiken steigen.\n\nDie Punktzahl ist auf einer Skala von 1 bis 6. Wobei 1 die niedrigste Punktzahl ist (ein sehr unsichers Add-On mit dem höchsten Risiko) und eine Punktzahl von 6 die höchste Punktzahl ist (eines der sichersten Add-Ons mit dem und niedrigsten Risiko).",
+                        "title": "Addon-Sicherheitsbewertung"
+                    },
+                    "role": {
+                        "admin": "Administrator",
+                        "backup": "Sicherung",
+                        "default": "Standard",
+                        "homeassistant": "homeassistant",
+                        "manager": "Manager"
+                    },
+                    "stage": {
+                        "description": "Add-Ons können sich in einer von drei Phasen befinden:\n\n{icon_stable} **Stable**: Dies sind Add-Ons, die bereits vollstandig sind und Updates erhalten.\n\n{icon_experimental} **Experimentell**: Diese können Fehler enthalten und unvollendet sein.\n\n{icon_deprecated} **Veraltet**: Diese Add-Ons erhalten keine Updates mehr.",
+                        "title": "Addon Phase"
+                    }
+                },
+                "changelog": "Änderungsprotokoll",
+                "cpu_usage": "CPU Auslastung des Addons",
+                "hostname": "Hostname",
+                "install": "Installieren",
+                "new_update_available": "{name} {version} ist verfügbar",
+                "not_available_arch": "Dieses Add-On ist nicht mit dem Prozessor oder Betriebssystem deines Geräts kompatibel",
+                "not_available_version": "Du hast Home Assistant {core_version_installed} installiert, um auf diese Version des Add-ons zu aktualisieren, benötigst Du mindestens die Home Assistan Version {core_version_needed}.",
+                "open_web_ui": "Benutzeroberfläche öffnen",
+                "option": {
+                    "auto_update": {
+                        "description": "Automatisches Aktualisieren des Addons, wenn eine neue Version verfügbar ist",
+                        "title": "Automatische Updates"
+                    },
+                    "boot": {
+                        "description": "Das Add-On beim Systemstart starten",
+                        "title": "Beim booten starten"
+                    },
+                    "ingress_panel": {
+                        "description": "Addon zur Seitenleiste hinzufügen",
+                        "title": "In der Seitenleiste anzeigen "
+                    },
+                    "protected": {
+                        "description": "Blockiert den erhöhten Systemzugriff über das Addon",
+                        "title": "Gesicherter Modus"
+                    },
+                    "watchdog": {
+                        "description": "Dadurch wird das Addon gestartet, wenn es abstürzt",
+                        "title": "Crash-Detektor"
+                    }
+                },
+                "protection_mode": {
+                    "content": "Der Schutzmodus für dieses Add-On ist deaktiviert! Dadurch erhält das Add-On vollen Zugriff auf das gesamte System, was Sicherheitsrisiken mit sich bringt und Dein System bei unsachgemäßer Verwendung beschädigen kann. Deaktiviere den Schutzmodus nur, wenn Du die Quelle dieses Add-Ons kennst, dieses benötigst UND vertraust.",
+                    "enable": "Gesicherten Modus einschalten",
+                    "title": "Warnung: Der gesicherte modus ist deaktiviert!"
+                },
+                "ram_usage": "Arbeitsspeicherbedarfdes Addons",
+                "rebuild": "neu bauen",
+                "restart": "Neu starten",
+                "start": "Starten",
+                "stop": "Stoppen",
+                "uninstall": "Deinstallieren",
+                "visit_addon_page": "Weitere Informationen findest du auf der Seite {name}"
+            },
+            "documentation": {
+                "get_documentation": "Fehler beim Abrufen der Addon-Dokumentation, {error}"
+            },
+            "failed_to_reset": "Fehler beim Zurücksetzen der Add-On-Konfiguration, {error}",
+            "failed_to_save": "Fehler beim speichern der Add-On-Konfiguration, {error}",
+            "logs": {
+                "get_logs": "Fehler beim Abrufen der Add-On-Protokolle, {error}"
+            },
             "panel": {
                 "configuration": "Konfiguration",
                 "documentation": "Dokumentation",
                 "info": "Informationen",
                 "log": "Protokoll"
+            },
+            "state": {
+                "installed": "Add-On ist installiert",
+                "not_available": "Das Add-On ist auf Deinem System nicht verfügbar",
+                "not_installed": "Add-On ist nicht installiert"
             }
         },
         "common": {
             "cancel": "Abbrechen",
+            "description": "Beschreibung",
+            "error": {
+                "unknown": "Unbekannter Fehler",
+                "update_failed": "Update fehlgeschlagen"
+            },
+            "failed_to_restart_name": "Neustart von {name} fehlgeschlagen",
+            "failed_to_update_name": "Update von {name} fehlgeschlagen",
+            "learn_more": "Mehr Informationen",
+            "new_version_available": "Neue Version verfügbar",
             "newest_version": "Neueste Version",
+            "no": "Nein",
+            "refresh": "Neu laden",
             "release_notes": "Versionshinweise",
-            "update": "Aktualisieren"
+            "reload": "Neu laden",
+            "reset_defaults": "Auf Werkseinstellungen zurücksetzen",
+            "reset_options": "Optionen zum Zurücksetzen",
+            "restart": "Neustart",
+            "restart_name": "{name} neu starten",
+            "running_version": "Du hast aktuell Version {version}",
+            "save": "Speichern",
+            "show_more": "Zeige mehr Informationen",
+            "update": "Aktualisieren",
+            "update_available": "{count, plural,\n  one {Aktualisierung}\n  other {{count} Aktualisierungen}\n} ausstehend",
+            "version": "Version",
+            "yes": "Ja"
         },
         "confirm": {
+            "reset_options": {
+                "text": "Bist du dir sicher, alle Einstellungen zurückzusetzen?",
+                "title": "Optionen zum Zurücksetzen"
+            },
+            "restart": {
+                "text": "Bist du dir sicher, dass du {name} neu starten willst?",
+                "title": "Neustart von {name}"
+            },
             "update": {
                 "text": "Sind Sie sicher, dass Sie {name} auf Version {version} aktualisieren möchten?",
                 "title": "Aktualisiere {name}"
@@ -127,13 +313,178 @@
             "addon_new_version": "Neue Version verfügbar",
             "addon_running": "Add-on wird ausgeführt",
             "addon_stopped": "Add-on ist gestoppt",
+            "addons": "Add-Ons",
             "no_addons": "Sie haben noch keine Add-Ons installiert. Gehen Sie zum Add-on-Shop, um loszulegen!"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Verbunden mit {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Deaktiviert",
+                "dns_servers": "DNS-Server",
+                "failed_to_change": "Ändern der Netzwerkeinstellungen fehlgeschlagen",
+                "gateway": "Gateway-Adresse",
+                "ip_netmask": "IP-Adresse/Netzmaske",
+                "open": "Offen",
+                "scan_ap": "Nach Zugangspunkten suchen",
+                "static": "Statisch",
+                "title": "Netzwerkeinstellungen",
+                "unsaved": "Nicht gespeicherte Änderungen gehen beim Wechsel des Tabs verloren. Willst Du fortfahren?",
+                "warning": "Wenn du die WLAN-, IP- oder Gateway-Adressen änderst, verlierst du möglicherweise die Verbindung!",
+                "wep": "WEP",
+                "wpa": "WPA-PSK"
+            },
+            "registries": {
+                "add_new_registry": "Neue Registrierung hinzufügen",
+                "add_registry": "Registrierung hinzufügen",
+                "failed_to_add": "Fehler beim Hinzufügen der Registrierung",
+                "failed_to_remove": "Fehler beim Entfernen der Registrierung",
+                "no_registries": "Keine Registrierungen konfiguriert",
+                "password": "Passwort",
+                "registry": "Registrierung",
+                "remove": "Entfernen",
+                "title_add": "Neue Container-Registrierung hinzufügen",
+                "title_manage": "Verwalten von Container-Registrierungen",
+                "username": "Benutzername"
+            },
+            "repositories": {
+                "add": "Hinzufügen",
+                "remove": "Entfernen",
+                "title": "Add-on Repositorys verwalten"
+            },
+            "restart_addon": {
+                "confirm_text": "Add-on neu starten",
+                "text": "Möchtest du das Add-on mit deinen Änderungen neu starten?"
+            },
+            "update": {
+                "create_snapshot": "Erstellen eine Datensicherung von {name} vor der Aktualisierung",
+                "snapshot": "Datensicherung",
+                "snapshotting": "Erstelle Datensicherung für {name}",
+                "updating": "Aktualisieren von {name} auf Version {version}"
+            }
+        },
+        "my": {
+            "error": "Ein unbekannter Fehler ist aufgetreten",
+            "faq_link": "Häufig gestellten Fragen zu Home Assistant",
+            "not_supported": "Diese Weiterleitung wird von Deiner Home Assistant Instanz nicht unterstützt. Überprüfe mit diesem {link} welche Weiterleitungen unterstützt werden und ab welcher Version. "
         },
         "panel": {
             "dashboard": "Dashboard",
             "snapshots": "Datensicherungen",
             "store": "Add-on Shop",
             "system": "System"
+        },
+        "snapshot": {
+            "addons": "Add-Ons",
+            "available_snapshots": "Verfügbare Sicherungen",
+            "could_not_create": "Datensicherung konnte nicht erstellt werden",
+            "create": "Erstellen",
+            "create_blocked_not_running": "Das Erstellen eines Snapshots ist derzeit nicht möglich, da sich das System im Zustand {state} befindet.",
+            "create_snapshot": "Datensicherung erstellen",
+            "description": "Sicherungen ermöglichen dir das leichte Speichern und Wiederherstellen von allen Daten aus Home Assistant.",
+            "enter_password": "Bitte Passwort eingeben.",
+            "folder": {
+                "addons/local": "Lokale Add-Ons",
+                "homeassistant": "Home Assistant-Konfiguration",
+                "media": "Medien",
+                "share": "Freigaben",
+                "ssl": "SSL"
+            },
+            "folders": "Ordner",
+            "full_snapshot": "Vollständige Datensicherung",
+            "name": "Name",
+            "no_snapshots": "Du hast bisher keine Sicherungen erstellt.",
+            "partial_snapshot": "Selektive Datensicherung",
+            "password": "Passwort",
+            "password_protected": "Passwort geschützt",
+            "password_protection": "Passwortschutz",
+            "security": "Sicherheit",
+            "type": "Typ",
+            "upload_snapshot": "Datensicherung hochladen"
+        },
+        "store": {
+            "missing_addons": "Fehlende Addons? Aktiviere den erweiterten Modus auf deiner Benutzerprofilseite",
+            "no_results_found": "Keine Ergebnisse in {repository} gefunden",
+            "registries": "Einträge",
+            "repositories": "Repositories"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Core-CPU Auslastung",
+                "ram_usage": "Core-RAM Nutzung"
+            },
+            "host": {
+                "change": "Ändern",
+                "change_hostname": "Hostname ändern",
+                "confirm_reboot": "Bist du sicher, dass du den Host neu starten willst?",
+                "confirm_shutdown": "Bist du sicher, dass du den Host herunterfahren willst?",
+                "deployment": "Deployment",
+                "docker_version": "Docker-Version",
+                "emmc_lifetime_used": "eMMC Nutzung",
+                "failed_to_get_hardware_list": "Fehler beim Abrufen der Hardwareliste",
+                "failed_to_import_from_usb": "Fehler beim Importieren von USB",
+                "failed_to_reboot": "Fehler beim Neustart des Hosts",
+                "failed_to_set_hostname": "Das Setzen des Hostnamens ist fehlgeschlagen",
+                "failed_to_shutdown": "Fehler beim Herunterfahren des Hosts",
+                "hardware": "Hardware",
+                "hostname": "Hostname",
+                "import_from_usb": "Von USB importieren",
+                "ip_address": "IP-Adresse",
+                "new_hostname": "Bitte einen neuen Hostnamen eingeben:",
+                "operating_system": "Betriebssystem",
+                "reboot_host": "Host neustarten",
+                "shutdown_host": "Host herunterfahren",
+                "used_space": "Belegter Speicherplatz"
+            },
+            "log": {
+                "get_logs": "Fehler beim Abrufen der {provider} -Protokolle, {error}",
+                "log_provider": "Protokollanbieter"
+            },
+            "supervisor": {
+                "beta_backup": "Stelle sicher dass du Backups gemacht hast, bevor du diese Funktion aktivierst.",
+                "beta_join_confirm": "Möchtest du den Beta Kanal beitreten?",
+                "beta_release_items": "Das beinhaltet Beta-Versionen für:",
+                "beta_warning": "Beta-Versionen sind für Tester und Early Adopters gedacht und können instabile Codeänderungen enthalten",
+                "channel": "Kanal",
+                "cpu_usage": "CPU Auslastung von Supervisor",
+                "failed_to_reload": "Fehler beim Aktualisieren des Supervisor",
+                "failed_to_set_option": "Fehler beim Setzen einer Supervisor Option",
+                "failed_to_update": "Der Supervisor konnte nicht aktualisiert werden",
+                "join_beta_action": "Beta-Kanal beitreten",
+                "join_beta_description": "Erhalte Beta-Updates für Home Assistant (RCs), Supervisor und Host",
+                "leave_beta_action": "Beta Kanal verlassen",
+                "leave_beta_description": "Erhalte stabile Updates für Home Assistant, Supervisor und Host",
+                "ram_usage": "Arbeitsspeicherbedarf von Supervisor",
+                "reload_supervisor": "Supervisor neu starten",
+                "share_diagnostics": "Diagnose teilen",
+                "share_diagnostics_description": "Teile Absturzberichte und Diagnoseinformationen.",
+                "share_diagonstics_description": "Möchten Sie Absturzberichte und Diagnoseinformationen automatisch freigeben, wenn der Supervisor auf unerwartete Fehler stößt? {line_break} Auf diese Weise können wir die Probleme beheben. Die Informationen sind nur für das Home Assistant Core Team zugänglich und werden nicht an andere weitergegeben. {line_break} Die Daten enthalten keine privaten/sensiblen Informationen und Sie können diese jederzeit in den Einstellungen deaktivieren.",
+                "share_diagonstics_title": "Helfe Home Assistant zu verbessern",
+                "unhealthy_description": "Das Ausführen einer fehlerhaften Installation führt zu Problemen. Unten finden Sie eine Liste der Probleme, die bei Ihrer Installation aufgetreten sind. Klicke auf die Links, um zu erfahren, wie Du diese Probleme beheben kannst.",
+                "unhealthy_reason": {
+                    "docker": "Die Docker Umgebung arbeitet nicht fehlerfrei",
+                    "privileged": "Der Supervisor ist nicht berechtigt",
+                    "setup": "Die Einrichtung des Supervisors ist fehlgeschlagen",
+                    "supervisor": "Supervisor konnte nicht upgedated werden"
+                },
+                "unhealthy_title": "Deine Installation ist fehlerhaft",
+                "unsupported_description": "Unten finden Sie eine Liste der Probleme, die bei Ihrer Installation aufgetreten sind. Klicken Sie auf die Links, um zu erfahren, wie Sie die Probleme beheben können.",
+                "unsupported_reason": {
+                    "container": "Container, von denen bekannt ist, dass sie Probleme verursachen",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker Konfiguration",
+                    "docker_version": "Docker Version",
+                    "job_conditions": "Ignorierte Jobbedingungen",
+                    "lxc": "LXC",
+                    "network_manager": "Netzwerk Einstellungen",
+                    "os": "Betriebssystem",
+                    "privileged": "Der Supervisor ist nicht berechtigt",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "Deine Installation wird nicht unterstützt",
+                "update_supervisor": "Supervisor aktualisieren",
+                "warning": "WARNUNG"
+            }
         }
     },
     "ui": {
@@ -531,7 +882,7 @@
                 "add_device_id": "Gerät auswählen",
                 "add_entity_id": "Entität auswählen",
                 "expand_area_id": "Erweitere diesen Bereich in einzelne Geräte und Entitäten. Nach der Erweiterung werden die Geräte und Entitäten nicht aktualisiert, wenn sich der Bereich ändert.",
-                "expand_device_id": "Erweitern Sie dieses Gerät in separate Entitäten. Nach dem Erweitern werden die Entitäten nicht aktualisiert, wenn sich das Gerät ändert.",
+                "expand_device_id": "Erweitere dieses Gerät in separate Entitäten. Nach dem Erweitern werden die Entitäten nicht aktualisiert, wenn sich das Gerät ändert.",
                 "remove_area_id": "Bereich entfernen",
                 "remove_device_id": "Gerät entfernen",
                 "remove_entity_id": "Entität entfernen"
@@ -791,6 +1142,7 @@
                     "clusters": "Cluster verwalten",
                     "reconfigure": "Gerät neu konfigurieren",
                     "remove": "Gerät entfernen",
+                    "view_in_visualization": "Visualisierung in einer Map",
                     "zigbee_information": "ZigBee-Gerätesignatur"
                 },
                 "confirmations": {
@@ -2368,6 +2720,7 @@
                         "caption": "Visualisierung",
                         "header": "Netzwerkvisualisierung",
                         "highlight_label": "Geräte hervorheben",
+                        "refresh_topology": "Topologie aktualisieren",
                         "zoom_label": "Auf Gerät zoomen"
                     }
                 },
@@ -2402,11 +2755,15 @@
                 },
                 "zwave_js": {
                     "add_node": {
+                        "cancel_inclusion": "Erfassung abbrechen",
+                        "controller_in_inclusion_mode": "Ihr Z-Wave-Controller befindet sich jetzt im Erfassungs-Modus",
                         "follow_device_instructions": "Befolge die mit dem Gerät gelieferten Anweisungen, um die Kopplung am Gerät auszulösen.",
                         "inclusion_failed": "Der Knoten konnte nicht hinzugefügt werden. Bitte überprüfe die Protokolle für weitere Informationen.",
                         "inclusion_finished": "Der Knoten wurde hinzugefügt. Es kann einige Minuten dauern, bis alle Einheiten angezeigt werden, da der Knoten im Hintergrund fertig eingerichtet wird.",
                         "introduction": "Dieser Assistent führt dich durch das Hinzufügen eines Knotens zu deinem Z-Wave-Netzwerk.",
                         "secure_inclusion_warning": "Sichere Geräte benötigen zusätzliche Bandbreite; zu viele sichere Geräte können Ihr Z-Wave-Netzwerk ausbremsen. Wir empfehlen, die sichere Einbindung nur für Geräte zu verwenden, die sie benötigen, wie Schlösser oder Garagentoröffner.",
+                        "start_inclusion": "Starten der Erfassung",
+                        "start_secure_inclusion": "Starten der sicheren Erfassung",
                         "title": "Z-Wave-Knoten hinzufügen",
                         "use_secure_inclusion": "Sichere Einbindung verwenden",
                         "view_device": "Gerät anzeigen"
@@ -2455,10 +2812,13 @@
                         "unknown": "Unbekannt"
                     },
                     "remove_node": {
+                        "cancel_exclusion": "Entfernung von Geräten abbrechen",
+                        "controller_in_exclusion_mode": "Der Z-Wave controller befindet sich im modus zur Entfernung von Knoten",
                         "exclusion_failed": "Der Knoten konnte nicht entfernt werden. Bitte in den Logs nach mehr Informationen suchen.",
                         "exclusion_finished": "Der Knoten {id} wurde aus deinem Z-Wave-Netzwerk entfernt.",
                         "follow_device_instructions": "Befolge die mit dem Gerät gelieferten Anweisungen, um die Kopplung am Gerät auszulösen.",
                         "introduction": "Entferne einen Knoten aus deinem Z-Wave-Netzwerk und entferne die zugehörigen Geräte und Entitäten aus Home Assistant.",
+                        "start_exclusion": "Entfernung von Geräten starten",
                         "title": "Z-Wave-Knoten entfernen"
                     }
                 },
@@ -3038,6 +3398,7 @@
                         "error_remove": "Konfiguration konnte nicht entfernt werden: {error}",
                         "error_save_yaml": "YAML konnte nicht gespeichert werden: {error}",
                         "header": "Konfiguration bearbeiten",
+                        "lovelace_changed": "Die Lovelace-Konfiguration wurde aktualisiert. Möchtest Du die aktualisierte Konfiguration in den Editor laden und Deine aktuellen Änderungen verlieren?",
                         "reload": "Neu laden",
                         "resources_moved": "Ressourcen sollten nicht mehr zur Lovelace-Konfiguration hinzugefügt werden, sondern können im Lovelace-Konfigurationsfenster hinzugefügt werden.",
                         "save": "Speichern",
