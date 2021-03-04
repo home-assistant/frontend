@@ -17,6 +17,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
@@ -37,12 +38,9 @@ class HassioRepositoriesDialog extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ attribute: false }) private _repos: HassioAddonRepository[] = [];
-
-  @property({ attribute: false })
-  private _dialogParams?: HassioRepositoryDialogParams;
-
   @query("#repository_input", true) private _optionInput?: PaperInputElement;
+
+  @internalProperty() private _repositories?: HassioAddonRepository[];
 
   @internalProperty() private _opened = false;
 
@@ -53,9 +51,9 @@ class HassioRepositoriesDialog extends LitElement {
   public async showDialog(
     dialogParams: HassioRepositoryDialogParams
   ): Promise<void> {
-    this._dialogParams = dialogParams;
     this.supervisor = dialogParams.supervisor;
     this._opened = true;
+    await this._loadData();
     await this.updateComplete;
   }
 
@@ -71,9 +69,11 @@ class HassioRepositoriesDialog extends LitElement {
   );
 
   protected render(): TemplateResult {
-    const repositories = this._filteredRepositories(
-      this.supervisor.addon.repositories
-    );
+    if (this._repositories === undefined) {
+      return html`<ha-circular-progress alt="loading" size="large" active>
+      </ha-circular-progress>`;
+    }
+    const repositories = this._filteredRepositories(this._repositories);
     return html`
       <ha-dialog
         .open=${this._opened}
@@ -159,6 +159,11 @@ class HassioRepositoriesDialog extends LitElement {
         ha-paper-dropdown-menu {
           display: block;
         }
+        ha-circular-progress {
+          display: block;
+          margin: 32px;
+          text-align: center;
+        }
       `,
     ];
   }
@@ -179,13 +184,25 @@ class HassioRepositoriesDialog extends LitElement {
     this._addRepository();
   }
 
+  private async _loadData(): Promise<void> {
+    try {
+      const addonsinfo = await fetchHassioAddonsInfo(this.hass);
+
+      this._repositories = addonsinfo.repositories;
+
+      fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
+    } catch (err) {
+      this._error = extractApiErrorMessage(err);
+    }
+  }
+
   private async _addRepository() {
     const input = this._optionInput;
     if (!input || !input.value) {
       return;
     }
     this._prosessing = true;
-    const repositories = this._filteredRepositories(this._repos);
+    const repositories = this._filteredRepositories(this._repositories!);
     const newRepositories = repositories.map((repo) => {
       return repo.source;
     });
@@ -195,11 +212,7 @@ class HassioRepositoriesDialog extends LitElement {
       await setSupervisorOption(this.hass, {
         addons_repositories: newRepositories,
       });
-
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._repos = addonsInfo.repositories;
-
-      await this._dialogParams!.loadData();
+      await this._loadData();
 
       input.value = "";
     } catch (err) {
@@ -210,7 +223,7 @@ class HassioRepositoriesDialog extends LitElement {
 
   private async _removeRepository(ev: Event) {
     const slug = (ev.currentTarget as any).slug;
-    const repositories = this._filteredRepositories(this._repos);
+    const repositories = this._filteredRepositories(this._repositories!);
     const repository = repositories.find((repo) => {
       return repo.slug === slug;
     });
@@ -229,11 +242,7 @@ class HassioRepositoriesDialog extends LitElement {
       await setSupervisorOption(this.hass, {
         addons_repositories: newRepositories,
       });
-
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._repos = addonsInfo.repositories;
-
-      await this._dialogParams!.loadData();
+      await this._loadData();
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }
