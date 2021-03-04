@@ -1,4 +1,3 @@
-import type { StreamLanguage } from "@codemirror/stream-parser";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import {
   customElement,
