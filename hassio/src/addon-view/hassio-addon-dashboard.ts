@@ -178,8 +178,7 @@ class HassioAddonDashboard extends LitElement {
       if (requestedAddon) {
         const addonsInfo = await fetchHassioAddonsInfo(this.hass);
         const validAddon = addonsInfo.addons
-          .map((addon) => addon.slug)
-          .includes(requestedAddon);
+          .some((addon) => addon.slug === requestedAddon);
         if (!validAddon) {
           this._error = this.supervisor.localize("my.error_addon_not_found");
         } else {
