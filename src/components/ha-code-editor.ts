@@ -122,8 +122,11 @@ export class HaCodeEditor extends UpdatingElement {
         doc: this._value,
         extensions: [
           this._loadedCodeMirror.lineNumbers(),
+          this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
           this._loadedCodeMirror.history(),
           this._loadedCodeMirror.highlightSelectionMatches(),
+          this._loadedCodeMirror.highlightActiveLine(),
+          this._loadedCodeMirror.rectangularSelection(),
           this._loadedCodeMirror.keymap.of([
             ...this._loadedCodeMirror.defaultKeymap,
             ...this._loadedCodeMirror.searchKeymap,

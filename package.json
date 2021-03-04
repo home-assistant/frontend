@@ -28,6 +28,7 @@
     "@codemirror/highlight": "^0.18.1",
     "@codemirror/history": "^0.18.0",
     "@codemirror/legacy-modes": "^0.18.0",
+    "@codemirror/rectangular-selection": "^0.18.0",
     "@codemirror/search": "^0.18.0",
     "@codemirror/state": "^0.18.0",
     "@codemirror/stream-parser": "^0.18.0",

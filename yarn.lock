@@ -1989,6 +1989,15 @@
   dependencies:
     "@codemirror/state" "^0.18.0"
 
+"@codemirror/rectangular-selection@^0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@codemirror/rectangular-selection/-/rectangular-selection-0.18.0.tgz#87e1a4d319b5d55b4e97294e6df0070164e836c0"
+  integrity sha512-BQ4pp2zhXCVZNqct5LtLR3AOWVseENBF/3oOgBmwsCKH7c11NfTqIqgWG5EW8NLOXp8HP8cDm3np8eWez0VkGQ==
+  dependencies:
+    "@codemirror/state" "^0.18.0"
+    "@codemirror/text" "^0.18.0"
+    "@codemirror/view" "^0.18.0"
+
 "@codemirror/search@^0.18.0":
   version "0.18.0"
   resolved "https://registry.yarnpkg.com/@codemirror/search/-/search-0.18.0.tgz#aabb53d4678196e82309241753cd67403149e35d"

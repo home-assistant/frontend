@@ -6,13 +6,14 @@ import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import { indentLess, indentMore } from "@codemirror/commands";
 import { Compartment } from "@codemirror/state";
 
-export { keymap } from "@codemirror/view";
+export { keymap, highlightActiveLine } from "@codemirror/view";
 export { CMEditorView as EditorView };
 export { EditorState, Prec } from "@codemirror/state";
 export { defaultKeymap } from "@codemirror/commands";
 export { lineNumbers } from "@codemirror/gutter";
 export { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 export { history, historyKeymap } from "@codemirror/history";
+export { rectangularSelection } from "@codemirror/rectangular-selection";
 
 export const langs = {
   jinja2: StreamLanguage.define(jinja2),
