@@ -14,6 +14,7 @@ import { html, TemplateResult } from "lit-html";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import { navigate } from "../../../src/common/navigate";
 import "../../../src/common/search/search-input";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
@@ -139,6 +140,7 @@ class HassioAddonStore extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     const repositoryUrl = extractSearchParam("repository_url");
+    navigate(this, "/hassio/store", true);
     if (repositoryUrl) {
       this._manageRepositories(repositoryUrl);
     }
