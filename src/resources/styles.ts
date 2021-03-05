@@ -355,3 +355,12 @@ export const haStyleScrollbar = css`
     scrollbar-width: thin;
   }
 `;
+
+export const baseEntrypointStyles = css`
+  body {
+    background-color: var(--primary-background-color);
+    color: var(--primary-text-color);
+    height: calc(100vh - 32px);
+    width: 100vw;
+  }
+`;
