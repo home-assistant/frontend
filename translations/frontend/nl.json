@@ -102,6 +102,393 @@
             "unknown": "Onbekend"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Standaard",
+                    "header": "Audio",
+                    "input": "Invoer",
+                    "output": "Uitvoer"
+                },
+                "network": {
+                    "container": "Container",
+                    "disabled": "Uitgeschakeld",
+                    "header": "Netwerk",
+                    "host": "Host"
+                },
+                "no_configuration": "Deze add-on laat geen configuratie zien waar je mee kunt spelen..",
+                "options": {
+                    "edit_in_ui": "Bewerken in UI",
+                    "edit_in_yaml": "Bewerken in YAML",
+                    "header": "Opties",
+                    "invalid_yaml": "Ongeldige YAML",
+                    "show_unused_optional": "Ongebruikte optionele configuratieopties tonen"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "Mislukt om add-on changelog te krijgen",
+                    "go_to_config": "Kan de add-on niet starten - configuratie validatie mislukt!",
+                    "install": "De installatie van de add-on is mislukt",
+                    "restart": "Kan de add-on niet herstarten",
+                    "start": "Kan de add-on niet starten",
+                    "start_invalid_config": "Ga naar configuratie",
+                    "stop": "Kan add-on niet stoppen",
+                    "uninstall": "De installatie van de add-on is mislukt",
+                    "validate_config": "De configuratie van de add-on kon niet worden gevalideerd"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') is een beveiligingsmodule voor de Linux-kernel die de mogelijkheden van add-ons beperkt, zoals netwerktoegang, toegang tot raw socket, en toestemming om specifieke bestanden te lezen, te schrijven of uit te voeren.\n\nAuteurs van add-ons kunnen hun beveiligingsprofielen opgeven, geoptimaliseerd voor de add-on, of vragen om het uit te schakelen. Als AppArmor is uitgeschakeld, verhoogt dit de beveiligingsrisico's en heeft het dus een negatieve invloed op de beveiligingsscore van de add-on.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Een add-on kan gebruikers authenticeren tegen Home Assistant, waardoor add-ons gebruikers de mogelijkheid geven om in te loggen bij applicaties die draaien in add-ons, met hun Home Assistant gebruikersnaam/wachtwoord. Deze badge geeft aan of de auteur van de add-on deze mogelijkheid heeft aangevraagd.",
+                        "title": "Home Assistant Authenticatie"
+                    },
+                    "docker_api": {
+                        "description": "De auteur van de add-on heeft gevraagd of de add-on beheertoegang heeft tot de Docker-instantie die op uw systeem draait. Deze modus geeft de add-on volledige toegang en controle tot uw gehele Home Assistant-systeem, wat veiligheidsrisico's toevoegt en bij misbruik uw systeem kan beschadigen. Daarom heeft deze functie een negatieve invloed op de beveiligingsscore van de add-on.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de add-on handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
+                        "title": "Volledige Docker toegang"
+                    },
+                    "full_access": {
+                        "description": "Deze add-on krijgt volledige toegang tot de hardware van uw systeem, op verzoek van de auteur van de add-on. De toegang is vergelijkbaar met de bevoorrechte modus in Docker. Aangezien dit mogelijke veiligheidsrisico's met zich meebrengt, heeft deze eigenschap een negatieve invloed op de veiligheidsscore van de add-on.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen, moet u de beveiligingsmodus op de add-on handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
+                        "title": "Volledige hardware toegang"
+                    },
+                    "hassio_api": {
+                        "description": "De add-on heeft toegang gekregen tot de Supervisor API, op verzoek van de auteur van de add-on. Standaard heeft de add-on toegang tot algemene versie-informatie van uw systeem. Wanneer de add-on 'manager' of 'admin' niveau toegang tot de API aanvraagt, zal het toegang krijgen om meerdere delen van uw Home Assistant systeem te controleren. Deze toestemming wordt aangegeven met deze badge en zal de beveiligingsscore van de add-on negatief beïnvloeden.",
+                        "title": "Supervisor API Toegang"
+                    },
+                    "homeassistant_api": {
+                        "description": "Deze add-on heeft rechtstreeks toegang tot uw actieve Home Assistant-instantie via de Home Assistant API. Deze modus handelt ook de authenticatie voor de add-on af, waardoor een add-on kan communiceren met Home Assistant zonder de noodzaak van extra authenticatietokens.",
+                        "title": "Home Assistant API Toegang"
+                    },
+                    "host_network": {
+                        "description": "Add-ons draaien meestal in hun eigen geïsoleerde netwerklaag, waardoor ze geen toegang hebben tot het netwerk van het host-besturingssysteem. In sommige gevallen kan deze netwerkisolatie add-ons beperken in het leveren van hun diensten en daarom kan de isolatie worden opgeheven door de add-on-auteur, waardoor de add-on volledige toegang krijgt tot de netwerk mogelijkheden van de host-machine. Dit geeft de add-on meer netwerkmogelijkheden maar verlaagt de beveiliging, vandaar dat de beveiligingsclassificatie van de add-on zal worden verlaagd als deze optie door de add-on wordt gebruikt.",
+                        "title": "Hostnetwerk"
+                    },
+                    "host_pid": {
+                        "description": "Gewoonlijk zijn de processen die de add-on uitvoert, geïsoleerd van alle andere systeemprocessen. De auteur van de add-on heeft gevraagd of de add-on toegang heeft tot de systeemprocessen die op het hostsysteem draaien, en staat toe dat de add-on ook processen op het hostsysteem spawnt. Deze modus geeft de add-on volledige toegang tot en controle over uw gehele Home Assistant-systeem, wat veiligheidsrisico's toevoegt en bij misbruik uw systeem kan beschadigen. Daarom heeft deze functie een negatieve invloed op de add-on beveiligingsscore.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de add-on handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
+                        "title": "Host Processes Namespace"
+                    },
+                    "ingress": {
+                        "description": "Deze add-on maakt gebruik van Ingress om zijn interface veilig toe te passen in Home Assistant.",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "auth",
+                        "docker": "docker",
+                        "hardware": "hardware",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "host",
+                        "host_pid": "host pid",
+                        "ingress": "ingress",
+                        "rating": "beoordeling",
+                        "stage": "stadium"
+                    },
+                    "rating": {
+                        "description": "Home Assistant geeft een veiligheidsscore aan elke add-on, die aangeeft welke risico's het gebruik van deze add-on met zich meebrengt. Hoe meer toegang een add-on tot je systeem vereist, hoe lager de score, waardoor de mogelijke veiligheidsrisico's toenemen.\n\nEen score is op een schaal van 1 tot 6. Waarbij 1 de laagste score is (beschouwd als het meest onveilige en het grootste risico) en een score van 6 de hoogste score is (beschouwd als het meest veilige en het minste risico).",
+                        "title": "Add-on Veiligheidsbeoordeling"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "back-up",
+                        "default": "standaard",
+                        "homeassistant": "homeassistant",
+                        "manager": "manager"
+                    },
+                    "stage": {
+                        "description": "Add-ons kunnen een van de drie stadia hebben:\n\n{icon_stable} **Stabiel**: Dit zijn add-ons die klaar zijn om in productie gebruikt te worden.\n\n{icon_experimental} **Experimenteel**: Deze kunnen bugs bevatten, en kunnen onvoltooid zijn.\n\n{icon_deprecated} *Vervallen**: Deze add-ons zullen niet langer updates ontvangen.",
+                        "title": "Add-on stadium"
+                    }
+                },
+                "changelog": "Wijzigingsoverzicht",
+                "cpu_usage": "Add-on CPU-gebruik",
+                "hostname": "Hostnaam",
+                "install": "installeren",
+                "new_update_available": "{name} {version} is beschikbaar",
+                "not_available_arch": "Deze add-on is niet compatibel met de processor van uw apparaat of het besturingssysteem dat u op uw apparaat hebt geïnstalleerd.",
+                "not_available_version": "U draait Home Assistant {core_version_installed}. Om de add-on naar deze versie bij te werken dient u op zijn minst Home Assistant {core_version_needed} te hebben.",
+                "open_web_ui": "Open web UI",
+                "option": {
+                    "auto_update": {
+                        "description": "Update automatisch de add-on wanneer er een nieuwe versie beschikbaar is",
+                        "title": "Automatisch updaten"
+                    },
+                    "boot": {
+                        "description": "Laat de add-on starten tijdens het opstarten van het systeem",
+                        "title": "Start bij opstarten"
+                    },
+                    "ingress_panel": {
+                        "description": "Voeg deze add-on toe aan uw zijbalk",
+                        "title": "Weergeven in zijbalk"
+                    },
+                    "protected": {
+                        "description": "Blokkeert verhoogde systeem toegang van de add-on",
+                        "title": "Beschermingsmodus"
+                    },
+                    "watchdog": {
+                        "description": "Dit zal de add-on starten als deze crasht",
+                        "title": "Watchdog"
+                    }
+                },
+                "protection_mode": {
+                    "content": "Beschermingsmodus op deze add-on is uitgeschakeld! Dit geeft de add-on volledige toegang tot het hele systeem, wat veiligheidsrisico's toevoegt, en uw systeem kan beschadigen bij onjuist gebruik. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
+                    "enable": "Beveiligingsmodus inschakelen",
+                    "title": "Waarschuwing: Beschermingsmodus is uitgeschakeld!"
+                },
+                "ram_usage": "Add-on RAM-gebruik",
+                "rebuild": "Herbouw",
+                "restart": "herstarten",
+                "start": "start",
+                "stop": "stop",
+                "uninstall": "verwijderen",
+                "visit_addon_page": "Bezoek de {name} pagina voor meer details"
+            },
+            "documentation": {
+                "get_documentation": "Mislukt om add-on documentatie te krijgen, {error}"
+            },
+            "failed_to_reset": "Kan configuratie van add-on niet resetten, {error}",
+            "failed_to_save": "Mislukt om add-on configuratie op te slaan, {error}",
+            "logs": {
+                "get_logs": "Mislukt om add-on logs te krijgen, {error}"
+            },
+            "panel": {
+                "configuration": "Configuratie",
+                "documentation": "Documentatie",
+                "info": "Informatie",
+                "log": "Logboek"
+            },
+            "state": {
+                "installed": "Add-on is geïnstalleerd",
+                "not_available": "Add-on is niet beschikbaar op uw systeem",
+                "not_installed": "Add-on is niet geïnstalleerd"
+            }
+        },
+        "common": {
+            "cancel": "Annuleren",
+            "close": "Sluiten",
+            "description": "Omschrijving",
+            "error": {
+                "unknown": "Onbekende fout",
+                "update_failed": "Update mislukt"
+            },
+            "failed_to_restart_name": "Mislukt om {name} te herstarten",
+            "failed_to_update_name": "Mislukt om {name} bij te werken",
+            "learn_more": "Meer informatie",
+            "new_version_available": "Nieuwe versie beschikbaar",
+            "newest_version": "Nieuwste versie",
+            "no": "Nee",
+            "refresh": "Vernieuwen",
+            "release_notes": "Release-notities",
+            "reload": "Herlaad",
+            "reset_defaults": "Terugzetten naar standaardinstellingen",
+            "reset_options": "Reset opties",
+            "restart": "Herstart",
+            "restart_name": "Herstart {name}",
+            "running_version": "U gebruikt momenteel versie {version}",
+            "save": "Opslaan",
+            "show_more": "Toon meer informatie hierover",
+            "update": "Update",
+            "update_available": "{count, plural, one {Update} other {{count} Updates}} Wachtend",
+            "version": "Versie",
+            "yes": "Ja"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Weet u zeker dat u al uw opties opnieuw wilt instellen?",
+                "title": "Reset opties"
+            },
+            "restart": {
+                "text": "Weet u zeker dat u {name} opnieuw wilt starten?",
+                "title": "Herstart {name}"
+            },
+            "update": {
+                "text": "Weet u zeker dat u {name} wilt updaten naar versie {version}?",
+                "title": "Update {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Nieuwe versie beschikbaar",
+            "addon_running": "Add-on wordt uitgevoerd",
+            "addon_stopped": "Add-on is gestopt",
+            "addons": "Add-ons",
+            "no_addons": "Je hebt nog geen add-ons geïnstalleerd. Ga naar de add-on store om te beginnen!"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Verbonden met {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Uitgeschakeld",
+                "dns_servers": "DNS-servers",
+                "failed_to_change": "Kan de netwerkinstellingen niet wijzigen",
+                "gateway": "Gateway-adres",
+                "ip_netmask": "IP-adres/Netmask",
+                "open": "Open",
+                "scan_ap": "Scan voor toegangspunten",
+                "static": "Statisch",
+                "title": "Netwerkinstellingen",
+                "unsaved": "U heeft onopgeslagen wijzigingen, deze gaan verloren als u van tabblad verandert, wilt u doorgaan?",
+                "warning": "Als u het Wi-Fi, IP of gateway adres verandert, kunt u de verbinding verliezen!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Voeg een nieuw register toe",
+                "add_registry": "Voeg register toe",
+                "failed_to_add": "Mislukt om register toe te voegen",
+                "failed_to_remove": "Het is niet gelukt om het register te verwijderen",
+                "no_registries": "Geen registers geconfigureerd",
+                "password": "Wachtwoord",
+                "registry": "Register",
+                "remove": "Verwijderen",
+                "title_add": "Nieuwe container registratie toevoegen",
+                "title_manage": "Containerregisters beheren",
+                "username": "Gebruikersnaam"
+            },
+            "repositories": {
+                "add": "Toevoegen",
+                "remove": "Verwijder",
+                "title": "Beheer add-on opslagplaatsen"
+            },
+            "restart_addon": {
+                "confirm_text": "Herstart add-on",
+                "text": "Wilt u de add-on opnieuw starten met uw wijzigingen?"
+            },
+            "update": {
+                "create_snapshot": "Maak een snapshot van {name} voordat u gaat updaten",
+                "snapshot": "Snapshot",
+                "snapshotting": "Maak een snapshot van {name}",
+                "updating": "Bijwerken van {name} naar versie {version}"
+            }
+        },
+        "my": {
+            "error": "Er is een onbekende fout opgetreden",
+            "error_addon_not_found": "Add-on niet gevonden",
+            "faq_link": "My Home Assistant FAQ",
+            "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
+        },
+        "panel": {
+            "dashboard": "Dashboard",
+            "snapshots": "Snapshots",
+            "store": "Add-on Store",
+            "system": "Systeem"
+        },
+        "snapshot": {
+            "addons": "Add-ons",
+            "available_snapshots": "Beschikbare snapshots",
+            "could_not_create": "Kon geen snapshot maken",
+            "create": "Maak",
+            "create_blocked_not_running": "Het maken van een snapshot is nu niet mogelijk omdat het systeem in {state} staat.",
+            "create_snapshot": "Maak snapshot",
+            "description": "Met snapshots kunt u gemakkelijk een back-up maken van alle gegevens van uw Home Assistant en ze herstellen.",
+            "enter_password": "Voer een wachtwoord in.",
+            "folder": {
+                "addons/local": "Lokale add-ons",
+                "homeassistant": "Home Assistant configuratie",
+                "media": "Media",
+                "share": "Deel",
+                "ssl": "SSL"
+            },
+            "folders": "Mappen",
+            "full_snapshot": "Volledige snapshot",
+            "name": "Naam",
+            "no_snapshots": "Je hebt nog geen snapshots.",
+            "partial_snapshot": "Gedeeltelijke snapshot",
+            "password": "Wachtwoord",
+            "password_protected": "beveiligd met wachtwoord",
+            "password_protection": "Wachtwoord bescherming",
+            "security": "Beveiliging",
+            "type": "Type",
+            "upload_snapshot": "Upload snapshot"
+        },
+        "store": {
+            "missing_addons": "Mis je de add-ons? Schakel de geadvanceerde modus in op uw gebruikersprofielpagina",
+            "no_results_found": "Geen resultaten gevonden in {repository}.",
+            "registries": "Registers",
+            "repositories": "Opslagplaatsen"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Core CPU-gebruik",
+                "ram_usage": "Core RAM-gebruik"
+            },
+            "host": {
+                "change": "Verander",
+                "change_hostname": "Hostnaam wijzigen",
+                "confirm_reboot": "Weet u zeker dat u de host opnieuw wilt opstarten?",
+                "confirm_shutdown": "Weet je zeker dat je de host wilt afsluiten?",
+                "deployment": "Implementatie",
+                "docker_version": "Docker versie",
+                "emmc_lifetime_used": "eMMC Levensduur Gebruikt",
+                "failed_to_get_hardware_list": "Kan geen hardware lijst krijgen",
+                "failed_to_import_from_usb": "Importeren vanaf USB mislukt",
+                "failed_to_reboot": "Kan de host niet herstarten",
+                "failed_to_set_hostname": "Instellen hostnaam mislukt",
+                "failed_to_shutdown": "Het is niet gelukt om de host af te sluiten",
+                "hardware": "Hardware",
+                "hostname": "Hostnaam",
+                "import_from_usb": "Importeren van USB",
+                "ip_address": "IP-adres",
+                "new_hostname": "Voer een nieuwe hostnaam in:",
+                "operating_system": "Besturingssysteem",
+                "reboot_host": "Host opnieuw opstarten",
+                "shutdown_host": "Host afsluiten",
+                "used_space": "Gebruikte ruimte"
+            },
+            "log": {
+                "get_logs": "Mislukt om {provider} logs te krijgen, {error}",
+                "log_provider": "Logboekprovider"
+            },
+            "supervisor": {
+                "beta_backup": "Zorg ervoor dat u back-ups van uw gegevens hebt voordat u deze functie activeert.",
+                "beta_join_confirm": "Wil je meedoen met de bèta releases?",
+                "beta_release_items": "Dit omvat beta releases voor:",
+                "beta_warning": "Beta-releases zijn voor testers en early adopters en kunnen onstabiele codewijzigingen bevatten",
+                "channel": "Kanaal",
+                "cpu_usage": "Supervisor CPU-gebruik",
+                "failed_to_reload": "Het is niet gelukt de Supervisor te herladen",
+                "failed_to_set_option": "Mislukt om Supervisor-optie in te stellen",
+                "failed_to_update": "Het is niet gelukt om de Supervisor bij te werken",
+                "join_beta_action": "Word lid van het beta-kanaal",
+                "join_beta_description": "Ontvang beta-updates voor Home Assistant (RC's), Supervisor en host",
+                "leave_beta_action": "Verlaat beta-kanaal",
+                "leave_beta_description": "Krijg stabiele updates voor Home Assistant, Supervisor en host",
+                "ram_usage": "Supervisor RAM-gebruik",
+                "reload_supervisor": "Herlaad de Supervisor",
+                "share_diagnostics": "Diagnostische gegevens delen",
+                "share_diagnostics_description": "Deel crash rapporten en diagnostische informatie.",
+                "share_diagonstics_description": "Zou je automatisch crash rapporten en diagnostische informatie willen delen wanneer de Supervisor onverwachte fouten tegenkomt? {line_break} Dit stelt ons in staat om de problemen op te lossen, de informatie is alleen toegankelijk voor het Home Assistant Core team en zal niet met anderen gedeeld worden.{line_break} De gegevens bevatten geen privé/gevoelige informatie en u kunt dit in de instellingen op elk gewenst moment uitschakelen.",
+                "share_diagonstics_title": "Help Home Assistant te verbeteren",
+                "unhealthy_description": "Het draaien van een onvolledige installatie zal problemen veroorzaken. Hieronder vindt u een lijst met problemen die gevonden zijn met uw installatie, klik op de links om te leren hoe u de problemen kunt oplossen.",
+                "unhealthy_reason": {
+                    "docker": "De Docker omgeving werkt niet goed",
+                    "privileged": "Supervisor heeft niet voldoende toegang",
+                    "setup": "Setup van de Supervisor mislukt",
+                    "supervisor": "Supervisor kon niet updaten"
+                },
+                "unhealthy_title": "Uw installatie is niet volledig",
+                "unsupported_description": "Hieronder vindt u een lijst met problemen die bij uw installatie zijn aangetroffen. Klik op de links om te zien hoe u de problemen kunt oplossen.",
+                "unsupported_reason": {
+                    "container": "Containers waarvan bekend is dat ze problemen veroorzaken",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker Configuratie",
+                    "docker_version": "Docker versie",
+                    "job_conditions": "Genegeerde taakvoorwaarden",
+                    "lxc": "LXC",
+                    "network_manager": "Netwerkmanager",
+                    "os": "Besturingssysteem",
+                    "privileged": "Supervisor heeft niet voldoende toegang",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "U gebruikt een niet-ondersteunde installatie",
+                "update_supervisor": "Supervisor updaten",
+                "warning": "WAARSCHUWING"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Wil je ingelogd blijven?",
@@ -200,7 +587,8 @@
             },
             "script": {
                 "cancel": "Annuleer",
-                "cancel_multiple": "Annuleer {number}"
+                "cancel_multiple": "Annuleer {number}",
+                "run": "Uitvoeren"
             },
             "service": {
                 "run": "Uitvoeren"
@@ -376,6 +764,8 @@
                     "changed_to_state": "gewijzigd in {state}",
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
                     "detected_device_class": "{device_class} gedetecteerd",
+                    "is_closing": "aan het sluiten",
+                    "is_opening": "Aan het openen",
                     "rose": "opkomst",
                     "set": "ondergang",
                     "turned_off": "is uitgeschakeld",
@@ -479,6 +869,12 @@
                     "second": "{count} {count, plural,\n  one {seconde}\n  other {seconden}\n} geleden",
                     "week": "{count} {count, plural,\n  one {week}\n  other {weken}\n} geleden"
                 }
+            },
+            "service-control": {
+                "required": "Dit veld is verplicht",
+                "service_data": "Service data",
+                "target": "Doelen",
+                "target_description": "Wat moet deze dienst gebruiken als doelgebieden, apparaten of entiteiten."
             },
             "service-picker": {
                 "service": "Service"
@@ -617,6 +1013,9 @@
                 "person": {
                     "create_zone": "Creëer zone van huidige locatie"
                 },
+                "remote": {
+                    "activity": "Huidige activiteit"
+                },
                 "restored": {
                     "confirm_remove_text": "Weet je zeker dat je dit item wilt verwijderen?",
                     "confirm_remove_title": "Entiteit verwijderen?",
@@ -626,7 +1025,7 @@
                 },
                 "script": {
                     "last_action": "Laatste actie",
-                    "last_triggered": "Voor het laatst uitgevoerd"
+                    "last_triggered": "Laatst geactiveerd"
                 },
                 "settings": "Entiteit instellingen",
                 "sun": {
@@ -689,7 +1088,7 @@
                         "scene": "Scènes",
                         "script": "Scripts",
                         "server_control": "Server Controls",
-                        "tags": "Tags",
+                        "tag": "Tags",
                         "users": "Gebruikers",
                         "zone": "Zones"
                     },
@@ -748,6 +1147,7 @@
                     "clusters": "Clusters beheren",
                     "reconfigure": "Apparaat opnieuw configureren",
                     "remove": "Verwijder apparaat",
+                    "view_in_visualization": "Bekijk in Visualisatie",
                     "zigbee_information": "Zigbee-apparaathandtekening"
                 },
                 "confirmations": {
@@ -785,7 +1185,7 @@
                 "editor_not_supported": "Visuele editor wordt niet ondersteund voor deze configuratie",
                 "error_detected": "Configuratiefouten ontdekt",
                 "key_missing": "Verplichte sleutel \"{key}\" ontbreekt.",
-                "key_not_expected": "Sleutel \" {key} \" wordt niet verwacht of wordt niet ondersteund door de visuele editor.",
+                "key_not_expected": "Sleutel \"{key}\" wordt niet verwacht of ondersteund door de visuele editor.",
                 "key_wrong_type": "De opgegeven waarde voor \" {key} \" wordt niet ondersteund door de visuele editor. We ondersteunen ( {type_correct} ) maar hebben ( {type_wrong} ) ontvangen.",
                 "no_type_provided": "Geen type opgegeven."
             }
@@ -1285,7 +1685,7 @@
                         "tts": {
                             "default_language": "Standaardtaal om te gebruiken",
                             "dialog": {
-                                "example_message": "Hallo {naam}, je kunt elke tekst afspelen op elke ondersteunde mediaspeler!",
+                                "example_message": "Hallo {name}, je kunt elke tekst afspelen op elke ondersteunde mediaspeler!",
                                 "header": "Probeer Tekst naar Spraak",
                                 "play": "Speel",
                                 "target": "Doel",
@@ -1492,7 +1892,7 @@
                     "cant_edit": "Je kunt alleen items bewerken die in de gebruikersinterface zijn gemaakt.",
                     "caption": "Apparaten",
                     "confirm_delete": "Weet je zeker dat je dit apparaat wilt verwijderen?",
-                    "confirm_disable_config_entry": "Er zijn geen apparaten meer voor de config entry {entry_name}, wil je in plaats daarvan de config entry uitschakelen?",
+                    "confirm_disable_config_entry": "Er zijn geen apparaten meer voor deze configuratie {entry_name}, wil je in plaats daarvan deze configuratie uitschakelen?",
                     "confirm_rename_entity_ids": "Wil je ook de entiteits-ID's van je entiteiten hernoemen?",
                     "confirm_rename_entity_ids_warning": "Dit zal geen enkele configuratie wijzigen (zoals automatiseringen, scripts, scènes, dashboards) die momenteel deze entiteiten gebruikt! U moet ze zelf bijwerken om de nieuwe entiteits-ID's te gebruiken!",
                     "data_table": {
@@ -1510,7 +1910,7 @@
                     "device_not_found": "Apparaat niet gevonden.",
                     "disabled": "Uitgeschakeld",
                     "disabled_by": {
-                        "config_entry": "Configuratie-invoer",
+                        "config_entry": "Configuratie-item",
                         "integration": "Integratie",
                         "user": "Gebruiker"
                     },
@@ -1722,7 +2122,7 @@
                         "loading_first_time": "Even geduld a.u.b. terwijl de integratie wordt geïnstalleerd",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
                         "pick_flow_step": {
-                            "new_flow": "Nee, zet een andere instantie van {integratie} op",
+                            "new_flow": "Nee, zet een andere instantie van {integration} op",
                             "title": "We hebben deze ontdekt. Wil je ze instellen?"
                         },
                         "submit": "Opslaan"
@@ -2165,7 +2565,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Tag toevoegen",
                     "automation_title": "Tag {name} is gescand",
                     "caption": "Tags",
@@ -2325,6 +2725,7 @@
                         "caption": "Visualisatie",
                         "header": "Netwerkvisualisatie",
                         "highlight_label": "Markeer Apparaten",
+                        "refresh_topology": "Topologie vernieuwen",
                         "zoom_label": "Zoom naar apparaat"
                     }
                 },
@@ -2359,11 +2760,17 @@
                 },
                 "zwave_js": {
                     "add_node": {
+                        "cancel_inclusion": "Opname annuleren",
+                        "controller_in_inclusion_mode": "Uw Z-Wave controller bevindt zich nu in de opnamemodus.",
                         "follow_device_instructions": "Volg de aanwijzingen die bij het apparaat zijn geleverd om de koppeling van het apparaat te activeren.",
                         "inclusion_failed": "Het knooppunt kon niet worden toegevoegd. Controleer de logs voor meer informatie.",
                         "inclusion_finished": "Het knooppunt is toegevoegd. Het kan een paar minuten duren voordat alle entiteiten zichtbaar zijn, omdat we het opzetten van het knooppunt op de achtergrond afwerken.",
                         "introduction": "Deze wizard begeleidt u bij het toevoegen van een knooppunt aan uw Z-Wave netwerk.",
+                        "secure_inclusion_warning": "Beveiligde apparaten vereisen extra bandbreedte; te veel beveiligde apparaten kunnen uw Z-Wave-netwerk vertragen. We raden aan om alleen veilige opname te gebruiken voor apparaten die dat vereisen, zoals sloten of garagedeuropeners.",
+                        "start_inclusion": "Start Opname",
+                        "start_secure_inclusion": "Start Veilige Opname",
                         "title": "Voeg een Z-Wave knooppunt toe",
+                        "use_secure_inclusion": "Gebruik veilige opname",
                         "view_device": "Bekijk apparaat"
                     },
                     "button": "Configureer",
@@ -2411,8 +2818,10 @@
                     },
                     "remove_node": {
                         "cancel_exclusion": "Uitsluiting annuleren",
+                        "controller_in_exclusion_mode": "Uw Z-Wave controller bevindt zich nu in de uitsluitingsmodus.",
                         "exclusion_failed": "Het knooppunt kon niet worden verwijderd. Controleer de logboeken voor meer informatie.",
                         "exclusion_finished": "Knooppunt {id} is verwijderd uit het Z-Wave-netwerk.",
+                        "follow_device_instructions": "Volg de instructies die bij uw apparaat zijn geleverd om uitsluiting op het apparaat te activeren.",
                         "introduction": "Verwijder een knooppunt uit uw Z-Wave-netwerk en verwijder het gekoppelde apparaat met bijbehorende entiteiten uit Home Assistant.",
                         "start_exclusion": "Start uitsluiting",
                         "title": "Een Z-Wave Node verwijderen"
@@ -2617,7 +3026,7 @@
                         "no_entity_more_info": "Geen entiteit voorzien voor meer info dialoog",
                         "no_entity_toggle": "Geen entiteit opgegeven om te schakelen",
                         "no_navigation_path": "Geen navigatiepad opgegeven",
-                        "no_service": "Geen service voor uitvoering opgegeven",
+                        "no_service": "Geen service geselecteerd",
                         "no_url": "Geen URL om te openen opgegeven"
                     },
                     "confirm_delete": "Weet je zeker dat je deze kaart wilt verwijderen?",
@@ -2994,6 +3403,8 @@
                         "error_remove": "Kan configuratie niet verwijderen: {error}",
                         "error_save_yaml": "Kan YAML niet opslaan: {error}",
                         "header": "Configuratie bewerken",
+                        "lovelace_changed": "De Lovelace configuratie is bijgewerkt, wil je de bijgewerkte configuratie in de editor laden en je huidige wijzigingen verliezen?",
+                        "reload": "Herlaad",
                         "resources_moved": "Bronnen moeten niet langer worden toegevoegd aan de Lovelace-configuratie, maar kunnen worden toegevoegd in het Lovelace-configuratiepaneel.",
                         "save": "Opslaan",
                         "saved": "Opgeslagen",
@@ -3080,8 +3491,10 @@
                 "playback_title": "Bericht afspelen"
             },
             "my": {
+                "component_not_loaded": "Deze omleiding wordt niet ondersteund door uw Home Assistant-instantie. U heeft de integratie {integration} nodig om deze omleiding te gebruiken.",
                 "documentation": "documentatie",
                 "error": "Er is een onbekende fout opgetreden",
+                "faq_link": "My Home Assistant FAQ",
                 "no_supervisor": "Deze omleiding wordt niet ondersteund door uw Home Assistant-installatie. Het vereist ofwel het Home Assistant besturingssysteem of de Home Assistant gecontroleerde installatiemethode. Voor meer informatie, zie de {docs_link}.",
                 "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
             },

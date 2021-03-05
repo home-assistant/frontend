@@ -1280,7 +1280,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Pievienot birku",
                     "automation_title": "Birka {name} ir noskenēta",
                     "caption": "Birkas",

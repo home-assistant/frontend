@@ -102,6 +102,231 @@
             "unknown": "Nezjištěno"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Výchozí",
+                    "header": "Zvuk",
+                    "input": "Vstup",
+                    "output": "Výstup"
+                },
+                "network": {
+                    "disabled": "Zakázáno",
+                    "header": "Síť",
+                    "host": "Hostitel"
+                },
+                "options": {
+                    "edit_in_ui": "Upravit v uživatelském rozhraní",
+                    "edit_in_yaml": "Upravit přímo YAML",
+                    "header": "Možnosti",
+                    "invalid_yaml": "Neplatný YAML"
+                }
+            },
+            "dashboard": {
+                "capability": {
+                    "apparmor": {
+                        "title": "AppArmor"
+                    },
+                    "label": {
+                        "docker": "docker",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "hostitel"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "záloha",
+                        "default": "výchozí",
+                        "homeassistant": "homeassistant",
+                        "manager": "správce"
+                    }
+                },
+                "changelog": "Seznam změn",
+                "hostname": "Název hostitele",
+                "open_web_ui": "Otevřít webové rozhraní",
+                "option": {
+                    "boot": {
+                        "title": "Spustit při spuštění"
+                    },
+                    "watchdog": {
+                        "title": "Hlídací pes"
+                    }
+                }
+            },
+            "panel": {
+                "configuration": "Nastavení",
+                "documentation": "Dokumentace",
+                "info": "Informace",
+                "log": "Log"
+            },
+            "state": {
+                "installed": "Doplněk je nainstalován",
+                "not_installed": "Doplněk není nainstalován"
+            }
+        },
+        "common": {
+            "cancel": "Zrušit",
+            "description": "Popis",
+            "error": {
+                "unknown": "Neznámá chyba"
+            },
+            "learn_more": "Další informace",
+            "new_version_available": "K dispozici je nová verze",
+            "newest_version": "Nejnovější verze",
+            "no": "Ne",
+            "refresh": "Obnovit",
+            "release_notes": "Poznámky k vydání",
+            "reload": "Nově načíst",
+            "restart": "Restartovat",
+            "restart_name": "Restartovat {name}",
+            "save": "Uložit",
+            "update": "Aktualizovat",
+            "update_available": "{count, plural,\n  one {Aktualizace}\n  few {{count} aktualizace}\n  other {{count} aktualizací}\n}",
+            "version": "Verze",
+            "yes": "Ano"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Opravdu chcete obnovit všechny možnosti?",
+                "title": "Obnovit možnosti"
+            },
+            "restart": {
+                "title": "Restartovat {name}"
+            },
+            "update": {
+                "text": "Opravdu chcete aktualizovat {name} na verzi {version}?",
+                "title": "Aktualizovat {název}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "K dispozici je nová verze",
+            "addon_running": "Doplněk je spuštěn",
+            "addon_stopped": "Doplněk je zastaven",
+            "addons": "Doplňky"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Připojeno k {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Zakázáno",
+                "dns_servers": "Servery DNS",
+                "gateway": "IP adresa brány",
+                "ip_netmask": "IP adresa/Maska sítě",
+                "open": "Otevřít",
+                "static": "Statická",
+                "title": "Nastavení sítě",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Přidat nový registr",
+                "add_registry": "Přidat registr",
+                "failed_to_add": "Nepodařilo se přidat registr",
+                "failed_to_remove": "Odebrání registru se nezdařilo",
+                "no_registries": "Nejsou nastaveny žádné registry",
+                "password": "Heslo",
+                "registry": "Registr",
+                "remove": "Odebrat",
+                "username": "Uživatelské jméno"
+            },
+            "repositories": {
+                "add": "Přidat",
+                "remove": "Odebrat",
+                "title": "Správa úložišť doplňků"
+            },
+            "restart_addon": {
+                "confirm_text": "Restartovat doplněk",
+                "text": "Chcete doplněk restartovat se svými změnami?"
+            },
+            "update": {
+                "create_snapshot": "Vytvořit zálohu \"{name}\" před aktualizací",
+                "snapshot": "Záloha",
+                "snapshotting": "Vytváří se záloha \"{name}\"",
+                "updating": "Aktualizuje se \"{name}\" na verzi {version}"
+            }
+        },
+        "my": {
+            "error": "Nastala neznámá chyba",
+            "faq_link": "Časté dotazy týkající se My Home Assistant",
+            "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
+        },
+        "panel": {
+            "dashboard": "Ovládací panel",
+            "snapshots": "Zálohy",
+            "store": "Obchod s doplňky",
+            "system": "Systém"
+        },
+        "snapshot": {
+            "addons": "Doplňky",
+            "available_snapshots": "Dostupné zálohy",
+            "could_not_create": "Nelze vytvořit zálohu",
+            "create": "Vytvořit",
+            "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
+            "create_snapshot": "Vytvořit zálohu",
+            "enter_password": "Prosím zadejte heslo.",
+            "folder": {
+                "addons/local": "Místní doplňky",
+                "homeassistant": "Nastavení Home Asistent",
+                "media": "Média",
+                "share": "Sdílení",
+                "ssl": "SSL"
+            },
+            "folders": "Složky",
+            "full_snapshot": "Úplná záloha",
+            "name": "Název",
+            "no_snapshots": "Zatím nemáte žádné zálohy.",
+            "partial_snapshot": "Částečná záloha",
+            "password": "Heslo",
+            "password_protected": "chráněno heslem",
+            "password_protection": "Ochrana heslem",
+            "security": "Zabezpečení",
+            "type": "Typ",
+            "upload_snapshot": "Nahrát zálohu"
+        },
+        "store": {
+            "registries": "Registry",
+            "repositories": "Repozitáře"
+        },
+        "system": {
+            "host": {
+                "change": "Změnit",
+                "change_hostname": "Změnit název hostitele",
+                "docker_version": "Verze Dockeru",
+                "hardware": "Hardware",
+                "hostname": "Název hostitele",
+                "import_from_usb": "Importovat z USB",
+                "ip_address": "IP adresa",
+                "new_hostname": "Zadejte prosím nový název hostitele:",
+                "operating_system": "Operační systém",
+                "reboot_host": "Restartovat hostitele",
+                "shutdown_host": "Vypnout hostitele",
+                "used_space": "Použité místo"
+            },
+            "supervisor": {
+                "beta_backup": "Před aktivací této funkce se ujistěte, že máte zálohy svých dat.",
+                "beta_join_confirm": "Chcete se připojit k beta kanálu?",
+                "beta_release_items": "To zahrnuje beta verze pro:",
+                "channel": "Kanál",
+                "failed_to_reload": "Nové načtení Supervisora se nezdařilo",
+                "failed_to_update": "Aktualizace Supervisora se nezdařila",
+                "join_beta_action": "Připojit se k beta kanálu",
+                "leave_beta_action": "Opustit beta kanál",
+                "reload_supervisor": "Nově načíst Supervisor",
+                "share_diagnostics": "Sdílet diagnostické informace",
+                "share_diagonstics_title": "Pomozte vylepšit Home Asistent",
+                "unsupported_reason": {
+                    "dbus": "DBUS",
+                    "docker_version": "Verze Dockeru",
+                    "network_manager": "Správce sítě",
+                    "os": "Operační systém",
+                    "systemd": "Systemd"
+                },
+                "update_supervisor": "Aktualizovat Supervisor",
+                "warning": "VAROVÁNÍ"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Chcete toto přihlášení uložit?",
@@ -120,7 +345,7 @@
             },
             "automation": {
                 "last_triggered": "Naposledy spuštěno",
-                "trigger": "Spustit"
+                "trigger": "Spustit akce"
             },
             "camera": {
                 "not_available": "Obrázek není k dispozici"
@@ -200,7 +425,8 @@
             },
             "script": {
                 "cancel": "Zrušit",
-                "cancel_multiple": "Zrušit {number}"
+                "cancel_multiple": "Zrušit {number}",
+                "run": "Spustit"
             },
             "service": {
                 "run": "Spustit"
@@ -295,6 +521,19 @@
             "yes": "Ano"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Doplněk",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Načítání doplňků skončilo chybou.",
+                        "title": "Chyba při načítání doplňků"
+                    },
+                    "no_supervisor": {
+                        "description": "Nebyl nalezen žádný Supervisor, takže doplňky nelze načíst.",
+                        "title": "Žádný Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Přidat",
@@ -363,6 +602,8 @@
                     "changed_to_state": "změněno na {state}",
                     "cleared_device_class": "zrušeno (nebylo zjištěno {device_class})",
                     "detected_device_class": "zjištěno {device_class}",
+                    "is_closing": "se zavírá",
+                    "is_opening": "se otevírá",
                     "rose": "vyšlo",
                     "set": "zapadlo",
                     "turned_off": "vypnuto",
@@ -468,7 +709,10 @@
                 }
             },
             "service-control": {
-                "service_data": "Data služby"
+                "required": "Toto pole je povinné",
+                "service_data": "Data služby",
+                "target": "Cíle",
+                "target_description": "Co by tato služba měla používat jako cílové oblasti, zařízení nebo entity."
             },
             "service-picker": {
                 "service": "Služba"
@@ -478,7 +722,7 @@
                 "add_device_id": "Vyberte zařízení",
                 "add_entity_id": "Vyberte entitu",
                 "expand_area_id": "Rozdělit tuto oblast na jednotlivá zařízení a entity, které obsahuje. Po rozdělení nebudou zařízení a entity aktualizovány, pokud dojde ke změnám oblasti.",
-                "expand_device_id": "Rozdělit toto zařízení na jednotlivé entity. Po rozdělení nebudou entity aktualizovány, pokud dojde ke změnám zařízení.",
+                "expand_device_id": "Rozdělit toto zařízení na jednotlivé entity, které obsahuje. Po rozdělení nebudou entity aktualizovány, pokud dojde ke změnám zařízení.",
                 "remove_area_id": "Odebrat oblast",
                 "remove_device_id": "Odebrat zařízení",
                 "remove_entity_id": "Odebrat entitu"
@@ -679,7 +923,7 @@
                         "scene": "Scény",
                         "script": "Skripty",
                         "server_control": "Ovládání serveru",
-                        "tags": "Štítky",
+                        "tag": "Štítky",
                         "users": "Uživatelé",
                         "zone": "Zóny"
                     },
@@ -1482,6 +1726,7 @@
                     "cant_edit": "Můžete upravovat pouze položky, které jsou vytvořeny v uživatelském rozhraní.",
                     "caption": "Zařízení",
                     "confirm_delete": "Opravdu chcete toto zařízení odstranit?",
+                    "confirm_disable_config_entry": "Pro položku konfigurace {entry_name} nejsou k dispozici žádná další zařízení, chcete položku konfigurace místo toho zakázat?",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit?",
                     "confirm_rename_entity_ids_warning": "Žádná nastavení (např. automatizace, skripty, scény, ovládací panely), která tyto entity aktuálně používá, nebudou změněna! Vše budete muset aktualizovat sami, aby se používaly nová ID entit!",
                     "data_table": {
@@ -1594,7 +1839,8 @@
                 },
                 "filtering": {
                     "clear": "Vymazat",
-                    "filtering_by": "Filtrování podle"
+                    "filtering_by": "Filtrování podle",
+                    "show": "Zobrazit"
                 },
                 "header": "Nastavení Home Assistant",
                 "helpers": {
@@ -1665,7 +1911,19 @@
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
                         "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
+                        "disable_restart_confirm": "Restartujte Home Assistant pro dokončení odstranění této integrace",
+                        "disable": {
+                            "disable_confirm": "Opravdu chcete zakázat tuto položku konfigurace? Její zařízení a entity budou zakázány.",
+                            "disabled": "Zakázáno",
+                            "disabled_by": {
+                                "device": "zařízením",
+                                "integration": "integrací",
+                                "user": "uživatelem"
+                            },
+                            "disabled_cause": "Zakázáno {cause}"
+                        },
                         "documentation": "Dokumentace",
+                        "enable_restart_confirm": "Restartujte Home Assistant pro dokončení přidání této integrace",
                         "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
                         "entity_unavailable": "Entita není dostupná",
                         "firmware": "Firmware: {version}",
@@ -1685,8 +1943,10 @@
                     "config_flow": {
                         "aborted": "Přerušeno",
                         "close": "Zavřít",
+                        "could_not_load": "Konfiguraci nelze načíst",
                         "created_config": "Bylo vytvořeno nastavení pro {name}.",
                         "dismiss": "Zavřít dialog",
+                        "error": "Chyba",
                         "error_saving_area": "Chyba při ukládání oblasti: {error}",
                         "external_step": {
                             "description": "K dokončení tohoto kroku je nutné navštívit externí webovou stránku.",
@@ -1695,6 +1955,10 @@
                         "finish": "Dokončit",
                         "loading_first_time": "Počkejte prosím, než bude integrace nainstalována.",
                         "not_all_required_fields": "Nejsou vyplněna všechna povinná pole.",
+                        "pick_flow_step": {
+                            "new_flow": "Ne, nastavit další instanci integrace {integration}",
+                            "title": "Objevili jsme tyto integrace, chcete je nastavit?"
+                        },
                         "submit": "Odeslat"
                     },
                     "configure": "Nastavit",
@@ -1702,6 +1966,11 @@
                     "confirm_new": "Chcete nastavit {integration}?",
                     "description": "Správa integrací a jejich služeb, zařízení, ...",
                     "details": "Podrobnosti o integraci",
+                    "disable": {
+                        "disabled_integrations": "{number} zakázáno",
+                        "hide_disabled": "Skrýt zakázané integrace",
+                        "show_disabled": "Zobrazit zakázané integrace"
+                    },
                     "discovered": "Objeveno",
                     "home_assistant_website": "stránky Home Assistant",
                     "ignore": {
@@ -2130,7 +2399,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Přidat štítek",
                     "automation_title": "Štítek {name} je naskenován",
                     "caption": "Štítky",
@@ -2511,17 +2780,23 @@
                         "type": "Typ události"
                     },
                     "services": {
+                        "accepts_target": "Tato služba přijímá cíl, například: `entity_id: light.bed_light`",
+                        "all_parameters": "Všechny dostupné parametry",
                         "call_service": "Zavolat službu",
                         "column_description": "Popis",
                         "column_example": "Příklad",
                         "column_parameter": "Parametr",
                         "description": "Vývojářský nástroj pro služby umožňuje zavolat jakoukoli dostupnou službu v Home Assistant",
                         "fill_example_data": "Vyplnit ukázková data",
-                        "title": "Služby"
+                        "title": "Služby",
+                        "ui_mode": "Přejít do režimu uživatelského rozhraní",
+                        "yaml_mode": "Přejít do režimu YAML",
+                        "yaml_parameters": "Parametry jsou dostupné pouze v režimu YAML"
                     },
                     "states": {
                         "alert_entity_field": "Entita je povinné pole",
                         "attributes": "Atributy",
+                        "copy_id": "Zkopírovat ID do schránky",
                         "current_entities": "Současné entity",
                         "description1": "Nastavte stav zařízení v Home Assistant.",
                         "description2": "Stav skutečného zařízení se nezmění.",
@@ -2961,6 +3236,7 @@
                         "error_remove": "Nelze odstranit nastavení: {error}",
                         "error_save_yaml": "Nelze uložit YAML: {error}",
                         "header": "Upravit nastavení",
+                        "reload": "Nově načíst",
                         "resources_moved": "Zdroje by již neměly být přidávány do konfigurace Lovelace, ale mohou být přidávány v panelu nastavení Lovelace.",
                         "save": "Uložit",
                         "saved": "Uloženo",
@@ -3048,8 +3324,10 @@
             },
             "my": {
                 "component_not_loaded": "Toto přesměrování není vaší instancí Home Assistant podporováno. Potřebujete integraci \"{integration}\", aby šlo použít toto přesměrování.",
+                "documentation": "dokumentace",
                 "error": "Nastala neznámá chyba",
                 "faq_link": "Časté dotazy týkající se My Home Assistant",
+                "no_supervisor": "Toto přesměrování není podporováno vaší instalací Home Assistant. Potřebuje buď operační systém Home Assistant, nebo metodu instalace Home Assistant Supervised. Další informace naleznete na {docs_link}.",
                 "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
             },
             "page-authorize": {

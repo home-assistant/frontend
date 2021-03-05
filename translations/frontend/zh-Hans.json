@@ -102,6 +102,101 @@
             "unknown": "未知"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "apparmor": {
+                        "description": "Application Armor，简称 AppArmor，是一个 Linux 内核安全模块，其限制加载项的部分功能，如网络访问、原始套接字访问、读写或执行特定文件的权限。\n\n加载项可以提供针对其自身进行了优化的安全配置文件，或者要求禁用 AppArmor。一旦禁用，将增加安全风险，也会相应地降低加载项的安全评分。",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "加载项可以通过 Home Assistant 验证用户身份，从而允许其用户通过 Home Assistant 的用户名和密码登录加载项内部的应用程序。此标识代表加载项是否请求此项功能。",
+                        "title": "Home Assistant 身份认证"
+                    },
+                    "host_pid": {
+                        "description": "通常情况下，加载项进程与其他系统进程是隔离的。加载项已要求其有权访问在宿主系统上运行的系统进程，并且在宿主系统上生成进程。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用插件上的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                        "title": "宿主进程命名空间"
+                    }
+                },
+                "protection_mode": {
+                    "content": "此加载项的保护模式已禁用！这将使加载项具有对整个系统的完全访问权限，这增加了安全风险，并且在使用不当时可能会损坏系统。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                    "title": "警告：保护模式已禁用！"
+                }
+            },
+            "panel": {
+                "configuration": "配置",
+                "documentation": "文档",
+                "info": "信息",
+                "log": "日志"
+            }
+        },
+        "common": {
+            "cancel": "取消",
+            "close": "关闭",
+            "newest_version": "最新版本",
+            "refresh": "刷新",
+            "release_notes": "发行说明",
+            "save": "保存",
+            "update": "更新",
+            "update_available": "正在等待 {count} 项更新",
+            "version": "版本"
+        },
+        "confirm": {
+            "update": {
+                "text": "您确定要更新 {name} 至版本 {version} 吗？",
+                "title": "更新 {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "发现新版本",
+            "addon_running": "加载项正在运行",
+            "addon_stopped": "加载项已停止",
+            "addons": "加载项",
+            "no_addons": "您尚未安装任何加载项。去加载项商店看看吧！"
+        },
+        "dialog": {
+            "registries": {
+                "add_new_registry": "添加新注册信息",
+                "add_registry": "添加注册信息",
+                "failed_to_add": "添加注册信息失败",
+                "failed_to_remove": "删除注册信息失败",
+                "remove": "删除"
+            },
+            "repositories": {
+                "add": "添加",
+                "remove": "删除",
+                "title": "管理加载项 Repo"
+            },
+            "restart_addon": {
+                "confirm_text": "重启加载项",
+                "text": "您确定要重启已更改的加载项吗？"
+            },
+            "update": {
+                "create_snapshot": "在更新前为 {name} 创建快照",
+                "snapshot": "快照",
+                "snapshotting": "正在为 {name} 创建快照",
+                "updating": "正在更新 {name} 至版本 {version}"
+            }
+        },
+        "my": {
+            "error": "发生未知错误",
+            "error_addon_not_found": "未找到加载项",
+            "faq_link": "我的 Home Assistant 常见问题",
+            "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
+        },
+        "panel": {
+            "dashboard": "仪表盘",
+            "snapshots": "快照",
+            "store": "加载项商店",
+            "system": "系统"
+        },
+        "system": {
+            "supervisor": {
+                "share_diagonstics_description": "您想要在 Supervisor 遇到异常错误时，共享崩溃报告和诊断信息吗？{line_break}这将帮助我们解决问题，此信息仅限 Home Assistant Core 团队访问，不会共享给他人。{line_break}此信息不包含私密、敏感信息，您可以随时在设置中将其禁用。"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "保持登录状态吗？",
@@ -200,7 +295,8 @@
             },
             "script": {
                 "cancel": "取消",
-                "cancel_multiple": "取消 {number} 个"
+                "cancel_multiple": "取消 {number} 个",
+                "run": "运行"
             },
             "service": {
                 "run": "运行"
@@ -295,6 +391,19 @@
             "yes": "是"
         },
         "components": {
+            "addon-picker": {
+                "addon": "加载项",
+                "error": {
+                    "fetch_addons": {
+                        "description": "获取加载项时返回错误。",
+                        "title": "获取加载项时出错"
+                    },
+                    "no_supervisor": {
+                        "description": "未找到 Supervisor，因此无法载入加载项。",
+                        "title": "未找到 Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "添加",
@@ -363,6 +472,8 @@
                     "changed_to_state": "变为 {state}",
                     "cleared_device_class": "未检测到 {device_class}",
                     "detected_device_class": "检测到 {device_class}",
+                    "is_closing": "正在关闭",
+                    "is_opening": "正在打开",
                     "rose": "升起",
                     "set": "落下",
                     "turned_off": "已关闭",
@@ -467,6 +578,12 @@
                     "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}前"
                 }
             },
+            "service-control": {
+                "required": "此字段为必填字段",
+                "service_data": "服务数据",
+                "target": "目标",
+                "target_description": "该服务作用于哪些区域、设备或实体。"
+            },
             "service-picker": {
                 "service": "服务"
             },
@@ -474,8 +591,8 @@
                 "add_area_id": "选择区域",
                 "add_device_id": "选择设备",
                 "add_entity_id": "选择实体",
-                "expand_area_id": "在它包含的单独设备和实体中展开此区域。展开后，当区域发生更改时，它不会更新设备和实体。",
-                "expand_device_id": "在单独的实体中展开此设备。展开后，设备发生变化时不会更新实体。",
+                "expand_area_id": "将此区域展开为单独的设备和实体。展开后，当区域发生变化时，将不会更新设备和实体。",
+                "expand_device_id": "将此设备展开为单独的实体。展开后，设备发生变化时将不会更新实体。",
                 "remove_area_id": "删除区域",
                 "remove_device_id": "删除设备",
                 "remove_entity_id": "删除实体"
@@ -604,6 +721,9 @@
                 "person": {
                     "create_zone": "从当前位置创建地点"
                 },
+                "remote": {
+                    "activity": "当前活动"
+                },
                 "restored": {
                     "confirm_remove_text": "您确定要删除此实体吗？",
                     "confirm_remove_title": "是否删除实体？",
@@ -676,7 +796,7 @@
                         "scene": "场景",
                         "script": "脚本",
                         "server_control": "服务控制",
-                        "tags": "标签",
+                        "tag": "标签",
                         "users": "用户",
                         "zone": "地点"
                     },
@@ -735,6 +855,7 @@
                     "clusters": "管理簇",
                     "reconfigure": "重新配置设备",
                     "remove": "删除设备",
+                    "view_in_visualization": "可视化查看",
                     "zigbee_information": "Zigbee 设备签名"
                 },
                 "confirmations": {
@@ -1479,6 +1600,7 @@
                     "cant_edit": "您只能编辑在 UI 中创建的项目。",
                     "caption": "设备",
                     "confirm_delete": "您确定要删除此设备吗？",
+                    "confirm_disable_config_entry": "配置条目 {entry_name} 没有更多设备了，是否要转而禁用整个配置条目？",
                     "confirm_rename_entity_ids": "是否要将实体 ID 一并重命名？",
                     "confirm_rename_entity_ids_warning": "此操作不会改变正在使用这些实体的配置（如自动化、脚本、场景、仪表盘），您必须手动更新它们以便使用新的实体 ID。",
                     "data_table": {
@@ -1591,7 +1713,8 @@
                 },
                 "filtering": {
                     "clear": "清除",
-                    "filtering_by": "正在筛选:"
+                    "filtering_by": "正在筛选:",
+                    "show": "显示"
                 },
                 "header": "配置 Home Assistant",
                 "helpers": {
@@ -1662,7 +1785,19 @@
                         "delete_confirm": "您确定要删除此集成吗？",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
+                        "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
+                        "disable": {
+                            "disable_confirm": "您确定要禁用此配置条目吗？其设备和实体也将被禁用。",
+                            "disabled": "已禁用",
+                            "disabled_by": {
+                                "device": "设备",
+                                "integration": "集成",
+                                "user": "用户"
+                            },
+                            "disabled_cause": "通过{cause}禁用"
+                        },
                         "documentation": "文档",
+                        "enable_restart_confirm": "重启 Home Assistant 以完成此集成的启用",
                         "entities": "{count} {count, plural,\n  one {个实体}\n  other {个实体}\n}",
                         "entity_unavailable": "实体不可用",
                         "firmware": "固件：{version}",
@@ -1682,8 +1817,10 @@
                     "config_flow": {
                         "aborted": "中止",
                         "close": "关闭",
+                        "could_not_load": "无法加载配置向导",
                         "created_config": "为 {name} 创建了配置。",
                         "dismiss": "关闭对话框",
+                        "error": "错误",
                         "error_saving_area": "保存区域时发生错误：{error}",
                         "external_step": {
                             "description": "此步骤需要访问外部网站才能完成。",
@@ -1692,6 +1829,10 @@
                         "finish": "完成",
                         "loading_first_time": "正在安装集成，请稍候",
                         "not_all_required_fields": "请填写所有必填字段",
+                        "pick_flow_step": {
+                            "new_flow": "否，设置另一个 {integration} 实例",
+                            "title": "已发现以下集成，要设置它们吗？"
+                        },
                         "submit": "提交"
                     },
                     "configure": "配置",
@@ -1699,6 +1840,11 @@
                     "confirm_new": "您想要配置 {integration} 吗？",
                     "description": "管理集成",
                     "details": "集成详细信息",
+                    "disable": {
+                        "disabled_integrations": "{number} 个已禁用",
+                        "hide_disabled": "隐藏禁用的集成",
+                        "show_disabled": "显示禁用的集成"
+                    },
                     "discovered": "已发现",
                     "home_assistant_website": "Home Assistant 网站",
                     "ignore": {
@@ -2127,7 +2273,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "添加标签",
                     "automation_title": "扫描到标签 {name}",
                     "caption": "标签",
@@ -2287,6 +2433,7 @@
                         "caption": "可视化",
                         "header": "网络可视化",
                         "highlight_label": "高亮显示设备",
+                        "refresh_topology": "刷新拓扑结构",
                         "zoom_label": "缩放到设备"
                     }
                 },
@@ -2508,17 +2655,23 @@
                         "type": "事件类型"
                     },
                     "services": {
+                        "accepts_target": "该服务接受一个目标，例如：`entity_id: light.bed_light`",
+                        "all_parameters": "所有可用的参数",
                         "call_service": "调用服务",
                         "column_description": "描述",
                         "column_example": "示例",
                         "column_parameter": "参数",
                         "description": "服务开发工具可让您调用 Home Assistant 中任何可用的服务。",
                         "fill_example_data": "填写示例数据",
-                        "title": "服务"
+                        "title": "服务",
+                        "ui_mode": "进入 UI 模式",
+                        "yaml_mode": "进入 YAML 模式",
+                        "yaml_parameters": "以下参数只能在 YAML 模式下使用"
                     },
                     "states": {
                         "alert_entity_field": "实体是必填字段",
                         "attributes": "属性",
+                        "copy_id": "将 ID 复制到剪贴板",
                         "current_entities": "现有实体",
                         "description1": "设置设备在 Home Assistant 中的呈现方式。",
                         "description2": "这将不影响实际设备。",
@@ -2958,6 +3111,8 @@
                         "error_remove": "无法删除配置：{error}",
                         "error_save_yaml": "无法保存 YAML：{error}",
                         "header": "编辑配置",
+                        "lovelace_changed": "Lovelace 配置已更新，是否要放弃当前更改并载入更新后的配置？",
+                        "reload": "重新加载",
                         "resources_moved": "资源(resources)不应再添加到 Lovelace 配置中，而是在 Lovelace 配置面板中添加。",
                         "save": "保存",
                         "saved": "已保存",
@@ -3045,8 +3200,10 @@
             },
             "my": {
                 "component_not_loaded": "您的 Home Assistant 不支持此重定向。需要使用 {integration} 集成才能使用它。",
+                "documentation": "文档",
                 "error": "发生未知错误",
                 "faq_link": "我的 Home Assistant 常见问题",
+                "no_supervisor": "您的 Home Assistant 不支持此重定向。它需要 Home Assistant OS 或 Home Assistant Supervised 安装方法。有关更多信息，请参阅 {docs_link} 。",
                 "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
             },
             "page-authorize": {

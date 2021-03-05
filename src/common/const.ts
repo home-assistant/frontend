@@ -103,6 +103,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "lock",
   "media_player",
   "person",
+  "remote",
   "script",
   "sun",
   "timer",

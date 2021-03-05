@@ -65,6 +65,13 @@
             "unknown": "Nežinoma"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "visit_addon_page": "Apsilankykite puslapyje {name}, jei reikia daugiau detalių"
+            }
+        }
+    },
     "ui": {
         "card": {
             "alarm_control_panel": {
@@ -230,7 +237,6 @@
                         "scene": "Scenos",
                         "script": "Skriptai",
                         "server_control": "Serverio valdikliai",
-                        "tags": "Žymės",
                         "users": "Vartotojai",
                         "zone": "Zonos"
                     }
@@ -664,7 +670,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "detail": {
                         "companion_apps": "papildomos programos",
                         "usage": "Nuskaitant žymą galima suaktyvinti automatizavimą, galite naudoti NFC žymes, QR kodus ar bet kokios kitos rūšies žymą. Naudokite mūsų {companion_link}, jei norite parašyti šią žymą į programuojamą NFC žymę arba sukurti QR kodą žemiau."

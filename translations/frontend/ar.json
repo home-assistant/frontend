@@ -518,6 +518,7 @@
                                     "trigger": "نوع المشغل"
                                 },
                                 "event": {
+                                    "context_user_pick": "Vælg bruger",
                                     "event_data": "بيانات الحدث",
                                     "event_type": "نوع الحدث",
                                     "label": "الحدث"

@@ -102,6 +102,393 @@
             "unknown": "Unknown"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Default",
+                    "header": "Audio",
+                    "input": "Input",
+                    "output": "Output"
+                },
+                "network": {
+                    "container": "Container",
+                    "disabled": "Disabled",
+                    "header": "Network",
+                    "host": "Host"
+                },
+                "no_configuration": "This add-on does not expose configuration for you to mess with...",
+                "options": {
+                    "edit_in_ui": "Edit in UI",
+                    "edit_in_yaml": "Edit in YAML",
+                    "header": "Options",
+                    "invalid_yaml": "Invalid YAML",
+                    "show_unused_optional": "Show unused optional configuration options"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "Failed to get add-on changelog",
+                    "go_to_config": "Failed to start add-on - configuration validation failed!",
+                    "install": "Failed to install add-on",
+                    "restart": "Failed to restart add-on",
+                    "start": "Failed to start add-on",
+                    "start_invalid_config": "Go to configuration",
+                    "stop": "Failed to stop add-on",
+                    "uninstall": "Failed to uninstall add-on",
+                    "validate_config": "Failed to validate add-on configuration"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') is a Linux kernel security module that restricts add-ons capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nAdd-on authors can provide their security profiles, optimized for the add-on, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the add-on.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "An add-on can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability.",
+                        "title": "Home Assistant Authentication"
+                    },
+                    "docker_api": {
+                        "description": "The add-on author has requested the add-on to have management access to the Docker instance running on your system. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
+                        "title": "Full Docker Access"
+                    },
+                    "full_access": {
+                        "description": "This add-on is given full access to the hardware of your system, by request of the add-on author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
+                        "title": "Full Hardware Access"
+                    },
+                    "hassio_api": {
+                        "description": "The add-on was given access to the Supervisor API, by request of the add-on author. By default, the add-on can access general version information of your system. When the add-on requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Home Assistant system. This permission is indicated by this badge and will impact the security score of the add-on negatively.",
+                        "title": "Supervisor API Access"
+                    },
+                    "homeassistant_api": {
+                        "description": "This add-on is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the add-on as well, which enables an add-on to interact with Home Assistant without the need for additional authentication tokens.",
+                        "title": "Home Assistant API Access"
+                    },
+                    "host_network": {
+                        "description": "Add-ons usually run in their own isolated network layer, which prevents them from accessing the network of the host operating system. In some cases, this network isolation can limit add-ons in providing their services and therefore, the isolation can be lifted by the add-on author, giving the add-on full access to the network capabilities of the host machine. This gives the add-on more networking capabilities but lowers the security, hence, the security rating of the add-on will be lowered when this option is used by the add-on.",
+                        "title": "Host Network"
+                    },
+                    "host_pid": {
+                        "description": "Usually, the processes the add-on runs, are isolated from all other system processes. The add-on author has requested the add-on to have access to the system processes running on the host system instance, and allow the add-on to spawn processes on the host system as well. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
+                        "title": "Host Processes Namespace"
+                    },
+                    "ingress": {
+                        "description": "This add-on is using Ingress to embed its interface securely into Home Assistant.",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "auth",
+                        "docker": "docker",
+                        "hardware": "hardware",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "host",
+                        "host_pid": "host pid",
+                        "ingress": "ingress",
+                        "rating": "rating",
+                        "stage": "stage"
+                    },
+                    "rating": {
+                        "description": "Home Assistant provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 6. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 6 is the highest score (considered the most secure and lowest risk).",
+                        "title": "Add-on Security Rating"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "backup",
+                        "default": "default",
+                        "homeassistant": "homeassistant",
+                        "manager": "manager"
+                    },
+                    "stage": {
+                        "description": "Add-ons can have one of three stages:\n\n{icon_stable} **Stable**: These are add-ons ready to be used in production.\n\n{icon_experimental} **Experimental**: These may contain bugs, and may be unfinished.\n\n{icon_deprecated} **Deprecated**: These add-ons will no longer receive any updates.",
+                        "title": "Add-on Stage"
+                    }
+                },
+                "changelog": "Changelog",
+                "cpu_usage": "Add-on CPU Usage",
+                "hostname": "Hostname",
+                "install": "install",
+                "new_update_available": "{name} {version} is available",
+                "not_available_arch": "This add-on is not compatible with the processor of your device or the operating system you have installed on your device.",
+                "not_available_version": "You are unning Home Assistant {core_version_installed}, to update to this version of the add-on you need at least version {core_version_needed} of Home Assistan",
+                "open_web_ui": "Open web UI",
+                "option": {
+                    "auto_update": {
+                        "description": "Auto update the add-on when there is a new version available",
+                        "title": "Auto update"
+                    },
+                    "boot": {
+                        "description": "Make the add-on start during a system boot",
+                        "title": "Start on boot"
+                    },
+                    "ingress_panel": {
+                        "description": "Add this add-on to your sidebar",
+                        "title": "Show in sidebar"
+                    },
+                    "protected": {
+                        "description": "Blocks elevated system access from the add-on",
+                        "title": "Protection mode"
+                    },
+                    "watchdog": {
+                        "description": "This will start the add-on if it crashes",
+                        "title": "Watchdog"
+                    }
+                },
+                "protection_mode": {
+                    "content": "Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.",
+                    "enable": "Enable Protection mode",
+                    "title": "Warning: Protection mode is disabled!"
+                },
+                "ram_usage": "Add-on RAM Usage",
+                "rebuild": "rebuild",
+                "restart": "restart",
+                "start": "start",
+                "stop": "stop",
+                "uninstall": "uninstall",
+                "visit_addon_page": "Visit the {name} page for more detals"
+            },
+            "documentation": {
+                "get_documentation": "Failed to get add-on documentation, {error}"
+            },
+            "failed_to_reset": "Failed to reset add-on configuration, {error}",
+            "failed_to_save": "Failed to save add-on configuration, {error}",
+            "logs": {
+                "get_logs": "Failed to get add-on logs, {error}"
+            },
+            "panel": {
+                "configuration": "Configuration",
+                "documentation": "Documentation",
+                "info": "Info",
+                "log": "Log"
+            },
+            "state": {
+                "installed": "Add-on is installed",
+                "not_available": "Add-on is not available on your system",
+                "not_installed": "Add-on is not installed"
+            }
+        },
+        "common": {
+            "cancel": "Cancel",
+            "close": "Close",
+            "description": "Description",
+            "error": {
+                "unknown": "Unknown error",
+                "update_failed": "Update failed"
+            },
+            "failed_to_restart_name": "Failed to restart {name}",
+            "failed_to_update_name": "Failed to update {name}",
+            "learn_more": "Learn more",
+            "new_version_available": "New version available",
+            "newest_version": "Newest Version",
+            "no": "No",
+            "refresh": "Refresh",
+            "release_notes": "Release notes",
+            "reload": "Reload",
+            "reset_defaults": "Reset to defaults",
+            "reset_options": "Reset options",
+            "restart": "Restart",
+            "restart_name": "Restart {name}",
+            "running_version": "You are currently running version {version}",
+            "save": "Save",
+            "show_more": "Show more information about this",
+            "update": "Update",
+            "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending",
+            "version": "Version",
+            "yes": "Yes"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Are you sure you want to reset all your options?",
+                "title": "Reset options"
+            },
+            "restart": {
+                "text": "Are you sure you want to restart {name}?",
+                "title": "Restart {name}"
+            },
+            "update": {
+                "text": "Are you sure you want to update {name} to version {version}?",
+                "title": "Update {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "New version available",
+            "addon_running": "Add-on is running",
+            "addon_stopped": "Add-on is stopped",
+            "addons": "Add-ons",
+            "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Connected to {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Disabled",
+                "dns_servers": "DNS Servers",
+                "failed_to_change": "Failed to change network settings",
+                "gateway": "Gateway address",
+                "ip_netmask": "IP address/Netmask",
+                "open": "Open",
+                "scan_ap": "Scan for accesspoints",
+                "static": "Static",
+                "title": "Network settings",
+                "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
+                "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Add new registry",
+                "add_registry": "Add registry",
+                "failed_to_add": "Failed to add registry",
+                "failed_to_remove": "Failed to remove registry",
+                "no_registries": "No registries configured",
+                "password": "Password",
+                "registry": "Registry",
+                "remove": "Remove",
+                "title_add": "Add New Container Registry",
+                "title_manage": "Manage Container Registries",
+                "username": "Username"
+            },
+            "repositories": {
+                "add": "Add",
+                "remove": "Remove",
+                "title": "Manage add-on repositories"
+            },
+            "restart_addon": {
+                "confirm_text": "Restart add-on",
+                "text": "Do you want to restart the add-on with your changes?"
+            },
+            "update": {
+                "create_snapshot": "Create a snapshot of {name} before updating",
+                "snapshot": "Snapshot",
+                "snapshotting": "Creating snapshot of {name}",
+                "updating": "Updating {name} to version {version}"
+            }
+        },
+        "my": {
+            "error": "An unknown error occured",
+            "error_addon_not_found": "Add-on not found",
+            "faq_link": "My Home Assistant FAQ",
+            "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
+        },
+        "panel": {
+            "dashboard": "Dashboard",
+            "snapshots": "Snapshots",
+            "store": "Add-on Store",
+            "system": "System"
+        },
+        "snapshot": {
+            "addons": "Add-ons",
+            "available_snapshots": "Available Snapshots",
+            "could_not_create": "Could not create snapshot",
+            "create": "Create",
+            "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
+            "create_snapshot": "Create snapshot",
+            "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
+            "enter_password": "Please enter a password.",
+            "folder": {
+                "addons/local": "Local add-ons",
+                "homeassistant": "Home Assistant configuration",
+                "media": "Media",
+                "share": "Share",
+                "ssl": "SSL"
+            },
+            "folders": "Folders",
+            "full_snapshot": "Full snapshot",
+            "name": "Name",
+            "no_snapshots": "You don't have any snapshots yet.",
+            "partial_snapshot": "Partial snapshot",
+            "password": "Password",
+            "password_protected": "password protected",
+            "password_protection": "Password protection",
+            "security": "Security",
+            "type": "Type",
+            "upload_snapshot": "Upload snapshot"
+        },
+        "store": {
+            "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
+            "no_results_found": "No results found in {repository}.",
+            "registries": "Registries",
+            "repositories": "Repositories"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Core CPU Usage",
+                "ram_usage": "Core RAM Usage"
+            },
+            "host": {
+                "change": "Change",
+                "change_hostname": "Change Hostname",
+                "confirm_reboot": "Are you sure you want to reboot the host?",
+                "confirm_shutdown": "Are you sure you want to shutdown the host?",
+                "deployment": "Deployment",
+                "docker_version": "Docker version",
+                "emmc_lifetime_used": "eMMC Lifetime Used",
+                "failed_to_get_hardware_list": "Failed to get hardware list",
+                "failed_to_import_from_usb": "Failed to import from USB",
+                "failed_to_reboot": "Failed to reboot the host",
+                "failed_to_set_hostname": "Setting hostname failed",
+                "failed_to_shutdown": "Failed to shutdown the host",
+                "hardware": "Hardware",
+                "hostname": "Hostname",
+                "import_from_usb": "Import from USB",
+                "ip_address": "IP Address",
+                "new_hostname": "Please enter a new hostname:",
+                "operating_system": "Operating System",
+                "reboot_host": "Reboot host",
+                "shutdown_host": "Shutdown host",
+                "used_space": "Used space"
+            },
+            "log": {
+                "get_logs": "Failed to get {provider} logs, {error}",
+                "log_provider": "Log Provider"
+            },
+            "supervisor": {
+                "beta_backup": "Make sure you have backups of your data before you activate this feature.",
+                "beta_join_confirm": "Do you want to join the beta channel?",
+                "beta_release_items": "This includes beta releases for:",
+                "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
+                "channel": "Channel",
+                "cpu_usage": "Supervisor CPU Usage",
+                "failed_to_reload": "Failed to reload the Supervisor",
+                "failed_to_set_option": "Failed to set Supervisor option",
+                "failed_to_update": "Failed to update the Supervisor",
+                "join_beta_action": "Join beta channel",
+                "join_beta_description": "Get beta updates for Home Assistant (RCs), Supervisor and host",
+                "leave_beta_action": "Leave beta channel",
+                "leave_beta_description": "Get stable updates for Home Assistant, Supervisor and host",
+                "ram_usage": "Supervisor RAM Usage",
+                "reload_supervisor": "Reload Supervisor",
+                "share_diagnostics": "Share Diagnostics",
+                "share_diagnostics_description": "Share crash reports and diagnostic information.",
+                "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
+                "share_diagonstics_title": "Help Improve Home Assistant",
+                "unhealthy_description": "Running an unhealthy installation will cause issues. Below is a list of issues found with your installation, click on the links to learn how you can resolve the issues.",
+                "unhealthy_reason": {
+                    "docker": "The Docker environment is not working properly",
+                    "privileged": "Supervisor is not privileged",
+                    "setup": "Setup of the Supervisor failed",
+                    "supervisor": "Supervisor was not able to update"
+                },
+                "unhealthy_title": "Your installation is unhealthy",
+                "unsupported_description": "Below is a list of issues found with your installation, click on the links to learn how you can resolve the issues.",
+                "unsupported_reason": {
+                    "container": "Containers known to cause issues",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker Configuration",
+                    "docker_version": "Docker Version",
+                    "job_conditions": "Ignored job conditions",
+                    "lxc": "LXC",
+                    "network_manager": "Network Manager",
+                    "os": "Operating System",
+                    "privileged": "Supervisor is not privileged",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "You are running an unsupported installation",
+                "update_supervisor": "Update the Supervisor",
+                "warning": "WARNING"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Do you want to stay logged in?",
@@ -377,6 +764,8 @@
                     "changed_to_state": "changed to {state}",
                     "cleared_device_class": "cleared (no {device_class} detected)",
                     "detected_device_class": "detected {device_class}",
+                    "is_closing": "is closing",
+                    "is_opening": "is opening",
                     "rose": "rose",
                     "set": "set",
                     "turned_off": "turned off",
@@ -624,6 +1013,9 @@
                 "person": {
                     "create_zone": "Create zone from current location"
                 },
+                "remote": {
+                    "activity": "Current activity"
+                },
                 "restored": {
                     "confirm_remove_text": "Are you sure you want to remove this entity?",
                     "confirm_remove_title": "Remove entity?",
@@ -632,8 +1024,8 @@
                     "remove_intro": "If the entity is no longer in use, you can clean it up by removing it."
                 },
                 "script": {
-                    "last_action": "Last Action",
-                    "last_triggered": "Last Triggered"
+                    "last_action": "Last action",
+                    "last_triggered": "Last triggered"
                 },
                 "settings": "Entity settings",
                 "sun": {
@@ -696,7 +1088,7 @@
                         "scene": "Scenes",
                         "script": "Scripts",
                         "server_control": "Server Controls",
-                        "tags": "Tags",
+                        "tag": "Tags",
                         "users": "Users",
                         "zone": "Zones"
                     },
@@ -755,6 +1147,7 @@
                     "clusters": "Manage Clusters",
                     "reconfigure": "Reconfigure Device",
                     "remove": "Remove Device",
+                    "view_in_visualization": "View in Visualization",
                     "zigbee_information": "Zigbee device signature"
                 },
                 "confirmations": {
@@ -2172,7 +2565,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Add tag",
                     "automation_title": "Tag {name} is scanned",
                     "caption": "Tags",
@@ -2332,6 +2725,7 @@
                         "caption": "Visualization",
                         "header": "Network Visualization",
                         "highlight_label": "Highlight Devices",
+                        "refresh_topology": "Refresh Topology",
                         "zoom_label": "Zoom To Device"
                     }
                 },
@@ -3009,6 +3403,8 @@
                         "error_remove": "Unable to remove configuration: {error}",
                         "error_save_yaml": "Unable to save YAML: {error}",
                         "header": "Edit Configuration",
+                        "lovelace_changed": "The Lovelace config was updated, do you want to load the updated config in the editor and lose your current changes?",
+                        "reload": "Reload",
                         "resources_moved": "Resources should no longer be added to the Lovelace configuration but can be added in the Lovelace config panel.",
                         "save": "Save",
                         "saved": "Saved",

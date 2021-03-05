@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import {
   mdiInformationOutline,
-  mdiClipboardTextMultipleOutline
+  mdiClipboardTextMultipleOutline,
 } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -169,7 +169,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <th>[[localize('ui.panel.developer-tools.tabs.states.state')]]</th>
             <th hidden$="[[narrow]]">
               [[localize('ui.panel.developer-tools.tabs.states.attributes')]]
-              <paper-checkbox checked="{{_showAttributes}}" on-change="{{saveAttributeCheckboxState}}"></paper-checkbox>
+              <paper-checkbox
+                checked="{{_showAttributes}}"
+                on-change="{{saveAttributeCheckboxState}}"
+              ></paper-checkbox>
             </th>
           </tr>
           <tr>
@@ -285,7 +288,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
       _showAttributes: {
         type: Boolean,
-        value: JSON.parse(localStorage.getItem("devToolsShowAttributes") || true),
+        value: JSON.parse(
+          localStorage.getItem("devToolsShowAttributes") || true
+        ),
       },
 
       _entities: {

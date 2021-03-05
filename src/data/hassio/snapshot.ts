@@ -29,9 +29,10 @@ export interface HassioFullSnapshotCreateParams {
 }
 export interface HassioPartialSnapshotCreateParams {
   name: string;
-  folders: string[];
-  addons: string[];
+  folders?: string[];
+  addons?: string[];
   password?: string;
+  homeassistant?: boolean;
 }
 
 export const fetchHassioSnapshots = async (
@@ -104,6 +105,7 @@ export const createHassioFullSnapshot = async (
       endpoint: "/snapshots/new/full",
       method: "post",
       timeout: null,
+      data,
     });
     return;
   }
@@ -116,7 +118,7 @@ export const createHassioFullSnapshot = async (
 
 export const createHassioPartialSnapshot = async (
   hass: HomeAssistant,
-  data: HassioFullSnapshotCreateParams
+  data: HassioPartialSnapshotCreateParams
 ) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     await hass.callWS({

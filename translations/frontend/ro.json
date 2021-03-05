@@ -648,7 +648,6 @@
                         "person": "Persoane",
                         "scene": "Scene",
                         "script": "Scripturi",
-                        "tags": "Etichete",
                         "users": "Utilizatori",
                         "zone": "Zone"
                     },
@@ -2027,7 +2026,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Adaugați etichetă",
                     "automation_title": "Eticheta {name} este scanată",
                     "caption": "Etichete",

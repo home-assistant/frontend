@@ -7,7 +7,7 @@ import { computeLocalize } from "../common/translations/localize";
 import { DEFAULT_PANEL } from "../data/panel";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
-import { getLocalLanguage, getTranslation } from "../util/hass-translation";
+import { getTranslation, getLocalLanguage } from "../util/hass-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";

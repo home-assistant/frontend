@@ -102,6 +102,123 @@
             "unknown": "Ukendt"
         }
     },
+    "supervisor": {
+        "common": {
+            "cancel": "Afbryd",
+            "restart": "Genstart",
+            "restart_name": "Genstart {name}",
+            "save": "Gem"
+        },
+        "confirm": {
+            "restart": {
+                "text": "Er du sikker på at du vil genstarte {name}?",
+                "title": "Genstart {name}"
+            },
+            "update": {
+                "title": "Opdater {name}"
+            }
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Forbundet til {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Deaktiveret",
+                "dns_servers": "DNS servere",
+                "gateway": "Gateway adresse",
+                "ip_netmask": "IP adresse/netmaske",
+                "open": "Åben",
+                "scan_ap": "Scan for adgangspunkter",
+                "static": "Statisk",
+                "title": "Netværksindstillinger",
+                "warning": "Hvis du ændrer på Wi-Fi, IP eller Gateway adresser, vil du måske miste forbindelsen!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Tilføj nyt registry",
+                "add_registry": "Tilføj registry",
+                "failed_to_add": "Fejl under tilføjelse af registry",
+                "failed_to_remove": "fejlede i at fjerne registret",
+                "no_registries": "Ingen registries er konfigurerede",
+                "password": "Kodeord",
+                "registry": "Registry",
+                "remove": "Fjern",
+                "title_manage": "Håndtér container registries",
+                "username": "Brugernavn"
+            },
+            "repositories": {
+                "add": "Tilføj",
+                "remove": "Fjern",
+                "title": "Administrer tilføjelsesregistre"
+            },
+            "restart_addon": {
+                "confirm_text": "Genstart add-on",
+                "text": "Vil du genstarte tilføjelsen med dine ændringer?"
+            },
+            "update": {
+                "create_snapshot": "Opret et snapshot af {name} før opdatering",
+                "snapshot": "Snapshot",
+                "snapshotting": "Opretter snapshot af {name}",
+                "updating": "Opdaterer {name} til version {version}"
+            }
+        },
+        "snapshot": {
+            "addons": "Tilføjelser",
+            "available_snapshots": "Tilgængelige snapshots",
+            "could_not_create": "Kunne ikke oprette snapshot",
+            "create": "Opret",
+            "create_blocked_not_running": "Det er ikke muligt at oprette et snapshot lige nu, fordi systemet er i tilstanden {state}.",
+            "create_snapshot": "Opret snapshot",
+            "description": "Snapshots giver dig mulighed for nemt at sikkerhedskopiere og gendanne alle data fra dit instans af Home Assistant.",
+            "enter_password": "Venligst indtast et kodeord.",
+            "folder": {
+                "addons/local": "Lokale tilføjelser",
+                "homeassistant": "Home Assistant konfiguration",
+                "media": "Medie",
+                "share": "Del",
+                "ssl": "SSL"
+            },
+            "folders": "Mapper",
+            "full_snapshot": "Fuldt snapshot",
+            "name": "Navn",
+            "no_snapshots": "Du har endnu ingen snapshots.",
+            "partial_snapshot": "Delvist snapshot",
+            "password": "Kodeord",
+            "password_protected": "beskyttet af kodeord",
+            "password_protection": "Adgangskodebeskyttelse",
+            "security": "Sikkerhed",
+            "type": "Type",
+            "upload_snapshot": "Opload snapshot"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Core CPU forbrug",
+                "ram_usage": "Core RAM forbrug"
+            },
+            "host": {
+                "change_hostname": "Skift værtsnavn",
+                "confirm_reboot": "Er du sikker på, at du vil genstarte værten?",
+                "confirm_shutdown": "Er du sikker på, at du vil lukke værten ned?",
+                "docker_version": "Docker-version",
+                "hardware": "Hardware",
+                "hostname": "Værtsnavn",
+                "import_from_usb": "Importer fra USB",
+                "ip_address": "IP-adresse",
+                "new_hostname": "Indtast et nyt værtsnavn:",
+                "operating_system": "Operativsystem",
+                "reboot_host": "Genstart værten",
+                "shutdown_host": "Sluk vært",
+                "used_space": "Plads forbrug"
+            },
+            "supervisor": {
+                "share_diagonstics_description": "Ønsker du automatisk at dele rapporter og diagnosticeringsoplysninger når supervisoren oplever uventede fejl? {line_break} Dette vil lade os fikse problemerne, informationerene er kun tilgængelige for Home Assistant Core teamet og vil ikke blive delt med andre. {line_break} Dataene indeholder ikke private/følsomme informationer og du kan slå det fra i indstillingerne til hver en tid.",
+                "unsupported_reason": {
+                    "docker_version": "Docker version",
+                    "os": "Operativsystem"
+                }
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Ønsker du at forblive logget ind?",
@@ -120,7 +237,7 @@
             },
             "automation": {
                 "last_triggered": "Senest udløst",
-                "trigger": "Udløs"
+                "trigger": "Udfør"
             },
             "camera": {
                 "not_available": "Billedet er ikke tilgængeligt"
@@ -603,6 +720,9 @@
                 "person": {
                     "create_zone": "Opret zone fra den aktuelle lokalitet"
                 },
+                "remote": {
+                    "activity": "Kørende aktivitet"
+                },
                 "restored": {
                     "confirm_remove_text": "Er du sikker på, at du vil fjerne denne entitet?",
                     "confirm_remove_title": "Fjern entitet?",
@@ -611,8 +731,8 @@
                     "remove_intro": "Hvis entiteten ikke længere er i brug, kan du rydde op ved at fjerne den."
                 },
                 "script": {
-                    "last_action": "Senest udløst",
-                    "last_triggered": "Senest udløst"
+                    "last_action": "Senest udført",
+                    "last_triggered": "Senest udført"
                 },
                 "settings": "Entitetsindstillinger",
                 "sun": {
@@ -675,7 +795,6 @@
                         "scene": "Scener",
                         "script": "Scripts",
                         "server_control": "Serveradministration",
-                        "tags": "",
                         "users": "Brugere",
                         "zone": "Zoner"
                     },
@@ -772,7 +891,7 @@
                 "error_detected": "Der blev fundet konfigurationsfejl",
                 "key_missing": "Påkrævede nøgle \"{key}\" mangler.",
                 "key_not_expected": "Nøglen \"{key}\" er ikke forventet eller understøttes ikke af den visuelle editor.",
-                "key_wrong_type": "Den angivne værdi for \" {key} \" understøttes ikke af den visuelle editor. Vi understøtter ( {type_correct} ) men modtog ( {type_wrong} ).",
+                "key_wrong_type": "Den angivne værdi for \"{key}\" understøttes ikke af den visuelle editor. Vi understøtter ( {type_correct} ) men modtog ( {type_wrong} ).",
                 "no_type_provided": "Der er ikke angivet nogen type."
             }
         },
@@ -1391,7 +1510,7 @@
                 },
                 "core": {
                     "caption": "Generelt",
-                    "description": "Ændr Home Assistants generelle konfiguration",
+                    "description": "Ændre Home Assistants generelle konfiguration",
                     "section": {
                         "core": {
                             "core_config": {
@@ -2089,7 +2208,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Tilføj tag",
                     "automation_title": "Tag {name} blev scannet",
                     "caption": "Tags",
@@ -2617,7 +2736,7 @@
                             "icon_height": "Ikonhøjde",
                             "image": "Sti til billede",
                             "manual": "Manuel",
-                            "manual_description": "Har du brug for at tilføje et brugerdefineret kort eller bare manuelt skrive yaml?",
+                            "manual_description": "Har du brug for at tilføje et brugerdefineret kort eller bare manuelt skrive YAML?",
                             "maximum": "Maksimum",
                             "minimum": "Minimum",
                             "name": "Navn",
@@ -3160,7 +3279,7 @@
                     "learn_auth_requests": "Lær, hvordan du laver godkendte forespørgsler.",
                     "name": "Navn",
                     "prompt_copy_token": "Kopier din adgangstoken. Den vil ikke blive vist igen.",
-                    "prompt_name": "Navn?"
+                    "prompt_name": "Giv tokenet et navn"
                 },
                 "mfa_setup": {
                     "close": "Luk",

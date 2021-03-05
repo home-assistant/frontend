@@ -650,7 +650,6 @@
                         "scene": "Zeene",
                         "script": "Skripte",
                         "server_control": "Server Kontrolle",
-                        "tags": "Tags",
                         "users": "Benotzer",
                         "zone": "Zone"
                     },
@@ -2083,7 +2082,7 @@
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Tag dobäisetzen",
                     "automation_title": "Tag {name} gouf gescannt",
                     "caption": "Tags",
