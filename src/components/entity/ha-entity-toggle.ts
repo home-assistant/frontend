@@ -17,7 +17,7 @@ import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-switch";
-import "./../ha-formfield";
+import "../ha-formfield";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
