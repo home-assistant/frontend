@@ -19,7 +19,7 @@ import "../../../src/components/ha-svg-icon";
 import {
   extractApiErrorMessage,
   HassioResponse,
-  ignoredStatusCodes,
+  ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
@@ -216,11 +216,7 @@ export class HassioUpdate extends LitElement {
     } catch (err) {
       // Only show an error if the status code was not expected (user behind proxy)
       // or no status at all(connection terminated)
-      if (
-        this.hass.connection.connected &&
-        err.status_code &&
-        !ignoredStatusCodes.has(err.status_code)
-      ) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
           title: this.supervisor.localize("common.error.update_failed"),
           text: extractApiErrorMessage(err),
