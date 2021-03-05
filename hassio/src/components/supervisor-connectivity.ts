@@ -15,15 +15,12 @@ class SupervisorConnectivity extends LitElement {
   @property({ attribute: false }) public supervisor!: Supervisor;
 
   protected render(): TemplateResult {
-    if (
-      !this.supervisor.network.host_internet &&
-      this.supervisor.network.supervisor_internet
-    ) {
+    if (this.supervisor.network.supervisor_internet) {
       return html``;
     }
 
     return html`<div class="connectivity">
-      <span>The supervisor has lost connectivity.</span>
+      <span>${this.supervisor.localize("common.error.lost_connectivity")}</span>
     </div>`;
   }
 

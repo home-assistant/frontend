@@ -3618,7 +3618,8 @@
 
       "error": {
         "unknown": "Unknown error",
-        "update_failed": "Update failed"
+        "update_failed": "Update failed",
+        "lost_connectivity": "The Supervisor has lost connectivity, check the Supervisor logs and your network settings."
       }
     },
     "confirm": {
