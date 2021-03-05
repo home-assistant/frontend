@@ -1,3 +1,4 @@
+import "../components/supervisor-connectivity";
 import {
   css,
   CSSResult,
@@ -62,6 +63,8 @@ class HassioSystem extends LitElement {
             .supervisor=${this.supervisor}
           ></hassio-supervisor-log>
         </div>
+        <supervisor-connectivity .supervisor=${this.supervisor}>
+        </supervisor-connectivity>
       </hass-tabs-subpage>
     `;
   }

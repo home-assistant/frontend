@@ -1,3 +1,4 @@
+import "../components/supervisor-connectivity";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
@@ -133,6 +134,8 @@ class HassioAddonStore extends LitElement {
               </div>
             `
           : ""}
+        <supervisor-connectivity .supervisor=${this.supervisor}>
+        </supervisor-connectivity>
       </hass-tabs-subpage>
     `;
   }

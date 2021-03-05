@@ -50,6 +50,8 @@ export interface WifiConfiguration {
 export interface NetworkInfo {
   interfaces: NetworkInterface[];
   docker: DockerNetwork;
+  supervisor_internet: boolean;
+  host_internet: boolean | null;
 }
 
 export const fetchNetworkInfo = async (
