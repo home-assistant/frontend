@@ -97,6 +97,7 @@
         },
         "common": {
             "cancel": "Avbryt",
+            "close": "Lukk",
             "newest_version": "Nyaste versjon",
             "release_notes": "Utgjevingsnotat",
             "update": "Oppdater ",
@@ -114,6 +115,17 @@
             "addon_stopped": "Tillegg stoppa",
             "addons": "Tillegg",
             "no_addons": "Du har ikkje installert nokon tillegg endå. Gå til tilleggsbutikken for å kome i gang!"
+        },
+        "dialog": {
+            "repositories": {
+                "remove": "Fjern"
+            },
+            "restart_addon": {
+                "confirm_text": "Start tillegget på nytt"
+            },
+            "update": {
+                "snapshot": "Øyeblikksbilde"
+            }
         },
         "panel": {
             "dashboard": "Skrivebord",

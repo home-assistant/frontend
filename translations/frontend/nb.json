@@ -269,6 +269,7 @@
         },
         "common": {
             "cancel": "Avbryt",
+            "close": "Lukk",
             "description": "Beskrivelse",
             "error": {
                 "unknown": "Ukjent feil",
@@ -365,6 +366,7 @@
         },
         "my": {
             "error": "Det oppstod en ukjent feil",
+            "error_addon_not_found": "Tillegget ble ikke funnet",
             "faq_link": "Vanlige spørsmål om Min Home Assistant",
             "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
         },
@@ -1010,6 +1012,9 @@
                 "last_updated": "Sist oppdatert",
                 "person": {
                     "create_zone": "Opprett sone fra gjeldende plassering"
+                },
+                "remote": {
+                    "activity": "Nåværende aktivitet"
                 },
                 "restored": {
                     "confirm_remove_text": "Er du sikker på at du vil fjerne denne entiteten?",

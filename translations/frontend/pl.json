@@ -69,11 +69,11 @@
     "state_badge": {
         "alarm_control_panel": {
             "armed": "uzbr",
-            "armed_away": "uzbrojony",
+            "armed_away": "uzbr",
             "armed_custom_bypass": "uzbr",
-            "armed_home": "uzbrojony",
-            "armed_night": "uzbrojony",
-            "arming": "uzbrajanie",
+            "armed_home": "uzbr",
+            "armed_night": "uzbr",
+            "arming": "uzbr",
             "disarmed": "rozbr",
             "disarming": "rozbr",
             "pending": "oczek",
@@ -269,6 +269,7 @@
         },
         "common": {
             "cancel": "Anuluj",
+            "close": "Zamknij",
             "description": "Opis",
             "error": {
                 "unknown": "Nieznany błąd",
@@ -359,12 +360,13 @@
             "update": {
                 "create_snapshot": "Utwórz snapshot {name} przed aktualizacją",
                 "snapshot": "Snapshot",
-                "snapshotting": "Tworzę snapshot {name}",
+                "snapshotting": "Tworzenie snapshota {name}",
                 "updating": "Aktualizacja {name} do wersji {version}"
             }
         },
         "my": {
             "error": "Wystąpił nieznany błąd",
+            "error_addon_not_found": "Nie znaleziono dodatku",
             "faq_link": "Mój Home Assistant - często zadawane pytania",
             "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
         },
@@ -447,7 +449,7 @@
                 "beta_warning": "Wersje beta są przeznaczone dla testerów i wczesnych użytkowników i mogą zawierać niestabilne zmiany w kodzie",
                 "channel": "Kanał",
                 "cpu_usage": "Zużycie procesora przez Supervisora",
-                "failed_to_reload": "Nie udało się przeładować Supervisora",
+                "failed_to_reload": "Nie udało się wczytać ponownie Supervisora",
                 "failed_to_set_option": "Nie udało się ustawić opcji Supervisora",
                 "failed_to_update": "Nie udało się zaktualizować Supervisora",
                 "join_beta_action": "Dołącz do kanału beta",
@@ -455,7 +457,7 @@
                 "leave_beta_action": "Opuść kanał beta",
                 "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
                 "ram_usage": "Zużycie pamięci przez Supervisora",
-                "reload_supervisor": "Przeładuj Supervisora",
+                "reload_supervisor": "Wczytaj ponownie Supervisora",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
                 "share_diagnostics_description": "Udostępniaj raporty o awariach i informacje diagnostyczne.",
                 "share_diagonstics_description": "Czy chcesz automatycznie udostępniać raporty o awariach i informacje diagnostyczne, gdy Supervisor napotka nieoczekiwane błędy? {line_break} Pozwoli nam to rozwiązać problemy, informacje są dostępne tylko dla głównego zespołu Home Assistant Core i nie będą udostępniane innym. {line_break} Dane nie zawierają żadnych prywatnych/wrażliwych informacji i możesz to wyłączyć w ustawieniach w dowolnym momencie.",
@@ -1010,6 +1012,9 @@
                 "last_updated": "Ostatnio zaktualizowano",
                 "person": {
                     "create_zone": "Utwórz strefę z bieżącej lokalizacji"
+                },
+                "remote": {
+                    "activity": "Aktualna czynność"
                 },
                 "restored": {
                     "confirm_remove_text": "Czy na pewno chcesz usunąć tę encję?",

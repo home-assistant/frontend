@@ -104,6 +104,26 @@
     },
     "supervisor": {
         "addon": {
+            "dashboard": {
+                "capability": {
+                    "apparmor": {
+                        "description": "Application Armor，简称 AppArmor，是一个 Linux 内核安全模块，其限制加载项的部分功能，如网络访问、原始套接字访问、读写或执行特定文件的权限。\n\n加载项可以提供针对其自身进行了优化的安全配置文件，或者要求禁用 AppArmor。一旦禁用，将增加安全风险，也会相应地降低加载项的安全评分。",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "加载项可以通过 Home Assistant 验证用户身份，从而允许其用户通过 Home Assistant 的用户名和密码登录加载项内部的应用程序。此标识代表加载项是否请求此项功能。",
+                        "title": "Home Assistant 身份认证"
+                    },
+                    "host_pid": {
+                        "description": "通常情况下，加载项进程与其他系统进程是隔离的。加载项已要求其有权访问在宿主系统上运行的系统进程，并且在宿主系统上生成进程。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用插件上的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                        "title": "宿主进程命名空间"
+                    }
+                },
+                "protection_mode": {
+                    "content": "此加载项的保护模式已禁用！这将使加载项具有对整个系统的完全访问权限，这增加了安全风险，并且在使用不当时可能会损坏系统。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                    "title": "警告：保护模式已禁用！"
+                }
+            },
             "panel": {
                 "configuration": "配置",
                 "documentation": "文档",
@@ -113,9 +133,13 @@
         },
         "common": {
             "cancel": "取消",
+            "close": "关闭",
             "newest_version": "最新版本",
+            "refresh": "刷新",
             "release_notes": "发行说明",
+            "save": "保存",
             "update": "更新",
+            "update_available": "正在等待 {count} 项更新",
             "version": "版本"
         },
         "confirm": {
@@ -131,11 +155,46 @@
             "addons": "加载项",
             "no_addons": "您尚未安装任何加载项。去加载项商店看看吧！"
         },
+        "dialog": {
+            "registries": {
+                "add_new_registry": "添加新注册信息",
+                "add_registry": "添加注册信息",
+                "failed_to_add": "添加注册信息失败",
+                "failed_to_remove": "删除注册信息失败",
+                "remove": "删除"
+            },
+            "repositories": {
+                "add": "添加",
+                "remove": "删除",
+                "title": "管理加载项 Repo"
+            },
+            "restart_addon": {
+                "confirm_text": "重启加载项",
+                "text": "您确定要重启已更改的加载项吗？"
+            },
+            "update": {
+                "create_snapshot": "在更新前为 {name} 创建快照",
+                "snapshot": "快照",
+                "snapshotting": "正在为 {name} 创建快照",
+                "updating": "正在更新 {name} 至版本 {version}"
+            }
+        },
+        "my": {
+            "error": "发生未知错误",
+            "error_addon_not_found": "未找到加载项",
+            "faq_link": "我的 Home Assistant 常见问题",
+            "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
+        },
         "panel": {
             "dashboard": "仪表盘",
             "snapshots": "快照",
             "store": "加载项商店",
             "system": "系统"
+        },
+        "system": {
+            "supervisor": {
+                "share_diagonstics_description": "您想要在 Supervisor 遇到异常错误时，共享崩溃报告和诊断信息吗？{line_break}这将帮助我们解决问题，此信息仅限 Home Assistant Core 团队访问，不会共享给他人。{line_break}此信息不包含私密、敏感信息，您可以随时在设置中将其禁用。"
+            }
         }
     },
     "ui": {
@@ -661,6 +720,9 @@
                 "last_updated": "上次更新",
                 "person": {
                     "create_zone": "从当前位置创建地点"
+                },
+                "remote": {
+                    "activity": "当前活动"
                 },
                 "restored": {
                     "confirm_remove_text": "您确定要删除此实体吗？",

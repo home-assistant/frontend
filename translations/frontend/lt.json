@@ -65,6 +65,13 @@
             "unknown": "Nežinoma"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "visit_addon_page": "Apsilankykite puslapyje {name}, jei reikia daugiau detalių"
+            }
+        }
+    },
     "ui": {
         "card": {
             "alarm_control_panel": {

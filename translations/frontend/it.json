@@ -1011,6 +1011,9 @@
                 "person": {
                     "create_zone": "Crea zona dalla posizione corrente"
                 },
+                "remote": {
+                    "activity": "Attività corrente"
+                },
                 "restored": {
                     "confirm_remove_text": "Sei sicuro di voler rimuovere questa entità?",
                     "confirm_remove_title": "Rimuovere l'entità?",

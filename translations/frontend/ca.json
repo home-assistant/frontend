@@ -117,6 +117,7 @@
                     "header": "Xarxa",
                     "host": "Amfitrió"
                 },
+                "no_configuration": "Aquest complement no exposa cap configuració amb la que t'hi puguis manegar...",
                 "options": {
                     "edit_in_ui": "Edita a la IU",
                     "edit_in_yaml": "Edita com a YAML",
@@ -139,24 +140,29 @@
                 },
                 "capability": {
                     "apparmor": {
+                        "description": "AppArmor ('Application Armor') és un mòdul de seguretat del nucli Linux que restringeix certes capacitats dels complements com l'accés a la xarxa, l'accés complet a sockets o els permisos per llegir, escriure o executar fitxers específics.\n\nEls autors del complement poden proporcionar els seus perfils de seguretat optimitzats per al complement, o demanar que es desactivi. Si AppArmor està desactivat, augmenten els riscos de seguretat i, per tant, el nivell de seguretat del complement se'n veurà ressentit.",
                         "title": "AppArmor"
                     },
                     "auth_api": {
+                        "description": "Un complement pot autenticar usuaris amb Home Assistant, cosa que permet que els usuaris puguin iniciar sessió a aplicacions que s'estan executant dins de complements mitjançant el seu nom d'usuari/contrasenya de Home Assistant. Aquesta insígnia indica si l'autor del complement ha demanat aquesta funcionalitat.",
                         "title": "Autenticació de Home Assistant"
                     },
                     "docker_api": {
                         "title": "Accés complet a Docker"
                     },
                     "full_access": {
+                        "description": "Aquest complement té accés complet al maquinari del teu sistema per petició del seu autor. Aquest accés és similar al mode privilegiat de Docker. Com que això genera possibles riscos de seguretat, aquesta funció afecta negativament al nivell de seguretat del complement. \n\nAquest accés no s'atorga automàticament i cal que ho confirms. Per fer-ho, has de desactivar manualment el mode de protecció del complement. Desactiva el mode de protecció només si coneixes i confies en l'origen del complement.",
                         "title": "Accés complet al maquinari"
                     },
                     "hassio_api": {
                         "title": "Accés a l'API del Supervisor"
                     },
                     "homeassistant_api": {
+                        "description": "Aquest complement té permís per accedir a la teva instància de Home Assistant directament mitjançant l'API de Home Assistant. Aquest mode també gestiona l'autenticació del complement, cosa que li permet interactuar amb Home Assistant sense necessitat de tokens d'autenticació addicionals.",
                         "title": "Accés a l'API de Home Assistant"
                     },
                     "host_network": {
+                        "description": "Els complements normalment s'executen dins la seva pròpia capa de xarxa aïllada, cosa que els impedeix accedir a la xarxa del sistema operatiu amfitrió. En alguns casos, aquest aïllament pot limitar la prestació dels serveis del complement. Per tant, l'aïllament pot ser eliminat per l'autor del complement; en aquest cas, el complement té un accés complet a les capacitats de xarxa del dispositiu amfitrió. Això li porporciona més capacitats però en redueix la seguretat, per tant, el nivell de seguretat del complement es reduirà quan aquesta opció s'utilitzi.",
                         "title": "Xarxa amfitrió"
                     },
                     "ingress": {
@@ -177,6 +183,7 @@
                         "stage": "fase"
                     },
                     "rating": {
+                        "description": "Home Assistant proporciona un nivell de seguretat a cadascun dels complements que n'indica els riscos que comporta el seu ús. Com més accés tingui el complement al teu sistema, menor serà la puntuació, ja que els possibles riscos de seguretat augmenten. \n\nEl nivell es troba en una escala de l'1 al 6. On l'1 és la puntuació més baixa (menys segur i risc més alt) i la puntuació 6 és la puntuació més alta (més segur i risc més baix).",
                         "title": "Nivell de seguretat del complement"
                     },
                     "role": {
@@ -196,6 +203,8 @@
                 "hostname": "Nom d'amfitrió",
                 "install": "instal·la",
                 "new_update_available": "{name} {version} està disponible",
+                "not_available_arch": "Aquest complement no és compatible amb el processador del dispositiu o amb el sistema operatiu que està instal·lat al dispositiu.",
+                "not_available_version": "Estàs utilitzant Home Assistant {core_version_installed}, per actualitzar el complement a aquesta versió, necessites com mínim la versió {core_version_needed} de Home Assistant",
                 "open_web_ui": "Obre la IU web",
                 "option": {
                     "auto_update": {
@@ -214,10 +223,12 @@
                         "title": "Mode de protecció"
                     },
                     "watchdog": {
-                        "description": "Això farà que s'iniciï el complement en cas de que falli"
+                        "description": "Això farà que s'iniciï el complement en cas de que falli",
+                        "title": "Gos vigilant"
                     }
                 },
                 "protection_mode": {
+                    "content": "El mode de protecció en aquest complement està desactivat. Això fa que el complement tingui accés complet a tot el sistema, cosa que afegeix riscos de seguretat i pot fer malbé el sistema si s'utilitza incorrectament. Desactiva el mode de protecció només si coneixes i confies en l'origen del complement.",
                     "enable": "Activa el mode de protecció",
                     "title": "Alerta: el mode de protecció està desactivat!"
                 },
@@ -251,6 +262,7 @@
         },
         "common": {
             "cancel": "Cancel·la",
+            "close": "Tanca",
             "description": "Descripció",
             "error": {
                 "unknown": "Error desconegut",
@@ -295,7 +307,8 @@
             "addon_new_version": "Nova versió disponible",
             "addon_running": "El complement s'està executant",
             "addon_stopped": "El complement està aturat",
-            "addons": "Complements"
+            "addons": "Complements",
+            "no_addons": "Encara no tens cap complement instal·lat. Vés al directori de complements per començar!"
         },
         "dialog": {
             "network": {
@@ -346,12 +359,14 @@
         },
         "my": {
             "error": "S'ha produït un error desconegut",
+            "error_addon_not_found": "No s'ha trobat el complement",
             "faq_link": "Preguntes freqüents de My Home Assistant",
             "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
         },
         "panel": {
             "dashboard": "Panell",
             "snapshots": "Instantànies",
+            "store": "Directori de complements",
             "system": "Sistema"
         },
         "snapshot": {
@@ -421,6 +436,7 @@
                 "log_provider": "Proveïdor de registres"
             },
             "supervisor": {
+                "beta_backup": "Assegura't que tens còpies de seguretat de les teves dades abans d'activar aquesta funció.",
                 "beta_join_confirm": "Vols unir-te al canal beta?",
                 "beta_release_items": "Això inclou les versions beta de:",
                 "channel": "Canal",
@@ -429,17 +445,24 @@
                 "failed_to_set_option": "No s'ha pogut configurar l'opció del Supervisor",
                 "failed_to_update": "No s'ha pogut actualitzar el Supervisor",
                 "join_beta_action": "Uneix-te al canal beta",
+                "join_beta_description": "Obtén actualitzacions beta de Home Assistant (RCs), del Supervisor i de l'amfitrió",
                 "leave_beta_action": "Deixa el canal beta",
+                "leave_beta_description": "Obtén actualitzacions estables de Home Assistant, del Supervisor i de l'amfitrió",
                 "ram_usage": "Ús de RAM del Supervisor",
                 "reload_supervisor": "Torna a carregar el Supervisor",
                 "share_diagnostics": "Comparteix diagnòstics",
+                "share_diagnostics_description": "Comparteix informes d'errors i informació de diagnòstic.",
+                "share_diagonstics_description": "Vols compartir automàticament informes d'error i informació de diagnòstic quan el Supervisor trobi amb errors inesperats?{line_break} Això ens permetrà solucionar problemes, la informació només és accessible per a l'equip de Home Assistant Core i no es compartirà amb altres persones.{line_break} Les dades no inclouen informació privada/confidencial, ho pots desactivar en qualsevol moment a la configuració.",
                 "share_diagonstics_title": "Ajuda a millorar Home Assistant",
+                "unhealthy_description": "Si utilitzes una instal·lació que no és bona, es produiran problemes. A continuació es mostra una llista de problemes relacionats amb la instal·lació, fes clic als enllaços per obtenir informació sobre com resoldre'ls.",
                 "unhealthy_reason": {
                     "docker": "L'entorn Docker no està funcionant correctament",
                     "privileged": "El Supervisor no és privilegiat",
                     "setup": "Ha fallat la configuració del Supervisor",
                     "supervisor": "El Supervisor no s'ha pogut actualitzar"
                 },
+                "unhealthy_title": "La teva instal·lació no és bona",
+                "unsupported_description": "A continuació es mostra una llista de problemes relacionats amb la instal·lació, fes clic als enllaços per obtenir informació sobre com resoldre'ls.",
                 "unsupported_reason": {
                     "dbus": "DBUS",
                     "docker_configuration": "Configuració de Docker",
@@ -979,6 +1002,9 @@
                 "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
+                },
+                "remote": {
+                    "activity": "Activitat actual"
                 },
                 "restored": {
                     "confirm_remove_text": "Estàs segur que vols eliminar aquesta entitat?",

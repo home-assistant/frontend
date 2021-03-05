@@ -102,12 +102,70 @@
         }
     },
     "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "apparmor": {
+                        "description": "앱아머 ( 'Application Armor')는 네트워크 액세스, 원시 소켓 액세스 및 특정 파일 읽기, 쓰기 또는 실행 권한과 같은 추가 기능 기능을 제한하는 Linux 커널 보안 모듈입니다. \n\n 애드온 작성자는 애드온에 최적화 된 보안 프로필을 제공하거나 비활성화하도록 요청할 수 있습니다. AppArmor가 비활성화되면 보안 위험이 높아져 추가 기능의 보안 점수에 부정적인 영향을 미칩니다.",
+                        "title": "앱아머"
+                    },
+                    "auth_api": {
+                        "description": "애드온은 Home Assistant에서 사용자를 인증 할 수 있으므로 이 기능을 통해 사용자는 Home Assistant 사용자 이름 / 암호를 사용하여 애드온 내에서 실행되는 응용 프로그램에 로그인 할 수 있습니다. 이 배지는 애드온 작성자가이 이러한 기능을 요청하는지 여부를 나타냅니다.",
+                        "title": "홈어시스턴트 인증"
+                    },
+                    "docker_api": {
+                        "description": "애드온 작성자가 시스템에서 실행중인 Docker 인스턴스에 대한 관리 액세스 권한을 갖도록 애드온을 요청했습니다. 이 모드는 애드온이 전체 홈 어시스턴트 시스템에 대한 전체 액세스 및 제어를 제공하여 보안 위험을 추가하고 오용시 시스템을 손상시킬 수 있습니다. 따라서이 기능은 애드온 보안 점수에 부정적인 영향을 미칩니다. \n\n 이 수준의 액세스는 자동으로 부여되지 않으며 귀하가 확인해야합니다. 이렇게하려면 애드온에서 보호 모드를 수동으로 비활성화해야합니다. 이 애드온의 출처를 알고 필요하고 신뢰할 수있는 경우에만 보호 모드를 비활성화하십시오.",
+                        "title": "전체 Docker 액세스"
+                    },
+                    "host_pid": {
+                        "description": "일반적으로 애드온이 실행하는 프로세스는 다른 모든 시스템 프로세스와 격리됩니다. 애드온 작성자는 호스트 시스템 인스턴스에서 실행중인 시스템 프로세스에 액세스 할 수 있도록 애드온을 요청했으며 애드온이 호스트 시스템에서도 프로세스를 생성 할 수 있도록 허용했습니다. 이 모드는 애드온이 전체 홈 어시스턴트 시스템에 대한 전체 액세스 및 제어를 제공하여 보안 위험을 추가하고 오용시 시스템을 손상시킬 수 있습니다. 따라서이 기능은 애드온 보안 점수에 부정적인 영향을 미칩니다. \n\n 이 수준의 액세스는 자동으로 부여되지 않으며 귀하가 확인해야합니다. 이렇게하려면 애드온에서 보호 모드를 수동으로 비활성화해야합니다. 이 애드온의 출처를 알고 필요하고 신뢰할 수있는 경우에만 보호 모드를 비활성화하십시오.",
+                        "title": "호스트 프로세스 네임스페이스"
+                    },
+                    "ingress": {
+                        "description": "이 애드온은 안전하게 내장된 홈어시스턴트 인터페이스로의 진입을 사용합니다.",
+                        "title": "진입"
+                    },
+                    "label": {
+                        "apparmor": "앱아머",
+                        "auth": "인증",
+                        "docker": "Docker",
+                        "hardware": "하드웨어",
+                        "hass": "hass",
+                        "hassio": "Hassio",
+                        "host": "호스트",
+                        "host_pid": "호스트 pid",
+                        "ingress": "진입",
+                        "rating": "평가",
+                        "stage": "단계"
+                    },
+                    "role": {
+                        "manager": "관리자"
+                    }
+                }
+            }
+        },
         "common": {
             "cancel": "취소",
+            "error": {
+                "unknown": "알 수 없는 오류",
+                "update_failed": "업데이트 실패"
+            },
             "failed_to_restart_name": "{name} 을(를) 다시 시작하지 못했습니다",
-            "restart_name": "{name} 다시 시작"
+            "refresh": "새로 고침",
+            "reload": "재실행",
+            "reset_defaults": "기본값으로 재설정",
+            "reset_options": "옵션 재설정",
+            "restart": "재시작",
+            "restart_name": "{name} 다시 시작",
+            "running_version": "현재 버전 {version}을 실행 중입니다.",
+            "save": "저장",
+            "show_more": "자세한 정보 표시"
         },
         "confirm": {
+            "reset_options": {
+                "text": "모든 옵션을 재설정 하시겠습니까?",
+                "title": "옵션 재설정"
+            },
             "restart": {
                 "text": "{name} 을(를) 다시 시작하시겠습니까?",
                 "title": "{name} 다시 시작"
@@ -117,6 +175,36 @@
             }
         },
         "dialog": {
+            "network": {
+                "connected_to": "{ssid} 연결됨",
+                "dhcp": "DHCP",
+                "disabled": "비활성화",
+                "dns_servers": "DNS 서버",
+                "failed_to_change": "네트워크 설정 변경 실패",
+                "gateway": "게이트웨이 주소",
+                "ip_netmask": "IP 주소/넷마스크",
+                "open": "공개",
+                "scan_ap": "액세스 포인트 검색",
+                "static": "정적",
+                "title": "네트워크 설정",
+                "unsaved": "저장하지 않은 변경 사항이 있습니다. 탭을 변경하면 손실됩니다. 계속 하시겠습니까?",
+                "warning": "Wi-Fi, IP 또는 게이트웨이 주소를 변경하는 경우 연결이 끊어 질 수 있습니다!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "신규 레지스트리 추가",
+                "add_registry": "레지스트리 추가",
+                "failed_to_add": "레지스트리 추가 실패",
+                "failed_to_remove": "레지스트리 제거 실패",
+                "no_registries": "구성된 레지스트리 없음",
+                "password": "암호",
+                "registry": "레지스트리",
+                "remove": "제거",
+                "title_add": "신규 컨테이너 레지스트리 추가",
+                "title_manage": "컨테이너 레지스트리 관리",
+                "username": "사용자명"
+            },
             "repositories": {
                 "add": "추가하기",
                 "remove": "제거하기",
@@ -131,6 +219,78 @@
                 "snapshot": "스냅샷",
                 "snapshotting": "{name} 스냅샷을 만드는 중",
                 "updating": "{name} 을(를) {version} 버전으로 업데이트 중"
+            }
+        },
+        "my": {
+            "error": "알려지지 않은 에러 발생",
+            "error_addon_not_found": "애드온을 찾을 수 없습니다.",
+            "faq_link": "자주 묻는 질문",
+            "not_supported": "이 리다이렉트는 홈어시트턴드에서 지원되지 않습니다. {link} 에서 소개되는 리다이렉트와 버전을 확인하세요."
+        },
+        "snapshot": {
+            "available_snapshots": "사용 가능한 스냅샷",
+            "could_not_create": "스냅샷을 만들 수 없습니다.",
+            "create": "생성",
+            "create_blocked_not_running": "{state} 상태이기 때문에 지금은 스냅샷을 생성 할 수 없습니다.",
+            "create_snapshot": "스냅샷 생성",
+            "description": "스냅샷을 사용하면 홈 어시스턴트 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
+            "folder": {
+                "addons/local": "로컬 애드온",
+                "media": "미디어"
+            },
+            "name": "이름",
+            "no_snapshots": "아직 스냅샷이 없습니다.",
+            "security": "보안",
+            "type": "유형",
+            "upload_snapshot": "스냅샷 업로드"
+        },
+        "store": {
+            "missing_addons": "애드온이 없나요? 사용자 프로필에서 고급 모드 활성화 하세요.",
+            "no_results_found": "{repository} 에 결과가 없습니다.",
+            "registries": "레지스트리",
+            "repositories": "저장소"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "코어 CPU 사용량",
+                "ram_usage": "코어 RAM 사용량"
+            },
+            "host": {
+                "change": "변경",
+                "change_hostname": "호스트 이름 변경",
+                "confirm_reboot": "호스트를 재부팅 하시겠습니까?",
+                "confirm_shutdown": "호스트를 종료 하시겠습니까?",
+                "deployment": "배포",
+                "docker_version": "Docker 버전",
+                "emmc_lifetime_used": "eMMC 사용 시간",
+                "failed_to_import_from_usb": "USB에서 가져오기 실패",
+                "failed_to_set_hostname": "호스트 이름 설정 실패",
+                "hardware": "하드웨어",
+                "hostname": "호스트 이름",
+                "import_from_usb": "USB에서 가져오기",
+                "ip_address": "IP 주소",
+                "new_hostname": "새 호스트 이름을 입력하십시오.",
+                "operating_system": "운영 체제",
+                "reboot_host": "호스트 재부팅",
+                "shutdown_host": "호스트 종료",
+                "used_space": "사용 공간"
+            },
+            "log": {
+                "get_logs": "{provider} 로그를 가져 오지 못했습니다 {error}",
+                "log_provider": "로그 제공"
+            },
+            "supervisor": {
+                "channel": "채널",
+                "cpu_usage": "Supervisor CPU 사용량",
+                "failed_to_reload": "Supervisor 재실행 실패",
+                "failed_to_set_option": "Supervisor 옵션 설정 실패",
+                "failed_to_update": "Supervisor 업데이트 실패",
+                "ram_usage": "Supervisor RAM 사용량",
+                "unhealthy_description": "비정상적인 설치를 실행하면 문제가 발생합니다. 다음은 설치시 발견 된 문제 목록입니다. 링크를 클릭하여 문제를 해결하는 방법을 알아보십시오.",
+                "unhealthy_title": "비정상 설치입니다.",
+                "unsupported_description": "다음은 설치시 발견 된 문제 목록입니다. 링크를 클릭하여 문제를 해결하는 방법을 알아보십시오.",
+                "unsupported_title": "지원되지 않는 설치로 운영 중입니다.",
+                "update_supervisor": "Supervisor 업데이트"
             }
         }
     },
@@ -600,6 +760,9 @@
                 "last_updated": "최근 업데이트 됨",
                 "person": {
                     "create_zone": "현재 위치로 지역 만들기"
+                },
+                "remote": {
+                    "activity": "현재 활동"
                 },
                 "restored": {
                     "confirm_remove_text": "이 구성요소를 제거하시겠습니까?",
@@ -2879,7 +3042,7 @@
             "my": {
                 "component_not_loaded": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. 이 리디렉션을 사용하려면 {integration} 통합 구성요소가 필요합니다.",
                 "error": "알 수 없는 오류가 발생했습니다",
-                "faq_link": "내 Home Assistant 자주 묻는 질문",
+                "faq_link": "자주 묻는 질문",
                 "not_supported": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. {link} 에서 지원되는 리디렉션과 리디렉션이 도입된 버전을 확인해주세요."
             },
             "page-authorize": {

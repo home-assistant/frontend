@@ -122,15 +122,28 @@
             "network": {
                 "connected_to": "Forbundet til {ssid}",
                 "dhcp": "DHCP",
+                "disabled": "Deaktiveret",
+                "dns_servers": "DNS servere",
+                "gateway": "Gateway adresse",
+                "ip_netmask": "IP adresse/netmaske",
                 "open": "Åben",
                 "scan_ap": "Scan for adgangspunkter",
                 "static": "Statisk",
-                "title": "Netværksindstillinger"
+                "title": "Netværksindstillinger",
+                "warning": "Hvis du ændrer på Wi-Fi, IP eller Gateway adresser, vil du måske miste forbindelsen!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
             },
             "registries": {
+                "add_new_registry": "Tilføj nyt registry",
+                "add_registry": "Tilføj registry",
+                "failed_to_add": "Fejl under tilføjelse af registry",
                 "failed_to_remove": "fejlede i at fjerne registret",
+                "no_registries": "Ingen registries er konfigurerede",
                 "password": "Kodeord",
-                "remove": "fjern",
+                "registry": "Registry",
+                "remove": "Fjern",
+                "title_manage": "Håndtér container registries",
                 "username": "Brugernavn"
             },
             "repositories": {
@@ -166,8 +179,10 @@
                 "ssl": "SSL"
             },
             "folders": "Mapper",
+            "full_snapshot": "Fuldt snapshot",
             "name": "Navn",
             "no_snapshots": "Du har endnu ingen snapshots.",
+            "partial_snapshot": "Delvist snapshot",
             "password": "Kodeord",
             "password_protected": "beskyttet af kodeord",
             "password_protection": "Adgangskodebeskyttelse",
@@ -192,7 +207,8 @@
                 "new_hostname": "Indtast et nyt værtsnavn:",
                 "operating_system": "Operativsystem",
                 "reboot_host": "Genstart værten",
-                "shutdown_host": "Sluk vært"
+                "shutdown_host": "Sluk vært",
+                "used_space": "Plads forbrug"
             },
             "supervisor": {
                 "share_diagonstics_description": "Ønsker du automatisk at dele rapporter og diagnosticeringsoplysninger når supervisoren oplever uventede fejl? {line_break} Dette vil lade os fikse problemerne, informationerene er kun tilgængelige for Home Assistant Core teamet og vil ikke blive delt med andre. {line_break} Dataene indeholder ikke private/følsomme informationer og du kan slå det fra i indstillingerne til hver en tid.",
@@ -703,6 +719,9 @@
                 "last_updated": "Sidst opdateret",
                 "person": {
                     "create_zone": "Opret zone fra den aktuelle lokalitet"
+                },
+                "remote": {
+                    "activity": "Kørende aktivitet"
                 },
                 "restored": {
                     "confirm_remove_text": "Er du sikker på, at du vil fjerne denne entitet?",

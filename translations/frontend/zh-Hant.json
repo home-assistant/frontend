@@ -1011,6 +1011,9 @@
                 "person": {
                     "create_zone": "使用目前位置新增區域"
                 },
+                "remote": {
+                    "activity": "目前活動"
+                },
                 "restored": {
                     "confirm_remove_text": "確定要移除此實體？",
                     "confirm_remove_title": "移除實體？",
