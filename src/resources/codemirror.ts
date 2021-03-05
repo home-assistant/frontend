@@ -6,7 +6,7 @@ import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import { indentLess, indentMore } from "@codemirror/commands";
 import { Compartment } from "@codemirror/state";
 
-export { keymap, highlightActiveLine } from "@codemirror/view";
+export { keymap, highlightActiveLine, drawSelection } from "@codemirror/view";
 export { CMEditorView as EditorView };
 export { EditorState, Prec } from "@codemirror/state";
 export { defaultKeymap } from "@codemirror/commands";
@@ -47,6 +47,10 @@ export const theme = CMEditorView.theme({
   },
   "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
     backgroundColor: "rgba(var(--rgb-primary-color), 0.3)",
+  },
+
+  ".cm-activeLine": {
+    backgroundColor: "rgba(var(--rgb-secondary-text-color), 0.1)",
   },
 
   ".cm-scroller": { outline: "none" },
