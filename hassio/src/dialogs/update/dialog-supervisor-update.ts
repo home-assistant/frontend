@@ -14,7 +14,10 @@ import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import {
+  extractApiErrorMessage,
+  ignoreSupervisorError,
+} from "../../../../src/data/hassio/common";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -160,7 +163,9 @@ class DialogSupervisorUpdate extends LitElement {
     try {
       await this._dialogParams!.updateHandler!();
     } catch (err) {
-      this._error = extractApiErrorMessage(err);
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
+        this._error = extractApiErrorMessage(err);
+      }
       this._action = null;
       return;
     }
