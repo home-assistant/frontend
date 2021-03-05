@@ -153,7 +153,7 @@
                     },
                     "full_access": {
                         "description": "Deze add-on krijgt volledige toegang tot de hardware van uw systeem, op verzoek van de auteur van de add-on. De toegang is vergelijkbaar met de bevoorrechte modus in Docker. Aangezien dit mogelijke veiligheidsrisico's met zich meebrengt, heeft deze eigenschap een negatieve invloed op de veiligheidsscore van de add-on.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen, moet u de beveiligingsmodus op de add-on handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
-                        "title": "Volledige hardwaretoegang"
+                        "title": "Volledige hardware toegang"
                     },
                     "hassio_api": {
                         "description": "De add-on heeft toegang gekregen tot de Supervisor API, op verzoek van de auteur van de add-on. Standaard heeft de add-on toegang tot algemene versie-informatie van uw systeem. Wanneer de add-on 'manager' of 'admin' niveau toegang tot de API aanvraagt, zal het toegang krijgen om meerdere delen van uw Home Assistant systeem te controleren. Deze toestemming wordt aangegeven met deze badge en zal de beveiligingsscore van de add-on negatief beïnvloeden.",
@@ -164,7 +164,7 @@
                         "title": "Home Assistant API Toegang"
                     },
                     "host_network": {
-                        "description": "Add-ons draaien meestal in hun eigen geïsoleerde netwerklaag, waardoor ze geen toegang hebben tot het netwerk van het host-besturingssysteem. In sommige gevallen kan deze netwerkisolatie add-ons beperken in het leveren van hun diensten en daarom kan de isolatie worden opgeheven door de add-on-auteur, waardoor de add-on volledige toegang krijgt tot de netwerkmogelijkheden van de host-machine. Dit geeft de add-on meer netwerkmogelijkheden maar verlaagt de beveiliging, vandaar dat de beveiligingsclassificatie van de add-on zal worden verlaagd als deze optie door de add-on wordt gebruikt.",
+                        "description": "Add-ons draaien meestal in hun eigen geïsoleerde netwerklaag, waardoor ze geen toegang hebben tot het netwerk van het host-besturingssysteem. In sommige gevallen kan deze netwerkisolatie add-ons beperken in het leveren van hun diensten en daarom kan de isolatie worden opgeheven door de add-on-auteur, waardoor de add-on volledige toegang krijgt tot de netwerk mogelijkheden van de host-machine. Dit geeft de add-on meer netwerkmogelijkheden maar verlaagt de beveiliging, vandaar dat de beveiligingsclassificatie van de add-on zal worden verlaagd als deze optie door de add-on wordt gebruikt.",
                         "title": "Hostnetwerk"
                     },
                     "host_pid": {
@@ -245,15 +245,15 @@
                 "start": "start",
                 "stop": "stop",
                 "uninstall": "verwijderen",
-                "visit_addon_page": "Bezoek de {naam} pagina voor meer details"
+                "visit_addon_page": "Bezoek de {name} pagina voor meer details"
             },
             "documentation": {
                 "get_documentation": "Mislukt om add-on documentatie te krijgen, {error}"
             },
             "failed_to_reset": "Kan configuratie van add-on niet resetten, {error}",
-            "failed_to_save": "Mislukt om add-on configuratie op te slaan, {fout}",
+            "failed_to_save": "Mislukt om add-on configuratie op te slaan, {error}",
             "logs": {
-                "get_logs": "Mislukt om add-on logs te krijgen, {fout}"
+                "get_logs": "Mislukt om add-on logs te krijgen, {error}"
             },
             "panel": {
                 "configuration": "Configuratie",
@@ -269,29 +269,30 @@
         },
         "common": {
             "cancel": "Annuleren",
+            "close": "Sluiten",
             "description": "Omschrijving",
             "error": {
                 "unknown": "Onbekende fout",
                 "update_failed": "Update mislukt"
             },
-            "failed_to_restart_name": "Misloukt om {name} te herstarten",
-            "failed_to_update_name": "Mislukt om {naam} bij te werken",
+            "failed_to_restart_name": "Mislukt om {name} te herstarten",
+            "failed_to_update_name": "Mislukt om {name} bij te werken",
             "learn_more": "Meer informatie",
             "new_version_available": "Nieuwe versie beschikbaar",
             "newest_version": "Nieuwste versie",
             "no": "Nee",
-            "refresh": "Vernieuw",
+            "refresh": "Vernieuwen",
             "release_notes": "Release-notities",
             "reload": "Herlaad",
             "reset_defaults": "Terugzetten naar standaardinstellingen",
             "reset_options": "Reset opties",
             "restart": "Herstart",
-            "restart_name": "Herstart {naam}",
-            "running_version": "U gebruikt momenteel versie {versie}",
+            "restart_name": "Herstart {name}",
+            "running_version": "U gebruikt momenteel versie {version}",
             "save": "Opslaan",
             "show_more": "Toon meer informatie hierover",
             "update": "Update",
-            "update_available": "{count, plural, one {Update} other {{count} Updates}} Pending",
+            "update_available": "{count, plural, one {Update} other {{count} Updates}} Wachtend",
             "version": "Versie",
             "yes": "Ja"
         },
@@ -301,12 +302,12 @@
                 "title": "Reset opties"
             },
             "restart": {
-                "text": "Weet u zeker dat u {naam} opnieuw wilt starten?",
-                "title": "Herstart {naam}"
+                "text": "Weet u zeker dat u {name} opnieuw wilt starten?",
+                "title": "Herstart {name}"
             },
             "update": {
-                "text": "Weet u zeker dat u {naam} wilt updaten naar versie {versie}?",
-                "title": "Update {naam}"
+                "text": "Weet u zeker dat u {name} wilt updaten naar versie {version}?",
+                "title": "Update {name}"
             }
         },
         "dashboard": {
@@ -360,11 +361,12 @@
                 "create_snapshot": "Maak een snapshot van {name} voordat u gaat updaten",
                 "snapshot": "Snapshot",
                 "snapshotting": "Maak een snapshot van {name}",
-                "updating": "Bijwerken van {naam} naar versie {versie}"
+                "updating": "Bijwerken van {name} naar versie {version}"
             }
         },
         "my": {
             "error": "Er is een onbekende fout opgetreden",
+            "error_addon_not_found": "Add-on niet gevonden",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
         },
@@ -379,7 +381,7 @@
             "available_snapshots": "Beschikbare snapshots",
             "could_not_create": "Kon geen snapshot maken",
             "create": "Maak",
-            "create_blocked_not_running": "Het maken van een snapshot is nu niet mogelijk omdat het systeem in {status} staat.",
+            "create_blocked_not_running": "Het maken van een snapshot is nu niet mogelijk omdat het systeem in {state} staat.",
             "create_snapshot": "Maak snapshot",
             "description": "Met snapshots kunt u gemakkelijk een back-up maken van alle gegevens van uw Home Assistant en ze herstellen.",
             "enter_password": "Voer een wachtwoord in.",
@@ -463,7 +465,7 @@
                 "unhealthy_description": "Het draaien van een onvolledige installatie zal problemen veroorzaken. Hieronder vindt u een lijst met problemen die gevonden zijn met uw installatie, klik op de links om te leren hoe u de problemen kunt oplossen.",
                 "unhealthy_reason": {
                     "docker": "De Docker omgeving werkt niet goed",
-                    "privileged": "Supervisor heeft geen priviliged acces",
+                    "privileged": "Supervisor heeft niet voldoende toegang",
                     "setup": "Setup van de Supervisor mislukt",
                     "supervisor": "Supervisor kon niet updaten"
                 },
@@ -478,7 +480,7 @@
                     "lxc": "LXC",
                     "network_manager": "Netwerkmanager",
                     "os": "Besturingssysteem",
-                    "privileged": "Supervisor heeft geen priviliged acces",
+                    "privileged": "Supervisor heeft niet voldoende toegang",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "U gebruikt een niet-ondersteunde installatie",
@@ -1011,6 +1013,9 @@
                 "person": {
                     "create_zone": "Creëer zone van huidige locatie"
                 },
+                "remote": {
+                    "activity": "Huidige activiteit"
+                },
                 "restored": {
                     "confirm_remove_text": "Weet je zeker dat je dit item wilt verwijderen?",
                     "confirm_remove_title": "Entiteit verwijderen?",
@@ -1020,7 +1025,7 @@
                 },
                 "script": {
                     "last_action": "Laatste actie",
-                    "last_triggered": "Voor het laatst uitgevoerd"
+                    "last_triggered": "Laatst geactiveerd"
                 },
                 "settings": "Entiteit instellingen",
                 "sun": {
@@ -1180,7 +1185,7 @@
                 "editor_not_supported": "Visuele editor wordt niet ondersteund voor deze configuratie",
                 "error_detected": "Configuratiefouten ontdekt",
                 "key_missing": "Verplichte sleutel \"{key}\" ontbreekt.",
-                "key_not_expected": "Sleutel \" {key} \" wordt niet verwacht of wordt niet ondersteund door de visuele editor.",
+                "key_not_expected": "Sleutel \"{key}\" wordt niet verwacht of ondersteund door de visuele editor.",
                 "key_wrong_type": "De opgegeven waarde voor \" {key} \" wordt niet ondersteund door de visuele editor. We ondersteunen ( {type_correct} ) maar hebben ( {type_wrong} ) ontvangen.",
                 "no_type_provided": "Geen type opgegeven."
             }
@@ -1680,7 +1685,7 @@
                         "tts": {
                             "default_language": "Standaardtaal om te gebruiken",
                             "dialog": {
-                                "example_message": "Hallo {naam}, je kunt elke tekst afspelen op elke ondersteunde mediaspeler!",
+                                "example_message": "Hallo {name}, je kunt elke tekst afspelen op elke ondersteunde mediaspeler!",
                                 "header": "Probeer Tekst naar Spraak",
                                 "play": "Speel",
                                 "target": "Doel",
@@ -1887,7 +1892,7 @@
                     "cant_edit": "Je kunt alleen items bewerken die in de gebruikersinterface zijn gemaakt.",
                     "caption": "Apparaten",
                     "confirm_delete": "Weet je zeker dat je dit apparaat wilt verwijderen?",
-                    "confirm_disable_config_entry": "Er zijn geen apparaten meer voor de config entry {entry_name}, wil je in plaats daarvan de config entry uitschakelen?",
+                    "confirm_disable_config_entry": "Er zijn geen apparaten meer voor deze configuratie {entry_name}, wil je in plaats daarvan deze configuratie uitschakelen?",
                     "confirm_rename_entity_ids": "Wil je ook de entiteits-ID's van je entiteiten hernoemen?",
                     "confirm_rename_entity_ids_warning": "Dit zal geen enkele configuratie wijzigen (zoals automatiseringen, scripts, scènes, dashboards) die momenteel deze entiteiten gebruikt! U moet ze zelf bijwerken om de nieuwe entiteits-ID's te gebruiken!",
                     "data_table": {
@@ -1905,7 +1910,7 @@
                     "device_not_found": "Apparaat niet gevonden.",
                     "disabled": "Uitgeschakeld",
                     "disabled_by": {
-                        "config_entry": "Configuratie-invoer",
+                        "config_entry": "Configuratie-item",
                         "integration": "Integratie",
                         "user": "Gebruiker"
                     },
@@ -2117,7 +2122,7 @@
                         "loading_first_time": "Even geduld a.u.b. terwijl de integratie wordt geïnstalleerd",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
                         "pick_flow_step": {
-                            "new_flow": "Nee, zet een andere instantie van {integratie} op",
+                            "new_flow": "Nee, zet een andere instantie van {integration} op",
                             "title": "We hebben deze ontdekt. Wil je ze instellen?"
                         },
                         "submit": "Opslaan"
@@ -3021,7 +3026,7 @@
                         "no_entity_more_info": "Geen entiteit voorzien voor meer info dialoog",
                         "no_entity_toggle": "Geen entiteit opgegeven om te schakelen",
                         "no_navigation_path": "Geen navigatiepad opgegeven",
-                        "no_service": "Geen service voor uitvoering opgegeven",
+                        "no_service": "Geen service geselecteerd",
                         "no_url": "Geen URL om te openen opgegeven"
                     },
                     "confirm_delete": "Weet je zeker dat je deze kaart wilt verwijderen?",

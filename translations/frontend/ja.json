@@ -1,7 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "構成エントリ",
+            "config_entry": "設定エントリ",
             "device": "デバイス",
             "integration": "インテグレーション",
             "user": "ユーザー"
@@ -117,20 +117,20 @@
                     "edit_in_yaml": "YAMLで編集",
                     "header": "オプション",
                     "invalid_yaml": "無効なYAML",
-                    "show_unused_optional": "未使用のオプション構成オプションを表示する"
+                    "show_unused_optional": "未使用の設定オプションを表示する"
                 }
             },
             "dashboard": {
                 "action_error": {
                     "get_changelog": "アドオンの変更ログを取得できませんでした",
-                    "go_to_config": "アドオンの起動に失敗しました - 構成検証に失敗しました。",
+                    "go_to_config": "アドオンの起動に失敗しました - 設定検証に失敗しました。",
                     "install": "アドオンのインストールに失敗しました",
                     "restart": "アドオンの再起動に失敗しました",
                     "start": "アドオンの開始に失敗しました",
                     "start_invalid_config": "設定に移動",
                     "stop": "アドオンの停止に失敗しました",
                     "uninstall": "アドオンのアンインストールに失敗しました",
-                    "validate_config": "アドオン構成の検証に失敗しました"
+                    "validate_config": "アドオン設定の検証に失敗しました"
                 },
                 "capability": {
                     "apparmor": {
@@ -198,7 +198,7 @@
                         "title": "アドオンステージ"
                     }
                 },
-                "changelog": "Changelog",
+                "changelog": "更新履歴",
                 "cpu_usage": "アドオンCPU使用率",
                 "hostname": "ホスト名",
                 "install": "インストール",
@@ -220,11 +220,11 @@
                         "title": "サイドバーに表示"
                     },
                     "protected": {
-                        "description": "アドオンからのシステムアクセスの昇格をブロックします。",
+                        "description": "アドオンからシステムアクセスの昇格をブロックします",
                         "title": "保護モード"
                     },
                     "watchdog": {
-                        "description": "これはクラッシュした場合にアドオンを起動します。",
+                        "description": "クラッシュした場合にアドオンを起動します。",
                         "title": "ウォッチドッグ"
                     }
                 },
@@ -244,13 +244,13 @@
             "documentation": {
                 "get_documentation": " {error}アドオンドキュメントの取得に失敗しました"
             },
-            "failed_to_reset": "{error}アドオン構成のリセットに失敗しました",
-            "failed_to_save": " {error}アドオン構成の保存に失敗しました",
+            "failed_to_reset": "{error}アドオン設定のリセットに失敗しました",
+            "failed_to_save": " {error}アドオン設定の保存に失敗しました",
             "logs": {
                 "get_logs": " {error}アドオンログの取得に失敗しました"
             },
             "panel": {
-                "configuration": "構成",
+                "configuration": "設定",
                 "documentation": "ドキュメント",
                 "info": "情報",
                 "log": "ログ"
@@ -333,7 +333,7 @@
                 "add_registry": "レジストリの追加",
                 "failed_to_add": "レジストリを追加できませんでした",
                 "failed_to_remove": "レジストリを削除できませんでした",
-                "no_registries": "レジストリが構成されていません",
+                "no_registries": "レジストリが設定されていません",
                 "password": "パスワード",
                 "registry": "レジストリ",
                 "remove": "削除",
@@ -976,12 +976,12 @@
                     "pattern": "クライアント側検証の正規表現パターン",
                     "text": "テキスト"
                 },
-                "platform_not_loaded": "{platform}統合がロードされていません。 'default_config：'または '' {platform} ： ''を追加して、構成に追加してください。",
+                "platform_not_loaded": "{platform}統合がロードされていません。 'default_config：'または '' {platform} ： ''を追加して、設定に追加してください。",
                 "required_error_msg": "この項目は必須です",
                 "timer": {
                     "duration": "期間"
                 },
-                "yaml_not_editable": "このエンティティの設定は UI から編集できません。UI から設定されたエンティティのみが UI から構成できます。"
+                "yaml_not_editable": "このエンティティの設定は UI から編集できません。UI から設定されたエンティティのみが UI から設定できます。"
             },
             "image_cropper": {
                 "crop": "収納"
@@ -1147,7 +1147,7 @@
                 "power_source": "電源",
                 "quirk": "癖",
                 "services": {
-                    "reconfigure": "ZHAデバイスを再構成します（デバイスの修復）。デバイスに問題がある場合に使用します。問題のデバイスがバッテリー駆動のデバイスである場合は、このサービスを使用するときに、デバイスが起動し、コマンドを受け入れていることを確認してください。",
+                    "reconfigure": "ZHAデバイスを再設定します（デバイスの修復）。デバイスに問題がある場合に使用します。問題のデバイスがバッテリー駆動のデバイスである場合は、このサービスを使用するときに、デバイスが起動し、コマンドを受け入れていることを確認してください。",
                     "remove": "Zigbee ネットワークからデバイスを削除します。",
                     "updateDeviceName": "デバイス レジストリでこのデバイスのカスタム名を設定します。",
                     "zigbee_information": "デバイスのZigbee情報を表示します。"
@@ -1170,7 +1170,7 @@
                 "edit_in_yaml_supported": "YAMLで設定を編集することはできます。",
                 "editor_not_available": "タイプ\"{type}\"で利用できるビジュアルエディタがありません。",
                 "editor_not_supported": "この設定では、Visual エディタはサポートされていません。",
-                "error_detected": "構成エラーが検出されました",
+                "error_detected": "設定エラーが検出されました",
                 "key_missing": "必要なキー \"{key}\" がありません。",
                 "key_not_expected": "キー \" {key} \"は予期されていないか、ビジュアルエディターでサポートされていません。",
                 "key_wrong_type": "\"{key}\" に指定された値は、ビジュアル エディターではサポートされていません。({type_correct}) をサポートしていますが、受信しました ({type_wrong})。",
@@ -1229,7 +1229,7 @@
                         "header": "エリア",
                         "integrations_page": "インテグレーションページ",
                         "introduction": "エリアは、デバイスの場所を整理するために使用されます。この情報は、ホームアシスタント全体で、インターフェイス、アクセス権、他のシステムとの統合を整理するために使用されます。",
-                        "introduction2": "デバイスをエリアに配置するには、次のリンクを使用して統合ページに移動し、構成済みの統合をクリックしてデバイス カードにアクセスします。",
+                        "introduction2": "デバイスをエリアに配置するには、次のリンクを使用して統合ページに移動し、設定済みの統合をクリックしてデバイス カードにアクセスします。",
                         "no_areas": "まだエリアがないようです！"
                     }
                 },
@@ -1686,7 +1686,7 @@
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "ウェブホックを無効にできませんでした：",
-                            "info": "webhook によってトリガーされるように構成された URL を公開可能な URL を与えることができ、インスタンスをインターネットに公開することなく、どこからでもホームアシスタントにデータを送信できます。",
+                            "info": "webhook によってトリガーされるように設定された URL を公開可能な URL を与えることができ、インスタンスをインターネットに公開することなく、どこからでもホームアシスタントにデータを送信できます。",
                             "link_learn_more": "Webhookを利用した自動化の作成について詳しく学んでください。",
                             "loading": "読み込み中...",
                             "manage": "管理",
@@ -1698,7 +1698,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "この UI を介して公開されるエンティティの編集は、configuration.yaml でエンティティ フィルターを構成しているため無効になります。",
+                        "banner": "この UI を介して公開されるエンティティの編集は、configuration.yaml でエンティティ フィルターを設定しているため無効になります。",
                         "dont_expose_entity": "エンティティを公開しない",
                         "expose": "Alexa に公開",
                         "expose_entity": "エンティティの公開",
@@ -1741,7 +1741,7 @@
                         "title": "パスワードを忘れた場合"
                     },
                     "google": {
-                        "banner": "この UI を介して公開されるエンティティの編集は、configuration.yaml でエンティティ フィルターを構成しているため無効になります。",
+                        "banner": "この UI を介して公開されるエンティティの編集は、configuration.yaml でエンティティ フィルターを設定しているため無効になります。",
                         "disable_2FA": "多要素認証を無効にする",
                         "dont_expose_entity": "エンティティを公開しない",
                         "expose": "Google Assistant に公開",
@@ -1826,7 +1826,7 @@
                                 "unit_system_metric": "メトリック"
                             },
                             "header": "一般的な設定",
-                            "introduction": "構成の変更は、面倒なプロセスになる可能性があります。私たちは知っています。このセクションでは、あなたの人生を少しでも楽にしようとしています。"
+                            "introduction": "設定の変更は、面倒なプロセスになる可能性があります。私たちは知っています。このセクションでは、あなたの人生を少しでも楽にしようとしています。"
                         }
                     }
                 },
@@ -1881,7 +1881,7 @@
                     "confirm_delete": "このデバイスを削除してもよろしいですか？",
                     "confirm_disable_config_entry": "{entry_name}デバイスはもうありません。設定エントリを無効にしますか？",
                     "confirm_rename_entity_ids": "エンティティの ID も変更しますか？",
-                    "confirm_rename_entity_ids_warning": "この場合、これらのエンティティを現在使用している構成 (オートメーション、スクリプト、シーン、Lovelace など) は変更されません。",
+                    "confirm_rename_entity_ids_warning": "この場合、これらのエンティティを現在使用している設定 (オートメーション、スクリプト、シーン、Lovelace など) は変更されません。",
                     "data_table": {
                         "area": "エリア",
                         "battery": "バッテリー",
@@ -1897,7 +1897,7 @@
                     "device_not_found": "デバイスが見つかりません。",
                     "disabled": "無効",
                     "disabled_by": {
-                        "config_entry": "構成エントリ",
+                        "config_entry": "設定エントリ",
                         "integration": "インテグレーション",
                         "user": "ユーザー"
                     },
@@ -1976,7 +1976,7 @@
                             "button": "選択したものを削除",
                             "confirm_partly_text": "選択した{selected}エンティティの{selected}削除{removable}のみを削除できます。エンティティが削除できるのは、統合によってエンティティが提供されなくなった場合のみです。削除された統合のエンティティを削除する前に、Home Assistantを再起動する必要がある場合があります。削除可能なエンティティを削除してもよろしいですか？",
                             "confirm_partly_title": "削除できるのは、選択された{number}エンティティのみです。",
-                            "confirm_text": "これらのエンティティが含まれている場合は、Lovelace の構成および自動化からそれらを削除する必要があります。",
+                            "confirm_text": "これらのエンティティが含まれている場合は、Lovelace の設定および自動化からそれらを削除する必要があります。Lovelace",
                             "confirm_title": "{number}エンティティを削除しますか？"
                         },
                         "search": "エンティティを検索",
@@ -2095,8 +2095,8 @@
                     "config_flow": {
                         "aborted": "中止",
                         "close": "閉じる",
-                        "could_not_load": "構成フローを読み込めませんでした",
-                        "created_config": "{name} の構成が作成しました。",
+                        "could_not_load": "設定フローを読み込めませんでした",
+                        "created_config": "{name} の設定を作成しました。",
                         "dismiss": "ダイアログを閉じる",
                         "error": "エラー",
                         "error_saving_area": "エリアを保存できません: {error}",
@@ -2113,7 +2113,7 @@
                         },
                         "submit": "送信"
                     },
-                    "configure": "構成",
+                    "configure": "設定",
                     "configured": "設定済み",
                     "confirm_new": "{integration}を設定しますか？",
                     "description": "インテグレーションの管理とセットアップ",
@@ -2145,12 +2145,12 @@
                     "none_found_detail": "別の検索基準をためしてみます。",
                     "note_about_integrations": "まだすべての統合をUI経由で設定できるわけではありません。",
                     "note_about_website_reference": "より多くが利用可能です",
-                    "reconfigure": "再構成",
+                    "reconfigure": "再設定",
                     "rename_dialog": "このコンフィグレーションエントリーの名前を変更",
                     "rename_input_label": "エントリー名",
                     "search": "インテグレーションを検索"
                 },
-                "introduction": "このビューでは、コンポーネントとHome Assistantを構成できます。まだすべてをUIから構成できるわけではありませんが、現在取り組んでいます。",
+                "introduction": "このビューでは、コンポーネントとHome Assistantを設定できます。まだすべてをUIから設定できるわけではありませんが、現在取り組んでいます。",
                 "logs": {
                     "caption": "ログ",
                     "clear": "消去",
@@ -2306,10 +2306,10 @@
                         "node_count": "{count}ノード"
                     },
                     "node_config": {
-                        "header": "ノード構成",
+                        "header": "ノード設定",
                         "help_source": "設定パラメータの説明とヘルプテキストは、OpenZWaveプロジェクトによって提供されます。",
                         "introduction": "Z-Wave ノードの各種設定パラメータを管理します。",
-                        "wakeup_help": "バッテリ駆動のノードは、構成を変更するためにスリープ状態になっている必要があります。ノードがスリープ解除されていない場合、OpenZWave は、ノードがウェイクアップする次の時間 (または数日後) にノードの構成を更新しようとします。デバイスを起動するには、次の手順に従います。"
+                        "wakeup_help": "バッテリ駆動のノードは、設定を変更するためにスリープ状態になっている必要があります。ノードがスリープ解除されていない場合、OpenZWave は、ノードがウェイクアップする次の時間 (または数日後) にノードの設定を更新しようとします。デバイスを起動するには、次の手順に従います。"
                     },
                     "node_metadata": {
                         "product_manual": "製品マニュアル"
@@ -2318,18 +2318,18 @@
                         "associations": "関連グループとメンバーシップの更新",
                         "cacheload": "OpenZWave キャッシュファイルから情報を読み込んでいます。バッテリー・ノードは、ノードがウェイクアップするまでこの段階にとどまります。",
                         "complete": "面接プロセスが完了しました",
-                        "configuration": "ノードから構成値を取得する",
+                        "configuration": "ノードから設定値を取得する",
                         "dynamic": "ノードから頻繁に変更される値を取得する",
                         "instances": "デバイスがサポートするインスタンスまたはチャネルに関する詳細の取得",
                         "manufacturerspecific1": "ノードからの製造元および製品IDコードの取得",
                         "manufacturerspecific2": "ノードから頻繁に変更される値を取得する",
                         "neighbors": "ノードの近隣ノードのリストの取得",
-                        "nodeinfo": "ノードから構成値を取得する",
+                        "nodeinfo": "ノードから設定値を取得する",
                         "nodeplusinfo": "ノードからZ-Wave +情報を取得する",
                         "probe": "ノードが起動しているかどうかの確認",
                         "protocolinfo": "コントローラからこのノードの基本的なZ-Wave機能を取得する",
                         "session": "ノードから頻繁に変更される値を取得する",
-                        "static": "ノードから構成値を取得する",
+                        "static": "ノードから設定値を取得する",
                         "versions": "ファームウェアおよびコマンドクラスのバージョンに関する情報の取得",
                         "wakeup": "ウェイクアップ キューとメッセージのサポートのセットアップ"
                     },
@@ -2545,7 +2545,7 @@
                         "validation": {
                             "check_config": "設定を確認",
                             "heading": "設定の検証",
-                            "introduction": "構成に変更を加えた後、すべてが有効であることを確認する場合は、構成を検証します。",
+                            "introduction": "設定に変更を加えた後、すべてが有効であることを確認する場合は、設定を検証します。",
                             "invalid": "設定は無効です",
                             "valid": "設定は有効です！"
                         }
@@ -2637,7 +2637,7 @@
                         "search_again": "もう一度検索",
                         "spinner": "ZHA Zigbeeデバイスを検索しています..."
                     },
-                    "button": "構成",
+                    "button": "設定",
                     "cluster_attributes": {
                         "attributes_of_cluster": "選択したクラスターの属性",
                         "get_zigbee_attribute": "Zigbee属性を取得",
@@ -2658,7 +2658,7 @@
                     "clusters": {
                         "header": "クラスター",
                         "help_cluster_dropdown": "クラスターを選択して、属性とコマンドを表示します。",
-                        "introduction": "クラスタは Zigbee 機能の構成要素です。機能を論理単位に分割します。クライアントとサーバーの種類があり、属性とコマンドで構成されています。"
+                        "introduction": "クラスタは Zigbee 機能の設定要素です。機能を論理単位に分割します。クライアントとサーバーの種類があり、属性とコマンドで設定されています。"
                     },
                     "common": {
                         "clusters": "クラスター",
@@ -2666,12 +2666,12 @@
                         "value": "バリュー"
                     },
                     "device_pairing_card": {
-                        "CONFIGURED": "構成の完了",
+                        "CONFIGURED": "設定の完了",
                         "CONFIGURED_status_text": "初期化中",
                         "INITIALIZED": "初期化が完了しました",
                         "INITIALIZED_status_text": "デバイスを使用する準備ができました",
                         "INTERVIEW_COMPLETE": "インタビュー完了",
-                        "INTERVIEW_COMPLETE_status_text": "構成",
+                        "INTERVIEW_COMPLETE_status_text": "設定",
                         "PAIRED": "デバイスが見つかりました",
                         "PAIRED_status_text": "インタビュー開始"
                     },
@@ -2718,7 +2718,7 @@
                 "zone": {
                     "add_zone": "ゾーンを追加",
                     "caption": "ゾーン",
-                    "configured_in_yaml": "configuration.yamlで構成されたゾーンは、UIで編集できません。",
+                    "configured_in_yaml": "configuration.yamlで設定されたゾーンは、UIで編集できません。",
                     "confirm_delete": "このゾーンを削除してもよろしいですか？",
                     "create_zone": "ゾーンを作成",
                     "description": "ユーザーを追跡するゾーンを管理する",
@@ -2739,8 +2739,8 @@
                     },
                     "edit_home_zone": "ホームゾーンの半径は、フロントエンドからはまだ編集できません。マップ上のマーカーをドラッグして、ホームゾーンを移動します。",
                     "edit_home_zone_narrow": "ホームゾーンの半径は、フロントエンドからはまだ編集できません。場所は、一般設定から変更できます。",
-                    "go_to_core_config": "一般的な構成に移動しますか？",
-                    "home_zone_core_config": "ホームゾーンの場所は、一般構成ページから編集できます。ホームゾーンの半径は、フロントエンドからはまだ編集できません。一般構成に移動しますか？",
+                    "go_to_core_config": "一般的な設定に移動しますか？",
+                    "home_zone_core_config": "ホームゾーンの場所は、一般設定ページから編集できます。ホームゾーンの半径は、フロントエンドからはまだ編集できません。一般設定に移動しますか？",
                     "introduction": "ゾーンを使用すると、地球上の特定の地域を指定できます。人がゾーン内にいるとき、州はゾーンから名前を取ります。ゾーンは、オートメーション設定内のトリガーまたは条件として使用することもできます。",
                     "no_zones_created_yet": "まだゾーンを作成していないようです。"
                 },
@@ -2843,12 +2843,12 @@
                         "network_stopped": "Z-Waveネットワークが停止しました"
                     },
                     "node_config": {
-                        "config_parameter": "構成パラメーターの設定",
+                        "config_parameter": "パラメーターの設定",
                         "config_value": "バリューを設定",
                         "false": "偽",
-                        "header": "ノード構成オプション",
+                        "header": "ノード設定オプション",
                         "seconds": "秒",
-                        "set_config_parameter": "構成パラメーターの設定",
+                        "set_config_parameter": "パラメーターの設定",
                         "set_wakeup": "ウェイクアップ間隔を設定",
                         "true": "真"
                     },
@@ -3002,7 +3002,7 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "この機能は、Lovelace UIを制御している場合にのみ使用できます。",
-                    "saving_failed": "Lovelace UI構成の保存に失敗しました。",
+                    "saving_failed": "Lovelace UI設定の保存に失敗しました。",
                     "yaml_unsupported": "YAMLモードでLovelace UIを使用している場合、この関数は使用できません。"
                 },
                 "cards": {
@@ -3033,7 +3033,7 @@
                         "url": "{url_path}へのウィンドウを開く"
                     },
                     "safe-mode": {
-                        "description": "Home Assistant は、構成の読み込み中に問題が発生し、セーフモードで実行されています。エラーログを見て、何が問題だったかを確認してください。",
+                        "description": "Home Assistant は、設定の読み込み中に問題が発生し、セーフモードで実行されています。エラーログを見て、何が問題だったかを確認してください。",
                         "header": "セーフモードがアクティブになりました"
                     },
                     "shopping-list": {
@@ -3322,7 +3322,7 @@
                         "show_code_editor": "コードエディタを表示",
                         "show_visual_editor": "ビジュアルエディターを表示",
                         "toggle_editor": "エディターの切り替え",
-                        "typed_header": "{type}カードの構成",
+                        "typed_header": "{type}カードの設定",
                         "unsaved_changes": "変更が保存されていません"
                     },
                     "edit_lovelace": {
@@ -3335,8 +3335,8 @@
                         "add": "ビューの追加",
                         "delete": "ビューの削除",
                         "edit": "ビューの編集",
-                        "header": "構成を表示",
-                        "header_name": "{name}構成の表示",
+                        "header": "設定を表示",
+                        "header_name": "{name}設定の表示",
                         "move_left": "ビューを左に移動",
                         "move_right": "ビューを右に移動",
                         "tab_badges": "バッジ",
@@ -3371,7 +3371,7 @@
                     },
                     "migrate": {
                         "header": "設定に互換性がありません",
-                        "migrate": "構成を移行する",
+                        "migrate": "設定を移行する",
                         "para_migrate": "Home Assistantは、「設定の移行」ボタンを押すことで、すべてのカードとビューにIDを自動的に追加できます。",
                         "para_no_id": "この要素には ID がありません。'ui-lovelace.yaml' のこの要素に ID を追加してください。"
                     },
@@ -3379,18 +3379,18 @@
                         "header": "カードを移動するビューを選択してください"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Lovelace UI構成を削除すると、エリアとデバイスを含むLovelace UIビューが自動的に生成されます。",
-                        "confirm_remove_config_title": "Lovelace UI構成を削除してもよろしいですか？エリアとデバイスを使用してLovelace UIビューを自動的に生成します。",
+                        "confirm_remove_config_text": "Lovelace UI設定を削除すると、エリアとデバイスを含むLovelace UIビューが自動的に生成されます。",
+                        "confirm_remove_config_title": "Lovelace UI設定を削除してもよろしいですか？エリアとデバイスを使用してLovelace UIビューを自動的に生成します。",
                         "confirm_unsaved_changes": "未保存の変更があります、終了してもよろしいですか？",
                         "confirm_unsaved_comments": "コンフィグレーションはコメントが含まれています、これらは保存されません。本当に続けますか？",
                         "error_invalid_config": "設定が無効です: {error}",
                         "error_parse_yaml": "YAMLを解析できません: {error}",
-                        "error_remove": "構成を削除できません： {error}",
+                        "error_remove": "設定を削除できません： {error}",
                         "error_save_yaml": "YAMLを保存できません: {error}",
                         "header": "設定を編集",
-                        "lovelace_changed": "Lovelace 構成が更新されましたが、エディタで更新された構成をロードして、現在の変更を失いますか?",
+                        "lovelace_changed": "Lovelace設定が更新されましたが、エディタで更新された設定をロードして、現在の変更を失いますか?",
                         "reload": "リロード",
-                        "resources_moved": "リソースはLovelace構成に追加されなくなりましたが、Lovelace構成パネルで追加できます。",
+                        "resources_moved": "リソースはLovelace設定に追加されなくなりましたが、Lovelace設定パネルで追加できます。",
                         "save": "保存",
                         "saved": "保存しました",
                         "unsaved_changes": "保存されていない変更"
@@ -3400,11 +3400,11 @@
                         "close": "閉じる",
                         "empty_config": "新しいダッシュボードから開始する",
                         "header": "Lovelace UIを制御する",
-                        "para": "このダッシュボードは現在、Home Assistantによって管理されています。新しいエンティティまたはLovelace UIコンポーネントが利用可能になると、自動的に更新されます。制御すると、このダッシュボードは自動的に更新されなくなります。いつでも構成で新しいダッシュボードを作成して、変更することができます。",
+                        "para": "このダッシュボードは現在、Home Assistantによって管理されています。新しいエンティティまたはLovelace UIコンポーネントが利用可能になると、自動的に更新されます。制御すると、このダッシュボードは自動的に更新されなくなります。いつでも設定\nで新しいダッシュボードを作成して、変更することができます。",
                         "para_sure": "ユーザー インターフェイスを制御しますか?",
                         "save": "制御する",
-                        "yaml_config": "ここで開始するには、このダッシュボードの現在の構成です。",
-                        "yaml_control": "YAML モードで制御するには、このダッシュボードの構成で指定した名前、またはデフォルトの 'ui-lovelace.yaml' を使用して YAML ファイルを作成します。",
+                        "yaml_config": "ここではダッシュボードの現在の設定を説明します。",
+                        "yaml_control": "YAML モードで制御するには、このダッシュボードの設定で指定した名前、またはデフォルトの 'ui-lovelace.yaml' を使用して YAML ファイルを作成します。",
                         "yaml_mode": "このダッシュボードで YAML モードを使用している場合は、UI から Lovelace 設定を変更することはできません。UI からこのダッシュボードを管理する場合は、'configuration.yaml' の Lovelace 設定から 'mode: yaml' を削除します。"
                     },
                     "select_view": {
@@ -3789,7 +3789,7 @@
         },
         "sidebar": {
             "done": "完了",
-            "external_app_configuration": "アプリの構成",
+            "external_app_configuration": "アプリの設定",
             "sidebar_toggle": "サイドバーの切り替え"
         }
     }

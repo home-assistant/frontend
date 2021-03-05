@@ -131,6 +131,12 @@
                     "apparmor": {
                         "title": "AppArmor"
                     },
+                    "docker_api": {
+                        "title": "Acesso completo ao Docker"
+                    },
+                    "full_access": {
+                        "title": "Acesso completo ao hardware"
+                    },
                     "label": {
                         "apparmor": "AppArmor",
                         "docker": "docker",
@@ -150,16 +156,19 @@
                 },
                 "cpu_usage": "Utilização de CPU do add-on",
                 "install": "Instalar",
+                "new_update_available": "{name} {version} está disponível",
                 "open_web_ui": "Abrir o interface web",
                 "option": {
                     "auto_update": {
                         "title": "Atualização automática"
                     },
                     "boot": {
+                        "description": "Iniciar o add-on durante o arranque do sistema",
                         "title": "Iniciar no Arranque"
                     },
                     "ingress_panel": {
-                        "description": "Adicione este add-on à barra lateral"
+                        "description": "Adicione este add-on à barra lateral",
+                        "title": "Mostrar na barra lateral"
                     },
                     "protected": {
                         "title": "Modo de proteção"
@@ -167,6 +176,10 @@
                     "watchdog": {
                         "title": "Watchdog"
                     }
+                },
+                "protection_mode": {
+                    "enable": "Ativar o modo de proteção",
+                    "title": "Aviso: o modo de proteção está desativado!"
                 },
                 "ram_usage": "Utilização de RAM do add-on",
                 "restart": "Reiniciar",
@@ -243,6 +256,7 @@
                 "scan_ap": "Procurar pontos de acesso",
                 "static": "Estático",
                 "title": "Configurações de rede",
+                "unsaved": "Possuí alterações não gravadas, serão perdidas se mudar de aba. Deseja continuar?",
                 "warning": "Se estiver a alterar os endereços de Wi-Fi, IP ou gateway, poderá perder a ligação.",
                 "wep": "WEP",
                 "wpa": "wpa-psk"
@@ -271,7 +285,7 @@
                 "create_snapshot": "Criar uma imagem de sistema do {name} antes de atualizar",
                 "snapshot": "Imagem de sistema",
                 "snapshotting": "A criar uma imagem de sistema do {home}",
-                "updating": "Actualização {nome} para a versão {versão}"
+                "updating": "Actualizando {nome} para a versão {versão}"
             }
         },
         "my": {
@@ -288,6 +302,7 @@
             "available_snapshots": "Imagens de sistema disponíveis",
             "could_not_create": "Não foi possivel criar imagem de sistema",
             "create": "Criar",
+            "create_blocked_not_running": "Não é possível criar uma imagem de sistema neste momento, porque o sistema encontra-se no estado {state}.",
             "create_snapshot": "Criar imagem de sistema",
             "description": "As imagens de sistema permitem facilmente criar uma cópia de segurança e restaurar todos os dados da sua instancia do Home Assistant",
             "enter_password": "Por favor introduza uma palavra-passe.",

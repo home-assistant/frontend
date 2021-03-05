@@ -269,6 +269,7 @@
         },
         "common": {
             "cancel": "Cancelar",
+            "close": "Cerrar",
             "description": "Descripción",
             "error": {
                 "unknown": "Error desconocido",
@@ -365,6 +366,7 @@
         },
         "my": {
             "error": "Se ha producido un error desconocido",
+            "error_addon_not_found": "Complemento no encontrado",
             "faq_link": "Preguntas frecuentes sobre mi Home Assistant",
             "not_supported": "Esta redirección no es compatible con tu instancia de Home Assistant. Consulta el {link} para conocer las redirecciones admitidas y la versión en la que se introdujeron."
         },
@@ -760,10 +762,10 @@
                 "messages": {
                     "became_unavailable": "dejó de estar disponible",
                     "changed_to_state": "cambiado a {state}",
-                    "cleared_device_class": "no detectado (no se detecta {device_class})",
+                    "cleared_device_class": "borrado (no se detecta {device_class})",
                     "detected_device_class": "detectado {device_class}",
-                    "is_closing": "está cerrando",
-                    "is_opening": "está abriendo",
+                    "is_closing": "se está cerrando",
+                    "is_opening": "se está abriendo",
                     "rose": "salió",
                     "set": "se puso",
                     "turned_off": "apagado",
@@ -772,16 +774,16 @@
                     "was_at_state": "se detectó en {state}",
                     "was_away": "se detectó como ausente",
                     "was_closed": "se cerró",
-                    "was_connected": "fue conectado",
-                    "was_disconnected": "fue desconectado",
+                    "was_connected": "se conectó",
+                    "was_disconnected": "se desconectó",
                     "was_locked": "se bloqueó",
                     "was_low": "era bajo",
                     "was_normal": "era normal",
                     "was_opened": "se abrió",
-                    "was_plugged_in": "fue enchufado",
+                    "was_plugged_in": "se enchufó",
                     "was_safe": "era seguro",
-                    "was_unlocked": "fue desbloqueado",
-                    "was_unplugged": "fue desenchufado",
+                    "was_unlocked": "se desbloqueó",
+                    "was_unplugged": "se desenchufó",
                     "was_unsafe": "era inseguro"
                 }
             },
@@ -896,7 +898,7 @@
         "dialogs": {
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si está deshabilitada, las nuevas entidades que se descubran para {integration} no se añadirán automáticamente a Home Assistant.",
-                "enable_new_entities_label": "Activar entidades recién añadidas.",
+                "enable_new_entities_label": "Habilitar entidades recién añadidas.",
                 "title": "Opciones del sistema para {integration}",
                 "update": "Actualizar"
             },
@@ -911,22 +913,22 @@
                 "editor": {
                     "advanced": "Configuración avanzada",
                     "area": "Establecer solo el área de la entidad",
-                    "area_note": "Por defecto, las entidades de un dispositivo están en la misma área que el dispositivo. Si cambias el área de esta entidad, ya no seguirá el área del dispositivo.",
+                    "area_note": "Por defecto, las entidades de un dispositivo están en la misma área que el dispositivo. Si cambias el área de esta entidad, ya no emulará el área del dispositivo.",
                     "change_device_area": "Cambiar el área del dispositivo",
                     "confirm_delete": "¿Estás seguro de que quieres eliminar este elemento?",
                     "delete": "Eliminar",
                     "device_disabled": "El dispositivo de esta entidad está deshabilitado.",
-                    "enabled_cause": "Desactivado por {cause}.",
+                    "enabled_cause": "Deshabilitada por {cause}.",
                     "enabled_delay_confirm": "Las entidades habilitadas se agregarán a Home Assistant en {delay} segundos",
-                    "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
-                    "enabled_label": "Activar entidad",
+                    "enabled_description": "Las entidades deshabilitadas no se añadirán a Home Assistant.",
+                    "enabled_label": "Habilitar entidad",
                     "enabled_restart_confirm": "Reinicia Home Assistant para terminar de habilitar las entidades",
                     "entity_id": "ID de la entidad",
-                    "follow_device_area": "Seguir el área del dispositivo",
+                    "follow_device_area": "Emular el área del dispositivo",
                     "icon": "Icono",
                     "icon_error": "Los iconos deben tener el formato 'prefijo:nombreicono', por ejemplo, 'mdi:home'",
                     "name": "Nombre",
-                    "note": "Nota: puede que esto no funcione todavía con todas las integraciones",
+                    "note": "Nota: Es posible que esto no funcione todavía con todas las integraciones.",
                     "open_device_settings": "Abrir la configuración del dispositivo",
                     "unavailable": "Esta entidad no está disponible actualmente.",
                     "update": "Actualizar"
@@ -989,7 +991,7 @@
                 "timer": {
                     "duration": "Duración"
                 },
-                "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
+                "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades constituidas desde la IU se pueden configurar desde la IU"
             },
             "image_cropper": {
                 "crop": "Recortar"
@@ -999,7 +1001,7 @@
                     "close_cover": "Cerrar persiana",
                     "close_tile_cover": "Cerrar la inclinación de la persiana",
                     "open_cover": "Abrir persiana",
-                    "open_tilt_cover": "Inclinación de la persiana abierta",
+                    "open_tilt_cover": "Abrir la inclinación de la persiana",
                     "stop_cover": "Detener el movimiento de la persiana"
                 },
                 "details": "Detalles",
@@ -1010,6 +1012,9 @@
                 "last_updated": "Última actualización",
                 "person": {
                     "create_zone": "Crear zona a partir de la ubicación actual"
+                },
+                "remote": {
+                    "activity": "Actividad actual"
                 },
                 "restored": {
                     "confirm_remove_text": "¿Estás seguro de que deseas eliminar esta entidad?",
@@ -1036,10 +1041,10 @@
                     "commands": "Comandos de aspiradora:",
                     "fan_speed": "Velocidad del ventilador",
                     "locate": "Localizar",
-                    "pause": "Pausa",
+                    "pause": "Pausar",
                     "return_home": "Volver a casa",
-                    "start": "Inicio",
-                    "start_pause": "Inicio/Pausa",
+                    "start": "Iniciar",
+                    "start_pause": "Iniciar/Pausar",
                     "status": "Estado",
                     "stop": "Detener"
                 }
@@ -1149,7 +1154,7 @@
                     "remove": "¿Estás seguro de que quieres eliminar este dispositivo?"
                 },
                 "device_signature": "Firma del dispositivo Zigbee",
-                "last_seen": "Ultima vez visto",
+                "last_seen": "Visto por última vez",
                 "manuf": "por {manufacturer}",
                 "no_area": "Ningún área",
                 "power_source": "Fuente de alimentación",
@@ -1770,7 +1775,7 @@
                         "email": "Correo electrónico",
                         "email_error_msg": "Correo electrónico no válido",
                         "forgot_password": "¿Olvidaste la contraseña?",
-                        "introduction": "Home Assistant Cloud te proporciona una conexión remota segura a tu instancia mientras estás fuera de casa. También te permite conectarte con servicios solo en la nube: Amazon Alexa y Google Assistant.",
+                        "introduction": "Home Assistant Cloud te proporciona una conexión remota segura a tu instancia mientras estás fuera de casa. También te permite conectarte con servicios exclusivos de la nube: Amazon Alexa y Google Assistant.",
                         "introduction2": "Este servicio está a cargo de nuestro socio.",
                         "introduction2a": ", una compañía fundada por los fundadores de Home Assistant y Hass.io.",
                         "introduction3": "Home Assistant Cloud es un servicio de suscripción con una prueba gratuita de un mes. No se necesita información de pago.",
@@ -3207,7 +3212,7 @@
                             "columns": "Columnas",
                             "description": "La tarjeta Cuadrícula te permite mostrar varias tarjetas en una cuadrícula.",
                             "name": "Cuadrícula",
-                            "square": "Renderizar tarjetas como cuadrados"
+                            "square": "Representar tarjetas como cuadrados"
                         },
                         "history-graph": {
                             "description": "La tarjeta Historial Gráfico te permite mostrar un gráfico para cada una de las entidades enumeradas.",
@@ -3230,7 +3235,7 @@
                             "name": "Luz"
                         },
                         "logbook": {
-                            "description": "La tarjeta Registro muestra una lista de eventos para las entidades.",
+                            "description": "La tarjeta Registro muestra un listado de eventos de las entidades.",
                             "name": "Registro"
                         },
                         "map": {

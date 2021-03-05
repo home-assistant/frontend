@@ -269,6 +269,7 @@
         },
         "common": {
             "cancel": "Loobu",
+            "close": "Sulge",
             "description": "Kirjeldus",
             "error": {
                 "unknown": "Tundmatu viga",
@@ -365,6 +366,7 @@
         },
         "my": {
             "error": "Viga",
+            "error_addon_not_found": "Lisandmoodulit ei leitud",
             "faq_link": "KKK viide",
             "not_supported": "pole toetatud"
         },
@@ -1011,6 +1013,9 @@
                 "person": {
                     "create_zone": "Loo tsoon praegusest asukohast"
                 },
+                "remote": {
+                    "activity": "Praegune tegevus"
+                },
                 "restored": {
                     "confirm_remove_text": "Oled kindel, et soovid selle olemi eemaldada?",
                     "confirm_remove_title": "Kas eemaldan olemi?",
@@ -1291,7 +1296,7 @@
                                     "extra_fields": {
                                         "code": "Kood",
                                         "message": "Sõnum",
-                                        "position": "Asukoht",
+                                        "position": "Asend",
                                         "title": "Nimetus"
                                     },
                                     "label": "Seade"

@@ -117,6 +117,7 @@
                     "header": "Red",
                     "host": "Host"
                 },
+                "no_configuration": "Este complemento no expone ninguna configuración que pueda alterar...",
                 "options": {
                     "edit_in_ui": "Editar en la interfaz de usuario",
                     "edit_in_yaml": "Editar en YAML",
@@ -128,6 +129,7 @@
             "dashboard": {
                 "action_error": {
                     "get_changelog": "Fallo al obtener el registro de cambios del complemento",
+                    "go_to_config": "Fallo al iniciar complemento - Validación de configuración errónea.",
                     "install": "Fallo al instalar el complemento",
                     "restart": "Fallo al reiniciar el complemento",
                     "start": "Fallo al iniciar el complemento",
@@ -137,8 +139,41 @@
                     "validate_config": "Fallo al validar la configuración del complemento"
                 },
                 "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') es un módulo de seguridad del kernel de Linux que restringe las capacidades de los complementos como el acceso a la red, el acceso al socket sin procesar y el permiso para leer, escribir o ejecutar archivos específicos. \n\n Los autores de complementos pueden proporcionar sus perfiles de seguridad, optimizados para el complemento, o solicitar su desactivación. Si AppArmor está deshabilitado, aumentará los riesgos de seguridad y, por lo tanto, tendrá un impacto negativo en la puntuación de seguridad del complemento.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Un complemento puede autenticar a los usuarios contra Home Assistant, lo que permite que los complementos brinden a los usuarios la posibilidad de iniciar sesión en aplicaciones que se ejecutan dentro de complementos, utilizando su nombre de usuario / contraseña de Home Assistant. Esta insignia indica si el autor del complemento solicita esta capacidad.",
+                        "title": "Autenticación de Home Assistant"
+                    },
+                    "docker_api": {
+                        "description": "El autor del complemento ha solicitado que éste tenga acceso de administración a la instancia de Docker que se ejecuta en su sistema. Este modo le da al complemento acceso y control total a todo su sistema Home Assistant, lo que agrega riesgos de seguridad y podría dañar su sistema si se usa incorrectamente. Por lo tanto, esta característica tiene un impacto negativo en la puntuación de seguridad del complemento. \n\nEste nivel de acceso no se otorga automáticamente y debe ser confirmado por usted. Para hacerlo, debe deshabilitar manualmente el modo de protección en el complemento. Desactive el modo de protección SOLAMENTE si conoce, necesita y confía en la fuente de este complemento.",
+                        "title": "Acceso total a Docker"
+                    },
+                    "full_access": {
+                        "description": "A pedido del autor del complemento, éste tiene acceso total al hardware de su sistema. El acceso es comparable al modo privilegiado en Docker. Dado que esto abre posibles riesgos de seguridad, ésta característica impacta negativamente en la puntuación de seguridad del complemento. \n\nEste nivel de acceso no se otorga automáticamente y debe ser confirmado por usted. Para hacerlo, debe deshabilitar manualmente el modo de protección en el complemento. Desactive el modo de protección SOLAMENTE si conoce, necesita y confía en la fuente de este complemento.",
+                        "title": "Acceso total al hardware"
+                    },
+                    "hassio_api": {
+                        "description": "Al complemento se le dio acceso a la API Supervisor, a solicitud del autor del complemento. De forma predeterminada, el complemento puede acceder a la información general de la versión de su sistema. Cuando el complemento solicita acceso de nivel de 'administrador' a la API, obtendrá acceso para controlar varias partes de su sistema Home Assistant. Este permiso está indicado por esta insignia y afectará negativamente la puntuación de seguridad del complemento.",
+                        "title": "Acceso a la API Supervisor"
+                    },
+                    "homeassistant_api": {
+                        "description": "Este complemento puede acceder a su instancia de Home Assistant en ejecución directamente a través de la API de Home Assistant. Este modo también maneja la autenticación para el complemento, lo que permite que un complemento interactúe con Home Assistant sin la necesidad de tokens de autenticación adicionales.",
+                        "title": "Acceso a la API de Home Assistant"
+                    },
+                    "host_network": {
+                        "description": "Los complementos generalmente se ejecutan en su propia capa de red aislada, lo que les impide acceder a la red del sistema operativo host. En algunos casos, este aislamiento de red puede limitar los complementos en la prestación de sus servicios y, por lo tanto, el autor del complemento puede eliminar el aislamiento, lo que le da al complemento acceso completo a las capacidades de red de la máquina host. Esto le da al complemento más capacidades de red pero reduce la seguridad, por lo tanto, la clasificación de seguridad del complemento se reducirá cuando el complemento utilice esta opción.",
+                        "title": "Red del host"
+                    },
+                    "host_pid": {
+                        "description": "Por lo general, los procesos que ejecuta el complemento están aislados de todos los demás procesos del sistema. El autor del complemento ha solicitado que el complemento tenga acceso a los procesos del sistema que se ejecutan en la instancia del sistema host y que permita que el complemento genere procesos en el sistema host también. Este modo le da al complemento acceso y control total a todo su sistema Home Assistant, lo que agrega riesgos de seguridad y podría dañar su sistema si se usa incorrectamente. Por lo tanto, esta característica tiene un impacto negativo en la puntuación de seguridad del complemento. \n\nEste nivel de acceso no se otorga automáticamente y debe ser confirmado por usted. Para hacerlo, debe deshabilitar manualmente el modo de protección en el complemento. Desactive el modo de protección SOLAMENTE si conoce, necesita y confía en la fuente de este complemento.",
+                        "title": "Espacio de nombres de procesos de host"
+                    },
                     "ingress": {
-                        "description": "Este complemento utiliza Ingress para integrar su interfaz de forma segura en Home Assistant."
+                        "description": "Este complemento utiliza Ingress para integrar su interfaz de forma segura en Home Assistant.",
+                        "title": "Ingress"
                     },
                     "label": {
                         "apparmor": "Apparmor",
@@ -153,20 +188,30 @@
                         "rating": "clasificación",
                         "stage": "Etapa"
                     },
+                    "rating": {
+                        "description": "Home Assistant proporciona una clasificación de seguridad para cada uno de los complementos, que indica los riesgos involucrados al usar tal complemento. Cuanto más acceso requiera un complemento en su sistema, menor será la puntuación, dado que aumentará los posibles riesgos de seguridad. \n\nEl puntaje está en una escala de 1 a 6. Donde 1 es el puntaje más bajo (considerado el menos seguro y de mayor riesgo) y un puntaje de 6 es el puntaje más alto (considerado el más seguro y de menor riesgo).",
+                        "title": "Calificación de seguridad del complemento"
+                    },
                     "role": {
                         "admin": "administrador",
                         "backup": "copia de seguridad",
                         "default": "Predeterminado",
                         "homeassistant": "homeassistant",
                         "manager": "Administrador"
+                    },
+                    "stage": {
+                        "description": "Los complementos pueden tener una de tres etapas: \n\n {icon_stable} ** Estable **: estos son complementos listos para usarse en producción. \n\n {icon_experimental} ** Experimental **: estos pueden contener errores y pueden no estar terminados. \n\n {icon_deprecated} ** Obsoleto **: estos complementos ya no recibirán actualizaciones.",
+                        "title": "Etapa del complemento"
                     }
                 },
                 "changelog": "Registro de cambios",
                 "cpu_usage": "Uso de CPU del complemento",
                 "hostname": "Nombre de host",
+                "install": "instalar",
                 "new_update_available": "{name} {version} está disponible",
                 "not_available_arch": "Este complemento no es compatible con el procesador de su dispositivo o el sistema operativo que ha instalado en su dispositivo.",
                 "not_available_version": "Está ejecutando Home Assistant {core_version_installed} , para actualizar a esta versión del complemento necesitas al menos la versión {core_version_needed} de Home Assistant",
+                "open_web_ui": "Abrir la interfaz de usuario web",
                 "option": {
                     "auto_update": {
                         "description": "Actualice automáticamente el complemento cuando haya una nueva versión disponible",
@@ -189,19 +234,42 @@
                         "title": "Watchdog"
                     }
                 },
+                "protection_mode": {
+                    "content": "¡El modo de protección en este complemento está deshabilitado! Esto le da al complemento acceso completo a todo el sistema, lo que agrega riesgos de seguridad y podría dañar su sistema si se usa incorrectamente. Desactive el modo de protección SOLAMENTE si conoce, necesita y confía en la fuente de este complemento.",
+                    "enable": "Activar el modo de protección",
+                    "title": "Advertencia: ¡El modo de protección está desactivado!"
+                },
                 "ram_usage": "Uso de RAM del complemento",
+                "rebuild": "reconstruir",
                 "restart": "reiniciar",
                 "start": "Iniciar",
+                "stop": "detener",
+                "uninstall": "desinstalar",
                 "visit_addon_page": "Visite la página {name} para obtener más detalles"
             },
             "documentation": {
                 "get_documentation": "Fallo al obtener documentación del complemento, {error}"
             },
+            "failed_to_reset": "Fallo al restablecer la configuración del complemento, {error}",
+            "failed_to_save": "Fallo al guardar la configuración del complemento, {error}",
             "logs": {
                 "get_logs": "Fallo al obtener los registros del complemento, {error}"
+            },
+            "panel": {
+                "configuration": "Configuración",
+                "documentation": "Documentación",
+                "info": "Información",
+                "log": "Registro"
+            },
+            "state": {
+                "installed": "El complemento está instalado",
+                "not_available": "El complemento no está disponible en su sistema",
+                "not_installed": "El complemento no está instalado"
             }
         },
         "common": {
+            "cancel": "Cancelar",
+            "close": "Cerrar",
             "description": "Descripción",
             "error": {
                 "unknown": "Error desconocido",
@@ -211,8 +279,10 @@
             "failed_to_update_name": "Fallo al actualizar {name}",
             "learn_more": "Aprender más",
             "new_version_available": "Nueva versión disponible",
+            "newest_version": "Versión más reciente",
             "no": "No",
             "refresh": "Actualizar",
+            "release_notes": "Notas de lanzamiento",
             "reload": "Recargar",
             "reset_defaults": "Restablecer a los valores predeterminados",
             "reset_options": "Restablecer opciones",
@@ -221,6 +291,7 @@
             "running_version": "Actualmente está ejecutando la versión {version}",
             "save": "Guardar",
             "show_more": "Mostrar más información sobre esto",
+            "update": "Actualizar",
             "update_available": "{count} {count, plural,\n  one {actualización}\n  other {actualizaciones}\n} pendiente/s",
             "version": "Versión",
             "yes": "Si"
@@ -235,12 +306,16 @@
                 "title": "Reiniciar {name}"
             },
             "update": {
-                "text": "¿Estás seguro de actualizar {name} a la versión {version}?"
+                "text": "¿Estás seguro de actualizar {name} a la versión {version}?",
+                "title": "Actualizar {name}"
             }
         },
         "dashboard": {
             "addon_new_version": "Nueva versión disponible",
-            "addon_running": "El complemento se está ejecutando"
+            "addon_running": "El complemento se está ejecutando",
+            "addon_stopped": "El complemento está detenido",
+            "addons": "Complementos",
+            "no_addons": "No hay ningún complemento instalado. ¡Diríjase a la tienda de complementos para comenzar!"
         },
         "dialog": {
             "network": {
@@ -291,10 +366,14 @@
         },
         "my": {
             "error": "Ha ocurrido un error desconocido",
+            "error_addon_not_found": "Complemento no encontrado",
             "faq_link": "Mis preguntas frecuentes de Home Assistant",
             "not_supported": "Esta redirección no está soportada por su instancia de Home Assistant. Consulte las redirecciones soportadas y la versión en la que fueron introducidas en {link}."
         },
         "panel": {
+            "dashboard": "Tablero",
+            "snapshots": "Instantáneas",
+            "store": "Tienda de complementos",
             "system": "Sistema"
         },
         "snapshot": {
@@ -685,6 +764,8 @@
                     "changed_to_state": "cambiado a {state}",
                     "cleared_device_class": "despejado (no se detecta {device_class})",
                     "detected_device_class": "detectado {device_class}",
+                    "is_closing": "se está cerrando",
+                    "is_opening": "se está abriendo",
                     "rose": "salió",
                     "set": "se ocultó",
                     "turned_off": "apagado",
@@ -932,6 +1013,9 @@
                 "person": {
                     "create_zone": "Crear zona desde ubicación actual"
                 },
+                "remote": {
+                    "activity": "Actividad actual"
+                },
                 "restored": {
                     "confirm_remove_text": "¿Está seguro de que desea eliminar esta entidad?",
                     "confirm_remove_title": "¿Eliminar entidad?",
@@ -1004,6 +1088,7 @@
                         "scene": "Escenas",
                         "script": "",
                         "server_control": "Controles del servidor",
+                        "tag": "Etiquetas",
                         "users": "Usuarios",
                         "zone": "Zonas"
                     },
@@ -1062,6 +1147,7 @@
                     "clusters": "Administrar clústeres",
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivo",
+                    "view_in_visualization": "Ver en Visualización",
                     "zigbee_information": "Firma del dispositivo Zigbee"
                 },
                 "confirmations": {
@@ -2639,6 +2725,7 @@
                         "caption": "Visualización",
                         "header": "Visualización de red",
                         "highlight_label": "Resaltar dispositivos",
+                        "refresh_topology": "Actualizar topología",
                         "zoom_label": "Zoom al dispositivo"
                     }
                 },
@@ -3316,6 +3403,8 @@
                         "error_remove": "No se puede eliminar la configuración: {error}",
                         "error_save_yaml": "No se puede guardar YAML: {error}",
                         "header": "Editar configuración",
+                        "lovelace_changed": "La configuración de Lovelace se actualizó, ¿desea cargar la configuración actualizada en el editor y perder los cambios actuales?",
+                        "reload": "Recargar",
                         "resources_moved": "Los recursos ya no se deben agregar a la configuración de Lovelace, sino que se pueden agregar en el panel de configuración de Lovelace.",
                         "save": "Guardar",
                         "saved": "Guardado",

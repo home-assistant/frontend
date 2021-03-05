@@ -102,6 +102,115 @@
             "unknown": "Inconnu"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "header": "Audio"
+                },
+                "options": {
+                    "header": "Options"
+                }
+            },
+            "panel": {
+                "configuration": "Configuration",
+                "documentation": "Documentation",
+                "info": "Info"
+            }
+        },
+        "common": {
+            "cancel": "Annuler",
+            "close": "Fermer",
+            "no": "Non",
+            "reload": "Recharger",
+            "save": "Sauver",
+            "update": "Mise à jour",
+            "version": "Version",
+            "yes": "Oui"
+        },
+        "confirm": {
+            "update": {
+                "title": "Mettre à jour {name}"
+            }
+        },
+        "dialog": {
+            "network": {
+                "dhcp": "DHCP",
+                "disabled": "Désactivé",
+                "dns_servers": "Serveurs DNS",
+                "gateway": "Adresse de la passerelle",
+                "ip_netmask": "Adresse IP / masque réseau",
+                "open": "Ouvrir",
+                "scan_ap": "Rechercher les points d'accès",
+                "static": "Statique",
+                "title": "Paramètres réseaux",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Ajouter un nouveau registre",
+                "add_registry": "Ajouter un registre",
+                "failed_to_add": "Échec de l'ajout du registre",
+                "no_registries": "Aucun registre configuré",
+                "password": "Mot de passe",
+                "registry": "Registre",
+                "remove": "Supprimer",
+                "username": "Nom d'utilisateur"
+            },
+            "repositories": {
+                "add": "Ajouter",
+                "remove": "Supprimer",
+                "title": "Gérer les référentiels d'add-ons"
+            },
+            "restart_addon": {
+                "confirm_text": "Redémarrer add-on"
+            },
+            "update": {
+                "snapshot": "Instantané"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "Add-on non trouvé"
+        },
+        "snapshot": {
+            "available_snapshots": "Instantanés disponibles",
+            "create": "Créer",
+            "create_snapshot": "Créer un instantané",
+            "folder": {
+                "media": "Médias",
+                "share": "Partager",
+                "ssl": "SSL"
+            },
+            "folders": "Dossiers",
+            "name": "Nom",
+            "password": "Mot de passe",
+            "security": "Sécurité",
+            "type": "Type",
+            "upload_snapshot": "Téléverser un instantané"
+        },
+        "store": {
+            "registries": "Registres",
+            "repositories": "Dépôts"
+        },
+        "system": {
+            "host": {
+                "hardware": "Matériel",
+                "reboot_host": "Redémarrer l'hôte",
+                "shutdown_host": "Arrêter l'hôte"
+            },
+            "supervisor": {
+                "channel": "Canal",
+                "reload_supervisor": "Recharger le superviseur",
+                "share_diagonstics_title": "Aider à améliorer Home Assistant",
+                "unsupported_reason": {
+                    "dbus": "DBUS",
+                    "lxc": "LXC",
+                    "systemd": "Systemd"
+                },
+                "warning": "AVERTISSEMENT"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Voulez-vous enregistrer cette connexion?",
@@ -377,6 +486,8 @@
                     "changed_to_state": "changé en {state}.",
                     "cleared_device_class": "effacé (no {device_class} detected)",
                     "detected_device_class": "détecté {device_class}",
+                    "is_closing": "se ferme",
+                    "is_opening": "s'ouvre",
                     "rose": "s'est levé",
                     "set": "s'est couché",
                     "turned_off": "éteint",
@@ -623,6 +734,9 @@
                 "last_updated": "Dernière mise à jour",
                 "person": {
                     "create_zone": "Créer une zone à partir de l'emplacement actuel"
+                },
+                "remote": {
+                    "activity": "Activité en cours"
                 },
                 "restored": {
                     "confirm_remove_text": "Voulez-vous vraiment supprimer cette entité ?",
@@ -3009,6 +3123,7 @@
                         "error_remove": "Impossible de supprimer la configuration: {error}",
                         "error_save_yaml": "Impossible de sauvegarder le YAML : {error}",
                         "header": "Modifier la configuration",
+                        "reload": "Recharger",
                         "resources_moved": "Les ressources ne doivent plus être ajoutées à la configuration Lovelace mais peuvent être ajoutées dans le panneau de configuration Lovelace.",
                         "save": "Enregistrer",
                         "saved": "Enregistré",
