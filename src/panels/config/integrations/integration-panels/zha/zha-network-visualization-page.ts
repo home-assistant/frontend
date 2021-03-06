@@ -27,6 +27,8 @@ import "../../../../../components/ha-svg-icon";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
 import { formatAsPaddedHex } from "./functions";
 import { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import "../../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -55,11 +57,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @internalProperty()
   private _filter?: string;
 
+  private _autoZoom = true;
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
+
     if (this.hass) {
       this._fetchData();
     }
+
     this._network = new Network(
       this._visualization!,
       {},
@@ -92,6 +98,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         },
       }
     );
+
     this._network.on("doubleClick", (properties) => {
       const ieee = properties.nodes[0];
       if (ieee) {
@@ -102,6 +109,17 @@ export class ZHANetworkVisualizationPage extends LitElement {
             `/config/devices/device/${device.device_reg_id}`,
             false
           );
+        }
+      }
+    });
+
+    this._network.on("click", (properties) => {
+      const ieee = properties.nodes[0];
+      if (ieee) {
+        const device = this._devices.get(ieee);
+        if (device && this._autoZoom) {
+          this.zoomedDeviceId = device.device_reg_id;
+          this._zoomToDevice();
         }
       }
     });
@@ -141,6 +159,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
             .deviceFilter=${(device) => this._filterDevices(device)}
             @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
+          <ha-checkbox
+            @change=${this._handleCheckboxChange}
+            .checked=${this._autoZoom}
+          ></ha-checkbox
+          >${this.hass!.localize("ui.panel.config.zha.visualization.auto_zoom")}
           <mwc-button @click=${this._refreshTopology}
             >${this.hass!.localize(
               "ui.panel.config.zha.visualization.refresh_topology"
@@ -323,6 +346,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     }
     return false;
+  }
+
+  private _handleCheckboxChange(ev: Event) {
+    this._autoZoom = (ev.target as HaCheckbox).checked;
   }
 
   static get styles(): CSSResult[] {
