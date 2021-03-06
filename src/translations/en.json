@@ -1531,6 +1531,8 @@
             "add_blueprint": "Import blueprint",
             "use_blueprint": "Create automation",
             "delete_blueprint": "Delete blueprint",
+            "share_blueprint": "Share blueprint",
+            "share_blueprint_no_url": "Unable to share blueprint: no source url",
             "discover_more": "Discover more blueprints"
           },
           "add": {
