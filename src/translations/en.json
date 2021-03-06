@@ -835,7 +835,7 @@
         "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
         "documentation": "documentation",
         "faq_link": "My Home Assistant FAQ",
-        "error": "An unknown error occured"
+        "error": "An unknown error occurred"
       },
       "config": {
         "header": "Configure Home Assistant",
@@ -2097,7 +2097,7 @@
                 "integration": "integration",
                 "device": "device"
               },
-              "disable_confirm": "Are you sure you want to disable this config entry? It's devices and entities will be disabled."
+              "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled."
             }
           },
           "config_flow": {
