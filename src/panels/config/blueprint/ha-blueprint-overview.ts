@@ -1,5 +1,11 @@
 import "@material/mwc-icon-button";
-import { mdiDelete, mdiDownload, mdiHelpCircle, mdiRobot } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDownload,
+  mdiHelpCircle,
+  mdiRobot,
+  mdiShareVariant,
+} from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -140,6 +146,24 @@ class HaBlueprintOverview extends LitElement {
                 )}
               </mwc-button>`,
       },
+      share: {
+        title: "",
+        type: "icon-button",
+        template: (_, blueprint: any) =>
+          blueprint.error
+            ? ""
+            : html`<mwc-icon-button
+                .blueprint=${blueprint}
+                .disabled=${!blueprint.source_url}
+                .label=${this.hass.localize(
+                  blueprint.source_url
+                    ? "ui.panel.config.blueprint.overview.share_blueprint"
+                    : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
+                )}
+                @click=${(ev) => this._share(ev)}
+                ><ha-svg-icon .path=${mdiShareVariant}></ha-svg-icon
+              ></mwc-icon-button>`,
+      },
       delete: {
         title: "",
         type: "icon-button",
@@ -260,6 +284,16 @@ class HaBlueprintOverview extends LitElement {
   private _createNew(ev) {
     const blueprint = ev.currentTarget.blueprint as BlueprintMetaDataPath;
     createNewFunctions[blueprint.domain](this, blueprint);
+  }
+
+  private _share(ev) {
+    const blueprint = ev.currentTarget.blueprint;
+    const params = new URLSearchParams();
+    params.append("redirect", "blueprint_import");
+    params.append("blueprint_url", blueprint.source_url);
+    window.open(
+      `https://my.home-assistant.io/create-link/?${params.toString()}`
+    );
   }
 
   private async _delete(ev) {
