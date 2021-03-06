@@ -37,14 +37,17 @@ export const theme = CMEditorView.theme({
     backgroundColor:
       "var(--code-editor-background-color, var(--card-background-color))",
     "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.3)" },
+    caretColor: "var(--secondary-text-color)",
     height: "var(--code-mirror-height, auto)",
     maxHeight: "var(--code-mirror-max-height, unset)",
   },
 
   "&.cm-focused": { outline: "none" },
+
   "&.cm-focused .cm-cursor": {
-    borderLeftColor: "#var(--secondary-text-color)",
+    borderLeftColor: "var(--secondary-text-color)",
   },
+
   "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
     backgroundColor: "rgba(var(--rgb-primary-color), 0.3)",
   },
