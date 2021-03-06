@@ -1,5 +1,11 @@
 import "@material/mwc-icon-button";
-import { mdiDelete, mdiDownload, mdiHelpCircle, mdiRobot } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDownload,
+  mdiHelpCircle,
+  mdiRobot,
+  mdiShareVariant,
+} from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -7,10 +13,13 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
+import { extractSearchParam } from "../../../common/url/search-params";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
@@ -137,6 +146,24 @@ class HaBlueprintOverview extends LitElement {
                 )}
               </mwc-button>`,
       },
+      share: {
+        title: "",
+        type: "icon-button",
+        template: (_, blueprint: any) =>
+          blueprint.error
+            ? ""
+            : html`<mwc-icon-button
+                .blueprint=${blueprint}
+                .disabled=${!blueprint.source_url}
+                .label=${this.hass.localize(
+                  blueprint.source_url
+                    ? "ui.panel.config.blueprint.overview.share_blueprint"
+                    : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
+                )}
+                @click=${(ev) => this._share(ev)}
+                ><ha-svg-icon .path=${mdiShareVariant}></ha-svg-icon
+              ></mwc-icon-button>`,
+      },
       delete: {
         title: "",
         type: "icon-button",
@@ -154,6 +181,17 @@ class HaBlueprintOverview extends LitElement {
       },
     })
   );
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    if (this.route.path === "/import") {
+      const url = extractSearchParam("blueprint_url");
+      navigate(this, "/config/blueprint/dashboard", true);
+      if (url) {
+        this._addBlueprint(url);
+      }
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -197,7 +235,7 @@ class HaBlueprintOverview extends LitElement {
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
           extended
-          @click=${this._addBlueprint}
+          @click=${this._addBlueprintClicked}
         >
           <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
         </ha-fab>
@@ -228,8 +266,15 @@ class HaBlueprintOverview extends LitElement {
     });
   }
 
-  private _addBlueprint() {
-    showAddBlueprintDialog(this, { importedCallback: () => this._reload() });
+  private _addBlueprint(url?: string) {
+    showAddBlueprintDialog(this, {
+      url,
+      importedCallback: () => this._reload(),
+    });
+  }
+
+  private _addBlueprintClicked(): void {
+    this._addBlueprint();
   }
 
   private _reload() {
@@ -239,6 +284,16 @@ class HaBlueprintOverview extends LitElement {
   private _createNew(ev) {
     const blueprint = ev.currentTarget.blueprint as BlueprintMetaDataPath;
     createNewFunctions[blueprint.domain](this, blueprint);
+  }
+
+  private _share(ev) {
+    const blueprint = ev.currentTarget.blueprint;
+    const params = new URLSearchParams();
+    params.append("redirect", "blueprint_import");
+    params.append("blueprint_url", blueprint.source_url);
+    window.open(
+      `https://my.home-assistant.io/create-link/?${params.toString()}`
+    );
   }
 
   private async _delete(ev) {

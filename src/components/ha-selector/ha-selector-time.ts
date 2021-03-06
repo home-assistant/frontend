@@ -17,6 +17,8 @@ export class HaTimeSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected render() {
     const parts = this.value?.split(":") || [];
     const hours = useAMPM ? parts[0] ?? "12" : parts[0] ?? "0";
@@ -29,6 +31,7 @@ export class HaTimeSelector extends LitElement {
         .sec=${parts[2] ?? "00"}
         .format=${useAMPM ? 12 : 24}
         .amPm=${useAMPM && (Number(hours) > 12 ? "PM" : "AM")}
+        .disabled=${this.disabled}
         @change=${this._timeChanged}
         @am-pm-changed=${this._timeChanged}
         hide-label

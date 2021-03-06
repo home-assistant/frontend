@@ -380,22 +380,24 @@ export class QuickBar extends LitElement {
     QuickBarNavigationItem,
     "action"
   >[] {
-    return Object.keys(this.hass.panels).map((panelKey) => {
-      const panel = this.hass.panels[panelKey];
-      const translationKey = getPanelNameTranslationKey(panel);
+    return Object.keys(this.hass.panels)
+      .filter((panelKey) => panelKey !== "_my_redirect")
+      .map((panelKey) => {
+        const panel = this.hass.panels[panelKey];
+        const translationKey = getPanelNameTranslationKey(panel);
 
-      const text = this.hass.localize(
-        "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-        "panel",
-        this.hass.localize(translationKey) || panel.title || panel.url_path
-      );
+        const text = this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+          "panel",
+          this.hass.localize(translationKey) || panel.title || panel.url_path
+        );
 
-      return {
-        text,
-        icon: getPanelIcon(panel) || DEFAULT_NAVIGATION_ICON,
-        path: `/${panel.url_path}`,
-      };
-    });
+        return {
+          text,
+          icon: getPanelIcon(panel) || DEFAULT_NAVIGATION_ICON,
+          path: `/${panel.url_path}`,
+        };
+      });
   }
 
   private _generateNavigationConfigSectionCommands(): Partial<

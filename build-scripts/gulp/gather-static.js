@@ -85,6 +85,11 @@ gulp.task("copy-translations-app", async () => {
   copyTranslations(staticDir);
 });
 
+gulp.task("copy-translations-supervisor", async () => {
+  const staticDir = paths.hassio_output_static;
+  copyTranslations(staticDir);
+});
+
 gulp.task("copy-static-app", async () => {
   const staticDir = paths.app_output_static;
   // Basic static files

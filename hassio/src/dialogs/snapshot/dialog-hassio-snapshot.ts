@@ -22,7 +22,11 @@ import {
   fetchHassioSnapshotInfo,
   HassioSnapshotDetail,
 } from "../../../../src/data/hassio/snapshot";
-import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../src/dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../../../../src/polymer-types";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -75,6 +79,8 @@ interface FolderItem {
 class HassioSnapshotDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor?: Supervisor;
+
   @internalProperty() private _error?: string;
 
   @internalProperty() private _onboarding = false;
@@ -89,7 +95,7 @@ class HassioSnapshotDialog extends LitElement {
 
   @internalProperty() private _snapshotPassword!: string;
 
-  @internalProperty() private _restoreHass: boolean | null | undefined = true;
+  @internalProperty() private _restoreHass = true;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
@@ -102,6 +108,10 @@ class HassioSnapshotDialog extends LitElement {
 
     this._dialogParams = params;
     this._onboarding = params.onboarding ?? false;
+    this.supervisor = params.supervisor;
+    if (!this._snapshot.homeassistant) {
+      this._restoreHass = false;
+    }
   }
 
   protected render(): TemplateResult {
@@ -127,15 +137,17 @@ class HassioSnapshotDialog extends LitElement {
           (${this._computeSize})<br />
           ${this._formatDatetime(this._snapshot.date)}
         </div>
-        <div>Home Assistant:</div>
-        <paper-checkbox
-          .checked=${this._restoreHass}
-          @change="${(ev: Event) => {
-            this._restoreHass = (ev.target as PaperCheckboxElement).checked;
-          }}"
-        >
-          Home Assistant ${this._snapshot.homeassistant}
-        </paper-checkbox>
+        ${this._snapshot.homeassistant
+          ? html`<div>Home Assistant:</div>
+              <paper-checkbox
+                .checked=${this._restoreHass}
+                @change="${(ev: Event) => {
+                  this._restoreHass = (ev.target as PaperCheckboxElement).checked!;
+                }}"
+              >
+                Home Assistant ${this._snapshot.homeassistant}
+              </paper-checkbox>`
+          : ""}
         ${this._folders.length
           ? html`
               <div>Folders:</div>
@@ -299,6 +311,16 @@ class HassioSnapshotDialog extends LitElement {
 
   private async _partialRestoreClicked() {
     if (
+      this.supervisor !== undefined &&
+      this.supervisor.info.state !== "running"
+    ) {
+      await showAlertDialog(this, {
+        title: "Could not restore snapshot",
+        text: `Restoring a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
+      });
+      return;
+    }
+    if (
       !(await showConfirmationDialog(this, {
         title: "Are you sure you want partially to restore this snapshot?",
         confirmText: "restore",
@@ -317,7 +339,7 @@ class HassioSnapshotDialog extends LitElement {
       .map((folder) => folder.slug);
 
     const data: {
-      homeassistant: boolean | null | undefined;
+      homeassistant: boolean;
       addons: any;
       folders: any;
       password?: string;
@@ -359,6 +381,16 @@ class HassioSnapshotDialog extends LitElement {
   }
 
   private async _fullRestoreClicked() {
+    if (
+      this.supervisor !== undefined &&
+      this.supervisor.info.state !== "running"
+    ) {
+      await showAlertDialog(this, {
+        title: "Could not restore snapshot",
+        text: `Restoring a snapshot is not possible right now because the system is in ${this.supervisor.info.state} state.`,
+      });
+      return;
+    }
     if (
       !(await showConfirmationDialog(this, {
         title:

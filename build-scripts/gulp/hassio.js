@@ -10,6 +10,8 @@ require("./gen-icons-json.js");
 require("./webpack.js");
 require("./compress.js");
 require("./rollup.js");
+require("./gather-static.js");
+require("./translations.js");
 
 gulp.task(
   "develop-hassio",
@@ -20,6 +22,8 @@ gulp.task(
     "clean-hassio",
     "gen-icons-json",
     "gen-index-hassio-dev",
+    "build-supervisor-translations",
+    "copy-translations-supervisor",
     env.useRollup() ? "rollup-watch-hassio" : "webpack-watch-hassio"
   )
 );
@@ -32,6 +36,8 @@ gulp.task(
     },
     "clean-hassio",
     "gen-icons-json",
+    "build-supervisor-translations",
+    "copy-translations-supervisor",
     env.useRollup() ? "rollup-prod-hassio" : "webpack-prod-hassio",
     "gen-index-hassio-prod",
     ...// Don't compress running tests

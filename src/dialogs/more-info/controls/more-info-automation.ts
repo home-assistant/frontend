@@ -10,7 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-relative-time";
-import { triggerAutomation } from "../../../data/automation";
+import { triggerAutomationActions } from "../../../data/automation";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
@@ -36,7 +36,7 @@ class MoreInfoAutomation extends LitElement {
 
       <div class="actions">
         <mwc-button
-          @click=${this.handleAction}
+          @click=${this._runActions}
           .disabled=${UNAVAILABLE_STATES.includes(this.stateObj!.state)}
         >
           ${this.hass.localize("ui.card.automation.trigger")}
@@ -45,8 +45,8 @@ class MoreInfoAutomation extends LitElement {
     `;
   }
 
-  private handleAction() {
-    triggerAutomation(this.hass, this.stateObj!.entity_id);
+  private _runActions() {
+    triggerAutomationActions(this.hass, this.stateObj!.entity_id);
   }
 
   static get styles(): CSSResult {

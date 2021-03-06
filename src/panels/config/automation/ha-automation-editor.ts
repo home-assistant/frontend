@@ -38,7 +38,7 @@ import {
   deleteAutomation,
   getAutomationEditorInitData,
   showAutomationEditor,
-  triggerAutomation,
+  triggerAutomationActions,
 } from "../../../data/automation";
 import {
   showAlertDialog,
@@ -256,7 +256,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                                     )}
                                   </div>
                                   <mwc-button
-                                    @click=${this._excuteAutomation}
+                                    @click=${this._runActions}
                                     .stateObj=${stateObj}
                                   >
                                     ${this.hass.localize(
@@ -381,8 +381,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._errors = undefined;
   }
 
-  private _excuteAutomation(ev: Event) {
-    triggerAutomation(this.hass, (ev.target as any).stateObj.entity_id);
+  private _runActions(ev: Event) {
+    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
   private _preprocessYaml() {

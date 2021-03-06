@@ -32,7 +32,7 @@ import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -272,6 +272,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         height: auto;
         color: var(--paper-item-icon-color, #44739e);
         --mdc-icon-size: 100%;
+        margin-bottom: 8px;
       }
 
       ha-icon,

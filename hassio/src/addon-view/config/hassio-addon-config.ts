@@ -15,11 +15,15 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
+import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
 import {
@@ -28,6 +32,7 @@ import {
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -42,11 +47,15 @@ class HassioAddonConfig extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ type: Boolean }) private _configHasChanged = false;
 
   @property({ type: Boolean }) private _valid = true;
 
   @internalProperty() private _canShowSchema = false;
+
+  @internalProperty() private _showOptional = false;
 
   @internalProperty() private _error?: string;
 
@@ -56,33 +65,70 @@ class HassioAddonConfig extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
+  public computeLabel = (entry: HaFormSchema): string => {
+    return (
+      this.addon.translations[this.hass.language]?.configuration?.[entry.name]
+        ?.name ||
+      this.addon.translations.en?.configuration?.[entry.name].name ||
+      entry.name
+    );
+  };
+
+  private _filteredShchema = memoizeOne(
+    (options: Record<string, unknown>, schema: HaFormSchema[]) => {
+      return schema.filter((entry) => entry.name in options || entry.required);
+    }
+  );
+
   protected render(): TemplateResult {
+    const showForm =
+      !this._yamlMode && this._canShowSchema && this.addon.schema;
+    const hasHiddenOptions =
+      showForm &&
+      JSON.stringify(this.addon.schema) !==
+        JSON.stringify(
+          this._filteredShchema(this.addon.options, this.addon.schema!)
+        );
     return html`
       <h1>${this.addon.name}</h1>
       <ha-card>
         <div class="header">
-          <h2>Configuration</h2>
+          <h2>
+            ${this.supervisor.localize("addon.configuration.options.header")}
+          </h2>
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button slot="trigger">
                 <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
               <mwc-list-item .disabled=${!this._canShowSchema}>
-                ${this._yamlMode ? "Edit in UI" : "Edit in YAML"}
+                ${this._yamlMode
+                  ? this.supervisor.localize(
+                      "addon.configuration.options.edit_in_ui"
+                    )
+                  : this.supervisor.localize(
+                      "addon.configuration.options.edit_in_yaml"
+                    )}
               </mwc-list-item>
               <mwc-list-item class="warning">
-                Reset to defaults
+                ${this.supervisor.localize("common.reset_defaults")}
               </mwc-list-item>
             </ha-button-menu>
           </div>
         </div>
 
         <div class="card-content">
-          ${!this._yamlMode && this._canShowSchema && this.addon.schema
+          ${showForm
             ? html`<ha-form
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
-                .schema=${this.addon.schema}
+                .computeLabel=${this.computeLabel}
+                .schema=${this._showOptional
+                  ? this.addon.schema!
+                  : this._filteredShchema(
+                      this.addon.options,
+                      this.addon.schema!
+                    )}
               ></ha-form>`
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}
@@ -92,14 +138,34 @@ class HassioAddonConfig extends LitElement {
           (this._canShowSchema && this.addon.schema) ||
           this._valid
             ? ""
-            : html` <div class="errors">Invalid YAML</div> `}
+            : html`
+                <div class="errors">
+                  ${this.supervisor.localize(
+                    "addon.configuration.options.invalid_yaml"
+                  )}
+                </div>
+              `}
         </div>
+        ${hasHiddenOptions
+          ? html`<ha-formfield
+              class="show-additional"
+              .label=${this.supervisor.localize(
+                "addon.configuration.options.show_unused_optional"
+              )}
+            >
+              <ha-switch
+                @change=${this._toggleOptional}
+                .checked=${this._showOptional}
+              >
+              </ha-switch>
+            </ha-formfield>`
+          : ""}
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
             .disabled=${!this._configHasChanged || !this._valid}
           >
-            Save
+            ${this.supervisor.localize("common.save")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -108,12 +174,10 @@ class HassioAddonConfig extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._canShowSchema =
-      this.addon.schema !== null &&
-      !this.addon.schema.find(
-        // @ts-ignore
-        (entry) => !SUPPORTED_UI_TYPES.includes(entry.type) || entry.multiple
-      );
+    this._canShowSchema = !this.addon.schema!.find(
+      // @ts-ignore
+      (entry) => !SUPPORTED_UI_TYPES.includes(entry.type) || entry.multiple
+    );
     this._yamlMode = !this._canShowSchema;
   }
 
@@ -146,16 +210,18 @@ class HassioAddonConfig extends LitElement {
     }
   }
 
+  private _toggleOptional() {
+    this._showOptional = !this._showOptional;
+  }
+
   private _configChanged(ev): void {
     if (this.addon.schema && this._canShowSchema && !this._yamlMode) {
       this._valid = true;
       this._configHasChanged = true;
+      this._options! = ev.detail.value;
     } else {
       this._configHasChanged = true;
       this._valid = ev.detail.isValid;
-    }
-    if (this._valid) {
-      this._options! = ev.detail.value;
     }
   }
 
@@ -164,10 +230,10 @@ class HassioAddonConfig extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: this.addon.name,
-      text: "Are you sure you want to reset all your options?",
-      confirmText: "reset options",
-      dismissText: "no",
+      title: this.supervisor.localize("confirm.reset_options.title"),
+      text: this.supervisor.localize("confirm.reset_options.text"),
+      confirmText: this.supervisor.localize("common.reset_options"),
+      dismissText: this.supervisor.localize("common.cancel"),
     });
 
     if (!confirmed) {
@@ -189,9 +255,11 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to reset addon configuration, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.common.update_available",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
     button.progress = false;
   }
@@ -204,8 +272,9 @@ class HassioAddonConfig extends LitElement {
 
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, {
-        options: this._options!,
+        options: this._yamlMode ? this._editor?.value : this._options,
       });
+
       this._configHasChanged = false;
       const eventdata = {
         success: true,
@@ -214,12 +283,14 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
       if (this.addon?.state === "started") {
-        await suggestAddonRestart(this, this.hass, this.addon);
+        await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err) {
-      this._error = `Failed to save addon configuration, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.configuration.options.failed_to_save",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
     button.progress = false;
   }
@@ -275,6 +346,10 @@ class HassioAddonConfig extends LitElement {
         }
         .card-actions.right {
           justify-content: flex-end;
+        }
+
+        .show-additional {
+          padding: 16px;
         }
       `,
     ];

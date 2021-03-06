@@ -1,6 +1,7 @@
 import {
   HassEntityAttributeBase,
   HassEntityBase,
+  HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
@@ -36,6 +37,7 @@ export interface EventAction {
 export interface ServiceAction {
   service: string;
   entity_id?: string;
+  target?: HassServiceTarget;
   data?: Record<string, any>;
 }
 
@@ -115,7 +117,7 @@ export const triggerScript = (
   variables?: Record<string, unknown>
 ) => hass.callService("script", computeObjectId(entityId), variables);
 
-export const canExcecute = (state: ScriptEntity) => {
+export const canRun = (state: ScriptEntity) => {
   if (state.state === "off") {
     return true;
   }

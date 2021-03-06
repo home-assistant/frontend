@@ -18,7 +18,7 @@ import {
   Condition,
   ManualAutomationConfig,
   Trigger,
-  triggerAutomation,
+  triggerAutomationActions,
 } from "../../../data/automation";
 import { Action, MODES, MODES_MAX } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
@@ -42,7 +42,7 @@ export class HaManualAutomationEditor extends LitElement {
   @property() public stateObj?: HassEntity;
 
   protected render() {
-    return html`<ha-config-section .isWide=${this.isWide}>
+    return html`<ha-config-section vertical .isWide=${this.isWide}>
         ${!this.narrow
           ? html` <span slot="header">${this.config.alias}</span> `
           : ""}
@@ -140,7 +140,7 @@ export class HaManualAutomationEditor extends LitElement {
                     )}
                   </div>
                   <mwc-button
-                    @click=${this._excuteAutomation}
+                    @click=${this._runActions}
                     .stateObj=${this.stateObj}
                   >
                     ${this.hass.localize("ui.card.automation.trigger")}
@@ -151,7 +151,7 @@ export class HaManualAutomationEditor extends LitElement {
         </ha-card>
       </ha-config-section>
 
-      <ha-config-section .isWide=${this.isWide}>
+      <ha-config-section vertical .isWide=${this.isWide}>
         <span slot="header">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.header"
@@ -180,7 +180,7 @@ export class HaManualAutomationEditor extends LitElement {
         ></ha-automation-trigger>
       </ha-config-section>
 
-      <ha-config-section .isWide=${this.isWide}>
+      <ha-config-section vertical .isWide=${this.isWide}>
         <span slot="header">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.header"
@@ -209,7 +209,7 @@ export class HaManualAutomationEditor extends LitElement {
         ></ha-automation-condition>
       </ha-config-section>
 
-      <ha-config-section .isWide=${this.isWide}>
+      <ha-config-section vertical .isWide=${this.isWide}>
         <span slot="header">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.header"
@@ -235,12 +235,13 @@ export class HaManualAutomationEditor extends LitElement {
           .actions=${this.config.action}
           @value-changed=${this._actionChanged}
           .hass=${this.hass}
+          .narrow=${this.narrow}
         ></ha-automation-action>
       </ha-config-section>`;
   }
 
-  private _excuteAutomation(ev: Event) {
-    triggerAutomation(this.hass, (ev.target as any).stateObj.entity_id);
+  private _runActions(ev: Event) {
+    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
   private _valueChanged(ev: CustomEvent) {

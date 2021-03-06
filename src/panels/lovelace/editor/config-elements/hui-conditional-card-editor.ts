@@ -61,8 +61,8 @@ export class HuiConditionalCardEditor extends LitElement
     this._config = config;
   }
 
-  public refreshYamlEditor(focus) {
-    this._cardEditorEl?.refreshYamlEditor(focus);
+  public focusYamlEditor() {
+    this._cardEditorEl?.focusYamlEditor();
   }
 
   protected render(): TemplateResult {

@@ -24,6 +24,8 @@ export class HaAreaSelector extends LitElement {
 
   @internalProperty() public _configEntries?: ConfigEntry[];
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected updated(changedProperties) {
     if (changedProperties.has("selector")) {
       const oldSelector = changedProperties.get("selector");
@@ -50,6 +52,7 @@ export class HaAreaSelector extends LitElement {
       .includeDomains=${this.selector.area.entity?.domain
         ? [this.selector.area.entity.domain]
         : undefined}
+      .disabled=${this.disabled}
     ></ha-area-picker>`;
   }
 

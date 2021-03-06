@@ -189,7 +189,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 >
                   ${this._config
                     ? html`
-                        <ha-config-section .isWide=${this.isWide}>
+                        <ha-config-section vertical .isWide=${this.isWide}>
                           ${!this.narrow
                             ? html`
                                 <span slot="header">${this._config.alias}</span>
@@ -299,12 +299,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                     <mwc-button
                                       @click=${this._runScript}
                                       title="${this.hass.localize(
-                                        "ui.panel.config.script.picker.activate_script"
+                                        "ui.panel.config.script.picker.run_script"
                                       )}"
                                       ?disabled=${this._dirty}
                                     >
                                       ${this.hass.localize(
-                                        "ui.card.script.execute"
+                                        "ui.panel.config.script.picker.run_script"
                                       )}
                                     </mwc-button>
                                   </div>
@@ -313,7 +313,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                           </ha-card>
                         </ha-config-section>
 
-                        <ha-config-section .isWide=${this.isWide}>
+                        <ha-config-section vertical .isWide=${this.isWide}>
                           <span slot="header">
                             ${this.hass.localize(
                               "ui.panel.config.script.editor.sequence"
@@ -350,7 +350,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
             ? html`
-                <ha-config-section .isWide=${false}>
+                <ha-config-section vertical .isWide=${false}>
                   ${!this.narrow
                     ? html`<span slot="header">${this._config?.alias}</span>`
                     : ``}
@@ -375,11 +375,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                             <mwc-button
                               @click=${this._runScript}
                               title="${this.hass.localize(
-                                "ui.panel.config.script.picker.activate_script"
+                                "ui.panel.config.script.picker.run_script"
                               )}"
                               ?disabled=${this._dirty}
                             >
-                              ${this.hass.localize("ui.card.script.execute")}
+                              ${this.hass.localize(
+                                "ui.panel.config.script.picker.run_script"
+                              )}
                             </mwc-button>
                           </div>
                         `
