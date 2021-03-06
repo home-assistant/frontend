@@ -148,13 +148,15 @@
                         "title": "Autenticació de Home Assistant"
                     },
                     "docker_api": {
+                        "description": "Aquest complement, per petició del seu autor, demana accés a la instància de Docker del teu sistema. Aquest mode porporciona un control complet de tot el teu sistema Home Assistant al complement. Això genera possibles riscos de seguretat i podria fer malbé el sistema si no s'utilitza adequadament. Per aquesta raó, aquesta funció afecta negativament al nivell de seguretat del complement. \n\nAquest nivell d'accés no s'atorga automàticament i cal que el confirms. Per fer-ho, has de desactivar manualment el mode de protecció del complement. Desactiva el mode de protecció només si coneixes i confies en l'origen del complement.",
                         "title": "Accés complet a Docker"
                     },
                     "full_access": {
-                        "description": "Aquest complement té accés complet al maquinari del teu sistema per petició del seu autor. Aquest accés és similar al mode privilegiat de Docker. Com que això genera possibles riscos de seguretat, aquesta funció afecta negativament al nivell de seguretat del complement. \n\nAquest accés no s'atorga automàticament i cal que ho confirms. Per fer-ho, has de desactivar manualment el mode de protecció del complement. Desactiva el mode de protecció només si coneixes i confies en l'origen del complement.",
+                        "description": "Aquest complement té accés complet al maquinari del teu sistema per petició del seu autor. Aquest accés és similar al mode privilegiat de Docker. Com que això genera possibles riscos de seguretat, aquesta funció afecta negativament al nivell de seguretat del complement. \n\nAquest accés no s'atorga automàticament i cal que el confirms. Per fer-ho, has de desactivar manualment el mode de protecció del complement. Desactiva el mode de protecció només si coneixes i confies en l'origen del complement.",
                         "title": "Accés complet al maquinari"
                     },
                     "hassio_api": {
+                        "description": "Aquest complement té accés a l'API del Supervisor per petició del seu autor. Per defecte, el complement pot accedir a informació de la versió del teu sistema. Si demana a l'API accés de gestió o d'administrador, obtindrà accés per controlar diferents parts de Home Assistant. Aquest permís s'indica amb aquesta insígnia i afecta negativament al nivell de seguretat del complement.",
                         "title": "Accés a l'API del Supervisor"
                     },
                     "homeassistant_api": {
@@ -164,6 +166,10 @@
                     "host_network": {
                         "description": "Els complements normalment s'executen dins la seva pròpia capa de xarxa aïllada, cosa que els impedeix accedir a la xarxa del sistema operatiu amfitrió. En alguns casos, aquest aïllament pot limitar la prestació dels serveis del complement. Per tant, l'aïllament pot ser eliminat per l'autor del complement; en aquest cas, el complement té un accés complet a les capacitats de xarxa del dispositiu amfitrió. Això li porporciona més capacitats però en redueix la seguretat, per tant, el nivell de seguretat del complement es reduirà quan aquesta opció s'utilitzi.",
                         "title": "Xarxa amfitrió"
+                    },
+                    "host_pid": {
+                        "description": "Habitualment, els processos que executen els complements estan aïllats dels altres processos del sistema. L'autor del complement ha demanat tenir accés i poder crear processos del sistema amfitrió. Aquest mode dóna accés i control total de tot el teu sistema Home Assistant al complement. Això genera possibles riscos de seguretat i podria fer malbé el sistema si no s'utilitza adequadament. Per aquesta raó, aquesta funció afecta negativament al nivell de seguretat del complement. \n\nAquest nivell d'accés no s'atorga automàticament i cal que el confirms. Per fer-ho, has de desactivar manualment el mode de protecció del complement. Desactiva el mode de protecció només si coneixes i confies en l'origen del complement.",
+                        "title": "Espai de noms de processos de l'amfitrió"
                     },
                     "ingress": {
                         "description": "Aquest complement utilitza Ingress per poder incrustar la seva interfície de manera segura a Home Assistant.",
@@ -220,6 +226,7 @@
                         "title": "Mostra a la barra lateral"
                     },
                     "protected": {
+                        "description": "Bloqueja l'accés privilegiat del complement al sistema",
                         "title": "Mode de protecció"
                     },
                     "watchdog": {
@@ -439,6 +446,7 @@
                 "beta_backup": "Assegura't que tens còpies de seguretat de les teves dades abans d'activar aquesta funció.",
                 "beta_join_confirm": "Vols unir-te al canal beta?",
                 "beta_release_items": "Això inclou les versions beta de:",
+                "beta_warning": "Les versions beta són per a verificadors i els primers que vulguin provar-la, però poden tenir canvis de codi inestables",
                 "channel": "Canal",
                 "cpu_usage": "Ús de CPU del Supervisor",
                 "failed_to_reload": "No s'ha pogut tornar a carregar el Supervisor",
@@ -464,9 +472,11 @@
                 "unhealthy_title": "La teva instal·lació no és bona",
                 "unsupported_description": "A continuació es mostra una llista de problemes relacionats amb la instal·lació, fes clic als enllaços per obtenir informació sobre com resoldre'ls.",
                 "unsupported_reason": {
+                    "container": "Els contenidors són coneguts per causar problemes",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuració de Docker",
                     "docker_version": "Versió de Docker",
+                    "job_conditions": "Condicions 'job' ignorades",
                     "lxc": "LXC",
                     "network_manager": "Gestor de xarxa",
                     "os": "Sistema operatiu",

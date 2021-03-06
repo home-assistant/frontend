@@ -128,14 +128,14 @@
             },
             "dashboard": {
                 "action_error": {
-                    "get_changelog": "Mislukt om add-on changelog te krijgen",
+                    "get_changelog": "Ophalen changelog van add-on is mislukt",
                     "go_to_config": "Kan de add-on niet starten - configuratie validatie mislukt!",
                     "install": "De installatie van de add-on is mislukt",
                     "restart": "Kan de add-on niet herstarten",
                     "start": "Kan de add-on niet starten",
                     "start_invalid_config": "Ga naar configuratie",
                     "stop": "Kan add-on niet stoppen",
-                    "uninstall": "De installatie van de add-on is mislukt",
+                    "uninstall": "De de-installatie van de add-on is mislukt",
                     "validate_config": "De configuratie van de add-on kon niet worden gevalideerd"
                 },
                 "capability": {
@@ -172,7 +172,7 @@
                         "title": "Host Processes Namespace"
                     },
                     "ingress": {
-                        "description": "Deze add-on maakt gebruik van Ingress om zijn interface veilig toe te passen in Home Assistant.",
+                        "description": "Deze add-on maakt gebruik van Ingress om zijn gebruikersinterface veilig te integreren in Home Assistant.",
                         "title": "Ingress"
                     },
                     "label": {
@@ -209,24 +209,24 @@
                 "hostname": "Hostnaam",
                 "install": "installeren",
                 "new_update_available": "{name} {version} is beschikbaar",
-                "not_available_arch": "Deze add-on is niet compatibel met de processor van uw apparaat of het besturingssysteem dat u op uw apparaat hebt geïnstalleerd.",
-                "not_available_version": "U draait Home Assistant {core_version_installed}. Om de add-on naar deze versie bij te werken dient u op zijn minst Home Assistant {core_version_needed} te hebben.",
+                "not_available_arch": "Deze add-on is niet compatibel met de processor van je apparaat of het besturingssysteem dat je op je apparaat hebt geïnstalleerd.",
+                "not_available_version": "Je draait Home Assistant {core_version_installed}. Om de add-on naar deze versie bij te werken moet je minimaal Home Assistant {core_version_needed} hebben.",
                 "open_web_ui": "Open web UI",
                 "option": {
                     "auto_update": {
                         "description": "Update automatisch de add-on wanneer er een nieuwe versie beschikbaar is",
-                        "title": "Automatisch updaten"
+                        "title": "Automatisch bijwerken"
                     },
                     "boot": {
                         "description": "Laat de add-on starten tijdens het opstarten van het systeem",
                         "title": "Start bij opstarten"
                     },
                     "ingress_panel": {
-                        "description": "Voeg deze add-on toe aan uw zijbalk",
+                        "description": "Voeg deze add-on toe aan je zijbalk",
                         "title": "Weergeven in zijbalk"
                     },
                     "protected": {
-                        "description": "Blokkeert verhoogde systeem toegang van de add-on",
+                        "description": "Blokkeert systeemtoegang met extra rechten voor de add-on",
                         "title": "Beschermingsmodus"
                     },
                     "watchdog": {
@@ -241,19 +241,19 @@
                 },
                 "ram_usage": "Add-on RAM-gebruik",
                 "rebuild": "Herbouw",
-                "restart": "herstarten",
+                "restart": "herstart",
                 "start": "start",
                 "stop": "stop",
                 "uninstall": "verwijderen",
                 "visit_addon_page": "Bezoek de {name} pagina voor meer details"
             },
             "documentation": {
-                "get_documentation": "Mislukt om add-on documentatie te krijgen, {error}"
+                "get_documentation": "Ophalen documentatie van add-on is mislukt, {error}"
             },
             "failed_to_reset": "Kan configuratie van add-on niet resetten, {error}",
             "failed_to_save": "Mislukt om add-on configuratie op te slaan, {error}",
             "logs": {
-                "get_logs": "Mislukt om add-on logs te krijgen, {error}"
+                "get_logs": "Ophalen logs van add-on is mislukt, {error}"
             },
             "panel": {
                 "configuration": "Configuratie",
@@ -275,8 +275,8 @@
                 "unknown": "Onbekende fout",
                 "update_failed": "Update mislukt"
             },
-            "failed_to_restart_name": "Mislukt om {name} te herstarten",
-            "failed_to_update_name": "Mislukt om {name} bij te werken",
+            "failed_to_restart_name": "Herstarten {name} is mislukt",
+            "failed_to_update_name": "Bijwerken {name} is mislukt",
             "learn_more": "Meer informatie",
             "new_version_available": "Nieuwe versie beschikbaar",
             "newest_version": "Nieuwste versie",
@@ -284,15 +284,15 @@
             "refresh": "Vernieuwen",
             "release_notes": "Release-notities",
             "reload": "Herlaad",
-            "reset_defaults": "Terugzetten naar standaardinstellingen",
+            "reset_defaults": "Standaardinstellingen terugzetten",
             "reset_options": "Reset opties",
             "restart": "Herstart",
             "restart_name": "Herstart {name}",
-            "running_version": "U gebruikt momenteel versie {version}",
+            "running_version": "Je gebruikt momenteel versie {version}",
             "save": "Opslaan",
             "show_more": "Toon meer informatie hierover",
             "update": "Update",
-            "update_available": "{count, plural, one {Update} other {{count} Updates}} Wachtend",
+            "update_available": "Er staan {count, plural, one {Update} other {{count} Updates}} klaar",
             "version": "Versie",
             "yes": "Ja"
         },
@@ -323,35 +323,35 @@
                 "dhcp": "DHCP",
                 "disabled": "Uitgeschakeld",
                 "dns_servers": "DNS-servers",
-                "failed_to_change": "Kan de netwerkinstellingen niet wijzigen",
+                "failed_to_change": "Wijzigen netwerkinstellingen mislukt",
                 "gateway": "Gateway-adres",
                 "ip_netmask": "IP-adres/Netmask",
                 "open": "Open",
                 "scan_ap": "Scan voor toegangspunten",
                 "static": "Statisch",
                 "title": "Netwerkinstellingen",
-                "unsaved": "U heeft onopgeslagen wijzigingen, deze gaan verloren als u van tabblad verandert, wilt u doorgaan?",
-                "warning": "Als u het Wi-Fi, IP of gateway adres verandert, kunt u de verbinding verliezen!",
+                "unsaved": "U heeft niet-opgeslagen wijzigingen, deze gaan verloren als u van tabblad verandert, wilt u doorgaan?",
+                "warning": "Als u het Wi-Fi-, IP- of gateway-adres verandert, kunt u de verbinding verliezen!",
                 "wep": "WEP",
                 "wpa": "wpa-psk"
             },
             "registries": {
-                "add_new_registry": "Voeg een nieuw register toe",
-                "add_registry": "Voeg register toe",
-                "failed_to_add": "Mislukt om register toe te voegen",
-                "failed_to_remove": "Het is niet gelukt om het register te verwijderen",
+                "add_new_registry": "Nieuw register toevoegen",
+                "add_registry": "Register toevoegen",
+                "failed_to_add": "Register toevoegen mislukt",
+                "failed_to_remove": "Register verwijderen mislukt",
                 "no_registries": "Geen registers geconfigureerd",
                 "password": "Wachtwoord",
                 "registry": "Register",
                 "remove": "Verwijderen",
                 "title_add": "Nieuwe container registratie toevoegen",
-                "title_manage": "Containerregisters beheren",
+                "title_manage": "Beheer containerregisters",
                 "username": "Gebruikersnaam"
             },
             "repositories": {
                 "add": "Toevoegen",
-                "remove": "Verwijder",
-                "title": "Beheer add-on opslagplaatsen"
+                "remove": "Verwijderen",
+                "title": "Beheer add-on repository's"
             },
             "restart_addon": {
                 "confirm_text": "Herstart add-on",
@@ -360,7 +360,7 @@
             "update": {
                 "create_snapshot": "Maak een snapshot van {name} voordat u gaat updaten",
                 "snapshot": "Snapshot",
-                "snapshotting": "Maak een snapshot van {name}",
+                "snapshotting": "Een snapshot van {name} aan het maken",
                 "updating": "Bijwerken van {name} naar versie {version}"
             }
         },
@@ -405,10 +405,10 @@
             "upload_snapshot": "Upload snapshot"
         },
         "store": {
-            "missing_addons": "Mis je de add-ons? Schakel de geadvanceerde modus in op uw gebruikersprofielpagina",
+            "missing_addons": "Mis je de add-ons? Schakel de geavanceerde modus in op uw gebruikersprofielpagina",
             "no_results_found": "Geen resultaten gevonden in {repository}.",
             "registries": "Registers",
-            "repositories": "Opslagplaatsen"
+            "repositories": "Repository's"
         },
         "system": {
             "core": {
@@ -416,42 +416,42 @@
                 "ram_usage": "Core RAM-gebruik"
             },
             "host": {
-                "change": "Verander",
+                "change": "Wijzig",
                 "change_hostname": "Hostnaam wijzigen",
-                "confirm_reboot": "Weet u zeker dat u de host opnieuw wilt opstarten?",
+                "confirm_reboot": "Weet u zeker dat u de host wilt herstarten?",
                 "confirm_shutdown": "Weet je zeker dat je de host wilt afsluiten?",
-                "deployment": "Implementatie",
+                "deployment": "Uitrol",
                 "docker_version": "Docker versie",
                 "emmc_lifetime_used": "eMMC Levensduur Gebruikt",
                 "failed_to_get_hardware_list": "Kan geen hardware lijst krijgen",
                 "failed_to_import_from_usb": "Importeren vanaf USB mislukt",
-                "failed_to_reboot": "Kan de host niet herstarten",
+                "failed_to_reboot": "Herstarten host mislukt",
                 "failed_to_set_hostname": "Instellen hostnaam mislukt",
-                "failed_to_shutdown": "Het is niet gelukt om de host af te sluiten",
+                "failed_to_shutdown": "Afsluiten host mislukt",
                 "hardware": "Hardware",
                 "hostname": "Hostnaam",
                 "import_from_usb": "Importeren van USB",
                 "ip_address": "IP-adres",
                 "new_hostname": "Voer een nieuwe hostnaam in:",
                 "operating_system": "Besturingssysteem",
-                "reboot_host": "Host opnieuw opstarten",
+                "reboot_host": "Host herstarten",
                 "shutdown_host": "Host afsluiten",
                 "used_space": "Gebruikte ruimte"
             },
             "log": {
-                "get_logs": "Mislukt om {provider} logs te krijgen, {error}",
+                "get_logs": "Ophalen {provider} logs mislukt, {error}",
                 "log_provider": "Logboekprovider"
             },
             "supervisor": {
-                "beta_backup": "Zorg ervoor dat u back-ups van uw gegevens hebt voordat u deze functie activeert.",
+                "beta_backup": "Zorg ervoor dat je back-ups van je gegevens hebt voordat je deze functie activeert.",
                 "beta_join_confirm": "Wil je meedoen met de bèta releases?",
                 "beta_release_items": "Dit omvat beta releases voor:",
                 "beta_warning": "Beta-releases zijn voor testers en early adopters en kunnen onstabiele codewijzigingen bevatten",
                 "channel": "Kanaal",
                 "cpu_usage": "Supervisor CPU-gebruik",
-                "failed_to_reload": "Het is niet gelukt de Supervisor te herladen",
-                "failed_to_set_option": "Mislukt om Supervisor-optie in te stellen",
-                "failed_to_update": "Het is niet gelukt om de Supervisor bij te werken",
+                "failed_to_reload": "Herladen van de Supervisor is mislukt",
+                "failed_to_set_option": "Instellen van Supervisor-optie is mislukt",
+                "failed_to_update": "Bijwerken van de Supervisor is mislukt",
                 "join_beta_action": "Word lid van het beta-kanaal",
                 "join_beta_description": "Ontvang beta-updates voor Home Assistant (RC's), Supervisor en host",
                 "leave_beta_action": "Verlaat beta-kanaal",
@@ -465,12 +465,12 @@
                 "unhealthy_description": "Het draaien van een onvolledige installatie zal problemen veroorzaken. Hieronder vindt u een lijst met problemen die gevonden zijn met uw installatie, klik op de links om te leren hoe u de problemen kunt oplossen.",
                 "unhealthy_reason": {
                     "docker": "De Docker omgeving werkt niet goed",
-                    "privileged": "Supervisor heeft niet voldoende toegang",
+                    "privileged": "Supervisor heeft onvoldoende toegangsrechten",
                     "setup": "Setup van de Supervisor mislukt",
-                    "supervisor": "Supervisor kon niet updaten"
+                    "supervisor": "Supervisor kon niet worden bijgewerkt"
                 },
-                "unhealthy_title": "Uw installatie is niet volledig",
-                "unsupported_description": "Hieronder vindt u een lijst met problemen die bij uw installatie zijn aangetroffen. Klik op de links om te zien hoe u de problemen kunt oplossen.",
+                "unhealthy_title": "Er is iets mis met je installatie",
+                "unsupported_description": "Hieronder vindt je een lijst met problemen die bij je installatie zijn aangetroffen. Klik op de links om te zien hoe je de problemen kunt oplossen.",
                 "unsupported_reason": {
                     "container": "Containers waarvan bekend is dat ze problemen veroorzaken",
                     "dbus": "DBUS",
@@ -480,11 +480,11 @@
                     "lxc": "LXC",
                     "network_manager": "Netwerkmanager",
                     "os": "Besturingssysteem",
-                    "privileged": "Supervisor heeft niet voldoende toegang",
+                    "privileged": "Supervisor heeft onvoldoende toegangsrechten",
                     "systemd": "Systemd"
                 },
-                "unsupported_title": "U gebruikt een niet-ondersteunde installatie",
-                "update_supervisor": "Supervisor updaten",
+                "unsupported_title": "Je gebruikt een niet-ondersteunde installatie",
+                "update_supervisor": "Supervisor bijwerken",
                 "warning": "WAARSCHUWING"
             }
         }
@@ -2935,7 +2935,7 @@
                         "data": "Gebeurtenis data (YAML, optioneel)",
                         "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
                         "documentation": "Gebeurtenissen documentatie.",
-                        "event_fired": "Gebeurtenis {name} afgevuurd",
+                        "event_fired": "Gebeurtenis {name} uitgevoerd",
                         "fire_event": "Gebeurtenis uitvoeren",
                         "listen_to_events": "Luisteren naar gebeurtenissen",
                         "listening_to": "Luisteren naar",

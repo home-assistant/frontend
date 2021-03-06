@@ -388,10 +388,17 @@
                     "second": "{count} {count, plural,\n  one {שנייה}\n  other {שניות}\n}",
                     "week": "{count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
                 },
+                "future_duration": {
+                    "day": "בעוד {count} {count, plural,\n  one {יום}\n  other {ימים}\n}",
+                    "hour": "בעוד {count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
+                    "minute": "בעוד {count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
+                    "second": "בעוד {count} {count, plural,\n  one {שניה}\n  other {שניות}\n}",
+                    "week": "בעוד {count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
+                },
                 "never": "אף פעם לא",
                 "past_duration": {
                     "day": "לפני {count} {count, plural,\n  one {day}\n  other {days}\n}",
-                    "hour": "לפני {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "hour": "לפני {count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
                     "minute": "לפני {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
                     "second": "לפני {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
                     "week": "לפני {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
@@ -1394,7 +1401,7 @@
                     "add_integration": "הוסף אינטגרציה",
                     "caption": "אינטגרציות",
                     "config_entry": {
-                        "area": "ב {area}",
+                        "area": "ב-{area}",
                         "delete": "מחק",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
                         "device_unavailable": "מכשיר אינו זמין",

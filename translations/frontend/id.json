@@ -44,6 +44,7 @@
             "preset_mode": {
                 "activity": "Aktivitas",
                 "away": "Keluar",
+                "boost": "Kencang",
                 "comfort": "Nyaman",
                 "eco": "Eco",
                 "home": "Rumah",
@@ -56,6 +57,7 @@
                 "auto": "Otomatis",
                 "away": "Keluar",
                 "baby": "Bayi",
+                "boost": "Kencang",
                 "comfort": "Nyaman",
                 "eco": "Eco",
                 "home": "Rumah",
@@ -162,7 +164,7 @@
                         "title": "Akses API Home Assistant"
                     },
                     "host_network": {
-                        "description": "Add-on biasanya berjalan di lapisan jaringannya sendiri yang terisolasi, yang mencegahnya mengakses jaringan sistem operasi host. Dalam beberapa kasus, isolasi jaringan ini dapat membatasi add-on dalam menyediakan layanannya dan oleh karena itu, isolasi tersebut dapat dicabut oleh pembuat add-on, sehingga memberikan akses penuh add-on ke kemampuan jaringan mesin host. Ini memberi add-on lebih banyak kemampuan jaringan tetapi menurunkan tingkat keamanan. Oleh karena itu, peringkat keamanan add-on akan diturunkan ketika opsi ini digunakan oleh add-on.",
+                        "description": "Add-on biasanya berjalan di lapisan jaringannya sendiri yang terisolasi, yang mencegahnya mengakses jaringan sistem operasi host. Dalam beberapa kasus, isolasi jaringan ini dapat membatasi add-on dalam menyediakan layanannya dan oleh karena itu, izin isolasi tersebut dapat dicabut oleh pembuat add-on, sehingga memberikan akses penuh add-on ke kemampuan jaringan mesin host. Ini memberi add-on lebih banyak kemampuan jaringan tetapi menurunkan tingkat keamanan. Oleh karena itu, peringkat keamanan add-on akan diturunkan ketika opsi ini digunakan oleh add-on.",
                         "title": "Jaringan Host"
                     },
                     "host_pid": {
@@ -208,7 +210,7 @@
                 "install": "instal",
                 "new_update_available": "{name} {version} tersedia",
                 "not_available_arch": "Add-on ini tidak kompatibel dengan prosesor perangkat Anda atau sistem operasi yang Anda instal di perangkat.",
-                "not_available_version": "Anda menjalanan Home Assistant {core_version_installed}, untuk memperbarui ke versi add-on ini, Anda memerlukan Home Assistant setidaknya versi {core_version_needed}",
+                "not_available_version": "Anda menjalanan Home Assistant {core_version_installed}. Untuk memperbarui ke versi add-on ini, Anda memerlukan Home Assistant setidaknya versi {core_version_needed}",
                 "open_web_ui": "Buka antarmuka web",
                 "option": {
                     "auto_update": {
@@ -267,6 +269,7 @@
         },
         "common": {
             "cancel": "Batalkan",
+            "close": "Tutup",
             "description": "Deskripsi",
             "error": {
                 "unknown": "Kesalahan yang tidak diketahui",
@@ -363,6 +366,7 @@
         },
         "my": {
             "error": "Terjadi kesalahan yang tidak diketahui",
+            "error_addon_not_found": "Add-on tidak ditemukan",
             "faq_link": "FAQ Home Assistant Saya",
             "not_supported": "Pengalihan ini tidak didukung oleh instans Home Assistant Anda. Periksa {link} tentang pengalihan yang didukung dan versi mana mulai diperkenalkan."
         },
@@ -494,6 +498,7 @@
         "card": {
             "alarm_control_panel": {
                 "arm_away": "Aktifkan utk keluar",
+                "arm_custom_bypass": "Diaktifkan khusus",
                 "arm_home": "Aktifkan utk di rumah",
                 "arm_night": "Aktifkan utk malam",
                 "clear_code": "Hapus",
@@ -757,7 +762,7 @@
                 "messages": {
                     "became_unavailable": "menjadi tidak tersedia",
                     "changed_to_state": "berubah menjadi {state}",
-                    "cleared_device_class": "dibersihkan (tidak ada {device_class} yang terdeteksi)",
+                    "cleared_device_class": "tidak ada (tidak ada {device_class} yang terdeteksi)",
                     "detected_device_class": "terdeteksi {device_class}",
                     "is_closing": "menutup",
                     "is_opening": "membuka",
@@ -878,6 +883,8 @@
                 "add_area_id": "Pilih area",
                 "add_device_id": "Pilih perangkat",
                 "add_entity_id": "Pilih entitas",
+                "expand_area_id": "Bentangkan area ini ke masing-masing perangkat dan entitas yang ada di dalamnya. Setelah dibentangkan dan areanya berubah, perangkat dan entitas tidak akan turut diubah secara otomatis.",
+                "expand_device_id": "Bentangkan perangkat ini ke masing-masing entitas yang ada di dalamnya. Setelah dibentangkan dan perangkatnya berubah, entitas tidak akan turut diubah secara otomatis.",
                 "remove_area_id": "Hapus area",
                 "remove_device_id": "Hapus perangkat",
                 "remove_entity_id": "Hapus entitas"
@@ -1006,6 +1013,9 @@
                 "person": {
                     "create_zone": "Buat zona dari lokasi saat ini"
                 },
+                "remote": {
+                    "activity": "Aktivitas saat ini"
+                },
                 "restored": {
                     "confirm_remove_text": "Yakin ingin menghapus entitas ini?",
                     "confirm_remove_title": "Hapus entitas?",
@@ -1014,8 +1024,8 @@
                     "remove_intro": "Jika entitas tidak lagi digunakan, Anda dapat membersihkannya dengan menghapusnya."
                 },
                 "script": {
-                    "last_action": "Aksi Terakhir",
-                    "last_triggered": "Terpicu Terakhir"
+                    "last_action": "Aksi terakhir",
+                    "last_triggered": "Terpicu terakhir"
                 },
                 "settings": "Pengaturan entitas",
                 "sun": {
@@ -2520,7 +2530,7 @@
                             "input_number": "Muat ulang input bilangan",
                             "input_select": "Muat ulang input pilihan",
                             "input_text": "Muat ulang input teks",
-                            "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan memulai ulang. Menekan tombol muat ulang akan membatalkan konfigurasi YAML saat ini dan memuat konfigurasi yang baru.",
+                            "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan memulai ulang. Penekanan tombol muat ulang akan membatalkan konfigurasi YAML saat ini dan memuat konfigurasi yang baru.",
                             "min_max": "Muat ulang entitas min/maks",
                             "mqtt": "Muat ulang entitas MQTT yang dikonfigurasi secara manual",
                             "person": "Muat ulang orang",

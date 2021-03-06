@@ -766,13 +766,13 @@
                     "was_closed": "閉鎖されました",
                     "was_connected": "接続されました",
                     "was_disconnected": "切断されました",
-                    "was_locked": "施錠されました",
+                    "was_locked": "施錠しました",
                     "was_low": "低かった",
                     "was_normal": "正常でした",
                     "was_opened": "開かれました",
                     "was_plugged_in": "接続されました",
                     "was_safe": "安全でした",
-                    "was_unlocked": "解錠されました",
+                    "was_unlocked": "解錠しました",
                     "was_unplugged": "プラグが抜かれました",
                     "was_unsafe": "安全ではなかった"
                 }

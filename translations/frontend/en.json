@@ -210,7 +210,7 @@
                 "install": "install",
                 "new_update_available": "{name} {version} is available",
                 "not_available_arch": "This add-on is not compatible with the processor of your device or the operating system you have installed on your device.",
-                "not_available_version": "You are unning Home Assistant {core_version_installed}, to update to this version of the add-on you need at least version {core_version_needed} of Home Assistan",
+                "not_available_version": "You are running Home Assistant {core_version_installed}, to update to this version of the add-on you need at least version {core_version_needed} of Home Assistant",
                 "open_web_ui": "Open web UI",
                 "option": {
                     "auto_update": {
@@ -245,7 +245,7 @@
                 "start": "start",
                 "stop": "stop",
                 "uninstall": "uninstall",
-                "visit_addon_page": "Visit the {name} page for more detals"
+                "visit_addon_page": "Visit the {name} page for more details"
             },
             "documentation": {
                 "get_documentation": "Failed to get add-on documentation, {error}"

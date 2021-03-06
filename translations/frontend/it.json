@@ -269,6 +269,7 @@
         },
         "common": {
             "cancel": "Annulla",
+            "close": "Chiudi",
             "description": "Descrizione",
             "error": {
                 "unknown": "Errore sconosciuto",
@@ -365,6 +366,7 @@
         },
         "my": {
             "error": "Si è verificato un errore sconosciuto",
+            "error_addon_not_found": "Componente aggiuntivo non trovato",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
         },
@@ -2557,7 +2559,7 @@
                         "validation": {
                             "check_config": "Verifica Configurazione",
                             "heading": "Convalida della configurazione",
-                            "introduction": "Convalidare la configurazione se di recente sono state apportate alcune modifiche alla configurazione e ci si vuole assicurare che sia tutto valido",
+                            "introduction": "Controllare la configurazione se essa è stata modificata di recente e ci si vuole assicurare che sia tutto valido.",
                             "invalid": "Configurazione non valida",
                             "valid": "Configurazione valida!"
                         }

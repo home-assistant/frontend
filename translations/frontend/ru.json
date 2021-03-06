@@ -209,7 +209,7 @@
                 "hostname": "Доменное имя",
                 "install": "установить",
                 "new_update_available": "Доступно обновление {name} до версии {version}",
-                "not_available_arch": "Это дополнение несовместимо с процессором или установленной операционной системой Вашего устройства.",
+                "not_available_arch": "Это дополнение несовместимо с процессором или операционной системой Вашего устройства.",
                 "not_available_version": "В настоящее время у Вас установлен Home Assistant {core_version_installed}. Для обновления дополнения требуется Home Assistan версии {core_version_needed} или выше.",
                 "open_web_ui": "Открыть веб-интерфейс",
                 "option": {
