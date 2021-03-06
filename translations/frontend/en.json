@@ -365,7 +365,7 @@
             }
         },
         "my": {
-            "error": "An unknown error occurred",
+            "error": "An unknown error occured",
             "error_addon_not_found": "Add-on not found",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
@@ -2079,7 +2079,7 @@
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
                         "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
                         "disable": {
-                            "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled.",
+                            "disable_confirm": "Are you sure you want to disable this config entry? It's devices and entities will be disabled.",
                             "disabled": "Disabled",
                             "disabled_by": {
                                 "device": "device",
@@ -3493,7 +3493,7 @@
             "my": {
                 "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
                 "documentation": "documentation",
-                "error": "An unknown error occurred",
+                "error": "An unknown error occured",
                 "faq_link": "My Home Assistant FAQ",
                 "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
                 "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
