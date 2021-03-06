@@ -743,12 +743,14 @@
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
         "device_signature": "Zigbee device signature",
+        "device_children": "Zigbee device children",
         "buttons": {
           "add": "Add Devices via this device",
           "remove": "Remove Device",
           "clusters": "Manage Clusters",
           "reconfigure": "Reconfigure Device",
           "zigbee_information": "Zigbee device signature",
+          "device_children": "View Children",
           "view_in_visualization": "View in Visualization"
         },
         "services": {
