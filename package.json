@@ -132,6 +132,7 @@
     "sortablejs": "^1.10.2",
     "superstruct": "^0.10.13",
     "tinykeys": "^1.1.1",
+    "tsparticles": "^1.19.2",
     "unfetch": "^4.1.0",
     "vis-data": "^7.1.1",
     "vis-network": "^8.5.4",
