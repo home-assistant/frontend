@@ -791,6 +791,7 @@ export class HaConfigDevicePage extends LitElement {
         .header-name {
           display: flex;
           align-items: center;
+          padding-left: 8px;
         }
 
         .column,
