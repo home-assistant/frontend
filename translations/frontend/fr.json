@@ -106,44 +106,174 @@
         "addon": {
             "configuration": {
                 "audio": {
-                    "header": "Audio"
+                    "default": "Défaut",
+                    "header": "Audio",
+                    "input": "Entrée",
+                    "output": "Sortie"
+                },
+                "network": {
+                    "container": "Conteneur",
+                    "disabled": "Désactivé",
+                    "header": "Réseau",
+                    "host": "Hôte"
                 },
                 "options": {
-                    "header": "Options"
+                    "edit_in_ui": "Modifier dans l'interface utilisateur",
+                    "edit_in_yaml": "Modifier en tant que YAML",
+                    "header": "Options",
+                    "invalid_yaml": "YAML invalide",
+                    "show_unused_optional": "Afficher les options non utilisées dans la configuration"
                 }
+            },
+            "dashboard": {
+                "action_error": {
+                    "install": "Échec de l'installation de l'extension",
+                    "restart": "Échec du redémarrage de l'extension",
+                    "start": "Échec du démarrage de l'extension",
+                    "start_invalid_config": "Aller à la configuration",
+                    "stop": "Échec de l'arrêt de l'extension",
+                    "uninstall": "Échec de la désinstallation de l'extension",
+                    "validate_config": "Échec de la validation de la configuration de l'add-on"
+                },
+                "capability": {
+                    "docker_api": {
+                        "title": "Accès complet à Docker"
+                    },
+                    "full_access": {
+                        "title": "Accès complet au matériel"
+                    },
+                    "host_network": {
+                        "title": "Réseau hôte"
+                    },
+                    "label": {
+                        "auth": "auth",
+                        "hardware": "Matériel",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "Hôte",
+                        "rating": "notation"
+                    },
+                    "rating": {
+                        "title": "Évaluation de sécurité de l'extension"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "sauvegarde",
+                        "default": "Défaut",
+                        "homeassistant": "homeassistant",
+                        "manager": "gestionnaire"
+                    }
+                },
+                "changelog": "Changelog",
+                "cpu_usage": "Utilisation CPU de l'extension",
+                "hostname": "Nom d'hôte",
+                "install": "installer",
+                "new_update_available": "{name} {version} est disponible",
+                "not_available_version": "Votre Home Assistant est en version {core_version_installed}, pour mettre à jour cet add-on, vous devez êtes au minimum en version {core_version_needed} de Home Assistant",
+                "open_web_ui": "Ouvrir l'interface utilisateur Web",
+                "option": {
+                    "auto_update": {
+                        "title": "Mise à jour automatique"
+                    },
+                    "boot": {
+                        "title": "Lancer au démarrage"
+                    },
+                    "ingress_panel": {
+                        "description": "Ajoutez l'extension à la barre latérale",
+                        "title": "Afficher dans la barre latérale"
+                    },
+                    "protected": {
+                        "title": "Mode protégé"
+                    },
+                    "watchdog": {
+                        "description": "Cela démarrera l'extension en cas de panne",
+                        "title": "Watchdog"
+                    }
+                },
+                "protection_mode": {
+                    "enable": "Activer le mode protégé",
+                    "title": "Attention: le mode protection est désactivé!"
+                },
+                "ram_usage": "Utilisation de la RAM de l'extension",
+                "restart": "redémarrer",
+                "start": "démarrer",
+                "stop": "arrêter",
+                "uninstall": "désinstaller",
+                "visit_addon_page": "Visitez la page {name} pour plus de détails"
             },
             "panel": {
                 "configuration": "Configuration",
                 "documentation": "Documentation",
-                "info": "Info"
+                "info": "Info",
+                "log": "Journal"
+            },
+            "state": {
+                "installed": "l'add-on est installé.",
+                "not_available": "L'extension n'est pas disponible sur votre système",
+                "not_installed": "l'add-on n'est pas installé"
             }
         },
         "common": {
             "cancel": "Annuler",
             "close": "Fermer",
+            "description": "Description",
+            "error": {
+                "unknown": "Erreur inconnue",
+                "update_failed": "La mise à jour a échoué"
+            },
+            "failed_to_restart_name": "Échec du redémarrage de {name}",
+            "failed_to_update_name": "Échec de la mise à jour de {name}",
+            "learn_more": "En savoir plus",
+            "new_version_available": "Nouvelle version disponible",
+            "newest_version": "Version la plus récente",
             "no": "Non",
+            "refresh": "Actualiser",
             "reload": "Recharger",
-            "save": "Sauver",
+            "reset_defaults": "Réinitialiser la configuration",
+            "reset_options": "Réinitialiser les options",
+            "restart": "Redémarrer",
+            "restart_name": "Redémarrer {name}",
+            "save": "Sauvegarder",
             "update": "Mise à jour",
+            "update_available": "{count, plural,\n  one {Mise à jour en attente}\n  other {{count} Mises à jour en attentes}\n}",
             "version": "Version",
             "yes": "Oui"
         },
         "confirm": {
+            "reset_options": {
+                "text": "Êtes-vous sûr de vouloir réinitialiser toutes vos options ?",
+                "title": "Réinitialiser les options"
+            },
+            "restart": {
+                "text": "Êtes-vous sûr de vouloir redémarrer {name}?",
+                "title": "Redémarre {name}"
+            },
             "update": {
+                "text": "Êtes-vous sûr de vouloir mettre à jour {name} vers {version}?",
                 "title": "Mettre à jour {name}"
             }
         },
+        "dashboard": {
+            "addon_new_version": "Nouvelle version disponible",
+            "addon_running": "Le module complémentaire fonctionne",
+            "addon_stopped": "Le module complémentaire est arrêté",
+            "addons": "Modules complémentaires",
+            "no_addons": "Vous n'avez pas encore installé de modules complémentaires. Rendez-vous dans la boutique des modules complémentaires pour commencer!"
+        },
         "dialog": {
             "network": {
+                "connected_to": "Connecté à {ssid}",
                 "dhcp": "DHCP",
                 "disabled": "Désactivé",
                 "dns_servers": "Serveurs DNS",
+                "failed_to_change": "Échec de la modification des paramètres réseaux",
                 "gateway": "Adresse de la passerelle",
                 "ip_netmask": "Adresse IP / masque réseau",
                 "open": "Ouvrir",
                 "scan_ap": "Rechercher les points d'accès",
                 "static": "Statique",
                 "title": "Paramètres réseaux",
+                "warning": "Si vous modifiez les adresses Wi-Fi, IP ou de passerelle, vous risquez de perdre la connexion!",
                 "wep": "WEP",
                 "wpa": "wpa-psk"
             },
@@ -151,6 +281,7 @@
                 "add_new_registry": "Ajouter un nouveau registre",
                 "add_registry": "Ajouter un registre",
                 "failed_to_add": "Échec de l'ajout du registre",
+                "failed_to_remove": "Échec de la suppression du registre",
                 "no_registries": "Aucun registre configuré",
                 "password": "Mot de passe",
                 "registry": "Registre",
@@ -160,53 +291,126 @@
             "repositories": {
                 "add": "Ajouter",
                 "remove": "Supprimer",
-                "title": "Gérer les référentiels d'add-ons"
+                "title": "Gérer les dépôts d'add-ons"
             },
             "restart_addon": {
-                "confirm_text": "Redémarrer add-on"
+                "confirm_text": "Redémarrer add-on",
+                "text": "Voulez-vous redémarrer l’add-on avec vos modifications ?"
             },
             "update": {
-                "snapshot": "Instantané"
+                "create_snapshot": "Créez un instantané de {name} avant de mettre à jour",
+                "snapshot": "Instantané",
+                "snapshotting": "Création d'un instantané de {name}",
+                "updating": "Mise à jour de {name} vers la version {version}"
             }
         },
         "my": {
-            "error_addon_not_found": "Add-on non trouvé"
+            "error": "Une erreur inconnue s'est produite",
+            "error_addon_not_found": "Add-on non trouvé",
+            "faq_link": "FAQ de My Home Assistant"
+        },
+        "panel": {
+            "dashboard": "Tableau de bord",
+            "snapshots": "Instantanés",
+            "store": "Boutique des modules complémentaires",
+            "system": "Système"
         },
         "snapshot": {
+            "addons": "Add-ons",
             "available_snapshots": "Instantanés disponibles",
+            "could_not_create": "Impossible de créer un instantané",
             "create": "Créer",
+            "create_blocked_not_running": "La création d’un instantané n’est pas possible en ce moment car le système est en état {state}.",
             "create_snapshot": "Créer un instantané",
+            "description": "Les instantanés vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
+            "enter_password": "Veuillez entrer un mot de passe.",
             "folder": {
+                "addons/local": "Add-ons locaux",
+                "homeassistant": "Configuration Home Assistant",
                 "media": "Médias",
                 "share": "Partager",
                 "ssl": "SSL"
             },
             "folders": "Dossiers",
+            "full_snapshot": "Instantané complet",
             "name": "Nom",
+            "no_snapshots": "Vous n'avez pas encore d'instantanés.",
+            "partial_snapshot": "Instantané partiel",
             "password": "Mot de passe",
+            "password_protected": "protégé par mot de passe",
+            "password_protection": "Protection par mot de passe",
             "security": "Sécurité",
             "type": "Type",
             "upload_snapshot": "Téléverser un instantané"
         },
         "store": {
+            "no_results_found": "Aucun résultat trouvé dans {repository}.",
             "registries": "Registres",
             "repositories": "Dépôts"
         },
         "system": {
+            "core": {
+                "cpu_usage": "Utilisation du CPU Core",
+                "ram_usage": "Utilisation de la RAM Core"
+            },
             "host": {
+                "change": "Changer",
+                "change_hostname": "Changer le nom de l'hôte",
+                "confirm_reboot": "Êtes-vous sûr de vouloir redémarrer l'hôte ?",
+                "confirm_shutdown": "Êtes-vous sûr de vouloir arrêter l'hôte ?",
+                "deployment": "Déploiement",
+                "docker_version": "Version Docker",
+                "emmc_lifetime_used": "Durée de vie de l'eMMC utilisée",
+                "failed_to_get_hardware_list": "Impossible d'obtenir la liste du matériel",
+                "failed_to_import_from_usb": "Impossible d'importer à partir de l'USB",
+                "failed_to_reboot": "Échec du redémarrage du système.",
+                "failed_to_set_hostname": "Échec du paramétrage du nom de la machine",
+                "failed_to_shutdown": "Échec de l'arrêt du système",
                 "hardware": "Matériel",
+                "hostname": "Nom d'hôte",
+                "import_from_usb": "Importer depuis USB",
+                "ip_address": "Adresse IP",
+                "new_hostname": "Veuillez saisir un nouveau nom d'hôte:",
+                "operating_system": "Système d'exploitation",
                 "reboot_host": "Redémarrer l'hôte",
-                "shutdown_host": "Arrêter l'hôte"
+                "shutdown_host": "Arrêter l'hôte",
+                "used_space": "Espace utilisé"
+            },
+            "log": {
+                "log_provider": "Fournisseur de journaux"
             },
             "supervisor": {
+                "beta_backup": "Assurez-vous d'avoir des sauvegardes de vos données avant d'activer cette fonctionnalité.",
+                "beta_join_confirm": "Voulez-vous rejoindre le canal bêta?",
+                "beta_release_items": "Cela inclut les versions bêta pour:",
                 "channel": "Canal",
+                "cpu_usage": "Utilisation du processeur par Supervisor",
+                "failed_to_reload": "Échec du rechargement de Supervisor",
+                "failed_to_set_option": "Échec lors du paramétrage de l'option du Supervisor",
+                "failed_to_update": "Échec de la mise à jour de Supervisor",
+                "join_beta_action": "Rejoignez le canal bêta",
+                "leave_beta_action": "Quitter le canal bêta",
+                "ram_usage": "Utilisation de la RAM Supervisor",
                 "reload_supervisor": "Recharger le superviseur",
+                "share_diagnostics": "Partager les diagnostics",
+                "share_diagnostics_description": "Partagez les rapports d'incident et les informations de diagnostic.",
                 "share_diagonstics_title": "Aider à améliorer Home Assistant",
+                "unhealthy_reason": {
+                    "supervisor": "Le Supervisor ne peu pas mettre à jour"
+                },
+                "unhealthy_title": "Votre installation est défectueuse",
                 "unsupported_reason": {
+                    "container": "Conteneurs connus pour causer des problèmes",
                     "dbus": "DBUS",
+                    "docker_configuration": "Configuration de Docker",
+                    "docker_version": "Version Docker",
                     "lxc": "LXC",
+                    "network_manager": "Gestionnaire de réseaux",
+                    "os": "Système d'exploitation",
                     "systemd": "Systemd"
                 },
+                "unsupported_title": "Vous exécutez une installation non prise en charge",
+                "update_supervisor": "Mettre à jour Supervisor",
                 "warning": "AVERTISSEMENT"
             }
         }

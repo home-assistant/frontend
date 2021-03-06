@@ -144,6 +144,7 @@
                 },
                 "changelog": "Seznam změn",
                 "hostname": "Název hostitele",
+                "new_update_available": "{name} {verze} je k dispozici",
                 "open_web_ui": "Otevřít webové rozhraní",
                 "option": {
                     "boot": {
@@ -152,7 +153,8 @@
                     "watchdog": {
                         "title": "Hlídací pes"
                     }
-                }
+                },
+                "visit_addon_page": "Další podrobnosti naleznete na stránce {name}"
             },
             "panel": {
                 "configuration": "Nastavení",
@@ -167,10 +169,13 @@
         },
         "common": {
             "cancel": "Zrušit",
+            "close": "Zavřít",
             "description": "Popis",
             "error": {
                 "unknown": "Neznámá chyba"
             },
+            "failed_to_restart_name": "Restartování {name} se nezdařilo",
+            "failed_to_update_name": "Aktualizace {name} se nezdařila",
             "learn_more": "Další informace",
             "new_version_available": "K dispozici je nová verze",
             "newest_version": "Nejnovější verze",
@@ -192,6 +197,7 @@
                 "title": "Obnovit možnosti"
             },
             "restart": {
+                "text": "Opravdu chcete restartovat {name}?",
                 "title": "Restartovat {name}"
             },
             "update": {
@@ -240,14 +246,15 @@
                 "text": "Chcete doplněk restartovat se svými změnami?"
             },
             "update": {
-                "create_snapshot": "Vytvořit zálohu \"{name}\" před aktualizací",
+                "create_snapshot": "Vytvořit zálohu {name} před aktualizací",
                 "snapshot": "Záloha",
-                "snapshotting": "Vytváří se záloha \"{name}\"",
-                "updating": "Aktualizuje se \"{name}\" na verzi {version}"
+                "snapshotting": "Vytváří se záloha {name}",
+                "updating": "Aktualizuje se {name} na verzi {version}"
             }
         },
         "my": {
             "error": "Nastala neznámá chyba",
+            "error_addon_not_found": "Doplněk nebyl nalezen",
             "faq_link": "Časté dotazy týkající se My Home Assistant",
             "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
         },

@@ -1,7 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "Zadanie konfigurácie",
+            "config_entry": "Položka konfigurácie",
             "integration": "integrácia",
             "user": "Používateľ"
         }
@@ -379,6 +379,7 @@
                 "confirm_shutdown": "Naozaj chcete vypnúť hostiteľa?",
                 "deployment": "Nasadenie",
                 "docker_version": "Verzia Dockera",
+                "emmc_lifetime_used": "Použitá životnosť eMMC",
                 "failed_to_get_hardware_list": "Nepodarilo sa získať zoznam hardvéru",
                 "failed_to_import_from_usb": "Nepodarilo sa importovať z USB",
                 "failed_to_reboot": "Nepodarilo sa reštartovať hostiteľa",
@@ -463,7 +464,7 @@
             },
             "automation": {
                 "last_triggered": "Naposledy spustené",
-                "trigger": "Spustiť"
+                "trigger": "Spustiť akcie"
             },
             "camera": {
                 "not_available": "Obrázok nie je k dispozícii"
@@ -791,6 +792,8 @@
             },
             "target-picker": {
                 "add_area_id": "Vybrať oblasť",
+                "expand_area_id": "Rozbaliť túto oblasť na samostatné zariadenia a entity, ktoré obsahuje. Po rozbalení sa nebudú pri zmene oblasti aktualizovať zariadenia a entity.",
+                "expand_device_id": "Rozbaliť toto zariadenie na samostatné entity, ktoré obsahuje. Po rozbalení sa nebudú pri zmene zariadenia aktualizovať entity.",
                 "remove_area_id": "Odstrániť oblasť"
             }
         },
@@ -1137,7 +1140,7 @@
                             "delete_confirm": "Ste si istý odstránením ? ",
                             "duplicate": "Duplikovať",
                             "header": "Podmienky",
-                            "introduction": "Podmienky sú voliteľnou súčasťou pravidla automatizácie a môžu sa použiť na zabránenie tomu, aby sa akcia vykonala pri spustení. Podmienky vyzerajú veľmi podobne ako spúšťače, ale sú veľmi odlišné. Spúšťač sa zameria na udalosti, ktoré sa dejú v systéme, zatiaľ čo podmienka sa zameriava iba na to, ako systém práve vyzerá. Spúšťač môže pozorovať, že je zapnutý spínač. Podmienkou je iba to, či je vypínač v súčasnosti zapnutý alebo vypnutý. \n\n [Viac informácií o podmienkach.](https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "Podmienky sú voliteľné a zabránia spusteniu automatizácie, pokiaľ nie sú splnené všetky podmienky.",
                             "learn_more": "Získajte viac informácií o podmienkach",
                             "name": "Podmienka",
                             "type_select": "Typ podmienky",
@@ -1605,6 +1608,9 @@
                     "description": "Spravujte nakonfigurované zariadenia",
                     "device_info": "Informácie o zariadení",
                     "disabled": "Vypnuté",
+                    "disabled_by": {
+                        "config_entry": "Položka konfigurácie"
+                    },
                     "entities": {
                         "add_entities_lovelace": "Pridať do Lovelace",
                         "entities": "Entity",
@@ -2071,7 +2077,7 @@
                         "icon": "Ikona",
                         "id": "Entity ID",
                         "id_already_exists": "Toto ID už existuje",
-                        "introduction": "Na vykonanie sledu akcií použite skripty.",
+                        "introduction": "Pomocou skriptov môžete spustiť postupnosť akcií.",
                         "link_available_actions": "Získajte viac informácií o dostupných akciách.",
                         "load_error_not_editable": "Iba skripty zo súboru scripts.yaml sú editovateľné.",
                         "max": {
@@ -2806,7 +2812,7 @@
                         "confirm_remove_config_text": "Ak odstránite svoju konfiguráciu používateľského rozhrania Lovelace, automaticky vygenerujeme vaše zobrazenia používateľského rozhrania Lovelace s vašimi oblasťami a zariadeniami.",
                         "confirm_remove_config_title": "Naozaj chcete odstrániť svoju konfiguráciu používateľského rozhrania Lovelace?",
                         "confirm_unsaved_changes": "Máte neuložené zmeny. Naozaj chcete odísť?",
-                        "confirm_unsaved_comments": "Vaša konfigurácia obsahuje komentáre, ktoré sa neuložia. Chcete pokračovať?",
+                        "confirm_unsaved_comments": "Vaša konfigurácia môže obsahovať komentár(e), ktoré sa neuložia. Chcete pokračovať?",
                         "error_invalid_config": "Vaša konfigurácia je neplatná: {error}",
                         "error_remove": "Konfiguráciu sa nepodarilo odstrániť: {error}",
                         "error_save_yaml": "Nepodarilo sa uložiť YAML: {error}",

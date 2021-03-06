@@ -409,7 +409,7 @@
             "disable": "Devre dışı bırak",
             "enable": "Etkinleştir",
             "error_required": "Gerekli",
-            "leave": "Çıkınca",
+            "leave": "Ayrıl",
             "loading": "Yükleniyor",
             "menu": "Menü",
             "next": "Sonraki",
@@ -422,7 +422,7 @@
             "rename": "Yeniden adlandır",
             "save": "Kaydet",
             "skip": "Atla",
-            "stay": "Kalmak",
+            "stay": "Kal",
             "successfully_deleted": "Başarıyla silindi",
             "successfully_saved": "Başarıyla kaydedildi",
             "undo": "Geri al",
@@ -1228,7 +1228,7 @@
                                     "enter": "Girince",
                                     "event": "Olay:",
                                     "label": "Konum",
-                                    "leave": "Çıkınca",
+                                    "leave": "Ayrıl",
                                     "source": "Kaynak",
                                     "zone": "Bölge"
                                 },
@@ -1291,7 +1291,7 @@
                                     "entity": "Konumu olan varlık",
                                     "event": "Olay:",
                                     "label": "Bölge",
-                                    "leave": "Çıkınca",
+                                    "leave": "Ayrıl",
                                     "zone": "Bölge"
                                 }
                             },
@@ -2688,7 +2688,7 @@
                     "services": {
                         "accepts_target": "Bu hizmet bir hedefi kabul eder, örneğin: 'entity_id: light.bed_light'",
                         "all_parameters": "Mevcut tüm parametreler",
-                        "call_service": "Arama Servisi",
+                        "call_service": "Servisi Çağır",
                         "column_description": "Açıklama",
                         "column_example": "Örnek",
                         "column_parameter": "Parametre",

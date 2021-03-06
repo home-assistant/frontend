@@ -269,12 +269,13 @@
         },
         "common": {
             "cancel": "取消",
+            "close": "關閉",
             "description": "說明",
             "error": {
                 "unknown": "未知錯誤",
                 "update_failed": "更新失敗"
             },
-            "failed_to_restart_name": "重啟{name}失敗",
+            "failed_to_restart_name": "重啟 {name} 失敗",
             "failed_to_update_name": "更新{name}失敗",
             "learn_more": "了解更多",
             "new_version_available": "新版本可供下載",
@@ -286,13 +287,13 @@
             "reset_defaults": "重置為預設值",
             "reset_options": "重置選項",
             "restart": "重啟",
-            "restart_name": "重啟{name}",
+            "restart_name": "重啟 {name}",
             "running_version": "目前執行為 {version} 版",
             "save": "儲存",
             "show_more": "顯示關於此更詳細資訊",
             "update": "更新",
             "update_available": "{count, plural,\n  one {個更新}\n  other {{count} 個更新}\n}等候中",
-            "version": "版本",
+            "version": "安裝版本",
             "yes": "是"
         },
         "confirm": {
@@ -302,7 +303,7 @@
             },
             "restart": {
                 "text": "確定要重啟 {name}？",
-                "title": "重啟{name}"
+                "title": "重啟 {name}"
             },
             "update": {
                 "text": "確定要更新 {name} 至 {version} 版？",
@@ -365,6 +366,7 @@
         },
         "my": {
             "error": "發生未知錯誤",
+            "error_addon_not_found": "找不到附加元件",
             "faq_link": "Home Assistant 常見問答集",
             "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
         },
@@ -438,7 +440,7 @@
             },
             "log": {
                 "get_logs": "取得 {provider} 日誌失敗，{error}",
-                "log_provider": "日誌提供者"
+                "log_provider": "日誌"
             },
             "supervisor": {
                 "beta_backup": "請於啟用此功能前確定已經備份所有資料。",
@@ -463,7 +465,7 @@
                 "unhealthy_description": "執行不健康的安裝版本可能會導致問題。下方列表為安裝問題清單，點選連結以了解如何解決問題。",
                 "unhealthy_reason": {
                     "docker": "Docker 環境未正常工作",
-                    "privileged": "Supervisor 不允許",
+                    "privileged": "未獲得 Supervisor 特權",
                     "setup": "設定 Supervisor 失敗",
                     "supervisor": "Supervisor 無法進行更新"
                 },
@@ -478,7 +480,7 @@
                     "lxc": "LXC",
                     "network_manager": "網路管理員",
                     "os": "作業系統",
-                    "privileged": "Supervisor 不允許",
+                    "privileged": "未獲得 Supervisor 特權",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "所執行的安裝方式不支援",

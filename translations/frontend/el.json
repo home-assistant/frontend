@@ -502,14 +502,14 @@
                 "disarm": "Αφοπλισμός"
             },
             "automation": {
-                "last_triggered": "Τελευταίο έναυσμα",
+                "last_triggered": "Τελευταία ενεργοποίηση",
                 "trigger": "Εκτέλεση ενεργειών"
             },
             "camera": {
                 "not_available": "Μη διαθέσιμη εικόνα"
             },
             "climate": {
-                "aux_heat": "Θερμοκρασία Aux",
+                "aux_heat": "Βοηθητική θέρμανση",
                 "away_mode": "Λειτουργία εκτός σπιτιού",
                 "cooling": "{name} ψύξη",
                 "current_temperature": "{name} τρέχουσα θερμοκρασία",

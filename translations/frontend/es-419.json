@@ -444,7 +444,7 @@
             },
             "supervisor": {
                 "beta_backup": "Asegúrese de tener copias de seguridad de sus datos antes de activar esta función.",
-                "beta_join_confirm": "¿Quieres unirte al canal beta?",
+                "beta_join_confirm": "¿Quiere unirse al canal beta?",
                 "beta_release_items": "Esto incluye versiones beta para:",
                 "beta_warning": "Las versiones beta son para testers y usuarios pioneros. Pueden contener cambios de código inestables.",
                 "channel": "Canal",
@@ -464,10 +464,10 @@
                 "share_diagonstics_title": "Ayude a mejorar Home Assistant",
                 "unhealthy_description": "Ejecutar una instalación en mal estado causará problemas. A continuación se muestra una lista de problemas encontrados con su instalación, haga clic en los enlaces para saber cómo puede resolverlos.",
                 "unhealthy_reason": {
-                    "docker": "El entorno de Docker no funciona correctamente",
-                    "privileged": "El supervisor no tiene privilegios",
-                    "setup": "Falló la configuración del supervisor",
-                    "supervisor": "El supervisor no pudo actualizar"
+                    "docker": "El entorno Docker no funciona correctamente",
+                    "privileged": "Supervisor no tiene privilegios",
+                    "setup": "Falló la configuración de Supervisor",
+                    "supervisor": "No se pudo actualizar Supervisor"
                 },
                 "unhealthy_title": "La instalación tiene problemas",
                 "unsupported_description": "A continuación se muestra una lista de problemas encontrados con su instalación, haga clic en los enlaces para saber cómo puede resolverlos.",
@@ -480,11 +480,11 @@
                     "lxc": "LXC",
                     "network_manager": "Administrador de red",
                     "os": "Sistema operativo",
-                    "privileged": "El supervisor no tiene privilegios",
+                    "privileged": "Supervisor no tiene privilegios",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Está ejecutando una instalación no soportada",
-                "update_supervisor": "Actualizar el supervisor",
+                "update_supervisor": "Actualizar Supervisor",
                 "warning": "ADVERTENCIA"
             }
         }
@@ -1354,7 +1354,7 @@
                         "conditions": {
                             "add": "Agregar condición",
                             "delete": "Eliminar",
-                            "delete_confirm": "¿Está seguro que quiere eliminar?",
+                            "delete_confirm": "¿Está seguro de eliminar ésto?",
                             "duplicate": "Duplicar",
                             "header": "Condiciones",
                             "introduction": "Las condiciones son opcionales y evitarán una mayor ejecución a menos que se cumplan todas las condiciones.",
@@ -3776,7 +3776,7 @@
                     "token_title": "Actualizar token para {clientId}"
                 },
                 "suspend": {
-                    "description": "¿Deberíamos cerrar la conexión al servidor después de estar oculto durante 5 minutos?",
+                    "description": "¿Deberíamos cerrar la conexión al servidor después de estar ausente por 5 minutos?",
                     "header": "Conexión cerrada automáticamente"
                 },
                 "themes": {
