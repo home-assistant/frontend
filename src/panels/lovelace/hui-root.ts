@@ -573,6 +573,10 @@ class HUIRoot extends LitElement {
         }
         newSelectView = index;
       }
+
+      // Check for requested edit mode
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("edit") === "1") this._enableEditMode();
     }
 
     if (changedProperties.has("lovelace")) {
