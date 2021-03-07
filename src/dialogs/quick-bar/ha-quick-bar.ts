@@ -486,17 +486,11 @@ export class QuickBar extends LitElement {
     page: PageNavigation
   ): NavigationInfo | undefined {
     if (page.component) {
-      const shortCaption = this.hass.localize(
+      const caption = this.hass.localize(
         `ui.dialogs.quick-bar.commands.navigation.${page.component}`
       );
 
-      if (page.translationKey && shortCaption) {
-        const caption = this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-          "panel",
-          shortCaption
-        );
-
+      if (page.translationKey && caption) {
         return { ...page, primaryText: caption };
       }
     }
