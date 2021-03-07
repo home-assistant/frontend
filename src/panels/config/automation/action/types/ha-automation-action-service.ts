@@ -49,7 +49,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
       fireEvent(this, "ui-mode-not-available", error);
       return;
     }
-    if (this.action && hasTemplate(JSON.stringify(this.action))) {
+    if (this.action && hasTemplate(this.action)) {
       fireEvent(
         this,
         "ui-mode-not-available",
