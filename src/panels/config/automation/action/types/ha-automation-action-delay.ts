@@ -1,5 +1,11 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, html, LitElement, property } from "lit-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+} from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/entity/ha-entity-picker";
@@ -19,17 +25,22 @@ export class HaDelayAction extends LitElement implements ActionElement {
     return { delay: "" };
   }
 
-  protected render() {
-    let data: HaFormTimeData = {};
-
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return;
+    }
     // Check for templates in action. If found, revert to YAML mode.
-    if (this.action && hasTemplate(JSON.stringify(this.action))) {
+    if (this.action && hasTemplate(this.action)) {
       fireEvent(
         this,
         "ui-mode-not-available",
         Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
       );
     }
+  }
+
+  protected render() {
+    let data: HaFormTimeData = {};
 
     if (typeof this.action.delay !== "object") {
       if (typeof this.action.delay === "string" || isNaN(this.action.delay)) {
