@@ -19,6 +19,7 @@ import type {
   DataTableColumnContainer,
   DataTableRowData,
 } from "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-circular-progress";
 import { fetchDevices, ZHADevice } from "../../../../../data/zha";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 
@@ -89,7 +90,7 @@ class DialogZHADeviceChildren extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._devices) {
+    if (!this._device) {
       return html``;
     }
     return html`
@@ -101,14 +102,25 @@ class DialogZHADeviceChildren extends LitElement {
           this.hass,
           this.hass.localize(`ui.dialogs.zha_device_info.device_children`)
         )}
-        ><ha-data-table
-          .columns=${this._columns}
-          .data=${this._deviceChildren(this._device, this._devices)}
-          auto-height
-          .dir=${computeRTLDirection(this.hass)}
-          .searchLabel=${this.hass.localize("ui.components.data-table.search")}
-          .noDataText=${this.hass.localize("ui.components.data-table.no-data")}
-        ></ha-data-table>
+      >
+        ${!this._devices
+          ? html`<ha-circular-progress
+              alt="Loading"
+              size="large"
+              active
+            ></ha-circular-progress>`
+          : html`<ha-data-table
+              .columns=${this._columns}
+              .data=${this._deviceChildren(this._device, this._devices)}
+              auto-height
+              .dir=${computeRTLDirection(this.hass)}
+              .searchLabel=${this.hass.localize(
+                "ui.components.data-table.search"
+              )}
+              .noDataText=${this.hass.localize(
+                "ui.components.data-table.no-data"
+              )}
+            ></ha-data-table>`}
       </ha-dialog>
     `;
   }
