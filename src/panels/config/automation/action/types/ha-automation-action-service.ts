@@ -47,6 +47,13 @@ export class HaServiceAction extends LitElement implements ActionElement {
     } catch (error) {
       fireEvent(this, "ui-mode-not-available", error);
     }
+    if (this.action?.data && hasTemplate(JSON.stringify(this.action.data))) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
+      );
+    }
     if (this.action.entity_id) {
       this._action = {
         ...this.action,
