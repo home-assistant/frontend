@@ -88,6 +88,19 @@ class ZWaveJSNodeConfig extends LitElement {
             ${this.hass.localize(
               "ui.panel.config.zwave_js.node_config.introduction"
             )}
+            <p>
+              <em
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_config.attribution",
+                  "device_database",
+                  html`<a href="https://devices.zwave-js.io/" target="_blank"
+                    >${this.hass.localize(
+                      "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
+                    )}</a
+                  >`
+                )}</em
+              >
+            </p>
           </div>
           ${this._config
             ? html`
