@@ -283,8 +283,8 @@ export class HaConfigDeviceDashboard extends LitElement {
         title: this.hass.localize("ui.panel.config.devices.data_table.battery"),
         sortable: true,
         type: "numeric",
-        width: narrow ? "90px" : "15%",
-        maxWidth: "90px",
+        width: narrow ? "95px" : "15%",
+        maxWidth: "95px",
         template: (batteryEntityPair: DeviceRowData["battery_entity"]) => {
           const battery =
             batteryEntityPair && batteryEntityPair[0]
@@ -298,7 +298,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             battery && computeStateDomain(battery) === "binary_sensor";
           return battery && (batteryIsBinary || !isNaN(battery.state as any))
             ? html`
-                ${batteryIsBinary ? "" : battery.state + "%"}
+                ${batteryIsBinary ? "" : battery.state + " %"}
                 <ha-battery-icon
                   .hass=${this.hass!}
                   .batteryStateObj=${battery}

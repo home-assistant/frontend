@@ -226,7 +226,7 @@ export class HaConfigDevicePage extends LitElement {
                     batteryState
                       ? html`
                           <div class="battery">
-                            ${batteryIsBinary ? "" : batteryState.state + "%"}
+                            ${batteryIsBinary ? "" : batteryState.state + " %"}
                             <ha-battery-icon
                               .hass=${this.hass!}
                               .batteryStateObj=${batteryState}
