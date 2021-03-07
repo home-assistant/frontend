@@ -171,7 +171,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               [[localize('ui.panel.developer-tools.tabs.states.attributes')]]
               <paper-checkbox
                 checked="{{_showAttributes}}"
-                on-change="{{saveAttributeCheckboxState}}"
+                on-change="saveAttributeCheckboxState"
               ></paper-checkbox>
             </th>
           </tr>
