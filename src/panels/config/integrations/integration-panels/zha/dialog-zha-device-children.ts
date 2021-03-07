@@ -19,7 +19,6 @@ import type {
   DataTableColumnContainer,
   DataTableRowData,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-circular-progress";
 import { fetchDevices, ZHADevice } from "../../../../../data/zha";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 
@@ -36,8 +35,6 @@ class DialogZHADeviceChildren extends LitElement {
   @internalProperty() private _device: ZHADevice | undefined;
 
   @internalProperty() private _devices: Map<string, ZHADevice> | undefined;
-
-  @internalProperty() private _opened = false;
 
   private _deviceChildren = memoizeOne(
     (
@@ -83,45 +80,35 @@ class DialogZHADeviceChildren extends LitElement {
   ): Promise<void> {
     this._device = params.device;
     this._fetchData();
-    this._opened = true;
   }
 
   public closeDialog(): void {
     this._device = undefined;
     this._devices = undefined;
-    this._opened = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
+    if (!this._devices) {
+      return html``;
+    }
     return html`
       <ha-dialog
-        .open=${this._opened}
         hideActions
-        @closing="${this.closeDialog}"
+        open
+        @closed="${this.closeDialog}"
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.dialogs.zha_device_info.device_children`)
         )}
-      >
-        ${!this._devices
-          ? html`<ha-circular-progress
-              alt="Loading"
-              size="large"
-              active
-            ></ha-circular-progress>`
-          : html` <ha-data-table
-              .columns=${this._columns}
-              .data=${this._deviceChildren(this._device, this._devices)}
-              auto-height
-              .dir=${computeRTLDirection(this.hass)}
-              .searchLabel=${this.hass.localize(
-                "ui.components.data-table.search"
-              )}
-              .noDataText=${this.hass.localize(
-                "ui.components.data-table.no-data"
-              )}
-            ></ha-data-table>`}
+        ><ha-data-table
+          .columns=${this._columns}
+          .data=${this._deviceChildren(this._device, this._devices)}
+          auto-height
+          .dir=${computeRTLDirection(this.hass)}
+          .searchLabel=${this.hass.localize("ui.components.data-table.search")}
+          .noDataText=${this.hass.localize("ui.components.data-table.no-data")}
+        ></ha-data-table>
       </ha-dialog>
     `;
   }
