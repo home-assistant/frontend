@@ -21,6 +21,8 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   @property() public action!: DelayAction;
 
+  @property() public _timeData!: HaFormTimeData;
+
   public static get defaultConfig() {
     return { delay: "" };
   }
@@ -36,38 +38,37 @@ export class HaDelayAction extends LitElement implements ActionElement {
         "ui-mode-not-available",
         Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
       );
+      return;
     }
-  }
-
-  protected render() {
-    let data: HaFormTimeData = {};
 
     if (typeof this.action.delay !== "object") {
       if (typeof this.action.delay === "string" || isNaN(this.action.delay)) {
         const parts = this.action.delay?.toString().split(":") || [];
-        data = {
+        this._timeData = {
           hours: Number(parts[0]) || 0,
           minutes: Number(parts[1]) || 0,
           seconds: Number(parts[2]) || 0,
           milliseconds: Number(parts[3]) || 0,
         };
       } else {
-        data = { seconds: this.action.delay };
+        this._timeData = { seconds: this.action.delay };
       }
-    } else {
-      const { days, minutes, seconds, milliseconds } = this.action.delay;
-      let { hours } = this.action.delay || 0;
-      hours = (hours || 0) + (days || 0) * 24;
-      data = {
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-        milliseconds: milliseconds,
-      };
+      return;
     }
+    const { days, minutes, seconds, milliseconds } = this.action.delay;
+    let { hours } = this.action.delay || 0;
+    hours = (hours || 0) + (days || 0) * 24;
+    this._timeData = {
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+      milliseconds: milliseconds,
+    };
+  }
 
-    return html` <ha-time-input
-      .data=${data}
+  protected render() {
+    return html`<ha-time-input
+      .data=${this._timeData}
       enableMillisecond
       @value-changed=${this._valueChanged}
     ></ha-time-input>`;
