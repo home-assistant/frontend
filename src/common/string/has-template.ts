@@ -1,2 +1,3 @@
 const hasTemplateRegex = new RegExp("{%|{{|{#");
-const hasTemplate = (value: string): boolean => hasTemplateRegex.test(value);
+export const hasTemplate = (value: string): boolean =>
+  hasTemplateRegex.test(value);

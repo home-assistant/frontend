@@ -16,6 +16,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { EntityIdOrAll } from "../../../../../common/structs/is-entity-id";
 import { ActionElement } from "../ha-automation-action-row";
 import "../../../../../components/ha-service-control";
+import { hasTemplate } from "../../../../../common/string/has-template";
 
 const actionStruct = object({
   service: optional(string()),
@@ -47,7 +48,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     } catch (error) {
       fireEvent(this, "ui-mode-not-available", error);
     }
-    if (this.action?.data && hasTemplate(JSON.stringify(this.action.data))) {
+    if (this.action && hasTemplate(JSON.stringify(this.action))) {
       fireEvent(
         this,
         "ui-mode-not-available",
