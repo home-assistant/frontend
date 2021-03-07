@@ -20,39 +20,62 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   protected render() {
     let data: HaFormTimeData = {};
+    let templateDetected = false;
 
     if (typeof this.action.delay !== "object") {
-      if (isNaN(this.action.delay)) {
-        const parts = this.action.delay?.toString().split(":") || [];
-        data = {
-          hours: Number(parts[0]) || 0,
-          minutes: Number(parts[1]) || 0,
-          seconds: Number(parts[2]) || 0,
-          milliseconds: Number(parts[3]) || 0,
-        };
+      if (typeof this.action.delay === "string" || isNaN(this.action.delay)) {
+        const delayString = this.action.delay?.toString();
+        // Check for template string. Otherwise we assume time string
+        if (delayString.startsWith("{{")) {
+          templateDetected = true;
+        } else {
+          const parts = delayString.split(":") || [];
+          data = {
+            hours: Number(parts[0]) || 0,
+            minutes: Number(parts[1]) || 0,
+            seconds: Number(parts[2]) || 0,
+            milliseconds: Number(parts[3]) || 0,
+          };
+        }
       } else {
         data = { seconds: this.action.delay };
       }
     } else {
       const { days, minutes, seconds, milliseconds } = this.action.delay;
       let { hours } = this.action.delay || 0;
-      hours = (hours || 0) + (days || 0) * 24;
-      data = {
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-        milliseconds: milliseconds,
-      };
+
+      if (
+        days?.toString().startsWith("{{") ||
+        hours?.toString().startsWith("{{") ||
+        minutes?.toString().startsWith("{{") ||
+        seconds?.toString().startsWith("{{") ||
+        milliseconds?.toString().startsWith("{{")
+      ) {
+        templateDetected = true;
+      } else {
+        hours = (hours || 0) + (days || 0) * 24;
+        data = {
+          hours: hours,
+          minutes: minutes,
+          seconds: seconds,
+          milliseconds: milliseconds,
+        };
+      }
     }
 
-    return html`
-      <ha-time-input
-        .data=${data}
-        enableMillisecond
-        @value-changed=${this._valueChanged}
-      >
-      </ha-time-input>
-    `;
+    return templateDetected
+      ? fireEvent(
+          this,
+          "ui-mode-not-available",
+          Error(
+            this.hass.localize("ui.errors.config.no_template_editor_support")
+          )
+        )
+      : html`<ha-time-input
+          .data=${data}
+          enableMillisecond
+          @value-changed=${this._valueChanged}
+        ></ha-time-input>`;
   }
 
   private _valueChanged(ev: CustomEvent) {
