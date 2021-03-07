@@ -410,10 +410,10 @@ class HassioSupervisorInfo extends LitElement {
   private async _diagnosticsInformationDialog(): Promise<void> {
     await showAlertDialog(this, {
       title: this.supervisor.localize(
-        "system.supervisor.share_diagonstics_title"
+        "system.supervisor.share_diagnostics_title"
       ),
       text: this.supervisor.localize(
-        "system.supervisor.share_diagonstics_description",
+        "system.supervisor.share_diagnostics_title_description",
         "line_break",
         html`<br /><br />`
       ),
