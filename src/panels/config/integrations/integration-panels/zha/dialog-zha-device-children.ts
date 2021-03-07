@@ -19,7 +19,9 @@ import type {
   DataTableColumnContainer,
   DataTableRowData,
 } from "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-circular-progress";
 import { fetchDevices, ZHADevice } from "../../../../../data/zha";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface DeviceRowData extends DataTableRowData {
   id: string;
@@ -31,25 +33,30 @@ export interface DeviceRowData extends DataTableRowData {
 class DialogZHADeviceChildren extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _device: any;
+  @internalProperty() private _device: ZHADevice | undefined;
 
-  @internalProperty() private _devices: Map<string, ZHADevice> = new Map();
+  @internalProperty() private _devices: Map<string, ZHADevice> | undefined;
+
+  @internalProperty() private _opened = false;
 
   private _deviceChildren = memoizeOne(
-    (device: ZHADevice, devices: Map<string, ZHADevice>) => {
+    (
+      device: ZHADevice | undefined,
+      devices: Map<string, ZHADevice> | undefined
+    ) => {
       const outputDevices: DeviceRowData[] = [];
-
-      device.neighbors.forEach((child) => {
-        const zhaDevice: ZHADevice | undefined = devices.get(child.ieee);
-        if (zhaDevice) {
-          outputDevices.push({
-            name: zhaDevice.user_given_name || zhaDevice.name,
-            id: zhaDevice.device_reg_id,
-            lqi: child.lqi,
-          });
-        }
-      });
-
+      if (device && devices) {
+        device.neighbors.forEach((child) => {
+          const zhaDevice: ZHADevice | undefined = devices.get(child.ieee);
+          if (zhaDevice) {
+            outputDevices.push({
+              name: zhaDevice.user_given_name || zhaDevice.name,
+              id: zhaDevice.device_reg_id,
+              lqi: child.lqi,
+            });
+          }
+        });
+      }
       return outputDevices;
     }
   );
@@ -75,32 +82,46 @@ class DialogZHADeviceChildren extends LitElement {
     params: ZHADeviceChildrenDialogParams
   ): Promise<void> {
     this._device = params.device;
-    await this._fetchData();
+    this._fetchData();
+    this._opened = true;
+  }
+
+  public closeDialog(): void {
+    this._device = undefined;
+    this._devices = undefined;
+    this._opened = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
-    if (!this._device) {
-      return html``;
-    }
-
     return html`
       <ha-dialog
-        open
+        .open=${this._opened}
         hideActions
-        @closing="${this._close}"
+        @closing="${this.closeDialog}"
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.dialogs.zha_device_info.device_children`)
         )}
       >
-        <ha-data-table
-          .columns=${this._columns}
-          .data=${this._deviceChildren(this._device, this._devices)}
-          auto-height
-          .dir=${computeRTLDirection(this.hass)}
-          .searchLabel=${this.hass.localize("ui.components.data-table.search")}
-          .noDataText=${this.hass.localize("ui.components.data-table.no-data")}
-        ></ha-data-table>
+        ${!this._devices
+          ? html`<ha-circular-progress
+              alt="Loading"
+              size="large"
+              active
+            ></ha-circular-progress>`
+          : html` <ha-data-table
+              .columns=${this._columns}
+              .data=${this._deviceChildren(this._device, this._devices)}
+              auto-height
+              .dir=${computeRTLDirection(this.hass)}
+              .searchLabel=${this.hass.localize(
+                "ui.components.data-table.search"
+              )}
+              .noDataText=${this.hass.localize(
+                "ui.components.data-table.no-data"
+              )}
+            ></ha-data-table>`}
       </ha-dialog>
     `;
   }
@@ -112,10 +133,6 @@ class DialogZHADeviceChildren extends LitElement {
         devices.map((device: ZHADevice) => [device.ieee, device])
       );
     }
-  }
-
-  private _close(): void {
-    this._device = undefined;
   }
 
   static get styles(): CSSResult {
