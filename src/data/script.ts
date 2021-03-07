@@ -55,7 +55,7 @@ export interface DelayActionParts {
   days?: number;
 }
 export interface DelayAction {
-  delay: number | Partial<DelayActionParts>;
+  delay: number | Partial<DelayActionParts> | string;
 }
 
 export interface SceneAction {
