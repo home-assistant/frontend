@@ -337,6 +337,7 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _switchYamlMode() {
+    this._warnings = undefined;
     this._yamlMode = !this._yamlMode;
   }
 
