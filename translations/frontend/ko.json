@@ -146,29 +146,37 @@
         },
         "common": {
             "cancel": "취소",
+            "close": "닫기",
+            "description": "상세정보",
             "error": {
                 "unknown": "알 수 없는 오류",
-                "update_failed": "업데이트 실패"
+                "update_failed": "업데이트가 실패했습니다"
             },
-            "failed_to_restart_name": "{name} 을(를) 다시 시작하지 못했습니다",
-            "refresh": "새로 고침",
-            "reload": "재실행",
-            "reset_defaults": "기본값으로 재설정",
-            "reset_options": "옵션 재설정",
-            "restart": "재시작",
-            "restart_name": "{name} 다시 시작",
-            "running_version": "현재 버전 {version}을 실행 중입니다.",
-            "save": "저장",
-            "show_more": "자세한 정보 표시"
+            "failed_to_restart_name": "{name}을(를) 다시 시작하지 못했습니다",
+            "failed_to_update_name": "{name}을(를) 업데이트하지 못했습니다",
+            "learn_more": "더 알아보기",
+            "new_version_available": "새로운 버전을 사용할 수 있습니다",
+            "no": "아니오",
+            "refresh": "새로고침",
+            "reload": "다시 읽어오기",
+            "reset_defaults": "기본값으로 재설정하기",
+            "reset_options": "옵션 재설정하기",
+            "restart": "다시 시작하기",
+            "restart_name": "{name} 다시 시작하기",
+            "running_version": "현재 버전 {version}을(를) 실행 중입니다",
+            "save": "저장하기",
+            "show_more": "이에 대한 자세한 정보 표시",
+            "update_available": "{count, plural,\n  one {업데이트}\n  other {{count} 업데이트}\n} 보류 중",
+            "yes": "예"
         },
         "confirm": {
             "reset_options": {
-                "text": "모든 옵션을 재설정 하시겠습니까?",
-                "title": "옵션 재설정"
+                "text": "모든 옵션을 재설정하시겠습니까?",
+                "title": "옵션 재설정하기"
             },
             "restart": {
-                "text": "{name} 을(를) 다시 시작하시겠습니까?",
-                "title": "{name} 다시 시작"
+                "text": "{name}을(를) 다시 시작하시겠습니까?",
+                "title": "{name} 다시 시작하기"
             },
             "update": {
                 "title": "{name} 업데이트"
@@ -176,34 +184,34 @@
         },
         "dialog": {
             "network": {
-                "connected_to": "{ssid} 연결됨",
+                "connected_to": "{ssid}에 연결되었습니다",
                 "dhcp": "DHCP",
                 "disabled": "비활성화",
                 "dns_servers": "DNS 서버",
-                "failed_to_change": "네트워크 설정 변경 실패",
+                "failed_to_change": "네트워크 설정을 변경하지 못했습니다",
                 "gateway": "게이트웨이 주소",
                 "ip_netmask": "IP 주소/넷마스크",
                 "open": "공개",
-                "scan_ap": "액세스 포인트 검색",
+                "scan_ap": "액세스 포인트 검색하기",
                 "static": "정적",
                 "title": "네트워크 설정",
-                "unsaved": "저장하지 않은 변경 사항이 있습니다. 탭을 변경하면 손실됩니다. 계속 하시겠습니까?",
-                "warning": "Wi-Fi, IP 또는 게이트웨이 주소를 변경하는 경우 연결이 끊어 질 수 있습니다!",
+                "unsaved": "저장되지 않은 변경 사항이 있습니다. 탭을 변경하면 손실됩니다. 계속하시겠습니까?",
+                "warning": "Wi-Fi, IP 또는 게이트웨이 주소를 변경하는 경우 연결이 끊어질 수 있습니다!",
                 "wep": "WEP",
                 "wpa": "wpa-psk"
             },
             "registries": {
-                "add_new_registry": "신규 레지스트리 추가",
-                "add_registry": "레지스트리 추가",
-                "failed_to_add": "레지스트리 추가 실패",
-                "failed_to_remove": "레지스트리 제거 실패",
-                "no_registries": "구성된 레지스트리 없음",
-                "password": "암호",
+                "add_new_registry": "새로운 레지스트리 추가하기",
+                "add_registry": "레지스트리 추가하기",
+                "failed_to_add": "레지스트리를 추가하지 못했습니다",
+                "failed_to_remove": "레지스트리를 제거하지 못했습니다",
+                "no_registries": "구성된 레지스트리가 없습니다",
+                "password": "비밀번호",
                 "registry": "레지스트리",
-                "remove": "제거",
-                "title_add": "신규 컨테이너 레지스트리 추가",
+                "remove": "제거하기",
+                "title_add": "새로운 컨테이너 레지스트리 추가",
                 "title_manage": "컨테이너 레지스트리 관리",
-                "username": "사용자명"
+                "username": "사용자 이름"
             },
             "repositories": {
                 "add": "추가하기",
@@ -211,42 +219,53 @@
                 "title": "추가 기능 저장소 관리"
             },
             "restart_addon": {
-                "confirm_text": "추가 기능 다시 시작",
+                "confirm_text": "추가 기능 다시 시작하기",
                 "text": "변경 사항과 함께 추가 기능을 다시 시작하시겠습니까?"
             },
             "update": {
                 "create_snapshot": "업데이트하기 전에 {name}의 스냅샷을 만들기",
                 "snapshot": "스냅샷",
                 "snapshotting": "{name} 스냅샷을 만드는 중",
-                "updating": "{name} 을(를) {version} 버전으로 업데이트 중"
+                "updating": "{name}을(를) {version} 버전으로 업데이트 중"
             }
         },
         "my": {
-            "error": "알려지지 않은 에러 발생",
-            "error_addon_not_found": "애드온을 찾을 수 없습니다.",
+            "error": "알 수 없는 오류가 발생했습니다",
+            "error_addon_not_found": "추가 기능을 찾을 수 없습니다",
             "faq_link": "자주 묻는 질문",
-            "not_supported": "이 리다이렉트는 홈어시트턴드에서 지원되지 않습니다. {link} 에서 소개되는 리다이렉트와 버전을 확인하세요."
+            "not_supported": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. {link} 에서 지원되는 리디렉션과 리디렉션이 도입된 버전을 확인해주세요."
         },
         "snapshot": {
+            "addons": "추가 기능",
             "available_snapshots": "사용 가능한 스냅샷",
-            "could_not_create": "스냅샷을 만들 수 없습니다.",
-            "create": "생성",
-            "create_blocked_not_running": "{state} 상태이기 때문에 지금은 스냅샷을 생성 할 수 없습니다.",
-            "create_snapshot": "스냅샷 생성",
-            "description": "스냅샷을 사용하면 홈 어시스턴트 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
+            "could_not_create": "스냅샷을 만들 수 없습니다",
+            "create": "생성하기",
+            "create_blocked_not_running": "시스템이 {state} 상태이기 때문에 지금은 스냅샷을 생성할 수 없습니다.",
+            "create_snapshot": "스냅샷 생성하기",
+            "description": "스냅샷을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
+            "enter_password": "비밀번호를 입력해주세요",
             "folder": {
-                "addons/local": "로컬 애드온",
-                "media": "미디어"
+                "addons/local": "로컬 추가 기능",
+                "homeassistant": "Home Assistant 구성 내용",
+                "media": "미디어",
+                "share": "공유 내용",
+                "ssl": "SSL 인증서"
             },
+            "folders": "폴더",
+            "full_snapshot": "전체 스냅샷",
             "name": "이름",
-            "no_snapshots": "아직 스냅샷이 없습니다.",
+            "no_snapshots": "스냅샷이 존재하지 않습니다.",
+            "partial_snapshot": "부분 스냅샷",
+            "password": "비밀번호",
+            "password_protected": "비밀번호로 보호됨",
+            "password_protection": "비밀번호 보호",
             "security": "보안",
             "type": "유형",
-            "upload_snapshot": "스냅샷 업로드"
+            "upload_snapshot": "스냅샷 업로드하기"
         },
         "store": {
-            "missing_addons": "애드온이 없나요? 사용자 프로필에서 고급 모드 활성화 하세요.",
-            "no_results_found": "{repository} 에 결과가 없습니다.",
+            "missing_addons": "추가 기능이 보이지 않으신가요? 사용자 프로필 페이지에서 고급 모드를 활성화해보세요",
+            "no_results_found": "{repository}에 결과가 존재하지 않습니다",
             "registries": "레지스트리",
             "repositories": "저장소"
         },
@@ -256,41 +275,76 @@
                 "ram_usage": "코어 RAM 사용량"
             },
             "host": {
-                "change": "변경",
-                "change_hostname": "호스트 이름 변경",
-                "confirm_reboot": "호스트를 재부팅 하시겠습니까?",
-                "confirm_shutdown": "호스트를 종료 하시겠습니까?",
-                "deployment": "배포",
+                "change": "변경하기",
+                "change_hostname": "호스트 이름 변경하기",
+                "confirm_reboot": "호스트를 재부팅하시겠습니까?",
+                "confirm_shutdown": "호스트를 종료하시겠습니까?",
+                "deployment": "배포 버전",
                 "docker_version": "Docker 버전",
-                "emmc_lifetime_used": "eMMC 사용 시간",
-                "failed_to_import_from_usb": "USB에서 가져오기 실패",
-                "failed_to_set_hostname": "호스트 이름 설정 실패",
+                "emmc_lifetime_used": "eMMC 사용 수명",
+                "failed_to_get_hardware_list": "하드웨어 목록을 가져오지 못했습니다",
+                "failed_to_import_from_usb": "USB에서 가져오지 못했습니다",
+                "failed_to_reboot": "호스트를 재부팅하지 못했습니다",
+                "failed_to_set_hostname": "호스트 이름을 설정하지 못했습니다",
+                "failed_to_shutdown": "호스트를 종료하지 못했습니다",
                 "hardware": "하드웨어",
                 "hostname": "호스트 이름",
                 "import_from_usb": "USB에서 가져오기",
                 "ip_address": "IP 주소",
-                "new_hostname": "새 호스트 이름을 입력하십시오.",
+                "new_hostname": "새로운 호스트 이름을 입력해주세요:",
                 "operating_system": "운영 체제",
-                "reboot_host": "호스트 재부팅",
-                "shutdown_host": "호스트 종료",
-                "used_space": "사용 공간"
+                "reboot_host": "호스트 재부팅하기",
+                "shutdown_host": "호스트 종료하기",
+                "used_space": "사용된 공간"
             },
             "log": {
-                "get_logs": "{provider} 로그를 가져 오지 못했습니다 {error}",
-                "log_provider": "로그 제공"
+                "get_logs": "{provider} 로그를 가져오지 못했습니다. {error}",
+                "log_provider": "로그 제공자"
             },
             "supervisor": {
+                "beta_backup": "이 기능을 활성화하기 전에 백업된 데이터가 있는지 확인해주세요.",
+                "beta_join_confirm": "베타 채널에 가입하시겠습니까?",
+                "beta_release_items": "여기에는 다음에 대한 베타 릴리스가 포함됩니다:",
+                "beta_warning": "베타 릴리스는 테스터 및 얼리 어답터용이며 불안정한 코드 변경 내용을 포함할 수 있습니다",
                 "channel": "채널",
                 "cpu_usage": "Supervisor CPU 사용량",
-                "failed_to_reload": "Supervisor 재실행 실패",
-                "failed_to_set_option": "Supervisor 옵션 설정 실패",
-                "failed_to_update": "Supervisor 업데이트 실패",
+                "failed_to_reload": "Supervisor를 다시 읽어오지 못했습니다",
+                "failed_to_set_option": "Supervisor 옵션을 설정하지 못했습니다",
+                "failed_to_update": "Supervisor를 업데이트하지 못했습니다",
+                "join_beta_action": "베타 채널에 가입하기",
+                "join_beta_description": "Home Assistant (출시 직전버전), Supervisor 및 호스트에 대한 베타 업데이트를 가져옵니다",
+                "leave_beta_action": "베타 채널에서 탈퇴하기",
+                "leave_beta_description": "Home Assistant, Supervisor 및 호스트에 대한 안정적인 업데이트를 가져옵니다 ",
                 "ram_usage": "Supervisor RAM 사용량",
-                "unhealthy_description": "비정상적인 설치를 실행하면 문제가 발생합니다. 다음은 설치시 발견 된 문제 목록입니다. 링크를 클릭하여 문제를 해결하는 방법을 알아보십시오.",
-                "unhealthy_title": "비정상 설치입니다.",
-                "unsupported_description": "다음은 설치시 발견 된 문제 목록입니다. 링크를 클릭하여 문제를 해결하는 방법을 알아보십시오.",
-                "unsupported_title": "지원되지 않는 설치로 운영 중입니다.",
-                "update_supervisor": "Supervisor 업데이트"
+                "reload_supervisor": "Supervisor 다시 읽어오기",
+                "share_diagnostics": "진단 정보 공유하기",
+                "share_diagnostics_description": "충돌 보고서 및 진단 정보를 공유합니다.",
+                "share_diagonstics_description": "Supervisor에서 예기치 않은 오류가 발생할 경우 충돌 보고서 및 진단 정보를 자동으로 공유하시겠습니까? {line_break} 공유된 내용으로 발생된 문제를 해결할 수 있으며, 해당 정보는 Home Assistant Core 팀에서만 접근할 수 있을 뿐, 다른 사람과 공유되지 않습니다.{line_break} 데이터에는 개인 및 민감한 정보가 포함되어 있지 않으므로 언제든지 설정에서 이 정보를 사용하지 않도록 설정할 수 있습니다.",
+                "share_diagonstics_title": "Home Assistant 개선 도와주기",
+                "unhealthy_description": "비정상적으로 설치를 실행하면 문제가 발생합니다. 다음은 설치 시 발견된 문제 목록입니다. 문제를 해결하는 방법에 대해 알아보려면 링크를 클릭해주세요.",
+                "unhealthy_reason": {
+                    "docker": "Docker 환경이 제대로 작동하지 않습니다",
+                    "privileged": "Supervisor가 권한이 없습니다",
+                    "setup": "Supervisor 설치에 실패했습니다",
+                    "supervisor": "Supervisor가 업데이트할 수 없습니다"
+                },
+                "unhealthy_title": "설치가 비정상적입니다",
+                "unsupported_description": "다음은 설치 시 발견된 문제 목록입니다. 문제를 해결하는 방법에 대해 알아보려면 링크를 클릭해주세요.",
+                "unsupported_reason": {
+                    "container": "문제를 일으키는 것으로 알려진 컨테이너입니다",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker 구성 내용",
+                    "docker_version": "Docker 버전",
+                    "job_conditions": "작업 조건이 무시되었습니다",
+                    "lxc": "LXC",
+                    "network_manager": "네트워크 관리자",
+                    "os": "운영 체제",
+                    "privileged": "Supervisor가 권한이 없습니다",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "지원되지 않는 설치로 실행 중입니다",
+                "update_supervisor": "Supervisor 업데이트하기",
+                "warning": "경고"
             }
         }
     },
@@ -534,32 +588,34 @@
             },
             "logbook": {
                 "by": "트리거 요소: ",
-                "by_service": "서비스 요소: ",
+                "by_service": "트리거 요소: 서비스",
                 "entries_not_found": "로그북 구성요소를 찾을 수 없습니다.",
                 "messages": {
-                    "became_unavailable": "이(가) 사용 불가능함.",
-                    "changed_to_state": "이(가) {state} 로 변경됨.",
-                    "cleared_device_class": "이(가) 더 이상 {device_class} 을(를) 감지하지 않음.",
-                    "detected_device_class": "이(가) {device_class} 을(를) 감지함.",
-                    "rose": "일출 시각",
-                    "set": "일몰 시각",
-                    "turned_off": "이(가) 꺼짐.",
-                    "turned_on": "이(가) 켜짐.",
-                    "was_at_home": "이(가) 집에서 발견됨.",
-                    "was_at_state": "이(가) {state} 로 감지됨.",
-                    "was_away": "이(가) 외출로 감지됨.",
-                    "was_closed": "이(가) 닫힘.",
-                    "was_connected": "이(가) 연결됨.",
-                    "was_disconnected": "이(가) 연결이 끊어짐.",
-                    "was_locked": "이(가) 잠김.",
-                    "was_low": "이(가) 낮음.",
-                    "was_normal": "이(가) 정상상태가 됨.",
-                    "was_opened": "이(가) 열림.",
-                    "was_plugged_in": "이(가) 플러그가 꼽힘.",
-                    "was_safe": "이(가) 안전함.",
-                    "was_unlocked": "이(가) 잠금이 해제됨.",
-                    "was_unplugged": "이(가) 플러그가 뽑힘.",
-                    "was_unsafe": "이(가) 안전하지 않음."
+                    "became_unavailable": "이(가) 사용 불가능해짐",
+                    "changed_to_state": "이(가) {state}로(으로) 변경됨",
+                    "cleared_device_class": "이(가) 더 이상 {device_class}을(를) 감지하지 않음",
+                    "detected_device_class": "이(가) {device_class}을(를) 감지함",
+                    "is_closing": "이(가) 닫히는 중",
+                    "is_opening": "이(가) 열리는 중",
+                    "rose": "이(가) 짐",
+                    "set": "이(가) 뜸",
+                    "turned_off": "이(가) 꺼짐",
+                    "turned_on": "이(가) 켜짐",
+                    "was_at_home": "이(가) 집에서 발견됨",
+                    "was_at_state": "이(가) {state}로(으로) 감지됨",
+                    "was_away": "이(가) 외출로 감지됨",
+                    "was_closed": "이(가) 닫힘",
+                    "was_connected": "이(가) 연결됨",
+                    "was_disconnected": "이(가) 연결이 끊어짐",
+                    "was_locked": "이(가) 잠김",
+                    "was_low": "이(가) 낮음",
+                    "was_normal": "이(가) 정상상태가 됨",
+                    "was_opened": "이(가) 열림",
+                    "was_plugged_in": " 플러그가 꼽힘",
+                    "was_safe": "이(가) 안전함",
+                    "was_unlocked": "이(가) 잠금이 해제됨",
+                    "was_unplugged": " 플러그가 뽑힘",
+                    "was_unsafe": "이(가) 안전하지 않음"
                 }
             },
             "media-browser": {
@@ -794,7 +850,7 @@
                     "start": "시작",
                     "start_pause": "시작 / 일시정지",
                     "status": "상태",
-                    "stop": "중지"
+                    "stop": "중지하기"
                 }
             },
             "mqtt_device_debug_info": {
@@ -874,8 +930,8 @@
                     },
                     "server_control": {
                         "perform_action": "서버 {action}",
-                        "restart": "재시작",
-                        "stop": "중지"
+                        "restart": "다시 시작하기",
+                        "stop": "중지하기"
                     }
                 },
                 "filter_placeholder": "구성요소 필터"
@@ -947,7 +1003,7 @@
         "panel": {
             "config": {
                 "advanced_mode": {
-                    "hint_enable": "구성 옵션이 보이지 않으신가요? 고급 모드를 사용해보세요",
+                    "hint_enable": "구성 옵션이 보이지 않으신가요? 사용자 프로필 페이지에서 고급 모드를 활성화해보세요",
                     "link_profile_page": "프로필 페이지"
                 },
                 "areas": {
@@ -1173,7 +1229,7 @@
                             "label": "모드",
                             "parallel": "병렬",
                             "queued": "대기",
-                            "restart": "재시작",
+                            "restart": "다시 시작하기",
                             "single": "단일 (기본값)"
                         },
                         "move_down": "아래로 이동",
@@ -1824,7 +1880,7 @@
                         "ignore": "무시",
                         "ignored": "무시된 통합 구성요소",
                         "show_ignored": "무시된 통합 구성요소 표시",
-                        "stop_ignore": "무시 중지"
+                        "stop_ignore": "무시 중지하기"
                     },
                     "integration": "통합 구성요소",
                     "integration_not_found": "통합 구성요소를 찾을 수 없습니다.",
@@ -2162,7 +2218,7 @@
                             "label": "모드",
                             "parallel": "병렬",
                             "queued": "대기",
-                            "restart": "재시작",
+                            "restart": "다시 시작하기",
                             "single": "단일 (기본값)"
                         },
                         "save_script": "스크립트 저장",
@@ -2186,7 +2242,7 @@
                 },
                 "server_control": {
                     "caption": "서버 제어",
-                    "description": "Home Assistant 서버를 재시작 또는 중지합니다",
+                    "description": "Home Assistant 서버를 다시 시작하거나 중지합니다",
                     "section": {
                         "reloading": {
                             "automation": "자동화 다시 읽어오기",
@@ -2205,7 +2261,7 @@
                             "input_number": "숫자입력 다시 읽어오기",
                             "input_select": "선택입력 다시 읽어오기",
                             "input_text": "문자입력 다시 읽어오기",
-                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 다시 읽어오기를 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
+                            "introduction": "Home Assistant의 일부 구성 내용은 다시 시작할 필요 없이 다시 읽어 들일 수 있습니다. 다시 읽어오기를 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
                             "min_max": "최소/최대 구성요소 다시 읽어오기",
                             "mqtt": "직접 구성한 MQTT 구성요소 다시 읽어오기",
                             "person": "구성원 다시 읽어오기",
@@ -2224,12 +2280,12 @@
                             "zone": "지역 다시 읽어오기"
                         },
                         "server_management": {
-                            "confirm_restart": "Home Assistant 를 재시작하시겠습니까?",
-                            "confirm_stop": "Home Assistant 를 중지하시겠습니까?",
+                            "confirm_restart": "Home Assistant를 다시 시작하시겠습니까?",
+                            "confirm_stop": "Home Assistant를 중지하시겠습니까?",
                             "heading": "서버 관리",
                             "introduction": "Home Assistant 서버를 제어합니다.",
-                            "restart": "재시작",
-                            "stop": "중지"
+                            "restart": "다시 시작하기",
+                            "stop": "중지하기"
                         },
                         "validation": {
                             "check_config": "구성 내용 확인",

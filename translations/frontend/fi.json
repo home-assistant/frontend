@@ -102,6 +102,108 @@
             "unknown": "Tuntematon"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "network": {
+                    "container": "Kontti",
+                    "header": "Verkko"
+                }
+            },
+            "dashboard": {
+                "capability": {
+                    "role": {
+                        "default": "oletus"
+                    }
+                },
+                "changelog": "Muutosloki",
+                "hostname": "Isäntänimi",
+                "install": "asenna",
+                "new_update_available": "{name} {version} on saatavilla",
+                "option": {
+                    "auto_update": {
+                        "title": "Automaattinen päivitys"
+                    },
+                    "watchdog": {
+                        "title": "Vahtikoira"
+                    }
+                },
+                "restart": "käynnistä uudelleen",
+                "start": "käynnistä",
+                "stop": "pysäytä",
+                "uninstall": "poista"
+            }
+        },
+        "common": {
+            "cancel": "Peru",
+            "close": "Sulje",
+            "description": "Kuvaus",
+            "error": {
+                "unknown": "Tuntematon virhe",
+                "update_failed": "Päivitys epäonnistui"
+            },
+            "save": "Tallenna"
+        },
+        "confirm": {
+            "update": {
+                "title": "Päivitä {name}"
+            }
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Yhdistetty kohteeseen {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Poistettu käytöstä",
+                "dns_servers": "DNS-palvelimet",
+                "gateway": "Yhdyskäytävän osoite",
+                "scan_ap": "Etsi tukiasemia",
+                "title": "Verkkoasetukset",
+                "wep": "WEP"
+            },
+            "registries": {
+                "password": "Salasana",
+                "remove": "Poista",
+                "username": "Käyttäjätunnus"
+            },
+            "repositories": {
+                "add": "Lisää",
+                "remove": "Poista"
+            }
+        },
+        "panel": {
+            "system": "Järjestelmä"
+        },
+        "snapshot": {
+            "addons": "Lisäosat",
+            "create": "Luo",
+            "folder": {
+                "addons/local": "Paikalliset lisäosat",
+                "ssl": "SSL"
+            },
+            "folders": "Kansiot",
+            "name": "Nimi",
+            "password": "Salasana",
+            "type": "Tyyppi"
+        },
+        "system": {
+            "host": {
+                "change": "Muuta",
+                "deployment": "Käyttöönotto",
+                "docker_version": "Docker-versio",
+                "hardware": "Laitteisto",
+                "ip_address": "IP-osoite",
+                "operating_system": "Käyttöjärjestelmä"
+            },
+            "supervisor": {
+                "unsupported_reason": {
+                    "docker_version": "Docker-versio",
+                    "lxc": "LXC",
+                    "systemd": "Systemd"
+                },
+                "warning": "VAROITUS"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Haluatko pysyä kirjautuneena sisään?",

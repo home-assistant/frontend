@@ -117,6 +117,7 @@
                     "header": "Réseau",
                     "host": "Hôte"
                 },
+                "no_configuration": "Cet add-on n'expose pas de configuration pour que vous puissiez jouer avec ...",
                 "options": {
                     "edit_in_ui": "Modifier dans l'interface utilisateur",
                     "edit_in_yaml": "Modifier en tant que YAML",
@@ -127,6 +128,8 @@
             },
             "dashboard": {
                 "action_error": {
+                    "get_changelog": "Impossible d'obtenir le journal des modifications du module complémentaire",
+                    "go_to_config": "Échec du démarrage du module complémentaire - échec de la validation de la configuration!",
                     "install": "Échec de l'installation de l'extension",
                     "restart": "Échec du redémarrage de l'extension",
                     "start": "Échec du démarrage de l'extension",
@@ -136,24 +139,57 @@
                     "validate_config": "Échec de la validation de la configuration de l'add-on"
                 },
                 "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') est un module de sécurité du noyau Linux qui restreint les capacités des modules complémentaires comme l'accès réseau, l'accès au socket brut et l'autorisation de lire, d'écrire ou d'exécuter des fichiers spécifiques. \n\n Les auteurs de modules complémentaires peuvent fournir leurs profils de sécurité, optimisés pour le module complémentaire, ou demander sa désactivation. Si AppArmor est désactivé, cela augmentera les risques de sécurité et, par conséquent, aura un impact négatif sur le score de sécurité du module complémentaire.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Un module complémentaire peut authentifier les utilisateurs auprès de Home Assistant, permettant aux modules complémentaires de donner aux utilisateurs la possibilité de se connecter à des applications exécutées à l'intérieur de modules complémentaires, en utilisant leur nom d'utilisateur / mot de passe Home Assistant. Ce badge indique si l'auteur du module complémentaire demande cette capacité.",
+                        "title": "Authentification de l'assistant domestique"
+                    },
                     "docker_api": {
+                        "description": "L'auteur du module complémentaire a demandé au module complémentaire d'avoir un accès de gestion à l'instance Docker exécutée sur votre système. Ce mode donne au module complémentaire un accès et un contrôle complets à l'ensemble de votre système Home Assistant, ce qui ajoute des risques de sécurité et peut endommager votre système en cas d'utilisation abusive. Par conséquent, cette fonctionnalité a un impact négatif sur le score de sécurité du module complémentaire. \n\n Ce niveau d'accès n'est pas accordé automatiquement et doit être confirmé par vous. Pour ce faire, vous devez désactiver manuellement le mode de protection sur le module complémentaire. Ne désactivez le mode de protection que si vous connaissez, avez besoin ET faites confiance à la source de ce module complémentaire.",
                         "title": "Accès complet à Docker"
                     },
                     "full_access": {
+                        "description": "Ce module complémentaire bénéficie d'un accès complet au matériel de votre système, à la demande de l'auteur du module complémentaire. L'accès est comparable au mode privilégié dans Docker. Étant donné que cela ouvre des risques de sécurité possibles, cette fonctionnalité a un impact négatif sur le score de sécurité du module complémentaire. \n\n Ce niveau d'accès n'est pas accordé automatiquement et doit être confirmé par vous. Pour ce faire, vous devez désactiver manuellement le mode de protection sur le module complémentaire. Ne désactivez le mode de protection que si vous connaissez, avez besoin ET faites confiance à la source de ce module complémentaire.",
                         "title": "Accès complet au matériel"
                     },
+                    "hassio_api": {
+                        "description": "Le module complémentaire a eu accès à l'API Supervisor, à la demande de l'auteur du module complémentaire. Par défaut, le module complémentaire peut accéder aux informations générales sur la version de votre système. Lorsque le module complémentaire demande un accès de niveau `` gestionnaire '' ou `` administrateur '' à l'API, il aura accès pour contrôler plusieurs parties de votre système Home Assistant. Cette autorisation est indiquée par ce badge et aura un impact négatif sur le score de sécurité du module complémentaire.",
+                        "title": "Accès à l'API du superviseur"
+                    },
+                    "homeassistant_api": {
+                        "description": "Ce module complémentaire est autorisé à accéder à votre instance Home Assistant en cours d'exécution directement via l'API Home Assistant. Ce mode gère également l'authentification pour le module complémentaire, ce qui permet à un module complémentaire d'interagir avec Home Assistant sans avoir besoin de jetons d'authentification supplémentaires.",
+                        "title": "Accès à l'API Home Assistant"
+                    },
                     "host_network": {
+                        "description": "Les modules complémentaires s'exécutent généralement dans leur propre couche réseau isolée, ce qui les empêche d'accéder au réseau du système d'exploitation hôte. Dans certains cas, cette isolation du réseau peut limiter les modules complémentaires dans la fourniture de leurs services et, par conséquent, l'isolement peut être levé par l'auteur du module complémentaire, donnant au module complémentaire un accès complet aux capacités réseau de la machine hôte. Cela donne au module complémentaire plus de capacités de mise en réseau mais réduit la sécurité, par conséquent, la cote de sécurité du module complémentaire sera réduite lorsque cette option est utilisée par le module complémentaire.",
                         "title": "Réseau hôte"
                     },
+                    "host_pid": {
+                        "description": "Habituellement, les processus exécutés par le module complémentaire sont isolés de tous les autres processus système. L'auteur du module complémentaire a demandé au module complémentaire d'avoir accès aux processus système s'exécutant sur l'instance du système hôte et de permettre au module complémentaire de générer également des processus sur le système hôte. Ce mode donne au module complémentaire un accès et un contrôle complets à l'ensemble de votre système Home Assistant, ce qui ajoute des risques de sécurité et peut endommager votre système en cas d'utilisation abusive. Par conséquent, cette fonctionnalité a un impact négatif sur le score de sécurité du module complémentaire. \n\n Ce niveau d'accès n'est pas accordé automatiquement et doit être confirmé par vous. Pour ce faire, vous devez désactiver manuellement le mode de protection sur le module complémentaire. Ne désactivez le mode de protection que si vous connaissez, avez besoin ET faites confiance à la source de ce module complémentaire.",
+                        "title": "Espace de noms des processus hôtes"
+                    },
+                    "ingress": {
+                        "description": "Ce module complémentaire utilise Ingress pour intégrer son interface en toute sécurité dans Home Assistant.",
+                        "title": "Entrée"
+                    },
                     "label": {
+                        "apparmor": "Apparmor",
                         "auth": "auth",
+                        "docker": "docker",
                         "hardware": "Matériel",
                         "hass": "hass",
                         "hassio": "hassio",
                         "host": "Hôte",
-                        "rating": "notation"
+                        "host_pid": "hôte pid",
+                        "ingress": "entrée",
+                        "rating": "notation",
+                        "stage": "Étape"
                     },
                     "rating": {
+                        "description": "Home Assistant fournit une cote de sécurité à chacun des modules complémentaires, qui indique les risques encourus lors de l'utilisation de ce module complémentaire. Plus un module complémentaire a besoin d'accès à votre système, plus le score est bas, augmentant ainsi les risques de sécurité potentiels. \n\n Un score est sur une échelle de 1 à 6. Où 1 est le score le plus bas (considéré comme le plus dangereux et le plus risqué) et un score de 6 est le score le plus élevé (considéré comme le plus sûr et le plus faible risque).",
                         "title": "Évaluation de sécurité de l'extension"
                     },
                     "role": {
@@ -162,6 +198,10 @@
                         "default": "Défaut",
                         "homeassistant": "homeassistant",
                         "manager": "gestionnaire"
+                    },
+                    "stage": {
+                        "description": "Les modules complémentaires peuvent comporter l'une des trois étapes suivantes: \n\n {icon_stable} ** Stable **: il s'agit de modules complémentaires prêts à être utilisés en production. \n\n {icon_experimental} ** Expérimental **: Ceux-ci peuvent contenir des bogues et peuvent être inachevés. \n\n {icon_deprecated} ** Obsolète **: ces modules complémentaires ne recevront plus de mises à jour.",
+                        "title": "Étape complémentaire"
                     }
                 },
                 "changelog": "Changelog",
@@ -169,13 +209,16 @@
                 "hostname": "Nom d'hôte",
                 "install": "installer",
                 "new_update_available": "{name} {version} est disponible",
+                "not_available_arch": "Ce module complémentaire n'est pas compatible avec le processeur de votre appareil ou le système d'exploitation que vous avez installé sur votre appareil.",
                 "not_available_version": "Votre Home Assistant est en version {core_version_installed}, pour mettre à jour cet add-on, vous devez êtes au minimum en version {core_version_needed} de Home Assistant",
                 "open_web_ui": "Ouvrir l'interface utilisateur Web",
                 "option": {
                     "auto_update": {
+                        "description": "Mettre à jour automatiquement le module complémentaire lorsqu'une nouvelle version est disponible",
                         "title": "Mise à jour automatique"
                     },
                     "boot": {
+                        "description": "Faire démarrer le module complémentaire lors du démarrage du système",
                         "title": "Lancer au démarrage"
                     },
                     "ingress_panel": {
@@ -183,6 +226,7 @@
                         "title": "Afficher dans la barre latérale"
                     },
                     "protected": {
+                        "description": "Bloque l'accès élevé au système depuis le module complémentaire",
                         "title": "Mode protégé"
                     },
                     "watchdog": {
@@ -191,15 +235,25 @@
                     }
                 },
                 "protection_mode": {
+                    "content": "Le mode de protection de ce module complémentaire est désactivé! Cela donne au module complémentaire un accès complet à l'ensemble du système, ce qui ajoute des risques de sécurité et peut endommager votre système s'il est utilisé de manière incorrecte. Ne désactivez le mode de protection que si vous connaissez, avez besoin ET faites confiance à la source de ce module complémentaire.",
                     "enable": "Activer le mode protégé",
                     "title": "Attention: le mode protection est désactivé!"
                 },
                 "ram_usage": "Utilisation de la RAM de l'extension",
+                "rebuild": "reconstruire",
                 "restart": "redémarrer",
                 "start": "démarrer",
                 "stop": "arrêter",
                 "uninstall": "désinstaller",
                 "visit_addon_page": "Visitez la page {name} pour plus de détails"
+            },
+            "documentation": {
+                "get_documentation": "Échec de l'obtention de la documentation du module complémentaire, {error}"
+            },
+            "failed_to_reset": "Échec de la réinitialisation de la configuration du module complémentaire, {error}",
+            "failed_to_save": "Échec de l'enregistrement de la configuration du module complémentaire, {error}",
+            "logs": {
+                "get_logs": "Échec de l'obtention des journaux du module complémentaire, {error}"
             },
             "panel": {
                 "configuration": "Configuration",
@@ -228,12 +282,15 @@
             "newest_version": "Version la plus récente",
             "no": "Non",
             "refresh": "Actualiser",
+            "release_notes": "Notes de version",
             "reload": "Recharger",
             "reset_defaults": "Réinitialiser la configuration",
             "reset_options": "Réinitialiser les options",
             "restart": "Redémarrer",
             "restart_name": "Redémarrer {name}",
+            "running_version": "Vous utilisez actuellement la version {version}",
             "save": "Sauvegarder",
+            "show_more": "Afficher plus d'informations à ce sujet",
             "update": "Mise à jour",
             "update_available": "{count, plural,\n  one {Mise à jour en attente}\n  other {{count} Mises à jour en attentes}\n}",
             "version": "Version",
@@ -273,6 +330,7 @@
                 "scan_ap": "Rechercher les points d'accès",
                 "static": "Statique",
                 "title": "Paramètres réseaux",
+                "unsaved": "Vous avez des modifications non enregistrées, elles seront perdues si vous changez d'onglet, voulez-vous continuer?",
                 "warning": "Si vous modifiez les adresses Wi-Fi, IP ou de passerelle, vous risquez de perdre la connexion!",
                 "wep": "WEP",
                 "wpa": "wpa-psk"
@@ -286,6 +344,8 @@
                 "password": "Mot de passe",
                 "registry": "Registre",
                 "remove": "Supprimer",
+                "title_add": "Ajouter un nouveau registre de conteneurs",
+                "title_manage": "Gérer les registres de conteneurs",
                 "username": "Nom d'utilisateur"
             },
             "repositories": {
@@ -307,7 +367,8 @@
         "my": {
             "error": "Une erreur inconnue s'est produite",
             "error_addon_not_found": "Add-on non trouvé",
-            "faq_link": "FAQ de My Home Assistant"
+            "faq_link": "FAQ de My Home Assistant",
+            "not_supported": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vérifiez le {link} pour les redirections prises en charge et la version dans laquelle elles ont été introduites."
         },
         "panel": {
             "dashboard": "Tableau de bord",
@@ -344,6 +405,7 @@
             "upload_snapshot": "Téléverser un instantané"
         },
         "store": {
+            "missing_addons": "Modules complémentaires manquants? Activer le mode avancé dans votre page de profil utilisateur",
             "no_results_found": "Aucun résultat trouvé dans {repository}.",
             "registries": "Registres",
             "repositories": "Dépôts"
@@ -377,36 +439,48 @@
                 "used_space": "Espace utilisé"
             },
             "log": {
+                "get_logs": "Échec de l'obtention des journaux de {provider} {error}",
                 "log_provider": "Fournisseur de journaux"
             },
             "supervisor": {
                 "beta_backup": "Assurez-vous d'avoir des sauvegardes de vos données avant d'activer cette fonctionnalité.",
                 "beta_join_confirm": "Voulez-vous rejoindre le canal bêta?",
                 "beta_release_items": "Cela inclut les versions bêta pour:",
+                "beta_warning": "Les versions bêta sont destinées aux testeurs et aux utilisateurs précoces et peuvent contenir des modifications de code instables",
                 "channel": "Canal",
                 "cpu_usage": "Utilisation du processeur par Supervisor",
                 "failed_to_reload": "Échec du rechargement de Supervisor",
                 "failed_to_set_option": "Échec lors du paramétrage de l'option du Supervisor",
                 "failed_to_update": "Échec de la mise à jour de Supervisor",
                 "join_beta_action": "Rejoignez le canal bêta",
+                "join_beta_description": "Obtenez des mises à jour bêta pour Home Assistant (RCs), Supervisor et host",
                 "leave_beta_action": "Quitter le canal bêta",
+                "leave_beta_description": "Obtenez des mises à jour stables pour l'assistant domestique, le superviseur et l'hôte",
                 "ram_usage": "Utilisation de la RAM Supervisor",
                 "reload_supervisor": "Recharger le superviseur",
                 "share_diagnostics": "Partager les diagnostics",
                 "share_diagnostics_description": "Partagez les rapports d'incident et les informations de diagnostic.",
+                "share_diagonstics_description": "Souhaitez-vous partager automatiquement les rapports d'erreur et les informations de diagnostic lorsque le superviseur rencontre des erreurs inattendues? {line_break} Cela nous permettra de résoudre les problèmes, les informations ne sont accessibles qu'à l'équipe Home Assistant Core et ne seront pas partagées avec d'autres. {line_break} Les données n'incluent aucune information privée / sensible et vous pouvez désactiver cela dans les paramètres à tout moment.",
                 "share_diagonstics_title": "Aider à améliorer Home Assistant",
+                "unhealthy_description": "L'exécution d'une installation défectueuse entraînera des problèmes. Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
                 "unhealthy_reason": {
+                    "docker": "L'environnement Docker ne fonctionne pas correctement",
+                    "privileged": "Le superviseur n'est pas privilégié",
+                    "setup": "La configuration du superviseur a échoué",
                     "supervisor": "Le Supervisor ne peu pas mettre à jour"
                 },
                 "unhealthy_title": "Votre installation est défectueuse",
+                "unsupported_description": "Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
                 "unsupported_reason": {
                     "container": "Conteneurs connus pour causer des problèmes",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuration de Docker",
                     "docker_version": "Version Docker",
+                    "job_conditions": "Conditions de travail ignorées",
                     "lxc": "LXC",
                     "network_manager": "Gestionnaire de réseaux",
                     "os": "Système d'exploitation",
+                    "privileged": "Le superviseur n'est pas privilégié",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Vous exécutez une installation non prise en charge",
@@ -1073,6 +1147,7 @@
                     "clusters": "Gérer les clusters",
                     "reconfigure": "Reconfigurer l'appareil",
                     "remove": "Supprimer l'appareil",
+                    "view_in_visualization": "Afficher dans la visualisation",
                     "zigbee_information": "Informations Zigbee"
                 },
                 "confirmations": {
@@ -2650,6 +2725,7 @@
                         "caption": "Visualisation",
                         "header": "Visualisation du réseau",
                         "highlight_label": "Mettre en évidence les appareils",
+                        "refresh_topology": "Actualiser la topologie",
                         "zoom_label": "Se connecter à l'appareil"
                     }
                 },
@@ -3327,6 +3403,7 @@
                         "error_remove": "Impossible de supprimer la configuration: {error}",
                         "error_save_yaml": "Impossible de sauvegarder le YAML : {error}",
                         "header": "Modifier la configuration",
+                        "lovelace_changed": "La configuration Lovelace a été mise à jour, voulez-vous charger la configuration mise à jour dans l'éditeur et perdre vos modifications actuelles?",
                         "reload": "Recharger",
                         "resources_moved": "Les ressources ne doivent plus être ajoutées à la configuration Lovelace mais peuvent être ajoutées dans le panneau de configuration Lovelace.",
                         "save": "Enregistrer",

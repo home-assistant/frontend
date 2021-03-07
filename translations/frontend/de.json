@@ -2169,7 +2169,7 @@
                     "caption": "Logs",
                     "clear": "Leeren",
                     "description": "Home Assistant Logs einsehen",
-                    "details": "Protokolldetails ( {level} )",
+                    "details": "Protokolldetails ({level})",
                     "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
                     "loading_log": "Fehlerprotokoll wird geladen...",
                     "multiple_messages": "Die Nachricht ist zum ersten Mal um {time} aufgetreten und erscheint {counter} mal",

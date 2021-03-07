@@ -358,7 +358,7 @@
                 "text": "Wilt u de add-on opnieuw starten met uw wijzigingen?"
             },
             "update": {
-                "create_snapshot": "Maak een snapshot van {name} voordat u gaat updaten",
+                "create_snapshot": "Maak een snapshot van {name} voordat u gaat bijwerken",
                 "snapshot": "Snapshot",
                 "snapshotting": "Een snapshot van {name} aan het maken",
                 "updating": "Bijwerken van {name} naar versie {version}"
@@ -445,16 +445,16 @@
             "supervisor": {
                 "beta_backup": "Zorg ervoor dat je back-ups van je gegevens hebt voordat je deze functie activeert.",
                 "beta_join_confirm": "Wil je meedoen met de bèta releases?",
-                "beta_release_items": "Dit omvat beta releases voor:",
-                "beta_warning": "Beta-releases zijn voor testers en early adopters en kunnen onstabiele codewijzigingen bevatten",
+                "beta_release_items": "Dit omvat bèta releases voor:",
+                "beta_warning": "Bèta-releases zijn voor testers en early adopters en kunnen onstabiele codewijzigingen bevatten",
                 "channel": "Kanaal",
                 "cpu_usage": "Supervisor CPU-gebruik",
                 "failed_to_reload": "Herladen van de Supervisor is mislukt",
                 "failed_to_set_option": "Instellen van Supervisor-optie is mislukt",
                 "failed_to_update": "Bijwerken van de Supervisor is mislukt",
-                "join_beta_action": "Word lid van het beta-kanaal",
-                "join_beta_description": "Ontvang beta-updates voor Home Assistant (RC's), Supervisor en host",
-                "leave_beta_action": "Verlaat beta-kanaal",
+                "join_beta_action": "Word lid van het bèta-kanaal",
+                "join_beta_description": "Ontvang bèta-updates voor Home Assistant (RC's), Supervisor en host",
+                "leave_beta_action": "Verlaat bèta-kanaal",
                 "leave_beta_description": "Krijg stabiele updates voor Home Assistant, Supervisor en host",
                 "ram_usage": "Supervisor RAM-gebruik",
                 "reload_supervisor": "Herlaad de Supervisor",
@@ -714,7 +714,7 @@
             "blueprint-picker": {
                 "add_user": "Gebruiker toevoegen",
                 "remove_user": "Gebruiker verwijderen",
-                "select_blueprint": "Selecteer een blauwdruk"
+                "select_blueprint": "Selecteer een Blueprint"
             },
             "calendar": {
                 "my_calendars": "Mijn agenda's",
@@ -1615,7 +1615,7 @@
                     "overview": {
                         "add_blueprint": "Blueprint importeren",
                         "confirm_delete_header": "Deze Blueprint verwijderen?",
-                        "confirm_delete_text": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
+                        "confirm_delete_text": "Weet je zeker dat je deze Blueprint wilt verwijderen?",
                         "delete_blueprint": "Verwijder Blueprint",
                         "discover_more": "Ontdek meer Blueprints",
                         "header": "Blueprinteditor",
@@ -1626,6 +1626,8 @@
                         },
                         "introduction": "Met de Blueprinteditor kunt je Blueprints maken en bewerken.",
                         "learn_more": "Meer informatie over Blueprints",
+                        "share_blueprint": "Deel Blueprint",
+                        "share_blueprint_no_url": "Kan Blueprint niet delen: geen bron-URL",
                         "use_blueprint": "Automatisering maken"
                     }
                 },
@@ -2841,7 +2843,7 @@
                     "migration": {
                         "ozw": {
                             "header": "Migreren naar OpenZWave",
-                            "introduction": "Deze wizard helpt u te migreren van de oude Z-Wave integratie naar de OpenZWave integratie die momenteel in beta is."
+                            "introduction": "Deze wizard helpt u te migreren van de oude Z-Wave integratie naar de OpenZWave integratie die momenteel in bèta is."
                         }
                     },
                     "network_management": {

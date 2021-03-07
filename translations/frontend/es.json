@@ -1626,6 +1626,8 @@
                         },
                         "introduction": "La configuración de planos te permite importar y administrar tus planos.",
                         "learn_more": "Aprende más sobre el uso de planos",
+                        "share_blueprint": "Compartir plano",
+                        "share_blueprint_no_url": "No se puede compartir el plano: no hay URL de origen",
                         "use_blueprint": "Crear automatización"
                     }
                 },

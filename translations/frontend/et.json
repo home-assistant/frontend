@@ -210,7 +210,7 @@
                 "install": "paigalda",
                 "new_update_available": "{name} {version} on saadaval",
                 "not_available_arch": "See lisandmoodul ei ühildu seadme protsessoriga ega seadmesse installitud operatsioonisüsteemiga.",
-                "not_available_version": "Kasutad Home Assistant {core_version_installed} Selle lisandmooduli versiooni värskendamiseks vajad vähemalt Home Assistant {core_version_needed}",
+                "not_available_version": "Kasutad Home Assistanti {core_version_installed}. Selle lisandmooduli versiooni värskendamiseks vajad vähemalt Home Assistanti {core_version_needed}",
                 "open_web_ui": "Ava veebiliides",
                 "option": {
                     "auto_update": {
@@ -1626,6 +1626,8 @@
                         },
                         "introduction": "Kavandite seadistus võimaldab importida ja hallata oma kavandeid.",
                         "learn_more": "Lisateave kavandite kasutamise kohta",
+                        "share_blueprint": "Kavandi jagamine",
+                        "share_blueprint_no_url": "Kavandit ei saa jagada: URL puudub",
                         "use_blueprint": "Loo automatiseering"
                     }
                 },

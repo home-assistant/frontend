@@ -200,6 +200,7 @@
         },
         "common": {
             "cancel": "Cancelar",
+            "close": "Fechar",
             "description": "Descrição",
             "error": {
                 "unknown": "Erro desconhecido",
@@ -270,6 +271,8 @@
                 "password": "Palavra-passe",
                 "registry": "Registro",
                 "remove": "Remover",
+                "title_add": "Adicionar registo de novo Container",
+                "title_manage": "Gerir Registos dos Containers",
                 "username": "Nome de Utilizador"
             },
             "repositories": {
@@ -282,14 +285,15 @@
                 "text": "Desejas reiniciar o add-on com as alterações?"
             },
             "update": {
-                "create_snapshot": "Criar uma imagem de sistema do {name} antes de atualizar",
-                "snapshot": "Imagem de sistema",
-                "snapshotting": "A criar uma imagem de sistema do {home}",
+                "create_snapshot": "Criar um snapshot do {name} antes de atualizar",
+                "snapshot": "Snapshot",
+                "snapshotting": "A criar um snapshot de {name}",
                 "updating": "Actualizando {nome} para a versão {versão}"
             }
         },
         "my": {
-            "error": "Ocorreu um erro desconhecido"
+            "error": "Ocorreu um erro desconhecido",
+            "error_addon_not_found": "Add-on não encontrado"
         },
         "panel": {
             "dashboard": "Painel",
@@ -300,10 +304,10 @@
         "snapshot": {
             "addons": "Add-ons",
             "available_snapshots": "Imagens de sistema disponíveis",
-            "could_not_create": "Não foi possivel criar imagem de sistema",
+            "could_not_create": "Não foi possivel criar um snapshot",
             "create": "Criar",
-            "create_blocked_not_running": "Não é possível criar uma imagem de sistema neste momento, porque o sistema encontra-se no estado {state}.",
-            "create_snapshot": "Criar imagem de sistema",
+            "create_blocked_not_running": "Não é possível criar um snapshot agora porque o sistema está  {state}.",
+            "create_snapshot": "Criar snapshot",
             "description": "As imagens de sistema permitem facilmente criar uma cópia de segurança e restaurar todos os dados da sua instancia do Home Assistant",
             "enter_password": "Por favor introduza uma palavra-passe.",
             "folder": {
@@ -314,16 +318,16 @@
                 "ssl": "SSL"
             },
             "folders": "Pastas",
-            "full_snapshot": "Imagem completa de sistema",
+            "full_snapshot": "Snapshot completo",
             "name": "Nome",
             "no_snapshots": "Ainda não existem imagens de sistema.",
-            "partial_snapshot": "Imagem parcial de sistema",
+            "partial_snapshot": "Snapshot parcial",
             "password": "Palavra-passe",
             "password_protected": "Protegido por Palavra-passe",
             "password_protection": "Protecção por palavra-passe",
             "security": "Segurança",
             "type": "Tipo",
-            "upload_snapshot": "Carregar imagem de sistema"
+            "upload_snapshot": "Upload  snapshot"
         },
         "store": {
             "no_results_found": "Nenhum resultado encontrado em {repository} .",
@@ -378,6 +382,7 @@
                 "reload_supervisor": "Recarregar Supervisor",
                 "share_diagnostics": "Partilhar Diagnósticos",
                 "share_diagnostics_description": "Partilhar relatórios de falhas e informações de diagnóstico.",
+                "share_diagonstics_description": "Quer partilhar automaticamente relatórios de quebras do sistema e informações de diagnóstico quando o Supervisor se deparar com erros inesperados? {line_break} Isto permitir-nos-á resolver os problemas, a informação só é acessível à equipa do Home Assistant Core  e não será partilhada com outros.{line_break} Os dados não incluem qualquer informação privada/sensível e pode desativá-la em configurações em qualquer altura.",
                 "share_diagonstics_title": "Ajudar a melhorar o Home Assistant",
                 "unhealthy_description": "Executar uma instalação não íntegra causará problemas. Abaixo está uma lista de problemas detetados na sua instalação, clique nos links para saber como poderá resolver os problemas.",
                 "unhealthy_reason": {
@@ -917,6 +922,9 @@
                 "last_updated": "Última atualização",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
+                },
+                "remote": {
+                    "activity": "Atividade actual"
                 },
                 "restored": {
                     "confirm_remove_text": "Tem a certeza que deseja remover esta entidade?",
@@ -1525,6 +1533,8 @@
                         },
                         "introduction": "A configuração de *blueprints* permite importar e gerir os seus *blueprints*",
                         "learn_more": "Aprenda mais sobre os *blueprints*",
+                        "share_blueprint": "Partilhar blueprint",
+                        "share_blueprint_no_url": "Não é possível partilhar o blueprint: falta o source url",
                         "use_blueprint": "Criar automação"
                     }
                 },

@@ -1626,6 +1626,8 @@
                         },
                         "introduction": "Blueprint 編輯器可允許匯入與管理 Blueprint。",
                         "learn_more": "詳細了解如何使用 Blueprint",
+                        "share_blueprint": "分享 Blueprint",
+                        "share_blueprint_no_url": "無法分享 Blueprint：沒有來源 URL",
                         "use_blueprint": "新增自動化"
                     }
                 },
