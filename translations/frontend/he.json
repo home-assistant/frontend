@@ -101,6 +101,48 @@
             "unknown": "לא ידוע"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "not_available_version": "אתה מפעיל את Home Assistant {core_version_installed} , כדי לעדכן לגרסה זו של התוסף אתה זקוק לפחות לגרסה {core_version_needed} של Home Assistant",
+                "visit_addon_page": "בקר בדף {name} לפרטים נוספים"
+            }
+        },
+        "common": {
+            "cancel": "בטל",
+            "close": "סגור",
+            "save": "שמור"
+        },
+        "confirm": {
+            "update": {
+                "title": "עדכן את {name}"
+            }
+        },
+        "dialog": {
+            "registries": {
+                "password": "סיסמה",
+                "username": "שם משתמש"
+            },
+            "repositories": {
+                "add": "הוסף",
+                "remove": "הסר",
+                "title": "נהל את מאגרי ההרחבות"
+            },
+            "restart_addon": {
+                "confirm_text": "אתחל את התוסף",
+                "text": "האם ברצונך לאתחל את התוסף עם השינויים שלך?"
+            },
+            "update": {
+                "create_snapshot": "צור נקודת גיבוי עבור {name}",
+                "snapshot": "נקודת גיבוי",
+                "snapshotting": "יוצר נקודת גיבוי עבור {name}",
+                "updating": "מעדכן את {name} לגרסה {version}"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "התוסף לא נמצא"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "האם ברצונך לשמור את ההתחברות הזו?",
@@ -360,6 +402,7 @@
             },
             "media-browser": {
                 "class": {
+                    "url": "נתיב כתובת URL",
                     "video": "וידאו"
                 },
                 "documentation": "תיעוד",
@@ -403,6 +446,9 @@
                     "second": "לפני {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
                     "week": "לפני {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 }
+            },
+            "service-control": {
+                "target_description": "אלה האיזורים, התקנים וישויות בהם ישתמש שירות זה"
             },
             "service-picker": {
                 "service": "שירות"
@@ -509,6 +555,9 @@
                 "last_changed": "שונה לאחרונה",
                 "person": {
                     "create_zone": "צור אזור מהמיקום הנוכחי"
+                },
+                "remote": {
+                    "activity": "פעילות נוכחית"
                 },
                 "restored": {
                     "confirm_remove_text": "האם אתה בטוח שברצונך להסיר ישות זו?",
@@ -618,6 +667,11 @@
             "minute": "{count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
             "second": "שניה שניות",
             "week": "שבוע שבועות"
+        },
+        "errors": {
+            "config": {
+                "key_wrong_type": "הערך שסופק עבור \"{key}\" אינו נתמך על-ידי העורך החזותי. אנו תומכים ({type_correct}) אך קיבלנו ({type_wrong})."
+            }
         },
         "login-form": {
             "log_in": "התחבר",
@@ -979,7 +1033,9 @@
                 "blueprint": {
                     "add": {
                         "community_forums": "פורומים קהילתיים",
+                        "error_no_url": "אנא הזן כתובת URL של השרטוט",
                         "file_name": "נתיב שרטוט",
+                        "header": "יבוא שרטוט",
                         "import_btn": "תצוגה מקדימה של שרטוט",
                         "import_header": "שרטוט \" {name} \"",
                         "import_introduction_link": "באפשרותך לייבא שרטוטים של משתמשים אחרים מ- Github ומ {community_link}. הזן את כתובת ה- URL של השרטוט.",
@@ -992,12 +1048,14 @@
                     },
                     "overview": {
                         "add_blueprint": "יבוא שרטוט",
+                        "confirm_delete_text": "האם אתה בטוח שברצונך למחוק שרטוט זה?",
                         "delete_blueprint": "מחק שרטוט",
                         "discover_more": "גלה שרטוטים נוספים",
                         "headers": {
                             "domain": "דומיין",
                             "file_name": "שם קובץ"
                         },
+                        "learn_more": "למד עוד אודות שימוש בשרטוטים",
                         "use_blueprint": "צור אוטומציה"
                     }
                 },
@@ -2145,7 +2203,8 @@
                 },
                 "cards": {
                     "actions": {
-                        "no_service": "לא צוין שום שירות לביצוע",
+                        "action_confirmation": "האם אתה בטוח שברצונך לבצע פעולה \" {action} \"?",
+                        "no_service": "לא צוין שירות להפעלה",
                         "no_url": "לא צוין כתובת אתר לפתיחה"
                     },
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק את הכרטיס הזה?",
@@ -2200,7 +2259,8 @@
                             "none": "אין פעולה",
                             "toggle": "החלף מצב",
                             "url": "Url"
-                        }
+                        },
+                        "url_path": "נתיב כתובת URL"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2835,7 +2895,7 @@
                     "error_no_theme": "אין ערכות נושא זמינות.",
                     "header": "ערכת נושא",
                     "link_promo": "למד אודות ערכות נושא",
-                    "primary_color": "בצע ראשי",
+                    "primary_color": "צבע ראשי",
                     "reset": "איפוס"
                 },
                 "vibrate": {

@@ -112,13 +112,16 @@
                     "output": "Изход"
                 },
                 "network": {
-                    "header": "Мрежа"
+                    "header": "Мрежа",
+                    "host": "Хост"
                 }
             },
             "dashboard": {
                 "capability": {
                     "label": {
                         "hardware": "хардуер",
+                        "hass": "hass",
+                        "hassio": "hassio",
                         "rating": "рейтинг"
                     },
                     "role": {
@@ -126,13 +129,19 @@
                         "homeassistant": "homeassistant"
                     }
                 },
+                "changelog": "Дневник на промените",
+                "hostname": "Име на хоста",
                 "option": {
                     "auto_update": {
                         "title": "Автоматично актуализиране"
                     },
                     "ingress_panel": {
+                        "description": "Добавете тази добавка към страничната си лента",
                         "title": "Показване в страничната лента"
                     }
+                },
+                "protection_mode": {
+                    "title": "Внимание: Режимът на защита е деактивиран!"
                 },
                 "restart": "рестарт",
                 "start": "старт",
@@ -149,6 +158,7 @@
             }
         },
         "common": {
+            "cancel": "Отказ",
             "close": "Затваряне",
             "description": "Описание",
             "error": {
@@ -156,10 +166,13 @@
             },
             "learn_more": "Научете повече",
             "new_version_available": "Налична е нова версия",
+            "newest_version": "Последна версия",
             "no": "Не",
+            "release_notes": "Бележки към изданието",
             "reload": "Презареждане",
             "restart": "Рестартиране",
             "restart_name": "Рестартиране {name}",
+            "save": "Запис",
             "update": "Актуализиране",
             "version": "Версия",
             "yes": "Да"
@@ -172,6 +185,8 @@
         },
         "dashboard": {
             "addon_new_version": "Налична е нова версия",
+            "addon_running": "Добавката се изпълнява",
+            "addon_stopped": "Добавката е спряна",
             "addons": "Добавки"
         },
         "dialog": {
@@ -179,11 +194,13 @@
                 "connected_to": "Свързан с {ssid}",
                 "dhcp": "DHCP",
                 "dns_servers": "DNS Сървъри",
+                "gateway": "Адрес на шлюза",
                 "ip_netmask": "IP адрес/Мрежова маска",
                 "open": "Отворена",
                 "scan_ap": "Сканиране за точки за достъп",
                 "static": "Статичен",
                 "title": "Мрежови настройки",
+                "warning": "Ако промените Wi-Fi, IP адреса или адреса на шлюза, може да загубите връзката!",
                 "wep": "WEP",
                 "wpa": "wpa-psk"
             },
@@ -198,9 +215,13 @@
             },
             "repositories": {
                 "add": "Добавяне",
-                "remove": "Премахване"
+                "remove": "Премахване",
+                "title": "Управление на хранилищата на добавки"
             },
             "update": {
+                "create_snapshot": "Създаване на снапшот на {name} преди актуализиране",
+                "snapshot": "Снапшот",
+                "snapshotting": "Създава се моментна снимка на {name}",
                 "updating": "Актуализиране на {name} до версия {version}"
             }
         },
@@ -210,24 +231,34 @@
         },
         "panel": {
             "dashboard": "Табло",
+            "snapshots": "Снапшоти",
+            "store": "Хранилище за добавки",
             "system": "Система"
         },
         "snapshot": {
             "addons": "Добавки",
+            "available_snapshots": "Налични Снапшоти",
+            "could_not_create": "Не можа да се създаде снапшот",
             "create": "Създаване",
+            "create_snapshot": "Създаване на снапшот",
             "enter_password": "Моля, въведете парола.",
             "folder": {
+                "addons/local": "Локални добавки",
                 "homeassistant": "Конфигурация на Home Assistant",
                 "media": "Медия",
                 "ssl": "SSL"
             },
             "folders": "Папки",
+            "full_snapshot": "Пълен снапшот",
             "name": "Име",
+            "no_snapshots": "Все още нямате снапшоти",
+            "partial_snapshot": "Частичен снапшот",
             "password": "Парола",
             "password_protected": "защитен с парола",
             "password_protection": "Защита с парола",
             "security": "Сигурност",
-            "type": "Тип"
+            "type": "Тип",
+            "upload_snapshot": "Качване на снапшот"
         },
         "store": {
             "no_results_found": "Няма намерени резултати в {repository}.",
@@ -239,6 +270,7 @@
                 "change": "Промяна",
                 "failed_to_import_from_usb": "Неуспешно импортиране от USB",
                 "hardware": "Хардуер",
+                "hostname": "Име на хоста",
                 "import_from_usb": "Импортиране от USB",
                 "ip_address": "IP адрес",
                 "operating_system": "Операционна система",
@@ -247,14 +279,17 @@
             "supervisor": {
                 "beta_backup": "Уверете се, че имате резервни копия на вашите данни, преди да активирате тази функция.",
                 "beta_join_confirm": "Искате ли да се присъедините към бета канала?",
+                "beta_release_items": "Това включва бета версии за:",
                 "channel": "Канал",
                 "join_beta_action": "Присъединяване към бета канала",
                 "leave_beta_action": "Напускане на бета канала",
                 "reload_supervisor": "Презареждане на Supervisor",
+                "share_diagonstics_title": "Помогнете за подобряването на Home Assistant",
                 "unsupported_reason": {
                     "dbus": "DBUS",
                     "lxc": "LXC",
-                    "os": "Операционна система"
+                    "os": "Операционна система",
+                    "systemd": "Systemd"
                 },
                 "update_supervisor": "Актуализиране на Supervisor",
                 "warning": "ВНИМАНИЕ"
@@ -1890,7 +1925,8 @@
                     },
                     "visualization": {
                         "caption": "Визуализация",
-                        "header": "Визуализация на мрежата"
+                        "header": "Визуализация на мрежата",
+                        "refresh_topology": "Обновяване на топологията"
                     }
                 },
                 "zone": {

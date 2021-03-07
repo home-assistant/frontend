@@ -1626,6 +1626,8 @@
                         },
                         "introduction": "La configuració dels blueprints et permet importar-ne i gestionar-los.",
                         "learn_more": "Més informació sobre l'ús dels blueprints",
+                        "share_blueprint": "Comparteix blueprint",
+                        "share_blueprint_no_url": "No s'ha pogut compartir el blueprint: no hi ha cap URL origen",
                         "use_blueprint": "Crea automatització"
                     }
                 },

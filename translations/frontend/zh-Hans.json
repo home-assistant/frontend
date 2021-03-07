@@ -119,10 +119,12 @@
                         "title": "宿主进程命名空间"
                     }
                 },
+                "not_available_version": "您正在运行 Home Assistant 版本 {core_version_installed}，要将加载项更新到此版本，至少需要 Home Assistant 版本 {core_version_needed}",
                 "protection_mode": {
                     "content": "此加载项的保护模式已禁用！这将使加载项具有对整个系统的完全访问权限，这增加了安全风险，并且在使用不当时可能会损坏系统。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
                     "title": "警告：保护模式已禁用！"
-                }
+                },
+                "visit_addon_page": "有关更多信息，请访问{name}页面"
             },
             "panel": {
                 "configuration": "配置",
@@ -139,7 +141,7 @@
             "release_notes": "发行说明",
             "save": "保存",
             "update": "更新",
-            "update_available": "正在等待 {count} 项更新",
+            "update_available": "正在等待{count, plural,\n  one {更新}\n  other { {count} 项更新}\n}",
             "version": "版本"
         },
         "confirm": {
@@ -1334,6 +1336,8 @@
                         },
                         "introduction": "Blueprint 编辑器方便您导入和管理 Blueprint。",
                         "learn_more": "详细了解如何使用 Blueprint",
+                        "share_blueprint": "共享 Blueprint",
+                        "share_blueprint_no_url": "无法共享 Blueprint，因为没有源码 URL",
                         "use_blueprint": "创建自动化"
                     }
                 },
