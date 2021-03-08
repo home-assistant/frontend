@@ -1,19 +1,24 @@
 import { HighlightStyle, tags } from "@codemirror/highlight";
-import { EditorView as CMEditorView, KeyBinding } from "@codemirror/view";
+import { EditorView, KeyBinding } from "@codemirror/view";
 import { StreamLanguage } from "@codemirror/stream-parser";
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import { indentLess, indentMore } from "@codemirror/commands";
 import { Compartment } from "@codemirror/state";
 
-export { keymap, highlightActiveLine, drawSelection } from "@codemirror/view";
-export { CMEditorView as EditorView };
+export {
+  keymap,
+  highlightActiveLine,
+  drawSelection,
+  EditorView,
+} from "@codemirror/view";
 export { EditorState, Prec } from "@codemirror/state";
 export { defaultKeymap } from "@codemirror/commands";
 export { lineNumbers } from "@codemirror/gutter";
 export { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 export { history, historyKeymap } from "@codemirror/history";
 export { rectangularSelection } from "@codemirror/rectangular-selection";
+export { HighlightStyle, tags } from "@codemirror/highlight";
 
 export const langs = {
   jinja2: StreamLanguage.define(jinja2),
@@ -31,7 +36,7 @@ export const tabKeyBindings: KeyBinding[] = [
   },
 ];
 
-export const theme = CMEditorView.theme({
+export const theme = EditorView.theme({
   "&": {
     color: "var(--primary-text-color)",
     backgroundColor:
@@ -133,7 +138,7 @@ export const theme = CMEditorView.theme({
       "2px solid var(--paper-input-container-focus-color, var(--primary-color))",
     paddingRight: "0",
   },
-  ".cm-gutterElementags.lineNumber": { color: "inherit" },
+  ".cm-gutterElement.lineNumber": { color: "inherit" },
 });
 
 export const highlightStyle = HighlightStyle.define([

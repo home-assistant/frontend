@@ -47,6 +47,17 @@ export class HaCodeEditor extends UpdatingElement {
     return this.codemirror ? this.codemirror.state.doc.toString() : this._value;
   }
 
+  public get hasComments(): boolean {
+    if (!this.codemirror || !this._loadedCodeMirror) {
+      return false;
+    }
+    const className = this._loadedCodeMirror.HighlightStyle.get(
+      this.codemirror.state,
+      this._loadedCodeMirror.tags.comment
+    );
+    return !!this.shadowRoot!.querySelector(`span.${className}`);
+  }
+
   public connectedCallback() {
     super.connectedCallback();
     if (!this.codemirror) {
