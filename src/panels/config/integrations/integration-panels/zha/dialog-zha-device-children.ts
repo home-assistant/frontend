@@ -76,7 +76,7 @@ class DialogZHADeviceChildren extends LitElement {
     },
   };
 
-  public async showDialog(
+  public showDialog(
     params: ZHADeviceChildrenDialogParams
   ): Promise<void> {
     this._device = params.device;
