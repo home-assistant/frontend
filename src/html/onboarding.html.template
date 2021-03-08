@@ -10,9 +10,10 @@
         background-color: #0277bd;
       }
       .content {
+        box-sizing: border-box;
         padding: 20px 16px;
         border-radius: 4px;
-        max-width: 400px;
+        max-width: 432px;
         margin: 64px auto 0;
         box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
         background-color: #fff;
@@ -44,6 +45,13 @@
         }
         .content {
           background-color: #111111;
+        }
+      }
+
+      @media (max-width: 450px) {
+        .content {
+          min-height: 100%;
+          margin: 0;
         }
       }
 
