@@ -230,7 +230,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
       this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
-      this._updateResources(result.language, result.data);
+      await this._updateResources(result.language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {
