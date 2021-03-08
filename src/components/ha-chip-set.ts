@@ -20,8 +20,8 @@ declare global {
   }
 }
 
-@customElement("ha-chips")
-export class HaChips extends LitElement {
+@customElement("ha-chip-set")
+export class HaChipSet extends LitElement {
   @property() public items = [];
 
   protected render(): TemplateResult {
@@ -33,18 +33,11 @@ export class HaChips extends LitElement {
         ${this.items.map(
           (item, idx) =>
             html`
-              <div class="mdc-chip" .index=${idx} @click=${this._handleClick}>
-                <div class="mdc-chip__ripple" .ripple="${ripple()}"></div>
-                <span role="gridcell">
-                  <span
-                    role="button"
-                    tabindex="0"
-                    class="mdc-chip__primary-action"
-                  >
-                    <span class="mdc-chip__text">${item}</span>
-                  </span>
-                </span>
-              </div>
+              <ha-chip
+                .index=${idx}
+                @click=${this._handleClick}
+                .label=${item}
+              />
             `
         )}
       </div>
@@ -70,6 +63,6 @@ export class HaChips extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-chips": HaChips;
+    "ha-chip-set": HaChipSet;
   }
 }

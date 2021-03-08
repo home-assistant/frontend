@@ -18,7 +18,7 @@ import {
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-chips";
+import "../../../../src/components/ha-chip-set";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";

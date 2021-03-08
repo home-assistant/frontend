@@ -92,6 +92,7 @@ export const derivedStyles = {
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
   "mdc-button-outline-color": "var(--divider-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
+  "chip-background-color": "rgba(var(--rgb-primary-text-color), 0.15)",
 };
 
 export const buttonLinkStyle = css`

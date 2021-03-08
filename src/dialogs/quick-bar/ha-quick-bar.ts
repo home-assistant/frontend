@@ -36,7 +36,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import { domainToName } from "../../data/integration";
-import { getPanelIcon, getPanelNameTranslationKey } from "../../data/panel";
+import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { haStyleDialog } from "../../resources/styles";
@@ -46,6 +46,7 @@ import {
   showConfirmationDialog,
 } from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
+import "../../components/ha-chip";
 
 const DEFAULT_SERVER_ICON = "hass:server";
 
@@ -254,8 +255,11 @@ export class QuickBar extends LitElement {
         .item=${item}
         index=${ifDefined(index)}
       >
-        <span class="command-category ${item.categoryKey}"
-          >${item.categoryText}
+        <span>
+          <ha-chip
+            text="${item.categoryText}"
+            class="command-category ${item.categoryKey}"
+          ></ha-chip>
         </span>
 
         <span>${item.primaryText}</span>
@@ -588,17 +592,17 @@ export class QuickBar extends LitElement {
           color: black;
         }
 
-        span.command-category.reload {
-          background: pink;
+        .command-category.reload {
+          --ha-chip-background-color: pink;
         }
 
-        span.command-category.navigation {
-          background: lightblue;
+        .command-category.navigation {
+          --ha-chip-background-color: lightblue;
         }
 
-        span.command-category.server_control {
-          background: orange;
-          color: white;
+        .command-category.server_control {
+          --ha-chip-background-color: orange;
+          --ha-chip-text-color: white;
         }
 
         .uni-virtualizer-host {
