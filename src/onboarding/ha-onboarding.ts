@@ -55,119 +55,6 @@ declare global {
   }
 }
 
-import("tsparticles").then((pkg) =>
-  pkg.tsParticles.load("particles", {
-    autoPlay: true,
-    background: {
-      color: {
-        value: "#0277bd",
-      },
-      image: "",
-      position: "",
-      repeat: "",
-      size: "",
-      opacity: 1,
-    },
-    fullScreen: {
-      enable: true,
-      zIndex: -1,
-    },
-    detectRetina: true,
-    fpsLimit: 60,
-    manualParticles: [],
-    motion: {
-      disable: false,
-      reduce: {
-        factor: 4,
-        value: true,
-      },
-    },
-    particles: {
-      color: {
-        value: "#fff",
-        animation: {
-          enable: true,
-          speed: 50,
-          sync: false,
-        },
-      },
-      links: {
-        blink: false,
-        color: {
-          value: "random",
-        },
-        consent: false,
-        distance: 100,
-        enable: true,
-        frequency: 1,
-        opacity: 1,
-        width: 1,
-        warp: false,
-      },
-      move: {
-        angle: {
-          offset: 45,
-          value: 90,
-        },
-        direction: "none",
-        distance: 0,
-        enable: true,
-
-        outModes: {
-          default: "out",
-        },
-        random: false,
-        size: false,
-        speed: 2,
-        straight: false,
-
-        vibrate: false,
-        warp: false,
-      },
-      number: {
-        density: {
-          enable: true,
-          area: 800,
-          factor: 1000,
-        },
-        limit: 0,
-        value: 100,
-      },
-      opacity: {
-        random: {
-          enable: true,
-          minimumValue: 0.3,
-        },
-        value: 0.8,
-        animation: {
-          destroy: "none",
-          enable: true,
-          minimumValue: 0.3,
-          speed: 0.5,
-          startValue: "random",
-          sync: false,
-        },
-      },
-      size: {
-        random: {
-          enable: true,
-          minimumValue: 1,
-        },
-        value: 3,
-        animation: {
-          destroy: "none",
-          enable: true,
-          minimumValue: 1,
-          speed: 3,
-          startValue: "random",
-          sync: false,
-        },
-      },
-    },
-    pauseOnBlur: true,
-  })
-);
-
 @customElement("ha-onboarding")
 class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -234,6 +121,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     import("./onboarding-core-config");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
+    if (window.innerWidth > 450) {
+      import("./particles");
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
