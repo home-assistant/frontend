@@ -355,11 +355,11 @@
             },
             "restart_addon": {
                 "confirm_text": "Redémarrer add-on",
-                "text": "Voulez-vous redémarrer l’add-on avec vos modifications ?"
+                "text": "Voulez-vous redémarrer l’add-on avec vos modifications?"
             },
             "update": {
                 "create_snapshot": "Créez un instantané de {name} avant de mettre à jour",
-                "snapshot": "Instantané",
+                "snapshot": "Snapshot",
                 "snapshotting": "Création d'un instantané de {name}",
                 "updating": "Mise à jour de {name} vers la version {version}"
             }

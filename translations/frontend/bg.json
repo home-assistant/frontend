@@ -114,6 +114,10 @@
                 "network": {
                     "header": "Мрежа",
                     "host": "Хост"
+                },
+                "options": {
+                    "header": "Опции",
+                    "invalid_yaml": "Невалиден YAML"
                 }
             },
             "dashboard": {
@@ -122,6 +126,7 @@
                         "hardware": "хардуер",
                         "hass": "hass",
                         "hassio": "hassio",
+                        "host": "хост",
                         "rating": "рейтинг"
                     },
                     "role": {
@@ -131,13 +136,18 @@
                 },
                 "changelog": "Дневник на промените",
                 "hostname": "Име на хоста",
+                "install": "инсталиране",
                 "option": {
                     "auto_update": {
+                        "description": "Автоматично актуализиране на добавката, когато има налична нова версия",
                         "title": "Автоматично актуализиране"
                     },
                     "ingress_panel": {
                         "description": "Добавете тази добавка към страничната си лента",
                         "title": "Показване в страничната лента"
+                    },
+                    "protected": {
+                        "title": "Режим на защита"
                     }
                 },
                 "protection_mode": {
@@ -145,7 +155,8 @@
                 },
                 "restart": "рестарт",
                 "start": "старт",
-                "stop": "стоп"
+                "stop": "стоп",
+                "uninstall": "деинсталиране"
             },
             "panel": {
                 "configuration": "Конфигурация",
@@ -159,11 +170,13 @@
         },
         "common": {
             "cancel": "Отказ",
-            "close": "Затваряне",
+            "close": "Затвори",
             "description": "Описание",
             "error": {
-                "unknown": "Неизвестна грешка"
+                "unknown": "Неизвестна грешка",
+                "update_failed": "Актуализацията не бе успешна"
             },
+            "failed_to_update_name": "Актуализирането на {name} не бе успешно",
             "learn_more": "Научете повече",
             "new_version_available": "Налична е нова версия",
             "newest_version": "Последна версия",
@@ -178,6 +191,9 @@
             "yes": "Да"
         },
         "confirm": {
+            "restart": {
+                "text": "Наистина ли искате да рестартирате {name}?"
+            },
             "update": {
                 "text": "Наистина ли искате да актуализирате {name} до версия {version}?",
                 "title": "Актуализиране на {name}"
@@ -268,11 +284,14 @@
         "system": {
             "host": {
                 "change": "Промяна",
+                "docker_version": "Docker версия",
+                "failed_to_get_hardware_list": "Неуспешно получаване на списъка с хардуер",
                 "failed_to_import_from_usb": "Неуспешно импортиране от USB",
                 "hardware": "Хардуер",
                 "hostname": "Име на хоста",
                 "import_from_usb": "Импортиране от USB",
                 "ip_address": "IP адрес",
+                "new_hostname": "Моля, въведете ново име на хоста:",
                 "operating_system": "Операционна система",
                 "used_space": "Използвано пространство"
             },
@@ -284,6 +303,7 @@
                 "join_beta_action": "Присъединяване към бета канала",
                 "leave_beta_action": "Напускане на бета канала",
                 "reload_supervisor": "Презареждане на Supervisor",
+                "share_diagnostics_description": "Споделяйте доклади за сривове и диагностична информация.",
                 "share_diagonstics_title": "Помогнете за подобряването на Home Assistant",
                 "unsupported_reason": {
                     "dbus": "DBUS",
@@ -689,6 +709,7 @@
                 "dismiss": "Отхвърли",
                 "editor": {
                     "advanced": "Разширени настройки",
+                    "change_device_area": "Промяна областта на устройството",
                     "confirm_delete": "Наистина ли искате да изтриете този запис?",
                     "delete": "Изтриване",
                     "device_disabled": "Устройството на този обект е деактивирано.",
@@ -824,8 +845,10 @@
             "quick-bar": {
                 "commands": {
                     "navigation": {
+                        "areas": "Области",
                         "automation": "Автоматизации",
                         "blueprint": "Планове",
+                        "customize": "Персонализации",
                         "devices": "Устройства",
                         "entities": "Обекти",
                         "helpers": "Помощници",
@@ -897,6 +920,12 @@
             "minute": "{count} {count, plural,\n  one {минута}\n  other {минути}\n}",
             "second": "{count} {count, plural,\n  one {секунда}\n  other {секунди}\n}",
             "week": "{count} {count, plural,\n  one {седмица}\n  other {седмици}\n}"
+        },
+        "errors": {
+            "config": {
+                "error_detected": "Открити са грешки в конфигурацията",
+                "no_template_editor_support": "Шаблоните не се поддържат във визуалния редактор"
+            }
         },
         "login-form": {
             "log_in": "Вход",
@@ -1331,6 +1360,9 @@
                         "sign_out": "Отписване",
                         "tts": {
                             "default_language": "Език по подразбиране за използване",
+                            "dialog": {
+                                "target_browser": "Браузър"
+                            },
                             "female": "Жена",
                             "male": "Мъж",
                             "title": "Текст в Реч"
@@ -1657,7 +1689,7 @@
                         "detail": {
                             "create": "Създаване",
                             "delete": "Изтриване",
-                            "dismiss": "Затваряне",
+                            "dismiss": "Затвори",
                             "update": "Актуализиране",
                             "url": "URL",
                             "url_error_msg": "URL е задължително поле",
@@ -1942,7 +1974,7 @@
                 },
                 "zwave_js": {
                     "common": {
-                        "close": "Затваряне",
+                        "close": "Затвори",
                         "network": "Мрежа"
                     },
                     "dashboard": {
@@ -2338,7 +2370,7 @@
                     },
                     "save_config": {
                         "cancel": "Няма значение",
-                        "close": "Затваряне",
+                        "close": "Затвори",
                         "header": "Поемете контрол над потребителския интерфейс на Lovelace",
                         "para": "В момента това табло се поддържа от Home Assistant. То се актуализира автоматично, когато станат достъпни нови обекти или компоненти на потребителския интерфейс на Lovelace. Ако поемете контрола, това табло вече няма да се актуализира автоматично. Винаги можете да създадете ново табло за управление в конфигурация, с което да си играете.",
                         "para_sure": "Наистина ли искате да поемете управлението на потребителския интерфейс?",

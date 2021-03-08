@@ -327,7 +327,7 @@
                 "gateway": "Gateway-adresse",
                 "ip_netmask": "IP-adresse / nettmaske",
                 "open": "Åpen",
-                "scan_ap": "Søk etter tilgangspunkter",
+                "scan_ap": "Skann etter tilgangspunkter",
                 "static": "Statisk",
                 "title": "Nettverksinnstillinger",
                 "unsaved": "Du har ikke lagrede endringer, disse vil gå tapt hvis du bytter fane, vil du fortsette?",
@@ -1187,6 +1187,7 @@
                 "key_missing": "Nødvendig nøkkel \"{key}\" mangler.",
                 "key_not_expected": "Nøkkelen \"{key}\" forventes ikke eller støttes ikke av det visuelle redigeringsprogrammet.",
                 "key_wrong_type": "Den angitte verdien for \"{key}\" støttes ikke av det visuelle redigeringsprogrammet. Vi støtter ({type_correct}), men mottatt ({type_wrong}).",
+                "no_template_editor_support": "Maler støttes ikke i visual editor",
                 "no_type_provided": "Ingen type oppgitt."
             }
         },
@@ -1342,7 +1343,7 @@
                                     "wait_template": "Ventemal"
                                 }
                             },
-                            "unsupported_action": "Ingen brukergrensesnitt for handling: {action}"
+                            "unsupported_action": "Ingen støtte for visuell redigering for handling: {action}"
                         },
                         "alias": "Navn",
                         "blueprint": {
@@ -1425,7 +1426,7 @@
                                     "zone": "Sone"
                                 }
                             },
-                            "unsupported_condition": "Ingen brukergrensesnitt for bruk: {condition}"
+                            "unsupported_condition": "Ingen støtte for visuell redigering for betingelse: {condition}"
                         },
                         "copy_to_clipboard": "Kopier til utklippstavle",
                         "default_name": "Ny automasjon",
@@ -1433,8 +1434,8 @@
                             "label": "Beskrivelse",
                             "placeholder": "Valgfri beskrivelse"
                         },
-                        "edit_ui": "Rediger med brukergrensesnittet",
-                        "edit_yaml": "Rediger som YAML",
+                        "edit_ui": "Rediger i visuell editor",
+                        "edit_yaml": "Rediger i YAML",
                         "enable_disable": "Aktivere/deaktivere automasjon",
                         "introduction": "Bruk automatisering for å bringe hjemmet ditt til live.",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres",
@@ -1555,7 +1556,7 @@
                                     "zone": "Sone"
                                 }
                             },
-                            "unsupported_platform": "Ingen UI-støtte for plattform: {platform}"
+                            "unsupported_platform": "Ingen støtte for visuell redigering for plattform: {platform}"
                         },
                         "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil lukke?"
                     },
@@ -2081,7 +2082,7 @@
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringen av denne integreringen",
                         "disable": {
-                            "disable_confirm": "Er du sikker på at du vil deaktivere denne konfigurasjonsoppføringen? Enhetene og enhetene blir deaktivert.",
+                            "disable_confirm": "Er du sikker på at du vil deaktivere denne config-oppføringen? Enhetene og enhetene deaktiveres.",
                             "disabled": "Deaktivert",
                             "disabled_by": {
                                 "device": "enhet",
@@ -2155,7 +2156,7 @@
                     "integration": "integrasjon",
                     "integration_not_found": "Integrasjon ikke funnet.",
                     "new": "Sett opp en ny integrasjon",
-                    "no_integrations": "Det ser ut som om du ikke har konfigurert noen integrasjoner ennå. Klikk på knappen nedenfor for å legge til din første integrasjon!",
+                    "no_integrations": "Virker som du ikke har noen integrasjoner konfigurert ennå. Klikk på knappen nedenfor for å legge til din første integrasjon!",
                     "none": "Ingenting er konfigurert enda",
                     "none_found": "Ingen integrasjoner funnet",
                     "none_found_detail": "Juster dine søkekriterier",
@@ -2347,7 +2348,7 @@
                         "session": "Henter verdier fra noden som sjeldent oppdateres",
                         "static": "Henter statiske verdier fra enheten",
                         "versions": "Henter informasjon om fastvare- og kommandoklasseversjoner",
-                        "wakeup": "Setter opp støtte for vekkingskøer og meldinger"
+                        "wakeup": "Konfigurere støtte for vekkekøer og meldinger"
                     },
                     "node": {
                         "button": "Node detaljer",
@@ -2371,8 +2372,8 @@
                         "start_refresh_button": "Start oppdatering",
                         "step": "Steg",
                         "title": "Oppdater nodeinformasjon",
-                        "wakeup_header": "Wakeup Instruksjoner for",
-                        "wakeup_instructions_source": "Wakeup-instruksjoner hentes fra OpenZWave-fellesskapets enhetsdatabase."
+                        "wakeup_header": "Instruksjoner for oppvåking for",
+                        "wakeup_instructions_source": "Våkningsinstruksjoner kommer fra OpenZWave fellesskapsenhetsdatabase."
                     },
                     "select_instance": {
                         "header": "Velg en OpenZWave-forekomst",
@@ -2836,7 +2837,7 @@
                         "instance": "Forekomst",
                         "unknown": "Ukjent",
                         "value": "Verdi",
-                        "wakeup_interval": "Våkningsintervall"
+                        "wakeup_interval": "Intervall for oppvåking"
                     },
                     "description": "Administrer ditt Z-Wave-nettverk",
                     "learn_more": "Lær mer om Z-Wave",
@@ -2865,7 +2866,7 @@
                         "header": "Alternativer for nodekonfigurasjon",
                         "seconds": "sekunder",
                         "set_config_parameter": "Angi konfigurasjonsparameter",
-                        "set_wakeup": "Angi vekkeintervall",
+                        "set_wakeup": "Angi oppvåkingsintervall",
                         "true": "Sant"
                     },
                     "node_management": {
