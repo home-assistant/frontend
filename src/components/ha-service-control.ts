@@ -151,16 +151,19 @@ export class HaServiceControl extends LitElement {
   });
 
   protected render() {
-    const legacy =
-      this._serviceData?.fields.length &&
-      !this._serviceData.fields.some((field) => field.selector);
+    const yamlServiceData =
+      (this._serviceData?.fields.length &&
+        !this._serviceData.fields.some((field) => field.selector)) ||
+      Object.keys(this.value?.data || {}).some(
+        (key) => !this._serviceData?.fields.find((field) => field.key === key)
+      );
 
     const entityId =
-      legacy &&
+      yamlServiceData &&
       this._serviceData?.fields.find((field) => field.key === "entity_id");
 
     const hasOptional = Boolean(
-      !legacy &&
+      !yamlServiceData &&
         this._serviceData?.fields.some(
           (field) => field.selector && !field.required
         )
@@ -209,7 +212,7 @@ export class HaServiceControl extends LitElement {
             allow-custom-entity
           ></ha-entity-picker>`
         : ""}
-      ${legacy
+      ${yamlServiceData
         ? html`<ha-yaml-editor
             .label=${this.hass.localize(
               "ui.components.service-control.service_data"
