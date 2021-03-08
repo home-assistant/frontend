@@ -155,7 +155,9 @@ export class HaServiceControl extends LitElement {
       (this._serviceData?.fields.length &&
         !this._serviceData.fields.some((field) => field.selector)) ||
       Object.keys(this.value?.data || {}).some(
-        (key) => !this._serviceData?.fields.find((field) => field.key === key)
+        (key) =>
+          !this._serviceData?.fields.find((field) => field.key === key)
+            ?.selector
       );
 
     const entityId =
@@ -222,7 +224,11 @@ export class HaServiceControl extends LitElement {
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
         : this._serviceData?.fields.map((dataField) =>
-            dataField.selector && (!dataField.advanced || this.showAdvanced)
+            dataField.selector &&
+            (!dataField.advanced ||
+              this.showAdvanced ||
+              (this.value?.data &&
+                this.value.data[dataField.key] !== undefined))
               ? html`<ha-settings-row .narrow=${this.narrow}>
                   ${dataField.required
                     ? hasOptional
