@@ -210,7 +210,7 @@
                 "install": "Installer",
                 "new_update_available": "{name} {version} er tilgjengelig",
                 "not_available_arch": "Dette tillegget er ikke kompatibelt med prosessoren på enheten din eller operativsystemet du har installert på enheten",
-                "not_available_version": "Du kjører Home Assistant {core_version_installed} , for å oppdatere til denne versjonen av tillegget trenger du minst versjon {core_version_needed} av Home Assistant",
+                "not_available_version": "Du kjører Home Assistant {core_version_installed}, for å oppdatere til denne versjonen av tillegget trenger du minst versjon {core_version_needed} av Home Assistant",
                 "open_web_ui": "Åpne nettgrensesnitt",
                 "option": {
                     "auto_update": {
@@ -365,7 +365,7 @@
             }
         },
         "my": {
-            "error": "Det oppstod en ukjent feil",
+            "error": "En ukjent feil har oppstått",
             "error_addon_not_found": "Tillegget ble ikke funnet",
             "faq_link": "Vanlige spørsmål om Min Home Assistant",
             "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
@@ -1626,6 +1626,8 @@
                         },
                         "introduction": "Med Blueprint-konfigurasjonen kan du importere og behandle dine Blueprinter",
                         "learn_more": "Finn ut mer om hvordan du bruker Blueprinter",
+                        "share_blueprint": "Del blueprint",
+                        "share_blueprint_no_url": "Kan ikke dele blueprint: ingen kilde-url",
                         "use_blueprint": "Opprett automasjon"
                     }
                 },
@@ -3493,7 +3495,7 @@
             "my": {
                 "component_not_loaded": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Du trenger integrasjonen {integration} å bruke denne viderekoblingen.",
                 "documentation": "dokumentasjon",
-                "error": "Det oppstod en ukjent feil",
+                "error": "En ukjent feil har oppstått",
                 "faq_link": "Vanlige spørsmål om Min Home Assistant",
                 "no_supervisor": "Denne viderekoblingen støttes ikke av Home Assistant-installasjonen. Det trenger enten installasjonsmetoden Home Assistant OS eller Home Assistant Supervised. For mer informasjon, se {docs_link}.",
                 "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."

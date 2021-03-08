@@ -2347,7 +2347,7 @@
                         "session": "Obtenint valors inusualment canviants del node",
                         "static": "Obtenint valors estàtics del dispositiu",
                         "versions": "Obtenint informació de programari i versions de classes de comandes",
-                        "wakeup": "Configurant el suport per a cues i missatges"
+                        "wakeup": "Configurant el suport per a cues de despertar i missatges"
                     },
                     "node": {
                         "button": "Detalls del node",
@@ -2371,8 +2371,8 @@
                         "start_refresh_button": "Inicia l'actualització",
                         "step": "Pas",
                         "title": "Informació d'actualització del node",
-                        "wakeup_header": "Instruccions en despertar de",
-                        "wakeup_instructions_source": "Les instruccions en despertar provenen de la base de dades de dispositius de la comunitat OpenZWave."
+                        "wakeup_header": "Instruccions per despertar de",
+                        "wakeup_instructions_source": "Les instruccions per despertar provenen de la base de dades de dispositius de la comunitat OpenZWave."
                     },
                     "select_instance": {
                         "header": "Selecciona una instància d'OpenZWave",
@@ -2836,7 +2836,7 @@
                         "instance": "Instància",
                         "unknown": "desconegut",
                         "value": "Valor",
-                        "wakeup_interval": "Interval en despertar"
+                        "wakeup_interval": "Interval per despertar-se"
                     },
                     "description": "Gestiona la teva xarxa Z-Wave",
                     "learn_more": "Més informació sobre Z-Wave",
@@ -2865,7 +2865,7 @@
                         "header": "Opcions de configuració del node",
                         "seconds": "segons",
                         "set_config_parameter": "Defineix el paràmetre de configuració",
-                        "set_wakeup": "Estableix l'interval en despertar",
+                        "set_wakeup": "Estableix l'interval per despertar-se",
                         "true": "Cert"
                     },
                     "node_management": {

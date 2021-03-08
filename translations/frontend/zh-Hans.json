@@ -158,12 +158,35 @@
             "no_addons": "您尚未安装任何加载项。去加载项商店看看吧！"
         },
         "dialog": {
+            "network": {
+                "connected_to": "已连接到 {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "已禁用",
+                "dns_servers": "DNS 服务器",
+                "failed_to_change": "更改网络设置失败",
+                "gateway": "网关地址",
+                "ip_netmask": "IP 地址/子网掩码",
+                "open": "开放式",
+                "scan_ap": "扫描接入点",
+                "static": "静态地址",
+                "title": "网络设置",
+                "unsaved": "有更改尚未保存，如果切换标签页，这些更改将会丢失。确认继续吗？",
+                "warning": "如果您更改了 Wi-Fi、IP 或网关地址，可能会断开当前连接！",
+                "wep": "WEP",
+                "wpa": "WPA-PSK"
+            },
             "registries": {
                 "add_new_registry": "添加新注册信息",
                 "add_registry": "添加注册信息",
                 "failed_to_add": "添加注册信息失败",
                 "failed_to_remove": "删除注册信息失败",
-                "remove": "删除"
+                "no_registries": "未配置注册表项",
+                "password": "密码",
+                "registry": "注册表",
+                "remove": "删除",
+                "title_add": "新增容器注册表",
+                "title_manage": "管理容器注册表",
+                "username": "用户名"
             },
             "repositories": {
                 "add": "添加",
@@ -193,9 +216,77 @@
             "store": "加载项商店",
             "system": "系统"
         },
+        "snapshot": {
+            "addons": "加载项",
+            "available_snapshots": "可用快照",
+            "could_not_create": "未能创建快照",
+            "create": "创建",
+            "create_blocked_not_running": "现在无法创建快照，因为系统处于{state}状态。",
+            "create_snapshot": "创建快照",
+            "description": "“快照”使您可以轻松地备份和还原 Home Assistant 实例的所有数据。",
+            "enter_password": "请输入密码。",
+            "folder": {
+                "addons/local": "本地加载项",
+                "homeassistant": "Home Assistant 配置",
+                "media": "媒体",
+                "share": "分享",
+                "ssl": "SSL"
+            },
+            "folders": "文件夹",
+            "full_snapshot": "完整快照",
+            "name": "名称",
+            "no_snapshots": "您还没有快照。",
+            "partial_snapshot": "部分快照",
+            "password": "密码",
+            "password_protected": "密码保护",
+            "password_protection": "密码保护",
+            "security": "安全性",
+            "type": "类型",
+            "upload_snapshot": "上传快照"
+        },
         "system": {
+            "core": {
+                "cpu_usage": "核心 CPU 使用率",
+                "ram_usage": "核心内存使用率"
+            },
+            "host": {
+                "change": "变更",
+                "change_hostname": "更改主机名",
+                "confirm_reboot": "您确定要重启主机吗？",
+                "confirm_shutdown": "您确定要关闭主机吗？",
+                "deployment": "部署方式",
+                "docker_version": "Docker 版本",
+                "emmc_lifetime_used": "eMMC 已用寿命",
+                "failed_to_get_hardware_list": "获取硬件列表失败",
+                "failed_to_import_from_usb": "从 USB 导入失败",
+                "failed_to_reboot": "重启主机失败",
+                "failed_to_set_hostname": "设置主机名失败",
+                "failed_to_shutdown": "关闭主机失败",
+                "hardware": "硬件",
+                "hostname": "主机名",
+                "import_from_usb": "从 USB 导入",
+                "ip_address": "IP 地址",
+                "new_hostname": "请输入新的主机名：",
+                "operating_system": "操作系统",
+                "reboot_host": "重启主机",
+                "shutdown_host": "关闭主机",
+                "used_space": "已用空间"
+            },
             "supervisor": {
-                "share_diagonstics_description": "您想要在 Supervisor 遇到异常错误时，共享崩溃报告和诊断信息吗？{line_break}这将帮助我们解决问题，此信息仅限 Home Assistant Core 团队访问，不会共享给他人。{line_break}此信息不包含私密、敏感信息，您可以随时在设置中将其禁用。"
+                "share_diagonstics_description": "您想要在 Supervisor 遇到异常错误时，共享崩溃报告和诊断信息吗？{line_break}这将帮助我们解决问题，此信息仅限 Home Assistant Core 团队访问，不会共享给他人。{line_break}此信息不包含私密、敏感信息，您可以随时在设置中将其禁用。",
+                "unhealthy_reason": {
+                    "docker": "Docker 环境无法正常工作",
+                    "privileged": "Supervisor 权限不够",
+                    "setup": "Supervisor 设置失败",
+                    "supervisor": "Supervisor 未能更新"
+                },
+                "unsupported_reason": {
+                    "lxc": "LXC",
+                    "network_manager": "网络管理器",
+                    "os": "操作系统",
+                    "privileged": "Supervisor 权限不够",
+                    "systemd": "Systemd"
+                }
             }
         }
     },

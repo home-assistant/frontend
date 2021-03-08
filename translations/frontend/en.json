@@ -327,7 +327,7 @@
                 "gateway": "Gateway address",
                 "ip_netmask": "IP address/Netmask",
                 "open": "Open",
-                "scan_ap": "Scan for accesspoints",
+                "scan_ap": "Scan for access points",
                 "static": "Static",
                 "title": "Network settings",
                 "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
@@ -1187,6 +1187,7 @@
                 "key_missing": "Required key \"{key}\" is missing.",
                 "key_not_expected": "Key \"{key}\" is not expected or not supported by the visual editor.",
                 "key_wrong_type": "The provided value for \"{key}\" is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
+                "no_template_editor_support": "Templates not supported in visual editor",
                 "no_type_provided": "No type provided."
             }
         },
@@ -1342,7 +1343,7 @@
                                     "wait_template": "Wait Template"
                                 }
                             },
-                            "unsupported_action": "No UI support for action: {action}"
+                            "unsupported_action": "No visual editor support for action: {action}"
                         },
                         "alias": "Name",
                         "blueprint": {
@@ -1425,7 +1426,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_condition": "No UI support for condition: {condition}"
+                            "unsupported_condition": "No visual editor support for condition: {condition}"
                         },
                         "copy_to_clipboard": "Copy to Clipboard",
                         "default_name": "New Automation",
@@ -1433,8 +1434,8 @@
                             "label": "Description",
                             "placeholder": "Optional description"
                         },
-                        "edit_ui": "Edit with UI",
-                        "edit_yaml": "Edit as YAML",
+                        "edit_ui": "Edit in visual editor",
+                        "edit_yaml": "Edit in YAML",
                         "enable_disable": "Enable/Disable automation",
                         "introduction": "Use automations to bring your home to life.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
@@ -1555,7 +1556,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_platform": "No UI support for platform: {platform}"
+                            "unsupported_platform": "No visual editor support for platform: {platform}"
                         },
                         "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?"
                     },
@@ -2155,7 +2156,7 @@
                     "integration": "integration",
                     "integration_not_found": "Integration not found.",
                     "new": "Set up a new integration",
-                    "no_integrations": "Seems like you don't have any integations configured yet. Click on the button below to add your first integration!",
+                    "no_integrations": "Seems like you don't have any integrations configured yet. Click on the button below to add your first integration!",
                     "none": "Nothing configured yet",
                     "none_found": "No integrations found",
                     "none_found_detail": "Adjust your search criteria.",
@@ -2347,7 +2348,7 @@
                         "session": "Obtaining infrequently changing values from the node",
                         "static": "Obtaining static values from the device",
                         "versions": "Obtaining information about firmware and command class versions",
-                        "wakeup": "Setting up support for wakeup queues and messages"
+                        "wakeup": "Setting up support for wake-up queues and messages"
                     },
                     "node": {
                         "button": "Node Details",
@@ -2371,8 +2372,8 @@
                         "start_refresh_button": "Start Refresh",
                         "step": "Step",
                         "title": "Refresh Node Information",
-                        "wakeup_header": "Wakeup Instructions for",
-                        "wakeup_instructions_source": "Wakeup instructions are sourced from the OpenZWave community device database."
+                        "wakeup_header": "Wake-up Instructions for",
+                        "wakeup_instructions_source": "Wake-up instructions are sourced from the OpenZWave community device database."
                     },
                     "select_instance": {
                         "header": "Select an OpenZWave Instance",
@@ -2836,7 +2837,7 @@
                         "instance": "Instance",
                         "unknown": "unknown",
                         "value": "Value",
-                        "wakeup_interval": "Wakeup Interval"
+                        "wakeup_interval": "Wake-up Interval"
                     },
                     "description": "Manage your Z-Wave network",
                     "learn_more": "Learn more about Z-Wave",
@@ -2865,7 +2866,7 @@
                         "header": "Node Configuration Options",
                         "seconds": "seconds",
                         "set_config_parameter": "Set Configuration Parameter",
-                        "set_wakeup": "Set Wakeup Interval",
+                        "set_wakeup": "Set Wake-up Interval",
                         "true": "True"
                     },
                     "node_management": {
