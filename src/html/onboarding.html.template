@@ -7,7 +7,7 @@
     <style>
       html {
         color: var(--primary-text-color, #212121);
-        background-color: #0277bd;
+        background-color: #0277bd !important;
       }
       .content {
         box-sizing: border-box;
