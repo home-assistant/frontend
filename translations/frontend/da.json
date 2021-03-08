@@ -87,7 +87,7 @@
         },
         "device_tracker": {
             "home": "Hjemme",
-            "not_home": "[%key:state::device_tracker::not_home%]"
+            "not_home": "Ude"
         },
         "person": {
             "home": "Hjemme",
@@ -250,7 +250,7 @@
             "documentation": {
                 "get_documentation": "Dokumentationen for tilføjelsesprogrammet kunne ikke hentes, {error}"
             },
-            "failed_to_reset": "Konfigurationen af tilføjelsesprogrammet kunne ikke nulstilles.",
+            "failed_to_reset": "Konfigurationen af tilføjelsesprogrammet kunne ikke nulstilles, {error}",
             "failed_to_save": "Konfigurationen af tilføjelsesprogrammet kunne ikke gemmes, {error}",
             "logs": {
                 "get_logs": "Logfiler for tilføjelsesprogrammet kunne ikke hentes, {error}"
@@ -268,7 +268,7 @@
             }
         },
         "common": {
-            "cancel": "Afbryd",
+            "cancel": "Annuller",
             "close": "Luk",
             "description": "Beskrivelse",
             "error": {

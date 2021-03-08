@@ -1187,6 +1187,7 @@
                 "key_missing": "Nõutav võti \" {key} \" puudub.",
                 "key_not_expected": "Võti \"{key}\" pole visuaalses redaktoris eeldatud või toetatatud.",
                 "key_wrong_type": "Visuaalne redaktor ei toeta \"{key}\" jaoks sisestatud väärtust. Toetatud on ({type_correct}) kuid saadi ({type_wrong}).",
+                "no_template_editor_support": "Visuaalne redaktor ei toetata malle",
                 "no_type_provided": "Tüüpi pole esitatud."
             }
         },
@@ -2155,7 +2156,7 @@
                     "integration": "sidumine",
                     "integration_not_found": "Sidumist ei leitud.",
                     "new": "Loo uus sidumine",
-                    "no_integrations": "Tundub, et teil pole veel ühtegi sidumist häälestatud. Esimese sidumise lisamiseks klõpsake allolevat nuppu!",
+                    "no_integrations": "Tundub, et ühtegi sidumist pole veel lisatud. Esimese sidumise lisamiseks klõpsa allolevat nuppu!",
                     "none": "Midagi pole veel seadistatud",
                     "none_found": "Sidumisi ei leitud",
                     "none_found_detail": "Korrigeerige oma otsingukriteeriume.",

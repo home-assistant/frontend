@@ -326,7 +326,7 @@
                 "failed_to_change": "네트워크 설정을 변경하지 못했습니다",
                 "gateway": "게이트웨이 주소",
                 "ip_netmask": "IP 주소/넷마스크",
-                "open": "공개",
+                "open": "비밀번호 없음",
                 "scan_ap": "액세스 포인트 검색하기",
                 "static": "수동 구성",
                 "title": "네트워크 설정",
@@ -1187,6 +1187,7 @@
                 "key_missing": "필수 키 \"{key}\"이(가) 없습니다.",
                 "key_not_expected": "비주얼 편집기에서 \"{key}\" 키는 예상되지 않거나 지원되지 않습니다.",
                 "key_wrong_type": "\"{key}\"에 제공된 값은 비주얼 편집기에서 지원되지 않습니다. ({type_correct})을(를) 지원하지만 ({type_wrong})을(를) 받았습니다.",
+                "no_template_editor_support": "비주얼 편집기에서 템플릿이 지원되지 않습니다",
                 "no_type_provided": "유형이 제공되지 않았습니다."
             }
         },
@@ -1342,7 +1343,7 @@
                                     "wait_template": "대기 템플릿"
                                 }
                             },
-                            "unsupported_action": "UI 미지원 동작: {action}"
+                            "unsupported_action": "비주얼 편집기에서 지원하지 않는 동작입니다: {action}"
                         },
                         "alias": "이름",
                         "blueprint": {
@@ -1425,7 +1426,7 @@
                                     "zone": "지역"
                                 }
                             },
-                            "unsupported_condition": "UI 미지원 조건: {condition}"
+                            "unsupported_condition": "비주얼 편집기에서 지원하지 않는 조건입니다: {condition}"
                         },
                         "copy_to_clipboard": "클립보드에 복사",
                         "default_name": "새로운 자동화",
@@ -1441,14 +1442,14 @@
                         "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no}).",
                         "max": {
                             "parallel": "최대 병렬 실행 수",
-                            "queued": "대기열 길이"
+                            "queued": "최대 대기열 길이"
                         },
                         "modes": {
                             "description": "모드는 자동화가 이전 트리거에서 동작이 실행되는 동안 트리거될 때 실행되는 작업을 제어합니다. 자세한 내용은 {documentation_link}을(를) 확인해주세요.",
                             "documentation": "자동화 문서",
                             "label": "모드",
                             "parallel": "병렬",
-                            "queued": "대기",
+                            "queued": "대기열",
                             "restart": "다시 시작하기",
                             "single": "단일 (기본값)"
                         },
@@ -1555,7 +1556,7 @@
                                     "zone": "지역"
                                 }
                             },
-                            "unsupported_platform": "UI 미지원 플랫폼: {platform}"
+                            "unsupported_platform": "비주얼 편집기에서 지원하지 않는 플랫폼입니다: {platform}"
                         },
                         "unsaved_confirm": "변경된 내용을 저장하지 않았습니다. 정말 이 페이지를 떠나시겠습니까?"
                     },
@@ -2155,7 +2156,7 @@
                     "integration": "통합 구성요소",
                     "integration_not_found": "통합 구성요소를 찾을 수 없습니다.",
                     "new": "새로운 통합 구성요소 설정",
-                    "no_integrations": "아직 통합 구성요소를 구성하지 않은 것 같습니다. 첫 번째 통합 구성요소를 추가하려면 아래 버튼을 클릭해주세요!",
+                    "no_integrations": "아직 구성된 통합 구성요소가 존재하지 않습니다. 첫 번째 통합 구성요소를 추가하려면 아래 버튼을 클릭해주세요!",
                     "none": "구성된 통합 구성요소가 없습니다",
                     "none_found": "통합 구성요소를 찾을 수 없습니다",
                     "none_found_detail": "검색 대상을 확인해주세요.",
@@ -2371,7 +2372,7 @@
                         "start_refresh_button": "새로고침 시작",
                         "step": "단계",
                         "title": "노드 정보 새로고침",
-                        "wakeup_header": "절전 해제 지침",
+                        "wakeup_header": "절전 해제 지침:",
                         "wakeup_instructions_source": "절전 해제 지침은 OpenZWave 커뮤니티 기기 데이터베이스에서 제공됩니다."
                     },
                     "select_instance": {
@@ -2480,14 +2481,14 @@
                         "load_error_not_editable": "scripts.yaml 의 스크립트만 편집할 수 있습니다.",
                         "max": {
                             "parallel": "최대 병렬 실행 수",
-                            "queued": "대기열 길이"
+                            "queued": "최대 대기열 길이"
                         },
                         "modes": {
                             "description": "모드는 스크립트가 하나 이상의 이전 호출에서 계속 실행되는 동안 스크립트가 호출될 때 실행되는 작업을 제어합니다. 자세한 내용은 {documentation_link}을(를) 확인해주세요.",
                             "documentation": "스크립트 문서",
                             "label": "모드",
                             "parallel": "병렬",
-                            "queued": "대기",
+                            "queued": "대기열",
                             "restart": "다시 시작하기",
                             "single": "단일 (기본값)"
                         },
@@ -2865,7 +2866,7 @@
                         "header": "노드 구성 옵션",
                         "seconds": "초",
                         "set_config_parameter": "구성 매개 변수 설정",
-                        "set_wakeup": "절전모드 해제 간격 설정",
+                        "set_wakeup": "절전모드 해제 간격 설정하기",
                         "true": "참"
                     },
                     "node_management": {
