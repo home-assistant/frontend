@@ -97,7 +97,7 @@ class DialogZHADeviceChildren extends LitElement {
       <ha-dialog
         hideActions
         open
-        @closed="${this.closeDialog}"
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.dialogs.zha_device_info.device_children`)
