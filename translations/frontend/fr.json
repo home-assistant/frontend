@@ -1626,6 +1626,8 @@
                         },
                         "introduction": "L’éditeur de Blueprint vous permet de créer et de modifier les Blueprints qui permettent de créer des automatisations facilement à l'aide de modèles configurables.",
                         "learn_more": "En savoir plus sur les Blueprints",
+                        "share_blueprint": "Partager le Blueprint",
+                        "share_blueprint_no_url": "Impossible de partager le Blueprint: pas d'URL source",
                         "use_blueprint": "Créer une automatisation"
                     }
                 },

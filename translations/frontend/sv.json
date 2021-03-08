@@ -105,6 +105,10 @@
     "supervisor": {
         "addon": {
             "configuration": {
+                "audio": {
+                    "default": "Standard",
+                    "header": "Ljud"
+                },
                 "network": {
                     "container": "Behållare",
                     "disabled": "Inaktiverad",

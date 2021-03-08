@@ -1626,6 +1626,8 @@
                         },
                         "introduction": "Konfiguracja schematów umożliwia ich importowanie i zarządzanie nimi.",
                         "learn_more": "Dowiedz się więcej o używaniu schematów",
+                        "share_blueprint": "Udostępnij schemat",
+                        "share_blueprint_no_url": "Nie można udostępnić schematu: brak źródłowego adresu URL",
                         "use_blueprint": "Utwórz automatyzację"
                     }
                 },
@@ -2079,7 +2081,7 @@
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
                         "disable": {
-                            "disable_confirm": "Czy na pewno chcesz wyłączyć ten wpis? Jego urządzenia i instancje zostaną wyłączone.",
+                            "disable_confirm": "Czy na pewno chcesz wyłączyć ten wpis w konfiguracji? Jego urządzenia i instancje zostaną wyłączone.",
                             "disabled": "Wyłączone",
                             "disabled_by": {
                                 "device": "Urządzenie",
