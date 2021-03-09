@@ -55,7 +55,7 @@ function initRouting() {
   // This includes "/states" response and user files from "/local".
   // First access might bring stale data from cache, but a single refresh will bring updated
   // file.
-  registerRoute(new RegExp(`${location.host}/.+`), new StaleWhileRevalidate());
+  registerRoute(new RegExp(`${location.host}/.*`), new StaleWhileRevalidate());
 }
 
 function initPushNotifications() {
