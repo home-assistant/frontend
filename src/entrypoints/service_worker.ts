@@ -11,6 +11,10 @@ import {
   StaleWhileRevalidate,
 } from "workbox-strategies";
 
+const noFallBackRegEx = new RegExp(
+  `${location.host}/(api|static|frontend_latest|frontend_es5|auth)/.*`
+);
+
 // Clean up caches from older workboxes and old service workers.
 // Will help with cleaning up Workbox v4 stuff
 cleanupOutdatedCaches();
@@ -196,8 +200,9 @@ self.addEventListener("message", (message) => {
 
 const catchHandler = async (options) => {
   const dest = options.request.destination;
+  const url = options.request.url;
 
-  if (dest !== "document") {
+  if (dest !== "document" || noFallBackRegEx.test(url)) {
     return Response.error();
   }
   // eslint-disable-next-line no-console
