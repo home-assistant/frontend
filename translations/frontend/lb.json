@@ -102,6 +102,180 @@
             "unknown": "Onbekannt"
         }
     },
+    "supervisor": {
+        "common": {
+            "close": "Zoumaachen",
+            "error": {
+                "unknown": "Onbekannte Feeler",
+                "update_failed": "Feeler bei der Aktualiséierung"
+            },
+            "learn_more": "Méi léieren",
+            "new_version_available": "Nei Versioun disponibel",
+            "restart": "Frësch starten",
+            "running_version": "Du benotz de Moment Versioun {version}"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Verbonne mat {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Deaktivéiert",
+                "dns_servers": "DNS Server",
+                "failed_to_change": "Feeler beim ännere vun den Netzwierk Astellungen",
+                "gateway": "Adress vun der Gateway",
+                "ip_netmask": "IP Adress/Netmask",
+                "open": "Offen",
+                "scan_ap": "No Access Points scannen",
+                "static": "Statesch",
+                "title": "Netzwierk Astellungen",
+                "unsaved": "Du hues net gespäichert Ännerungen, dës gi verluer wanns Du Tabs wiesselt, wëlls Du weiderfueren?",
+                "warning": "Falls du Wi-Fi, IP oder Gateway Adress änners, riskéiers du den Accès ze verléieren!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Nei Registry dobäisetzen",
+                "add_registry": "Registry dobäisetzen",
+                "failed_to_add": "Feeler beim dobäisetze vun der Registry",
+                "failed_to_remove": "Feeler beim läschen vun der Registry",
+                "no_registries": "Keng Registry konfiguréiert",
+                "password": "Passwuert",
+                "registry": "Registry",
+                "remove": "Läschen",
+                "title_add": "Neie Container Registry dobäisetzen",
+                "title_manage": "Container Registry verwalten",
+                "username": "Benotzernumm"
+            },
+            "repositories": {
+                "add": "Dobäisetzen",
+                "remove": "Läschen",
+                "title": "Add-On Depoten verwalten"
+            },
+            "restart_addon": {
+                "confirm_text": "Add-On frësch starten",
+                "text": "Soll den Add-on mat dengem Ännerungen frësch gestart ginn?"
+            },
+            "update": {
+                "create_snapshot": "Erstell ee Snapshot vun {name} virun der Aktualiséierung",
+                "snapshot": "Snapshot",
+                "snapshotting": "Snapshot vun {name} gëtt erstallt",
+                "updating": "Aktualiséiert {name} op Versioun {version}"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "Add-on net fonnt"
+        },
+        "snapshot": {
+            "addons": "Add-ons",
+            "available_snapshots": "Verfügbar Snapshoten",
+            "could_not_create": "Feeler beim erstellen vum Snapshot",
+            "create": "Erstellen",
+            "create_blocked_not_running": "Ee Snapshot erstellen ass fir de Moment net méiglech well de System an engem {state} Zoustand ass.",
+            "create_snapshot": "Snapshot erstellen",
+            "description": "Snapshots erlaaben Dir all Home Assistant Instanz Donnéeën einfach ze backupen an ze restauréieren.",
+            "enter_password": "Gëff ee Passwuert an",
+            "folder": {
+                "addons/local": "Lokal Add-ons",
+                "homeassistant": "Home Assistant Konfiguratioun",
+                "media": "Medien",
+                "share": "Deelen",
+                "ssl": "SSL"
+            },
+            "folders": "Dossieren",
+            "full_snapshot": "Komplette Snapshot",
+            "name": "Numm",
+            "no_snapshots": "Du hues nach keng Snapshoten.",
+            "partial_snapshot": "Deelweise Snapshot",
+            "password": "Passwuert",
+            "password_protected": "Duerch ee Passwuert geschützt",
+            "password_protection": "Passwuert Protektioun",
+            "security": "Sëcherheet",
+            "type": "Typ",
+            "upload_snapshot": "Snapshot eroplueden"
+        },
+        "store": {
+            "no_results_found": "Keng Resultater fonnt am {repository}.",
+            "registries": "Registry",
+            "repositories": "Depoten"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Core CPU Verbrauch",
+                "ram_usage": "Core RAM Verbrauch"
+            },
+            "host": {
+                "change": "Änneren",
+                "change_hostname": "Host Numm änneren",
+                "confirm_reboot": "Sécher fir den Host frësch ze starten?",
+                "confirm_shutdown": "Sécher fir den Host aus ze schalten?",
+                "deployment": "Deployment",
+                "docker_version": "Docker Versioun",
+                "emmc_lifetime_used": "eMMC Liewensdauer benotzt",
+                "failed_to_get_hardware_list": "Feeler beim liesen vun der Hardware Lëscht",
+                "failed_to_import_from_usb": "Feeler beim importéieren vun USB",
+                "failed_to_reboot": "Feeler beim frësch starten vum Host",
+                "failed_to_set_hostname": "Feeler beim setzen vum Host Numm",
+                "failed_to_shutdown": "Feeler beim ausschalten vum Host",
+                "hardware": "Hardware",
+                "hostname": "Host Numm",
+                "import_from_usb": "Vun USB importéieren",
+                "ip_address": "IP Adresse",
+                "new_hostname": "Gëff een neien Host Numm un:",
+                "operating_system": "Betribssystem",
+                "reboot_host": "Host frësch starten",
+                "shutdown_host": "Host Ausmaachen",
+                "used_space": "Benotzten Espace"
+            },
+            "log": {
+                "get_logs": "Feeler beim liesen vun {provider} logs, {error}",
+                "log_provider": "Log Provider"
+            },
+            "supervisor": {
+                "beta_backup": "Stell sécher dass du ee Backup vun dengen Donnéeën hues iers du dëse Feature aktivéiers.",
+                "beta_join_confirm": "Wëlls du dem Beta Kanal beitrieden?",
+                "beta_release_items": "Dëst enthält Beta Versiounen fir:",
+                "beta_warning": "Beta Versiounen si fir Tester an Early Adopter an können onstabile Code enthalen.",
+                "channel": "Kanal",
+                "cpu_usage": "Supervisor CPU Verbrauch",
+                "failed_to_reload": "Feeler beim frësch lueden vum Supervisor",
+                "failed_to_set_option": "Feeler beim setzen vun enger Optioun am Supervisor",
+                "failed_to_update": "Feeler beim Aktualiséieren vum Supervisor",
+                "join_beta_action": "Beta Kanal beitrieden",
+                "join_beta_description": "Beta Versioune fir Home Assistant (RCs), Supervisor an Host kréien",
+                "leave_beta_action": "Beta Kanal verloossen",
+                "leave_beta_description": "Stabil Versioune fir Home Assistant, Supervisor an Host kréien",
+                "ram_usage": "Supervisor RAM Verbrauch",
+                "reload_supervisor": "Supervisor frësch lueden",
+                "share_diagnostics": "Diagnose Informatioune deelen",
+                "share_diagnostics_description": "Crash Meldungan an Diagnose Informatioune deelen.",
+                "share_diagonstics_description": "Wëlls Du automatesch Crash Meldungen an Diagnosinformatiounen deelen wann de Supervisor een onerwaarte Feeler begéint?{line_break} Dëst erlaabt eis d'Problemer ze fixéieren, d'Informatioun ass nëmme fir den Home Assistant Core Team zougänglech a gëtt net mat aneren gedeelt.{line_break}D'Donnéeën enthalen keng privat / sensibel Informatioun an Du kanns dëst an den Astellungen ausschalten wanns Du wëlls.",
+                "share_diagonstics_title": "Hëllef Home Assistant ze verbesseren",
+                "unhealthy_description": "Eng ongesond Installatioun auszeféieren verursaacht Problemer. Hei drënner ass eng Lëscht vu Probleemer déi an denger Installatioun fonnt goufen, klick op d'Links fir ze léieren wéi's Du Problemer léise kanns.",
+                "unhealthy_reason": {
+                    "docker": "Den Docker Environnement ass feelerhaft",
+                    "privileged": "Supervisor ass net privilegéiert",
+                    "setup": "Feeler beim ariichten vum Supervisor",
+                    "supervisor": "Supervisor konnt net aktualiséiert ginn"
+                },
+                "unhealthy_title": "Deng Installation ass ongesond",
+                "unsupported_description": "Hei drënner ass eng Lëscht vu Probleemer déi an denger Installatioun fonnt goufen, klick op d'Links fir ze léieren wéi's Du Problemer léise kanns.",
+                "unsupported_reason": {
+                    "container": "Container vun deene mir wësse dass sie Problemer verursaachen",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker Konfiguratioun",
+                    "docker_version": "Docker Versioun",
+                    "job_conditions": "Ignoréiert Job Konditiounen",
+                    "lxc": "LXC",
+                    "network_manager": "Netzwierk Manager",
+                    "os": "Betribssystem",
+                    "privileged": "Supervisor ass net privilegéiert",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "Du benotz eng net ënnerstëtzten Installatioun",
+                "update_supervisor": "Supervisor aktualiséieren",
+                "warning": "WARNUNG"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Soll dëse Login gespäichert ginn?",
@@ -294,6 +468,13 @@
             "yes": "Jo"
         },
         "components": {
+            "addon-picker": {
+                "error": {
+                    "no_supervisor": {
+                        "title": "Keen Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Dobäisetzen",
@@ -578,6 +759,9 @@
                 "person": {
                     "create_zone": "Zone erstellen vun der aktueller Positioun"
                 },
+                "remote": {
+                    "activity": "Aktuel Aktivitéit"
+                },
                 "restored": {
                     "confirm_remove_text": "Sécher fir dës Entitéit ze läsche?",
                     "confirm_remove_title": "Entitéit läschen?",
@@ -698,6 +882,7 @@
                 "buttons": {
                     "add": "Apparater via dësen Apparat dobäisetzen",
                     "clusters": "Cluster verwalten",
+                    "device_children": "Kanner uweisen",
                     "reconfigure": "Apparat frësch konfiguréieren",
                     "remove": "Apparat läschen",
                     "zigbee_information": "Zigbee Apparat Informatiounen"
@@ -705,6 +890,7 @@
                 "confirmations": {
                     "remove": "Sécher fir den Apparat ze läsche?"
                 },
+                "device_children": "Zigbee Apparat Kanner",
                 "device_signature": "Zigbee Apparat Signatur",
                 "last_seen": "Fir d'läscht gesinn",
                 "manuf": "vun {manufacturer}",
@@ -739,6 +925,7 @@
                 "key_missing": "Néidege Schlëssel \"{key}\" feelt.",
                 "key_not_expected": "Schlëssel \"{key}\" ass net erwaard oder vum visuellen Editeur ënnerstëtzt.",
                 "key_wrong_type": "De Wäert fir \"{key}\" ass net vum visuelle Editeur ënnerstëtzt. Mir ënnerstëtzen ({type_correct}) mee mir kruuten ({type_wrong}).",
+                "no_template_editor_support": "Modeller net ënnerstëtzt am Visuellen Editeur",
                 "no_type_provided": "Keen Typ uginn."
             }
         },
@@ -1173,6 +1360,8 @@
                         },
                         "introduction": "Plang Konfiguratioun erlabt et Pläng z'importéieren an deng Pläng ze verwalten.",
                         "learn_more": "Méi iwwert Pläng léieren",
+                        "share_blueprint": "Plang deelen",
+                        "share_blueprint_no_url": "Kann de Plang net deelen: keng quell URL",
                         "use_blueprint": "Automatisme erstellen"
                     }
                 },
@@ -2239,6 +2428,7 @@
                         "caption": "Netzwierk"
                     },
                     "visualization": {
+                        "auto_zoom": "Auto Zoom",
                         "caption": "Visualisatioun",
                         "header": "Visualisatioun vum Netzwierk",
                         "zoom_label": "Op apparat vergréisseren"
@@ -2275,7 +2465,12 @@
                 },
                 "zwave_js": {
                     "dashboard": {
-                        "dump_not_ready_confirm": "Eroflueden"
+                        "driver_version": "Driver Versioun",
+                        "dump_not_ready_confirm": "Eroflueden",
+                        "server_version": "Server Versioun"
+                    },
+                    "node_status": {
+                        "unknown": "Onbekannt"
                     }
                 },
                 "zwave": {
@@ -2923,7 +3118,8 @@
                 "playback_title": "Noriicht ofspillen"
             },
             "my": {
-                "documentation": "Dokumentatioun"
+                "documentation": "Dokumentatioun",
+                "no_supervisor": "Dëse Redirect gëtt net vun Denger Home Assistant Installatioun ënnerstëtzt. Et brauch entweder een Home Assistant Betribssystem oder eng Home Assistant Superviséiert Installatiounsmethod. Fir méi Informatiounen, kuck {docs_link}."
             },
             "page-authorize": {
                 "abort_intro": "Login ofgebrach",

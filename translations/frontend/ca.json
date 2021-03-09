@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Afegeix dispositius a través d'aquest dispositiu",
                     "clusters": "Gestiona clústers",
+                    "device_children": "Mostra fills",
                     "reconfigure": "Reconfigurar dispositiu",
                     "remove": "Eliminar dispositiu",
                     "view_in_visualization": "Mostra a la visualització",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Estàs segur que vols eliminar el dispositiu?"
                 },
+                "device_children": "Dispositiu Zigbee fill",
                 "device_signature": "Signatura Zigbee del dispositiu",
                 "last_seen": "Vist per últim cop",
                 "manuf": "per {manufacturer}",
@@ -1187,6 +1189,7 @@
                 "key_missing": "Falta la clau obligatòria \"{key}\".",
                 "key_not_expected": "No s'està esperant la clau \"{key}\" o no és compatible amb l'editor visual.",
                 "key_wrong_type": "L'editor visual no admet el valor proporcionat de \"{key}\". ({type_correct}) és compatible, però s'ha rebut ({type_wrong}).",
+                "no_template_editor_support": "Les plantilles no són compatibles amb l'editor visual",
                 "no_type_provided": "No s'ha proporcionat cap tipus."
             }
         },
@@ -1342,7 +1345,7 @@
                                     "wait_template": "Plantilla d'espera"
                                 }
                             },
-                            "unsupported_action": "La IU no és compatible amb l'acció: {action}"
+                            "unsupported_action": "Acció no compatible amb l'editor visual: {action}"
                         },
                         "alias": "Nom",
                         "blueprint": {
@@ -1425,7 +1428,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "La IU no és compatible amb la condició: {condition}"
+                            "unsupported_condition": "Condició no compatible amb l'editor visual: {condition}"
                         },
                         "copy_to_clipboard": "Copia al porta-retalls",
                         "default_name": "Nova automatització",
@@ -1433,8 +1436,8 @@
                             "label": "Descripció",
                             "placeholder": "Descripció opcional"
                         },
-                        "edit_ui": "Edita a través d'interfície",
-                        "edit_yaml": "Edita com a YAML",
+                        "edit_ui": "Edita amb l'editor visual",
+                        "edit_yaml": "Edita en YAML",
                         "enable_disable": "Activa/desactiva automatització",
                         "introduction": "Utilitza les automatitzacions per donar vida a casa teva.",
                         "load_error_not_editable": "Només les automatitzacions a automations.yaml són editables.",
@@ -1555,7 +1558,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "La IU no és compatible amb la plataforma: {platform}"
+                            "unsupported_platform": "Plataforma no compatible amb l'editor visual: {platform}"
                         },
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?"
                     },
@@ -2648,7 +2651,7 @@
                     "add_device": "Afegeix dispositiu",
                     "add_device_page": {
                         "discovered_text": "Els dispositius apareixeran aquí un cop descoberts.",
-                        "no_devices_found": "No s'han trobat dispositius, assegura't que estiguin en mode vinculació i manten-los desperts mentre s'estiguin descoberint.",
+                        "no_devices_found": "No s'han trobat dispositius, assegura't que estiguin en mode vinculació i manten-los desperts mentre s'estiguin descobrint.",
                         "pairing_mode": "Assegura't que els dispositiu estiguin en mode vinculació. Consulta les instruccions del dispositiu per saber com fer-ho.",
                         "search_again": "Torna a cercar",
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."
@@ -2724,6 +2727,7 @@
                         "caption": "Xarxa"
                     },
                     "visualization": {
+                        "auto_zoom": "Zoom automàtic",
                         "caption": "Visualització",
                         "header": "Visualització de xarxa",
                         "highlight_label": "Ressalta els dispositius",

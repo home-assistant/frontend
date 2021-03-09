@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Lisa seadmeid selle seadme abil",
                     "clusters": "Halda seadmekobaraid",
+                    "device_children": "Kuva alamseadmed",
                     "reconfigure": "Muuda seadme sätteid",
                     "remove": "Eemalda seade",
                     "view_in_visualization": "Visualiseeri",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Oled kindel, et soovid selle seadme eemaldada?"
                 },
+                "device_children": "Zigbee alamseadmed",
                 "device_signature": "Zigbee seadme tunnus",
                 "last_seen": "Viimati nähtud",
                 "manuf": "{manufacturer} järgi",
@@ -2725,6 +2727,7 @@
                         "caption": "Võrk"
                     },
                     "visualization": {
+                        "auto_zoom": "Mahuta kuvale",
                         "caption": "Visualiseerimine",
                         "header": "Võrgu visualiseerimine",
                         "highlight_label": "Tõsta seadmed esile",

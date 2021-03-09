@@ -145,6 +145,7 @@
                 "changelog": "Seznam změn",
                 "hostname": "Název hostitele",
                 "new_update_available": "{name} {verze} je k dispozici",
+                "not_available_version": "Používáte Home Assistant {core_version_installed}, pro aktualizaci na tuto verzi doplňku potřebujete alespoň Home Assistant ve verzi {core_version_needed}",
                 "open_web_ui": "Otevřít webové rozhraní",
                 "option": {
                     "boot": {
@@ -220,6 +221,7 @@
                 "gateway": "IP adresa brány",
                 "ip_netmask": "IP adresa/Maska sítě",
                 "open": "Otevřít",
+                "scan_ap": "Hledat přístupové body",
                 "static": "Statická",
                 "title": "Nastavení sítě",
                 "wep": "WEP",
@@ -1028,6 +1030,7 @@
                 "key_missing": "Chybí požadovaný klíč \"{key}\".",
                 "key_not_expected": "Klíč \"{key}\" není vizuálním editorem očekáván nebo podporován.",
                 "key_wrong_type": "Zadávanou hodnotu \"{key}\" nepodporuje vizuální editor. Podporuje ({type_correct}), ale obdržel ({type_wrong}).",
+                "no_template_editor_support": "Šablony nejsou podporovány v uživatelském rozhraní",
                 "no_type_provided": "Není k dispozici žádný typ."
             }
         },
@@ -1467,6 +1470,8 @@
                         },
                         "introduction": "Nastavení šablon vám umožňuje importovat a spravovat vaše šablony.",
                         "learn_more": "Další informace o používání šablon",
+                        "share_blueprint": "Sdílet šablonu",
+                        "share_blueprint_no_url": "Nelze sdílet šablonu: žádná zdrojová URL adresa",
                         "use_blueprint": "Vytvořit automatizaci"
                     }
                 },

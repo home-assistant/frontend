@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Add Devices via this device",
                     "clusters": "Manage Clusters",
+                    "device_children": "View Children",
                     "reconfigure": "Reconfigure Device",
                     "remove": "Remove Device",
                     "view_in_visualization": "View in Visualization",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Are you sure that you want to remove the device?"
                 },
+                "device_children": "Zigbee device children",
                 "device_signature": "Zigbee device signature",
                 "last_seen": "Last Seen",
                 "manuf": "by {manufacturer}",
@@ -2649,7 +2651,7 @@
                     "add_device": "Add Device",
                     "add_device_page": {
                         "discovered_text": "Devices will show up here once discovered.",
-                        "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
+                        "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while discovering is running.",
                         "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
                         "search_again": "Search Again",
                         "spinner": "Searching for ZHA Zigbee devices..."
@@ -2725,6 +2727,7 @@
                         "caption": "Network"
                     },
                     "visualization": {
+                        "auto_zoom": "Auto Zoom",
                         "caption": "Visualization",
                         "header": "Network Visualization",
                         "highlight_label": "Highlight Devices",
