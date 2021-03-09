@@ -3667,6 +3667,7 @@
       "error_addon_not_found": "Add-on not found"
     },
     "system": {
+      "system_checks": "System checks",
       "log": {
         "log_provider": "Log Provider",
         "get_logs": "Failed to get {provider} logs, {error}"
@@ -3818,6 +3819,20 @@
         "create_snapshot": "Create a snapshot of {name} before updating",
         "updating": "Updating {name} to version {version}",
         "snapshotting": "Creating snapshot of {name}"
+      },
+      "system_check": {
+        "title": "Manage system checks",
+        "failed_to_set_option": "Failed to set check options",
+        "check": {
+          "addon_pwned": {
+            "title": "PWNED Add-ons",
+            "description": "Monitor secrets and passwords used in add-on configuration against HIBP"
+          },
+          "free_space": {
+            "title": "Free space",
+            "description": "Monitor free space left on the device"
+          }
+        }
       }
     }
   }

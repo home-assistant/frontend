@@ -7,6 +7,7 @@ export interface HassioResolution {
   unhealthy: string[];
   issues: string[];
   suggestions: string[];
+  checks: { name: string; enabled: boolean }[];
 }
 
 export const fetchHassioResolution = async (
@@ -25,5 +26,27 @@ export const fetchHassioResolution = async (
       "GET",
       "hassio/resolution/info"
     )
+  );
+};
+
+export const setCheckOption = async (
+  hass: HomeAssistant,
+  check: string,
+  data: Record<string, any>
+): Promise<void> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/resolution/check/${check}`,
+      data,
+      method: "post",
+    });
+    return;
+  }
+
+  await hass.callApi<HassioResponse<HassioResolution>>(
+    "POST",
+    `hassio/resolution/check/${check}`,
+    data
   );
 };

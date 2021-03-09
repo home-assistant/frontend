@@ -1,3 +1,5 @@
+import { ActionDetail } from "@material/mwc-list";
+import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -11,6 +13,7 @@ import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
+import { showSystemChecksDialog } from "../dialogs/system_checks/show-dialog-system-checks";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
 import "./hassio-core-info";
@@ -42,6 +45,21 @@ class HassioSystem extends LitElement {
         <span slot="header">
           ${this.supervisor.localize("panel.system")}
         </span>
+        ${this.hass.userData?.showAdvanced
+          ? html` <ha-button-menu
+              corner="BOTTOM_START"
+              slot="toolbar-icon"
+              @action=${this._handleAction}
+            >
+              <mwc-icon-button slot="trigger" alt="menu">
+                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+              </mwc-icon-button>
+              <mwc-list-item>
+                ${this.supervisor.localize("system.system_checks")}
+              </mwc-list-item>
+            </ha-button-menu>`
+          : ""}
+
         <div class="content">
           <div class="card-group">
             <hassio-core-info
@@ -64,6 +82,14 @@ class HassioSystem extends LitElement {
         </div>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        showSystemChecksDialog(this, { supervisor: this.supervisor });
+        break;
+    }
   }
 
   static get styles(): CSSResult[] {
