@@ -36,6 +36,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
     example?: any;
     selector?: Selector;
   }[];
+  hasSelector: string[];
 }
 
 @customElement("ha-service-control")
@@ -147,18 +148,20 @@ export class HaServiceControl extends LitElement {
     return {
       ...serviceDomains[domain][serviceName],
       fields,
+      hasSelector: fields.length
+        ? fields.filter((field) => field.selector).map((field) => field.key)
+        : [],
     };
   });
 
   protected render() {
     const yamlServiceData =
       (this._serviceData?.fields.length &&
-        !this._serviceData.fields.some((field) => field.selector)) ||
-      Object.keys(this.value?.data || {}).some(
-        (key) =>
-          !this._serviceData?.fields.find((field) => field.key === key)
-            ?.selector
-      );
+        !this._serviceData.hasSelector.length) ||
+      (this._serviceData &&
+        Object.keys(this.value?.data || {}).some(
+          (key) => !this._serviceData!.hasSelector.includes(key)
+        ));
 
     const entityId =
       yamlServiceData &&
