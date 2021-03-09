@@ -4,7 +4,11 @@
 /* eslint-env serviceworker */
 import { cacheNames } from "workbox-core";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
-import { registerRoute } from "workbox-routing";
+import {
+  registerRoute,
+  setCatchHandler,
+  setDefaultHandler,
+} from "workbox-routing";
 import {
   CacheFirst,
   NetworkOnly,
@@ -18,13 +22,17 @@ cleanupOutdatedCaches();
 function initRouting() {
   precacheAndRoute(
     // @ts-ignore
-    WB_MANIFEST
+    WB_MANIFEST,
+    {
+      // Ignore all URL parameters.
+      ignoreURLParametersMatching: [/.*/],
+    }
   );
 
   // Cache static content (including translations) on first access.
   registerRoute(
     new RegExp(`${location.host}/(static|frontend_latest|frontend_es5)/.+`),
-    new CacheFirst()
+    new CacheFirst({ matchOptions: { ignoreSearch: true } })
   );
 
   // Get api from network.
@@ -41,11 +49,17 @@ function initRouting() {
     new NetworkOnly()
   );
 
+  // For the root "/" we ignore search
+  registerRoute(
+    `${location.host}/`,
+    new StaleWhileRevalidate({ matchOptions: { ignoreSearch: true } })
+  );
+
   // For rest of the files (on Home Assistant domain only) try both cache and network.
-  // This includes the root "/" or "/states" response and user files from "/local".
+  // This includes "/states" response and user files from "/local".
   // First access might bring stale data from cache, but a single refresh will bring updated
   // file.
-  registerRoute(new RegExp(`${location.host}/.*`), new StaleWhileRevalidate());
+  registerRoute(new RegExp(`${location.host}/.+`), new StaleWhileRevalidate());
 }
 
 function initPushNotifications() {
@@ -158,8 +172,15 @@ function initPushNotifications() {
 
 self.addEventListener("install", (event) => {
   // Delete all runtime caching, so that index.html has to be refetched.
+  // And add the new index.html back to the runtime cache
   const cacheName = cacheNames.runtime;
-  event.waitUntil(caches.delete(cacheName));
+  event.waitUntil(
+    caches.delete(cacheName).then(() =>
+      caches.open(cacheName).then((cache) => {
+        cache.add("/");
+      })
+    )
+  );
 });
 
 self.addEventListener("activate", () => {
@@ -177,5 +198,19 @@ self.addEventListener("message", (message) => {
   }
 });
 
+const catchHandler = async (options) => {
+  const dest = options.request.destination;
+
+  if (dest === "document") {
+    return (
+      (await caches.match("/", { ignoreSearch: true })) || Response.error()
+    );
+  }
+  return Response.error();
+};
+
+// setDefaultHandler(new StaleWhileRevalidate());
+
 initRouting();
+setCatchHandler(catchHandler);
 initPushNotifications();
