@@ -195,17 +195,15 @@ self.addEventListener("message", (message) => {
 });
 
 const catchHandler = async (options) => {
+  const dest = options.request.destination;
+
+  if (dest !== "document") {
+    return Response.error();
+  }
   // eslint-disable-next-line no-console
   console.log("Using fallback for request:", options.request);
 
-  const dest = options.request.destination;
-
-  if (dest === "document") {
-    return (
-      (await caches.match("/", { ignoreSearch: true })) || Response.error()
-    );
-  }
-  return Response.error();
+  return (await caches.match("/", { ignoreSearch: true })) || Response.error();
 };
 
 initRouting();
