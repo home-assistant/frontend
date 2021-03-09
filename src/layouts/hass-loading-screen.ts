@@ -16,12 +16,12 @@ import { HomeAssistant } from "../types";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property({ type: Boolean, attribute: "no-toolbar" })
   public noToolbar = false;
 
   @property({ type: Boolean }) public rootnav = false;
-
-  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public narrow?: boolean;
 
