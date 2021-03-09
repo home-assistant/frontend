@@ -390,7 +390,7 @@
             "no_snapshots": "スナップショットはまだありません。",
             "partial_snapshot": "部分的なスナップショット",
             "password": "パスワード",
-            "password_protected": "パスワードで保護された",
+            "password_protected": "パスワードで保護されています",
             "password_protection": "パスワード保護",
             "security": "セキュリティ",
             "type": "タイプ",

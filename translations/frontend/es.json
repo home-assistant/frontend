@@ -1187,6 +1187,7 @@
                 "key_missing": "Falta la clave obligatoria \"{key}\".",
                 "key_not_expected": "El editor visual no espera o no admite la clave \"{key}\".",
                 "key_wrong_type": "El valor proporcionado para \"{key}\" no es compatible con el editor visual. Aceptamos ({type_correct}) pero recibimos ({type_wrong}).",
+                "no_template_editor_support": "Las plantillas no son compatibles con el editor visual",
                 "no_type_provided": "No se proporciona ningún tipo."
             }
         },
@@ -1342,7 +1343,7 @@
                                     "wait_template": "Plantilla de espera"
                                 }
                             },
-                            "unsupported_action": "No hay soporte en la IU para la acción: {action}"
+                            "unsupported_action": "No hay soporte del editor visual para la acción: {action}"
                         },
                         "alias": "Nombre",
                         "blueprint": {
@@ -1425,7 +1426,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "No hay soporte en la IU para la condición: {condition}"
+                            "unsupported_condition": "No hay soporte del editor visual para la condición: {condition}"
                         },
                         "copy_to_clipboard": "Copiar al portapapeles",
                         "default_name": "Nueva automatización",
@@ -1433,8 +1434,8 @@
                             "label": "Descripción",
                             "placeholder": "Descripción opcional"
                         },
-                        "edit_ui": "Editar con la interfaz de usuario",
-                        "edit_yaml": "Editar como YAML",
+                        "edit_ui": "Editar en el editor visual",
+                        "edit_yaml": "Editar en YAML",
                         "enable_disable": "Activar/Desactivar automatización",
                         "introduction": "Usa automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
@@ -1555,7 +1556,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "No hay soporte en la IU para la plataforma: {platform}"
+                            "unsupported_platform": "No hay soporte del editor visual para la plataforma: {platform}"
                         },
                         "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?"
                     },
@@ -2347,7 +2348,7 @@
                         "session": "Obteniendo valores que cambian con poca frecuencia del nodo",
                         "static": "Obteniendo valores estáticos del dispositivo",
                         "versions": "Obteniendo información sobre versiones de firmware y clases de órdenes",
-                        "wakeup": "Configurando soporte para colas de despertador y mensajes"
+                        "wakeup": "Configurar soporte para mensajes y colas de activación"
                     },
                     "node": {
                         "button": "Detalles del nodo",
@@ -2371,8 +2372,8 @@
                         "start_refresh_button": "Iniciar Refresco",
                         "step": "Paso",
                         "title": "Refrescar Información del Nodo",
-                        "wakeup_header": "Instrucciones para despertar a",
-                        "wakeup_instructions_source": "Las instrucciones para despertarlo se obtienen de la base de datos de dispositivos de la comunidad OpenZWave."
+                        "wakeup_header": "Instrucciones de activación para",
+                        "wakeup_instructions_source": "Las instrucciones de activación se obtienen de la base de datos de dispositivos de la comunidad OpenZWave."
                     },
                     "select_instance": {
                         "header": "Selecciona una instancia de OpenZWave",
@@ -2865,7 +2866,7 @@
                         "header": "Opciones de configuración de nodo",
                         "seconds": "segundos",
                         "set_config_parameter": "Establecer parámetro de configuración",
-                        "set_wakeup": "Configurar el intervalo de activación",
+                        "set_wakeup": "Establecer intervalo de activación",
                         "true": "Verdadero"
                     },
                     "node_management": {

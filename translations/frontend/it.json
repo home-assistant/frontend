@@ -218,8 +218,8 @@
                         "title": "Aggiornamento automatico"
                     },
                     "boot": {
-                        "description": "Avvia il componente aggiuntivo durante l'avvio del sistema",
-                        "title": "Inizia dall'avvio"
+                        "description": "Il componente aggiuntivo sarà eseguito durante l'avvio del sistema",
+                        "title": "Esegui dall'avvio"
                     },
                     "ingress_panel": {
                         "description": "Aggiungi questo componente aggiuntivo alla barra laterale",
@@ -230,7 +230,7 @@
                         "title": "Modalità di protezione"
                     },
                     "watchdog": {
-                        "description": "Questo avvierà il componente aggiuntivo se si arresta in modo anomalo",
+                        "description": "Questo riavvierà automaticamente il componente aggiuntivo in caso di arresti anomali",
                         "title": "Watchdog"
                     }
                 },
@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Aggiungi dispositivi tramite questo dispositivo",
                     "clusters": "Gestisci i cluster",
+                    "device_children": "Visualizza dispositivo",
                     "reconfigure": "Riconfigura dispositivo",
                     "remove": "Rimuovi dispositivo",
                     "view_in_visualization": "Visualizza in visualizzazione",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Sei sicuro di voler rimuovere il dispositivo?"
                 },
+                "device_children": "Firma del dispositivo Zigbee",
                 "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Ultima visualizzazione",
                 "manuf": "da {manufacturer}",
@@ -1187,6 +1189,7 @@
                 "key_missing": "Chiave obbligatoria \"{key}\" mancante.",
                 "key_not_expected": "La chiave \"{key}\" non è prevista o non è supportata dall'editor visivo.",
                 "key_wrong_type": "Il valore fornito per \"{key}\" non è supportato dall'editor visivo. Supportiamo ({type_correct}) ma ricevuto ({type_wrong}).",
+                "no_template_editor_support": "Modelli non supportati nell'editor visivo",
                 "no_type_provided": "Nessun tipo fornito."
             }
         },
@@ -2724,6 +2727,7 @@
                         "caption": "Rete"
                     },
                     "visualization": {
+                        "auto_zoom": "Zoom automatico",
                         "caption": "Visualizzazione",
                         "header": "Visualizzazione di rete",
                         "highlight_label": "Evidenzia dispositivi",

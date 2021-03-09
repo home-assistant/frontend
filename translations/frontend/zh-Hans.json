@@ -946,6 +946,7 @@
                 "buttons": {
                     "add": "通过此设备添加设备",
                     "clusters": "管理簇",
+                    "device_children": "查看子设备",
                     "reconfigure": "重新配置设备",
                     "remove": "删除设备",
                     "view_in_visualization": "可视化查看",
@@ -954,6 +955,7 @@
                 "confirmations": {
                     "remove": "您确定要删除此设备吗？"
                 },
+                "device_children": "Zigbee 子设备",
                 "device_signature": "Zigbee 设备签名",
                 "last_seen": "上次发现",
                 "manuf": "制造商：{manufacturer}",
@@ -988,6 +990,7 @@
                 "key_missing": "缺少必需的键“{key}”。",
                 "key_not_expected": "“{key}”选项不可用，或不被可视化编辑器支持。",
                 "key_wrong_type": "“{key}”的值不受可视化编辑器支持。支持 ({type_correct}) 但得到 ({type_wrong})。",
+                "no_template_editor_support": "可视化编辑器不支持模板",
                 "no_type_provided": "未提供类型。"
             }
         },
@@ -2525,6 +2528,7 @@
                         "caption": "网络"
                     },
                     "visualization": {
+                        "auto_zoom": "自动缩放",
                         "caption": "可视化",
                         "header": "网络可视化",
                         "highlight_label": "高亮显示设备",

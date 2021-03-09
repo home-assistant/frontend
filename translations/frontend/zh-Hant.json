@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "透過這個裝置來新增裝置",
                     "clusters": "管理叢集",
+                    "device_children": "檢視子設備",
                     "reconfigure": "重新設定裝置",
                     "remove": "移除裝置",
                     "view_in_visualization": "網路形象化",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "確定要移除此裝置？"
                 },
+                "device_children": "Zigbee 裝置子設備",
                 "device_signature": "Zigbee 裝置簽章",
                 "last_seen": "上次出現",
                 "manuf": "由 {manufacturer}",
@@ -1187,6 +1189,7 @@
                 "key_missing": "缺少所需的權杖 \"{key}\"。",
                 "key_not_expected": "視覺化編輯器不支援權杖 \"{key}\"。",
                 "key_wrong_type": "視覺化編輯器不支援所提供的 \"{key}\" 數值。支援 ({type_correct}) 但卻收到 ({type_wrong})。",
+                "no_template_editor_support": "視覺化編輯器不支援模版",
                 "no_type_provided": "未提供類型。"
             }
         },
@@ -1342,7 +1345,7 @@
                                     "wait_template": "等待模板"
                                 }
                             },
-                            "unsupported_action": "UI 介面不支援觸發動作：{action}"
+                            "unsupported_action": "視覺化編輯器不支援觸發動作：{action}"
                         },
                         "alias": "名稱",
                         "blueprint": {
@@ -1425,7 +1428,7 @@
                                     "zone": "區域"
                                 }
                             },
-                            "unsupported_condition": "UI 介面不支援觸發判斷：{condition}"
+                            "unsupported_condition": "視覺化編輯器不支援觸發判斷：{condition}"
                         },
                         "copy_to_clipboard": "複製至剪貼簿",
                         "default_name": "建立新的自動化",
@@ -1433,7 +1436,7 @@
                             "label": "說明",
                             "placeholder": "選項說明"
                         },
-                        "edit_ui": "以 UI 編輯",
+                        "edit_ui": "以視覺化編輯器編輯",
                         "edit_yaml": "以 YAML 編輯",
                         "enable_disable": "開啟/關閉自動化",
                         "introduction": "運用自動化、讓智能家居更具魅力吧。",
@@ -1555,7 +1558,7 @@
                                     "zone": "區域"
                                 }
                             },
-                            "unsupported_platform": "UI 介面不支援平台：{platform}"
+                            "unsupported_platform": "視覺化編輯器不支援平台：{platform}"
                         },
                         "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？"
                     },
@@ -2724,6 +2727,7 @@
                         "caption": "網路"
                     },
                     "visualization": {
+                        "auto_zoom": "自動縮放",
                         "caption": "形象化",
                         "header": "網路形象化",
                         "highlight_label": "高亮顯示裝置",

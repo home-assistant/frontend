@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "이 기기를 통해 기기 추가하기",
                     "clusters": "클러스터 관리",
+                    "device_children": "자식 보기",
                     "reconfigure": "기기 재구성하기",
                     "remove": "기기 제거하기",
                     "view_in_visualization": "시각화에서보기",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "이 기기를 제거하시겠습니까?"
                 },
+                "device_children": "Zigbee 기기 자식",
                 "device_signature": "Zigbee 기기 서명",
                 "last_seen": "마지막 확인",
                 "manuf": "{manufacturer} 제조",
@@ -2649,7 +2651,7 @@
                     "add_device": "기기 추가하기",
                     "add_device_page": {
                         "discovered_text": "기기가 발견되면 여기에 표시됩니다.",
-                        "no_devices_found": "발견된 기기가 없습니다. 기기를 검색하는 동안 기기가 페어링 모드 상태이고 절전모드가 해제되어있는지 확인해주세요.",
+                        "no_devices_found": "기기를 찾을 수 없습니다. 기기가 페어링 모드에 있는지 확인하고 검색이 실행되는 동안 절전모드가 해제되어있는지 확인해주세요.",
                         "pairing_mode": "기기가 페어링 모드인지 확인해주세요. 기기의 페어링 모드 설정 방법은 기기의 설명서를 참조해주세요.",
                         "search_again": "다시 찾기",
                         "spinner": "ZHA Zigbee 기기를 찾고있습니다..."
@@ -2725,6 +2727,7 @@
                         "caption": "네트워크"
                     },
                     "visualization": {
+                        "auto_zoom": "자동 확대",
                         "caption": "시각화",
                         "header": "네트워크 시각화",
                         "highlight_label": "기기를 강조 표시하기",
