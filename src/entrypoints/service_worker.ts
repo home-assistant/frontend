@@ -4,11 +4,7 @@
 /* eslint-env serviceworker */
 import { cacheNames } from "workbox-core";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
-import {
-  registerRoute,
-  setCatchHandler,
-  setDefaultHandler,
-} from "workbox-routing";
+import { registerRoute, setCatchHandler } from "workbox-routing";
 import {
   CacheFirst,
   NetworkOnly,
@@ -208,8 +204,6 @@ const catchHandler = async (options) => {
   }
   return Response.error();
 };
-
-// setDefaultHandler(new StaleWhileRevalidate());
 
 initRouting();
 setCatchHandler(catchHandler);
