@@ -47,7 +47,7 @@ function initRouting() {
 
   // For the root "/" we ignore search
   registerRoute(
-    `${location.host}/`,
+    new RegExp(`^${location.host}/(\\?.*)?$`),
     new StaleWhileRevalidate({ matchOptions: { ignoreSearch: true } })
   );
 
@@ -195,6 +195,9 @@ self.addEventListener("message", (message) => {
 });
 
 const catchHandler = async (options) => {
+  // eslint-disable-next-line no-console
+  console.log("Using fallback for request:", options.request);
+
   const dest = options.request.destination;
 
   if (dest === "document") {
