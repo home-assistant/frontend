@@ -12,8 +12,8 @@ import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
-  getLocalLanguage,
   getTranslation,
+  getLocalLanguage,
   getUserLanguage,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
@@ -49,6 +49,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this._selectLanguage((e as CustomEvent).detail.language, true)
       );
       this._loadCoreTranslations(getLocalLanguage());
+    }
+
+    protected updated(changedProps) {
+      super.updated(changedProps);
+      if (!changedProps.has("hass")) {
+        return;
+      }
+      const oldHass = changedProps.get("hass");
+      if (this.hass?.panels && oldHass.panels !== this.hass.panels) {
+        this._loadFragmentTranslations(this.hass.language, this.hass.panelUrl);
+      }
     }
 
     protected hassConnected() {
@@ -204,13 +215,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
 
       // If it's the first call we don't have panel info yet to check the component.
-      // If the url is not known it might be a custom lovelace dashboard, so we load lovelace translations
       const fragment = translationMetadata.fragments.includes(
         panelComponent || panelUrl
       )
         ? panelComponent || panelUrl
-        : !panelComponent
-        ? "lovelace"
         : undefined;
 
       if (!fragment) {
@@ -222,7 +230,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
       this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
-      this._updateResources(result.language, result.data);
+      await this._updateResources(result.language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {

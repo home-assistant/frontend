@@ -257,7 +257,7 @@ class LovelacePanel extends LitElement {
       }
     }
 
-    this._state = "loaded";
+    this._state = this._state === "yaml-editor" ? this._state : "loaded";
     this._setLovelaceConfig(conf, confMode);
   }
 

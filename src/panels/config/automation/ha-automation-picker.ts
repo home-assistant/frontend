@@ -20,7 +20,10 @@ import { DataTableColumnContainer } from "../../../components/data-table/ha-data
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
-import { AutomationEntity, triggerAutomation } from "../../../data/automation";
+import {
+  AutomationEntity,
+  triggerAutomationActions,
+} from "../../../data/automation";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -88,12 +91,12 @@ class HaAutomationPicker extends LitElement {
         },
       };
       if (!narrow) {
-        columns.execute = {
+        columns.trigger = {
           title: "",
           template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
-              @click=${(ev) => this._execute(ev)}
+              @click=${(ev) => this._runActions(ev)}
               .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
@@ -210,9 +213,9 @@ class HaAutomationPicker extends LitElement {
     });
   }
 
-  private _execute(ev) {
+  private _runActions(ev) {
     const entityId = ev.currentTarget.automation.entity_id;
-    triggerAutomation(this.hass, entityId);
+    triggerAutomationActions(this.hass, entityId);
   }
 
   private _createNew() {

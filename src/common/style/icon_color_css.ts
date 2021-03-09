@@ -15,7 +15,7 @@ export const iconColorCSS = css`
   ha-icon[data-domain="media_player"][data-state="on"],
   ha-icon[data-domain="media_player"][data-state="paused"],
   ha-icon[data-domain="media_player"][data-state="playing"],
-  ha-icon[data-domain="script"][data-state="running"],
+  ha-icon[data-domain="script"][data-state="on"],
   ha-icon[data-domain="sun"][data-state="above_horizon"],
   ha-icon[data-domain="switch"][data-state="on"],
   ha-icon[data-domain="timer"][data-state="active"],

@@ -48,7 +48,7 @@ class HcCast extends LitElement {
 
   protected render(): TemplateResult {
     if (this.lovelaceConfig === undefined) {
-      return html` <hass-loading-screen no-toolbar></hass-loading-screen>> `;
+      return html`<hass-loading-screen no-toolbar></hass-loading-screen>`;
     }
 
     const error =

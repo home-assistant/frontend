@@ -63,7 +63,11 @@ export default class HaAutomationConditionEditor extends LitElement {
                   )}
                 `
               : ""}
-            <h2>Edit in YAML</h2>
+            <h2>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.edit_yaml"
+              )}
+            </h2>
             <ha-yaml-editor
               .defaultValue=${this.condition}
               @value-changed=${this._onYamlChange}

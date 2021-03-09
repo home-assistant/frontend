@@ -5,6 +5,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { FORMAT_NUMBER } from "../../../data/alarm_control_panel";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
@@ -26,6 +27,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
           flex-direction: column;
         }
         .pad mwc-button {
+          padding: 8px;
           width: 80px;
         }
         .actions mwc-button {
@@ -43,6 +45,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
           label="[[localize('ui.card.alarm_control_panel.code')]]"
           value="{{_enteredCode}}"
           type="password"
+          inputmode="[[_inputMode]]"
           disabled="[[!_inputEnabled]]"
         ></paper-input>
 
@@ -53,21 +56,21 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="1"
-                raised
+                outlined
                 >1</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="4"
-                raised
+                outlined
                 >4</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="7"
-                raised
+                outlined
                 >7</mwc-button
               >
             </div>
@@ -76,28 +79,28 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="2"
-                raised
+                outlined
                 >2</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="5"
-                raised
+                outlined
                 >5</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="8"
-                raised
+                outlined
                 >8</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="0"
-                raised
+                outlined
                 >0</mwc-button
               >
             </div>
@@ -106,27 +109,27 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="3"
-                raised
+                outlined
                 >3</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="6"
-                raised
+                outlined
                 >6</mwc-button
               >
               <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="9"
-                raised
+                outlined
                 >9</mwc-button
               >
               <mwc-button
                 on-click="_clearEnteredCode"
                 disabled="[[!_inputEnabled]]"
-                raised
+                outlined
               >
                 [[localize('ui.card.alarm_control_panel.clear_code')]]
               </mwc-button>
@@ -201,6 +204,10 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
+      _inputMode: {
+        type: String,
+        computed: "_getInputMode(_codeFormat)",
+      },
     };
   }
 
@@ -237,8 +244,12 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
     }
   }
 
+  _getInputMode(format) {
+    return this._isNumber(format) ? "numeric" : "text";
+  }
+
   _isNumber(format) {
-    return format === "Number";
+    return format === FORMAT_NUMBER;
   }
 
   _validateCode(code, format, armVisible, codeArmRequired) {

@@ -221,7 +221,7 @@ export class HaSceneEditor extends SubscribeMixin(
         >
           ${this._config
             ? html`
-                <ha-config-section .isWide=${this.isWide}>
+                <ha-config-section vertical .isWide=${this.isWide}>
                   ${!this.narrow
                     ? html` <span slot="header">${name}</span> `
                     : ""}
@@ -253,7 +253,7 @@ export class HaSceneEditor extends SubscribeMixin(
                   </ha-card>
                 </ha-config-section>
 
-                <ha-config-section .isWide=${this.isWide}>
+                <ha-config-section vertical .isWide=${this.isWide}>
                   <div slot="header">
                     ${this.hass.localize(
                       "ui.panel.config.scene.editor.devices.header"
@@ -324,7 +324,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
                 ${this.showAdvanced
                   ? html`
-                      <ha-config-section .isWide=${this.isWide}>
+                      <ha-config-section vertical .isWide=${this.isWide}>
                         <div slot="header">
                           ${this.hass.localize(
                             "ui.panel.config.scene.editor.entities.header"

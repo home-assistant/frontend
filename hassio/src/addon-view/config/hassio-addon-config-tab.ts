@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import "../../../../src/components/ha-circular-progress";
 import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -20,26 +21,28 @@ import "./hassio-addon-network";
 class HassioAddonConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
   protected render(): TemplateResult {
     if (!this.addon) {
       return html`<ha-circular-progress active></ha-circular-progress>`;
     }
-    const hasOptions =
-      this.addon.options && Object.keys(this.addon.options).length;
-    const hasSchema =
-      this.addon.schema && Object.keys(this.addon.schema).length;
+    const hasConfiguration =
+      (this.addon.options && Object.keys(this.addon.options).length) ||
+      (this.addon.schema && Object.keys(this.addon.schema).length);
 
     return html`
       <div class="content">
-        ${hasOptions || hasSchema || this.addon.network || this.addon.audio
+        ${hasConfiguration || this.addon.network || this.addon.audio
           ? html`
-              ${hasOptions || hasSchema
+              ${hasConfiguration
                 ? html`
                     <hassio-addon-config
                       .hass=${this.hass}
                       .addon=${this.addon}
+                      .supervisor=${this.supervisor}
                     ></hassio-addon-config>
                   `
                 : ""}
@@ -48,6 +51,7 @@ class HassioAddonConfigDashboard extends LitElement {
                     <hassio-addon-network
                       .hass=${this.hass}
                       .addon=${this.addon}
+                      .supervisor=${this.supervisor}
                     ></hassio-addon-network>
                   `
                 : ""}
@@ -56,11 +60,12 @@ class HassioAddonConfigDashboard extends LitElement {
                     <hassio-addon-audio
                       .hass=${this.hass}
                       .addon=${this.addon}
+                      .supervisor=${this.supervisor}
                     ></hassio-addon-audio>
                   `
                 : ""}
             `
-          : "This add-on does not expose configuration for you to mess with.... 👋"}
+          : this.supervisor.localize("addon.configuration.no_configuration")}
       </div>
     `;
   }

@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import "../../../../src/components/ha-circular-progress";
 import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -17,6 +18,8 @@ import "./hassio-addon-logs";
 @customElement("hassio-addon-log-tab")
 class HassioAddonLogDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
@@ -28,6 +31,7 @@ class HassioAddonLogDashboard extends LitElement {
       <div class="content">
         <hassio-addon-logs
           .hass=${this.hass}
+          .supervisor=${this.supervisor}
           .addon=${this.addon}
         ></hassio-addon-logs>
       </div>

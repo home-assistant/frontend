@@ -4,10 +4,12 @@
             "config": {
                 "automation": {
                     "editor": {
-                        "triggers": {
+                        "conditions": {
                             "type": {
-                                "mqtt": {
-                                    "label": ""
+                                "time": {
+                                    "weekdays": {
+                                        "mon": "Luns"
+                                    }
                                 }
                             }
                         }

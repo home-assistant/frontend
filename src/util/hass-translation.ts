@@ -1,6 +1,7 @@
 import { fetchTranslationPreferences } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
+import { getTranslation as commonGetTranslation } from "./common-translation";
 
 const STORAGE = window.localStorage || {};
 
@@ -93,55 +94,13 @@ export function getLocalLanguage() {
   return "en";
 }
 
-// Store loaded translations in memory so translations are available immediately
-// when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
-const translations = {};
-
-async function fetchTranslation(fingerprint) {
-  const response = await fetch(`/static/translations/${fingerprint}`, {
-    credentials: "same-origin",
-  });
-  if (!response.ok) {
-    throw new Error(
-      `Fail to fetch translation ${fingerprint}: HTTP response status is ${response.status}`
-    );
-  }
-  return response.json();
-}
-
 export async function getTranslation(
   fragment: string | null,
   language: string
 ) {
-  const metadata = translationMetadata.translations[language];
-  if (!metadata) {
-    if (language !== "en") {
-      return getTranslation(fragment, "en");
-    }
-    throw new Error("Language en is not found in metadata");
-  }
-
-  // nl-abcd.jon or logbook/nl-abcd.json
-  const fingerprint = `${fragment ? fragment + "/" : ""}${language}-${
-    metadata.hash
-  }.json`;
-
-  // Fetch translation from the server
-  if (!translations[fingerprint]) {
-    translations[fingerprint] = fetchTranslation(fingerprint)
-      .then((data) => ({ language, data }))
-      .catch((error) => {
-        delete translations[fingerprint];
-        if (language !== "en") {
-          // Couldn't load selected translation. Try a fall back to en before failing.
-          return getTranslation(fragment, "en");
-        }
-        return Promise.reject(error);
-      });
-  }
-  return translations[fingerprint];
+  return commonGetTranslation(fragment, language);
 }
 
 // Load selected translation into memory immediately so it is ready when Polymer
 // initializes.
-getTranslation(null, getLocalLanguage());
+commonGetTranslation(null, getLocalLanguage());

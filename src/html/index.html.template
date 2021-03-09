@@ -2,8 +2,8 @@
 <html>
   <head>
     <% if (!useWDS) { %>
-    <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin="use-credentials" />
-    <link rel="preload" href="<%= latestAppJS %>" as="script" crossorigin="use-credentials" />
+    <link rel="modulepreload" href="<%= latestCoreJS %>" crossorigin="use-credentials" />
+    <link rel="modulepreload" href="<%= latestAppJS %>" crossorigin="use-credentials" />
     <% } %>
     <%= renderTemplate('_header') %>
     <title>Home Assistant</title>

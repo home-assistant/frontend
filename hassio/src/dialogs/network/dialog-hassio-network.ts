@@ -35,6 +35,7 @@ import {
   updateNetworkInterface,
   WifiConfiguration,
 } from "../../../../src/data/hassio/network";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -50,6 +51,8 @@ const IP_VERSIONS = ["ipv4", "ipv6"];
 export class DialogHassioNetwork extends LitElement
   implements HassDialog<HassioNetworkDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @internalProperty() private _accessPoints?: AccessPoints;
 
@@ -73,7 +76,8 @@ export class DialogHassioNetwork extends LitElement
     this._params = params;
     this._dirty = false;
     this._curTabIndex = 0;
-    this._interfaces = params.network.interfaces.sort((a, b) => {
+    this.supervisor = params.supervisor;
+    this._interfaces = params.supervisor.network.interfaces.sort((a, b) => {
       return a.primary > b.primary ? -1 : 1;
     });
     this._interface = { ...this._interfaces[this._curTabIndex] };
@@ -104,7 +108,7 @@ export class DialogHassioNetwork extends LitElement
         <div slot="heading">
           <ha-header-bar>
             <span slot="title">
-              Network settings
+              ${this.supervisor.localize("dialog.network.title")}
             </span>
             <mwc-icon-button slot="actionItems" dialogAction="cancel">
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
@@ -139,7 +143,13 @@ export class DialogHassioNetwork extends LitElement
           ? html`
               <ha-expansion-panel header="Wi-Fi" outlined>
                 ${this._interface?.wifi?.ssid
-                  ? html`<p>Connected to: ${this._interface?.wifi?.ssid}</p>`
+                  ? html`<p>
+                      ${this.supervisor.localize(
+                        "dialog.network.connected_to",
+                        "ssid",
+                        this._interface?.wifi?.ssid
+                      )}
+                    </p>`
                   : ""}
                 <mwc-button
                   class="scan"
@@ -149,7 +159,7 @@ export class DialogHassioNetwork extends LitElement
                   ${this._scanning
                     ? html`<ha-circular-progress active size="small">
                       </ha-circular-progress>`
-                    : "Scan for accesspoints"}
+                    : this.supervisor.localize("dialog.network.scan_ap")}
                 </mwc-button>
                 ${this._accessPoints &&
                 this._accessPoints.accesspoints &&
@@ -181,7 +191,11 @@ export class DialogHassioNetwork extends LitElement
                 ${this._wifiConfiguration
                   ? html`
                       <div class="radio-row">
-                        <ha-formfield label="open">
+                        <ha-formfield
+                          .label=${this.supervisor.localize(
+                            "dialog.network.open"
+                          )}
+                        >
                           <ha-radio
                             @change=${this._handleRadioValueChangedAp}
                             .ap=${this._wifiConfiguration}
@@ -193,7 +207,11 @@ export class DialogHassioNetwork extends LitElement
                           >
                           </ha-radio>
                         </ha-formfield>
-                        <ha-formfield label="wep">
+                        <ha-formfield
+                          .label=${this.supervisor.localize(
+                            "dialog.network.wep"
+                          )}
+                        >
                           <ha-radio
                             @change=${this._handleRadioValueChangedAp}
                             .ap=${this._wifiConfiguration}
@@ -203,7 +221,11 @@ export class DialogHassioNetwork extends LitElement
                           >
                           </ha-radio>
                         </ha-formfield>
-                        <ha-formfield label="wpa-psk">
+                        <ha-formfield
+                          .label=${this.supervisor.localize(
+                            "dialog.network.wpa"
+                          )}
+                        >
                           <ha-radio
                             @change=${this._handleRadioValueChangedAp}
                             .ap=${this._wifiConfiguration}
@@ -237,18 +259,21 @@ export class DialogHassioNetwork extends LitElement
           : ""}
         ${this._dirty
           ? html`<div class="warning">
-              If you are changing the Wi-Fi, IP or gateway addresses, you might
-              lose the connection!
+              ${this.supervisor.localize("dialog.network.warning")}
             </div>`
           : ""}
       </div>
       <div class="buttons">
-        <mwc-button label="close" @click=${this.closeDialog}> </mwc-button>
+        <mwc-button
+          .label=${this.supervisor.localize("common.cancel")}
+          @click=${this.closeDialog}
+        >
+        </mwc-button>
         <mwc-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
           ${this._processing
             ? html`<ha-circular-progress active size="small">
               </ha-circular-progress>`
-            : "Save"}
+            : this.supervisor.localize("common.save")}
         </mwc-button>
       </div>`;
   }
@@ -285,7 +310,9 @@ export class DialogHassioNetwork extends LitElement
         outlined
       >
         <div class="radio-row">
-          <ha-formfield label="DHCP">
+          <ha-formfield
+            .label=${this.supervisor.localize("dialog.network.dhcp")}
+          >
             <ha-radio
               @change=${this._handleRadioValueChanged}
               .version=${version}
@@ -295,7 +322,9 @@ export class DialogHassioNetwork extends LitElement
             >
             </ha-radio>
           </ha-formfield>
-          <ha-formfield label="Static">
+          <ha-formfield
+            .label=${this.supervisor.localize("dialog.network.static")}
+          >
             <ha-radio
               @change=${this._handleRadioValueChanged}
               .version=${version}
@@ -305,7 +334,10 @@ export class DialogHassioNetwork extends LitElement
             >
             </ha-radio>
           </ha-formfield>
-          <ha-formfield label="Disabled" class="warning">
+          <ha-formfield
+            .label=${this.supervisor.localize("dialog.network.disabled")}
+            class="warning"
+          >
             <ha-radio
               @change=${this._handleRadioValueChanged}
               .version=${version}
@@ -321,7 +353,7 @@ export class DialogHassioNetwork extends LitElement
               <paper-input
                 class="flex-auto"
                 id="address"
-                label="IP address/Netmask"
+                .label=${this.supervisor.localize("dialog.network.ip_netmask")}
                 .version=${version}
                 .value=${this._toString(this._interface![version].address)}
                 @value-changed=${this._handleInputValueChanged}
@@ -330,7 +362,7 @@ export class DialogHassioNetwork extends LitElement
               <paper-input
                 class="flex-auto"
                 id="gateway"
-                label="Gateway address"
+                .label=${this.supervisor.localize("dialog.network.gateway")}
                 .version=${version}
                 .value=${this._interface![version].gateway}
                 @value-changed=${this._handleInputValueChanged}
@@ -339,7 +371,7 @@ export class DialogHassioNetwork extends LitElement
               <paper-input
                 class="flex-auto"
                 id="nameservers"
-                label="DNS servers"
+                .label=${this.supervisor.localize("dialog.network.dns_servers")}
                 .version=${version}
                 .value=${this._toString(this._interface![version].nameservers)}
                 @value-changed=${this._handleInputValueChanged}
@@ -424,7 +456,7 @@ export class DialogHassioNetwork extends LitElement
       );
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to change network settings",
+        title: this.supervisor.localize("dialog.network.failed_to_change"),
         text: extractApiErrorMessage(err),
       });
       this._processing = false;
@@ -437,10 +469,9 @@ export class DialogHassioNetwork extends LitElement
   private async _handleTabActivated(ev: CustomEvent): Promise<void> {
     if (this._dirty) {
       const confirm = await showConfirmationDialog(this, {
-        text:
-          "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
-        confirmText: "yes",
-        dismissText: "no",
+        text: this.supervisor.localize("dialog.network.unsaved"),
+        confirmText: this.supervisor.localize("common.yes"),
+        dismissText: this.supervisor.localize("common.no"),
       });
       if (!confirm) {
         this.requestUpdate("_interface");

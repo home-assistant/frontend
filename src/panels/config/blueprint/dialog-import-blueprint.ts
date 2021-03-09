@@ -39,17 +39,21 @@ class DialogImportBlueprint extends LitElement {
 
   @internalProperty() private _result?: BlueprintImportResult;
 
+  @internalProperty() private _url?: string;
+
   @query("#input") private _input?: PaperInputElement;
 
   public showDialog(params): void {
     this._params = params;
     this._error = undefined;
+    this._url = this._params.url;
   }
 
   public closeDialog(): void {
     this._error = undefined;
     this._result = undefined;
     this._params = undefined;
+    this._url = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -123,6 +127,7 @@ class DialogImportBlueprint extends LitElement {
                   .label=${this.hass.localize(
                     "ui.panel.config.blueprint.add.url"
                   )}
+                  .value=${this._url}
                   dialogInitialFocus
                 ></paper-input>`}
         </div>
@@ -171,6 +176,7 @@ class DialogImportBlueprint extends LitElement {
   }
 
   private async _import() {
+    this._url = undefined;
     this._importing = true;
     this._error = undefined;
     try {

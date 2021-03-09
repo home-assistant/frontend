@@ -206,7 +206,7 @@ class OnboardingCreateUser extends LitElement {
       }
 
       .action {
-        margin: 32px 0;
+        margin: 32px 0 16px;
         text-align: center;
       }
     `;

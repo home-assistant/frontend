@@ -86,5 +86,5 @@ export interface LovelaceGenericElementEditor extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
   setConfig(config: any): void;
-  refreshYamlEditor?: (focus: boolean) => void;
+  focusYamlEditor?: () => void;
 }
