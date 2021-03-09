@@ -69,9 +69,7 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys = new Set();
     }
 
-    const serviceData = this.value?.service
-      ? this._getServiceInfo(this.value.service)
-      : undefined;
+    const serviceData = this._getServiceInfo(this.value?.service);
 
     if (
       serviceData &&
@@ -118,7 +116,7 @@ export class HaServiceControl extends LitElement {
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   });
 
-  private _getServiceInfo = memoizeOne((service: string):
+  private _getServiceInfo = memoizeOne((service?: string):
     | ExtHassService
     | undefined => {
     if (!service) {
@@ -153,9 +151,7 @@ export class HaServiceControl extends LitElement {
   });
 
   protected render() {
-    const serviceData = this.value?.service
-      ? this._getServiceInfo(this.value.service)
-      : undefined;
+    const serviceData = this._getServiceInfo(this.value?.service);
 
     const shouldRenderServiceDataYaml =
       (serviceData?.fields.length && !serviceData.hasSelector.length) ||
