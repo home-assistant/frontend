@@ -36,12 +36,11 @@ export class HaPickThemeRow extends LitElement {
 
   protected render(): TemplateResult {
     const hasThemes =
-      this.hass.themes?.themes && Object.keys(this.hass.themes.themes).length;
+      this.hass.themes.themes && Object.keys(this.hass.themes.themes).length;
     const curTheme =
-      this.hass!.selectedThemeSettings?.theme ||
-      this.hass!.themes.default_theme;
+      this.hass.selectedThemeSettings?.theme || this.hass.themes.default_theme;
 
-    const themeSettings = this.hass!.selectedThemeSettings;
+    const themeSettings = this.hass.selectedThemeSettings;
 
     return html`
       <ha-settings-row .narrow=${this.narrow}>
@@ -54,7 +53,7 @@ export class HaPickThemeRow extends LitElement {
             : ""}
           <a
             href="${documentationUrl(
-              this.hass!,
+              this.hass,
               "/integrations/frontend/#defining-themes"
             )}"
             target="_blank"
@@ -83,7 +82,7 @@ export class HaPickThemeRow extends LitElement {
       (this._selectedTheme && this._supportsModeSelection(this._selectedTheme))
         ? html` <div class="inputs">
             <ha-formfield
-              .label=${this.hass!.localize(
+              .label=${this.hass.localize(
                 "ui.panel.profile.themes.dark_mode.auto"
               )}
             >
@@ -95,7 +94,7 @@ export class HaPickThemeRow extends LitElement {
               ></ha-radio>
             </ha-formfield>
             <ha-formfield
-              .label=${this.hass!.localize(
+              .label=${this.hass.localize(
                 "ui.panel.profile.themes.dark_mode.light"
               )}
             >
@@ -108,7 +107,7 @@ export class HaPickThemeRow extends LitElement {
               </ha-radio>
             </ha-formfield>
             <ha-formfield
-              .label=${this.hass!.localize(
+              .label=${this.hass.localize(
                 "ui.panel.profile.themes.dark_mode.dark"
               )}
             >
@@ -133,7 +132,7 @@ export class HaPickThemeRow extends LitElement {
                         ]) ||
                     "#03a9f4"}
                     type="color"
-                    .label=${this.hass!.localize(
+                    .label=${this.hass.localize(
                       "ui.panel.profile.themes.primary_color"
                     )}
                     .name=${"primaryColor"}
@@ -148,7 +147,7 @@ export class HaPickThemeRow extends LitElement {
                         ]) ||
                     "#ff9800"}
                     type="color"
-                    .label=${this.hass!.localize(
+                    .label=${this.hass.localize(
                       "ui.panel.profile.themes.accent_color"
                     )}
                     .name=${"accentColor"}
@@ -156,7 +155,7 @@ export class HaPickThemeRow extends LitElement {
                   ></paper-input>
                   ${themeSettings?.primaryColor || themeSettings?.accentColor
                     ? html` <mwc-button @click=${this._resetColors}>
-                        ${this.hass!.localize("ui.panel.profile.themes.reset")}
+                        ${this.hass.localize("ui.panel.profile.themes.reset")}
                       </mwc-button>`
                     : ""}
                 </div>`
@@ -170,7 +169,7 @@ export class HaPickThemeRow extends LitElement {
     const oldHass = changedProperties.get("hass") as undefined | HomeAssistant;
     const themesChanged =
       changedProperties.has("hass") &&
-      (!oldHass || oldHass.themes?.themes !== this.hass.themes?.themes);
+      (!oldHass || oldHass.themes.themes !== this.hass.themes.themes);
     const selectedThemeChanged =
       changedProperties.has("hass") &&
       (!oldHass ||
@@ -218,7 +217,7 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsColorSelection(theme: Theme): boolean {
-    return this.hass.themes?.darkMode
+    return this.hass.themes.darkMode
       ? theme.defaults?.dark !== undefined
       : theme.defaults?.light !== undefined;
   }
