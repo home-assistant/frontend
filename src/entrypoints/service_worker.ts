@@ -2,7 +2,7 @@
 // eslint-disable-next-line spaced-comment
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
-import { cacheNames } from "workbox-core";
+import { cacheNames, RouteHandler } from "workbox-core";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute, setCatchHandler } from "workbox-routing";
 import {
@@ -12,7 +12,7 @@ import {
 } from "workbox-strategies";
 
 const noFallBackRegEx = new RegExp(
-  `${location.host}/(api|static|frontend_latest|frontend_es5|auth)/.*`
+  `${location.host}/(api|static|auth|frontend_latest|frontend_es5|local)/.*`
 );
 
 // Clean up caches from older workboxes and old service workers.
@@ -198,9 +198,9 @@ self.addEventListener("message", (message) => {
   }
 });
 
-const catchHandler = async (options) => {
-  const dest = options.request.destination;
-  const url = options.request.url;
+const catchHandler: RouteHandler = async (options) => {
+  const dest = (options.request as Request).destination;
+  const url = (options.request as Request).url;
 
   if (dest !== "document" || noFallBackRegEx.test(url)) {
     return Response.error();
