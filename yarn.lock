@@ -1926,10 +1926,10 @@
     "@codemirror/state" "^0.18.0"
     "@codemirror/view" "^0.18.0"
 
-"@codemirror/highlight@^0.18.0", "@codemirror/highlight@^0.18.1":
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/@codemirror/highlight/-/highlight-0.18.1.tgz#9ba1e842dd149b9985ee48cfdbeff6ef191378bb"
-  integrity sha512-SBbz6hS7/vUrgeiwTBByx/UXY8+Tkdyk7/CUq+XfgGUwPXpK8+llzBlQHa4mov46f/wAy1qoj0uobfgSjcvEpQ==
+"@codemirror/highlight@^0.18.0":
+  version "0.18.3"
+  resolved "https://registry.yarnpkg.com/@codemirror/highlight/-/highlight-0.18.3.tgz#50e268630f113c322a2dc97c9f68d71934fffcb0"
+  integrity sha512-NmRmkmWl8ht6Y6Y39ghov84AMPCqhUPIH9fmILs2NaWxZFZf4jGCTzrULnmREGsTie+26+LbKUncIU+PBu1Qng==
   dependencies:
     "@codemirror/language" "^0.18.0"
     "@codemirror/rangeset" "^0.18.0"
@@ -2035,9 +2035,9 @@
   integrity sha512-HMzHNIAbjCiCf3tEJMRg6ul01KPuXxQGNiHlHgAnqPguq/CX+L4Nvj5JlWQAI91Pupk18zhmM1c6eaazX4YeTg==
 
 "@codemirror/view@^0.18.0":
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/@codemirror/view/-/view-0.18.0.tgz#3bbb95d71fd526460acb0de724846851d0f7137c"
-  integrity sha512-+ll9SL8dIAvaI4OMv4wZWRrW6AGUY45Al5L88KIp+bd1jFKYO1cu21UXAG25EvqYInZ4ctc6el0vYRP9A+VOrw==
+  version "0.18.1"
+  resolved "https://registry.yarnpkg.com/@codemirror/view/-/view-0.18.1.tgz#5fbc97acd28997ed2aafbe6e8d48d9446b4bf5ff"
+  integrity sha512-chyy+oEnywKMUFDMafVAMcrV+DkjJT3l6pSfN1cvM2LBM/eY54gekv/aXtmsBFRSnd+u09mhjb/kGB+EdNHIjg==
   dependencies:
     "@codemirror/rangeset" "^0.18.0"
     "@codemirror/state" "^0.18.0"
