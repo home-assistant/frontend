@@ -47,6 +47,11 @@ class HaConfigAutomation extends HassRouterPage {
       },
       edit: {
         tag: "ha-automation-editor",
+        load: () => import("./ha-automation-editor"),
+      },
+      trace: {
+        tag: "ha-automation-trace",
+        load: () => import("./trace/ha-automation-trace"),
       },
     },
   };
@@ -81,7 +86,7 @@ class HaConfigAutomation extends HassRouterPage {
 
     if (
       (!changedProps || changedProps.has("route")) &&
-      this._currentPage === "edit"
+      this._currentPage !== "dashboard"
     ) {
       const automationId = this.routeTail.path.substr(1);
       pageEl.automationId = automationId === "new" ? null : automationId;
