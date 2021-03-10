@@ -9,6 +9,7 @@ import "../resources/safari-14-attachshadow-patch";
 import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
+import { baseEntrypointStyles } from "../resources/styles";
 
 declare global {
   interface Window {
@@ -41,6 +42,7 @@ function initialize(
   properties: Record<string, unknown>
 ) {
   const style = document.createElement("style");
+
   style.innerHTML = "body{margin:0}";
   document.head.appendChild(style);
 
@@ -86,7 +88,24 @@ function initialize(
       (err) => {
         // eslint-disable-next-line
         console.error(err, panel);
-        alert(`Unable to load the panel source: ${err}.`);
+        let errorScreen;
+        if (panel.url_path === "hassio") {
+          import("../layouts/supervisor-error-screen");
+          errorScreen = document.createElement(
+            "supervisor-error-screen"
+          ) as any;
+        } else {
+          import("../layouts/hass-error-screen");
+          errorScreen = document.createElement("hass-error-screen") as any;
+          errorScreen.error = `Unable to load the panel source: ${err}.`;
+        }
+
+        const errorStyle = document.createElement("style");
+        errorStyle.innerHTML = baseEntrypointStyles.cssText;
+        document.body.appendChild(errorStyle);
+
+        errorScreen.hass = properties.hass;
+        document.body.appendChild(errorScreen);
       }
     );
 }
