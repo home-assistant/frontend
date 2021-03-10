@@ -56,14 +56,6 @@ class SupervisorErrorScreen extends LitElement {
                 If you just started, make sure you have given the supervisor
                 enough time to start.
               </li>
-              <li>Check the observer</li>
-              <li>Try a reboot of the host</li>
-            </ol>
-          </div>
-        </ha-card>
-        <ha-card header="Links">
-          <div class="card-content">
-            <ol>
               <li>
                 <a
                   class="supervisor_error-link"
@@ -71,12 +63,13 @@ class SupervisorErrorScreen extends LitElement {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Observer
+                  Check the Observer
                 </a>
               </li>
+              <li>Try a reboot of the host</li>
               <li>
                 <a href="/config/info" target="_parent">
-                  System Health
+                  Check System Health
                 </a>
               </li>
               <li>
@@ -85,7 +78,7 @@ class SupervisorErrorScreen extends LitElement {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Need help?
+                  Ask for help
                 </a>
               </li>
             </ol>
