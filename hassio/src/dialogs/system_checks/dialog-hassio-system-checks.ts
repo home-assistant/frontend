@@ -47,7 +47,7 @@ class HassioSystemChecksDialog extends LitElement {
                 <span slot="heading">
                   ${this.supervisor.localize(
                     `dialog.system_check.check.${check.name}.title`
-                  )}
+                  ) || check.name}
                 </span>
                 <span slot="description">
                   ${this.supervisor.localize(
