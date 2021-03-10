@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Dodaj urządzenia za pomocą tego urządzenia",
                     "clusters": "Zarządzaj klastrami",
+                    "device_children": "Wyświetl urządzenia-dzieci",
                     "reconfigure": "Rekonfiguracja urządzenia",
                     "remove": "Usuń urządzenie",
                     "view_in_visualization": "Wyświetl w wizualizacji",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Czy na pewno chcesz usunąć urządzenie?"
                 },
+                "device_children": "Urządzenia-dzieci Zigbee",
                 "device_signature": "Sygnatura urządzenia Zigbee",
                 "last_seen": "Ostatnio widziane",
                 "manuf": "Producent: {manufacturer}",
@@ -1187,6 +1189,7 @@
                 "key_missing": "Brak wymaganego klucza \"{key}\".",
                 "key_not_expected": "Klucz \"{key}\" nie jest oczekiwany lub nie jest obsługiwany przez edytor wizualny.",
                 "key_wrong_type": "Wprowadzona wartość dla \"{key}\" nie jest obsługiwana przez edytor wizualny. Obsługujemy ({type_correct}), a otrzymaliśmy ({type_wrong}).",
+                "no_template_editor_support": "Szablony nie są obsługiwane w edytorze wizualnym",
                 "no_type_provided": "Nie wprowadzono typu."
             }
         },
@@ -1342,7 +1345,7 @@
                                     "wait_template": "Szablon czekania"
                                 }
                             },
-                            "unsupported_action": "Brak w interfejsie użytkownika wsparcia dla akcji: {action}"
+                            "unsupported_action": "Brak wsparcia edytora wizualnego dla akcji: {action}"
                         },
                         "alias": "Nazwa",
                         "blueprint": {
@@ -1425,7 +1428,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_condition": "Brak w interfejsie użytkownika wsparcia dla warunku: {condition}"
+                            "unsupported_condition": "Brak wsparcia edytora wizualnego dla warunku: {condition}"
                         },
                         "copy_to_clipboard": "Skopiuj do schowka",
                         "default_name": "Nowa automatyzacja",
@@ -1433,8 +1436,8 @@
                             "label": "Opis",
                             "placeholder": "Opcjonalny opis"
                         },
-                        "edit_ui": "Edytuj za pomocą interfejsu użytkownika",
-                        "edit_yaml": "Edycja jako YAML",
+                        "edit_ui": "Edytuj w edytorze wizualnym",
+                        "edit_yaml": "Edycja w YAML",
                         "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne",
@@ -1555,7 +1558,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_platform": "Brak w interfejsie użytkownika wsparcia dla platformy: {platform}"
+                            "unsupported_platform": "Brak wsparcia edytora wizualnego dla platformy: {platform}"
                         },
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
                     },
@@ -2724,6 +2727,7 @@
                         "caption": "Sieć"
                     },
                     "visualization": {
+                        "auto_zoom": "Auto Zoom",
                         "caption": "Wizualizacja",
                         "header": "Wizualizacja sieci",
                         "highlight_label": "Zaznacz urządzenia",

@@ -205,7 +205,7 @@
                     }
                 },
                 "changelog": "Registro de cambios",
-                "cpu_usage": "Complemento de uso de CPU",
+                "cpu_usage": "Uso de CPU del complemento",
                 "hostname": "Nombre de host",
                 "install": "instalar",
                 "new_update_available": "{name} {version} está disponible",
@@ -230,7 +230,7 @@
                         "title": "Modo de protección"
                     },
                     "watchdog": {
-                        "description": "Esto iniciará el complemento si falla",
+                        "description": "Esto reiniciará el complemento si se cae",
                         "title": "Vigilancia"
                     }
                 },
@@ -239,7 +239,7 @@
                     "enable": "Habilitar el modo de protección",
                     "title": "Advertencia: ¡El modo de protección está desactivado!"
                 },
-                "ram_usage": "Complemento de uso de RAM",
+                "ram_usage": "Uso de RAM del complemento",
                 "rebuild": "reconstruir",
                 "restart": "reiniciar",
                 "start": "iniciar",
@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Añadir dispositivos a través de este dispositivo",
                     "clusters": "Administrar clústeres",
+                    "device_children": "Ver hijos",
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivos",
                     "view_in_visualization": "Ver en Visualización",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "¿Estás seguro de que quieres eliminar este dispositivo?"
                 },
+                "device_children": "Dispositivos Zigbee hijos",
                 "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Visto por última vez",
                 "manuf": "por {manufacturer}",
@@ -2649,7 +2651,7 @@
                     "add_device": "Añadir dispositivo",
                     "add_device_page": {
                         "discovered_text": "Los dispositivos aparecerán aquí una vez descubiertos.",
-                        "no_devices_found": "No se encontraron dispositivos, asegúrate de que están en modo de emparejamiento y mantenlos despiertos mientras el descubrimiento se está ejecutando.",
+                        "no_devices_found": "No se encontraron dispositivos, asegúrate de que estén en modo de emparejamiento y mantenlos despiertos mientras se ejecuta el descubrimiento.",
                         "pairing_mode": "Asegúrate de que tus dispositivos están en modo de emparejamiento. Consulta las instrucciones de tu dispositivo sobre cómo hacerlo.",
                         "search_again": "Buscar de nuevo",
                         "spinner": "Buscando dispositivos ZHA Zigbee...."
@@ -2725,6 +2727,7 @@
                         "caption": "Red"
                     },
                     "visualization": {
+                        "auto_zoom": "Zoom automático",
                         "caption": "Visualización",
                         "header": "Visualización de la red",
                         "highlight_label": "Resaltar dispositivos",

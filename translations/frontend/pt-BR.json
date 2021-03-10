@@ -102,6 +102,13 @@
             "unknown": "Desconhecido"
         }
     },
+    "supervisor": {
+        "snapshot": {
+            "folder": {
+                "homeassistant": "Configuração do Home Assistant"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Você deseja continuar logado?",

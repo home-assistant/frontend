@@ -112,27 +112,85 @@
                     "output": "Výstup"
                 },
                 "network": {
+                    "container": "Kontejner",
                     "disabled": "Zakázáno",
                     "header": "Síť",
                     "host": "Hostitel"
                 },
+                "no_configuration": "Tento doplňek neposkytuje konfiguraci s kterou byste si mohli hrát...",
                 "options": {
                     "edit_in_ui": "Upravit v uživatelském rozhraní",
                     "edit_in_yaml": "Upravit přímo YAML",
                     "header": "Možnosti",
-                    "invalid_yaml": "Neplatný YAML"
+                    "invalid_yaml": "Neplatný YAML",
+                    "show_unused_optional": "Zobrazit nepoužívané volitelné možnosti konfigurace"
                 }
             },
             "dashboard": {
+                "action_error": {
+                    "get_changelog": "Nepodařilo se získat seznam změn doplňku",
+                    "go_to_config": "Spuštění doplňku se nezdařilo - ověření konfigurace selhalo!",
+                    "install": "Instalace doplňku se nezdařila",
+                    "restart": "Restartování doplňku se nezdařilo",
+                    "start": "Spuštění doplňku se nezdařilo",
+                    "start_invalid_config": "Přejít do konfigurace",
+                    "stop": "Zastavení doplňku se nezdařilo",
+                    "uninstall": "Odinstalace doplňku se nezdařila",
+                    "validate_config": "Nepodařilo se ověřit konfiguraci doplňku"
+                },
                 "capability": {
                     "apparmor": {
+                        "description": "AppArmor ('Application Armor') je modul zabezpečení jádra systému Linux, který omezuje možnosti doplňků, jako je přístup k síti, přístup k soketům a oprávnění číst, zapisovat nebo spouštět konkrétní soubory. \n\nAutoři doplňků mohou poskytnout své bezpečnostní profily optimalizované pro doplněk nebo požádat o jejich deaktivaci. Pokud je AppArmor zakázán, zvýší se bezpečnostní rizika a proto má negativní dopad na skóre zabezpečení doplňku.",
                         "title": "AppArmor"
                     },
+                    "auth_api": {
+                        "description": "Doplněk může ověřovat uživatele pomocí Home Assistant, což umožňuje doplňkům možnost přihlašovat se do aplikací spuštěných uvnitř doplňků pomocí uživatelského jména / hesla Home Assistant. Tento odznak označuje, zda autor doplňku tuto schopnost požaduje.",
+                        "title": "Autentifikace Home Assistant"
+                    },
+                    "docker_api": {
+                        "description": "Autor doplňku požádal, aby měl doplněk správcovský přístup k instanci Dockeru spuštěné ve vašem systému. Tento režim poskytuje doplňku plný přístup a kontrolu nad celým vaším systémem Home Assistant, což zvyšuje bezpečnostní rizika a při zneužití může váš systém poškodit. Proto tato funkce negativně ovlivňuje skóre zabezpečení doplňku. \n\nTato úroveň přístupu není udělena automaticky a je třeba ji potvrdit. Chcete-li to provést, musíte ručně deaktivovat režim ochrany doplňku. Režim ochrany deaktivujte, pouze pokud víte, co děláte, potřebujete to a důvěřujete zdroji tohoto doplňku.",
+                        "title": "Úplný přístup k Dockeru"
+                    },
+                    "full_access": {
+                        "description": "Tento doplněk získá úplný přístup k hardwaru vašeho systému na žádost autora doplňku. Přístup je srovnatelný s privilegovaným režimem v Dockeru. Protože to představuje možná bezpečnostní rizika, tato funkce negativně ovlivňuje skóre zabezpečení doplňku. \n\nTato úroveň přístupu není udělena automaticky a je třeba ji potvrdit. Chcete-li to provést, musíte ručně deaktivovat režim ochrany doplňku. Režim ochrany deaktivujte, pouze pokud víte co děláte, potřebujete to a důvěřujete zdroji tohoto doplňku.",
+                        "title": "Plný přístup k hardwaru"
+                    },
+                    "hassio_api": {
+                        "description": "Doplňku byl na žádost autora doplňku umožněn přístup k rozhraní Supervisor API. Ve výchozím nastavení má doplněk přístup k obecným informacím o verzi vašeho systému. Když doplněk požaduje přístup k rozhraní API na úrovni „manažer“ nebo „správce“, získá přístup k ovládání více částí systému Home Assistant. Toto oprávnění je označeno tímto odznakem a negativně ovlivní skóre zabezpečení doplňku.",
+                        "title": "Přístup k rozhraní Supervisor API"
+                    },
+                    "homeassistant_api": {
+                        "description": "Tento doplněk má přístup k vaší spuštěné instanci Home Assistant přímo přes Home Assistant API. Tento režim taktéž zajištuje autentifikaci pro doplněk, což umožňuje doplňku komunikovat s Home Assistant bez nutnosti dalších ověřovacích tokenů.",
+                        "title": "Přístup k API Home Assistant"
+                    },
+                    "host_network": {
+                        "description": "Doplňky obvykle běží ve své vlastní izolované síťové vrstvě, což jim brání v přístupu k síti hostitelského operačního systému. V některých případech může tato izolace sítě omezit doplňky při poskytování jejich služeb a proto může izolace být zrušena autorem doplňku, což doplňku poskytne plný přístup k síťovým funkcím hostitelského počítače. To dává doplňku více síťových funkcí, ale snižuje zabezpečení, proto se sníží bezpečnostní hodnocení doplňku, pokud doplněk tuto možnost použije.",
+                        "title": "Hostitelská síť"
+                    },
+                    "host_pid": {
+                        "description": "Obvykle procesy, které doplněk spouští, jsou izolovány od všech ostatních systémových procesů. Autor doplňku požádal, aby měl doplněk přístup k systémovým procesům běžícím na instanci hostitelského systému a umožnil doplňku také spouštět procesy v hostitelském systému. Tento režim poskytuje doplňku plný přístup a kontrolu nad celým vaším systémem Home Assistant, což zvyšuje bezpečnostní rizika a při zneužití může váš systém poškodit. Proto tato funkce negativně ovlivňuje skóre zabezpečení doplňku. \n\nTato úroveň přístupu není udělena automaticky a je třeba ji potvrdit. Chcete-li to provést, musíte ručně deaktivovat režim ochrany doplňku. Režim ochrany deaktivujte, pouze pokud víte, co děláte, potřebujete to a důvěřujete zdroji tohoto doplňku.",
+                        "title": "Obor názvů hostitelských procesů"
+                    },
+                    "ingress": {
+                        "description": "Tento doplněk používá Ingress k bezpečné integraci svého rozhraní do Home Assistant.",
+                        "title": "Ingress"
+                    },
                     "label": {
+                        "apparmor": "apparmor",
+                        "auth": "autentifikace",
                         "docker": "docker",
+                        "hardware": "hardware",
                         "hass": "hass",
                         "hassio": "hassio",
-                        "host": "hostitel"
+                        "host": "hostitel",
+                        "host_pid": "hostitelský pid",
+                        "ingress": "ingress",
+                        "rating": "hodnocení",
+                        "stage": "fáze"
+                    },
+                    "rating": {
+                        "description": "Home Assistant poskytuje každému z doplňků hodnocení zabezpečení, které označuje rizika spojená s používáním tohoto doplňku. Čím více přístupu doplněk ve vašem systému vyžaduje, tím nižší je skóre, čímž se zvyšují možná bezpečnostní rizika. \n\nSkóre je na stupnici od 1 do 6. Kde 1 je nejnižší skóre (považováno za nejméně bezpečné a nejvyšší riziko) a skóre 6 je nejvyšší skóre (považováno za nejbezpečnější a nejnižší riziko).",
+                        "title": "Bezpečnostní hodnocení doplňku"
                     },
                     "role": {
                         "admin": "admin",
@@ -140,22 +198,62 @@
                         "default": "výchozí",
                         "homeassistant": "homeassistant",
                         "manager": "správce"
+                    },
+                    "stage": {
+                        "description": "Doplňky mohou mít jednu ze tří fází: \n\n {icon_stable} **Stabilní**: Tyto doplňky jsou připraveny k produkčnímu nasazení.\n\n {icon_experimental} **Experimentální**: Mohou obsahovat chyby a mohou být nedokončené. \n\n {icon_deprecated} **Zastaralé**: Tyto doplňky již nebudou dostávat žádné aktualizace.",
+                        "title": "Fáze doplňku"
                     }
                 },
                 "changelog": "Seznam změn",
+                "cpu_usage": "Využití procesoru doplňkem",
                 "hostname": "Název hostitele",
+                "install": "nainstalovat",
                 "new_update_available": "{name} {verze} je k dispozici",
+                "not_available_arch": "Tento doplněk není kompatibilní s procesorem vašeho zařízení nebo operačním systémem, který jste do zařízení nainstalovali.",
                 "not_available_version": "Používáte Home Assistant {core_version_installed}, pro aktualizaci na tuto verzi doplňku potřebujete alespoň Home Assistant ve verzi {core_version_needed}",
                 "open_web_ui": "Otevřít webové rozhraní",
                 "option": {
+                    "auto_update": {
+                        "description": "Automaticky aktualizovat doplněk, pokud je k dispozici nová verze",
+                        "title": "Automatická aktualizace"
+                    },
                     "boot": {
+                        "description": "Spustit doplněk při spuštění systému",
                         "title": "Spustit při spuštění"
                     },
+                    "ingress_panel": {
+                        "description": "Přidejte si tento doplněk na svůj postranní panel",
+                        "title": "Zobrazit v postranním panelu"
+                    },
+                    "protected": {
+                        "description": "Blokuje doplňku zvýšený přístup do systému",
+                        "title": "Režim ochrany"
+                    },
                     "watchdog": {
+                        "description": "Toto spustí doplněk, pokud dojde k jeho selhání",
                         "title": "Hlídací pes"
                     }
                 },
+                "protection_mode": {
+                    "content": "Režim ochrany v tomto doplňku je zakázán! To poskytuje doplněku plný přístup k celému systému, což zvyšuje bezpečnostní rizika a mohlo by poškodit systém při nesprávném použití. Režim ochrany zakažte pouze v případě, že víte, co děláte, je to potřeba a důvěřujete zdroji tohoto doplňku.",
+                    "enable": "Povolit režim ochrany",
+                    "title": "Upozornění: Režim ochrany je zakázán!"
+                },
+                "ram_usage": "Využití paměti RAM doplňkem",
+                "rebuild": "obnovit",
+                "restart": "restartovat",
+                "start": "spustit",
+                "stop": "zastavit",
+                "uninstall": "odinstalovat",
                 "visit_addon_page": "Další podrobnosti naleznete na stránce {name}"
+            },
+            "documentation": {
+                "get_documentation": "Nepodařilo se získat dokumentaci k doplňku, {error}"
+            },
+            "failed_to_reset": "Obnovení konfigurace doplňku se nezdařilo, {error}",
+            "failed_to_save": "Uložení konfigurace doplňku se nezdařilo, {error}",
+            "logs": {
+                "get_logs": "Nepodařilo se získat protokoly o doplňcích, {error}"
             },
             "panel": {
                 "configuration": "Nastavení",
@@ -165,6 +263,7 @@
             },
             "state": {
                 "installed": "Doplněk je nainstalován",
+                "not_available": "Doplněk není ve vašem systému k dispozici",
                 "not_installed": "Doplněk není nainstalován"
             }
         },
@@ -173,7 +272,8 @@
             "close": "Zavřít",
             "description": "Popis",
             "error": {
-                "unknown": "Neznámá chyba"
+                "unknown": "Neznámá chyba",
+                "update_failed": "Aktualizace se nezdařila"
             },
             "failed_to_restart_name": "Restartování {name} se nezdařilo",
             "failed_to_update_name": "Aktualizace {name} se nezdařila",
@@ -184,9 +284,13 @@
             "refresh": "Obnovit",
             "release_notes": "Poznámky k vydání",
             "reload": "Nově načíst",
+            "reset_defaults": "Obnovit výchozí hodnoty",
+            "reset_options": "Obnovit možnosti",
             "restart": "Restartovat",
             "restart_name": "Restartovat {name}",
+            "running_version": "Aktuálně používáte verzi {version}",
             "save": "Uložit",
+            "show_more": "Zobrazit o tom více informací",
             "update": "Aktualizovat",
             "update_available": "{count, plural,\n  one {Aktualizace}\n  few {{count} aktualizace}\n  other {{count} aktualizací}\n}",
             "version": "Verze",
@@ -210,7 +314,8 @@
             "addon_new_version": "K dispozici je nová verze",
             "addon_running": "Doplněk je spuštěn",
             "addon_stopped": "Doplněk je zastaven",
-            "addons": "Doplňky"
+            "addons": "Doplňky",
+            "no_addons": "Zatím nemáte nainstalované žádné doplňky. Chcete-li začít, přejděte do obchodu s doplňky."
         },
         "dialog": {
             "network": {
@@ -218,12 +323,15 @@
                 "dhcp": "DHCP",
                 "disabled": "Zakázáno",
                 "dns_servers": "Servery DNS",
+                "failed_to_change": "Nepodařilo se změnit nastavení sítě",
                 "gateway": "IP adresa brány",
                 "ip_netmask": "IP adresa/Maska sítě",
                 "open": "Otevřít",
                 "scan_ap": "Hledat přístupové body",
                 "static": "Statická",
                 "title": "Nastavení sítě",
+                "unsaved": "Máte neuložené změny, které budou ztraceny, pokud změníte záložku. Chcete pokračovat?",
+                "warning": "Pokud měníte nastavení Wi-Fi, IP adresu nebo adresu brány, můžete ztratit připojení!",
                 "wep": "WEP",
                 "wpa": "wpa-psk"
             },
@@ -236,6 +344,8 @@
                 "password": "Heslo",
                 "registry": "Registr",
                 "remove": "Odebrat",
+                "title_add": "Přidat nový registr kontejnerů",
+                "title_manage": "Spravovat registry kontejnerů",
                 "username": "Uživatelské jméno"
             },
             "repositories": {
@@ -273,6 +383,7 @@
             "create": "Vytvořit",
             "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
             "create_snapshot": "Vytvořit zálohu",
+            "description": "Snímky umožňují snadno zálohovat a obnovovat všechna data instance Home Assistant.",
             "enter_password": "Prosím zadejte heslo.",
             "folder": {
                 "addons/local": "Místní doplňky",
@@ -294,14 +405,29 @@
             "upload_snapshot": "Nahrát zálohu"
         },
         "store": {
+            "missing_addons": "Chybí doplňky? Na stránce svého uživatelského profilu povolte pokročilý režim",
+            "no_results_found": "V {repository} nebyly nalezeny žádné výsledky.",
             "registries": "Registry",
             "repositories": "Repozitáře"
         },
         "system": {
+            "core": {
+                "cpu_usage": "Využití procesoru jádrem",
+                "ram_usage": "Využití paměti RAM jádrem"
+            },
             "host": {
                 "change": "Změnit",
                 "change_hostname": "Změnit název hostitele",
+                "confirm_reboot": "Opravdu chcete restartovat hostitele?",
+                "confirm_shutdown": "Opravdu chcete vypnout hostitele?",
+                "deployment": "Nasazení",
                 "docker_version": "Verze Dockeru",
+                "emmc_lifetime_used": "Použitá životnost eMMC",
+                "failed_to_get_hardware_list": "Nepodařilo se získat seznam hardwaru",
+                "failed_to_import_from_usb": "Import z USB se nezdařil",
+                "failed_to_reboot": "Nepodařilo se restartovat hostitele",
+                "failed_to_set_hostname": "Nastavení názvu hostitele se nezdařilo",
+                "failed_to_shutdown": "Nepodařilo se vypnout hostitele",
                 "hardware": "Hardware",
                 "hostname": "Název hostitele",
                 "import_from_usb": "Importovat z USB",
@@ -312,25 +438,52 @@
                 "shutdown_host": "Vypnout hostitele",
                 "used_space": "Použité místo"
             },
+            "log": {
+                "get_logs": "Nepodařilo se získat protokoly {provider}, {error}",
+                "log_provider": "Poskytovatel protokolu"
+            },
             "supervisor": {
                 "beta_backup": "Před aktivací této funkce se ujistěte, že máte zálohy svých dat.",
                 "beta_join_confirm": "Chcete se připojit k beta kanálu?",
                 "beta_release_items": "To zahrnuje beta verze pro:",
+                "beta_warning": "Beta verze jsou určeny pro testery a nedočkavce a mohou obsahovat nestabilní změny kódu",
                 "channel": "Kanál",
+                "cpu_usage": "Využití procesoru Supervisorem",
                 "failed_to_reload": "Nové načtení Supervisora se nezdařilo",
+                "failed_to_set_option": "Nastavení možnosti Supervisora se nezdařilo",
                 "failed_to_update": "Aktualizace Supervisora se nezdařila",
                 "join_beta_action": "Připojit se k beta kanálu",
+                "join_beta_description": "Získejte beta aktualizace pro Home Assistant (RC), Supervisor a hostitele",
                 "leave_beta_action": "Opustit beta kanál",
+                "leave_beta_description": "Získejte stabilní aktualizace pro Home Assistant, Supervisor a hostitele",
+                "ram_usage": "Využití paměti RAM Supervisorem",
                 "reload_supervisor": "Nově načíst Supervisor",
                 "share_diagnostics": "Sdílet diagnostické informace",
+                "share_diagnostics_description": "Sdílejte zprávy o selhání a diagnostické informace.",
+                "share_diagonstics_description": "Chcete automaticky sdílet zprávy o selhání a diagnostické informace, když  Supervisor narazí na neočekávané chyby? {line_break} To nám umožní vyřešit problémy, informace jsou přístupné pouze týmu Home Assistant Core a nebudou sdíleny s ostatními. {line_break} Data neobsahují žádné soukromé / citlivé informace a tato volba může být kdykoliv deaktivována v nastavení.",
                 "share_diagonstics_title": "Pomozte vylepšit Home Asistent",
+                "unhealthy_description": "Používáním instalace, která není v pořádku způsobí problémy. Níže je uveden seznam problémů nalezených ve vaší instalaci. Kliknutím na odkazy se dozvíte, jak tyto problémy vyřešit.",
+                "unhealthy_reason": {
+                    "docker": "Prostředí Docker nefunguje správně",
+                    "privileged": "Supervisor není privilegovaný",
+                    "setup": "Nastavení Supervisora se nezdařilo",
+                    "supervisor": "Supervisor se nepodařilo aktualizovat"
+                },
+                "unhealthy_title": "Instalace není v pořádku",
+                "unsupported_description": "Níže je uveden seznam problémů nalezených ve vaší instalaci. Kliknutím na odkazy se dozvíte, jak tyto problémy vyřešit.",
                 "unsupported_reason": {
+                    "container": "Kontejnery, o nichž je známo, že způsobují problémy",
                     "dbus": "DBUS",
+                    "docker_configuration": "Konfigurace Dockeru",
                     "docker_version": "Verze Dockeru",
+                    "job_conditions": "Ignorované podmínky úlohy",
+                    "lxc": "LXC",
                     "network_manager": "Správce sítě",
                     "os": "Operační systém",
+                    "privileged": "Supervisor není privilegovaný",
                     "systemd": "Systemd"
                 },
+                "unsupported_title": "Používáte nepodporovanou instalaci",
                 "update_supervisor": "Aktualizovat Supervisor",
                 "warning": "VAROVÁNÍ"
             }
@@ -860,6 +1013,9 @@
                 "person": {
                     "create_zone": "Vytvořit zónu z aktuálního umístění"
                 },
+                "remote": {
+                    "activity": "Současná aktivita"
+                },
                 "restored": {
                     "confirm_remove_text": "Opravdu chcete tuto entitu odebrat?",
                     "confirm_remove_title": "Odebrat entitu?",
@@ -989,13 +1145,16 @@
                 "buttons": {
                     "add": "Přidejte zařízení prostřednictvím tohoto zařízení",
                     "clusters": "Správa clusterů",
+                    "device_children": "Zobrazit potomky",
                     "reconfigure": "Přenastavit zařízení",
                     "remove": "Odebrat zařízení",
+                    "view_in_visualization": "Zobrazit ve vizualizaci",
                     "zigbee_information": "Podpis zařízení Zigbee"
                 },
                 "confirmations": {
                     "remove": "Opravdu chcete zařízení odebrat?"
                 },
+                "device_children": "Potomci Zigbee zařízení",
                 "device_signature": "Podpis zařízení Zigbee",
                 "last_seen": "Naposledy viděn",
                 "manuf": "od {manufacturer}",
@@ -2492,7 +2651,7 @@
                     "add_device": "Přidat zařízení",
                     "add_device_page": {
                         "discovered_text": "Jakmile se objeví nalezne, zobrazí se zde.",
-                        "no_devices_found": "Žádná zařízení nalezena, ujistěte se, že jsou v režimu párování a udržujte je zapnuté, zatímco je objevování spuštěno.",
+                        "no_devices_found": "Nebyla nalezena žádná zařízení, ujistěte se, že jsou v režimu párování a udržujte je v aktivním stavu, zatímco je objevování spuštěno.",
                         "pairing_mode": "Zkontrolujte, zda jsou vaše zařízení v režimu párování. Postupujte podle pokynů svého zařízení.",
                         "search_again": "Hledat znovu",
                         "spinner": "Hledání zařízení ZHA Zigbee ..."
@@ -2568,9 +2727,11 @@
                         "caption": "Síť"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatické přiblížení",
                         "caption": "Vizualizace",
                         "header": "Vizualizace sítě",
                         "highlight_label": "Zvýraznit zařízení",
+                        "refresh_topology": "Aktualizovat topologii",
                         "zoom_label": "Přiblížit na zařízení"
                     }
                 },
@@ -3248,6 +3409,7 @@
                         "error_remove": "Nelze odstranit nastavení: {error}",
                         "error_save_yaml": "Nelze uložit YAML: {error}",
                         "header": "Upravit nastavení",
+                        "lovelace_changed": "Konfigurace Lovelace byla aktualizována, chcete načíst aktualizovanou konfiguraci do editoru a přijít o aktuální změny?",
                         "reload": "Nově načíst",
                         "resources_moved": "Zdroje by již neměly být přidávány do konfigurace Lovelace, ale mohou být přidávány v panelu nastavení Lovelace.",
                         "save": "Uložit",

@@ -315,7 +315,7 @@
             "addon_running": "Add-on wird ausgeführt",
             "addon_stopped": "Add-on ist gestoppt",
             "addons": "Add-ons",
-            "no_addons": "Du hast noch keine Add-ons installiert. Gehe zum Add-on-Shop, um loszulegen!"
+            "no_addons": "Du hast noch keine Add-ons installiert. Gehe zum Add-on Shop, um loszulegen!"
         },
         "dialog": {
             "network": {
@@ -426,7 +426,7 @@
                 "failed_to_get_hardware_list": "Fehler beim Abrufen der Hardwareliste",
                 "failed_to_import_from_usb": "Fehler beim Importieren von USB",
                 "failed_to_reboot": "Fehler beim Neustart des Hosts",
-                "failed_to_set_hostname": "Das Setzen des Hostnamens ist fehlgeschlagen",
+                "failed_to_set_hostname": "Das Setzen des Hostnamen ist fehlgeschlagen",
                 "failed_to_shutdown": "Fehler beim Herunterfahren des Hosts",
                 "hardware": "Hardware",
                 "hostname": "Hostname",
@@ -434,7 +434,7 @@
                 "ip_address": "IP-Adresse",
                 "new_hostname": "Bitte einen neuen Hostnamen eingeben:",
                 "operating_system": "Betriebssystem",
-                "reboot_host": "Host neustarten",
+                "reboot_host": "Host Neustarten",
                 "shutdown_host": "Host herunterfahren",
                 "used_space": "Belegter Speicherplatz"
             },
@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Geräte über dieses Gerät hinzufügen",
                     "clusters": "Cluster verwalten",
+                    "device_children": "Endgeräte anzeigen",
                     "reconfigure": "Gerät neu konfigurieren",
                     "remove": "Gerät entfernen",
                     "view_in_visualization": "Visualisierung in einer Map",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Möchtest du das Gerät wirklich entfernen?"
                 },
+                "device_children": "Zigbee-Endgeräte",
                 "device_signature": "ZigBee-Gerätesignatur",
                 "last_seen": "Zuletzt gesehen",
                 "manuf": "von {manufacturer}",
@@ -1187,6 +1189,7 @@
                 "key_missing": "Erforderlicher Schlüssel \"{key}\" fehlt.",
                 "key_not_expected": "Der Schlüssel \"{key}\" wird vom visuellen Editor nicht erwartet oder nicht unterstützt.",
                 "key_wrong_type": "Der angegebene Wert für \"{key}\" wird vom visuellen Editor nicht unterstützt. Wir unterstützen ({type_correct}), haben aber ({type_wrong}) erhalten.",
+                "no_template_editor_support": "Vorlagen werden im visuellen Editor nicht unterstützt",
                 "no_type_provided": "Kein Typ angegeben."
             }
         },
@@ -1425,7 +1428,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_condition": "Nicht unterstützte Bedingung: {condition}"
+                            "unsupported_condition": "Keine Unterstützung für visuellen Editor für Bedingung: {condition} verfügbar"
                         },
                         "copy_to_clipboard": "In die Zwischenablage kopieren",
                         "default_name": "Neue Automatisierung",
@@ -1602,7 +1605,7 @@
                         "header": "Vorlage importieren",
                         "import_btn": "Vorschau Vorlage",
                         "import_header": "Vorlage \"{name}\"",
-                        "import_introduction_link": "Du kannst Vorlagen anderer Benutzer aus GitHub und den {community_link} importieren. Gib unten die URL der Vorlage ein.",
+                        "import_introduction_link": "Du kannst Blaupausen anderer Benutzer aus GitHub und den {community_link} importieren. Gib unten die URL der Blaupause ein.",
                         "importing": "Vorlage wird geladen...",
                         "raw_blueprint": "Inhalt der Vorlage",
                         "save_btn": "Vorlage importieren",
@@ -1626,6 +1629,8 @@
                         },
                         "introduction": "Mit der Vorlagenkonfiguration kannst du deine Vorlagen importieren und verwalten.",
                         "learn_more": "Erfahre mehr über die Benutzung von Vorlagen",
+                        "share_blueprint": "Blaupause teilen",
+                        "share_blueprint_no_url": "Vorlage kann nicht geteilt werden: Keine Quell-URL",
                         "use_blueprint": "Automatisierung erstellen"
                     }
                 },
@@ -2543,7 +2548,7 @@
                             "smtp": "SMTP-Benachrichtigungsdienste neu laden",
                             "statistics": "Statistik-Entitäten neu laden",
                             "telegram": "Telegram-Benachrichtigungsdienste neu laden",
-                            "template": "Vorlagenentitäten neu laden",
+                            "template": "Template-Entitäten neu laden",
                             "trend": "Trend-Entitäten neu laden",
                             "universal": "Universelle Media Player-Entitäten neu laden",
                             "zone": "Zonen neu laden"
@@ -2722,6 +2727,7 @@
                         "caption": "Netzwerk"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatischer Zoom",
                         "caption": "Visualisierung",
                         "header": "Netzwerkvisualisierung",
                         "highlight_label": "Geräte hervorheben",
@@ -2981,20 +2987,20 @@
                         "title": "Zustände"
                     },
                     "templates": {
-                        "all_listeners": "Diese Vorlage überwacht alle Zustandsänderungsereignisse.",
+                        "all_listeners": "Dieses Template überwacht alle Zustandsänderungsereignisse.",
                         "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
                         "domain": "Domain",
-                        "editor": "Vorlageneditor",
+                        "editor": "Template-Editor",
                         "entity": "Entität",
                         "jinja_documentation": "Jinja2 Template Dokumentation",
-                        "listeners": "Diese Vorlage überwacht die folgenden Statusänderungsereignisse:",
-                        "no_listeners": "Diese Vorlage überwacht keine Ereignisse und wird nicht automatisch aktualisiert.",
-                        "reset": "Zurücksetzen auf Demo-Vorlage",
+                        "listeners": "Dieses Template überwacht die folgenden Statusänderungsereignisse:",
+                        "no_listeners": "Dieses Template überwacht keine Ereignisse und wird nicht automatisch aktualisiert.",
+                        "reset": "Zurücksetzen auf Demo-Template",
                         "result_type": "Ergebnistyp",
-                        "template_extensions": "Home Assistant-Vorlagenerweiterungen",
-                        "time": "Diese Vorlage wird zu Beginn jeder Minute aktualisiert.",
-                        "title": "Vorlage",
-                        "unknown_error_template": "Unbekannter Fehler beim Rendern der Vorlage"
+                        "template_extensions": "Home Assistant-Template Erweiterungen",
+                        "time": "Dieses Template wird zu Beginn jeder Minute aktualisiert.",
+                        "title": "Template",
+                        "unknown_error_template": "Unbekannter Fehler beim Rendern des Templates"
                     }
                 }
             },
