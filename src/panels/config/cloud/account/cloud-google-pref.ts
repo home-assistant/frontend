@@ -14,11 +14,12 @@ import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 export class CloudGooglePref extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
@@ -35,7 +36,7 @@ export class CloudGooglePref extends LitElement {
 
     return html`
       <ha-card
-        header=${this.hass!.localize(
+        header=${this.hass.localize(
           "ui.panel.config.cloud.account.google.title"
         )}
       >
@@ -47,7 +48,7 @@ export class CloudGooglePref extends LitElement {
           ></ha-switch>
         </div>
         <div class="card-content">
-          ${this.hass!.localize("ui.panel.config.cloud.account.google.info")}
+          ${this.hass.localize("ui.panel.config.cloud.account.google.info")}
           <ul>
             <li>
               <a
@@ -55,7 +56,7 @@ export class CloudGooglePref extends LitElement {
                 target="_blank"
                 rel="noreferrer"
               >
-                ${this.hass!.localize(
+                ${this.hass.localize(
                   "ui.panel.config.cloud.account.google.enable_ha_skill"
                 )}
               </a>
@@ -66,7 +67,7 @@ export class CloudGooglePref extends LitElement {
                 target="_blank"
                 rel="noreferrer"
               >
-                ${this.hass!.localize(
+                ${this.hass.localize(
                   "ui.panel.config.cloud.account.google.config_documentation"
                 )}
               </a>
@@ -76,7 +77,7 @@ export class CloudGooglePref extends LitElement {
             ? html`
                 <div class="state-reporting">
                   <h3>
-                    ${this.hass!.localize(
+                    ${this.hass.localize(
                       "ui.panel.config.cloud.account.google.enable_state_reporting"
                     )}
                   </h3>
@@ -88,25 +89,25 @@ export class CloudGooglePref extends LitElement {
                   </div>
                 </div>
                 <p>
-                  ${this.hass!.localize(
+                  ${this.hass.localize(
                     "ui.panel.config.cloud.account.google.info_state_reporting"
                   )}
                 </p>
                 <div class="secure_devices">
                   <h3>
-                    ${this.hass!.localize(
+                    ${this.hass.localize(
                       "ui.panel.config.cloud.account.google.security_devices"
                     )}
                   </h3>
-                  ${this.hass!.localize(
+                  ${this.hass.localize(
                     "ui.panel.config.cloud.account.google.enter_pin_info"
                   )}
                   <paper-input
-                    label="${this.hass!.localize(
+                    label="${this.hass.localize(
                       "ui.panel.config.cloud.account.google.devices_pin"
                     )}"
                     id="google_secure_devices_pin"
-                    placeholder="${this.hass!.localize(
+                    placeholder="${this.hass.localize(
                       "ui.panel.config.cloud.account.google.enter_pin_hint"
                     )}"
                     .value=${google_secure_devices_pin || ""}
@@ -123,14 +124,14 @@ export class CloudGooglePref extends LitElement {
             @hass-api-called=${this._syncEntitiesCalled}
             path="cloud/google_actions/sync"
           >
-            ${this.hass!.localize(
+            ${this.hass.localize(
               "ui.panel.config.cloud.account.google.sync_entities"
             )}
           </ha-call-api-button>
           <div class="spacer"></div>
           <a href="/config/cloud/google-assistant">
             <mwc-button
-              >${this.hass!.localize(
+              >${this.hass.localize(
                 "ui.panel.config.cloud.account.google.manage_entities"
               )}</mwc-button
             >
@@ -140,20 +141,39 @@ export class CloudGooglePref extends LitElement {
     `;
   }
 
-  private _syncEntitiesCalled(ev: CustomEvent) {
+  private async _syncEntitiesCalled(ev: CustomEvent) {
     if (!ev.detail.success && ev.detail.response.status_code === 404) {
-      alert(
-        this.hass!.localize(
-          "ui.panel.config.cloud.account.google.sync_entities_404_message"
-        )
-      );
+      this._syncFailed();
     }
+  }
+
+  private async _syncFailed() {
+    showAlertDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.cloud.account.google.not_configured_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.cloud.account.google.not_configured_text"
+      ),
+    });
+    await updateCloudPref(this.hass, {
+      google_enabled: false,
+    });
+    fireEvent(this, "ha-refresh-cloud-status");
   }
 
   private async _enableToggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
     try {
-      await updateCloudPref(this.hass!, { [toggle.id]: toggle.checked! });
+      await updateCloudPref(this.hass, { [toggle.id]: toggle.checked! });
+      try {
+        await this.hass.callApi("POST", "cloud/google_actions/sync");
+      } catch (err) {
+        if (err.status_code === 404) {
+          this._syncFailed();
+        }
+        throw err;
+      }
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       toggle.checked = !toggle.checked;
@@ -163,7 +183,7 @@ export class CloudGooglePref extends LitElement {
   private async _reportToggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
     try {
-      await updateCloudPref(this.hass!, {
+      await updateCloudPref(this.hass, {
         google_report_state: toggle.checked!,
       });
       fireEvent(this, "ha-refresh-cloud-status");
@@ -180,14 +200,14 @@ export class CloudGooglePref extends LitElement {
   private async _pinChanged(ev) {
     const input = ev.target as PaperInputElement;
     try {
-      await updateCloudPref(this.hass!, {
+      await updateCloudPref(this.hass, {
         [input.id]: input.value || null,
       });
-      showSaveSuccessToast(this, this.hass!);
+      showSaveSuccessToast(this, this.hass);
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       alert(
-        `${this.hass!.localize(
+        `${this.hass.localize(
           "ui.panel.config.cloud.account.google.enter_pin_error"
         )} ${err.message}`
       );

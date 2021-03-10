@@ -1768,7 +1768,9 @@
               "sync_entities": "Sync Entities to Google",
               "sync_entities_404_message": "Failed to sync your entities to Google, ask Google 'Hey Google, sync my devices' to sync your entities.",
               "manage_entities": "Manage Entities",
-              "enter_pin_error": "Unable to store pin:"
+              "enter_pin_error": "Unable to store pin:",
+              "not_configured_title": "Google Assistant not configured",
+              "not_configured_text": "It seems you have not setup Google Assistant with this Home Assistant Cloud account. Please setup Google Assistant with Home Assistant Cloud first."
             },
             "webhooks": {
               "title": "Webhooks",
