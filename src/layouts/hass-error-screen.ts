@@ -32,7 +32,9 @@ class HassErrorScreen extends LitElement {
       <div class="content">
         <h3>${this.error}</h3>
         <slot>
-          <mwc-button @click=${this._handleBack}>go back</mwc-button>
+          <mwc-button @click=${this._handleBack}>
+            ${this.hass.localize("ui.panel.error.go_back")}
+          </mwc-button>
         </slot>
       </div>
     `;

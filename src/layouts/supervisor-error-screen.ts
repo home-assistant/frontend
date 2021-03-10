@@ -48,13 +48,14 @@ class SupervisorErrorScreen extends LitElement {
         ></ha-icon-button-arrow-prev>
       </div>
       <div class="content">
-        <div class="title">Could not load the Supervisor panel!</div>
+        <div class="title">
+          ${this.hass.localize("ui.panel.error.supervisor.title")}
+        </div>
         <ha-card header="Troubleshooting">
           <div class="card-content">
             <ol>
               <li>
-                If you just started, make sure you have given the supervisor
-                enough time to start.
+                ${this.hass.localize("ui.panel.error.supervisor.wait")}
               </li>
               <li>
                 <a
@@ -63,13 +64,17 @@ class SupervisorErrorScreen extends LitElement {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Check the Observer
+                  ${this.hass.localize("ui.panel.error.supervisor.observer")}
                 </a>
               </li>
-              <li>Try a reboot of the host</li>
+              <li>
+                ${this.hass.localize("ui.panel.error.supervisor.reboot")}
+              </li>
               <li>
                 <a href="/config/info" target="_parent">
-                  Check System Health
+                  ${this.hass.localize(
+                    "ui.panel.error.supervisor.system_health"
+                  )}
                 </a>
               </li>
               <li>
@@ -78,7 +83,7 @@ class SupervisorErrorScreen extends LitElement {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Ask for help
+                  ${this.hass.localize("ui.panel.error.supervisor.ask")}
                 </a>
               </li>
             </ol>

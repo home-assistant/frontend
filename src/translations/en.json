@@ -3418,6 +3418,17 @@
           "complete_access": "It will have access to all data in Home Assistant.",
           "hide_message": "Check docs for the panel_custom component to hide this message"
         }
+      },
+      "error": {
+        "go_back": "Go back",
+        "supervisor": {
+          "title": "Could not load the Supervisor panel!",
+          "wait": "If you just started, make sure you have given the supervisor enough time to start.",
+          "ask": "Ask for help",
+          "reboot": "Try a reboot of the host",
+          "observer": "Check the Observer",
+          "system_health": "Check System Health"
+        }
       }
     }
   },
