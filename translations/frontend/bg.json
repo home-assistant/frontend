@@ -121,6 +121,13 @@
                 }
             },
             "dashboard": {
+                "action_error": {
+                    "install": "Инсталирането на добавката не бе успешно",
+                    "restart": "Рестартирането на добавката не бе успешно",
+                    "start": "Стартирането на добавката не бе успешно",
+                    "stop": "Спирането на добавката не бе успешно",
+                    "uninstall": "Деинсталирането на добавката не бе успешно"
+                },
                 "capability": {
                     "label": {
                         "docker": "docker",
@@ -138,6 +145,7 @@
                 "changelog": "Дневник на промените",
                 "hostname": "Име на хоста",
                 "install": "инсталиране",
+                "not_available_version": "Изпълнявате Home Assistant {core_version_installed}, за да актуализирате до тази версия на добавката ви е необходима поне версия {core_version_needed} на Home Assistant",
                 "option": {
                     "auto_update": {
                         "description": "Автоматично актуализиране на добавката, когато има налична нова версия",
@@ -149,6 +157,10 @@
                     },
                     "protected": {
                         "title": "Режим на защита"
+                    },
+                    "watchdog": {
+                        "description": "Това ще стартира добавката, ако се срине",
+                        "title": "Watchdog"
                     }
                 },
                 "protection_mode": {
@@ -178,11 +190,13 @@
                 "unknown": "Неизвестна грешка",
                 "update_failed": "Актуализацията не бе успешна"
             },
+            "failed_to_restart_name": "Рестартирането на {name} не бе успешно",
             "failed_to_update_name": "Актуализирането на {name} не бе успешно",
             "learn_more": "Научете повече",
             "new_version_available": "Налична е нова версия",
             "newest_version": "Последна версия",
             "no": "Не",
+            "refresh": "Опресняване",
             "release_notes": "Бележки към изданието",
             "reload": "Презареждане",
             "restart": "Рестартиране",
@@ -194,7 +208,8 @@
         },
         "confirm": {
             "restart": {
-                "text": "Наистина ли искате да рестартирате {name}?"
+                "text": "Наистина ли искате да рестартирате {name}?",
+                "title": "Рестартиране {name}"
             },
             "update": {
                 "text": "Наистина ли искате да актуализирате {name} до версия {version}?",
@@ -212,6 +227,7 @@
                 "connected_to": "Свързан с {ssid}",
                 "dhcp": "DHCP",
                 "dns_servers": "DNS Сървъри",
+                "failed_to_change": "Промяната на мрежовите настройки не бе успешна",
                 "gateway": "Адрес на шлюза",
                 "ip_netmask": "IP адрес/Мрежова маска",
                 "open": "Отворена",
@@ -245,7 +261,8 @@
         },
         "my": {
             "error": "Възникна неизвестна грешка",
-            "error_addon_not_found": "Добавката не е намерена"
+            "error_addon_not_found": "Добавката не е намерена",
+            "faq_link": "My Home Assistant ЧЗВ"
         },
         "panel": {
             "dashboard": "Табло",
@@ -303,15 +320,21 @@
                 "beta_join_confirm": "Искате ли да се присъедините към бета канала?",
                 "beta_release_items": "Това включва бета версии за:",
                 "channel": "Канал",
+                "failed_to_reload": "Неуспешно презареждане на Supervisor",
+                "failed_to_update": "Неуспешно актуализиране на Supervisor",
                 "join_beta_action": "Присъединяване към бета канала",
+                "join_beta_description": "Получавайте бета актуализации за Home Assistant (RCs), Supervisor и хоста",
                 "leave_beta_action": "Напускане на бета канала",
+                "leave_beta_description": "Получавайте стабилни актуализации за Home Assistant, Supervisor и хоста",
                 "reload_supervisor": "Презареждане на Supervisor",
+                "share_diagnostics": "Споделяне на диагностика",
                 "share_diagnostics_description": "Споделяйте доклади за сривове и диагностична информация.",
                 "share_diagonstics_title": "Помогнете за подобряването на Home Assistant",
                 "unsupported_reason": {
                     "dbus": "DBUS",
                     "docker_version": "Docker Версия",
                     "lxc": "LXC",
+                    "network_manager": "Мрежов мениджър",
                     "os": "Операционна система",
                     "systemd": "Systemd"
                 },
@@ -417,7 +440,7 @@
             },
             "script": {
                 "cancel": "Отказ",
-                "cancel_multiple": "Отмяна на {номер}"
+                "cancel_multiple": "Отмяна на {number}"
             },
             "service": {
                 "run": "Изпълни"
@@ -640,7 +663,8 @@
                 "web-browser": "Уеб браузър"
             },
             "picture-upload": {
-                "label": "Картина"
+                "label": "Картина",
+                "unsupported_format": "Неподдържан формат, моля, изберете JPEG, PNG или GIF изображение."
             },
             "related-items": {
                 "area": "Област",
@@ -766,7 +790,8 @@
                 "input_number": {
                     "max": "Максимална стойност",
                     "min": "Минимална стойност",
-                    "step": "Размер на стъпката"
+                    "step": "Размер на стъпката",
+                    "unit_of_measurement": "Единици за измерване"
                 },
                 "input_select": {
                     "add": "Добавяне",
@@ -934,6 +959,7 @@
         "errors": {
             "config": {
                 "error_detected": "Открити са грешки в конфигурацията",
+                "key_missing": "Липсва задължителният ключ \"{key}\".",
                 "no_template_editor_support": "Шаблоните не се поддържат във визуалния редактор"
             }
         },
@@ -1377,6 +1403,7 @@
                             "dialog": {
                                 "example_message": "Здравейте, {name}, можете да възпроизвеждате произволен текст на всеки поддържан медиен плейър!",
                                 "header": "Опитайте Текст в Реч",
+                                "play": "Възпроизвеждане",
                                 "target_browser": "Браузър"
                             },
                             "female": "Жена",
@@ -1506,6 +1533,7 @@
                         },
                         "create_disable": "Не може да се създаде автоматизация с деактивирано устройство",
                         "no_automations": "Няма автоматизации",
+                        "no_device_automations": "Няма налични автоматизации за това устройство.",
                         "unknown_automation": "Неизвестна автоматизация"
                     },
                     "caption": "Устройства",
@@ -1873,6 +1901,7 @@
                         "default_name": "Нов скрипт",
                         "delete_script": "Изтриване на скрипт",
                         "header": "Скрипт: {name}",
+                        "icon": "Икона",
                         "id_already_exists": "Това ID вече съществува",
                         "introduction": "Използвайте скриптове за изпълнение на последователност от действия.",
                         "link_available_actions": "Научете повече за наличните действия.",
@@ -2542,7 +2571,8 @@
             },
             "my": {
                 "documentation": "документация",
-                "error": "Възникна неизвестна грешка"
+                "error": "Възникна неизвестна грешка",
+                "faq_link": "My Home Assistant ЧЗВ"
             },
             "page-authorize": {
                 "abort_intro": "Входът е прекратен",
@@ -2636,6 +2666,7 @@
                     "working": "Моля, изчакайте"
                 },
                 "initializing": "Инициализиране",
+                "logging_in_to_with": "Влизане в **{locationName}** с **{authProviderName}**.",
                 "logging_in_with": "Вход с **{authProviderName}**.",
                 "pick_auth_provider": "Или влезте с"
             },
@@ -2689,6 +2720,7 @@
                     "intro": "Здравейте {name} , добре дошли в Home Assistant. Как бихте искали да назовете дома си?",
                     "intro_location": "Бихме искали да знаем къде живеете. Тази информация ще помогне за показването на информация и създаването на автоматизаци, които се активират от изгрев и залез. Тези данни никога не се споделят извън мрежата ви.",
                     "intro_location_detect": "Можем да ви помогнем да попълните тази информация, като изпратим еднократна заявка до външна услуга.",
+                    "location_name": "Име на Вашата Home Assistant инсталация",
                     "location_name_default": "У дома"
                 },
                 "integration": {

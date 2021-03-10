@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Ajouter des appareils",
                     "clusters": "Gérer les clusters",
+                    "device_children": "Voir les enfants",
                     "reconfigure": "Reconfigurer l'appareil",
                     "remove": "Supprimer l'appareil",
                     "view_in_visualization": "Afficher dans la visualisation",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Êtes-vous sûr de vouloir retirer l'appareil ?"
                 },
+                "device_children": "Enfants de l'appareil Zigbee",
                 "device_signature": "Signature de l'appareil Zigbee",
                 "last_seen": "Dernière vue",
                 "manuf": "par {manufacturer}",
@@ -1187,6 +1189,7 @@
                 "key_missing": "La clé requise « {key} » est manquante.",
                 "key_not_expected": "La clé « {key} » n’est pas attendue ou non prise en charge par l’éditeur visuel.",
                 "key_wrong_type": "La valeur fournie pour \"{key}\" n'est pas prise en charge par l'éditeur visuel. Nous supportons ({type_correct}) mais avons reçu ({type_wrong}).",
+                "no_template_editor_support": "Modèles non pris en charge dans l'éditeur visuel",
                 "no_type_provided": "Aucun type fourni."
             }
         },
@@ -2724,6 +2727,7 @@
                         "caption": "Réseau"
                     },
                     "visualization": {
+                        "auto_zoom": "Zoom automatique",
                         "caption": "Visualisation",
                         "header": "Visualisation du réseau",
                         "highlight_label": "Mettre en évidence les appareils",

@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Legg til enheter via denne enheten",
                     "clusters": "Behandle Clusters",
+                    "device_children": "Vis barn",
                     "reconfigure": "Rekonfigurer enhet",
                     "remove": "Fjern enhet",
                     "view_in_visualization": "Visning i visualisering",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Er du sikker på at du vil fjerne enheten?"
                 },
+                "device_children": "Zigbee-enhet barn",
                 "device_signature": "ZigBee-enhetssignatur",
                 "last_seen": "Sist sett",
                 "manuf": "av {manufacturer}",
@@ -2725,6 +2727,7 @@
                         "caption": "Nettverk"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatisk zoom",
                         "caption": "Visualisering",
                         "header": "Nettverksvisualisering",
                         "highlight_label": "Fremhev enheter",

@@ -935,7 +935,7 @@
                 },
                 "faq": "관련 문서",
                 "info_customize": "{customize_link} 섹션에서 일부 속성을 재정의 할 수 있습니다.",
-                "no_unique_id": "이 구성요소 (\"{entity_id}\")은(는) 고유한 ID 가 없으므로 UI 에서 구성 내용을 관리할 수 없습니다. 자세한 내용은 {faq_link}을(를) 참조해주세요.",
+                "no_unique_id": "이 구성요소 (\"{entity_id}\")은(는) 고유한 ID가 없으므로 UI에서 구성 내용을 관리할 수 없습니다. 자세한 내용은 {faq_link}을(를) 참조해주세요.",
                 "related": "관련 내용",
                 "settings": "설정 내용"
             },
@@ -986,7 +986,7 @@
                     "pattern": "클라이언트 측 검증을 위한 정규표현식",
                     "text": "텍스트"
                 },
-                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 'default_config:' 또는 \"{platform}:\" 을 configuration.yaml에 추가해주세요.",
+                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 'default_config:' 또는 \"{platform}:\"을 configuration.yaml에 추가해주세요.",
                 "required_error_msg": "이 입력란은 필수 요소입니다",
                 "timer": {
                     "duration": "기간"
@@ -1642,7 +1642,7 @@
                             "enable": "활성화",
                             "enable_ha_skill": "Alexa 에 Home Assistant 스킬 사용하기",
                             "enable_state_reporting": "상태 보고 활성화",
-                            "info": "Home Assistant Cloud의 Alexa 연동 기능으로 Alexa 가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
+                            "info": "Home Assistant Cloud의 Alexa 연동 기능으로 Alexa가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
                             "info_state_reporting": "상태 보고를 활성화하면 Home Assistant는 노출된 구성요소의 모든 상태 변경 사항을 Amazon 에 보냅니다. 이를 통해 Alexa 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있으며, 상태 변경을 사용하여 루틴을 만들 수 있습니다.",
                             "manage_entities": "구성요소 관리",
                             "state_reporting_error": "상태 보고를 {enable_disable}할 수 없습니다.",
@@ -1704,7 +1704,7 @@
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "웹 훅을 비활성화하지 못했습니다:",
-                            "info": "웹 훅에 의해 트리거 되도록 구성된 모든 구성요소를 인터넷상에 공개 노출시키지 않고도 어디서나 Home Assistant로 데이터를 보낼 수 있는 공개된 액세스가 가능한 URL 을 제공해드립니다.",
+                            "info": "웹 훅에 의해 트리거 되도록 구성된 모든 구성요소를 인터넷상에 공개 노출시키지 않고도 어디서나 Home Assistant로 데이터를 보낼 수 있는 공개된 액세스가 가능한 URL을 제공해드립니다.",
                             "link_learn_more": "웹 훅 기반 자동화 생성에 대해 더 알아보기.",
                             "loading": "읽는 중 ...",
                             "manage": "관리",
@@ -1870,7 +1870,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "아직 이 기기로 추가 된 {name}이(가) 없습니다. 위의 + 단추를 클릭하여 추가할 수 있습니다.",
+                    "add_prompt": "아직 이 기기로 추가된 {name}이(가) 없습니다. 위의 + 단추를 클릭하여 추가할 수 있습니다.",
                     "automation": {
                         "actions": {
                             "caption": "뭔가 트리거 되었을 때....",
@@ -2061,7 +2061,7 @@
                     "path_configuration": "configuration.yaml의 위치: {path}",
                     "server": "서버",
                     "source": "소스:",
-                    "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml 에 'system_health:' 를 추가해주세요.",
+                    "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml에 'system_health:'를 추가해주세요.",
                     "system_health": {
                         "manage": "관리하기",
                         "more_info": "추가 정보"
@@ -2312,7 +2312,7 @@
                             "ready": "연결할 준비가 되었습니다",
                             "started": "MQTT 에 연결됨",
                             "starting": "MQTT 에 연결 중",
-                            "stopped": "OpenZWave 가 중지되었습니다"
+                            "stopped": "OpenZWave가 중지되었습니다"
                         },
                         "offline": "오프라인",
                         "online": "온라인",
@@ -2328,7 +2328,7 @@
                         "header": "노드 구성",
                         "help_source": "구성 매개 변수 설명 및 도움말 텍스트는 OpenZWave 프로젝트에서 제공합니다.",
                         "introduction": "Z-Wave 노드에 대한 다양한 구성 매개 변수를 관리합니다.",
-                        "wakeup_help": "배터리 전원을 사용하는 노드는 구성을 변경하려면 반드시 절전 해제된 상태이어야 합니다. 노드가 절전 생태인 경우 Openzwave 는 절전 해제될 때 노드의 구성 업데이트를 시도합니다. 이 과정은 몇 시간 (또는 며칠) 후에 이루어질 수 있습니다. 기기를 절전 해제하려면 다음 단계를 따라주세요."
+                        "wakeup_help": "배터리 전원을 사용하는 노드는 구성을 변경하려면 반드시 절전 해제된 상태이어야 합니다. 노드가 절전 상태면 Openzwave는 절전 해제될 때 노드의 구성 업데이트를 시도합니다. 이 과정은 몇 시간 (또는 며칠) 후에 이루어질 수 있습니다. 기기를 절전 해제하려면 다음 단계를 따라주세요."
                     },
                     "node_metadata": {
                         "product_manual": "제품 설명서"
@@ -3394,7 +3394,7 @@
                         "header": "구성 내용이 호환되지 않습니다",
                         "migrate": "구성 마이그레이션",
                         "para_migrate": "Home Assistant는 '구성 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 뷰에 ID를 추가할 수 있습니다.",
-                        "para_no_id": "이 요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 요소의 ID를 추가해주세요."
+                        "para_no_id": "이 요소에는 ID가 없습니다. 'ui-lovelace.yaml'에 요소의 ID를 추가해주세요."
                     },
                     "move_card": {
                         "header": "카드를 이동할 뷰를 선택해주세요"
@@ -3473,7 +3473,7 @@
                     "last_changed": "최근 변경 됨",
                     "no_data": "미사용 구성요소가 없습니다",
                     "search": "구성요소 찾기",
-                    "select_to_add": "카드에 추가 할 구성요소를 선택한 다음, 카드 추가 버튼을 클릭해주세요.",
+                    "select_to_add": "카드에 추가할 구성요소를 선택한 다음, 카드 추가 버튼을 클릭해주세요.",
                     "title": "미사용 구성요소"
                 },
                 "views": {
@@ -3608,7 +3608,7 @@
                 "cards": {
                     "demo": {
                         "demo_by": "{name}님이 만듦",
-                        "introduction": "집에 오신 것을 환영합니다! 커뮤니티에서 만든 멋진 UI 가 적용된 Home Assistant를 소개합니다.",
+                        "introduction": "집에 오신 것을 환영합니다! 커뮤니티에서 만든 멋진 UI가 적용된 Home Assistant를 소개합니다.",
                         "learn_more": "Home Assistant에 대해 더 알아보기",
                         "next_demo": "다음 데모"
                     }

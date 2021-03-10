@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Bu cihaz üzerinden Aygıt Ekleme",
                     "clusters": "Kümeleri Yönet",
+                    "device_children": "Alt cihazları görüntüle",
                     "reconfigure": "Cihazı Yeniden Yapılandır",
                     "remove": "Cihazı Kaldır",
                     "view_in_visualization": "Görselleştirmede Görüntüle",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Cihazı kaldırmak istediğinize emin misiniz?"
                 },
+                "device_children": "Zigbee alt cihazları",
                 "device_signature": "Zigbee cihaz imzası",
                 "last_seen": "Son görülen",
                 "manuf": "{manufacturer} tarafından",
@@ -1187,6 +1189,7 @@
                 "key_missing": "Gerekli anahtar \" {key} \" eksik.",
                 "key_not_expected": "Anahtar \"{key}\" beklenmiyor veya görsel düzenleyici tarafından desteklenmiyor.",
                 "key_wrong_type": "\"{key}\" için sağlanan değer görsel düzenleyici tarafından desteklenmez. Biz destek ({type_correct}) ama alınan ({type_wrong}).",
+                "no_template_editor_support": "Görsel düzenleyicide desteklenmeyen şablonlar",
                 "no_type_provided": "Tür sağlanmadı."
             }
         },
@@ -1342,7 +1345,7 @@
                                     "wait_template": "Bekleme taslak"
                                 }
                             },
-                            "unsupported_action": "Eylem için kullanıcı arayüzü desteği yok: {action}"
+                            "unsupported_action": "Eylem için görsel düzenleyici desteği yok: {action}"
                         },
                         "alias": "İsim",
                         "blueprint": {
@@ -1425,7 +1428,7 @@
                                     "zone": "Bölge"
                                 }
                             },
-                            "unsupported_condition": "Koşul için kullanıcı arayüzü desteği yok: {condition}"
+                            "unsupported_condition": "Koşul için görsel düzenleyici desteği yok: {condition}"
                         },
                         "copy_to_clipboard": "Panoya kopyala",
                         "default_name": "Yeni Otomasyon",
@@ -1433,8 +1436,8 @@
                             "label": "Açıklama",
                             "placeholder": "İsteğe bağlı açıklama"
                         },
-                        "edit_ui": "UI ile düzenle",
-                        "edit_yaml": "YAML olarak düzenle",
+                        "edit_ui": "Görsel düzenleyicide düzenle",
+                        "edit_yaml": "YAML'de düzenle",
                         "enable_disable": "Otomasyonu etkinleştirme / devre dışı bırakma",
                         "introduction": "Evinizi canlandırmak için otomasyonları kullanın",
                         "load_error_not_editable": "Yalnızca automations.yaml içindeki otomasyonlar düzenlenebilir.",
@@ -1555,7 +1558,7 @@
                                     "zone": "Bölge"
                                 }
                             },
-                            "unsupported_platform": "Platform için kullanıcı arayüzü desteği yok: {platform}"
+                            "unsupported_platform": "Platform için görsel düzenleyici desteği yok: {platform}"
                         },
                         "unsaved_confirm": "Kaydedilmemiş değişiklikleriniz var. Çıkmak istediğinize emin misiniz?"
                     },
@@ -2155,7 +2158,7 @@
                     "integration": "Entegrasyon",
                     "integration_not_found": "Entegrasyon bulunamadı.",
                     "new": "Yeni bir entegrasyon kur",
-                    "no_integrations": "Henüz yapılandırılmış hiçbir entegrasyonunuz yok gibi görünüyor. İlk entegrasyonunuzu eklemek için aşağıdaki düğmeyi tıklayın!",
+                    "no_integrations": "Henüz yapılandırılmış herhangi bir entegrasyonunuz yok gibi görünüyor. İlk entegrasyonunuzu eklemek için aşağıdaki düğmeyi tıklayın!",
                     "none": "Henüz hiçbir şey yapılandırılmamış",
                     "none_found": "Hiçbir entegrasyon bulunamadı",
                     "none_found_detail": "Arama ölçütlerinizi ayarlayın.",
@@ -2648,7 +2651,7 @@
                     "add_device": "Cihaz Ekle",
                     "add_device_page": {
                         "discovered_text": "Cihazlar keşfedildikten sonra burada görünecektir.",
-                        "no_devices_found": "Hiçbir cihaz bulunamadı, eşleştirme modunda olduklarından emin olun ve keşfetme sırasında cihazı açık tutun.",
+                        "no_devices_found": "Hiçbir cihaz bulunamadı, eşleştirme modunda olduklarından emin olun ve çalışırken çalışırken onları uyanık tutun.",
                         "pairing_mode": "Cihazlarınızın eşleme modunda olduğundan emin olun. Bunun nasıl yapılacağı konusunda cihazınızın talimatlarını kontrol edin.",
                         "search_again": "Yeniden Ara",
                         "spinner": "ZHA Zigbee cihazları aranıyor ..."
@@ -2724,6 +2727,7 @@
                         "caption": "Ağ"
                     },
                     "visualization": {
+                        "auto_zoom": "Otomatik Yakınlaştırma",
                         "caption": "Görselleştirme",
                         "header": "Ağ Görselleştirme",
                         "highlight_label": "Cihazları Vurgula",
@@ -2836,7 +2840,7 @@
                         "instance": "Örnek",
                         "unknown": "Bilinmeyen",
                         "value": "Değer",
-                        "wakeup_interval": "Uyandırma Aralığı"
+                        "wakeup_interval": "Uyanma Aralığı"
                     },
                     "description": "Z-Wave ağınızı yönetin",
                     "learn_more": "Z-Wave hakkında daha fazla bilgi edinin",
@@ -2865,7 +2869,7 @@
                         "header": "Düğüm Yapılandırma Seçenekleri",
                         "seconds": "Saniye",
                         "set_config_parameter": "Yapılandırma parametresini belirle",
-                        "set_wakeup": "Uyandırma Aralığı Ayarla",
+                        "set_wakeup": "Uyanma Aralığını Ayarlama",
                         "true": "Doğru"
                     },
                     "node_management": {
