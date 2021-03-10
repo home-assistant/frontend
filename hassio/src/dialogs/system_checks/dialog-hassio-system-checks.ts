@@ -74,7 +74,9 @@ class HassioSystemChecksDialog extends LitElement {
   }
 
   public closeDialog(): void {
+    this.supervisor = undefined;
     this._opened = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   public focus(): void {
