@@ -29,6 +29,8 @@ import "../../../ha-config-section";
 import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
+import { getConfigEntries } from "../../../../../data/config_entries";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends LitElement {
@@ -162,6 +164,11 @@ class ZWaveJSConfigDashboard extends LitElement {
                         "ui.panel.config.zwave_js.common.remove_node"
                       )}
                     </mwc-button>
+                    <mwc-button @click=${this._openOptionFlow}>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.reconfigure_server"
+                      )}
+                    </mwc-button>
                   </div>
                 </ha-card>
                 <ha-card>
@@ -260,6 +267,18 @@ class ZWaveJSConfigDashboard extends LitElement {
       this.configEntryId!,
       ev.target.checked
     );
+  }
+
+  private async _openOptionFlow() {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (!searchParams.has("config_entry")) {
+      return;
+    }
+    const configEntries = await getConfigEntries(this.hass);
+    const configEntry = configEntries.find(
+      (entry) => entry.entry_id === this.configEntryId!
+    );
+    showOptionsFlowDialog(this, configEntry!);
   }
 
   private async _dumpDebugClicked() {
