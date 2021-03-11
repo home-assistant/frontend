@@ -7,7 +7,7 @@ export interface HassioResolution {
   unhealthy: string[];
   issues: string[];
   suggestions: string[];
-  checks: { name: string; enabled: boolean }[];
+  checks: { slug: string; enabled: boolean }[];
 }
 
 export const fetchHassioResolution = async (
@@ -29,7 +29,7 @@ export const fetchHassioResolution = async (
   );
 };
 
-export const setCheckOption = async (
+export const setCheckOptions = async (
   hass: HomeAssistant,
   check: string,
   data: Record<string, any>

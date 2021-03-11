@@ -2,7 +2,6 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -13,7 +12,7 @@ import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import { setCheckOption } from "../../../../src/data/hassio/resolution";
+import { setCheckOptions } from "../../../../src/data/hassio/resolution";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
@@ -24,37 +23,39 @@ import { SystemChecksParams } from "./show-dialog-system-checks";
 class HassioSystemChecksDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public supervisor!: Supervisor;
-
-  @internalProperty() private _opened = false;
+  @property({ attribute: false }) public supervisor?: Supervisor;
 
   protected render(): TemplateResult {
+    if (!this.supervisor) {
+      return html``;
+    }
+
     return html`
       <ha-dialog
         @closing=${this.closeDialog}
-        .open=${this._opened}
         .heading=${createCloseHeading(
           this.hass,
           this.supervisor.localize("dialog.system_check.title")
         )}
         hideActions
+        open
       >
         <div class="form">
           ${this.supervisor.resolution.checks.map(
             (check) => html`
               <ha-settings-row three-line>
                 <span slot="heading">
-                  ${this.supervisor.localize(
-                    `dialog.system_check.check.${check.name}.title`
-                  ) || check.name}
+                  ${this.supervisor!.localize(
+                    `dialog.system_check.check.${check.slug}.title`
+                  ) || check.slug}
                 </span>
                 <span slot="description">
-                  ${this.supervisor.localize(
-                    `dialog.system_check.check.${check.name}.description`
+                  ${this.supervisor!.localize(
+                    `dialog.system_check.check.${check.slug}.description`
                   )}
                 </span>
                 <ha-switch
-                  .check=${check.name}
+                  .slug=${check.slug}
                   @change=${this._checkToggled}
                   .checked=${check.enabled}
                   haptic
@@ -68,14 +69,12 @@ class HassioSystemChecksDialog extends LitElement {
   }
 
   public async showDialog(dialogParams: SystemChecksParams): Promise<void> {
-    this._opened = true;
     this.supervisor = dialogParams.supervisor;
     await this.updateComplete;
   }
 
   public closeDialog(): void {
     this.supervisor = undefined;
-    this._opened = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -91,13 +90,13 @@ class HassioSystemChecksDialog extends LitElement {
     const check = ev.currentTarget as any;
 
     try {
-      await setCheckOption(this.hass, check.check, { enabled: check.checked });
+      await setCheckOptions(this.hass, check.slug, { enabled: check.checked });
       fireEvent(this, "supervisor-collection-refresh", {
         collection: "resolution",
       });
     } catch (err) {
       showAlertDialog(this, {
-        title: this.supervisor.localize(
+        title: this.supervisor!.localize(
           "dialog.system_check.failed_to_set_option"
         ),
         text: extractApiErrorMessage(err),
