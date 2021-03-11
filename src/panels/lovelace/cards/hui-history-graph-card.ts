@@ -161,7 +161,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           this._cacheConfig!.cacheKey,
           this._cacheConfig!,
           this.hass!.localize,
-          this.hass!.language.language
+          this.hass!.locale.language
         )),
       };
     } finally {

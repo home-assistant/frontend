@@ -94,7 +94,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${lovelaceTabs}
-        .columns=${this._columns(this.hass.language.language)}
+        .columns=${this._columns(this.hass.locale.language)}
         .data=${this._resources}
         .noDataText=${this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.no_resources"

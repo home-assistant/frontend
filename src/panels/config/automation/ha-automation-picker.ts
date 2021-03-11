@@ -83,7 +83,7 @@ class HaAutomationPicker extends LitElement {
               ${automation.attributes.last_triggered
                 ? formatDateTime(
                     new Date(automation.attributes.last_triggered),
-                    this.hass.language
+                    this.hass.locale
                   )
                 : this.hass.localize("ui.components.relative_time.never")}
             </div>
@@ -192,7 +192,7 @@ class HaAutomationPicker extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
-        .columns=${this._columns(this.narrow, this.hass.language.language)}
+        .columns=${this._columns(this.narrow, this.hass.locale.language)}
         .data=${this._automations(this.automations)}
         id="entity_id"
         .noDataText=${this.hass.localize(

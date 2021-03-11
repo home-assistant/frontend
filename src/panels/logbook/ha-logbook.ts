@@ -63,7 +63,7 @@ class HaLogbook extends LitElement {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const languageChanged =
       oldHass === undefined ||
-      oldHass.language.language !== this.hass.language.language;
+      oldHass.locale.language !== this.hass.locale.language;
 
     return (
       changedProps.has("entries") ||
@@ -77,7 +77,7 @@ class HaLogbook extends LitElement {
 
     if (
       oldHass === undefined ||
-      oldHass.language.language !== this.hass.language.language
+      oldHass.locale.language !== this.hass.locale.language
     ) {
       this._rtl = computeRTL(this.hass);
     }
@@ -143,7 +143,7 @@ class HaLogbook extends LitElement {
             new Date(previous.when).toDateString())
           ? html`
               <h4 class="date">
-                ${formatDate(new Date(item.when), this.hass.language)}
+                ${formatDate(new Date(item.when), this.hass.locale)}
               </h4>
             `
           : html``}
@@ -208,7 +208,7 @@ class HaLogbook extends LitElement {
                 <span
                   >${formatTimeWithSeconds(
                     new Date(item.when),
-                    this.hass.language
+                    this.hass.locale
                   )}</span
                 >
                 -

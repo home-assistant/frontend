@@ -50,7 +50,7 @@ class MoreInfoSun extends LitElement {
             <div class="value">
               ${formatTime(
                 item === "ris" ? risingDate : settingDate,
-                this.hass.language
+                this.hass.locale
               )}
             </div>
           </div>
@@ -61,10 +61,7 @@ class MoreInfoSun extends LitElement {
           ${this.hass.localize("ui.dialogs.more_info_control.sun.elevation")}
         </div>
         <div class="value">
-          ${formatNumber(
-            this.stateObj.attributes.elevation,
-            this.hass.language
-          )}
+          ${formatNumber(this.stateObj.attributes.elevation, this.hass.locale)}
         </div>
       </div>
     `;

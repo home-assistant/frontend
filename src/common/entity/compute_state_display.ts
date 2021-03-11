@@ -11,7 +11,7 @@ import { computeStateDomain } from "./compute_state_domain";
 export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
-  language: FrontendTranslationData,
+  locale: FrontendTranslationData,
   state?: string
 ): string => {
   const compareState = state !== undefined ? state : stateObj.state;
@@ -21,7 +21,7 @@ export const computeStateDisplay = (
   }
 
   if (stateObj.attributes.unit_of_measurement) {
-    return `${formatNumber(compareState, language)} ${
+    return `${formatNumber(compareState, locale)} ${
       stateObj.attributes.unit_of_measurement
     }`;
   }
@@ -36,7 +36,7 @@ export const computeStateDisplay = (
         stateObj.attributes.month - 1,
         stateObj.attributes.day
       );
-      return formatDate(date, language);
+      return formatDate(date, locale);
     }
     if (!stateObj.attributes.has_date) {
       const now = new Date();
@@ -49,7 +49,7 @@ export const computeStateDisplay = (
         stateObj.attributes.hour,
         stateObj.attributes.minute
       );
-      return formatTime(date, language);
+      return formatTime(date, locale);
     }
 
     date = new Date(
@@ -59,7 +59,7 @@ export const computeStateDisplay = (
       stateObj.attributes.hour,
       stateObj.attributes.minute
     );
-    return formatDateTime(date, language);
+    return formatDateTime(date, locale);
   }
 
   if (domain === "humidifier") {
@@ -68,8 +68,9 @@ export const computeStateDisplay = (
     }
   }
 
+  // `counter` and `number` domains do not have a unit of measurement but should still use `formatNumber`
   if (domain === "counter" || domain === "number") {
-    return formatNumber(compareState, language);
+    return formatNumber(compareState, locale);
   }
 
   return (

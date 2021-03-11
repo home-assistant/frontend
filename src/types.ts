@@ -196,16 +196,16 @@ export interface HomeAssistant {
   selectedTheme?: ThemeSettings | null;
   panels: Panels;
   panelUrl: string;
-
   // i18n
-  // current effective language and number_format, in that order:
+  // current effective language in that order:
   //   - backend saved user selected lanugage
   //   - language in local appstorage
   //   - browser language
   //   - english (en)
-  language: FrontendTranslationData;
+  language: string;
   // local stored language, keep that name for backward compability
-  selectedLanguage: FrontendTranslationData | null;
+  selectedLanguage: string | null;
+  locale: FrontendTranslationData;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;

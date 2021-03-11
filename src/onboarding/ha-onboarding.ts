@@ -296,7 +296,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this.initializeHass(auth, conn);
     // Load config strings for integrations
     (this as any)._loadFragmentTranslations(
-      this.hass!.language.language,
+      this.hass!.locale.language,
       "config"
     );
     // Make sure hass is initialized + the config/user callbacks have called.

@@ -169,7 +169,7 @@ class HomeAssistantMain extends LitElement {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     // Make app-drawer adjust to a potential LTR/RTL change
-    if (oldHass && oldHass.language.language !== this.hass!.language.language) {
+    if (oldHass && oldHass.locale.language !== this.hass!.locale.language) {
       this.drawer._resetPosition();
     }
   }

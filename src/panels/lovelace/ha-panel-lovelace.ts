@@ -68,7 +68,7 @@ class LovelacePanel extends LitElement {
     if (
       this.lovelace &&
       this.hass &&
-      this.lovelace.language !== this.hass.language.language
+      this.lovelace.language !== this.hass.locale.language
     ) {
       // language has been changed, rebuild UI
       this._setLovelaceConfig(this.lovelace.config, this.lovelace.mode);
@@ -285,7 +285,7 @@ class LovelacePanel extends LitElement {
       mode,
       urlPath: this.urlPath,
       editMode: this.lovelace ? this.lovelace.editMode : false,
-      language: this.hass!.language.language,
+      language: this.hass!.locale.language,
       enableFullEditMode: () => {
         if (!editorLoaded) {
           editorLoaded = true;

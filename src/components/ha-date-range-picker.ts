@@ -43,10 +43,7 @@ export class HaDateRangePicker extends LitElement {
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        !oldHass ||
-        oldHass.language.language !== this.hass.language.language
-      ) {
+      if (!oldHass || oldHass.locale.language !== this.hass.locale.language) {
         this._hour24format = this._compute24hourFormat();
         this._rtlDirection = computeRTLDirection(this.hass);
       }
@@ -65,7 +62,7 @@ export class HaDateRangePicker extends LitElement {
         <div slot="input" class="date-range-inputs">
           <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
           <paper-input
-            .value=${formatDateTime(this.startDate, this.hass.language)}
+            .value=${formatDateTime(this.startDate, this.hass.locale)}
             .label=${this.hass.localize(
               "ui.components.date-range-picker.start_date"
             )}
@@ -74,7 +71,7 @@ export class HaDateRangePicker extends LitElement {
             readonly
           ></paper-input>
           <paper-input
-            .value=${formatDateTime(this.endDate, this.hass.language)}
+            .value=${formatDateTime(this.endDate, this.hass.locale)}
             label=${this.hass.localize(
               "ui.components.date-range-picker.end_date"
             )}
@@ -114,7 +111,7 @@ export class HaDateRangePicker extends LitElement {
 
   private _compute24hourFormat() {
     return (
-      new Intl.DateTimeFormat(this.hass.language.language, {
+      new Intl.DateTimeFormat(this.hass.locale.language, {
         hour: "numeric",
       })
         .formatToParts(new Date(2020, 0, 1, 13))

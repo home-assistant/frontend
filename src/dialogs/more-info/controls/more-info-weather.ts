@@ -68,7 +68,7 @@ class MoreInfoWeather extends LitElement {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
       !oldHass ||
-      oldHass.language.language !== this.hass.language.language ||
+      oldHass.locale.language !== this.hass.locale.language ||
       oldHass.config.unit_system !== this.hass.config.unit_system
     ) {
       return true;
@@ -91,7 +91,7 @@ class MoreInfoWeather extends LitElement {
         <div>
           ${formatNumber(
             this.stateObj.attributes.temperature,
-            this.hass.language
+            this.hass.locale
           )}
           ${getWeatherUnit(this.hass, "temperature")}
         </div>
@@ -106,7 +106,7 @@ class MoreInfoWeather extends LitElement {
               <div>
                 ${formatNumber(
                   this.stateObj.attributes.pressure,
-                  this.hass.language
+                  this.hass.locale
                 )}
                 ${getWeatherUnit(this.hass, "air_pressure")}
               </div>
@@ -123,7 +123,7 @@ class MoreInfoWeather extends LitElement {
               <div>
                 ${formatNumber(
                   this.stateObj.attributes.humidity,
-                  this.hass.language
+                  this.hass.locale
                 )}
                 %
               </div>
@@ -157,7 +157,7 @@ class MoreInfoWeather extends LitElement {
               <div>
                 ${formatNumber(
                   this.stateObj.attributes.visibility,
-                  this.hass.language
+                  this.hass.locale
                 )}
                 ${getWeatherUnit(this.hass, "length")}
               </div>
@@ -184,7 +184,7 @@ class MoreInfoWeather extends LitElement {
                         <div class="main">
                           ${formatTimeWeekday(
                             new Date(item.datetime),
-                            this.hass.language
+                            this.hass.locale
                           )}
                         </div>
                       `
@@ -194,17 +194,17 @@ class MoreInfoWeather extends LitElement {
                         <div class="main">
                           ${formatDateWeekday(
                             new Date(item.datetime),
-                            this.hass.language
+                            this.hass.locale
                           )}
                         </div>
                         <div class="templow">
-                          ${formatNumber(item.templow, this.hass.language)}
+                          ${formatNumber(item.templow, this.hass.locale)}
                           ${getWeatherUnit(this.hass, "temperature")}
                         </div>
                       `
                     : ""}
                   <div class="temp">
-                    ${formatNumber(item.temperature, this.hass.language)}
+                    ${formatNumber(item.temperature, this.hass.locale)}
                     ${getWeatherUnit(this.hass, "temperature")}
                   </div>
                 </div>

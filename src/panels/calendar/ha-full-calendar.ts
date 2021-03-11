@@ -209,15 +209,15 @@ export class HAFullCalendar extends LitElement {
 
     const oldHass = changedProps.get("hass") as HomeAssistant;
 
-    if (oldHass && oldHass.language.language !== this.hass.language.language) {
-      this.calendar.setOption("locale", this.hass.language.language);
+    if (oldHass && oldHass.locale.language !== this.hass.locale.language) {
+      this.calendar.setOption("locale", this.hass.locale.language);
     }
   }
 
   protected firstUpdated(): void {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
-      locale: this.hass.language.language,
+      locale: this.hass.locale.language,
       initialView: this.initialView,
     };
 

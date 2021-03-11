@@ -63,16 +63,16 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
     ) {
       return `${formatNumber(
         stateObj.attributes.target_temp_low,
-        this.hass.language
+        this.hass.locale
       )} - ${formatNumber(
         stateObj.attributes.target_temp_high,
-        this.hass.language
+        this.hass.locale
       )} ${hass.config.unit_system.temperature}`;
     }
     if (stateObj.attributes.temperature != null) {
       return `${formatNumber(
         stateObj.attributes.temperature,
-        this.hass.language
+        this.hass.locale
       )} ${hass.config.unit_system.temperature}`;
     }
 
@@ -80,11 +80,7 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
   }
 
   _localizeState(stateObj) {
-    return computeStateDisplay(
-      this.hass.localize,
-      stateObj,
-      this.hass.language
-    );
+    return computeStateDisplay(this.hass.localize, stateObj, this.hass.locale);
   }
 }
 customElements.define("ha-water_heater-state", HaWaterHeaterState);

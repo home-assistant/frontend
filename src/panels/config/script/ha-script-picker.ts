@@ -89,7 +89,7 @@ class HaScriptPicker extends LitElement {
               ${script.attributes.last_triggered
                 ? formatDateTime(
                     new Date(script.attributes.last_triggered),
-                    this.hass.language
+                    this.hass.locale
                   )
                 : this.hass.localize("ui.components.relative_time.never")}
             </div>
@@ -135,7 +135,7 @@ class HaScriptPicker extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
-        .columns=${this._columns(this.hass.language.language)}
+        .columns=${this._columns(this.hass.locale.language)}
         .data=${this._scripts(this.scripts)}
         id="entity_id"
         .noDataText=${this.hass.localize(

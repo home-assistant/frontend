@@ -33,11 +33,11 @@ class NumberFormatRow extends LitElement {
         <ha-paper-dropdown-menu
           label="Number Format"
           dynamic-align
-          .disabled=${this.hass.language === undefined}
+          .disabled=${this.hass.locale === undefined}
         >
           <paper-listbox
             slot="dropdown-content"
-            .selected=${this.hass.language.number_format}
+            .selected=${this.hass.locale.number_format}
             @iron-select=${this._handleFormatSelection}
             attr-for-selected="format"
           >
@@ -50,7 +50,7 @@ class NumberFormatRow extends LitElement {
                 </div>
                 <div secondary>
                   ${formatNumber(1234567.89, {
-                    language: this.hass.language.language,
+                    language: this.hass.locale.language,
                     number_format: NumberFormat.auto,
                   })}
                 </div>
@@ -65,7 +65,7 @@ class NumberFormatRow extends LitElement {
                 </div>
                 <div secondary>
                   ${formatNumber(1234567.89, {
-                    language: this.hass.language.language,
+                    language: this.hass.locale.language,
                     number_format: NumberFormat.system,
                   })}
                 </div>
@@ -95,7 +95,7 @@ class NumberFormatRow extends LitElement {
                 </div>
                 <div secondary>
                   ${formatNumber(1234567.89, {
-                    language: this.hass.language.language,
+                    language: this.hass.locale.language,
                     number_format: NumberFormat.none,
                   })}
                 </div>
@@ -109,8 +109,8 @@ class NumberFormatRow extends LitElement {
 
   private async _handleFormatSelection(ev: CustomEvent) {
     fireEvent(this, "hass-language-select", {
-      language: {
-        ...this.hass.language,
+      locale: {
+        ...this.hass.locale,
         number_format: ev.detail.item.format,
       },
     });

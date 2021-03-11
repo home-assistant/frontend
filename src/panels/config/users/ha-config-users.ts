@@ -126,7 +126,7 @@ export class HaConfigUsers extends LitElement {
         .route=${this.route}
         backPath="/config"
         .tabs=${configSections.persons}
-        .columns=${this._columns(this.narrow, this.hass.language.language)}
+        .columns=${this._columns(this.narrow, this.hass.locale.language)}
         .data=${this._users}
         @row-click=${this._editUser}
         hasFab

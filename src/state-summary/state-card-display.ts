@@ -56,7 +56,7 @@ export class StateCardDisplay extends LitElement {
             : computeStateDisplay(
                 this.hass!.localize,
                 this.stateObj,
-                this.hass.language
+                this.hass.locale
               )}
         </div>
       </div>
@@ -70,7 +70,7 @@ export class StateCardDisplay extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.language.language !== this.hass.language.language) {
+    if (!oldHass || oldHass.locale.language !== this.hass.locale.language) {
       this.rtl = computeRTL(this.hass);
     }
   }

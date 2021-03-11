@@ -199,11 +199,9 @@ export const provideHass = (
     },
     panelUrl: "lovelace",
     defaultPanel: DEFAULT_PANEL,
-    language: {
-      language: localLanguage,
-      number_format: NumberFormat.auto,
-    },
-    selectedLanguage: {
+    language: localLanguage,
+    selectedLanguage: localLanguage,
+    locale: {
       language: localLanguage,
       number_format: NumberFormat.auto,
     },

@@ -6,7 +6,7 @@ import {
   NumberFormat,
 } from "../../../src/data/translation";
 
-const languageData: FrontendTranslationData = {
+const localeData: FrontendTranslationData = {
   language: "en",
   number_format: NumberFormat.comma_decimal,
 };
@@ -23,7 +23,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, languageData),
+      computeStateDisplay(localize, stateObj, localeData),
       "component.binary_sensor.state._.off"
     );
   });
@@ -37,7 +37,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, languageData),
+      computeStateDisplay(localize, stateObj, localeData),
       "component.binary_sensor.state.moisture.off"
     );
   });
@@ -57,7 +57,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, languageData),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "component.binary_sensor.state.invalid_device_class.off"
     );
   });
@@ -71,7 +71,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, languageData),
+      computeStateDisplay(localize, stateObj, localeData),
       "123 m"
     );
   });
@@ -85,7 +85,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, languageData),
+      computeStateDisplay(localize, stateObj, localeData),
       "1,234.5 m"
     );
   });
@@ -105,7 +105,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, languageData),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "state.default.unknown"
     );
   });
@@ -125,7 +125,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, languageData),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "state.default.unavailable"
     );
   });
@@ -143,7 +143,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, languageData),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "component.sensor.state._.custom_state"
     );
   });
@@ -164,7 +164,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, languageData),
+      computeStateDisplay(localize, stateObj, localeData),
       "November 18, 2017, 11:12 AM"
     );
   });
@@ -185,7 +185,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, languageData),
+      computeStateDisplay(localize, stateObj, localeData),
       "November 18, 2017"
     );
   });
@@ -206,7 +206,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, languageData),
+      computeStateDisplay(localize, stateObj, localeData),
       "11:12 AM"
     );
   });
@@ -224,7 +224,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, languageData),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "state.default.unavailable"
     );
   });
@@ -240,7 +240,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, languageData),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "My Custom State"
     );
   });

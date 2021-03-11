@@ -1,7 +1,7 @@
 import { HomeAssistant } from "../../types";
 
 export function computeRTL(hass: HomeAssistant) {
-  const lang = hass.language.language || "en";
+  const lang = hass.locale.language || "en";
   if (hass.translationMetadata.translations[lang]) {
     return hass.translationMetadata.translations[lang].isRTL || false;
   }

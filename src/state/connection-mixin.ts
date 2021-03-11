@@ -40,11 +40,14 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         user: null as any,
         panelUrl: (this as any)._panelUrl,
         defaultPanel: DEFAULT_PANEL,
-        language: {
+        get language() {
+          return this.locale.language;
+        },
+        selectedLanguage: null,
+        locale: {
           language: getLocalLanguage(),
           number_format: NumberFormat.auto,
         },
-        selectedLanguage: null,
         resources: null as any,
         localize: () => "",
 
@@ -133,7 +136,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         loadBackendTranslation: (category, integration?, configFlow?) =>
           // @ts-ignore
           this._loadHassTranslations(
-            this.hass?.language.language,
+            this.hass?.locale.language,
             category,
             integration,
             configFlow

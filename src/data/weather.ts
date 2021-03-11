@@ -133,7 +133,7 @@ export const getWind = (
   speed: string,
   bearing: string
 ): string => {
-  const speedText = `${formatNumber(speed, hass.language)} ${getWeatherUnit(
+  const speedText = `${formatNumber(speed, hass.locale)} ${getWeatherUnit(
     hass!,
     "wind_speed"
   )}`;
@@ -206,7 +206,7 @@ export const getSecondaryWeatherAttribute = (
           <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
         `
       : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
-    ${formatNumber(value, hass.language, { maximumFractionDigits: 1 })}
+    ${formatNumber(value, hass.locale, { maximumFractionDigits: 1 })}
     ${getWeatherUnit(hass!, attribute)}
   `;
 };

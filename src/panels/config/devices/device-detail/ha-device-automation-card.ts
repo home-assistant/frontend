@@ -50,7 +50,7 @@ export abstract class HaDeviceAutomationCard<
       return true;
     }
     const oldHass = changedProps.get("hass");
-    if (!oldHass || this.hass.language.language !== oldHass.language.language) {
+    if (!oldHass || this.hass.locale.language !== oldHass.locale.language) {
       return true;
     }
     return false;

@@ -67,7 +67,7 @@ class HuiTimestampDisplay extends LitElement {
       return html` ${this._relative} `;
     }
     if (format in FORMATS) {
-      return html` ${FORMATS[format](this.ts, this.hass.language)} `;
+      return html` ${FORMATS[format](this.ts, this.hass.locale)} `;
     }
     return html`${this.hass.localize(
       "ui.panel.lovelace.components.timestamp-display.invalid_format"

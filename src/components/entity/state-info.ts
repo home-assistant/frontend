@@ -84,7 +84,7 @@ class StateInfo extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.language.language !== this.hass.language.language) {
+    if (!oldHass || oldHass.locale.language !== this.hass.locale.language) {
       this.rtl = computeRTL(this.hass);
     }
   }

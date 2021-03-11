@@ -661,7 +661,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           : "/config"}
         .route=${this.route}
         .tabs=${configSections.integrations}
-        .columns=${this._columns(this.narrow, this.hass.language.language)}
+        .columns=${this._columns(this.narrow, this.hass.locale.language)}
         .data=${filteredEntities}
         .filter=${this._filter}
         selectable

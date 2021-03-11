@@ -89,7 +89,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   id="input"
                 ></ha-slider>
                 <span class="state">
-                  ${formatNumber(Number(stateObj.state), this.hass.language)}
+                  ${formatNumber(Number(stateObj.state), this.hass.locale)}
                   ${stateObj.attributes.unit_of_measurement}
                 </span>
               </div>

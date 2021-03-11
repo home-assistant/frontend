@@ -1,20 +1,20 @@
 import { FrontendTranslationData, NumberFormat } from "../../data/translation";
 
 /**
- * Formats a number based on the specified language with thousands separator(s) and decimal character for better legibility.
+ * Formats a number based on the user's preference with thousands separator(s) and decimal character for better legibility.
  *
  * @param num The number to format
- * @param language The user-selected language and number format, from `hass.language`
+ * @param locale The user-selected language and number format, from `hass.locale`
  * @param options Intl.NumberFormatOptions to use
  */
 export const formatNumber = (
   num: string | number,
-  language?: FrontendTranslationData,
+  locale?: FrontendTranslationData,
   options?: Intl.NumberFormatOptions
 ): string => {
   let format: string | string[] | undefined;
 
-  switch (language?.number_format) {
+  switch (locale?.number_format) {
     case NumberFormat.comma_decimal:
       format = ["en-US", "en"]; // Use United States with fallback to English formatting 1,234,567.89
       break;
@@ -28,7 +28,7 @@ export const formatNumber = (
       format = undefined;
       break;
     default:
-      format = language?.language;
+      format = locale?.language;
   }
 
   // Polyfill for Number.isNaN, which is more reliable than the global isNaN()
@@ -41,7 +41,7 @@ export const formatNumber = (
   if (
     !Number.isNaN(Number(num)) &&
     Intl &&
-    language?.number_format !== NumberFormat.none
+    locale?.number_format !== NumberFormat.none
   ) {
     try {
       return new Intl.NumberFormat(

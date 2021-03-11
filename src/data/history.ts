@@ -235,7 +235,7 @@ export const computeHistory = (
 
     if (!unit) {
       timelineDevices.push(
-        processTimelineEntity(localize, hass.language, stateInfo)
+        processTimelineEntity(localize, hass.locale, stateInfo)
       );
     } else if (unit in lineChartDevices) {
       lineChartDevices[unit].push(stateInfo);

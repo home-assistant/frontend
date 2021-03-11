@@ -82,7 +82,7 @@ export class MoreInfoHistory extends LitElement {
         hoursToShow: 24,
       },
       this.hass!.localize,
-      this.hass!.language.language
+      this.hass!.locale.language
     );
   }
 }

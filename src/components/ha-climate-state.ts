@@ -53,14 +53,14 @@ class HaClimateState extends LitElement {
     if (this.stateObj.attributes.current_temperature != null) {
       return `${formatNumber(
         this.stateObj.attributes.current_temperature,
-        this.hass.language
+        this.hass.locale
       )} ${this.hass.config.unit_system.temperature}`;
     }
 
     if (this.stateObj.attributes.current_humidity != null) {
       return `${formatNumber(
         this.stateObj.attributes.current_humidity,
-        this.hass.language
+        this.hass.locale
       )} %`;
     }
 
@@ -78,17 +78,17 @@ class HaClimateState extends LitElement {
     ) {
       return `${formatNumber(
         this.stateObj.attributes.target_temp_low,
-        this.hass.language
+        this.hass.locale
       )}-${formatNumber(
         this.stateObj.attributes.target_temp_high,
-        this.hass.language
+        this.hass.locale
       )} ${this.hass.config.unit_system.temperature}`;
     }
 
     if (this.stateObj.attributes.temperature != null) {
       return `${formatNumber(
         this.stateObj.attributes.temperature,
-        this.hass.language
+        this.hass.locale
       )} ${this.hass.config.unit_system.temperature}`;
     }
     if (
@@ -97,17 +97,17 @@ class HaClimateState extends LitElement {
     ) {
       return `${formatNumber(
         this.stateObj.attributes.target_humidity_low,
-        this.hass.language
+        this.hass.locale
       )}-${formatNumber(
         this.stateObj.attributes.target_humidity_high,
-        this.hass.language
+        this.hass.locale
       )}%`;
     }
 
     if (this.stateObj.attributes.humidity != null) {
       return `${formatNumber(
         this.stateObj.attributes.humidity,
-        this.hass.language
+        this.hass.locale
       )} %`;
     }
 
