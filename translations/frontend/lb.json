@@ -103,16 +103,115 @@
         }
     },
     "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Standard",
+                    "header": "Audio",
+                    "input": "Agab",
+                    "output": "Ausgab"
+                },
+                "network": {
+                    "container": "Container",
+                    "disabled": "Deaktivéiert",
+                    "header": "Netzwierk",
+                    "host": "Host"
+                },
+                "options": {
+                    "edit_in_ui": "An der UI änneren",
+                    "edit_in_yaml": "Am YAML änneren",
+                    "header": "Optiounen",
+                    "invalid_yaml": "Ongëltege YAML"
+                }
+            },
+            "dashboard": {
+                "capability": {
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "auth",
+                        "docker": "docker",
+                        "hardware": "hardware",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "host",
+                        "host_pid": "host pid",
+                        "rating": "bewäertung",
+                        "stage": "stage"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "sauvegarde",
+                        "default": "Standard",
+                        "homeassistant": "homeassistant",
+                        "manager": "manager"
+                    }
+                },
+                "changelog": "Changelog",
+                "cpu_usage": "Add-on CPU Verbrauch",
+                "hostname": "Host Numm",
+                "new_update_available": "{name} {version} ass disponibel",
+                "option": {
+                    "auto_update": {
+                        "description": "Automatesch Aktualiséierung vum Add-on wann eng nei Versioun disponibel ass",
+                        "title": "Automatesch Aktualiséierung"
+                    },
+                    "boot": {
+                        "title": "Beim Booten starten"
+                    },
+                    "ingress_panel": {
+                        "description": "Dësen Add-on op deng Säite Läischt beisetzen",
+                        "title": "An der Säite Läischt uweisen"
+                    },
+                    "protected": {
+                        "description": "Späert erhéichten Systemzougang vum Add-on",
+                        "title": "Schutzmodus"
+                    },
+                    "watchdog": {
+                        "description": "Dëst start den Add-on frësch wann en ofstierzt",
+                        "title": "Watchdog"
+                    }
+                },
+                "ram_usage": "Add-on RAM Verbrauch"
+            },
+            "documentation": {
+                "get_documentation": "Feeler beim liesen vun add-on Dokumentatioun, {error}"
+            },
+            "logs": {
+                "get_logs": "Feeler beim liesen vun add-on logs, {error}"
+            }
+        },
         "common": {
             "close": "Zoumaachen",
+            "description": "Beschreiwung",
             "error": {
                 "unknown": "Onbekannte Feeler",
                 "update_failed": "Feeler bei der Aktualiséierung"
             },
+            "failed_to_restart_name": "Feeler beim frësch starten vun {name}",
+            "failed_to_update_name": "Feeler beim Aktualiséieren vun {name}",
             "learn_more": "Méi léieren",
             "new_version_available": "Nei Versioun disponibel",
+            "no": "Nee",
+            "refresh": "Aktualiséieren",
+            "reload": "Nei lueden",
+            "reset_defaults": "Optiounen op Standard zerécksetzen",
+            "reset_options": "Optiounen zerécksetzen",
             "restart": "Frësch starten",
-            "running_version": "Du benotz de Moment Versioun {version}"
+            "restart_name": "{name} frësch starten",
+            "running_version": "Du benotz de Moment Versioun {version}",
+            "save": "Späicheren",
+            "show_more": "Méi Informatiounen iwwert dëst uweisen",
+            "yes": "Jo"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Sécher fir all deng Optiounen zeréck ze setzen?",
+                "title": "Optiounen zerécksetzen"
+            },
+            "restart": {
+                "text": "Sécher fir {name} frësch ze starten?",
+                "title": "{name} frësch starten"
+            }
         },
         "dialog": {
             "network": {
@@ -162,7 +261,10 @@
             }
         },
         "my": {
-            "error_addon_not_found": "Add-on net fonnt"
+            "error": "Onbekannte Feeler opgetrueden",
+            "error_addon_not_found": "Add-on net fonnt",
+            "faq_link": "Meng Home Assistant FAQ",
+            "not_supported": "Dëse Redirect gëtt net vun  Denger Home Assistant Instanz ënnerstëtzt. Kuck de {link} fir déi ënnerstëtzte Redirects an d'Versioun fir déi se agefouert goufen."
         },
         "snapshot": {
             "addons": "Add-ons",
@@ -193,6 +295,7 @@
             "upload_snapshot": "Snapshot eroplueden"
         },
         "store": {
+            "missing_addons": "Add-ons feelen ? Aktivéier den Avancéierte Modus an denger Benotzer Profil Säit",
             "no_results_found": "Keng Resultater fonnt am {repository}.",
             "registries": "Registry",
             "repositories": "Depoten"
@@ -2636,6 +2739,17 @@
                         "title": "Modeller",
                         "unknown_error_template": "Onbekannte Feeler beim duerstelle vum Modell"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Zeréck goen",
+                "supervisor": {
+                    "ask": "No Hëllef froen",
+                    "observer": "Observateur iwwerpréiwen",
+                    "reboot": "Probéier ee Reboot vum Host",
+                    "system_health": "System Zoustand iwwerpréiwen",
+                    "title": "Konnt den Supervisor Panneau net lueden!",
+                    "wait": "Wanns Du just gestart hues, stell sécher dass den Supervisor genuch Zäit huet fir ze starten."
                 }
             },
             "history": {

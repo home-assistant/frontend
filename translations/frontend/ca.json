@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Torna",
+                "supervisor": {
+                    "ask": "Sol·licita ajuda",
+                    "observer": "Comprova l'observador",
+                    "reboot": "Intenta reiniciar l'amfitrió",
+                    "system_health": "Comprova l'estat del sistema",
+                    "title": "No s'ha pogut carregar el panell del Supervisor!",
+                    "wait": "Si acabes de començar, assegura't que has deixat passar prou temps perquè el Supervisor s'iniciï."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "La setmana passada",

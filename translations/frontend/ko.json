@@ -358,7 +358,7 @@
                 "text": "변경 사항과 함께 추가 기능을 다시 시작하시겠습니까?"
             },
             "update": {
-                "create_snapshot": "업데이트하기 전에 {name}의 스냅샷을 만들기",
+                "create_snapshot": "업데이트하기 전에 {name}의 스냅샷 만들기",
                 "snapshot": "스냅샷",
                 "snapshotting": "{name} 스냅샷을 만드는 중",
                 "updating": "{name}을(를) {version} 버전으로 업데이트 중"
@@ -1226,7 +1226,7 @@
                         "devices": "기기"
                     },
                     "delete": {
-                        "confirmation_text": "이 영역에 속한 모든 장치가 할당 해제됩니다.",
+                        "confirmation_text": "이 영역에 속한 모든 기기가 할당 해제됩니다.",
                         "confirmation_title": "이 영역을 삭제하시겠습니까?"
                     },
                     "description": "기기와 구성요소를 영역으로 그룹화합니다",
@@ -1643,10 +1643,10 @@
                             "enable_ha_skill": "Alexa 에 Home Assistant 스킬 사용하기",
                             "enable_state_reporting": "상태 보고 활성화",
                             "info": "Home Assistant Cloud의 Alexa 연동 기능으로 Alexa가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
-                            "info_state_reporting": "상태 보고를 활성화하면 Home Assistant는 노출된 구성요소의 모든 상태 변경 사항을 Amazon 에 보냅니다. 이를 통해 Alexa 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있으며, 상태 변경을 사용하여 루틴을 만들 수 있습니다.",
+                            "info_state_reporting": "상태 보고를 활성화하면 Home Assistant는 노출된 구성요소의 모든 상태 변경 사항을 Amazon에 보냅니다. 이를 통해 Alexa 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있으며, 상태 변경을 사용하여 루틴을 만들 수 있습니다.",
                             "manage_entities": "구성요소 관리",
                             "state_reporting_error": "상태 보고를 {enable_disable}할 수 없습니다.",
-                            "sync_entities": "구성요소를 Amazon 에 동기화",
+                            "sync_entities": "구성요소를 Amazon에 동기화",
                             "sync_entities_error": "구성요소 동기화를 하지 못했습니다:",
                             "title": "Alexa"
                         },
@@ -1662,15 +1662,15 @@
                             "enter_pin_hint": "보안 기기 사용 PIN 입력",
                             "enter_pin_info": "보안 기기를 제어하기 위한 PIN 을 설정해주세요. 보안 기기란 현관문, 차고문, 도어락과 같은 기기입니다. Google 어시스턴트를 통해 이러한 기기를 제어할 때 PIN 을 입력하거나 말씀해주셔야 합니다.",
                             "info": "Home Assistant Cloud의 Google 어시스턴트 연동 기능으로 Google 어시스턴트가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
-                            "info_state_reporting": "상태 보고를 활성화하면 Home Assistant는 노출된 구성요소의 모든 상태 변경 사항을 Google 에 보냅니다. 이를 통해 Google 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있습니다.",
+                            "info_state_reporting": "상태 보고를 활성화하면 Home Assistant는 노출된 구성요소의 모든 상태 변경 사항을 Google에 보냅니다. 이를 통해 Google 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있습니다.",
                             "manage_entities": "구성요소 관리",
                             "security_devices": "보안 기기",
-                            "sync_entities": "구성요소를 Google 에 동기화",
-                            "sync_entities_404_message": "구성요소를 Google 과 동기화하지 못했습니다. Google 에 'Hey Google, 기기 동기화해줘' 라고 말씀하셔서 구성요소를 동기화해주세요.",
+                            "sync_entities": "구성요소를 Google에 동기화",
+                            "sync_entities_404_message": "구성요소를 Google과 동기화하지 못했습니다. Google에 'Hey Google, 기기 동기화해줘' 라고 말씀하셔서 구성요소를 동기화해주세요.",
                             "title": "Google 어시스턴트"
                         },
                         "integrations": "서비스 연동",
-                        "integrations_introduction": "Home Assistant Cloud 연동으로 Home Assistant 구성요소를 인터넷상에 직접 공개 노출시키지 않고도 클라우드를 통해 서비스에 연결시킬 수 있습니다.",
+                        "integrations_introduction": "Home Assistant Cloud에 연동하면 Home Assistant 인스턴스를 인터넷에 공개적으로 노출하지 않고도 클라우드를 통해 서비스에 연결할 수 있습니다.",
                         "integrations_introduction2": "웹사이트를 방문하여 다음을 확인해보세요. ",
                         "integrations_link_all_features": "사용 가능한 모든 기능",
                         "manage_account": "계정 관리",
@@ -1704,7 +1704,7 @@
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "웹 훅을 비활성화하지 못했습니다:",
-                            "info": "웹 훅에 의해 트리거 되도록 구성된 모든 구성요소를 인터넷상에 공개 노출시키지 않고도 어디서나 Home Assistant로 데이터를 보낼 수 있는 공개된 액세스가 가능한 URL을 제공해드립니다.",
+                            "info": "웹 훅에 의해 트리거 되도록 구성된 모든 구성요소에 공개적으로 액세스 할 수 있는 URL을 제공하여 인스턴스를 인터넷에 노출하지 않고도 어디에서나 Home Assistant로 데이터를 보낼 수 있습니다.",
                             "link_learn_more": "웹 훅 기반 자동화 생성에 대해 더 알아보기.",
                             "loading": "읽는 중 ...",
                             "manage": "관리",
@@ -1770,7 +1770,7 @@
                         "manage_domains": "도메인 관리",
                         "not_exposed": "{selected}개의 구성요소가 노출되지 않음",
                         "not_exposed_entities": "노출되지 않은 구성요소",
-                        "sync_to_google": "변경 사항을 Google 에 동기화하는 중.",
+                        "sync_to_google": "변경 사항을 Google에 동기화하는 중.",
                         "title": "Google 어시스턴트"
                     },
                     "login": {
@@ -3002,6 +3002,17 @@
                         "title": "템플릿",
                         "unknown_error_template": "템플릿 구성 중 알 수 없는 오류가 발생했습니다"
                     }
+                }
+            },
+            "error": {
+                "go_back": "뒤로가기",
+                "supervisor": {
+                    "ask": "도움 요청하기",
+                    "observer": "Observer 확인하기",
+                    "reboot": "호스트 재부팅 시도하기",
+                    "system_health": "시스템 상태 확인하기",
+                    "title": "Supervisor 패널을 로드할 수 없습니다!",
+                    "wait": "방금 시작한 경우 Supervisor에게 시작할 충분한 시간을 주었는지 확인해주세요."
                 }
             },
             "history": {

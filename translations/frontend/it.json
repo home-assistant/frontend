@@ -1145,7 +1145,7 @@
                 "buttons": {
                     "add": "Aggiungi dispositivi tramite questo dispositivo",
                     "clusters": "Gestisci i cluster",
-                    "device_children": "Visualizza dispositivo",
+                    "device_children": "Visualizza dispositivo figlio",
                     "reconfigure": "Riconfigura dispositivo",
                     "remove": "Rimuovi dispositivo",
                     "view_in_visualization": "Visualizza in visualizzazione",
@@ -1154,7 +1154,7 @@
                 "confirmations": {
                     "remove": "Sei sicuro di voler rimuovere il dispositivo?"
                 },
-                "device_children": "Firma del dispositivo Zigbee",
+                "device_children": "Dispositivo figlio Zigbee",
                 "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Ultima visualizzazione",
                 "manuf": "da {manufacturer}",
@@ -1437,7 +1437,7 @@
                             "placeholder": "Descrizione facoltativa"
                         },
                         "edit_ui": "Modifica con l'Interfaccia Utente",
-                        "edit_yaml": "Modifica come YAML",
+                        "edit_yaml": "Modifica in YAML",
                         "enable_disable": "Abilitare/Disabilitare l'automazione",
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
@@ -2158,7 +2158,7 @@
                     "integration": "Integrazione",
                     "integration_not_found": "Integrazione non trovata.",
                     "new": "Configura una nuova integrazione",
-                    "no_integrations": "Sembra che tu non abbia ancora alcuna integrazione configurata. Fai clic sul pulsante in basso per aggiungere la tua prima integrazione!",
+                    "no_integrations": "Sembra che tu non abbia ancora nessuna integrazione configurata. Fai clic sul pulsante in basso per aggiungere la tua prima integrazione!",
                     "none": "Non hai ancora configurato niente",
                     "none_found": "Non sono state trovate integrazioni",
                     "none_found_detail": "Modifica i criteri di ricerca.",
@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Torna indietro",
+                "supervisor": {
+                    "ask": "Chiedere aiuto",
+                    "observer": "Controlla l'Observer",
+                    "reboot": "Prova a riavviare l'host",
+                    "system_health": "Controlla l'integrità del sistema",
+                    "title": "Impossibile caricare il pannello Supervisor!",
+                    "wait": "Se hai appena avviato, assicurati di aver dato al Supervisor abbastanza tempo per iniziare."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "Settimana scorsa",
@@ -3397,7 +3408,7 @@
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
                     },
                     "move_card": {
-                        "header": "Scegli una visualizzazione in cui spostare la scheda"
+                        "header": "Scegli una vista in cui spostare la scheda"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia utente di Lovelace con le tue aree e dispositivi se rimuovi la tua configurazione dell'interfaccia utente di Lovelace.",
@@ -3430,7 +3441,7 @@
                     },
                     "select_view": {
                         "dashboard_label": "Plancia",
-                        "header": "Scegliere una visualizzazione"
+                        "header": "Scegli una vista"
                     },
                     "sub-element-editor": {
                         "types": {
@@ -3473,7 +3484,7 @@
                     "last_changed": "Ultima modifica",
                     "no_data": "Trovate entità non utilizzate",
                     "search": "Cerca entità",
-                    "select_to_add": "Selezionare le entità che si desidera aggiungere a una scheda, quindi fare clic sul pulsante Aggiungi scheda.",
+                    "select_to_add": "Selezionare le entità che si desidera aggiungere a una vista, quindi fare clic sul pulsante Aggiungi scheda.",
                     "title": "Entità non utilizzate"
                 },
                 "views": {

@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Retour en arrière",
+                "supervisor": {
+                    "ask": "Demandez de l’aide",
+                    "observer": "Vérifiez l’Observer",
+                    "reboot": "Essayez un redémarrage de l’hôte",
+                    "system_health": "Vérifier la santé du système",
+                    "title": "Impossible de charger le panneau Supervisor!",
+                    "wait": "Si vous venez de commencer, assurez-vous d’avoir donné le superviseur suffisamment de temps pour commencer."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "La semaine dernière",
