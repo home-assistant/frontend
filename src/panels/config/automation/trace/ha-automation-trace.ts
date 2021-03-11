@@ -11,13 +11,17 @@ import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_da
 import { AutomationEntity } from "../../../../data/automation";
 import {
   AutomationTraceExtended,
+  getConfigFromPath,
   loadAutomationTrace,
   loadAutomationTraces,
 } from "../../../../data/automation_debug";
+import "../../../../components/ha-card";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
 import { configSections } from "../../ha-panel-config";
 import "./ha-timeline";
+
+const pathToName = (path: string) => path.split("/").join(" ");
 
 export class HaAutomationTracer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -49,67 +53,77 @@ export class HaAutomationTracer extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        <h1>Hello ${stateObj?.attributes.friendly_name}!</h1>
-        <button @click=${this._loadTrace}>Reload Trace</button>
-        ${this._trace
-          ? html`
-              <div class="trace">
-                <ha-timeline>
-                  Triggered at
-                  ${formatDateTimeWithSeconds(
-                    new Date(this._trace.timestamp.start),
-                    this.hass.language
-                  )}
-                </ha-timeline>
+        <ha-card
+          .header=${`Trace for ${
+            stateObj?.attributes.friendly_name || this._entityId
+          }`}
+        >
+          <button class="load-last" @click=${this._loadTrace}>
+            Load last trace
+          </button>
+          ${this._trace
+            ? html`
+                <div class="card-content">
+                  <ha-timeline>
+                    Triggered at
+                    ${formatDateTimeWithSeconds(
+                      new Date(this._trace.timestamp.start),
+                      this.hass.language
+                    )}
+                  </ha-timeline>
 
-                ${!this._trace.condition_trace
-                  ? ""
-                  : Object.entries(this._trace.condition_trace).map(
-                      ([path, value]) => html`
-                        <ha-timeline ?lastItem=${!value[0].result.result}>
-                          ${path}
-                          ${value[0].result.result ? "passed" : "failed"}
-                        </ha-timeline>
-                      `
-                    )}
-                ${!this._trace.action_trace
-                  ? ""
-                  : Object.entries(this._trace.action_trace).map(
-                      ([path, value]) => html`
-                        <ha-timeline>
-                          ${path} @
-                          ${formatDateTimeWithSeconds(
-                            new Date(value[0].timestamp),
-                            this.hass.language
-                          )}
-                        </ha-timeline>
-                      `
-                    )}
-                ${this._trace.last_action === null
-                  ? ""
-                  : html`
-                      <ha-timeline lastItem>
-                        ${this._trace.timestamp.finish
-                          ? html`Finished at
+                  ${!this._trace.condition_trace
+                    ? ""
+                    : Object.entries(this._trace.condition_trace).map(
+                        ([path, value]) => html`
+                          <ha-timeline ?lastItem=${!value[0].result.result}>
+                            ${getConfigFromPath(this._trace!.config, path)
+                              .alias || pathToName(path)}
+                            ${value[0].result.result ? "passed" : "failed"}
+                          </ha-timeline>
+                        `
+                      )}
+                  ${!this._trace.action_trace
+                    ? ""
+                    : Object.entries(this._trace.action_trace).map(
+                        ([path, value]) => html`
+                          <ha-timeline>
+                            ${getConfigFromPath(this._trace!.config, path)
+                              .alias || pathToName(path)}
+                            @
                             ${formatDateTimeWithSeconds(
-                              new Date(this._trace.timestamp.finish),
+                              new Date(value[0].timestamp),
                               this.hass.language
                             )}
-                            (${Math.round(
-                              // @ts-expect-error
-                              (new Date(this._trace.timestamp.finish!) -
+                          </ha-timeline>
+                        `
+                      )}
+                  ${this._trace.last_action === null
+                    ? ""
+                    : html`
+                        <ha-timeline lastItem>
+                          ${this._trace.timestamp.finish
+                            ? html`Finished at
+                              ${formatDateTimeWithSeconds(
+                                new Date(this._trace.timestamp.finish),
+                                this.hass.language
+                              )}
+                              (${Math.round(
                                 // @ts-expect-error
-                                new Date(this._trace.timestamp.start)) /
-                                1000,
-                              1
-                            )}
-                            seconds)`
-                          : "Still running"}
-                      </ha-timeline>
-                    `}
-              </div>
-            `
-          : ""}
+                                (new Date(this._trace.timestamp.finish!) -
+                                  // @ts-expect-error
+                                  new Date(this._trace.timestamp.start)) /
+                                  1000,
+                                1
+                              )}
+                              seconds)`
+                            : "Still running"}
+                        </ha-timeline>
+                      `}
+                </div>
+              `
+            : ""}
+        </ha-card>
       </hass-tabs-subpage>
     `;
   }
@@ -162,9 +176,15 @@ export class HaAutomationTracer extends LitElement {
     return [
       haStyle,
       css`
-        .trace {
+        ha-card {
           max-width: 800px;
-          margin: 0 auto;
+          margin: 24px auto;
+        }
+
+        .load-last {
+          position: absolute;
+          top: 8px;
+          right: 8px;
         }
 
         ha-timeline:first-child {

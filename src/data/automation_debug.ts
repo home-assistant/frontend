@@ -1,5 +1,6 @@
 import { HomeAssistant, Context } from "../types";
-import { AutomationConfig } from "./automation";
+import { AutomationConfig, Condition } from "./automation";
+import { Action } from "./script";
 
 interface BaseTrace {
   timestamp: string;
@@ -48,3 +49,11 @@ export const loadAutomationTraces = (
   hass.callWS({
     type: "automation/trace/list",
   });
+
+export const getConfigFromPath = <T extends Condition | Action>(
+  config: AutomationConfig,
+  path: string
+): T => {
+  const parts = path.split("/");
+  return config[parts[0]][Number(parts[1])];
+};

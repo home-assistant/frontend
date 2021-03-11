@@ -19,6 +19,8 @@ class HaTimeline extends LitElement {
       :host {
         display: flex;
         flex-direction: row;
+      }
+      :host(:not([lastItem])) {
         min-height: 50px;
       }
       .timeline-start {
