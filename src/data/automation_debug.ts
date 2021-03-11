@@ -1,6 +1,15 @@
 import { HomeAssistant, Context } from "../types";
 import { AutomationConfig } from "./automation";
 
+interface BaseTrace {
+  timestamp: string;
+  changed_variables: Record<string, unknown>;
+}
+
+interface ConditionTrace extends BaseTrace {
+  result: { result: boolean };
+}
+
 export interface AutomationTrace {
   last_action: string | null;
   last_condition: string | null;
@@ -14,28 +23,24 @@ export interface AutomationTrace {
   unique_id: string;
 }
 
-export interface AutomationTraceExtended
-  extends Omit<AutomationTrace, "last_action" | "last_condition"> {
-  action_trace: unknown;
-  condition_trace: unknown;
+export interface AutomationTraceExtended extends AutomationTrace {
+  condition_trace: Record<string, ConditionTrace[]>;
+  action_trace: Record<string, BaseTrace[]>;
   context: Context;
-  variables: { [key: string]: unknown };
+  variables: Record<string, unknown>;
   config: AutomationConfig;
 }
 
 export const loadAutomationTrace = (
   hass: HomeAssistant,
-  automation_id: string
-): Promise<AutomationTraceExtended[]> =>
-  hass
-    .callWS({
-      type: "automation/trace/get",
-      automation_id,
-    })
-    // I disagree with the current return type of automation/trace/get
-    // So patching it here to what it imo should be.
-    // @ts-ignore
-    .then((val) => val[automation_id]);
+  automation_id: string,
+  run_id: string
+): Promise<AutomationTraceExtended> =>
+  hass.callWS({
+    type: "automation/trace/get",
+    automation_id,
+    run_id,
+  });
 
 export const loadAutomationTraces = (
   hass: HomeAssistant

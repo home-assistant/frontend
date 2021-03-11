@@ -12,20 +12,12 @@ import { AutomationEntity } from "../../../../data/automation";
 import {
   AutomationTraceExtended,
   loadAutomationTrace,
+  loadAutomationTraces,
 } from "../../../../data/automation_debug";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
 import { configSections } from "../../ha-panel-config";
-
-const omit = (obj, keys) => {
-  const res = {};
-  for (const key of Object.keys(obj)) {
-    if (!keys.includes(key)) {
-      res[key] = obj[key];
-    }
-  }
-  return res;
-};
+import "./ha-timeline";
 
 export class HaAutomationTracer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -61,47 +53,61 @@ export class HaAutomationTracer extends LitElement {
         <button @click=${this._loadTrace}>Reload Trace</button>
         ${this._trace
           ? html`
-              <h1>Info</h1>
-              <div>
-                ${formatDateTimeWithSeconds(
-                  new Date(this._trace.timestamp.start),
-                  this.hass.language
-                )}
-                –
-                ${this._trace.timestamp.finish
-                  ? formatDateTimeWithSeconds(
-                      new Date(this._trace.timestamp.finish),
-                      this.hass.language
-                    )
-                  : "Still running"}
+              <div class="trace">
+                <ha-timeline>
+                  Triggered at
+                  ${formatDateTimeWithSeconds(
+                    new Date(this._trace.timestamp.start),
+                    this.hass.language
+                  )}
+                </ha-timeline>
+
+                ${!this._trace.condition_trace
+                  ? ""
+                  : Object.entries(this._trace.condition_trace).map(
+                      ([path, value]) => html`
+                        <ha-timeline ?lastItem=${!value[0].result.result}>
+                          ${path}
+                          ${value[0].result.result ? "passed" : "failed"}
+                        </ha-timeline>
+                      `
+                    )}
+                ${!this._trace.action_trace
+                  ? ""
+                  : Object.entries(this._trace.action_trace).map(
+                      ([path, value]) => html`
+                        <ha-timeline>
+                          ${path} @
+                          ${formatDateTimeWithSeconds(
+                            new Date(value[0].timestamp),
+                            this.hass.language
+                          )}
+                        </ha-timeline>
+                      `
+                    )}
+                ${this._trace.last_action === null
+                  ? ""
+                  : html`
+                      <ha-timeline lastItem>
+                        ${this._trace.timestamp.finish
+                          ? html`Finished at
+                            ${formatDateTimeWithSeconds(
+                              new Date(this._trace.timestamp.finish),
+                              this.hass.language
+                            )}
+                            (${Math.round(
+                              // @ts-expect-error
+                              (new Date(this._trace.timestamp.finish!) -
+                                // @ts-expect-error
+                                new Date(this._trace.timestamp.start)) /
+                                1000,
+                              1
+                            )}
+                            seconds)`
+                          : "Still running"}
+                      </ha-timeline>
+                    `}
               </div>
-
-              <h1>Triggered by ${this._trace.trigger.description}</h1>
-              <pre>${JSON.stringify(this._trace.trigger, undefined, 2)}</pre>
-
-              <h1>Condition</h1>
-              <pre>
-${JSON.stringify(this._trace.condition_trace, undefined, 2)}</pre
-              >
-
-              <h1>Action</h1>
-              <pre>
-${JSON.stringify(this._trace.action_trace, undefined, 2)}</pre
-              >
-
-              <h1>Rest</h1>
-              <pre>
-${JSON.stringify(
-                  omit(this._trace, [
-                    "trigger",
-                    "condition_trace",
-                    "action_trace",
-                    "timestamp",
-                  ]),
-                  undefined,
-                  2
-                )}</pre
-              >
             `
           : ""}
       </hass-tabs-subpage>
@@ -127,8 +133,18 @@ ${JSON.stringify(
   }
 
   private async _loadTrace() {
-    const traces = await loadAutomationTrace(this.hass, this.automationId);
-    this._trace = traces[traces.length - 1];
+    const traces = await loadAutomationTraces(this.hass);
+    const automationTraces = traces[this.automationId];
+
+    if (!automationTraces || automationTraces.length === 0) {
+      // TODO no trace found.
+    }
+
+    this._trace = await loadAutomationTrace(
+      this.hass,
+      this.automationId,
+      automationTraces[automationTraces.length - 1].run_id
+    );
   }
 
   private _setEntityId() {
@@ -143,7 +159,23 @@ ${JSON.stringify(
   }
 
   static get styles(): CSSResult[] {
-    return [haStyle, css``];
+    return [
+      haStyle,
+      css`
+        .trace {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        ha-timeline:first-child {
+          --timeline-ball-color: var(--primary-color);
+        }
+
+        ha-timeline[lastItem] {
+          --timeline-ball-color: var(--error-color);
+        }
+      `,
+    ];
   }
 }
 
