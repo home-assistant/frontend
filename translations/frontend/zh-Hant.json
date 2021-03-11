@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "上一步",
+                "supervisor": {
+                    "ask": "尋求協助",
+                    "observer": "檢查 Observer",
+                    "reboot": "嘗試重啟主機",
+                    "system_health": "檢查系統健康狀態",
+                    "title": "無法載入 Supervisor 面板！",
+                    "wait": "假如為剛剛啟動，請確認已經給予 Supervisor 足夠時間進行啟動。"
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "上週",

@@ -145,6 +145,7 @@
                 "changelog": "Дневник на промените",
                 "hostname": "Име на хоста",
                 "install": "инсталиране",
+                "new_update_available": "{name} {version} е налично",
                 "not_available_version": "Изпълнявате Home Assistant {core_version_installed}, за да актуализирате до тази версия на добавката ви е необходима поне версия {core_version_needed} на Home Assistant",
                 "option": {
                     "auto_update": {
@@ -169,7 +170,8 @@
                 "restart": "рестарт",
                 "start": "старт",
                 "stop": "стоп",
-                "uninstall": "деинсталиране"
+                "uninstall": "деинсталиране",
+                "visit_addon_page": "Посетете страницата {name} за повече подробности"
             },
             "panel": {
                 "configuration": "Конфигурация",
@@ -330,6 +332,9 @@
                 "share_diagnostics": "Споделяне на диагностика",
                 "share_diagnostics_description": "Споделяйте доклади за сривове и диагностична информация.",
                 "share_diagonstics_title": "Помогнете за подобряването на Home Assistant",
+                "unhealthy_reason": {
+                    "supervisor": "Supervisor не успя да се актуализира"
+                },
                 "unsupported_reason": {
                     "dbus": "DBUS",
                     "docker_version": "Docker Версия",
@@ -1434,6 +1439,7 @@
                     "description_login": "Вписани сте като {email}",
                     "description_not_login": "Не сте влезли",
                     "dialog_certificate": {
+                        "certificate_expiration_date": "Дата на изтичане на сертификата:",
                         "close": "Затвори"
                     },
                     "dialog_cloudhook": {
@@ -2065,6 +2071,7 @@
                         "caption": "Мрежа"
                     },
                     "visualization": {
+                        "auto_zoom": "Автоматично увеличение",
                         "caption": "Визуализация",
                         "header": "Визуализация на мрежата",
                         "refresh_topology": "Обновяване на топологията"

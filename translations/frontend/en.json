@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Go back",
+                "supervisor": {
+                    "ask": "Ask for help",
+                    "observer": "Check the Observer",
+                    "reboot": "Try a reboot of the host",
+                    "system_health": "Check System Health",
+                    "title": "Could not load the Supervisor panel!",
+                    "wait": "If you just started, make sure you have given the supervisor enough time to start."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "Last week",

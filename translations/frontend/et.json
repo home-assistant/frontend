@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Mine tagasi",
+                "supervisor": {
+                    "ask": "Küsi abi",
+                    "observer": "Kontrolli Observerit",
+                    "reboot": "Proovi host taaskäivitada",
+                    "system_health": "Kontrolli süsteemi seisundit",
+                    "title": "Supervisori paneeli laadimine nurjus!",
+                    "wait": "Kui just alustasid siis veendu, et oled andnud superviisorile piisavalt aega käivitumiseks."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "Eelmine nädal",
