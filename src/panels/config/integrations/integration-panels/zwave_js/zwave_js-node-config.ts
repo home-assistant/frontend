@@ -142,7 +142,12 @@ class ZWaveJSNodeConfig extends LitElement {
         <div class="flex">
           ${labelAndDescription}
           <div class="toggle">
-            <ha-switch .id=${id} .checked=${item.value === 1}></ha-switch>
+            <ha-switch
+              .property=${item.property}
+              .propertyKey=${item.property_key}
+              .checked=${item.value === 1}
+              @change=${this._switchToggled}
+            ></ha-switch>
           </div>
         </div>
       `;
@@ -164,7 +169,14 @@ class ZWaveJSNodeConfig extends LitElement {
         ${labelAndDescription}
         <div class="flex">
           <paper-dropdown-menu dynamic-align>
-            <paper-listbox slot="dropdown-content" .selected=${item.value}>
+            <paper-listbox
+              slot="dropdown-content"
+              .selected=${item.value}
+              .key=${id}
+              .property=${item.property}
+              .propertyKey=${item.property_key}
+              @iron-select=${this._dropdownSelected}
+            >
               ${Object.entries(item.metadata.states).map(
                 ([key, state]) => html`
                   <paper-item .id=${key}>${state}</paper-item>
@@ -202,6 +214,45 @@ class ZWaveJSNodeConfig extends LitElement {
       return true;
     }
     return false;
+  }
+
+  private _switchToggled(ev) {
+    const data = {
+      type: "zwave_js/set_config_parameter",
+      entry_id: this.configEntryId,
+      node_id: this.nodeId,
+      property: ev.target.property,
+      value: ev.target.checked ? 1 : 0,
+    };
+
+    if (ev.target.propertyKey !== null) {
+      data.property_key = ev.target.propertyKey;
+    }
+
+    this.hass.callWS(data);
+  }
+
+  private _dropdownSelected(ev) {
+    if (ev.target === undefined || this._config[ev.target.key] === undefined) {
+      return;
+    }
+    if (this._config[ev.target.key].value === ev.target.selected) {
+      return;
+    }
+
+    const data = {
+      type: "zwave_js/set_config_parameter",
+      entry_id: this.configEntryId,
+      node_id: this.nodeId,
+      property: ev.target.property,
+      value: ev.target.selected,
+    };
+
+    if (ev.target.propertyKey !== null) {
+      data.property_key = ev.target.propertyKey;
+    }
+
+    this.hass.callWS(data);
   }
 
   private async _fetchData() {
