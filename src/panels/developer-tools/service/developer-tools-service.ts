@@ -4,7 +4,6 @@ import {
   CSSResultArray,
   html,
   LitElement,
-  internalProperty,
   property,
   query,
 } from "lit-element";
@@ -32,8 +31,6 @@ class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
-
-  @internalProperty() private _error?: string;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
@@ -79,7 +76,7 @@ class HaPanelDevService extends LitElement {
       this._serviceData?.service
     );
 
-    const isValid = this._isValid(this._serviceData, fields, target);
+    const { isValid, error } = this._isValid(this._serviceData, fields, target);
 
     return html`
       <div class="content">
@@ -108,7 +105,7 @@ class HaPanelDevService extends LitElement {
                   @value-changed=${this._serviceDataChanged}
                 ></ha-service-control></div
             ></ha-card>`}
-        ${this._error ? html` <p class="error">Error: ${this._error}</p> ` : ""}
+        ${error ? html` <p class="error">Error: ${error}</p> ` : ""}
       </div>
       <div class="button-row">
         <div class="buttons">
@@ -195,23 +192,20 @@ class HaPanelDevService extends LitElement {
     fields.filter((field) => !field.selector)
   );
 
-  private _isValid = memoizeOne((serviceData, fields, target): boolean => {
+  private _isValid = memoizeOne((serviceData, fields, target): {
+    isValid: boolean;
+    error?: string;
+  } => {
     if (!serviceData?.service) {
-      return false;
+      return { isValid: false };
     }
-
-    if (hasTemplate(this._serviceData!)) {
-      this._error = this.hass.localize(
-        "ui.panel.developer-tools.tabs.services.no_templates"
-      );
-      return false;
-    }
-    this._error = undefined;
 
     const domain = computeDomain(serviceData.service);
     const service = computeObjectId(serviceData.service);
     if (!domain || !service) {
-      return false;
+      return {
+        isValid: false,
+      };
     }
     if (
       target &&
@@ -220,17 +214,27 @@ class HaPanelDevService extends LitElement {
       !serviceData.data?.device_id &&
       !serviceData.data?.area_id
     ) {
-      return false;
+      return { isValid: false };
     }
     for (const field of fields) {
       if (
         field.required &&
         (!serviceData.data || serviceData.data[field.key] === undefined)
       ) {
-        return false;
+        return { isValid: false };
       }
     }
-    return true;
+
+    if (hasTemplate(this._serviceData!)) {
+      return {
+        isValid: false,
+        error: this.hass.localize(
+          "ui.panel.developer-tools.tabs.services.no_templates"
+        ),
+      };
+    }
+
+    return { isValid: true };
   });
 
   private _fields = memoizeOne(
