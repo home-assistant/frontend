@@ -10,6 +10,7 @@ import {
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { AutomationEntity } from "../../../../data/automation";
 import {
+  ActionTrace,
   AutomationTraceExtended,
   getConfigFromPath,
   loadAutomationTrace,
@@ -20,6 +21,18 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
 import { configSections } from "../../ha-panel-config";
 import "./ha-timeline";
+import {
+  getLogbookDataForContext,
+  LogbookEntry,
+} from "../../../../data/logbook";
+import {
+  mdiCheckCircleOutline,
+  mdiCircle,
+  mdiCircleOutline,
+  mdiPauseCircleOutline,
+  mdiRecordCircleOutline,
+  mdiStopCircleOutline,
+} from "@mdi/js";
 
 const pathToName = (path: string) => path.split("/").join(" ");
 
@@ -39,6 +52,8 @@ export class HaAutomationTracer extends LitElement {
   @internalProperty() private _entityId?: string;
 
   @internalProperty() private _trace?: AutomationTraceExtended;
+
+  @internalProperty() private _logbookEntries?: LogbookEntry[];
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -64,67 +79,149 @@ export class HaAutomationTracer extends LitElement {
           ${this._trace
             ? html`
                 <div class="card-content">
-                  <ha-timeline>
-                    Triggered at
-                    ${formatDateTimeWithSeconds(
-                      new Date(this._trace.timestamp.start),
-                      this.hass.language
-                    )}
-                  </ha-timeline>
-
-                  ${!this._trace.condition_trace
-                    ? ""
-                    : Object.entries(this._trace.condition_trace).map(
-                        ([path, value]) => html`
-                          <ha-timeline ?lastItem=${!value[0].result.result}>
-                            ${getConfigFromPath(this._trace!.config, path)
-                              .alias || pathToName(path)}
-                            ${value[0].result.result ? "passed" : "failed"}
-                          </ha-timeline>
-                        `
-                      )}
-                  ${!this._trace.action_trace
-                    ? ""
-                    : Object.entries(this._trace.action_trace).map(
-                        ([path, value]) => html`
-                          <ha-timeline>
-                            ${getConfigFromPath(this._trace!.config, path)
-                              .alias || pathToName(path)}
-                            @
-                            ${formatDateTimeWithSeconds(
-                              new Date(value[0].timestamp),
-                              this.hass.language
-                            )}
-                          </ha-timeline>
-                        `
-                      )}
-                  ${this._trace.last_action === null
-                    ? ""
-                    : html`
-                        <ha-timeline lastItem>
-                          ${this._trace.timestamp.finish
-                            ? html`Finished at
-                              ${formatDateTimeWithSeconds(
-                                new Date(this._trace.timestamp.finish),
-                                this.hass.language
-                              )}
-                              (${Math.round(
-                                // @ts-expect-error
-                                (new Date(this._trace.timestamp.finish!) -
-                                  // @ts-expect-error
-                                  new Date(this._trace.timestamp.start)) /
-                                  1000,
-                                1
-                              )}
-                              seconds)`
-                            : "Still running"}
-                        </ha-timeline>
-                      `}
+                  ${this._getTimelineEntries()}
                 </div>
               `
             : ""}
         </ha-card>
       </hass-tabs-subpage>
+    `;
+  }
+
+  private _getTimelineEntries() {
+    if (!this._trace) {
+      return [];
+    }
+
+    const entries = [
+      html`
+        <ha-timeline .icon=${mdiCircle}>
+          Triggered by the ${this._trace.variables.trigger.description} at
+          ${formatDateTimeWithSeconds(
+            new Date(this._trace.timestamp.start),
+            this.hass.language
+          )}
+        </ha-timeline>
+      `,
+    ];
+
+    if (this._trace.condition_trace) {
+      for (const [path, value] of Object.entries(this._trace.condition_trace)) {
+        entries.push(html`
+          <ha-timeline
+            ?lastItem=${!value[0].result.result}
+            class="condition"
+            .icon=${value[0].result.result
+              ? mdiCheckCircleOutline
+              : mdiStopCircleOutline}
+          >
+            ${getConfigFromPath(this._trace!.config, path).alias ||
+            pathToName(path)}
+            ${value[0].result.result ? "passed" : "failed"}
+          </ha-timeline>
+        `);
+      }
+    }
+
+    if (this._trace.action_trace && this._logbookEntries) {
+      const actionTraces = Object.entries(this._trace.action_trace);
+
+      let logbookIndex = 0;
+      let actionTraceIndex = 0;
+
+      while (
+        logbookIndex < this._logbookEntries.length &&
+        actionTraceIndex < actionTraces.length
+      ) {
+        // Find next item.
+
+        // Skip the "automation got triggered item"
+        if (
+          logbookIndex === 0 &&
+          this._logbookEntries[0].entity_id === this._entityId
+        ) {
+          logbookIndex++;
+          continue;
+        }
+
+        // Find next item time-wise.
+        const logbookItem = this._logbookEntries[logbookIndex];
+        const actionTrace = actionTraces[actionTraceIndex];
+
+        if (
+          new Date(logbookItem.when) > new Date(actionTrace[1][0].timestamp)
+        ) {
+          actionTraceIndex++;
+          entries.push(this._renderActionTrace(...actionTrace));
+        } else {
+          logbookIndex++;
+          entries.push(this._renderLogbookEntry(logbookItem));
+        }
+      }
+
+      // Append all leftover items
+      while (logbookIndex < this._logbookEntries.length) {
+        entries.push(
+          this._renderLogbookEntry(this._logbookEntries[logbookIndex])
+        );
+        logbookIndex++;
+      }
+
+      while (actionTraceIndex < actionTraces.length) {
+        entries.push(
+          this._renderActionTrace(...actionTraces[actionTraceIndex])
+        );
+        actionTraceIndex++;
+      }
+    }
+
+    // null means it was stopped by a condition
+    if (this._trace.last_action !== null) {
+      entries.push(html`
+        <ha-timeline
+          lastItem
+          .icon=${this._trace.timestamp.finish
+            ? mdiCircle
+            : mdiPauseCircleOutline}
+        >
+          ${this._trace.timestamp.finish
+            ? html`Finished at
+              ${formatDateTimeWithSeconds(
+                new Date(this._trace.timestamp.finish),
+                this.hass.language
+              )}
+              (runtime:
+              ${Math.round(
+                // @ts-expect-error
+                (new Date(this._trace.timestamp.finish!) -
+                  // @ts-expect-error
+                  new Date(this._trace.timestamp.start)) /
+                  1000,
+                1
+              )}
+              seconds)`
+            : "Still running"}
+        </ha-timeline>
+      `);
+    }
+
+    return entries;
+  }
+
+  private _renderLogbookEntry(entry: LogbookEntry) {
+    return html`
+      <ha-timeline .icon=${mdiCircleOutline}>
+        ${entry.name} (${entry.entity_id}) turned ${entry.state}
+      </ha-timeline>
+    `;
+  }
+
+  private _renderActionTrace(path: string, value: ActionTrace[]) {
+    return html`
+      <ha-timeline .icon=${mdiRecordCircleOutline}>
+        ${getConfigFromPath(this._trace!.config, path).alias ||
+        pathToName(path)}
+      </ha-timeline>
     `;
   }
 
@@ -152,13 +249,22 @@ export class HaAutomationTracer extends LitElement {
 
     if (!automationTraces || automationTraces.length === 0) {
       // TODO no trace found.
+      alert("NO traces found");
+      return;
     }
 
-    this._trace = await loadAutomationTrace(
+    const trace = await loadAutomationTrace(
       this.hass,
       this.automationId,
       automationTraces[automationTraces.length - 1].run_id
     );
+    this._logbookEntries = await getLogbookDataForContext(
+      this.hass,
+      trace.timestamp.start,
+      trace.context.id
+    );
+
+    this._trace = trace;
   }
 
   private _setEntityId() {
@@ -187,11 +293,7 @@ export class HaAutomationTracer extends LitElement {
           right: 8px;
         }
 
-        ha-timeline:first-child {
-          --timeline-ball-color: var(--primary-color);
-        }
-
-        ha-timeline[lastItem] {
+        ha-timeline[lastItem].condition {
           --timeline-ball-color: var(--error-color);
         }
       `,

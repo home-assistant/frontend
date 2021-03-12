@@ -1,13 +1,17 @@
+import { mdiCircleOutline } from "@mdi/js";
 import { LitElement, customElement, html, css, property } from "lit-element";
+import "../../../../components/ha-svg-icon";
 
 @customElement("ha-timeline")
 class HaTimeline extends LitElement {
   @property({ type: Boolean }) public lastItem = false;
 
+  @property({ type: String }) public icon?: string;
+
   protected render() {
     return html`
       <div class="timeline-start">
-        <div class="ball"></div>
+        <ha-svg-icon .path=${this.icon || mdiCircleOutline}></ha-svg-icon>
         ${this.lastItem ? "" : html`<div class="line"></div>`}
       </div>
       <div class="content"><slot></slot></div>
@@ -29,13 +33,10 @@ class HaTimeline extends LitElement {
         align-items: center;
         margin-right: 4px;
       }
-      .ball {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background-color: var(
+      ha-svg-icon {
+        color: var(
           --timeline-ball-color,
-          var(--timeline-color, var(--divider-color))
+          var(--timeline-color, var(--secondary-text-color))
         );
       }
       .line {
@@ -43,9 +44,12 @@ class HaTimeline extends LitElement {
         width: 2px;
         background-color: var(
           --timeline-line-color,
-          var(--timeline-color, var(--divider-color))
+          var(--timeline-color, var(--secondary-text-color))
         );
         margin: 4px 0;
+      }
+      .content {
+        margin-top: 2px;
       }
     `;
   }

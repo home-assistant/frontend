@@ -2,14 +2,22 @@ import { HomeAssistant, Context } from "../types";
 import { AutomationConfig, Condition } from "./automation";
 import { Action } from "./script";
 
+interface TraceVariables extends Record<string, unknown> {
+  trigger: {
+    description: string;
+  };
+}
+
 interface BaseTrace {
   timestamp: string;
   changed_variables: Record<string, unknown>;
 }
 
-interface ConditionTrace extends BaseTrace {
+export interface ConditionTrace extends BaseTrace {
   result: { result: boolean };
 }
+
+export type ActionTrace = BaseTrace;
 
 export interface AutomationTrace {
   last_action: string | null;
@@ -26,9 +34,9 @@ export interface AutomationTrace {
 
 export interface AutomationTraceExtended extends AutomationTrace {
   condition_trace: Record<string, ConditionTrace[]>;
-  action_trace: Record<string, BaseTrace[]>;
+  action_trace: Record<string, ActionTrace[]>;
   context: Context;
-  variables: Record<string, unknown>;
+  variables: TraceVariables;
   config: AutomationConfig;
 }
 
