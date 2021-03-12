@@ -3,7 +3,7 @@ import { fetchFrontendUserData, saveFrontendUserData } from "./frontend";
 
 export enum NumberFormat {
   auto = "auto",
-  system = "system",
+  language = "language",
   comma_decimal = "comma_decimal",
   decimal_comma = "decimal_comma",
   space_comma = "space_comma",

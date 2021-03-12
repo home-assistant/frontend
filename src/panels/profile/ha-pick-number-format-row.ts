@@ -56,17 +56,17 @@ class NumberFormatRow extends LitElement {
                 </div>
               </paper-item-body>
             </paper-item>
-            <paper-item .format=${NumberFormat.system}>
+            <paper-item .format=${NumberFormat.language}>
               <paper-item-body two-line>
                 <div>
                   ${this.hass.localize(
-                    "ui.panel.profile.number_format.formats.system"
+                    "ui.panel.profile.number_format.formats.language"
                   )}
                 </div>
                 <div secondary>
                   ${formatNumber(1234567.89, {
                     language: this.hass.locale.language,
-                    number_format: NumberFormat.system,
+                    number_format: NumberFormat.language,
                   })}
                 </div>
               </paper-item-body>

@@ -3111,8 +3111,8 @@
           "header": "Number Format",
           "description": "Choose how numbers are formatted.",
           "formats": {
-            "auto": "Auto (use language setting)",
-            "system": "Use system locale",
+            "auto": "Auto",
+            "language": "Use language setting",
             "comma_decimal": "1,234,567.89",
             "decimal_comma": "1.234.567,89",
             "space_comma": "1 234 567,89",

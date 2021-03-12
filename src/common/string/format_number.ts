@@ -24,11 +24,11 @@ export const formatNumber = (
     case NumberFormat.space_comma:
       format = ["fr", "sv", "cs"]; // Use French with fallback to Swedish and Czech formatting 1 234 567,89
       break;
-    case NumberFormat.system:
-      format = undefined;
+    case NumberFormat.language:
+      format = locale?.language;
       break;
     default:
-      format = locale?.language;
+      format = undefined;
   }
 
   // Polyfill for Number.isNaN, which is more reliable than the global isNaN()
