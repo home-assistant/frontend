@@ -152,14 +152,19 @@
                         "default": "Predefinição",
                         "homeassistant": "homeassistant",
                         "manager": "Gestor"
+                    },
+                    "stage": {
+                        "description": "Os add-ons podem ter uma das três fases:\n\n{icon_stable} **Estável***: Estes são complementos prontos a serem utilizados na produção.\n\n{icon_experimental} **Experimental***: Estes podem conter bugs, e podem estar inacabados.\n\n{icon_deprecated} **Depreendido***: Estes suplementos deixarão de receber qualquer actualização."
                     }
                 },
                 "cpu_usage": "Utilização de CPU do add-on",
                 "install": "Instalar",
                 "new_update_available": "{name} {version} está disponível",
+                "not_available_version": "Está a executar o Home Assistant {core_version_installed}, para actualizar esta versão do add-on necessita pelo menos da versão {core_version_needed} do Home Assistant",
                 "open_web_ui": "Abrir o interface web",
                 "option": {
                     "auto_update": {
+                        "description": "Actualização automática do add-on quando houver uma nova versão disponível",
                         "title": "Atualização automática"
                     },
                     "boot": {
@@ -228,13 +233,15 @@
         },
         "confirm": {
             "reset_options": {
-                "text": "Tem a certeza que deseja fazer reset a todas as opções?"
+                "text": "Tem a certeza que deseja redefinir todas as opções?",
+                "title": "Opções de redefinição"
             },
             "restart": {
-                "text": "Tem a certeza que deseja reiniciar o {name}",
+                "text": "Tem a certeza que deseja reiniciar {name}?",
                 "title": "Reiniciar {name}"
             },
             "update": {
+                "text": "Tem a certeza que quer actualizar {name} para a versão {version}?",
                 "title": "Actualização {name}"
             }
         },
@@ -251,8 +258,8 @@
                 "disabled": "Desativado",
                 "dns_servers": "Servidores DNS",
                 "failed_to_change": "Falha ao alterar as configurações de rede",
-                "gateway": "Endereço de gateway",
-                "ip_netmask": "Endereço IP / máscara de rede",
+                "gateway": "Endereço de Gateway",
+                "ip_netmask": "Endereço IP / Máscara de rede",
                 "open": "Abrir",
                 "scan_ap": "Procurar pontos de acesso",
                 "static": "Estático",
@@ -263,13 +270,13 @@
                 "wpa": "wpa-psk"
             },
             "registries": {
-                "add_new_registry": "Adicionar novo registro",
-                "add_registry": "Adicionar registro",
-                "failed_to_add": "Falha ao registrar",
-                "failed_to_remove": "Falha ao remover o registro",
+                "add_new_registry": "Adicionar novo registo",
+                "add_registry": "Adicionar registo",
+                "failed_to_add": "Falha ao registar",
+                "failed_to_remove": "Falha ao remover o registo",
                 "no_registries": "Nenhum registo configurado",
                 "password": "Palavra-passe",
-                "registry": "Registro",
+                "registry": "Registo",
                 "remove": "Remover",
                 "title_add": "Adicionar registo de novo Container",
                 "title_manage": "Gerir Registos dos Containers",
@@ -288,12 +295,13 @@
                 "create_snapshot": "Criar um snapshot do {name} antes de atualizar",
                 "snapshot": "Snapshot",
                 "snapshotting": "A criar um snapshot de {name}",
-                "updating": "Actualizando {nome} para a versão {versão}"
+                "updating": "Atualizando {name} para a versão {version}"
             }
         },
         "my": {
             "error": "Ocorreu um erro desconhecido",
-            "error_addon_not_found": "Add-on não encontrado"
+            "error_addon_not_found": "Add-on não encontrado",
+            "not_supported": "Este redirecionamento não é suportado pela sua instância Início Assistant. Verifique o {link} para os redirecionamentos suportados e a versão em que foram introduzidos."
         },
         "panel": {
             "dashboard": "Painel",
@@ -304,16 +312,16 @@
         "snapshot": {
             "addons": "Add-ons",
             "available_snapshots": "Imagens de sistema disponíveis",
-            "could_not_create": "Não foi possivel criar um snapshot",
+            "could_not_create": "Não foi possível criar um snapshot",
             "create": "Criar",
-            "create_blocked_not_running": "Não é possível criar um snapshot agora porque o sistema está  {state}.",
+            "create_blocked_not_running": "Não é possível criar um snapshot agora porque o sistema está {state}.",
             "create_snapshot": "Criar snapshot",
-            "description": "As imagens de sistema permitem facilmente criar uma cópia de segurança e restaurar todos os dados da sua instancia do Home Assistant",
+            "description": "As imagens de sistema permitem facilmente criar uma cópia de segurança e restauro de todos os dados da sua instância do Home Assistant",
             "enter_password": "Por favor introduza uma palavra-passe.",
             "folder": {
-                "addons/local": "add-ons locais",
+                "addons/local": "Add-ons locais",
                 "homeassistant": "Configuração do Home Assistant",
-                "media": "Mídia",
+                "media": "Média",
                 "share": "Partilhar",
                 "ssl": "SSL"
             },
@@ -324,13 +332,13 @@
             "partial_snapshot": "Snapshot parcial",
             "password": "Palavra-passe",
             "password_protected": "Protegido por Palavra-passe",
-            "password_protection": "Protecção por palavra-passe",
+            "password_protection": "Proteção por palavra-passe",
             "security": "Segurança",
             "type": "Tipo",
             "upload_snapshot": "Upload  snapshot"
         },
         "store": {
-            "no_results_found": "Nenhum resultado encontrado em {repository} .",
+            "no_results_found": "Nenhum resultado encontrado em {repository}.",
             "registries": "Registros",
             "repositories": "Repositórios"
         },
@@ -367,7 +375,7 @@
                 "log_provider": "Fornecedor de logs"
             },
             "supervisor": {
-                "beta_backup": "Certifique-se de que tem cópias de segurança dos seus dados antes de activar esta funcionalidade.",
+                "beta_backup": "Certifique-se de que tem cópias de segurança dos seus dados antes de ativar esta funcionalidade.",
                 "beta_join_confirm": "Quer juntar-se ao canal beta?",
                 "beta_release_items": "Isto inclui versões beta para:",
                 "beta_warning": "As versões Beta são destinadas a utilizadores de teste ou outros interessados e podem conter alterações de código instaveis.",
@@ -377,7 +385,9 @@
                 "failed_to_set_option": "Falha ao definir a opção Supervisor",
                 "failed_to_update": "Falha ao atualizar o Supervisor",
                 "join_beta_action": "Inscreva-se no canal beta",
+                "join_beta_description": "Obter actualizações beta para Home Assistant (RCs), Supervisor e Host",
                 "leave_beta_action": "Sair do canal beta",
+                "leave_beta_description": "Obter actualizações estáveis para Home Assistant, Supervisor e Host",
                 "ram_usage": "Utilização de RAM do Supervisor",
                 "reload_supervisor": "Recarregar Supervisor",
                 "share_diagnostics": "Partilhar Diagnósticos",
@@ -394,6 +404,7 @@
                 "unhealthy_title": "Sua instalação não está íntegra",
                 "unsupported_description": "Abaixo está uma lista de problemas detetados na sua instalação, clique nos links para saber como poderá resolver os problemas.",
                 "unsupported_reason": {
+                    "container": "Contentores conhecidos por causar problemas",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuração do Docker",
                     "docker_version": "Versão Docker",
@@ -1055,6 +1066,7 @@
                 "buttons": {
                     "add": "Adicionar dispositivos através deste dispositivo",
                     "clusters": "Gerir Clusters",
+                    "device_children": "Ver Descendentes",
                     "reconfigure": "Reconfigurar Dispositivo",
                     "remove": "Remover Dispositivo",
                     "view_in_visualization": "Ver na visualização",
@@ -1094,6 +1106,7 @@
                 "editor_not_available": "Nenhum editor visual disponível para o tipo \" {type} \".",
                 "editor_not_supported": "O editor visual não é suportado para esta configuração",
                 "error_detected": "Erros de configuração detectados",
+                "no_template_editor_support": "Modelos não suportados no editor visual",
                 "no_type_provided": "Nenhum tipo fornecido."
             }
         },
@@ -2622,6 +2635,7 @@
                         "caption": "Rede"
                     },
                     "visualization": {
+                        "auto_zoom": "Zoom Automático",
                         "caption": "Visualização",
                         "header": "Visualização de rede",
                         "highlight_label": "Destacar Dispositivos",
@@ -2890,6 +2904,16 @@
                         "title": "Template",
                         "unknown_error_template": "Erro desconhecido ao processar o template"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Voltar",
+                "supervisor": {
+                    "ask": "Pedido de ajuda",
+                    "reboot": "Tente uma reinicialização do anfitrião",
+                    "system_health": "Integridade do Sistema",
+                    "title": "Impossível carregar o painel do Supervisor!",
+                    "wait": "Se acabou de começar, certifique-se de que deu tempo suficiente ao supervisor para iniciar."
                 }
             },
             "history": {
@@ -3296,6 +3320,7 @@
                         "error_remove": "Não foi possível remover a configuração: {error}",
                         "error_save_yaml": "Não é possível salvar o YAML: {error}",
                         "header": "Editar Configuração",
+                        "lovelace_changed": "A configuração do Lovelace foi actualizada, deseja carregar a configuração actualizada no editor e perder as suas alterações actuais?",
                         "reload": "Recarregar",
                         "resources_moved": "Os recursos não devem mais ser adicionados ao editor de configuração do código fonte do Lovelace, mas podem ser adicionados no painel de configuração do Lovelace.",
                         "save": "Guardar",

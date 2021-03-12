@@ -112,6 +112,8 @@
                     "output": "Изход"
                 },
                 "network": {
+                    "container": "Контейнер",
+                    "disabled": "Деактивиран",
                     "header": "Мрежа",
                     "host": "Хост"
                 },
@@ -145,6 +147,7 @@
                 "changelog": "Дневник на промените",
                 "hostname": "Име на хоста",
                 "install": "инсталиране",
+                "new_update_available": "{name} {version} е налично",
                 "not_available_version": "Изпълнявате Home Assistant {core_version_installed}, за да актуализирате до тази версия на добавката ви е необходима поне версия {core_version_needed} на Home Assistant",
                 "option": {
                     "auto_update": {
@@ -169,7 +172,8 @@
                 "restart": "рестарт",
                 "start": "старт",
                 "stop": "стоп",
-                "uninstall": "деинсталиране"
+                "uninstall": "деинсталиране",
+                "visit_addon_page": "Посетете страницата {name} за повече подробности"
             },
             "panel": {
                 "configuration": "Конфигурация",
@@ -226,6 +230,7 @@
             "network": {
                 "connected_to": "Свързан с {ssid}",
                 "dhcp": "DHCP",
+                "disabled": "Деактивиран",
                 "dns_servers": "DNS Сървъри",
                 "failed_to_change": "Промяната на мрежовите настройки не бе успешна",
                 "gateway": "Адрес на шлюза",
@@ -241,6 +246,8 @@
             "registries": {
                 "add_new_registry": "Добавяне на нов регистър",
                 "add_registry": "Добавяне на регистър",
+                "failed_to_add": "Добавянето на регистър не бе успешно",
+                "failed_to_remove": "Премахването на регистър не бе успешно",
                 "no_registries": "Няма конфигурирани регистри",
                 "password": "Парола",
                 "registry": "Регистър",
@@ -251,6 +258,9 @@
                 "add": "Добавяне",
                 "remove": "Премахване",
                 "title": "Управление на хранилищата на добавки"
+            },
+            "restart_addon": {
+                "text": "Искате ли да рестартирате добавката с вашите промени?"
             },
             "update": {
                 "create_snapshot": "Създаване на снапшот на {name} преди актуализиране",
@@ -304,9 +314,13 @@
             "host": {
                 "change": "Промяна",
                 "change_hostname": "Промяна в името на хоста",
+                "confirm_reboot": "Сигурни ли сте, че искате да рестартирате хоста?",
+                "confirm_shutdown": "Сигурни ли сте, че искате да изключите хоста?",
                 "docker_version": "Docker версия",
                 "failed_to_get_hardware_list": "Неуспешно получаване на списъка с хардуер",
                 "failed_to_import_from_usb": "Неуспешно импортиране от USB",
+                "failed_to_reboot": "Неуспешно рестартиране на хоста",
+                "failed_to_shutdown": "Неуспешно изключване на хоста",
                 "hardware": "Хардуер",
                 "hostname": "Име на хоста",
                 "import_from_usb": "Импортиране от USB",
@@ -330,8 +344,12 @@
                 "share_diagnostics": "Споделяне на диагностика",
                 "share_diagnostics_description": "Споделяйте доклади за сривове и диагностична информация.",
                 "share_diagonstics_title": "Помогнете за подобряването на Home Assistant",
+                "unhealthy_reason": {
+                    "supervisor": "Supervisor не успя да се актуализира"
+                },
                 "unsupported_reason": {
                     "dbus": "DBUS",
+                    "docker_configuration": "Конфигурация на Docker",
                     "docker_version": "Docker Версия",
                     "lxc": "LXC",
                     "network_manager": "Мрежов мениджър",
@@ -1434,7 +1452,9 @@
                     "description_login": "Вписани сте като {email}",
                     "description_not_login": "Не сте влезли",
                     "dialog_certificate": {
-                        "close": "Затвори"
+                        "certificate_expiration_date": "Дата на изтичане на сертификата:",
+                        "close": "Затвори",
+                        "will_be_auto_renewed": "ще бъде автоматично подновено"
                     },
                     "dialog_cloudhook": {
                         "close": "Затвори",
@@ -1666,6 +1686,7 @@
                         "delete_confirm": "Сигурни ли сте, че искате да изтриете интеграцията?",
                         "device_unavailable": "Устройството е недостъпно",
                         "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройства}\n}",
+                        "disable_restart_confirm": "Рестартирайте Home Assistant за да завършите деактивирането на тази интеграция",
                         "disable": {
                             "disabled_by": {
                                 "device": "устройство",
@@ -1675,6 +1696,7 @@
                             "disabled_cause": "Деактивирано от {cause}"
                         },
                         "documentation": "Документация",
+                        "enable_restart_confirm": "Рестартирайте Home Assistant за да завършите активирането на тази интеграция",
                         "entities": "{count} {count, plural,\n  one {обект}\n  other {обекти}\n}",
                         "entity_unavailable": "Обектът е недостъпен",
                         "firmware": "Фърмуер: {version}",
@@ -1705,6 +1727,10 @@
                     "configure": "Конфигуриране",
                     "configured": "Конфигуриран",
                     "description": "Управление на интеграции с услуги, устройства, ...",
+                    "disable": {
+                        "hide_disabled": "Скриване на деактивираните интеграции",
+                        "show_disabled": "Показване на деактивираните интеграции"
+                    },
                     "discovered": "Открити",
                     "ignore": {
                         "confirm_ignore": "Наистина ли не искате да настроите тази интеграция? Можете да отмените това, като кликнете върху „Показване на игнорирани интеграции“ в менюто горе вдясно."
@@ -2051,6 +2077,7 @@
                         "add_members": "Добавяне на членове",
                         "caption": "Групи",
                         "create": "Създай група",
+                        "create_group": "Zigbee Home Automation - Създаване на група",
                         "create_group_details": "Въведете необходимите данни, за да създадете нова zigbee група",
                         "creating_group": "Създаване на група",
                         "group_info": "Информация за групата",
@@ -2065,6 +2092,7 @@
                         "caption": "Мрежа"
                     },
                     "visualization": {
+                        "auto_zoom": "Автоматично увеличение",
                         "caption": "Визуализация",
                         "header": "Визуализация на мрежата",
                         "refresh_topology": "Обновяване на топологията"
@@ -2169,10 +2197,12 @@
                         "title": "Събития"
                     },
                     "services": {
+                        "all_parameters": "Всички налични параметри",
                         "column_description": "Описание",
                         "column_example": "Пример",
                         "column_parameter": "Параметър",
-                        "title": "Услуги"
+                        "title": "Услуги",
+                        "yaml_parameters": "Параметрите налични само в YAML режим"
                     },
                     "states": {
                         "attributes": "Атрибути",
@@ -2202,6 +2232,12 @@
                         "title": "Шаблон",
                         "unknown_error_template": "Неизвестна грешка при визуализирането на шаблон"
                     }
+                }
+            },
+            "error": {
+                "supervisor": {
+                    "ask": "Помолете за помощ",
+                    "reboot": "Опитайте да рестартирате хоста"
                 }
             },
             "history": {
@@ -2244,7 +2280,8 @@
                     "shopping-list": {
                         "add_item": "Добави артикул",
                         "checked_items": "Отметнати артикули",
-                        "clear_items": "Изчистване на отметнатите артикули"
+                        "clear_items": "Изчистване на отметнатите артикули",
+                        "reorder_items": "Пренареждане на артикули"
                     },
                     "starting": {
                         "description": "Home Assistant стартира, моля, изчакайте ..."

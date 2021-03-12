@@ -1189,7 +1189,7 @@
                 "key_missing": "Erforderlicher Schlüssel \"{key}\" fehlt.",
                 "key_not_expected": "Der Schlüssel \"{key}\" wird vom visuellen Editor nicht erwartet oder nicht unterstützt.",
                 "key_wrong_type": "Der angegebene Wert für \"{key}\" wird vom visuellen Editor nicht unterstützt. Wir unterstützen ({type_correct}), haben aber ({type_wrong}) erhalten.",
-                "no_template_editor_support": "Vorlagen werden im visuellen Editor nicht unterstützt",
+                "no_template_editor_support": "Templates werden im visuellen Editor nicht unterstützt",
                 "no_type_provided": "Kein Typ angegeben."
             }
         },
@@ -3002,6 +3002,16 @@
                         "title": "Template",
                         "unknown_error_template": "Unbekannter Fehler beim Rendern des Templates"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Zurück",
+                "supervisor": {
+                    "ask": "Um Hilfe bitten",
+                    "reboot": "Versuche den Host neuzustarten",
+                    "system_health": "Überprüfe Systemzustand",
+                    "title": "Supervisor-Bedienfeld konnte nicht geladen werden.",
+                    "wait": "Wenn du gerade erst hochgefahren hast, dann stelle sicher dass du den Supervisor genug Zeit zum Starten gegeben hast."
                 }
             },
             "history": {
