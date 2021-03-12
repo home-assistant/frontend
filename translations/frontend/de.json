@@ -3009,7 +3009,9 @@
                 "supervisor": {
                     "ask": "Um Hilfe bitten",
                     "reboot": "Versuche den Host neuzustarten",
-                    "system_health": "Überprüfe Systemzustand"
+                    "system_health": "Überprüfe Systemzustand",
+                    "title": "Supervisor-Bedienfeld konnte nicht geladen werden.",
+                    "wait": "Wenn du gerade erst hochgefahren hast, dann stelle sicher dass du den Supervisor genug Zeit zum Starten gegeben hast."
                 }
             },
             "history": {

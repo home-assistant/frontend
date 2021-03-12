@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Geri Git",
+                "supervisor": {
+                    "ask": "Yardım isteyin",
+                    "observer": "Gözlemciyi Kontrol Edin",
+                    "reboot": "Ana bilgisayarı yeniden başlatmayı deneyin",
+                    "system_health": "Sistem Sağlığını Kontrol Edin",
+                    "title": "Süpervizör paneli yüklenemedi!",
+                    "wait": "Yeni başladıysanız, süpervizöre başlaması için yeterince zaman verdiğinizden emin olun."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "Geçen hafta",

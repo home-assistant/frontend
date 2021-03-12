@@ -273,20 +273,48 @@
                 "used_space": "已用空间"
             },
             "supervisor": {
+                "beta_backup": "激活此功能前，请确保数据已经备份。",
+                "beta_join_confirm": "您想要加入 Beta 频道吗？",
+                "beta_release_items": "其中包括以下测试版本：",
+                "beta_warning": "Beta 版本面向测试人员和尝鲜用户，可能包含不稳定的代码",
+                "cpu_usage": "Supervisor CPU 使用率",
+                "failed_to_reload": "重载 Supervisor 失败",
+                "failed_to_set_option": "设定 Supervisor 选项失败",
+                "failed_to_update": "更新 Supervisor 失败",
+                "join_beta_action": "加入测试频道",
+                "join_beta_description": "获取 Home Assistant(及其预览版)、Supervisor 和主机的测试版更新",
+                "leave_beta_action": "退出测试频道",
+                "leave_beta_description": "获取 Home Assistant、Supervisor 和主机的稳定版更新",
+                "ram_usage": "Supervisor 内存使用率",
+                "reload_supervisor": "重载 Supervisor",
+                "share_diagnostics": "共享诊断信息",
+                "share_diagnostics_description": "共享崩溃报告和诊断信息。",
                 "share_diagonstics_description": "您想要在 Supervisor 遇到异常错误时，共享崩溃报告和诊断信息吗？{line_break}这将帮助我们解决问题，此信息仅限 Home Assistant Core 团队访问，不会共享给他人。{line_break}此信息不包含私密、敏感信息，您可以随时在设置中将其禁用。",
+                "share_diagonstics_title": "帮助改进 Home Assistant",
+                "unhealthy_description": "运行状态不良的系统可能导致问题。以下是已发现的系统问题的列表，请点击链接以了解如何解决问题。",
                 "unhealthy_reason": {
                     "docker": "Docker 环境无法正常工作",
                     "privileged": "Supervisor 权限不够",
                     "setup": "Supervisor 设置失败",
                     "supervisor": "Supervisor 未能更新"
                 },
+                "unhealthy_title": "系统状态不佳",
+                "unsupported_description": "以下是系统存在的问题的列表，请点击链接以了解如何解决问题。",
                 "unsupported_reason": {
+                    "container": "已知会导致问题的容器",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker 配置",
+                    "docker_version": "Docker 版本",
+                    "job_conditions": "已忽略的工作条件",
                     "lxc": "LXC",
                     "network_manager": "网络管理器",
                     "os": "操作系统",
                     "privileged": "Supervisor 权限不够",
                     "systemd": "Systemd"
-                }
+                },
+                "unsupported_title": "您当前运行的系统不受支持",
+                "update_supervisor": "更新 Supervisor",
+                "warning": "警告"
             }
         }
     },
@@ -2803,6 +2831,17 @@
                         "title": "模板",
                         "unknown_error_template": "渲染模板时发生了未知错误"
                     }
+                }
+            },
+            "error": {
+                "go_back": "返回",
+                "supervisor": {
+                    "ask": "寻求帮助",
+                    "observer": "检查 Observer",
+                    "reboot": "请尝试重启主机",
+                    "system_health": "检查系统状态",
+                    "title": "无法加载 Supervisor 面板！",
+                    "wait": "如果系统刚刚启动，请确保已等候足够的时间以便 Supervisor 启动完成。"
                 }
             },
             "history": {
