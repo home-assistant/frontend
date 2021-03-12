@@ -1,6 +1,6 @@
 import { mdiCircleOutline } from "@mdi/js";
 import { LitElement, customElement, html, css, property } from "lit-element";
-import "../../../../components/ha-svg-icon";
+import "../ha-svg-icon";
 
 @customElement("ha-timeline")
 class HaTimeline extends LitElement {
@@ -50,6 +50,9 @@ class HaTimeline extends LitElement {
       }
       .content {
         margin-top: 2px;
+      }
+      :host(:not([lastItem])) .content {
+        padding-bottom: 16px;
       }
     `;
   }

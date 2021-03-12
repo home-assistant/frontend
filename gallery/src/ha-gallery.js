@@ -111,29 +111,9 @@ class HaGallery extends PolymerElement {
                 </template>
               </ha-card>
 
-              <ha-card header="More Info Demos">
-                <div class="card-content intro">
-                  <p>
-                    More info screens show up when an entity is clicked.
-                  </p>
-                </div>
-                <template is="dom-repeat" items="[[_moreInfoDemos]]">
-                  <a href="#[[item]]">
-                    <paper-item>
-                      <paper-item-body>{{ item }}</paper-item-body>
-                      <ha-icon icon="hass:chevron-right"></ha-icon>
-                    </paper-item>
-                  </a>
-                </template>
-              </ha-card>
-
-              <ha-card header="Util Demos">
-                <div class="card-content intro">
-                  <p>
-                    Test pages for our utility functions.
-                  </p>
-                </div>
-                <template is="dom-repeat" items="[[_utilDemos]]">
+              <ha-card header="Other Demos">
+                <div class="card-content intro"></div>
+                <template is="dom-repeat" items="[[_restDemos]]">
                   <a href="#[[item]]">
                     <paper-item>
                       <paper-item-body>{{ item }}</paper-item-body>
@@ -178,13 +158,9 @@ class HaGallery extends PolymerElement {
         type: Array,
         computed: "_computeLovelace(_demos)",
       },
-      _moreInfoDemos: {
+      _restDemos: {
         type: Array,
-        computed: "_computeMoreInfos(_demos)",
-      },
-      _utilDemos: {
-        type: Array,
-        computed: "_computeUtil(_demos)",
+        computed: "_computeRest(_demos)",
       },
     };
   }
@@ -237,12 +213,8 @@ class HaGallery extends PolymerElement {
     return demos.filter((demo) => demo.includes("hui"));
   }
 
-  _computeMoreInfos(demos) {
-    return demos.filter((demo) => demo.includes("more-info"));
-  }
-
-  _computeUtil(demos) {
-    return demos.filter((demo) => demo.includes("util"));
+  _computeRest(demos) {
+    return demos.filter((demo) => !demo.includes("hui"));
   }
 }
 

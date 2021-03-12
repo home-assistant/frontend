@@ -5,6 +5,7 @@ import { Action } from "./script";
 interface TraceVariables extends Record<string, unknown> {
   trigger: {
     description: string;
+    [key: string]: unknown;
   };
 }
 
@@ -23,7 +24,7 @@ export interface AutomationTrace {
   last_action: string | null;
   last_condition: string | null;
   run_id: string;
-  state: "running" | "stopped";
+  state: "running" | "stopped" | "debugged";
   timestamp: {
     start: string;
     finish: string | null;

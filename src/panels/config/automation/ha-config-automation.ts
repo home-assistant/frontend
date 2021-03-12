@@ -10,6 +10,7 @@ import {
 } from "../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../types";
 import "./ha-automation-picker";
+import "./ha-automation-editor";
 
 const equal = (a: AutomationEntity[], b: AutomationEntity[]): boolean => {
   if (a.length !== b.length) {
@@ -46,7 +47,6 @@ class HaConfigAutomation extends HassRouterPage {
       },
       edit: {
         tag: "ha-automation-editor",
-        load: () => import("./ha-automation-editor"),
       },
       trace: {
         tag: "ha-automation-trace",

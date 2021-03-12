@@ -14,7 +14,8 @@ export interface LogbookEntry {
   message?: string;
   entity_id?: string;
   icon?: string;
-  domain: string;
+  source?: string;
+  domain?: string;
   context_user_id?: string;
   context_event_type?: string;
   context_domain?: string;
