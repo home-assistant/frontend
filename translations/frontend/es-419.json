@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Volver",
+                "supervisor": {
+                    "ask": "Solicitar ayuda",
+                    "observer": "Verificar Observer",
+                    "reboot": "Intente reiniciar el host",
+                    "system_health": "Verificar estado del sistema",
+                    "title": "No se pudo cargar el panel de Supervisor",
+                    "wait": "Si recién inicia, asegúrese de darle tiempo suficiente a Supervisor para que se inicie."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "La semana pasada",

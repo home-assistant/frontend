@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Ga terug",
+                "supervisor": {
+                    "ask": "Vraag om hulp",
+                    "observer": "Check de Observer",
+                    "reboot": "Probeer de host opnieuw op te starten",
+                    "system_health": "Check de systeemstatus",
+                    "title": "Kan het supervisor scherm niet laden!",
+                    "wait": "Als Home Assistant net is gestart, zorg ervoor dat de supervisor genoeg tijd heeft gehad om op te starten."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "Vorige week",
