@@ -87,6 +87,7 @@ export class HaAutomationTrace extends LitElement {
     if (changedProps.has("automationId")) {
       this._entityId = undefined;
       this._trace = undefined;
+      this._logbookEntries = undefined;
       this._loadTrace();
     }
 
