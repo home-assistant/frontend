@@ -199,6 +199,15 @@ class HaPanelDevService extends LitElement {
     if (!serviceData?.service) {
       return false;
     }
+
+    this._error = undefined;
+    if (hasTemplate(this._serviceData!)) {
+      this._error = this.hass.localize(
+        "ui.panel.developer-tools.tabs.services.no_templates"
+      );
+      return false;
+    }
+
     const domain = computeDomain(serviceData.service);
     const service = computeObjectId(serviceData.service);
     if (!domain || !service) {
@@ -257,14 +266,6 @@ class HaPanelDevService extends LitElement {
     const domain = computeDomain(this._serviceData!.service);
     const service = computeObjectId(this._serviceData!.service);
     if (!domain || !service) {
-      return;
-    }
-
-    this._error = undefined;
-    if (hasTemplate(this._serviceData!)) {
-      this._error = this.hass.localize(
-        "ui.panel.developer-tools.tabs.services.no_templates"
-      );
       return;
     }
 
