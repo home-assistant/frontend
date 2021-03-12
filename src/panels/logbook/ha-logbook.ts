@@ -117,7 +117,10 @@ class HaLogbook extends LitElement {
       : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
-    const domain = item.entity_id ? computeDomain(item.entity_id) : item.domain;
+    const domain = item.entity_id
+      ? computeDomain(item.entity_id)
+      : // Domain is there if there is no entity ID.
+        item.domain!;
 
     return html`
       <div class="entry-container">

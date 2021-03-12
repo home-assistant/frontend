@@ -1,4 +1,3 @@
-import { AutomationTraceExtended } from "../../../../src/data/automation_debug";
 import { DemoTrace } from "./types";
 
 export const basicTrace: DemoTrace = {

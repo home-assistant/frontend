@@ -137,14 +137,11 @@ export class HaAutomationTracer extends LitElement {
                 this.hass.language
               )}
               (runtime:
-              ${Math.round(
-                // @ts-expect-error
-                (new Date(this.trace.timestamp.finish!) -
-                  // @ts-expect-error
-                  new Date(this.trace.timestamp.start)) /
-                  1000,
-                1
-              )}
+              ${(
+                (Number(new Date(this.trace.timestamp.finish!)) -
+                  Number(new Date(this.trace.timestamp.start))) /
+                1000
+              ).toFixed(2)}
               seconds)`
             : "Still running"}
         </ha-timeline>
