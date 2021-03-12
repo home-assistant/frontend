@@ -1,6 +1,7 @@
 import {
   css,
   CSSResult,
+  customElement,
   html,
   internalProperty,
   LitElement,
@@ -23,7 +24,8 @@ import {
   LogbookEntry,
 } from "../../../../data/logbook";
 
-export class HaAutomationTracer extends LitElement {
+@customElement("ha-automation-trace")
+export class HaAutomationTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public automationId!: string;
@@ -151,10 +153,8 @@ export class HaAutomationTracer extends LitElement {
   }
 }
 
-customElements.define("ha-automation-trace", HaAutomationTracer);
-
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trace": HaAutomationTracer;
+    "ha-automation-trace": HaAutomationTrace;
   }
 }
