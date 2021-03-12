@@ -3340,7 +3340,8 @@
             "ui_mode": "Go to UI mode",
             "yaml_parameters": "Parameters only available in YAML mode",
             "all_parameters": "All available parameters",
-            "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`"
+            "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`",
+            "no_templates": "The service dev tools does not support the use of Jinja templates"
           },
           "states": {
             "title": "States",

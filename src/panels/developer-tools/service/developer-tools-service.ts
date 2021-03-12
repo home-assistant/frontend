@@ -4,6 +4,7 @@ import {
   CSSResultArray,
   html,
   LitElement,
+  internalProperty,
   property,
   query,
 } from "lit-element";
@@ -25,11 +26,14 @@ import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
 import "../../../util/app-localstorage-document";
+import { hasTemplate } from "../../../common/string/has-template";
 
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
+
+  @internalProperty() private _error?: string;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
@@ -84,7 +88,6 @@ class HaPanelDevService extends LitElement {
             "ui.panel.developer-tools.tabs.services.description"
           )}
         </p>
-
         ${this._yamlMode
           ? html`<ha-service-picker
                 .hass=${this.hass}
@@ -105,6 +108,7 @@ class HaPanelDevService extends LitElement {
                   @value-changed=${this._serviceDataChanged}
                 ></ha-service-control></div
             ></ha-card>`}
+        ${this._error ? html` <p class="error">Error: ${this._error}</p> ` : ""}
       </div>
       <div class="button-row">
         <div class="buttons">
@@ -255,6 +259,15 @@ class HaPanelDevService extends LitElement {
     if (!domain || !service) {
       return;
     }
+
+    this._error = undefined;
+    if (hasTemplate(this._serviceData!)) {
+      this._error = this.hass.localize(
+        "ui.panel.developer-tools.tabs.services.no_templates"
+      );
+      return;
+    }
+
     this.hass.callService(
       domain,
       service,
