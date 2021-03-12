@@ -200,13 +200,13 @@ class HaPanelDevService extends LitElement {
       return false;
     }
 
-    this._error = undefined;
     if (hasTemplate(this._serviceData!)) {
       this._error = this.hass.localize(
         "ui.panel.developer-tools.tabs.services.no_templates"
       );
       return false;
     }
+    this._error = undefined;
 
     const domain = computeDomain(serviceData.service);
     const service = computeObjectId(serviceData.service);
