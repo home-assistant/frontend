@@ -9,7 +9,6 @@ import {
   RouterOptions,
 } from "../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../types";
-import "./ha-automation-editor";
 import "./ha-automation-picker";
 
 const equal = (a: AutomationEntity[], b: AutomationEntity[]): boolean => {
