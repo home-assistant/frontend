@@ -136,15 +136,39 @@
         "common": {
             "cancel": "取消",
             "close": "关闭",
+            "description": "描述",
+            "error": {
+                "unknown": "未知错误",
+                "update_failed": "更新失败"
+            },
+            "learn_more": "详细了解",
+            "new_version_available": "发现新版本",
             "newest_version": "最新版本",
+            "no": "否",
             "refresh": "刷新",
             "release_notes": "发行说明",
+            "reload": "重新加载",
+            "reset_defaults": "重置为默认值",
+            "reset_options": "重置选项",
+            "restart": "重新启动",
+            "restart_name": "重启 {name}",
+            "running_version": "您正在运行版本 {version}",
             "save": "保存",
+            "show_more": "显示与此相关的更多信息",
             "update": "更新",
             "update_available": "正在等待{count, plural,\n  one {更新}\n  other { {count} 项更新}\n}",
-            "version": "版本"
+            "version": "版本",
+            "yes": "是"
         },
         "confirm": {
+            "reset_options": {
+                "text": "您确定要重置所有选项吗？",
+                "title": "重置选项"
+            },
+            "restart": {
+                "text": "您确定要重启 {name} 吗？",
+                "title": "重启 {name}"
+            },
             "update": {
                 "text": "您确定要更新 {name} 至版本 {version} 吗？",
                 "title": "更新 {name}"
@@ -244,6 +268,12 @@
             "type": "类型",
             "upload_snapshot": "上传快照"
         },
+        "store": {
+            "missing_addons": "找不到加载项设置？请在个人资料页面中启用高级模式",
+            "no_results_found": "在 {repository} 中未找到结果。",
+            "registries": "注册项",
+            "repositories": "仓库(Repo)"
+        },
         "system": {
             "core": {
                 "cpu_usage": "核心 CPU 使用率",
@@ -272,11 +302,16 @@
                 "shutdown_host": "关闭主机",
                 "used_space": "已用空间"
             },
+            "log": {
+                "get_logs": "无法获取 {provider} 日志: {error}",
+                "log_provider": "日志提供方"
+            },
             "supervisor": {
                 "beta_backup": "激活此功能前，请确保数据已经备份。",
                 "beta_join_confirm": "您想要加入 Beta 频道吗？",
                 "beta_release_items": "其中包括以下测试版本：",
                 "beta_warning": "Beta 版本面向测试人员和尝鲜用户，可能包含不稳定的代码",
+                "channel": "频道",
                 "cpu_usage": "Supervisor CPU 使用率",
                 "failed_to_reload": "重载 Supervisor 失败",
                 "failed_to_set_option": "设定 Supervisor 选项失败",

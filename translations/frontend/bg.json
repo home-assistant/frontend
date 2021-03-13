@@ -131,6 +131,9 @@
                     "uninstall": "Деинсталирането на добавката не бе успешно"
                 },
                 "capability": {
+                    "apparmor": {
+                        "title": "AppArmor"
+                    },
                     "label": {
                         "docker": "docker",
                         "hardware": "хардуер",
@@ -205,6 +208,7 @@
             "reload": "Презареждане",
             "restart": "Рестартиране",
             "restart_name": "Рестартиране {name}",
+            "running_version": "В момента използвате версия {version}",
             "save": "Запис",
             "update": "Актуализиране",
             "version": "Версия",
@@ -290,7 +294,8 @@
             "folder": {
                 "addons/local": "Локални добавки",
                 "homeassistant": "Конфигурация на Home Assistant",
-                "media": "Медия",
+                "media": "Media",
+                "share": "Share",
                 "ssl": "SSL"
             },
             "folders": "Папки",
@@ -345,9 +350,12 @@
                 "share_diagnostics_description": "Споделяйте доклади за сривове и диагностична информация.",
                 "share_diagonstics_title": "Помогнете за подобряването на Home Assistant",
                 "unhealthy_reason": {
+                    "docker": "Средата на Docker не работи правилно",
+                    "setup": "Настройката на Supervisor не бе успешна",
                     "supervisor": "Supervisor не успя да се актуализира"
                 },
                 "unsupported_reason": {
+                    "container": "Контейнери, за които е известно, че причиняват проблеми",
                     "dbus": "DBUS",
                     "docker_configuration": "Конфигурация на Docker",
                     "docker_version": "Docker Версия",
@@ -913,6 +921,7 @@
                         "scene": "Сцени",
                         "script": "Скриптове",
                         "server_control": "Управление на сървъра",
+                        "tag": "Маркери",
                         "users": "Потребители",
                         "zone": "Зони"
                     },
@@ -1297,6 +1306,9 @@
                                     "sunrise": "Изгрев",
                                     "sunset": "Залез"
                                 },
+                                "tag": {
+                                    "label": "Маркер"
+                                },
                                 "template": {
                                     "label": "Шаблон",
                                     "value_template": "Шаблон за стойност"
@@ -1402,6 +1414,7 @@
                             "enable_ha_skill": "Активирайте умението Home Assistant за Alexa",
                             "title": "Alexa"
                         },
+                        "connected": "Свързан",
                         "google": {
                             "config_documentation": "Документация за конфигурацията",
                             "devices_pin": "ПИН код за Устройства за защита",
@@ -1409,9 +1422,11 @@
                             "security_devices": "Устройства за защита",
                             "title": "Google Assistant"
                         },
+                        "integrations": "Интеграции",
                         "integrations_introduction2": "Проверете уебсайта за",
                         "integrations_link_all_features": "всички налични функции",
                         "manage_account": "Управление на акаунта",
+                        "not_connected": "Не е свързан",
                         "remote": {
                             "title": "Дистанционен контрол"
                         },
@@ -1453,6 +1468,7 @@
                     "description_not_login": "Не сте влезли",
                     "dialog_certificate": {
                         "certificate_expiration_date": "Дата на изтичане на сертификата:",
+                        "certificate_information": "Информация за сертификата",
                         "close": "Затвори",
                         "will_be_auto_renewed": "ще бъде автоматично подновено"
                     },
@@ -1478,18 +1494,25 @@
                         "title": "Google Assistant"
                     },
                     "login": {
+                        "alert_email_confirm_necessary": "Трябва да потвърдите имейла си, преди да влезете.",
                         "alert_password_change_required": "Трябва да промените паролата си, преди да влезете.",
                         "email": "Имейл",
                         "email_error_msg": "Грешен имейл",
                         "forgot_password": "Забравена парола?",
                         "introduction2": "Тази услуга се управлява от нашия партньор",
                         "introduction2a": ", компания основана от основателите на Home Assistant и Hass.io.",
+                        "introduction3": "Home Assistant Cloud е абонаментна услуга с безплатен едномесечен пробен период. Не е необходима информация за плащане.",
                         "learn_more_link": "Научете повече за Home Assistant Cloud",
                         "password": "Парола",
-                        "password_error_msg": "Паролите са най-малко 8 знака"
+                        "password_error_msg": "Паролите са най-малко 8 знака",
+                        "start_trial": "Започнете безплатния си едномесечен пробен период",
+                        "trial_info": "Не е необходима информация за плащане"
                     },
                     "register": {
+                        "account_created": "Акаунтът е създаден! Проверете имейла си за инструкции как да активирате акаунта си.",
                         "create_account": "Създаване на акаунт",
+                        "email_address": "Имейл адрес",
+                        "email_error_msg": "Грешен имейл",
                         "feature_amazon_alexa": "Интеграция с Amazon Alexa",
                         "feature_google_home": "Интеграция с Google Assistant",
                         "feature_webhook_apps": "Лесна интеграция с базирани на webhook приложения като OwnTracks",
@@ -1499,6 +1522,8 @@
                         "link_privacy_policy": "Политика за поверителност",
                         "link_terms_conditions": "Правила и условия",
                         "password": "Парола",
+                        "password_error_msg": "Паролите са най-малко 8 знака",
+                        "resend_confirm_email": "Повторно изпращане на имейл за потвърждение",
                         "title": "Регистриране на акаунт"
                     }
                 },
@@ -1670,6 +1695,7 @@
                     "caption": "Информация",
                     "description": "Версия, състояние на системата и връзки към документация",
                     "documentation": "Документация",
+                    "home_assistant_logo": "Лого на Home Assistant",
                     "integrations": "Интеграции",
                     "license": "Публикувано под лиценза Apache 2.0",
                     "path_configuration": "Път към configuration.yaml: {path}",
@@ -1726,12 +1752,14 @@
                     },
                     "configure": "Конфигуриране",
                     "configured": "Конфигуриран",
+                    "confirm_new": "Искате ли да настроите {integration}?",
                     "description": "Управление на интеграции с услуги, устройства, ...",
                     "disable": {
                         "hide_disabled": "Скриване на деактивираните интеграции",
                         "show_disabled": "Показване на деактивираните интеграции"
                     },
                     "discovered": "Открити",
+                    "home_assistant_website": "Уебсайт на Home Assistant",
                     "ignore": {
                         "confirm_ignore": "Наистина ли не искате да настроите тази интеграция? Можете да отмените това, като кликнете върху „Показване на игнорирани интеграции“ в менюто горе вдясно."
                     },
@@ -1749,7 +1777,9 @@
                 },
                 "introduction": "Тук е възможно да конфигурирате Вашите компоненти и Home Assistant. Не всичко е възможно да се конфигурира от Интерфейса, но работим по върпоса.",
                 "logs": {
-                    "multiple_messages": "съобщението е възникнало за първи път в {time} и се показва {counter} пъти"
+                    "clear": "Изчистване",
+                    "multiple_messages": "съобщението е възникнало за първи път в {time} и се показва {counter} пъти",
+                    "refresh": "Опресняване"
                 },
                 "lovelace": {
                     "caption": "Lovelace Табла",
@@ -1820,6 +1850,7 @@
                     "common": {
                         "controller": "Контролер",
                         "network": "Мрежа",
+                        "query_stage": "Етап на заявка",
                         "zwave": "Z-Wave"
                     },
                     "navigation": {
@@ -1925,6 +1956,7 @@
                     "editor": {
                         "alias": "Име",
                         "default_name": "Нов скрипт",
+                        "delete_confirm": "Сигурни ли сте, че искате да изтриете този скрипт?",
                         "delete_script": "Изтриване на скрипт",
                         "header": "Скрипт: {name}",
                         "icon": "Икона",
@@ -1993,6 +2025,12 @@
                     }
                 },
                 "tag": {
+                    "add_tag": "Добавяне на маркер",
+                    "automation_title": "Маркера {name} е сканиран",
+                    "caption": "Маркери",
+                    "confirm_remove": "Наистина ли искате да премахнете маркера {tag}?",
+                    "confirm_remove_title": "Премахване на маркера?",
+                    "create_automation": "Създаване на автоматизация с маркер",
                     "description": "Задействайте автоматизации при сканиране на NFC етикет, QR код и др",
                     "detail": {
                         "create": "Създаване",
@@ -2000,11 +2038,21 @@
                         "delete": "Изтриване",
                         "description": "Описание",
                         "name": "Име",
-                        "update": "Актуализиране"
+                        "new_tag": "Нов маркер",
+                        "tag_id": "ID на маркера",
+                        "tag_id_placeholder": "Автоматично генериране, когато остане празно",
+                        "update": "Актуализиране",
+                        "usage": "Маркерът може да задейства автоматизация при сканиране, можете да използвате NFC маркери, QR кодове или всякакъв друг маркер. Използвайте нашия {companion_link}, за да запишете този маркер в програмируем NFC маркер или да създадете QR код по-долу."
                     },
+                    "edit": "Редактиране",
                     "headers": {
+                        "last_scanned": "Последно сканиране",
                         "name": "Име"
-                    }
+                    },
+                    "learn_more": "Научете повече за маркерите",
+                    "never_scanned": "Никога не е сканиран",
+                    "no_tags": "Няма маркери",
+                    "write": "Запис"
                 },
                 "users": {
                     "add_user": {
