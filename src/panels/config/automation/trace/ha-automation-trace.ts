@@ -62,9 +62,14 @@ export class HaAutomationTrace extends LitElement {
             stateObj?.attributes.friendly_name || this._entityId
           }`}
         >
-          <button class="load-last" @click=${this._loadTrace}>
-            Load last trace
-          </button>
+          <div class="actions">
+            <button @click=${this._loadTrace}>
+              Load last trace
+            </button>
+            <button @click=${this._downloadTrace}>
+              Download
+            </button>
+          </div>
           ${this._trace
             ? html`
                 <div class="card-content">
@@ -135,6 +140,22 @@ export class HaAutomationTrace extends LitElement {
     history.back();
   }
 
+  private _downloadTrace() {
+    const aEl = document.createElement("a");
+    aEl.download = `trace-${this._entityId}.json`;
+    aEl.href = `data:application/json;charset=utf-8,${encodeURI(
+      JSON.stringify(
+        {
+          trace: this._trace,
+          logbookEntries: this._logbookEntries,
+        },
+        undefined,
+        2
+      )
+    )}`;
+    aEl.click();
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
@@ -144,7 +165,7 @@ export class HaAutomationTrace extends LitElement {
           margin: 24px auto;
         }
 
-        .load-last {
+        .actions {
           position: absolute;
           top: 8px;
           right: 8px;
