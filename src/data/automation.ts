@@ -149,11 +149,13 @@ export type Trigger =
 
 export interface LogicalCondition {
   condition: "and" | "not" | "or";
+  alias?: string;
   conditions: Condition[];
 }
 
 export interface StateCondition {
   condition: "state";
+  alias?: string;
   entity_id: string;
   attribute?: string;
   state: string | number;
@@ -162,6 +164,7 @@ export interface StateCondition {
 
 export interface NumericStateCondition {
   condition: "numeric_state";
+  alias?: string;
   entity_id: string;
   attribute?: string;
   above?: number;
@@ -171,6 +174,7 @@ export interface NumericStateCondition {
 
 export interface SunCondition {
   condition: "sun";
+  alias?: string;
   after_offset: number;
   before_offset: number;
   after: "sunrise" | "sunset";
@@ -179,12 +183,14 @@ export interface SunCondition {
 
 export interface ZoneCondition {
   condition: "zone";
+  alias?: string;
   entity_id: string;
   zone: string;
 }
 
 export interface TimeCondition {
   condition: "time";
+  alias?: string;
   after?: string;
   before?: string;
   weekday?: string | string[];
@@ -192,6 +198,7 @@ export interface TimeCondition {
 
 export interface TemplateCondition {
   condition: "template";
+  alias?: string;
   value_template: string;
 }
 
