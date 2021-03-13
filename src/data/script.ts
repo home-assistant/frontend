@@ -29,12 +29,14 @@ export interface ScriptConfig {
 }
 
 export interface EventAction {
+  alias?: string;
   event: string;
   event_data?: Record<string, any>;
   event_data_template?: Record<string, any>;
 }
 
 export interface ServiceAction {
+  alias?: string;
   service: string;
   entity_id?: string;
   target?: HassServiceTarget;
@@ -42,6 +44,7 @@ export interface ServiceAction {
 }
 
 export interface DeviceAction {
+  alias?: string;
   device_id: string;
   domain: string;
   entity_id: string;
@@ -55,26 +58,31 @@ export interface DelayActionParts {
   days?: number;
 }
 export interface DelayAction {
+  alias?: string;
   delay: number | Partial<DelayActionParts> | string;
 }
 
 export interface SceneAction {
+  alias?: string;
   scene: string;
 }
 
 export interface WaitAction {
+  alias?: string;
   wait_template: string;
   timeout?: number;
   continue_on_timeout?: boolean;
 }
 
 export interface WaitForTriggerAction {
+  alias?: string;
   wait_for_trigger: Trigger[];
   timeout?: number;
   continue_on_timeout?: boolean;
 }
 
 export interface RepeatAction {
+  alias?: string;
   repeat: CountRepeat | WhileRepeat | UntilRepeat;
 }
 
@@ -95,6 +103,7 @@ export interface UntilRepeat extends BaseRepeat {
 }
 
 export interface ChooseAction {
+  alias?: string;
   choose: [{ conditions: Condition[]; sequence: Action[] }];
   default?: Action[];
 }

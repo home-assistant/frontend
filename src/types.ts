@@ -168,7 +168,7 @@ export interface Resources {
 export interface Context {
   id: string;
   parent_id?: string;
-  user_id?: string;
+  user_id?: string | null;
 }
 
 export interface ServiceCallResponse {
