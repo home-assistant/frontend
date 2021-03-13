@@ -1655,7 +1655,7 @@
                         "fetching_subscription": "Abonnement ophalen...",
                         "google": {
                             "config_documentation": "Configuratie documentatie",
-                            "devices_pin": "Pin Beveiligingsapparaten",
+                            "devices_pin": "Pincode van beveiligingsapparaten",
                             "enable_ha_skill": "Activeer Home Assistant voor Google Assistant",
                             "enable_state_reporting": "Statusrapportage inschakelen",
                             "enter_pin_error": "Kan pincode niet opslaan:",

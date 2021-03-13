@@ -3004,6 +3004,17 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Wróć",
+                "supervisor": {
+                    "ask": "Poproś o pomoc",
+                    "observer": "Sprawdź obserwatora",
+                    "reboot": "Spróbuj ponownie uruchomić hosta",
+                    "system_health": "Sprawdź kondycję systemu",
+                    "title": "Nie można załadować panelu Supervisora!",
+                    "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "Poprzedni tydzień",

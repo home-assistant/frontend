@@ -3004,6 +3004,12 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Vrátit se",
+                "supervisor": {
+                    "ask": "Požádat o pomoc"
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "Minulý týden",

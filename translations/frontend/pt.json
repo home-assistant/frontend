@@ -111,6 +111,10 @@
                     "input": "Entrada",
                     "output": "Saída"
                 },
+                "network": {
+                    "disabled": "Desativado",
+                    "header": "Rede"
+                },
                 "options": {
                     "edit_in_ui": "Editar em UI",
                     "edit_in_yaml": "Editar em YAML",
@@ -120,12 +124,15 @@
             },
             "dashboard": {
                 "action_error": {
+                    "get_changelog": "Falha ao obter lista de alterações do add-on",
+                    "go_to_config": "Falha ao iniciar add-on - validação de configuração falhou!",
                     "install": "Falha ao instalar add-on",
                     "restart": "Falha ao reiniciar add-on",
                     "start": "Falha ao iniciar add-on",
                     "start_invalid_config": "Ir para a configuração",
                     "stop": "Falha ao parar add-on",
-                    "uninstall": "Falha ao desinstalar add-on"
+                    "uninstall": "Falha ao desinstalar add-on",
+                    "validate_config": "Falha ao validar a configuração do add-on"
                 },
                 "capability": {
                     "apparmor": {
@@ -137,6 +144,9 @@
                     "full_access": {
                         "title": "Acesso completo ao hardware"
                     },
+                    "hassio_api": {
+                        "description": "O suplemento tem acesso à API do Supervisor, a pedido do autor do complemento. Por defeito, o complemento pode aceder à informação da versão do seu sistema. Quando o complemento solicita acesso de nível 'gestor' ou 'administrador' à API, obterá acesso para controlar múltiplas partes do seu sistema Home Assistant. Esta permissão é indicada por este crachá e terá um impacto negativo na pontuação de segurança do complemento."
+                    },
                     "label": {
                         "apparmor": "AppArmor",
                         "docker": "docker",
@@ -145,6 +155,10 @@
                         "hassio": "hassio",
                         "rating": "classificação",
                         "stage": "etapa"
+                    },
+                    "rating": {
+                        "description": "O Home Assistant fornece uma classificação de segurança a cada um dos complementos, que indica os riscos envolvidos na utilização deste complemento. Quanto mais acesso um complemento requer no seu sistema, mais baixa a pontuação, aumentando assim os possíveis riscos de segurança.\n\nA pontuação tem uma escala de 1 a 6, na qual 1 é a pontuação mais baixa (considerada a mais insegura e de maior risco) e 6 é a mais alta (considerada a mais segura e de menor risco).",
+                        "title": "Classificação de segurança do complemento"
                     },
                     "role": {
                         "admin": "admin",
@@ -157,6 +171,7 @@
                         "description": "Os add-ons podem ter uma das três fases:\n\n{icon_stable} **Estável***: Estes são complementos prontos a serem utilizados na produção.\n\n{icon_experimental} **Experimental***: Estes podem conter bugs, e podem estar inacabados.\n\n{icon_deprecated} **Depreendido***: Estes suplementos deixarão de receber qualquer actualização."
                     }
                 },
+                "changelog": "Changelog",
                 "cpu_usage": "Utilização de CPU do add-on",
                 "install": "Instalar",
                 "new_update_available": "{name} {version} está disponível",
@@ -179,10 +194,12 @@
                         "title": "Modo de proteção"
                     },
                     "watchdog": {
+                        "description": "Isto iniciará o add-on se este falhar",
                         "title": "Watchdog"
                     }
                 },
                 "protection_mode": {
+                    "content": "O modo de proteção neste complemento está desativado! Isso dá ao complemento acesso total a todo o sistema, o que gera riscos de segurança e pode danificar seu sistema quando usado incorretamente. Apenas desative o modo de proteção se conhecer, precisar e confiar na fonte deste complemento.",
                     "enable": "Ativar o modo de proteção",
                     "title": "Aviso: o modo de proteção está desativado!"
                 },
@@ -191,6 +208,13 @@
                 "start": "Iniciar",
                 "stop": "Parar",
                 "uninstall": "Desinstalar"
+            },
+            "documentation": {
+                "get_documentation": "Falha ao obter documentação do add-on, {error}"
+            },
+            "failed_to_reset": "Falha ao redefinir a configuração do add-on, {error}",
+            "logs": {
+                "get_logs": "Falha ao obter logs do add-on, {error}"
             },
             "panel": {
                 "configuration": "Configuração",
@@ -228,6 +252,7 @@
             "save": "Guardar",
             "show_more": "Mostrar mais informações sobre isso",
             "update": "Atualizar",
+            "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pendente/es",
             "version": "Versão",
             "yes": "Sim"
         },
@@ -254,7 +279,7 @@
         "dialog": {
             "network": {
                 "connected_to": "Conectado a {ssid}",
-                "dhcp": "DHCP",
+                "dhcp": "",
                 "disabled": "Desativado",
                 "dns_servers": "Servidores DNS",
                 "failed_to_change": "Falha ao alterar as configurações de rede",
@@ -295,7 +320,7 @@
                 "create_snapshot": "Criar um snapshot do {name} antes de atualizar",
                 "snapshot": "Snapshot",
                 "snapshotting": "A criar um snapshot de {name}",
-                "updating": "Atualizando {name} para a versão {version}"
+                "updating": "A actualizar {name} para a versão {version}"
             }
         },
         "my": {
@@ -338,6 +363,7 @@
             "upload_snapshot": "Upload  snapshot"
         },
         "store": {
+            "missing_addons": "Complementos em falta? Active o modo avançado na sua pagina de perfil de utilizador",
             "no_results_found": "Nenhum resultado encontrado em {repository}.",
             "registries": "Registros",
             "repositories": "Repositórios"
@@ -942,7 +968,7 @@
                     "confirm_remove_title": "Remover a entidade?",
                     "not_provided": "Esta entidade está actualmente indisponível e é órfã de uma integração ou dispositivo removido, alterado ou disfuncional.",
                     "remove_action": "Remover entidade",
-                    "remove_intro": "Se a entidade não estiver em uso, você pode removê-la."
+                    "remove_intro": "Se a entidade não estiver em uso, pode removê-la."
                 },
                 "script": {
                     "last_action": "Última ocorrência",
@@ -1075,6 +1101,7 @@
                 "confirmations": {
                     "remove": "Tem a certeza que deseja remover este dispositivo?"
                 },
+                "device_children": "Dispositivos Zigbee descendentes",
                 "device_signature": "Assinatura do dispositivo Zigbee",
                 "last_seen": "Visto pela última vez",
                 "manuf": "por {manufacturer}",
@@ -1102,7 +1129,7 @@
         },
         "errors": {
             "config": {
-                "edit_in_yaml_supported": "Você ainda pode editar sua configuração no YAML.",
+                "edit_in_yaml_supported": "Ainda pode editar sua configuração no YAML.",
                 "editor_not_available": "Nenhum editor visual disponível para o tipo \" {type} \".",
                 "editor_not_supported": "O editor visual não é suportado para esta configuração",
                 "error_detected": "Erros de configuração detectados",
@@ -1522,7 +1549,7 @@
                         "header": "Importar um *Blueprint*",
                         "import_btn": "Pré-visualizar *blueprint*",
                         "import_header": "*Blueprint* \"{name}\"",
-                        "import_introduction_link": "Você pode importar *blueprints* de outros utilizadores do Github e do {community_link} . Insira o URL do *blueprint* abaixo.",
+                        "import_introduction_link": "Pode importar *blueprints* de outros utilizadores do Github e do {community_link} . Insira o URL do *blueprint* abaixo.",
                         "importing": "A carregar *blueprint*...",
                         "raw_blueprint": "Conteúdo do *blueprint*",
                         "save_btn": "Importar *blueprint*",
@@ -1560,7 +1587,7 @@
                             "enable_ha_skill": "Ativar a skill Home Assistant para a Alexa.",
                             "enable_state_reporting": "Ativar relatório de estado",
                             "info": "Com a integração Alexa para o Home Assistant Cloud, você poderá controlar todos os seus dispositivos Home Assistant através de qualquer dispositivo  Alexa.",
-                            "info_state_reporting": "Se você ativar o relatório de estado, o Home Assistant enviará todas as alterações de estado das entidades expostas à Amazon. Isso permite que você veja sempre os estados mais recentes na aplicação Alexa e use as alterações de estado para criar rotinas.",
+                            "info_state_reporting": "Se ativar o relatório de estado, o Home Assistant enviará todas as alterações de estado das entidades expostas à Amazon. Tal permite que veja sempre os estados mais recentes na aplicação Alexa e use as alterações de estado para criar rotinas.",
                             "manage_entities": "Gerir Entidades",
                             "state_reporting_error": "Indisponível para {enable_disable} reportar estado.",
                             "sync_entities": "Sincronizar Entidades",
@@ -1579,7 +1606,7 @@
                             "enter_pin_hint": "Insira um PIN para usar dispositivos de segurança",
                             "enter_pin_info": "Por favor, insira um pin para interagir com os dispositivos de segurança. Os dispositivos de segurança são portas, portões de garagem e fechaduras. Ser-lhe-á pedido para dizer/inserir este pin quando interagir com tais dispositivos através do Google Assistant.",
                             "info": "Com a integração do Google Assistant para o Home Assistant Cloud, poderá controlar todos os seus dispositivos do Home Assistant por qualquer dispositivo com Google Assistant ativado.",
-                            "info_state_reporting": "Se você ativar o relatório de estado, o Home Assistant enviará todas as alterações de estado das entidades expostas à Amazon. Isso permite que você veja sempre os estados mais recentes na aplicação Google Home.",
+                            "info_state_reporting": "Se ativar o relatório de estado, o Home Assistant enviará todas as alterações de estado das entidades expostas à Google. Isso permite que consulte sempre os estados mais recentes na aplicação Google Home.",
                             "manage_entities": "Gerir Entidades",
                             "security_devices": "Dispositivos de segurança",
                             "sync_entities": "Sincronizar entidades com o Google",
@@ -1623,7 +1650,7 @@
                             "link_learn_more": "Saiba mais sobre como criar automações baseadas em webhook.",
                             "loading": "A carregar...",
                             "manage": "Gerir",
-                            "no_hooks_yet": "Parece que você ainda não tem webhooks. Comece, configurando um",
+                            "no_hooks_yet": "Parece que ainda não tem webhooks. Comece, por configurar um",
                             "no_hooks_yet_link_automation": "automação de webhook",
                             "no_hooks_yet_link_integration": "integração baseada em webhook",
                             "no_hooks_yet2": " ou criando um ",
@@ -1674,7 +1701,7 @@
                         "title": "Esqueci-me da palavra-passe"
                     },
                     "google": {
-                        "banner": "Editar as entidades que são expostas através desta UI está desabilitada porque você configurou entity filters em configuration.yaml.",
+                        "banner": "A edição de quais entidades são expostas através desta UI está desactivada porque configurou *entity filters* no configuration.yaml.",
                         "disable_2FA": "Desativar a autenticação de dois fatores",
                         "dont_expose_entity": "Não expor entidade",
                         "expose": "Expor ao Google Assistant",
@@ -1695,7 +1722,7 @@
                         "email": "Email",
                         "email_error_msg": "E-mail inválido",
                         "forgot_password": "Esqueceu-se da palavra-passe?",
-                        "introduction": "O Home Assistant Cloud fornece uma conexão remota segura à sua instância enquanto estiver fora de casa. Também permite que você se conecte com serviços que apenas utilizam a nuvem: Amazon Alexa e Google Assistant.",
+                        "introduction": "O Home Assistant Cloud fornece uma ligação remota segura à sua instância enquanto estiver fora de casa. Também permite a interligação com serviços que apenas utilizam a nuvem como: Amazon Alexa e Google Assistant.",
                         "introduction2": "Este serviço é gerido pelo nosso parceiro ",
                         "introduction2a": ", uma empresa criada pelos fundadores do Home Assistant e do Hass.io.",
                         "introduction3": "O Home Assistant Cloud é um serviço de assinatura com uma avaliação gratuita de um mês. Nenhuma informação de pagamento é necessária.",
@@ -1767,7 +1794,7 @@
                     "attributes_customize": "Os seguintes atributos já estão definidos em customize.yaml",
                     "attributes_not_set": "Os seguintes atributos não foram definidos. Defina-os, se quiser.",
                     "attributes_outside": "Os seguintes atributos estão personalizados fora de customize.yaml",
-                    "attributes_override": "Você pode substituí-los, se quiser.",
+                    "attributes_override": "Pode substituí-los, se quiser.",
                     "attributes_set": "Os seguintes atributos de uma entidade são definidos por meio de programação.",
                     "caption": "Personalização",
                     "description": "Personalizar as suas entidades",
@@ -1906,7 +1933,7 @@
                         "introduction2": "Use o registo da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant.",
                         "remove_selected": {
                             "button": "Remover selecionado",
-                            "confirm_partly_text": "Você pode remover apenas {removable} das {selected} entidades selecionadas. As entidades só podem ser removidas quando a integração deixar de suportá-las. Por vezes é necessário reiniciar o Home Assistant antes de poder remover as entidades de uma integração removida. Tem a certeza de que deseja remover as entidades removíveis?",
+                            "confirm_partly_text": "Pode apenas remover {removable} das {selected} entidades selecionadas. As entidades só podem ser removidas quando a integração deixar de suportá-las. Por vezes é necessário reiniciar o Home Assistant antes de poder remover as entidades de uma integração removida. Tem a certeza de que deseja remover as entidades removíveis?",
                             "confirm_partly_title": "Apenas {number} {number, plural,\n  uma {selected entity} pode ser removida \n  outras {selected entities} podem ser removidas \n}.",
                             "confirm_text": "Deve remover da configuração do Lovelace e das automações se contêm estas entidades",
                             "confirm_title": "Deseja remover {number} {number, plural,\n  one {entidade}\n  other {entidades}\n}?"
@@ -2027,6 +2054,7 @@
                     "config_flow": {
                         "aborted": "Abortado",
                         "close": "Fechar",
+                        "could_not_load": "O fluxo de configuração não pôde ser carregado",
                         "created_config": "Configuração criada para {name}.",
                         "dismiss": "Descartar diálogo",
                         "error": "Erro",
@@ -2134,7 +2162,7 @@
                     },
                     "description": "Criar conjuntos personalizados de cartões para controlar sua casa",
                     "resources": {
-                        "cant_edit_yaml": "Você está a usar o Lovelace no modo YAML, portanto, não é possível gerir os seus recursos através do interface do utilizador. Configure-os em configuration.yaml.",
+                        "cant_edit_yaml": "Está a usar o Lovelace no modo YAML, portanto, não é possível gerir os seus recursos através do interface do utilizador. Configure-os em configuration.yaml.",
                         "caption": "Recursos",
                         "confirm_delete": "Tem certeza de que deseja apagar este recurso?",
                         "detail": {
@@ -2157,7 +2185,7 @@
                             },
                             "no_resources": "Sem recursos"
                         },
-                        "refresh_body": "Você tem que atualizar a página para completar a remoção, quer atualizar agora?",
+                        "refresh_body": "Tem que atualizar a página para completar a remoção, quer atualizar agora?",
                         "refresh_header": "Deseja atualizar?",
                         "types": {
                             "css": "Stylesheet",
@@ -2219,7 +2247,7 @@
                             "offline": "OZWDaemon inativo",
                             "ready": "Pronto para ligar",
                             "started": "Conectado ao MQTT",
-                            "starting": "Conectando-se ao MQTT",
+                            "starting": "A ligar ao MQTT",
                             "stopped": "OpenZWave parado"
                         },
                         "offline": "Inativo",
@@ -2242,22 +2270,22 @@
                         "product_manual": "Manual do produto"
                     },
                     "node_query_stages": {
-                        "associations": "Refrescando grupos de associação e membros",
-                        "cacheload": "Carregando informações do arquivo de cache do OpenZWave. Os nós da bateria permanecerão nesta fase até que o nó acorde.",
+                        "associations": "A actualizar grupos de associação e membros",
+                        "cacheload": "A carregar informações do arquivo de cache do OpenZWave. Os nós da bateria permanecerão nesta fase até que o nó acorde.",
                         "complete": "O processo de entrevista está completo",
-                        "configuration": "Obtendo valores de configuração do nó",
-                        "dynamic": "Obtendo valores que mudam frequentemente do nó",
-                        "instances": "Obtendo detalhes sobre que instâncias ou canais um dispositivo suporta",
-                        "manufacturerspecific1": "Obtendo códigos de identificação do fabricante e produto do nó",
-                        "manufacturerspecific2": "Obtendo códigos adicionais de identificação do fabricante e do produto a partir do nó",
+                        "configuration": "A obter valores de configuração do nó",
+                        "dynamic": "A obter valores que mudam frequentemente do nó",
+                        "instances": "A obter detalhes sobre que instâncias ou canais um dispositivo suporta",
+                        "manufacturerspecific1": "A obter códigos de identificação do fabricante e produto do nó",
+                        "manufacturerspecific2": "A obter códigos adicionais de identificação do fabricante e do produto a partir do nó",
                         "neighbors": "Obter uma lista dos vizinhos do nó",
-                        "nodeinfo": "Obtendo classes de comando suportadas do nó",
-                        "nodeplusinfo": "Obtendo de informações da Onda Z+ a partir do nó",
+                        "nodeinfo": "A obter classes de comando suportadas do nó",
+                        "nodeplusinfo": "A obter de informações da Onda Z+ a partir do nó",
                         "probe": "Verificar se nó está acordado/ativo",
-                        "protocolinfo": "Obtendo recursos Z-Wave básicos do nó a partir do controlador",
-                        "session": "Obtendo valores alterados com pouca frequência do nó",
-                        "static": "Obtendo valores estáticos do dispositivo",
-                        "versions": "Obtendo informações sobre as versões de firmware e classe de comando",
+                        "protocolinfo": "A obter recursos Z-Wave básicos do nó a partir do controlador",
+                        "session": "A obter valores alterados com pouca frequência do nó",
+                        "static": "A obter valores estáticos do dispositivo",
+                        "versions": "A obter informações sobre as versões de firmware e classe de comando",
                         "wakeup": "A configurar suporte para filas de ativação e mensagens"
                     },
                     "node": {
@@ -2288,7 +2316,7 @@
                     "select_instance": {
                         "header": "Selecione uma instância OpenZWave",
                         "introduction": "Tem mais do que uma instância Openzwave em execução. Que instância deseja gerir?",
-                        "none_found": "Não conseguimos encontrar uma instância OpenZWave. Se você acredita que isso está incorreto, verifique as configurações do OpenZWave e do MQTT e certifique-se de que o Home Assistant possa se comunicar com o seu corretor MQTT."
+                        "none_found": "Não conseguimos encontrar uma instância OpenZWave. Se acredita no contrário, verifique as configurações do OpenZWave e do MQTT e certifique-se de que o Home Assistant consegue comunicar com o *broker* MQTT."
                     },
                     "services": {
                         "add_node": "Adicionar nó",
@@ -2318,12 +2346,12 @@
                         "name": "Nome",
                         "name_error_msg": "Nome é obrigatório",
                         "new_person": "Nova Pessoa",
-                        "no_device_tracker_available_intro": "Quando você possui dispositivos que indicam a presença de uma pessoa, poderá atribuí-los a essa pessoa aqui. Pode adicionar o seu primeiro dispositivo, adicionando uma integração de deteção de presença na página de integrações.",
+                        "no_device_tracker_available_intro": "Quando possui dispositivos que indicam a presença de uma pessoa, poderá atribuí-los a essa pessoa aqui. Pode adicionar o seu primeiro dispositivo, adicionando uma integração de deteção de presença na página de integrações.",
                         "update": "Atualizar"
                     },
                     "introduction": "Aqui pode definir cada pessoa de interesse no Home Assistant.",
                     "learn_more": "Saiba mais sobre pessoas",
-                    "no_persons_created_yet": "Parece que você ainda não criou nenhuma pessoa.",
+                    "no_persons_created_yet": "Parece que ainda não criou nenhuma pessoa.",
                     "note_about_persons_configured_in_yaml": "Nota: pessoas configuradas via configuration.yaml não podem ser editadas via UI.",
                     "person_not_found": "Não conseguimos encontrar a pessoa que estavas a tentar editar.",
                     "person_not_found_title": "Pessoa não encontrada"
@@ -2497,7 +2525,7 @@
                         "tag_id": "Identificador da etiqueta",
                         "tag_id_placeholder": "Gerado automaticamente quando deixado vazio",
                         "update": "Atualizar",
-                        "usage": "Uma tag pode acionar uma automação quando digitalizada, você pode usar tags NFC, códigos QR ou qualquer outro tipo de tag. Use o nosso {companion_link} para escrever esta tag em uma tag NFC programável ou crie um código QR abaixo."
+                        "usage": "Uma tag pode acionar uma automação quando digitalizada, pode usar tags NFC, códigos QR ou qualquer outro tipo de tag. Use o nosso {companion_link} para escrever esta tag em uma tag NFC programável ou crie um código QR abaixo."
                     },
                     "edit": "Editar",
                     "headers": {
@@ -2598,7 +2626,7 @@
                         "INITIALIZED": "Inicialização completa",
                         "INITIALIZED_status_text": "O dispositivo está pronto para uso",
                         "INTERVIEW_COMPLETE": "Entrevista Completa",
-                        "INTERVIEW_COMPLETE_status_text": "Configurando",
+                        "INTERVIEW_COMPLETE_status_text": "A configurar",
                         "PAIRED": "Dispositivo encontrado",
                         "PAIRED_status_text": "A iniciar entrevista"
                     },
@@ -2670,7 +2698,7 @@
                     "go_to_core_config": "Ir para a configuração geral?",
                     "home_zone_core_config": "A localização da sua zona \"casa\" é editável na página de configuração geral. O raio dessa zona ainda não pode ser editado a partir do frontend. Deseja ir para a configuração geral?",
                     "introduction": "As zonas permitem especificar determinadas regiões da Terra. Quando uma pessoa está dentro de uma zona, o estado assume o nome da zona. As zonas também podem ser usadas como gatilho ou condição nas configurações de automação.",
-                    "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
+                    "no_zones_created_yet": "Parece que ainda não criou nenhuma zona."
                 },
                 "zwave_js": {
                     "add_node": {
@@ -2934,9 +2962,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Você só pode usar esta função quando tiver assumido o controlo do IU Lovelace.",
+                    "generated_unsupported": "Só pode usar esta função quando tiver assumido o controlo do UI Lovelace.",
                     "saving_failed": "Falha ao salvar a configuração da interface Lovelace.",
-                    "yaml_unsupported": "Você não pode usar esta função ao usar o Lovelace IU no modo YAML."
+                    "yaml_unsupported": "Não pode usar esta função enquanto utilizar o UI Lovelace no modo YAML."
                 },
                 "cards": {
                     "actions": {
@@ -3174,7 +3202,7 @@
                             "name": "Controlo multimédia"
                         },
                         "picture-elements": {
-                            "description": "O cartão Elementos de Imagem é um dos tipos de cartões mais versáteis. Os cartões permitem que você posicione ícones ou texto e até serviços! Em uma imagem baseada em coordenadas.",
+                            "description": "O cartão Elementos de Imagem é um dos tipos de cartões mais versáteis. Os cartões permitem que posicione ícones ou texto e até serviços! Numa imagem baseada em coordenadas.",
                             "name": "Elementos da imagem"
                         },
                         "picture-entity": {
@@ -3249,7 +3277,7 @@
                         "move_before": "Mover cartão antes de",
                         "options": "Mais opções",
                         "pick_card": "Que cartão gostaria de adicionar?",
-                        "pick_card_view_title": "Que cartão você gostaria de adicionar à sua vista {name}?",
+                        "pick_card_view_title": "Que cartão gostaria de adicionar à sua vista {name}?",
                         "search_cards": "Procurar cartões",
                         "show_code_editor": "Mostrar Editor de Código",
                         "show_visual_editor": "Mostrar Editor Visual",
@@ -3311,7 +3339,7 @@
                         "header": "Escolha uma vista para mover o cartão para"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Iremos gerar automaticamente as suas vistas do Lovelace UI com as suas áreas e dispositivos se você remover a sua configuração do Lovelace UI.",
+                        "confirm_remove_config_text": "Iremos gerar automaticamente as suas vistas do Lovelace UI com as suas áreas e dispositivos se remover a sua configuração do Lovelace UI.",
                         "confirm_remove_config_title": "Tem a certeza que deseja remover a configuração do interface de utilizador do Lovelace?",
                         "confirm_unsaved_changes": "Existem alterações não guardadas. De certeza de que quer sair?",
                         "confirm_unsaved_comments": "A sua configuração contém comentário(s), eles não serão salvos. Deseja continuar?",
@@ -3353,7 +3381,7 @@
                     "suggest_card": {
                         "add": "Adicionar à Lovelace UI",
                         "create_own": "Escolha um cartão diferente",
-                        "header": "Criamos uma sugestão para você."
+                        "header": "Criámos uma sugestão para si."
                     },
                     "view": {
                         "panel_mode": {
@@ -3409,7 +3437,8 @@
             },
             "my": {
                 "documentation": "Documentação",
-                "error": "Ocorreu um erro desconhecido"
+                "error": "Ocorreu um erro desconhecido",
+                "faq_link": "My Home Assistant FAQ"
             },
             "page-authorize": {
                 "abort_intro": "Início de sessão cancelado",
@@ -3612,7 +3641,7 @@
                 "current_user": "Esta atualmente ligado como {fullName}",
                 "customize_sidebar": {
                     "button": "Editar",
-                    "description": "Você também pode pressionar e segurar o cabeçalho da barra lateral para ativar o modo de edição.",
+                    "description": "Pode também pressionar e segurar o cabeçalho da barra lateral para ativar o modo de edição.",
                     "header": "Altere a ordem e oculte os itens da barra lateral"
                 },
                 "dashboard": {

@@ -1655,12 +1655,12 @@
                         "fetching_subscription": "Henter abonnement...",
                         "google": {
                             "config_documentation": "Konfigurasjonsdokumentasjon",
-                            "devices_pin": "PIN-kode for sikkerhetsenheter",
+                            "devices_pin": "PIN for sikkerhetsenheter",
                             "enable_ha_skill": "Aktivere Home Assistant-ferdigheten for Google Assistant",
                             "enable_state_reporting": "Aktiver tilstandsrapportering",
-                            "enter_pin_error": "Kunne ikke lagre PIN-kode:",
+                            "enter_pin_error": "Kan ikke lagre PIN:",
                             "enter_pin_hint": "Angi en PIN-kode for å bruke sikkerhetsenheter",
-                            "enter_pin_info": "Angi en PIN-kode for å samhandle med sikkerhetsenheter. Sikkerhetsanordninger er dører, garasjeporter og låser. Du vil bli bedt om å si/angi denne PIN-koden når du samhandler med slike enheter via Google Assistant.",
+                            "enter_pin_info": "Angi en PIN-kode for å samhandle med sikkerhetsenheter. Sikkerhetsinnretninger er dører, garasjeporter og låser. Du blir bedt om å si / angi denne PIN-koden når du kommuniserer med slike enheter via Google Assistant.",
                             "info": "Med Google Assistant-integrasjonen for Home Assistant Cloud vil du kunne kontrollere alle dine Home Assistant-enheter via hvilken som helst Google Assistant-aktivert enhet.",
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av eksponerte entiteter til Google. Dette lar deg alltid se de siste tilstandene i Google-appen.",
                             "manage_entities": "Håndtér entiteter",
@@ -3002,6 +3002,17 @@
                         "title": "Mal",
                         "unknown_error_template": "Ukjent feil ved rendring av mal"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Gå tilbake",
+                "supervisor": {
+                    "ask": "Be om hjelp",
+                    "observer": "Sjekk observatøren",
+                    "reboot": "Prøv en omstart av verten",
+                    "system_health": "Sjekk systemtilstand",
+                    "title": "Kunne ikke laste Supervisor-panelet!",
+                    "wait": "Hvis du nettopp startet, må du sørge for at du har gitt veilederen nok tid til å starte."
                 }
             },
             "history": {
