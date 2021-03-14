@@ -160,7 +160,7 @@ export const getScriptEditorInitData = () => {
   return data;
 };
 
-export const describeAction = (action: Action, localize: LocalizeFunc) => {
+export const describeAction = (action: Action, _localize: LocalizeFunc) => {
   // Check based on config_validation.py#determine_script_action
   if ("delay" in action) {
     return "Delay";
