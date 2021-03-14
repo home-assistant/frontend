@@ -94,6 +94,19 @@ export const derivedStyles = {
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
 };
 
+export const buttonLinkStyle = css`
+  button.link {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;
+
 export const haStyle = css`
   :host {
     font-family: var(--paper-font-body1_-_font-family);
@@ -180,16 +193,7 @@ export const haStyle = css`
     --mdc-theme-primary: var(--error-color);
   }
 
-  button.link {
-    background: none;
-    color: inherit;
-    border: none;
-    padding: 0;
-    font: inherit;
-    text-align: left;
-    text-decoration: underline;
-    cursor: pointer;
-  }
+  ${buttonLinkStyle}
 
   .card-actions a {
     text-decoration: none;
