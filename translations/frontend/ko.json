@@ -68,12 +68,12 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed": "경비중",
-            "armed_away": "경비중",
-            "armed_custom_bypass": "경비중",
-            "armed_home": "경비중",
-            "armed_night": "경비중",
-            "arming": "경비중",
+            "armed": "경비 중",
+            "armed_away": "경비 중",
+            "armed_custom_bypass": "경비 중",
+            "armed_home": "경비 중",
+            "armed_night": "경비 중",
+            "arming": "경비 중",
             "disarmed": "해제",
             "disarming": "해제",
             "pending": "지연",
@@ -161,7 +161,7 @@
                     },
                     "homeassistant_api": {
                         "description": "이 추가 기능은 Home Assistant API를 통해 실행 중인 Home Assistant 인스턴스에 직접 액세스할 수 있습니다. 이 모드는 추가 기능에 대한 인증도 처리하므로 추가 인증 토큰 없이도 추가 기능이 Home Assistant와 상호 작용할 수 있습니다.",
-                        "title": "Home Assistant API 엑세스"
+                        "title": "Home Assistant API 액세스"
                     },
                     "host_network": {
                         "description": "추가 기능은 일반적으로 자체 격리된 네트워크 계층에서 실행되므로 호스트 운영 체제의 네트워크에 액세스 할 수 없습니다. 경우에 따라 이 네트워크 격리에 의해 추가 기능의 서비스 제공이 제한될 수 있으므로 추가 기능 작성자가 격리를 해제하여 추가 기능에 호스트 시스템의 네트워크 기능에 대한 전체 액세스 권한을 부여할 수 있습니다. 이렇게 하면 추가 기능에 더 많은 네트워크 기능이 제공되지만 보안이 저하되므로 추가 기능에서 이 옵션을 사용하면 추가 기능의 보안 등급이 낮아집니다.",
@@ -1138,8 +1138,8 @@
                 "error": "이런, 오류가 발생했습니다",
                 "found": "다음을 찾았습니다:",
                 "how_can_i_help": "무엇을 도와드릴까요?",
-                "label": "질문을 입력하고 'Enter' 를 눌러주세요",
-                "label_voice": "질문을 입력하고 'Enter' 를 누르거나 마이크를 탭하여 말씀해보세요"
+                "label": "질문을 입력하고 'Enter'를 눌러주세요",
+                "label_voice": "질문을 입력하고 'Enter'를 누르거나 마이크를 탭하여 말씀해보세요"
             },
             "zha_device_info": {
                 "buttons": {
@@ -1600,7 +1600,7 @@
                 "blueprint": {
                     "add": {
                         "community_forums": "커뮤니티 포럼",
-                        "error_no_url": "블루프린트의 URL 을 입력해주세요.",
+                        "error_no_url": "블루프린트의 URL을 입력해주세요.",
                         "file_name": "블루프린트 경로",
                         "header": "블루프린트 가져오기",
                         "import_btn": "블루프린트 미리보기",
@@ -1640,7 +1640,7 @@
                             "config_documentation": "구성 문서",
                             "disable": "비활성화",
                             "enable": "활성화",
-                            "enable_ha_skill": "Alexa 에 Home Assistant 스킬 사용하기",
+                            "enable_ha_skill": "Alexa에 Home Assistant 스킬 사용하기",
                             "enable_state_reporting": "상태 보고 활성화",
                             "info": "Home Assistant Cloud의 Alexa 연동 기능으로 Alexa가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
                             "info_state_reporting": "상태 보고를 활성화하면 Home Assistant는 노출된 구성요소의 모든 상태 변경 사항을 Amazon에 보냅니다. 이를 통해 Alexa 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있으며, 상태 변경을 사용하여 루틴을 만들 수 있습니다.",
@@ -1658,9 +1658,9 @@
                             "devices_pin": "보안 기기 PIN",
                             "enable_ha_skill": "Google 어시스턴트에 Home Assistant 스킬 사용하기",
                             "enable_state_reporting": "상태 보고 활성화",
-                            "enter_pin_error": "PIN 을 저장할 수 없습니다:",
+                            "enter_pin_error": "PIN을 저장할 수 없습니다:",
                             "enter_pin_hint": "보안 기기 사용 PIN 입력",
-                            "enter_pin_info": "보안 기기를 제어하기 위한 PIN 을 설정해주세요. 보안 기기란 현관문, 차고문, 도어락과 같은 기기입니다. Google 어시스턴트를 통해 이러한 기기를 제어할 때 PIN 을 입력하거나 말씀해주셔야 합니다.",
+                            "enter_pin_info": "보안 기기를 제어하기 위한 PIN을 설정해주세요. 보안 기기는 현관문, 차고 문, 도어록과 같은 기기입니다. Google 어시스턴트를 통해 이러한 기기를 제어할 때 PIN을 입력하거나 말씀해주셔야 합니다.",
                             "info": "Home Assistant Cloud의 Google 어시스턴트 연동 기능으로 Google 어시스턴트가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
                             "info_state_reporting": "상태 보고를 활성화하면 Home Assistant는 노출된 구성요소의 모든 상태 변경 사항을 Google에 보냅니다. 이를 통해 Google 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있습니다.",
                             "manage_entities": "구성요소 관리",
@@ -1718,7 +1718,7 @@
                     "alexa": {
                         "banner": "configuration.yaml에서 구성요소 필터를 구성했으므로 이 UI를 통해 노출되는 구성요소는 편집할 수 없습니다.",
                         "dont_expose_entity": "구성 요소 노출하지 않기",
-                        "expose": "Alexa 에 노출",
+                        "expose": "Alexa에 노출",
                         "expose_entity": "구성 요소 노출하기",
                         "exposed": "{selected}개의 구성요소가 노출됨",
                         "exposed_entities": "노출된 구성요소",
@@ -1739,7 +1739,7 @@
                         "will_be_auto_renewed": "인증서는 자동으로 갱신됩니다"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "웹 훅은 다음의 URL 을 사용해 주세요:",
+                        "available_at": "웹 훅은 다음의 URL을 사용해 주세요:",
                         "close": "닫기",
                         "confirm_disable": "이 웹 훅을 비활성화하시겠습니까?",
                         "copied_to_clipboard": "클립보드에 복사됨",
@@ -1782,7 +1782,7 @@
                         "forgot_password": "비밀번호가 기억나지 않으세요?",
                         "introduction": "Home Assistant Cloud는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다. 또한 Amazon Alexa 및 Google 어시스턴트와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
                         "introduction2": "이 서비스는 Home Assistant와 Hass.io의 창립자가 설립한 회사인 ",
-                        "introduction2a": " 에 의해 운영되고 있습니다.",
+                        "introduction2a": "에 의해 운영되고 있습니다.",
                         "introduction3": "Home Assistant Cloud는 1개월 무료 평가판이 포함된 구독 서비스입니다. 결제 정보는 필요하지 않습니다.",
                         "learn_more_link": "Home Assistant Cloud에 대해 더 알아보기",
                         "password": "비밀번호",
@@ -1805,7 +1805,7 @@
                         "information": "1개월간 무료로 사용해 볼 수 있는 Home Assistant Cloud 계정을 만들어보세요. 결제 정보는 필요하지 않습니다.",
                         "information2": "평가판을 사용하면 다음을 포함하는 Home Assistant Cloud의 모든 기능을 이용해 볼 수 있습니다:",
                         "information3": "이 서비스는 Home Assistant와 Hass.io의 창립자가 설립한 회사인 ",
-                        "information3a": " 에 의해 운영되고 있습니다.",
+                        "information3a": "에 의해 운영되고 있습니다.",
                         "information4": "계정 등록은 다음 이용 약관의 동의를 포함합니다.",
                         "link_privacy_policy": "개인 정보 정책",
                         "link_terms_conditions": "이용 약관",
@@ -1849,7 +1849,7 @@
                     }
                 },
                 "customize": {
-                    "attributes_customize": "customize.yaml 에 설정된 속성은 다음과 같습니다.",
+                    "attributes_customize": "customize.yaml에 설정된 속성은 다음과 같습니다.",
                     "attributes_not_set": "다음의 속성이 설정되지 않았습니다. 원하는 경우 설정해주세요.",
                     "attributes_outside": "다음 속성은 customize.yaml 이 아닌 다른 곳에서 사용자화됩니다",
                     "attributes_override": "원하는 경우 재정의 할 수 있습니다.",
@@ -1894,7 +1894,7 @@
                         },
                         "unknown_automation": "알 수 없는 자동화"
                     },
-                    "cant_edit": "UI 에서 작성된 항목만 편집할 수 있습니다.",
+                    "cant_edit": "UI에서 작성된 항목만 편집할 수 있습니다.",
                     "caption": "기기",
                     "confirm_delete": "이 기기를 삭제하시겠습니까?",
                     "confirm_disable_config_entry": "{entry_name} 구성 항목에 대한 기기가 더 이상 존재하지 않습니다. 구성 항목을 비활성화하시겠습니까?",
@@ -1923,7 +1923,7 @@
                     "enabled_description": "비활성화된 기기는 표시되지 않으며 기기에 속한 구성요소는 비활성화되고 Home Assistant에 추가되지 않습니다.",
                     "enabled_label": "기기 활성화하기",
                     "entities": {
-                        "add_entities_lovelace": "Lovelace 에 추가하기",
+                        "add_entities_lovelace": "Lovelace에 추가하기",
                         "disabled_entities": "+{count} {count, plural,\n  one{개의 비활성화된 구성요소}\n  other{개의 비활성화된 구성요소}\n}",
                         "entities": "구성요소",
                         "hide_disabled": "비활성화된 구성요소 숨기기",
@@ -2057,7 +2057,7 @@
                     "icons_by": "아이콘 출처",
                     "integrations": "통합 구성요소",
                     "issues": "이슈",
-                    "license": "Apache 2.0 License 에 따라 게시",
+                    "license": "Apache 2.0 License에 따라 게시",
                     "path_configuration": "configuration.yaml의 위치: {path}",
                     "server": "서버",
                     "source": "소스:",
@@ -2147,7 +2147,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "이렇게 하면 발견된 통합 구성요소가 발견될 때, 발견된 통합 구성요소에 다시 나타나게 됩니다. 다시 시작해야 하거나 시간이 걸릴 수 있습니다.",
                         "confirm_delete_ignore_title": "{name} 무시를 중지하시겠습니까?",
-                        "confirm_ignore": "이 통합 구성요소의 설정을 하지 않으시겠습니까? 오른쪽 상단의 오버플로 메뉴에서 '무시된 통합 구성요소 표시하기' 를 클릭하여 이 작업을 취소할 수 있습니다.",
+                        "confirm_ignore": "이 통합 구성요소의 설정을 하지 않으시겠습니까? 오른쪽 상단의 오버플로 메뉴에서 '무시된 통합 구성요소 표시하기'를 클릭하여 이 작업을 취소할 수 있습니다.",
                         "confirm_ignore_title": "발견된 {name} 기기를 무시하시겠습니까?",
                         "hide_ignored": "무시된 통합 구성요소 숨기기",
                         "ignore": "무시",
@@ -2209,7 +2209,7 @@
                             "title_required": "제목은 필수 요소입니다",
                             "update": "업데이트",
                             "url": "URL",
-                            "url_error_msg": "URL 은 - 를 포함해야 하며 _ 및 - 를 제외한 공백이나 특수 문자를 포함할 수 없습니다"
+                            "url_error_msg": "URL은 - 를 포함해야 하며 _ 및 - 를 제외한 공백이나 특수 문자를 포함할 수 없습니다"
                         },
                         "picker": {
                             "add_dashboard": "대시보드 추가하기",
@@ -2226,7 +2226,7 @@
                     },
                     "description": "사용자 정의된 카드 세트를 만들어 집을 제어할 수 있습니다",
                     "resources": {
-                        "cant_edit_yaml": "YAML 모드에서 Lovelace 를 사용하고 있으므로 UI 를 통해 리소스를 관리할 수 없습니다. configuration.yaml 에서 관리해주세요.",
+                        "cant_edit_yaml": "YAML 모드에서 Lovelace를 사용하고 있으므로 UI를 통해 리소스를 관리할 수 없습니다. configuration.yaml에서 관리해주세요.",
                         "caption": "리소스",
                         "confirm_delete": "이 리소스를 삭제하시겠습니까?",
                         "detail": {
@@ -2237,7 +2237,7 @@
                             "type": "리소스 유형",
                             "update": "업데이트",
                             "url": "URL",
-                            "url_error_msg": "URL 은 필수 입력 요소입니다",
+                            "url_error_msg": "URL은 필수 입력 요소입니다",
                             "warning_header": "주의해주세요!",
                             "warning_text": "리소스를 추가하는 것은 위험할 수 있습니다. 리소스의 출처를 알고 신뢰할 수 있는지 확인해주세요. 잘못된 리소스는 시스템에 심각한 손상을 줄 수 있습니다."
                         },
@@ -2310,8 +2310,8 @@
                             "driverreset": "드라이버가 재설정되었습니다",
                             "offline": "OZWDaemon 오프라인",
                             "ready": "연결할 준비가 되었습니다",
-                            "started": "MQTT 에 연결됨",
-                            "starting": "MQTT 에 연결 중",
+                            "started": "MQTT에 연결됨",
+                            "starting": "MQTT에 연결 중",
                             "stopped": "OpenZWave가 중지되었습니다"
                         },
                         "offline": "오프라인",
@@ -2597,7 +2597,7 @@
                         "name": "이름"
                     },
                     "learn_more": "태그에 대해 더 알아보기",
-                    "never_scanned": "검색 된 적 없음",
+                    "never_scanned": "검색된 적 없음",
                     "no_tags": "태그 없음",
                     "write": "쓰기"
                 },
@@ -2645,7 +2645,7 @@
                             "username": "사용자 이름"
                         }
                     },
-                    "users_privileges_note": "사용자 그룹 기능은 현재 작업 중이며, 사용자는 UI 를 통해 인스턴스를 관리할 수 없습니다. 모든 사용자 관리 API 엔드포인트가 관리자에 대한 액세스를 올바르게 제한하는지를 확인하는 중입니다."
+                    "users_privileges_note": "사용자 그룹 기능은 현재 작업 중이며, 사용자는 UI를 통해 인스턴스를 관리할 수 없습니다. 모든 사용자 관리 API 엔드포인트가 관리자에 대한 액세스를 올바르게 제한하는지를 확인하는 중입니다."
                 },
                 "zha": {
                     "add_device": "기기 추가하기",
@@ -2843,7 +2843,7 @@
                         "wakeup_interval": "절전모드 해제 간격"
                     },
                     "description": "Z-Wave 네트워크를 관리합니다",
-                    "learn_more": "Z-Wave 에 대해 더 알아보기",
+                    "learn_more": "Z-Wave에 대해 더 알아보기",
                     "migration": {
                         "ozw": {
                             "header": "OpenZWave 로 마이그레이션 하기",
@@ -2953,7 +2953,7 @@
                         "type": "이벤트 유형"
                     },
                     "services": {
-                        "accepts_target": "이 서비스는 대상을 지정받습니다. 예: 'entity_id: light.bed_light'",
+                        "accepts_target": "이 서비스는 대상을 지정받습니다. 예: `entity_id: light.bed_light`",
                         "all_parameters": "사용 가능한 모든 매개 변수",
                         "call_service": "서비스 호출",
                         "column_description": "상세정보",
@@ -3033,9 +3033,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Lovelace UI 를 직접 관리하는 경우에만 이 기능을 사용할 수 있습니다.",
+                    "generated_unsupported": "Lovelace UI를 직접 관리하는 경우에만 이 기능을 사용할 수 있습니다.",
                     "saving_failed": "Lovelace UI 구성을 저장하지 못했습니다.",
-                    "yaml_unsupported": "YAML 모드에서 Lovelace UI 를 사용하는 경우 이 기능은 사용할 수 없습니다."
+                    "yaml_unsupported": "YAML 모드에서 Lovelace UI를 사용하는 경우 이 기능은 사용할 수 없습니다."
                 },
                 "cards": {
                     "actions": {
@@ -3105,7 +3105,7 @@
                     "card": {
                         "alarm-panel": {
                             "available_states": "사용 가능한 상태요소",
-                            "description": "알람 패널 카드를 사용하면 알람 제어판 통합 구성요소의 경비를 설정 및 해제할 수 있습니다.",
+                            "description": "알람 패널 카드를 사용하면 알람 제어판 통합 구성요소의 경비를 설정하거나 해제할 수 있습니다.",
                             "name": "알람 패널"
                         },
                         "button": {
@@ -3201,7 +3201,7 @@
                             "icon_height": "아이콘 높이",
                             "image": "이미지 경로",
                             "manual": "직접 작성",
-                            "manual_description": "사용자 정의 카드를 추가하거나 YAML 을 직접 작성하시겠습니까?",
+                            "manual_description": "사용자 정의 카드를 추가하거나 YAML을 직접 작성하시겠습니까?",
                             "maximum": "최대",
                             "minimum": "최소",
                             "name": "이름",
@@ -3436,8 +3436,8 @@
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
                         "save": "직접 관리할게요",
                         "yaml_config": "시작하는데 도움이 될 수 있는 대시보드의 현재 구성은 다음과 같습니다:",
-                        "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름의 YAML 파일을 만들거나 기본 제공된 'ui-lovelace.yaml' 을 사용해주세요.",
-                        "yaml_mode": "이 대시보드는 YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml' 을 제거해주세요."
+                        "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름의 YAML 파일을 만들거나 기본 제공된 'ui-lovelace.yaml'을 사용해주세요.",
+                        "yaml_mode": "이 대시보드는 YAML 모드를 사용 중이므로 UI에서 Lovelace 구성을 변경할 수 없습니다. Lovelace를 UI에서 변경하려면 'configuration.yaml'의 Lovelace 구성에서 'mode:yaml'을 제거해주세요."
                     },
                     "select_view": {
                         "dashboard_label": "대시보드",
@@ -3451,7 +3451,7 @@
                         }
                     },
                     "suggest_card": {
-                        "add": "Lovelace UI 에 추가하기",
+                        "add": "Lovelace UI에 추가하기",
                         "create_own": "다른 카드 선택",
                         "header": "제안 드리는 카드"
                     },
@@ -3477,7 +3477,7 @@
                     "refresh_header": "새로 고치시겠습니까?"
                 },
                 "unused_entities": {
-                    "available_entities": "사용 가능한 구성요소이지만 아직 Lovelace UI 에는 등록되지 않았습니다.",
+                    "available_entities": "사용 가능한 구성요소이지만 아직 Lovelace UI에는 등록되지 않았습니다.",
                     "domain": "도메인",
                     "entity": "구성요소",
                     "entity_id": "구성요소 ID",
@@ -3726,7 +3726,7 @@
                     "header": "대시보드"
                 },
                 "enable_shortcuts": {
-                    "description": "UI 에서 다양한 작업을 수행하기 위한 단축키를 활성화하거나 비활성화합니다.",
+                    "description": "UI에서 다양한 작업을 수행하기 위한 단축키를 활성화하거나 비활성화합니다.",
                     "header": "키보드 단축키"
                 },
                 "force_narrow": {
@@ -3753,7 +3753,7 @@
                     "header": "장기 액세스 토큰",
                     "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아보세요.",
                     "name": "이름",
-                    "prompt_copy_token": "Ctrl + C 를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
+                    "prompt_copy_token": "Ctrl + C를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
                     "prompt_name": "토큰 이름을 지어주세요."
                 },
                 "mfa_setup": {
@@ -3775,8 +3775,8 @@
                         "title": "이 기기의 이름을 지어주세요"
                     },
                     "description": "이 기기에 알림을 보냅니다.",
-                    "error_load_platform": "notify.html5 를 구성해주세요.",
-                    "error_use_https": "SSL 을 통한 보안 연결된 환경이 필요합니다.",
+                    "error_load_platform": "notify.html5를 구성해주세요.",
+                    "error_use_https": "SSL을 통한 보안 연결된 환경이 필요합니다.",
                     "header": "푸시 알림",
                     "link_promo": "알림에 대해 더 알아보기",
                     "push_notifications": "푸시 알림"
