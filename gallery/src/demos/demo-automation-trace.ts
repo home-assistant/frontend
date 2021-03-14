@@ -43,7 +43,8 @@ export class DemoAutomationTrace extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    provideHass(this);
+    const hass = provideHass(this);
+    hass.updateTranslations(null, "en");
   }
 
   static get styles() {

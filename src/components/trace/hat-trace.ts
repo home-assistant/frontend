@@ -19,16 +19,21 @@ import {
   mdiCheckCircleOutline,
   mdiCircle,
   mdiCircleOutline,
+  mdiClockOutline,
   mdiPauseCircleOutline,
   mdiRecordCircleOutline,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { LogbookEntry } from "../../data/logbook";
 import { Action, describeAction } from "../../data/script";
+import relativeTime from "../../common/datetime/relative_time";
+
+const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
 const pathToName = (path: string) => path.split("/").join(" ");
 
-const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
+// Report time entry when more than this time has passed
+const SIGNIFICANT_TIME_CHANGE = 5000; // 5 seconds
 
 @customElement("hat-trace")
 export class HaAutomationTracer extends LitElement {
@@ -77,6 +82,27 @@ export class HaAutomationTracer extends LitElement {
 
       let logbookIndex = 0;
       let actionTraceIndex = 0;
+      let lastReportedTime = new Date(this.trace.timestamp.start);
+
+      const maybeRenderTime = (nextItemTimestamp: Date) => {
+        if (
+          nextItemTimestamp.getTime() - lastReportedTime.getTime() <
+          SIGNIFICANT_TIME_CHANGE
+        ) {
+          return;
+        }
+
+        entries.push(html`
+          <ha-timeline .icon=${mdiClockOutline}>
+            ${relativeTime(lastReportedTime, this.hass.localize, {
+              compareTime: nextItemTimestamp,
+              includeTense: false,
+            })}
+            later
+          </ha-timeline>
+        `);
+        lastReportedTime = nextItemTimestamp;
+      };
 
       let groupedLogbookItems: LogbookEntry[] = [];
 
@@ -98,15 +124,16 @@ export class HaAutomationTracer extends LitElement {
         // Find next item time-wise.
         const logbookItem = this.logbookEntries[logbookIndex];
         const actionTrace = actionTraces[actionTraceIndex];
+        const actionTimestamp = new Date(actionTrace[1][0].timestamp);
 
-        if (
-          new Date(logbookItem.when) > new Date(actionTrace[1][0].timestamp)
-        ) {
+        if (new Date(logbookItem.when) > actionTimestamp) {
           actionTraceIndex++;
           if (groupedLogbookItems.length > 0) {
+            maybeRenderTime(new Date(groupedLogbookItems[0].when));
             entries.push(this._renderLogbookEntries(groupedLogbookItems));
             groupedLogbookItems = [];
           }
+          maybeRenderTime(actionTimestamp);
           entries.push(this._renderActionTrace(...actionTrace));
         } else {
           logbookIndex++;
@@ -120,13 +147,14 @@ export class HaAutomationTracer extends LitElement {
       }
 
       if (groupedLogbookItems.length > 0) {
+        maybeRenderTime(new Date(groupedLogbookItems[0].when));
         entries.push(this._renderLogbookEntries(groupedLogbookItems));
       }
 
       while (actionTraceIndex < actionTraces.length) {
-        entries.push(
-          this._renderActionTrace(...actionTraces[actionTraceIndex])
-        );
+        const trace = actionTraces[actionTraceIndex];
+        maybeRenderTime(new Date(trace[1][0].timestamp));
+        entries.push(this._renderActionTrace(...trace));
         actionTraceIndex++;
       }
     }
@@ -148,8 +176,8 @@ export class HaAutomationTracer extends LitElement {
               )}
               (runtime:
               ${(
-                (Number(new Date(this.trace.timestamp.finish!)) -
-                  Number(new Date(this.trace.timestamp.start))) /
+                (new Date(this.trace.timestamp.finish!).getTime() -
+                  new Date(this.trace.timestamp.start).getTime()) /
                 1000
               ).toFixed(2)}
               seconds)`
