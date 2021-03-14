@@ -236,20 +236,19 @@ export class HaDataTable extends LitElement {
             "auto-height": this.autoHeight,
           })}"
           role="table"
-          aria-rowcount=${this._filteredData.length}
+          aria-rowcount=${this._filteredData.length + 1}
           style=${styleMap({
             height: this.autoHeight
               ? `${(this._filteredData.length || 1) * 53 + 57}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
-          <div class="mdc-data-table__header-row" role="row">
+          <div class="mdc-data-table__header-row" role="row" aria-rowindex="1">
             ${this.selectable
               ? html`
                   <div
                     class="mdc-data-table__header-cell mdc-data-table__header-cell--checkbox"
                     role="columnheader"
-                    scope="col"
                   >
                     <ha-checkbox
                       class="mdc-data-table__row-checkbox"
@@ -292,7 +291,13 @@ export class HaDataTable extends LitElement {
                       })
                     : ""}
                   role="columnheader"
-                  scope="col"
+                  aria-sort=${ifDefined(
+                    sorted
+                      ? this._sortDirection === "desc"
+                        ? "descending"
+                        : "ascending"
+                      : undefined
+                  )}
                   @click=${this._handleHeaderClick}
                   .columnId=${key}
                 >
@@ -338,7 +343,7 @@ export class HaDataTable extends LitElement {
                       }
                       return html`
                         <div
-                          aria-rowindex=${index}
+                          aria-rowindex=${index! + 2}
                           role="row"
                           .rowId=${row[this.id]}
                           @click=${this._handleRowClick}
