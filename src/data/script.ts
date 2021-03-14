@@ -5,6 +5,7 @@ import {
 } from "home-assistant-js-websocket";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
+import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
 
@@ -157,4 +158,42 @@ export const getScriptEditorInitData = () => {
   const data = inititialScriptEditorData;
   inititialScriptEditorData = undefined;
   return data;
+};
+
+export const describeAction = (action: Action, _localize: LocalizeFunc) => {
+  // Check based on config_validation.py#determine_script_action
+  if ("delay" in action) {
+    return "Delay";
+  }
+  if ("wait_template" in action) {
+    return "Wait";
+  }
+  if ("condition" in action) {
+    return "Check condition";
+  }
+  if ("event" in action) {
+    return "Fire event";
+  }
+  if ("device_id" in action) {
+    return "Run Device Action";
+  }
+  if ("scene" in action) {
+    return "Activate a scene";
+  }
+  if ("repeat" in action) {
+    return "Repeat an action multiple times";
+  }
+  if ("choose" in action) {
+    return "Choose an action";
+  }
+  if ("wait_for_trigger" in action) {
+    return "Wait for a trigger";
+  }
+  if ("variables" in action) {
+    return "Define variables";
+  }
+  if ("service" in action) {
+    return "Call service";
+  }
+  return "Unknown action";
 };
