@@ -862,6 +862,7 @@
                 "dismiss": "Fechar",
                 "editor": {
                     "advanced": "Configurações avançadas",
+                    "area_note": "Por defeito, as entidades de um dispositivo estão na mesma área que o dispositivo. Se alterar a área desta entidade, esta deixará de seguir a área do dispositivo.",
                     "change_device_area": "Alterar área do dispositivo",
                     "confirm_delete": "Tem certeza de que deseja apagar esta entrada?",
                     "delete": "Apagar",
@@ -1133,6 +1134,7 @@
                 "editor_not_available": "Nenhum editor visual disponível para o tipo \" {type} \".",
                 "editor_not_supported": "O editor visual não é suportado para esta configuração",
                 "error_detected": "Erros de configuração detectados",
+                "key_missing": "A chave obrigatória \"{key}\" está em falta.",
                 "no_template_editor_support": "Modelos não suportados no editor visual",
                 "no_type_provided": "Nenhum tipo fornecido."
             }

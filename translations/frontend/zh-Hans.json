@@ -104,7 +104,33 @@
     },
     "supervisor": {
         "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "默认",
+                    "header": "音频",
+                    "input": "输入",
+                    "output": "输出"
+                },
+                "no_configuration": "此加载项没有可供您“乱搞”的配置……",
+                "options": {
+                    "edit_in_ui": "以图形界面编辑",
+                    "edit_in_yaml": "以 YAML 编辑",
+                    "header": "选项",
+                    "invalid_yaml": "YAML 无效"
+                }
+            },
             "dashboard": {
+                "action_error": {
+                    "get_changelog": "获取加载项更新日志失败",
+                    "go_to_config": "无法启动加载项，因为配置检查失败。",
+                    "install": "安装加载项失败",
+                    "restart": "重启加载项失败",
+                    "start": "启动加载项失败",
+                    "start_invalid_config": "前往配置",
+                    "stop": "停止加载项失败",
+                    "uninstall": "卸载加载项失败",
+                    "validate_config": "加载项配置校验失败"
+                },
                 "capability": {
                     "apparmor": {
                         "description": "Application Armor，简称 AppArmor，是一个 Linux 内核安全模块，其限制加载项的部分功能，如网络访问、原始套接字访问、读写或执行特定文件的权限。\n\n加载项可以提供针对其自身进行了优化的安全配置文件，或者要求禁用 AppArmor。一旦禁用，将增加安全风险，也会相应地降低加载项的安全评分。",
@@ -120,17 +146,52 @@
                     }
                 },
                 "not_available_version": "您正在运行 Home Assistant 版本 {core_version_installed}，要将加载项更新到此版本，至少需要 Home Assistant 版本 {core_version_needed}",
+                "option": {
+                    "auto_update": {
+                        "description": "有新版本时，自动更新加载项",
+                        "title": "自动更新"
+                    },
+                    "boot": {
+                        "description": "系统启动时，自动启动加载项",
+                        "title": "自启动"
+                    },
+                    "ingress_panel": {
+                        "description": "将此加载项添加到侧边栏",
+                        "title": "在侧边栏显示"
+                    },
+                    "protected": {
+                        "description": "阻止加载项的高权限系统访问",
+                        "title": "保护模式"
+                    },
+                    "watchdog": {
+                        "description": "加载项崩溃时，自动重新启动",
+                        "title": "守护"
+                    }
+                },
                 "protection_mode": {
                     "content": "此加载项的保护模式已禁用！这将使加载项具有对整个系统的完全访问权限，这增加了安全风险，并且在使用不当时可能会损坏系统。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
                     "title": "警告：保护模式已禁用！"
                 },
                 "visit_addon_page": "有关更多信息，请访问{name}页面"
             },
+            "documentation": {
+                "get_documentation": "获取加载项文档失败: {error}"
+            },
+            "failed_to_reset": "重置加载项配置失败: {error}",
+            "failed_to_save": "保存加载项配置失败: {error}",
+            "logs": {
+                "get_logs": "获取加载项日志失败: {error}"
+            },
             "panel": {
                 "configuration": "配置",
                 "documentation": "文档",
                 "info": "信息",
                 "log": "日志"
+            },
+            "state": {
+                "installed": "加载项已安装",
+                "not_available": "加载项在此系统上不可用",
+                "not_installed": "加载项未安装"
             }
         },
         "common": {
@@ -141,6 +202,8 @@
                 "unknown": "未知错误",
                 "update_failed": "更新失败"
             },
+            "failed_to_restart_name": "重启 {name} 失败",
+            "failed_to_update_name": "更新 {name} 失败",
             "learn_more": "详细了解",
             "new_version_available": "发现新版本",
             "newest_version": "最新版本",
@@ -1524,11 +1587,11 @@
                             "enable_state_reporting": "启用状态报告",
                             "enter_pin_error": "无法存储pin：",
                             "enter_pin_hint": "输入 PIN 码以使用安全设备",
-                            "enter_pin_info": "请输入一个 PIN 码以和安全装置交互。安全装置就是门、车库门和锁之类的物品。通过 Google Assistant 与此类装置互动时，会要求您说出或输入此 PIN 码。",
+                            "enter_pin_info": "请输入一个 PIN 码以和安全设备交互。安全设备就是门、车库开门器和锁之类的物品。通过 Google Assistant 与此类设备互动时，会要求您说出或输入此 PIN 码。",
                             "info": "通过 Home Assistant Cloud 的 Google Assistant 集成，您将可以通过任何启用了 Google Assistant 的设备来控制所有 Home Assistant 设备。",
                             "info_state_reporting": "如果启用状态报告，则 Home Assistant 会将公开实体的所有状态变化发送给 Google。这样您就可以始终在 Google 应用中看到最新状态。",
                             "manage_entities": "管理实体",
-                            "security_devices": "安全装置",
+                            "security_devices": "安全设备",
                             "sync_entities": "同步实体到 Google",
                             "sync_entities_404_message": "无法将实体同步到 Google，请对 Google 说 “Hey Google, sync my devices”来同步实体。",
                             "title": "Google Assistant"
