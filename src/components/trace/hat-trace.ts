@@ -180,15 +180,9 @@ export class HaAutomationTracer extends LitElement {
     let moreItems: TemplateResult[] | undefined;
 
     if (i < entries.length) {
-      // If there is only 1 item hidden behind "show more", just show it
-      // instead of showing the more info link. We're not animals.
-      if (entries.length - i === 1) {
-        parts.push(this._renderLogbookEntryHelper(entries[i]));
-      } else {
-        moreItems = [];
-        for (i = 0; i < entries.length; i++) {
-          moreItems.push(this._renderLogbookEntryHelper(entries[i]));
-        }
+      moreItems = [];
+      for (i = 0; i < entries.length; i++) {
+        moreItems.push(this._renderLogbookEntryHelper(entries[i]));
       }
     }
 

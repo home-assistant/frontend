@@ -33,7 +33,10 @@ class HaTimeline extends LitElement {
           ? ""
           : html`
               <div>
-                ${this._showMore
+                ${this._showMore ||
+                // If there is only 1 item hidden behind "show more", just show it
+                // instead of showing the more info link. We're not animals.
+                this.moreItems.length === 1
                   ? this.moreItems
                   : html`
                       <button class="link" @click=${this._handleShowMore}>
