@@ -24,6 +24,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { LogbookEntry } from "../../data/logbook";
+import { Action, describeAction } from "../../data/script";
 
 const pathToName = (path: string) => path.split("/").join(" ");
 
@@ -194,9 +195,10 @@ export class HaAutomationTracer extends LitElement {
   }
 
   private _renderActionTrace(path: string, _value: ActionTrace[]) {
+    const action = getConfigFromPath(this.trace!.config, path) as Action;
     return html`
       <ha-timeline .icon=${mdiRecordCircleOutline}>
-        ${getConfigFromPath(this.trace!.config, path).alias || pathToName(path)}
+        ${action.alias || describeAction(action, this.hass.localize)}
       </ha-timeline>
     `;
   }
