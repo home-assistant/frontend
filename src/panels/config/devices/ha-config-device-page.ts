@@ -685,7 +685,7 @@ export class HaConfigDevicePage extends LitElement {
         }
         const entities = this._entities(this.deviceId, this.entities);
 
-        const renameEntityid =
+        const renameEntityId =
           this.showAdvanced &&
           (await showConfirmationDialog(this, {
             title: this.hass.localize(
@@ -708,14 +708,9 @@ export class HaConfigDevicePage extends LitElement {
             newName = name.replace(oldDeviceName, newDeviceName);
           }
 
-          if (renameEntityid) {
-            const oldSearch = slugify(oldDeviceName);
-            if (entity.entity_id.includes(oldSearch)) {
-              newEntityId = entity.entity_id.replace(
-                oldSearch,
-                slugify(newDeviceName)
-              );
-            }
+          if (renameEntityId) {
+            newEntityId =
+              entity.entity_id.split(".", 1)[0] + "." + slugify(newDeviceName);
           }
 
           if (!newName && !newEntityId) {

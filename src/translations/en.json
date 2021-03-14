@@ -1894,7 +1894,7 @@
           },
           "scripts": "Scripts",
           "scenes": "Scenes",
-          "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
+          "confirm_rename_entity_ids": "Should the entity IDs for this device be renamed to match the new device name?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
           "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
           "disabled": "Disabled",
