@@ -27,6 +27,8 @@ import { LogbookEntry } from "../../data/logbook";
 
 const pathToName = (path: string) => path.split("/").join(" ");
 
+const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
+
 @customElement("hat-trace")
 export class HaAutomationTracer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -75,6 +77,8 @@ export class HaAutomationTracer extends LitElement {
       let logbookIndex = 0;
       let actionTraceIndex = 0;
 
+      let groupedLogbookItems: LogbookEntry[] = [];
+
       while (
         logbookIndex < this.logbookEntries.length &&
         actionTraceIndex < actionTraces.length
@@ -98,19 +102,24 @@ export class HaAutomationTracer extends LitElement {
           new Date(logbookItem.when) > new Date(actionTrace[1][0].timestamp)
         ) {
           actionTraceIndex++;
+          if (groupedLogbookItems.length > 0) {
+            entries.push(this._renderLogbookEntries(groupedLogbookItems));
+            groupedLogbookItems = [];
+          }
           entries.push(this._renderActionTrace(...actionTrace));
         } else {
           logbookIndex++;
-          entries.push(this._renderLogbookEntry(logbookItem));
+          groupedLogbookItems.push(logbookItem);
         }
       }
 
-      // Append all leftover items
       while (logbookIndex < this.logbookEntries.length) {
-        entries.push(
-          this._renderLogbookEntry(this.logbookEntries[logbookIndex])
-        );
+        groupedLogbookItems.push(this.logbookEntries[logbookIndex]);
         logbookIndex++;
+      }
+
+      if (groupedLogbookItems.length > 0) {
+        entries.push(this._renderLogbookEntries(groupedLogbookItems));
       }
 
       while (actionTraceIndex < actionTraces.length) {
@@ -151,10 +160,35 @@ export class HaAutomationTracer extends LitElement {
     return html`${entries}`;
   }
 
-  private _renderLogbookEntry(entry: LogbookEntry) {
+  private _renderLogbookEntryHelper(entry: LogbookEntry) {
+    return html`${entry.name} (${entry.entity_id}) turned ${entry.state}<br />`;
+  }
+
+  private _renderLogbookEntries(entries: LogbookEntry[]) {
+    const parts: TemplateResult[] = [];
+
+    let i;
+
+    for (
+      i = 0;
+      i < Math.min(entries.length, LOGBOOK_ENTRIES_BEFORE_FOLD);
+      i++
+    ) {
+      parts.push(this._renderLogbookEntryHelper(entries[i]));
+    }
+
+    let moreItems: TemplateResult[] | undefined;
+
+    if (i < entries.length) {
+      moreItems = [];
+      for (i = 0; i < entries.length; i++) {
+        moreItems.push(this._renderLogbookEntryHelper(entries[i]));
+      }
+    }
+
     return html`
-      <ha-timeline .icon=${mdiCircleOutline}>
-        ${entry.name} (${entry.entity_id}) turned ${entry.state}
+      <ha-timeline .icon=${mdiCircleOutline} .moreItems=${moreItems}>
+        ${parts}
       </ha-timeline>
     `;
   }
