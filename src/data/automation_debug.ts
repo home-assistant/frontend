@@ -11,7 +11,7 @@ interface TraceVariables extends Record<string, unknown> {
 
 interface BaseTrace {
   timestamp: string;
-  changed_variables: Record<string, unknown>;
+  changed_variables?: Record<string, unknown>;
 }
 
 export interface ConditionTrace extends BaseTrace {

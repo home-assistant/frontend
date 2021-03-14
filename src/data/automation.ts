@@ -28,6 +28,16 @@ export interface ManualAutomationConfig {
   action: Action[];
   mode?: typeof MODES[number];
   max?: number;
+  max_exceeded?:
+    | "silent"
+    | "critical"
+    | "fatal"
+    | "error"
+    | "warning"
+    | "warn"
+    | "info"
+    | "debug"
+    | "notset";
 }
 
 export interface BlueprintAutomationConfig extends ManualAutomationConfig {
