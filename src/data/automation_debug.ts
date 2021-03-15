@@ -18,7 +18,18 @@ export interface ConditionTrace extends BaseTrace {
   result: { result: boolean };
 }
 
-export type ActionTrace = BaseTrace;
+export interface ChooseActionTrace extends BaseTrace {
+  result: { choice: number };
+}
+
+export interface ChooseChoiceActionTrace extends BaseTrace {
+  result: { result: boolean };
+}
+
+export type ActionTrace =
+  | BaseTrace
+  | ChooseActionTrace
+  | ChooseChoiceActionTrace;
 
 export interface AutomationTrace {
   last_action: string | null;

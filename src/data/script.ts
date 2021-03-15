@@ -105,7 +105,10 @@ export interface UntilRepeat extends BaseRepeat {
 
 export interface ChooseAction {
   alias?: string;
-  choose: [{ conditions: Condition[]; sequence: Action[] }];
+  choose: Array<{
+    conditions: string | Condition | Array<Condition | string>;
+    sequence: Action[];
+  }>;
   default?: Action[];
 }
 
