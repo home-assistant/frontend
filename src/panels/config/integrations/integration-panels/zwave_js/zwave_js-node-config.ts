@@ -22,6 +22,7 @@ import {
   fetchNodeConfigParameters,
   ZWaveJSNode,
   ZWaveJSNodeConfigParams,
+  ZWaveJSSetConfigParamData,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -49,7 +50,7 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @property() public deviceId?: string;
 
-  @property() public devices!: DeviceRegistryEntry[];
+  @property({ type: Array }) public devices!: DeviceRegistryEntry[];
 
   // @internalProperty() private _node?: ZWaveJSNode;
 
@@ -234,10 +235,10 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private _switchToggled(ev) {
-    const data = {
+    const data: ZWaveJSSetConfigParamData = {
       type: "zwave_js/set_config_parameter",
-      entry_id: this.configEntryId,
-      node_id: this.nodeId,
+      entry_id: this.configEntryId!,
+      node_id: this.nodeId!,
       property: ev.target.property,
       value: ev.target.checked ? 1 : 0,
     };
@@ -250,17 +251,17 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private _dropdownSelected(ev) {
-    if (ev.target === undefined || this._config[ev.target.key] === undefined) {
+    if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config[ev.target.key].value === ev.target.selected) {
+    if (this._config![ev.target.key].value === ev.target.selected) {
       return;
     }
 
-    const data = {
+    const data: ZWaveJSSetConfigParamData = {
       type: "zwave_js/set_config_parameter",
-      entry_id: this.configEntryId,
-      node_id: this.nodeId,
+      entry_id: this.configEntryId!,
+      node_id: this.nodeId!,
       property: ev.target.property,
       value: ev.target.selected,
     };

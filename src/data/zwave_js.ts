@@ -47,6 +47,15 @@ export interface ZWaveJSNodeConfigParamMetadata {
   states: { [key: number]: string };
 }
 
+export interface ZWaveJSSetConfigParamData {
+  type: string;
+  entry_id: string;
+  node_id: number;
+  property: number;
+  property_key?: number;
+  value: string | number;
+}
+
 export enum NodeStatus {
   Unknown,
   Asleep,
