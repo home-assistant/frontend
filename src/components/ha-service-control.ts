@@ -185,6 +185,8 @@ export class HaServiceControl extends LitElement {
         serviceData?.fields.some((field) => field.selector && !field.required)
     );
 
+    const domainFilter = this._domainFilter(this.value!.service);
+
     return html`<ha-service-picker
         .hass=${this.hass}
         .value=${this._value?.service}
@@ -233,7 +235,9 @@ export class HaServiceControl extends LitElement {
                 ? { target: serviceData.target }
                 : {
                     target: {
-                      entity: { domain: computeDomain(this._value!.service) },
+                      entity: {
+                        domain: domainFilter ? domainFilter[0] : undefined,
+                      },
                     },
                   }}
               @value-changed=${this._targetChanged}
@@ -245,7 +249,7 @@ export class HaServiceControl extends LitElement {
             .hass=${this.hass}
             .value=${this._value?.data?.entity_id}
             .label=${entityId.description}
-            .includeDomains=${this._domainFilter(this._value!.service)}
+            .includeDomains=${domainFilter}
             @value-changed=${this._entityPicked}
             allow-custom-entity
           ></ha-entity-picker>`
