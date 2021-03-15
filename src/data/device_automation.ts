@@ -6,13 +6,15 @@ export interface DeviceAutomation {
   alias?: string;
   device_id: string;
   domain: string;
-  entity_id: string;
+  entity_id?: string;
   type?: string;
   subtype?: string;
   event?: string;
 }
 
-export type DeviceAction = DeviceAutomation;
+export interface DeviceAction extends DeviceAutomation {
+  entity_id: string;
+}
 
 export interface DeviceCondition extends DeviceAutomation {
   condition: string;
