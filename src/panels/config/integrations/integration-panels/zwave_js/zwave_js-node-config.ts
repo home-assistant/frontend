@@ -14,6 +14,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
@@ -93,8 +94,8 @@ class ZWaveJSNodeConfig extends LitElement {
               "ui.panel.config.zwave_js.node_config.introduction"
             )}
             <p>
-              <em
-                >${this.hass.localize(
+              <em>
+                ${this.hass.localize(
                   "ui.panel.config.zwave_js.node_config.attribution",
                   "device_database",
                   html`<a href="https://devices.zwave-js.io/" target="_blank"
@@ -102,8 +103,8 @@ class ZWaveJSNodeConfig extends LitElement {
                       "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
                     )}</a
                   >`
-                )}</em
-              >
+                )}
+              </em>
             </p>
           </div>
           ${this._config
@@ -174,7 +175,9 @@ class ZWaveJSNodeConfig extends LitElement {
           .max=${item.metadata.max}
           .property=${item.property}
           .propertyKey=${item.property_key}
+          .key=${id}
           .disabled=${!item.metadata.writeable}
+          @value-changed=${this._numericInputChanged}
         >
         </paper-input> `;
     }
@@ -271,6 +274,35 @@ class ZWaveJSNodeConfig extends LitElement {
     }
 
     this.hass.callWS(data);
+  }
+
+  private debouncedUpdate = debounce((target) => {
+    const value = parseInt(target.value);
+    this._config![target.key].value = value;
+
+    const data: ZWaveJSSetConfigParamData = {
+      type: "zwave_js/set_config_parameter",
+      entry_id: this.configEntryId!,
+      node_id: this.nodeId!,
+      property: target.property,
+      value: value,
+    };
+
+    if (target.propertyKey !== null) {
+      data.property_key = target.propertyKey;
+    }
+
+    this.hass.callWS(data);
+  }, 1000);
+
+  private _numericInputChanged(ev) {
+    if (ev.target === undefined || this._config![ev.target.key] === undefined) {
+      return;
+    }
+    if (this._config![ev.target.key].value === parseInt(ev.target.value)) {
+      return;
+    }
+    this.debouncedUpdate(ev.target);
   }
 
   private async _fetchData() {
