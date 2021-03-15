@@ -139,7 +139,6 @@ class ZWaveJSNodeConfig extends LitElement {
             ? html`<em>This parameter is read-only.</em>`
             : ""}
         </span>
-        <br /><small>${id}</small>
       </div>
     `;
 
@@ -238,19 +237,7 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private _switchToggled(ev) {
-    const data: ZWaveJSSetConfigParamData = {
-      type: "zwave_js/set_config_parameter",
-      entry_id: this.configEntryId!,
-      node_id: this.nodeId!,
-      property: ev.target.property,
-      value: ev.target.checked ? 1 : 0,
-    };
-
-    if (ev.target.propertyKey !== null) {
-      data.property_key = ev.target.propertyKey;
-    }
-
-    this.hass.callWS(data);
+    this._updateConfigParameter(ev.target, ev.target.checked ? 1 : 0);
   }
 
   private _dropdownSelected(ev) {
@@ -261,25 +248,27 @@ class ZWaveJSNodeConfig extends LitElement {
       return;
     }
 
-    const data: ZWaveJSSetConfigParamData = {
-      type: "zwave_js/set_config_parameter",
-      entry_id: this.configEntryId!,
-      node_id: this.nodeId!,
-      property: ev.target.property,
-      value: ev.target.selected,
-    };
-
-    if (ev.target.propertyKey !== null) {
-      data.property_key = ev.target.propertyKey;
-    }
-
-    this.hass.callWS(data);
+    this._updateConfigParameter(ev.target, ev.target.selected);
   }
 
   private debouncedUpdate = debounce((target) => {
     const value = parseInt(target.value);
     this._config![target.key].value = value;
 
+    this._updateConfigParameter(target, value);
+  }, 1000);
+
+  private _numericInputChanged(ev) {
+    if (ev.target === undefined || this._config![ev.target.key] === undefined) {
+      return;
+    }
+    if (this._config![ev.target.key].value === parseInt(ev.target.value)) {
+      return;
+    }
+    this.debouncedUpdate(ev.target);
+  }
+
+  private _updateConfigParameter(target, value) {
     const data: ZWaveJSSetConfigParamData = {
       type: "zwave_js/set_config_parameter",
       entry_id: this.configEntryId!,
@@ -293,16 +282,6 @@ class ZWaveJSNodeConfig extends LitElement {
     }
 
     this.hass.callWS(data);
-  }, 1000);
-
-  private _numericInputChanged(ev) {
-    if (ev.target === undefined || this._config![ev.target.key] === undefined) {
-      return;
-    }
-    if (this._config![ev.target.key].value === parseInt(ev.target.value)) {
-      return;
-    }
-    this.debouncedUpdate(ev.target);
   }
 
   private async _fetchData() {
