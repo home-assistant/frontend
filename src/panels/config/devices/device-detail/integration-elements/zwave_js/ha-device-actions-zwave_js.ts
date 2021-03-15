@@ -12,10 +12,6 @@ import {
 } from "lit-element";
 import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import {
-  getIdentifiersFromDevice,
-  ZWaveJSNodeIdentifiers,
-} from "../../../../../../data/zwave_js";
 
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
