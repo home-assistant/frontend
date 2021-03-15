@@ -7,15 +7,10 @@ import {
   internalProperty,
   LitElement,
   property,
-  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import {
-  getIdentifiersFromDevice,
-  ZWaveJSNodeIdentifiers,
-} from "../../../../../../data/zwave_js";
 
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
@@ -28,29 +23,11 @@ export class HaDeviceActionsZWaveJS extends LitElement {
 
   @internalProperty() private _entryId?: string;
 
-  @internalProperty() private _nodeId?: number;
-
-  @internalProperty() private _homeId?: string;
-
-  protected updated(changedProperties: PropertyValues) {
-    if (changedProperties.has("device")) {
-      const identifiers:
-        | ZWaveJSNodeIdentifiers
-        | undefined = getIdentifiersFromDevice(this.device);
-      if (!identifiers) {
-        return;
-      }
-      this._homeId = identifiers.home_id;
-      this._nodeId = identifiers.node_id;
-      this._entryId = this.device.config_entries[0];
-    }
-  }
-
   protected render(): TemplateResult {
     return html`
       <mwc-button @click=${this._nodeConfigClicked}>
         ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.node_config"
+          "ui.panel.config.zwave_js.device_info.device_config"
         )}
       </mwc-button>
     `;

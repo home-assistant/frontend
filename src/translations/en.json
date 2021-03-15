@@ -2508,7 +2508,7 @@
             "zwave_info": "Z-Wave Info",
             "node_status": "Node Status",
             "node_ready": "Node Ready",
-            "node_config": "Configure Device"
+            "device_config": "Configure Device"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
