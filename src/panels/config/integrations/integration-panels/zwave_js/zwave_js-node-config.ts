@@ -269,7 +269,7 @@ class ZWaveJSNodeConfig extends LitElement {
       return;
     }
 
-    this._updateConfigParameter(ev.target, ev.target.selected);
+    this._updateConfigParameter(ev.target, parseInt(ev.target.selected));
   }
 
   private debouncedUpdate = debounce((target) => {
