@@ -21,7 +21,6 @@ import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-switch";
 import {
   fetchNodeConfigParameters,
-  ZWaveJSNode,
   ZWaveJSNodeConfigParams,
   ZWaveJSSetConfigParamData,
 } from "../../../../../data/zwave_js";
