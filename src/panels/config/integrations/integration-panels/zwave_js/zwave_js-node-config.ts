@@ -212,6 +212,7 @@ class ZWaveJSNodeConfig extends LitElement {
             <paper-listbox
               slot="dropdown-content"
               .selected=${item.value}
+              attr-for-selected="value"
               .key=${id}
               .property=${item.property}
               .propertyKey=${item.property_key}
@@ -219,7 +220,7 @@ class ZWaveJSNodeConfig extends LitElement {
             >
               ${Object.entries(item.metadata.states).map(
                 ([key, state]) => html`
-                  <paper-item .id=${key}>${state}</paper-item>
+                  <paper-item .value=${key}>${state}</paper-item>
                 `
               )}
             </paper-listbox>
