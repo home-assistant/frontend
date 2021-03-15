@@ -19,7 +19,6 @@ import {
   mdiCheckCircleOutline,
   mdiCircle,
   mdiCircleOutline,
-  mdiClockOutline,
   mdiPauseCircleOutline,
   mdiRecordCircleOutline,
   mdiStopCircleOutline,
@@ -93,7 +92,7 @@ export class HaAutomationTracer extends LitElement {
         }
 
         entries.push(html`
-          <ha-timeline .icon=${mdiClockOutline}>
+          <ha-timeline label>
             ${relativeTime(lastReportedTime, this.hass.localize, {
               compareTime: nextItemTimestamp,
               includeTense: false,

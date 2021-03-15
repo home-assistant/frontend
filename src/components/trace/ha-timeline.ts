@@ -13,6 +13,8 @@ import "../ha-svg-icon";
 
 @customElement("ha-timeline")
 class HaTimeline extends LitElement {
+  @property({ type: Boolean, reflect: true }) public label = false;
+
   @property({ type: Boolean }) public lastItem = false;
 
   @property({ type: String }) public icon?: string;
@@ -24,7 +26,11 @@ class HaTimeline extends LitElement {
   protected render() {
     return html`
       <div class="timeline-start">
-        <ha-svg-icon .path=${this.icon || mdiCircleOutline}></ha-svg-icon>
+        ${this.label
+          ? ""
+          : html`
+              <ha-svg-icon .path=${this.icon || mdiCircleOutline}></ha-svg-icon>
+            `}
         ${this.lastItem ? "" : html`<div class="line"></div>`}
       </div>
       <div class="content">
@@ -63,11 +69,17 @@ class HaTimeline extends LitElement {
         :host(:not([lastItem])) {
           min-height: 50px;
         }
+        :host([label]) {
+          margin-top: -8px;
+          font-style: italic;
+          color: var(--timeline-label-color, var(--secondary-text-color));
+        }
         .timeline-start {
           display: flex;
           flex-direction: column;
           align-items: center;
-          margin-right: 4px;
+          margin-right: 8px;
+          width: 24px;
         }
         ha-svg-icon {
           color: var(
@@ -89,6 +101,10 @@ class HaTimeline extends LitElement {
         }
         :host(:not([lastItem])) .content {
           padding-bottom: 16px;
+        }
+        :host([label]) .content {
+          margin-top: 0;
+          padding-top: 6px;
         }
       `,
       buttonLinkStyle,
