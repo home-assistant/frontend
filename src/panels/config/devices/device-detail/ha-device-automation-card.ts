@@ -9,7 +9,10 @@ import {
 import "../../../../components/ha-card";
 import "../../../../components/ha-chips";
 import { showAutomationEditor } from "../../../../data/automation";
-import { DeviceAutomation } from "../../../../data/device_automation";
+import {
+  DeviceAction,
+  DeviceAutomation,
+} from "../../../../data/device_automation";
 import { showScriptEditor } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
 
@@ -79,7 +82,7 @@ export abstract class HaDeviceAutomationCard<
       return;
     }
     if (this.script) {
-      showScriptEditor(this, { sequence: [automation] });
+      showScriptEditor(this, { sequence: [automation as DeviceAction] });
       return;
     }
     const data = {};
