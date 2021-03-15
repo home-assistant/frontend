@@ -124,9 +124,11 @@ export class HaServiceControl extends LitElement {
     }
   }
 
-  private _domainFilter = memoizeOne((service: string) => {
+  private _domainFilter = memoizeOne((service: string):
+    | [string]
+    | undefined => {
     const domain = computeDomain(service);
-    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
+    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : undefined;
   });
 
   private _getServiceInfo = memoizeOne(
