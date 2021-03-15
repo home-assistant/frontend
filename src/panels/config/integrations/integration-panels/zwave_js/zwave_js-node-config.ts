@@ -53,8 +53,6 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @property({ type: Array }) public devices!: DeviceRegistryEntry[];
 
-  // @internalProperty() private _node?: ZWaveJSNode;
-
   @internalProperty() private _device?: DeviceRegistryEntry;
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
@@ -66,6 +64,24 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this._device) {
+      return html`<hass-error-screen
+        .hass=${this.hass}
+        .error=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.error_device_not_found"
+        )}
+      ></hass-error-screen>`;
+    }
+
+    if (!this.nodeId) {
+      return html`<hass-error-screen
+        .hass=${this.hass}
+        .error=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.error_couldnt_determine_node_from_device"
+        )}
+      ></hass-error-screen>`;
+    }
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -136,7 +152,11 @@ class ZWaveJSNodeConfig extends LitElement {
             ? html`<br />`
             : ""}
           ${!item.metadata.writeable
-            ? html`<em>This parameter is read-only.</em>`
+            ? html`<em
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
+                )}</em
+              >`
             : ""}
         </span>
       </div>
@@ -157,6 +177,7 @@ class ZWaveJSNodeConfig extends LitElement {
               .property=${item.property}
               .propertyKey=${item.property_key}
               .checked=${item.value === 1}
+              .key=${id}
               @change=${this._switchToggled}
               .disabled=${!item.metadata.writeable}
             ></ha-switch>
@@ -282,6 +303,8 @@ class ZWaveJSNodeConfig extends LitElement {
     }
 
     this.hass.callWS(data);
+
+    this._config![target.key].value = value;
   }
 
   private async _fetchData() {

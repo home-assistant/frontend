@@ -15,10 +15,6 @@ import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { mdiServerNetwork } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../../../../../data/area_registry";
-import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
@@ -105,7 +101,6 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     if (this._currentPage === "node_config") {
       el.deviceId = this.routeTail.path.substr(1);
       el.devices = this._deviceRegistryEntries;
-      el.areas = this._areas;
     }
 
     const searchParams = new URLSearchParams(window.location.search);
