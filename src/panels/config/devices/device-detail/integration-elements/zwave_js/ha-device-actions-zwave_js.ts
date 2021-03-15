@@ -7,10 +7,15 @@ import {
   internalProperty,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import {
+  getIdentifiersFromDevice,
+  ZWaveJSNodeIdentifiers,
+} from "../../../../../../data/zwave_js";
 
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
@@ -22,6 +27,12 @@ export class HaDeviceActionsZWaveJS extends LitElement {
   @property() public device!: DeviceRegistryEntry;
 
   @internalProperty() private _entryId?: string;
+
+  protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has("device")) {
+      this._entryId = this.device.config_entries[0];
+    }
+  }
 
   protected render(): TemplateResult {
     return html`

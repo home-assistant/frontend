@@ -307,6 +307,7 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private async _fetchData() {
+    console.log("fetching data", this.devices);
     if (!this.configEntryId) {
       return;
     }
