@@ -251,7 +251,7 @@ class HaPanelDevService extends LitElement {
   );
 
   private _callService() {
-    if (!this._serviceData!.service) {
+    if (!this._serviceData?.service) {
       return;
     }
     callServiceAction(this.hass, this._serviceData);
