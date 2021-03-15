@@ -111,12 +111,19 @@
                     "input": "输入",
                     "output": "输出"
                 },
+                "network": {
+                    "container": "容器",
+                    "disabled": "已禁用",
+                    "header": "网络",
+                    "host": "主机"
+                },
                 "no_configuration": "此加载项没有可供您“乱搞”的配置……",
                 "options": {
                     "edit_in_ui": "以图形界面编辑",
                     "edit_in_yaml": "以 YAML 编辑",
                     "header": "选项",
-                    "invalid_yaml": "YAML 无效"
+                    "invalid_yaml": "YAML 无效",
+                    "show_unused_optional": "显示未使用的可选配置选项"
                 }
             },
             "dashboard": {
@@ -140,12 +147,51 @@
                         "description": "加载项可以通过 Home Assistant 验证用户身份，从而允许其用户通过 Home Assistant 的用户名和密码登录加载项内部的应用程序。此标识代表加载项是否请求此项功能。",
                         "title": "Home Assistant 身份认证"
                     },
+                    "docker_api": {
+                        "description": "加载项要求其有权访问并管理系统上运行的 Docker 实例。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用加载项的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。"
+                    },
+                    "hassio_api": {
+                        "description": "加载项要求其有权访问 Supervisor API。默认情况下，加载项只能访问系统的常规版本信息。如果加载项要求了“管理”或“超级管理”级别的 API 访问权限，就有权控制 Home Assistant 系统的多个部分。此标识代表加载项是否请求此项权限，此权限会降低加载项的安全评分。",
+                        "title": "Supervisor API 访问权限"
+                    },
+                    "host_network": {
+                        "description": "加载项通常在各自隔离的网络层中运行，以阻止其访问宿主操作系统的网络。某些情况下，这种网络隔离会限制加载项的正常工作，因此加载项可以要求解除隔离，给予加载项完全的宿主网络访问权限。这为加载项提供了更多的网络功能，也增加了安全风险。因此，此功能会降低加载项的安全评分。",
+                        "title": "宿主网络"
+                    },
                     "host_pid": {
-                        "description": "通常情况下，加载项进程与其他系统进程是隔离的。加载项已要求其有权访问在宿主系统上运行的系统进程，并且在宿主系统上生成进程。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用插件上的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                        "description": "通常情况下，加载项进程与其他系统进程是隔离的。加载项要求其有权访问在宿主系统上运行的系统进程，并且在宿主系统上生成进程。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用加载项的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
                         "title": "宿主进程命名空间"
+                    },
+                    "ingress": {
+                        "description": "此加载项使用 Ingress 将其界面安全地嵌入 Home Assistant 中。",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "ingress": "ingress",
+                        "rating": "评分",
+                        "stage": "状态"
+                    },
+                    "rating": {
+                        "description": "Home Assistant 对每个加载项都进行了安全评分，以代表使用该加载项可能带来的风险。加载项请求的系统访问权限越高，安全风险就越高，安全评分就会越低。\n\n评分的范围从 1 到 6。1 为最低分（最不安全、最高风险），6 为最高分（最安全、最低风险）。",
+                        "title": "加载项安全评分"
+                    },
+                    "role": {
+                        "admin": "超级管理",
+                        "manager": "管理"
+                    },
+                    "stage": {
+                        "description": "加载项有三种状态：\n\n{icon_stable} **稳定**: 这些加载项可用于生产环境。\n\n{icon_experimental} **实验**: 这些加载项可能存在 Bug，或者尚未开发完成。\n\n{icon_deprecated} **废弃**: 这些加载项不会再更新。",
+                        "title": "加载项状态"
                     }
                 },
+                "changelog": "更新日志",
+                "cpu_usage": "加载项 CPU 使用率",
+                "hostname": "主机名",
+                "install": "安装",
+                "new_update_available": "{name} 有新版本 {version}",
+                "not_available_arch": "此加载项与设备的处理器或安装的操作系统不兼容。",
                 "not_available_version": "您正在运行 Home Assistant 版本 {core_version_installed}，要将加载项更新到此版本，至少需要 Home Assistant 版本 {core_version_needed}",
+                "open_web_ui": "打开 Web UI",
                 "option": {
                     "auto_update": {
                         "description": "有新版本时，自动更新加载项",
@@ -170,8 +216,15 @@
                 },
                 "protection_mode": {
                     "content": "此加载项的保护模式已禁用！这将使加载项具有对整个系统的完全访问权限，这增加了安全风险，并且在使用不当时可能会损坏系统。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                    "enable": "启用保护模式",
                     "title": "警告：保护模式已禁用！"
                 },
+                "ram_usage": "加载项内存使用率",
+                "rebuild": "重新编译",
+                "restart": "重启",
+                "start": "启动",
+                "stop": "停止",
+                "uninstall": "卸载",
                 "visit_addon_page": "有关更多信息，请访问{name}页面"
             },
             "documentation": {

@@ -358,10 +358,10 @@
                 "text": "변경 사항과 함께 추가 기능을 다시 시작하시겠습니까?"
             },
             "update": {
-                "create_snapshot": "업데이트하기 전에 {name}의 스냅샷 만들기",
-                "snapshot": "스냅샷",
-                "snapshotting": "{name} 스냅샷을 만드는 중",
-                "updating": "{name}을(를) {version} 버전으로 업데이트 중"
+                "create_snapshot": "업데이트하기 전에 {name}의 스냅숏 만들기",
+                "snapshot": "스냅숏",
+                "snapshotting": "{name} 스냅숏을 만드는 중",
+                "updating": "{name}을(를) {version} 버전으로 업데이트하는 중"
             }
         },
         "my": {
@@ -372,18 +372,18 @@
         },
         "panel": {
             "dashboard": "대시보드",
-            "snapshots": "스냅샷",
+            "snapshots": "스냅숏",
             "store": "추가 기능 스토어",
             "system": "시스템"
         },
         "snapshot": {
             "addons": "추가 기능",
-            "available_snapshots": "사용 가능한 스냅샷",
-            "could_not_create": "스냅샷을 만들 수 없습니다",
+            "available_snapshots": "사용 가능한 스냅숏",
+            "could_not_create": "스냅숏을 만들 수 없습니다",
             "create": "생성하기",
-            "create_blocked_not_running": "시스템이 {state} 상태이기 때문에 지금은 스냅샷을 생성할 수 없습니다.",
-            "create_snapshot": "스냅샷 생성하기",
-            "description": "스냅샷을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
+            "create_blocked_not_running": "시스템이 {state} 상태이기 때문에 지금은 스냅숏을 생성할 수 없습니다.",
+            "create_snapshot": "스냅숏 생성하기",
+            "description": "스냅숏을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
             "enter_password": "비밀번호를 입력해주세요",
             "folder": {
                 "addons/local": "로컬 추가 기능",
@@ -393,16 +393,16 @@
                 "ssl": "SSL 인증서"
             },
             "folders": "폴더",
-            "full_snapshot": "전체 스냅샷",
+            "full_snapshot": "전체 스냅숏",
             "name": "이름",
-            "no_snapshots": "스냅샷이 존재하지 않습니다.",
-            "partial_snapshot": "부분 스냅샷",
+            "no_snapshots": "스냅숏이 존재하지 않습니다.",
+            "partial_snapshot": "부분 스냅숏",
             "password": "비밀번호",
             "password_protected": "비밀번호로 보호됨",
             "password_protection": "비밀번호 보호",
             "security": "보안",
             "type": "유형",
-            "upload_snapshot": "스냅샷 올리기"
+            "upload_snapshot": "스냅숏 올리기"
         },
         "store": {
             "missing_addons": "추가 기능이 보이지 않으신가요? 사용자 프로필 페이지에서 고급 모드를 활성화해보세요",
@@ -2297,7 +2297,7 @@
                             "dashboard": "대시보드"
                         },
                         "nodes": "노드",
-                        "select_instance": "인스턴스 선택"
+                        "select_instance": "인스턴스 선택하기"
                     },
                     "network_status": {
                         "details": {
@@ -2378,7 +2378,7 @@
                         "wakeup_instructions_source": "절전 해제 지침은 OpenZWave 커뮤니티 기기 데이터베이스에서 제공됩니다."
                     },
                     "select_instance": {
-                        "header": "OpenZWave 인스턴스 선택",
+                        "header": "OpenZWave 인스턴스 선택하기",
                         "introduction": "둘 이상의 OpenZWave 인스턴스가 실행 중입니다. 어떤 인스턴스를 관리하시겠습니까?",
                         "none_found": "OpenZWave 인스턴스를 찾을 수 없습니다. 이 상황이 잘못되었다고 생각되시면 OpenZWave 및 MQTT 설정을 확인하고 Home Assistant가 MQTT 브로커와 통신할 수 있는지 확인해주세요."
                     },
@@ -2995,7 +2995,7 @@
                         "jinja_documentation": "Jinja2 템플릿 문서 보기",
                         "listeners": "이 템플릿은 다음의 상태 변경 이벤트를 수신합니다.",
                         "no_listeners": "이 템플릿은 이벤트를 수신하지 않으며 자동으로 업데이트되지 않습니다.",
-                        "reset": "데모 템플릿으로 재설정",
+                        "reset": "데모 템플릿으로 재설정하기",
                         "result_type": "결과 유형",
                         "template_extensions": "Home Assistant 템플릿 확장기능 문서 보기",
                         "time": "이 템플릿은 매 분마다 업데이트됩니다.",
@@ -3676,7 +3676,7 @@
                 },
                 "intro": "잠들어 있는 집을 깨우고 개인정보를 보호하며 전세계의 공돌이 커뮤니티에 가입 할 준비가 되셨나요?",
                 "restore": {
-                    "description": "이전 스냅샷에서 복원할 수 있습니다.",
+                    "description": "이전 스냅숏에서 복원할 수 있습니다.",
                     "hide_log": "전체 로그 숨기기",
                     "in_progress": "복원 중",
                     "show_log": "전체 로그 표시하기"

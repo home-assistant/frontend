@@ -275,7 +275,7 @@
                 "unknown": "Ukjent feil",
                 "update_failed": "Oppdatering mislyktes"
             },
-            "failed_to_restart_name": "Kan ikke starte {name} på nytt",
+            "failed_to_restart_name": "Kunne ikke starte {name} på nytt",
             "failed_to_update_name": "Kunne ikke oppdatere {name}",
             "learn_more": "Lær mer",
             "new_version_available": "Ny versjon tilgjengelig",
@@ -435,7 +435,7 @@
                 "new_hostname": "Vennligst skriv inn et nytt vertsnavn:",
                 "operating_system": "Operativsystem",
                 "reboot_host": "Start verten på nytt",
-                "shutdown_host": "Slå av verten",
+                "shutdown_host": "Slå av vert",
                 "used_space": "Brukt lagringsplass"
             },
             "log": {

@@ -146,6 +146,9 @@
                     "hassio_api": {
                         "title": "Supervisor API hozzáférés"
                     },
+                    "host_network": {
+                        "description": "A bővítmények általában a saját elszigetelt hálózati rétegükben futnak, ami megakadályozza, hogy hozzáférjenek a gazdagép operációs rendszer hálózatához. Bizonyos esetekben ez a hálózati elkülönítés korlátozhatja a bővítményeket a szolgáltatásaik nyújtásában, ezért az elkülönítést a bővítmény szerzője feloldhatja, így a bővítmény teljes hozzáférést biztosít a gazdaszámítógép hálózati képességeihez. Ez több hálózati lehetőséget biztosít a bővítménynek, de csökkenti a biztonságot, ezért a bővítmény biztonsági besorolása csökken, ha ezt a beállítást a bővítmény használja."
+                    },
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "auth",
@@ -164,12 +167,16 @@
                         "default": "alapértelmezett",
                         "homeassistant": "homeassistant",
                         "manager": "manager"
+                    },
+                    "stage": {
+                        "title": "Kiegészítő szakasz"
                     }
                 },
                 "changelog": "Változási napló",
                 "cpu_usage": "Bővítmény CPU-használat",
                 "hostname": "Gazdagép neve",
                 "install": "telepítés",
+                "not_available_version": "A(z) {core_version_installed} otthoni segédet futtatja, hogy frissítse az Otthoni segéd legalább {core_version_needed} verzióját.",
                 "open_web_ui": "Webes felhasználói felület megnyitása",
                 "option": {
                     "auto_update": {
@@ -195,7 +202,8 @@
                 "restart": "újraindítás",
                 "start": "indítás",
                 "stop": "leállítás",
-                "uninstall": "eltávolítás"
+                "uninstall": "eltávolítás",
+                "visit_addon_page": "További részletekért látogasson el a(z) {name} oldalra."
             },
             "documentation": {
                 "get_documentation": "Nem sikerült lekérni a bővítmény dokumentációját, {error}"
@@ -795,7 +803,8 @@
             "service-control": {
                 "required": "Ez a mező kötelező",
                 "service_data": "Szolgáltatás adatai",
-                "target": "Célok"
+                "target": "Célok",
+                "target_description": "Mit használjon ez a szolgáltatás célzott területként, eszközként vagy entitásként?"
             },
             "service-picker": {
                 "service": "Szolgáltatás"
@@ -1991,6 +2000,7 @@
                         "devices": "{count} {count, plural,\n  one {eszköz}\n  other {eszköz}\n}",
                         "disable_restart_confirm": "Indítsa újra a Home Assistant programot az integráció lekapcsolásának befejezéséhez",
                         "disable": {
+                            "disable_confirm": "Biztosan letiltja ezt a konfigurációs bejegyzést? Eszközeit és entitásait letiltjuk.",
                             "disabled": "Letiltva",
                             "disabled_by": {
                                 "device": "eszköz",
@@ -2669,6 +2679,7 @@
                     "no_zones_created_yet": "Úgy tűnik, még nem hoztál létre zónákat."
                 },
                 "zwave_js": {
+                    "button": "Konfigurálja",
                     "common": {
                         "close": "Bezárás"
                     },
@@ -2853,6 +2864,12 @@
                         "title": "Sablon",
                         "unknown_error_template": "Ismeretlen hiba a sablon kiértékelésekor"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Menjen vissza",
+                "supervisor": {
+                    "system_health": "A rendszer állapotának ellenőrzése"
                 }
             },
             "history": {

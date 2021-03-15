@@ -128,51 +128,51 @@
             },
             "dashboard": {
                 "action_error": {
-                    "get_changelog": "Ophalen changelog van add-on is mislukt",
-                    "go_to_config": "Kan de add-on niet starten - configuratie validatie mislukt!",
-                    "install": "De installatie van de add-on is mislukt",
-                    "restart": "Kan de add-on niet herstarten",
-                    "start": "Kan de add-on niet starten",
+                    "get_changelog": "Ophalen changelog van de invoegtoepassing is mislukt",
+                    "go_to_config": "Kan de invoegtoepassing niet starten - configuratie validatie mislukt!",
+                    "install": "De installatie van de invoegtoepassing is mislukt",
+                    "restart": "Kan de invoegtoepassing niet herstarten",
+                    "start": "Kan de invoegtoepassing niet starten",
                     "start_invalid_config": "Ga naar configuratie",
-                    "stop": "Kan add-on niet stoppen",
-                    "uninstall": "De de-installatie van de add-on is mislukt",
-                    "validate_config": "De configuratie van de add-on kon niet worden gevalideerd"
+                    "stop": "Kan de invoegtoepassing niet stoppen",
+                    "uninstall": "De de-installatie van de invoegtoepassing is mislukt",
+                    "validate_config": "De configuratie van de invoegtoepassing kon niet worden gevalideerd"
                 },
                 "capability": {
                     "apparmor": {
-                        "description": "AppArmor ('Application Armor') is een beveiligingsmodule voor de Linux-kernel die de mogelijkheden van add-ons beperkt, zoals netwerktoegang, toegang tot raw socket, en toestemming om specifieke bestanden te lezen, te schrijven of uit te voeren.\n\nAuteurs van add-ons kunnen hun beveiligingsprofielen opgeven, geoptimaliseerd voor de add-on, of vragen om het uit te schakelen. Als AppArmor is uitgeschakeld, verhoogt dit de beveiligingsrisico's en heeft het dus een negatieve invloed op de beveiligingsscore van de add-on.",
+                        "description": "AppArmor ('Application Armor') is een beveiligingsmodule voor de Linux-kernel die de mogelijkheden van invoegtoepassingen beperkt, zoals netwerktoegang, toegang tot raw socket, en toestemming om specifieke bestanden te lezen, te schrijven of uit te voeren.\n\nAuteurs van invoegtoepassingen kunnen hun beveiligingsprofielen opgeven, geoptimaliseerd voor de invoegtoepassing, of vragen om het uit te schakelen. Als AppArmor is uitgeschakeld, verhoogt dit de beveiligingsrisico's en heeft het dus een negatieve invloed op de beveiligingsscore van de invoegtoepassing.",
                         "title": "AppArmor"
                     },
                     "auth_api": {
-                        "description": "Een add-on kan gebruikers authenticeren tegen Home Assistant, waardoor add-ons gebruikers de mogelijkheid geven om in te loggen bij applicaties die draaien in add-ons, met hun Home Assistant gebruikersnaam/wachtwoord. Deze badge geeft aan of de auteur van de add-on deze mogelijkheid heeft aangevraagd.",
+                        "description": "Een invoegtoepassing kan gebruikers authenticeren bij Home Assistant, waardoor invoegtoepassingen gebruikers de mogelijkheid geven om in te loggen bij applicaties die draaien in invoegtoepassingen, met hun Home Assistant gebruikersnaam/wachtwoord. Deze badge geeft aan of de auteur van de invoegtoepassing deze mogelijkheid heeft aangevraagd.",
                         "title": "Home Assistant Authenticatie"
                     },
                     "docker_api": {
-                        "description": "De auteur van de add-on heeft gevraagd of de add-on beheertoegang heeft tot de Docker-instantie die op uw systeem draait. Deze modus geeft de add-on volledige toegang en controle tot uw gehele Home Assistant-systeem, wat veiligheidsrisico's toevoegt en bij misbruik uw systeem kan beschadigen. Daarom heeft deze functie een negatieve invloed op de beveiligingsscore van de add-on.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de add-on handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
+                        "description": "De auteur van deze invoegtoepassing heeft gevraagd of deze beheertoegang mag tot de Docker-instantie die op uw systeem draait. Deze modus geeft de invoegtoepassing volledige toegang en controle tot uw gehele Home Assistant-systeem, wat veiligheidsrisico's met zich mee brengt en bij misbruik uw systeem kan beschadigen. Daarom heeft deze functie een negatieve invloed op de beveiligingsscore van de invoegtoepassing.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
                         "title": "Volledige Docker toegang"
                     },
                     "full_access": {
-                        "description": "Deze add-on krijgt volledige toegang tot de hardware van uw systeem, op verzoek van de auteur van de add-on. De toegang is vergelijkbaar met de bevoorrechte modus in Docker. Aangezien dit mogelijke veiligheidsrisico's met zich meebrengt, heeft deze eigenschap een negatieve invloed op de veiligheidsscore van de add-on.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen, moet u de beveiligingsmodus op de add-on handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
+                        "description": "Deze invoegtoepassing krijgt volledige toegang tot de hardware van uw systeem, op verzoek van de auteur van deze invoegtoepassing. De toegang is vergelijkbaar met de bevoorrechte modus in Docker. Aangezien dit mogelijke veiligheidsrisico's met zich meebrengt, heeft deze eigenschap een negatieve invloed op de veiligheidsscore van de invoegtoepassing.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen, moet u de beveiligingsmodus op de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
                         "title": "Volledige hardware toegang"
                     },
                     "hassio_api": {
-                        "description": "De add-on heeft toegang gekregen tot de Supervisor API, op verzoek van de auteur van de add-on. Standaard heeft de add-on toegang tot algemene versie-informatie van uw systeem. Wanneer de add-on 'manager' of 'admin' niveau toegang tot de API aanvraagt, zal het toegang krijgen om meerdere delen van uw Home Assistant systeem te controleren. Deze toestemming wordt aangegeven met deze badge en zal de beveiligingsscore van de add-on negatief beïnvloeden.",
+                        "description": "De invoegtoepassing heeft toegang gekregen tot de Supervisor API, op verzoek van de auteur van de invoegtoepassing. Standaard heeft deze toegang tot algemene versie-informatie van uw systeem. Wanneer de invoegtoepassing 'manager' of 'admin' niveau toegang tot de API aanvraagt, zal het toegang krijgen om meerdere delen van uw Home Assistant systeem te controleren. Deze toestemming wordt aangegeven met deze badge en zal de beveiligingsscore van de invoegtoepassing negatief beïnvloeden.",
                         "title": "Supervisor API Toegang"
                     },
                     "homeassistant_api": {
-                        "description": "Deze add-on heeft rechtstreeks toegang tot uw actieve Home Assistant-instantie via de Home Assistant API. Deze modus handelt ook de authenticatie voor de add-on af, waardoor een add-on kan communiceren met Home Assistant zonder de noodzaak van extra authenticatietokens.",
+                        "description": "Deze invoegtoepassing heeft rechtstreeks toegang tot uw actieve Home Assistant-instantie via de Home Assistant API. Deze modus handelt ook de authenticatie voor de invoegtoepassing af, waardoor een invoegtoepassing kan communiceren met Home Assistant zonder de noodzaak van extra authenticatietokens.",
                         "title": "Home Assistant API Toegang"
                     },
                     "host_network": {
-                        "description": "Add-ons draaien meestal in hun eigen geïsoleerde netwerklaag, waardoor ze geen toegang hebben tot het netwerk van het host-besturingssysteem. In sommige gevallen kan deze netwerkisolatie add-ons beperken in het leveren van hun diensten en daarom kan de isolatie worden opgeheven door de add-on-auteur, waardoor de add-on volledige toegang krijgt tot de netwerk mogelijkheden van de host-machine. Dit geeft de add-on meer netwerkmogelijkheden maar verlaagt de beveiliging, vandaar dat de beveiligingsclassificatie van de add-on zal worden verlaagd als deze optie door de add-on wordt gebruikt.",
+                        "description": "Invoegtoepassingen draaien meestal in hun eigen geïsoleerde netwerklaag, waardoor ze geen toegang hebben tot het netwerk van het host-besturingssysteem. In sommige gevallen kan deze netwerkisolatie invoegtoepassingen beperken in het leveren van hun diensten en daarom kan de isolatie worden opgeheven door de auteur van deze invoegtoepassingen, waardoor de invoegtoepassing volledige toegang krijgt tot de netwerk mogelijkheden van de host-machine. Dit geeft de invoegtoepassing meer netwerkmogelijkheden maar verlaagt de beveiliging, vandaar dat de beveiligingsclassificatie van de invoegtoepassing zal worden verlaagd als deze optie door de invoegtoepassing wordt gebruikt.",
                         "title": "Hostnetwerk"
                     },
                     "host_pid": {
-                        "description": "Gewoonlijk zijn de processen die de add-on uitvoert, geïsoleerd van alle andere systeemprocessen. De auteur van de add-on heeft gevraagd of de add-on toegang heeft tot de systeemprocessen die op het hostsysteem draaien, en staat toe dat de add-on ook processen op het hostsysteem spawnt. Deze modus geeft de add-on volledige toegang tot en controle over uw gehele Home Assistant-systeem, wat veiligheidsrisico's toevoegt en bij misbruik uw systeem kan beschadigen. Daarom heeft deze functie een negatieve invloed op de add-on beveiligingsscore.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de add-on handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
+                        "description": "Gewoonlijk zijn de processen die de invoegtoepassing uitvoert, geïsoleerd van alle andere systeemprocessen. De auteur van de invoegtoepassing heeft toegang gevraagd  tot de systeemprocessen die op het hostsysteem draaien, en staat toe dat de invoegtoepassing ook processen op het hostsysteem start. Deze modus geeft de invoegtoepassing volledige toegang tot en controle over uw gehele Home Assistant-systeem, wat veiligheidsrisico's toevoegt en bij misbruik uw systeem kan beschadigen. Daarom heeft deze functie een negatieve invloed op de beveiligingscode van de invoegtoepassing.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
                         "title": "Host Processes Namespace"
                     },
                     "ingress": {
-                        "description": "Deze add-on maakt gebruik van Ingress om zijn gebruikersinterface veilig te integreren in Home Assistant.",
+                        "description": "Deze invoegtoepassing maakt gebruik van Ingress om zijn gebruikersinterface veilig te integreren in Home Assistant.",
                         "title": "Ingress"
                     },
                     "label": {
@@ -190,7 +190,7 @@
                     },
                     "rating": {
                         "description": "Home Assistant geeft een veiligheidsscore aan elke add-on, die aangeeft welke risico's het gebruik van deze add-on met zich meebrengt. Hoe meer toegang een add-on tot je systeem vereist, hoe lager de score, waardoor de mogelijke veiligheidsrisico's toenemen.\n\nEen score is op een schaal van 1 tot 6. Waarbij 1 de laagste score is (beschouwd als het meest onveilige en het grootste risico) en een score van 6 de hoogste score is (beschouwd als het meest veilige en het minste risico).",
-                        "title": "Add-on Veiligheidsbeoordeling"
+                        "title": "Invoegtoepassing veiligheidsbeoordeling"
                     },
                     "role": {
                         "admin": "admin",
@@ -200,7 +200,7 @@
                         "manager": "manager"
                     },
                     "stage": {
-                        "description": "Add-ons kunnen een van de drie stadia hebben:\n\n{icon_stable} **Stabiel**: Dit zijn add-ons die klaar zijn om in productie gebruikt te worden.\n\n{icon_experimental} **Experimenteel**: Deze kunnen bugs bevatten, en kunnen onvoltooid zijn.\n\n{icon_deprecated} *Vervallen**: Deze add-ons zullen niet langer updates ontvangen.",
+                        "description": "invoegtoepassingen kunnen een van de drie stadia hebben:\n\n{icon_stable} **Stabiel**: Dit zijn add-ons die klaar zijn om in productie gebruikt te worden.\n\n{icon_experimental} **Experimenteel**: Deze kunnen bugs bevatten, en kunnen onvoltooid zijn.\n\n{icon_deprecated} *Vervallen**: Deze add-ons zullen niet langer updates ontvangen.",
                         "title": "Add-on stadium"
                     }
                 },
@@ -214,23 +214,23 @@
                 "open_web_ui": "Open web UI",
                 "option": {
                     "auto_update": {
-                        "description": "Update automatisch de add-on wanneer er een nieuwe versie beschikbaar is",
+                        "description": "Update automatisch de invoegtoepassing wanneer er een nieuwe versie beschikbaar is",
                         "title": "Automatisch bijwerken"
                     },
                     "boot": {
-                        "description": "Laat de add-on starten tijdens het opstarten van het systeem",
+                        "description": "Start de invoegtoepassing tijdens het opstarten van het systeem",
                         "title": "Start bij opstarten"
                     },
                     "ingress_panel": {
-                        "description": "Voeg deze add-on toe aan je zijbalk",
+                        "description": "Voeg deze invoegtoepassing toe aan je zijbalk",
                         "title": "Weergeven in zijbalk"
                     },
                     "protected": {
-                        "description": "Blokkeert systeemtoegang met extra rechten voor de add-on",
+                        "description": "Blokkeert systeemtoegang met extra rechten voor de invoegtoepassing",
                         "title": "Beschermingsmodus"
                     },
                     "watchdog": {
-                        "description": "Dit zal de add-on starten als deze crasht",
+                        "description": "Dit zal de invoegtoepassing starten als deze crasht",
                         "title": "Watchdog"
                     }
                 },
@@ -248,12 +248,12 @@
                 "visit_addon_page": "Bezoek de {name} pagina voor meer details"
             },
             "documentation": {
-                "get_documentation": "Ophalen documentatie van add-on is mislukt, {error}"
+                "get_documentation": "Ophalen documentatie van de invoegtoepassing is mislukt, {error}"
             },
             "failed_to_reset": "Kan configuratie van add-on niet resetten, {error}",
             "failed_to_save": "Mislukt om add-on configuratie op te slaan, {error}",
             "logs": {
-                "get_logs": "Ophalen logs van add-on is mislukt, {error}"
+                "get_logs": "Ophalen van het logboek van de invoegtoepassing is mislukt, {error}"
             },
             "panel": {
                 "configuration": "Configuratie",
@@ -351,11 +351,11 @@
             "repositories": {
                 "add": "Toevoegen",
                 "remove": "Verwijderen",
-                "title": "Beheer add-on repository's"
+                "title": "Beheer de invoegtoepassing repository's"
             },
             "restart_addon": {
-                "confirm_text": "Herstart add-on",
-                "text": "Wilt u de add-on opnieuw starten met uw wijzigingen?"
+                "confirm_text": "Herstart de invoegtoepassing",
+                "text": "Wilt u de invoegtoepassing opnieuw starten met uw wijzigingen?"
             },
             "update": {
                 "create_snapshot": "Maak een snapshot van {name} voordat u gaat bijwerken",
@@ -366,7 +366,7 @@
         },
         "my": {
             "error": "Er is een onbekende fout opgetreden",
-            "error_addon_not_found": "Add-on niet gevonden",
+            "error_addon_not_found": "Invoegtoepassing niet gevonden",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
         },
@@ -377,7 +377,7 @@
             "system": "Systeem"
         },
         "snapshot": {
-            "addons": "Add-ons",
+            "addons": "Invoegtoepassingen",
             "available_snapshots": "Beschikbare snapshots",
             "could_not_create": "Kon geen snapshot maken",
             "create": "Maak",
@@ -386,7 +386,7 @@
             "description": "Met snapshots kunt u gemakkelijk een back-up maken van alle gegevens van uw Home Assistant en ze herstellen.",
             "enter_password": "Voer een wachtwoord in.",
             "folder": {
-                "addons/local": "Lokale add-ons",
+                "addons/local": "Lokale invoegtoepassingen",
                 "homeassistant": "Home Assistant configuratie",
                 "media": "Media",
                 "share": "Deel",
@@ -405,7 +405,7 @@
             "upload_snapshot": "Upload snapshot"
         },
         "store": {
-            "missing_addons": "Mis je de add-ons? Schakel de geavanceerde modus in op uw gebruikersprofielpagina",
+            "missing_addons": "Mis je de invoegtoepassingen? Schakel de geavanceerde modus in op uw gebruikersprofielpagina",
             "no_results_found": "Geen resultaten gevonden in {repository}.",
             "registries": "Registers",
             "repositories": "Repository's"
@@ -1189,7 +1189,7 @@
                 "key_missing": "Verplichte sleutel \"{key}\" ontbreekt.",
                 "key_not_expected": "Sleutel \"{key}\" wordt niet verwacht of ondersteund door de visuele editor.",
                 "key_wrong_type": "De opgegeven waarde voor \" {key} \" wordt niet ondersteund door de visuele editor. We ondersteunen ( {type_correct} ) maar hebben ( {type_wrong} ) ontvangen.",
-                "no_template_editor_support": "Sjablonen worden niet ondersteund in visuele editor",
+                "no_template_editor_support": "Sjablonen worden niet ondersteund in de visuele editor",
                 "no_type_provided": "Geen type opgegeven."
             }
         },
@@ -1629,8 +1629,8 @@
                         },
                         "introduction": "Met de Blueprinteditor kunt je Blueprints maken en bewerken.",
                         "learn_more": "Meer informatie over Blueprints",
-                        "share_blueprint": "Deel Blueprint",
-                        "share_blueprint_no_url": "Kan Blueprint niet delen: geen bron-URL",
+                        "share_blueprint": "Deel blauwdruk",
+                        "share_blueprint_no_url": "Kan blauwdruk niet delen: geen bron-URL",
                         "use_blueprint": "Automatisering maken"
                     }
                 },
