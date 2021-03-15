@@ -32,7 +32,7 @@ import {
   DeviceRegistryEntry,
   computeDeviceName,
 } from "../../../../../data/device_registry";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
@@ -57,21 +57,9 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
 
-  private _unsubs?: UnsubscribeFunc[];
-
   protected firstUpdated() {
     if (this.hass) {
       this._fetchData();
-    }
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubs) {
-      while (this._unsubs.length) {
-        this._unsubs.pop()!();
-      }
-      this._unsubs = undefined;
     }
   }
 
