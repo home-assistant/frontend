@@ -254,7 +254,7 @@ class HaPanelDevService extends LitElement {
     if (!this._serviceData!.service) {
       return;
     }
-    callServiceAction(this.hass, this._serviceData!);
+    callServiceAction(this.hass, this._serviceData);
   }
 
   private _toggleYaml() {
