@@ -88,17 +88,6 @@ export const fetchNodeConfigParameters = (
     node_id,
   });
 
-export const fetchDeviceFromNode = (
-  hass: HomeAssistant,
-  entry_id: string,
-  node_id: number
-): Promise<DeviceRegistryEntry> =>
-  hass.callWS({
-    type: "zwave_js/get_device_from_node",
-    entry_id,
-    node_id,
-  });
-
 export const getIdentifiersFromDevice = function (
   device: DeviceRegistryEntry
 ): ZWaveJSNodeIdentifiers | undefined {

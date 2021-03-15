@@ -1,4 +1,9 @@
-import { customElement, property } from "lit-element";
+import {
+  customElement,
+  internalProperty,
+  property,
+  PropertyValues,
+} from "lit-element";
 import {
   HassRouterPage,
   RouterOptions,
@@ -8,6 +13,15 @@ import { navigate } from "../../../../../common/navigate";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
 import { mdiServerNetwork } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  AreaRegistryEntry,
+  subscribeAreaRegistry,
+} from "../../../../../data/area_registry";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../../../data/device_registry";
 
 export const configTabs: PageNavigation[] = [
   {
@@ -24,6 +38,11 @@ class ZWaveJSConfigRouter extends HassRouterPage {
   @property() public isWide!: boolean;
 
   @property() public narrow!: boolean;
+
+  @internalProperty()
+  private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
+  private _unsubs?: UnsubscribeFunc[];
 
   private _configEntry = new URLSearchParams(window.location.search).get(
     "config_entry"
@@ -44,6 +63,39 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     },
   };
 
+  public connectedCallback() {
+    super.connectedCallback();
+
+    if (!this.hass) {
+      return;
+    }
+    this._loadData();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubs) {
+      while (this._unsubs.length) {
+        this._unsubs.pop()!();
+      }
+      this._unsubs = undefined;
+    }
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this.addEventListener("hass-reload-entries", () => {
+      this._loadData();
+    });
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (!this._unsubs && changedProps.has("hass")) {
+      this._loadData();
+    }
+  }
+
   protected updatePageEl(el): void {
     el.route = this.routeTail;
     el.hass = this.hass;
@@ -51,7 +103,9 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
     if (this._currentPage === "node_config") {
-      el.nodeId = parseInt(this.routeTail.path.substr(1));
+      el.deviceId = this.routeTail.path.substr(1);
+      el.devices = this._deviceRegistryEntries;
+      el.areas = this._areas;
     }
 
     const searchParams = new URLSearchParams(window.location.search);
@@ -65,6 +119,17 @@ class ZWaveJSConfigRouter extends HassRouterPage {
         true
       );
     }
+  }
+
+  private _loadData() {
+    if (this._unsubs) {
+      return;
+    }
+    this._unsubs = [
+      subscribeDeviceRegistry(this.hass.connection, (entries) => {
+        this._deviceRegistryEntries = entries;
+      }),
+    ];
   }
 }
 

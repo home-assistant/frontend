@@ -19,7 +19,6 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-switch";
 import {
-  fetchDeviceFromNode,
   fetchNodeConfigParameters,
   ZWaveJSNode,
   ZWaveJSNodeConfigParams,
@@ -33,7 +32,7 @@ import {
   DeviceRegistryEntry,
   computeDeviceName,
 } from "../../../../../data/device_registry";
-
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
@@ -48,15 +47,31 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @property({ type: Number }) public nodeId?: number;
 
+  @property() public deviceId?: string;
+
+  @property() public devices!: DeviceRegistryEntry[];
+
   // @internalProperty() private _node?: ZWaveJSNode;
 
   @internalProperty() private _device?: DeviceRegistryEntry;
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
 
+  private _unsubs?: UnsubscribeFunc[];
+
   protected firstUpdated() {
     if (this.hass) {
       this._fetchData();
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubs) {
+      while (this._unsubs.length) {
+        this._unsubs.pop()!();
+      }
+      this._unsubs = undefined;
     }
   }
 
@@ -256,14 +271,28 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private async _fetchData() {
-    if (!this.configEntryId || !this.nodeId) {
+    if (!this.configEntryId) {
       return;
     }
-    this._device = await fetchDeviceFromNode(
-      this.hass,
-      this.configEntryId,
-      this.nodeId
+
+    this._device = this.devices
+      ? this.devices.find((device) => device.id === this.deviceId)
+      : undefined;
+
+    if (!this._device) {
+      return;
+    }
+
+    const identifier = this._device.identifiers.find(
+      (ident) => ident[0] === "zwave_js"
     );
+
+    if (!identifier) {
+      return;
+    }
+
+    this.nodeId = parseInt(identifier[1].split("-")[1]);
+
     this._config = await fetchNodeConfigParameters(
       this.hass,
       this.configEntryId,
