@@ -130,7 +130,14 @@ class ZWaveJSNodeConfig extends LitElement {
         <b>${item.metadata.label}</b><br />
         <span class="secondary">
           ${item.metadata.description}
+          ${item.metadata.description !== null && !item.metadata.writeable
+            ? html`<br />`
+            : ""}
+          ${!item.metadata.writeable
+            ? html`<em>This parameter is read-only.</em>`
+            : ""}
         </span>
+        <br /><small>${id}</small>
       </div>
     `;
 
@@ -150,6 +157,7 @@ class ZWaveJSNodeConfig extends LitElement {
               .propertyKey=${item.property_key}
               .checked=${item.value === 1}
               @change=${this._switchToggled}
+              .disabled=${!item.metadata.writeable}
             ></ha-switch>
           </div>
         </div>
@@ -163,6 +171,9 @@ class ZWaveJSNodeConfig extends LitElement {
           .value=${item.value}
           .min=${item.metadata.min}
           .max=${item.metadata.max}
+          .property=${item.property}
+          .propertyKey=${item.property_key}
+          .disabled=${!item.metadata.writeable}
         >
         </paper-input> `;
     }
@@ -171,7 +182,10 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <div class="flex">
-          <paper-dropdown-menu dynamic-align>
+          <paper-dropdown-menu
+            dynamic-align
+            .disabled=${!item.metadata.writeable}
+          >
             <paper-listbox
               slot="dropdown-content"
               .selected=${item.value}
