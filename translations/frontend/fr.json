@@ -156,7 +156,7 @@
                         "title": "Accès complet au matériel"
                     },
                     "hassio_api": {
-                        "description": "Le module complémentaire a eu accès à l'API Supervisor, à la demande de l'auteur du module complémentaire. Par défaut, le module complémentaire peut accéder aux informations générales sur la version de votre système. Lorsque le module complémentaire demande un accès de niveau `` gestionnaire '' ou `` administrateur '' à l'API, il aura accès pour contrôler plusieurs parties de votre système Home Assistant. Cette autorisation est indiquée par ce badge et aura un impact négatif sur le score de sécurité du module complémentaire.",
+                        "description": "Le module complémentaire a eu accès à l'API du superviseur, à la demande de l'auteur du module complémentaire. Par défaut, le module complémentaire peut accéder aux informations générales sur la version de votre système. Lorsque le module complémentaire demande un accès de niveau \"gestionnaire\" ou \"administrateur\" à l'API, il aura accès pour contrôler plusieurs parties de votre système Home Assistant. Cette autorisation est indiquée par ce badge et aura un impact négatif sur le score de sécurité du module complémentaire.",
                         "title": "Accès à l'API du superviseur"
                     },
                     "homeassistant_api": {
@@ -448,15 +448,15 @@
                 "beta_release_items": "Cela inclut les versions bêta pour:",
                 "beta_warning": "Les versions bêta sont destinées aux testeurs et aux utilisateurs précoces et peuvent contenir des modifications de code instables",
                 "channel": "Canal",
-                "cpu_usage": "Utilisation du processeur par Supervisor",
+                "cpu_usage": "Utilisation du processeur par le superviseur",
                 "failed_to_reload": "Échec du rechargement de Supervisor",
-                "failed_to_set_option": "Échec lors du paramétrage de l'option du Supervisor",
+                "failed_to_set_option": "Échec lors du paramétrage de l'option du Superviseur",
                 "failed_to_update": "Échec de la mise à jour de Supervisor",
                 "join_beta_action": "Rejoignez le canal bêta",
-                "join_beta_description": "Obtenez des mises à jour bêta pour Home Assistant (RCs), Supervisor et host",
+                "join_beta_description": "Obtenez des mises à jour bêta pour Home Assistant (RCs), Superviseur et l'hôte",
                 "leave_beta_action": "Quitter le canal bêta",
                 "leave_beta_description": "Obtenez des mises à jour stables pour l'assistant domestique, le superviseur et l'hôte",
-                "ram_usage": "Utilisation de la RAM Supervisor",
+                "ram_usage": "Utilisation de la RAM du superviseur",
                 "reload_supervisor": "Recharger le superviseur",
                 "share_diagnostics": "Partager les diagnostics",
                 "share_diagnostics_description": "Partagez les rapports d'incident et les informations de diagnostic.",
@@ -467,7 +467,7 @@
                     "docker": "L'environnement Docker ne fonctionne pas correctement",
                     "privileged": "Le superviseur n'est pas privilégié",
                     "setup": "La configuration du superviseur a échoué",
-                    "supervisor": "Le Supervisor ne peu pas mettre à jour"
+                    "supervisor": "Le superviseur ne peut pas mettre à jour"
                 },
                 "unhealthy_title": "Votre installation est défectueuse",
                 "unsupported_description": "Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
@@ -1655,12 +1655,12 @@
                         "fetching_subscription": "Récupération de l'abonnement...",
                         "google": {
                             "config_documentation": "Documentation de configuration",
-                            "devices_pin": "PIN pour les appareils sécurisés",
+                            "devices_pin": "NIP pour les appareils sécurisés",
                             "enable_ha_skill": "Activer le skill Home Assistant pour Google Assistant",
                             "enable_state_reporting": "Activer le rapport d'état",
-                            "enter_pin_error": "Impossible de stocker le PIN:",
-                            "enter_pin_hint": "Entrer un code PIN pour utiliser les dispositifs de sécurité",
-                            "enter_pin_info": "Veuillez entrer un code PIN pour interagir avec les dispositifs de sécurité. Les dispositifs de sécurité sont les portes, les portes de garage et les serrures. Il vous sera demandé de dire/entrer ce code PIN lorsque vous interagissez avec de tels appareils via Google Assistant.",
+                            "enter_pin_error": "Impossible de stocker le NIP :",
+                            "enter_pin_hint": "Entrer un code NIP pour utiliser les dispositifs de sécurité",
+                            "enter_pin_info": "Veuillez entrer un code NIP pour interagir avec les dispositifs de sécurité. Les dispositifs de sécurité sont les portes, les portes de garage et les serrures. Il vous sera demandé de dire/entrer ce code NIP lorsque vous interagissez avec de tels appareils via Google Assistant.",
                             "info": "Grâce à l'intégration de Google Assistant pour Home Assistant Cloud, vous pourrez contrôler tous vos appareils Home Assistant via n'importe quel appareil compatible avec Google Assistant.",
                             "info_state_reporting": "Si vous activez le rapport d'état, Home Assistant envoie tous les changements d'état des entités exposées à Google. Cela vous permet de toujours voir les derniers états de l'application Google.",
                             "manage_entities": "Gérer les entités",
@@ -1709,7 +1709,7 @@
                             "loading": "Chargement ...",
                             "manage": "Gérer",
                             "no_hooks_yet": "Il semble que vous n'ayez pas encore de Webhooks. Commencez en configurer un ",
-                            "no_hooks_yet_link_automation": "automation webhook",
+                            "no_hooks_yet_link_automation": "automatisation webhook",
                             "no_hooks_yet_link_integration": "intégration basée sur un Webhook",
                             "no_hooks_yet2": "ou en créant un",
                             "title": "Webhooks"
@@ -3008,11 +3008,11 @@
                 "go_back": "Retour en arrière",
                 "supervisor": {
                     "ask": "Demandez de l’aide",
-                    "observer": "Vérifiez l’Observer",
+                    "observer": "Vérifiez l'observateur",
                     "reboot": "Essayez un redémarrage de l’hôte",
                     "system_health": "Vérifier la santé du système",
-                    "title": "Impossible de charger le panneau Supervisor!",
-                    "wait": "Si vous venez de commencer, assurez-vous d’avoir donné le superviseur suffisamment de temps pour commencer."
+                    "title": "Impossible de charger le panneau du superviseur!",
+                    "wait": "Si vous venez de commencer, assurez-vous d’avoir donné au superviseur suffisamment de temps pour démarrer."
                 }
             },
             "history": {
