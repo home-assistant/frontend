@@ -224,6 +224,7 @@
             },
             "state": {
                 "installed": "Add-on está instalado",
+                "not_available": "O add-on não está disponível no seu sistema",
                 "not_installed": "Add-on não está instalado"
             }
         },
@@ -824,7 +825,8 @@
                 }
             },
             "service-control": {
-                "required": "Este campo é obrigatório"
+                "required": "Este campo é obrigatório",
+                "target": "Alvos"
             },
             "service-picker": {
                 "service": "Serviço"
@@ -862,6 +864,7 @@
                 "dismiss": "Fechar",
                 "editor": {
                     "advanced": "Configurações avançadas",
+                    "area": "Definir apenas a área da entidade",
                     "area_note": "Por defeito, as entidades de um dispositivo estão na mesma área que o dispositivo. Se alterar a área desta entidade, esta deixará de seguir a área do dispositivo.",
                     "change_device_area": "Alterar área do dispositivo",
                     "confirm_delete": "Tem certeza de que deseja apagar esta entrada?",
@@ -1135,6 +1138,7 @@
                 "editor_not_supported": "O editor visual não é suportado para esta configuração",
                 "error_detected": "Erros de configuração detectados",
                 "key_missing": "A chave obrigatória \"{key}\" está em falta.",
+                "key_wrong_type": "O valor fornecido para \"{key}\" não é suportado pelo editor visual.  ({type_correct}) é suportado, mas recebemos ({type_wrong}).",
                 "no_template_editor_support": "Modelos não suportados no editor visual",
                 "no_type_provided": "Nenhum tipo fornecido."
             }
@@ -1636,6 +1640,7 @@
                         "tts": {
                             "default_language": "Linguagem predefinida a utilizar",
                             "dialog": {
+                                "example_message": "Olá {nome}, pode reproduzir qualquer texto em qualquer media player suportado!",
                                 "header": "Tentar Texto para Fala",
                                 "play": "Reproduzir",
                                 "target": "Alvo",
@@ -3538,6 +3543,7 @@
                     "working": "Por favor, aguarde"
                 },
                 "initializing": "A inicializar",
+                "logging_in_to_with": "A iniciar sessão em **{locationName}** com **{authProviderName}**.",
                 "logging_in_with": "Iniciar a sessão com **{authProviderName}**.",
                 "pick_auth_provider": "Ou entre com"
             },

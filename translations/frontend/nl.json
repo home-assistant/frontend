@@ -129,22 +129,22 @@
             "dashboard": {
                 "action_error": {
                     "get_changelog": "Ophalen changelog van de invoegtoepassing is mislukt",
-                    "go_to_config": "Kan de invoegtoepassing niet starten - configuratie validatie mislukt!",
+                    "go_to_config": "Starten van de invoegtoepassing is mislukt - configuratie validatie mislukt!",
                     "install": "De installatie van de invoegtoepassing is mislukt",
-                    "restart": "Kan de invoegtoepassing niet herstarten",
-                    "start": "Kan de invoegtoepassing niet starten",
+                    "restart": "Herstarten van de invoegtoepassing is mislukt",
+                    "start": "Starten van de invoegtoepassing is mislukt",
                     "start_invalid_config": "Ga naar configuratie",
-                    "stop": "Kan de invoegtoepassing niet stoppen",
+                    "stop": "Stoppen van de invoegtoepassing is mislukt",
                     "uninstall": "De de-installatie van de invoegtoepassing is mislukt",
                     "validate_config": "De configuratie van de invoegtoepassing kon niet worden gevalideerd"
                 },
                 "capability": {
                     "apparmor": {
-                        "description": "AppArmor ('Application Armor') is een beveiligingsmodule voor de Linux-kernel die de mogelijkheden van invoegtoepassingen beperkt, zoals netwerktoegang, toegang tot raw socket, en toestemming om specifieke bestanden te lezen, te schrijven of uit te voeren.\n\nAuteurs van invoegtoepassingen kunnen hun beveiligingsprofielen opgeven, geoptimaliseerd voor de invoegtoepassing, of vragen om het uit te schakelen. Als AppArmor is uitgeschakeld, verhoogt dit de beveiligingsrisico's en heeft het dus een negatieve invloed op de beveiligingsscore van de invoegtoepassing.",
+                        "description": "AppArmor ('Application Armor') is een beveiligingsmodule voor de Linux-kernel die de mogelijkheden van invoegtoepassingen beperkt, zoals netwerktoegang, toegang tot raw socket, en toestemming om specifieke bestanden te lezen, te schrijven of uit te voeren.\n\nAuteurs van invoegtoepassingen kunnen hun beveiligings-profielen opgeven, geoptimaliseerd voor de invoegtoepassing, of vragen om AppArmor uit te schakelen. Als deze is uitgeschakeld, verhoogt dit de beveiligingsrisico's en heeft het een negatieve invloed op de beveiligingsscore van de invoegtoepassing.",
                         "title": "AppArmor"
                     },
                     "auth_api": {
-                        "description": "Een invoegtoepassing kan gebruikers authenticeren bij Home Assistant, waardoor invoegtoepassingen gebruikers de mogelijkheid geven om in te loggen bij applicaties die draaien in invoegtoepassingen, met hun Home Assistant gebruikersnaam/wachtwoord. Deze badge geeft aan of de auteur van de invoegtoepassing deze mogelijkheid heeft aangevraagd.",
+                        "description": "Een invoegtoepassing kan gebruikers authenticeren bij Home Assistant met hun Home Assistant gebruikersnaam/wachtwoord. Hierdoor hebben invoegtoepassingen de mogelijkheid om gebruikers in te loggen bij applicaties die draaien in invoegtoepassingen. Deze badge geeft aan of de auteur van de invoegtoepassing deze mogelijkheid heeft aangevraagd.",
                         "title": "Home Assistant Authenticatie"
                     },
                     "docker_api": {
@@ -152,11 +152,11 @@
                         "title": "Volledige Docker toegang"
                     },
                     "full_access": {
-                        "description": "Deze invoegtoepassing krijgt volledige toegang tot de hardware van uw systeem, op verzoek van de auteur van deze invoegtoepassing. De toegang is vergelijkbaar met de bevoorrechte modus in Docker. Aangezien dit mogelijke veiligheidsrisico's met zich meebrengt, heeft deze eigenschap een negatieve invloed op de veiligheidsscore van de invoegtoepassing.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen, moet u de beveiligingsmodus op de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
+                        "description": "Op verzoek van de auteur van deze invoegtoepassing, heeft deze invoegtoepassing volledige toegang tot de hardware van uw systeem. De toegang is vergelijkbaar met de bevoorrechte modus in Docker. Omdat dit mogelijke veiligheidsrisico's met zich meebrengt, heeft deze eigenschap een negatieve invloed op de veiligheidsscore van de invoegtoepassing.\n\nDit toegangsniveau wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen, moet u de beveiligingsmodus van de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
                         "title": "Volledige hardware toegang"
                     },
                     "hassio_api": {
-                        "description": "De invoegtoepassing heeft toegang gekregen tot de Supervisor API, op verzoek van de auteur van de invoegtoepassing. Standaard heeft deze toegang tot algemene versie-informatie van uw systeem. Wanneer de invoegtoepassing 'manager' of 'admin' niveau toegang tot de API aanvraagt, zal het toegang krijgen om meerdere delen van uw Home Assistant systeem te controleren. Deze toestemming wordt aangegeven met deze badge en zal de beveiligingsscore van de invoegtoepassing negatief beïnvloeden.",
+                        "description": "Op verzoek van de auteur van de invoegtoepassing, heeft de invoegtoepassing toegang gekregen tot de Supervisor API. Standaard heeft deze toegang tot algemene versie-informatie van uw systeem. Wanneer de invoegtoepassing het toegangsniveau 'manager' of 'admin' tot de API aanvraagt, zal het toegang krijgen om meerdere delen van uw Home Assistant systeem te controleren. Deze toestemming wordt aangegeven met deze badge en zal de beveiligingsscore van de invoegtoepassing negatief beïnvloeden.",
                         "title": "Supervisor API Toegang"
                     },
                     "homeassistant_api": {
@@ -164,11 +164,11 @@
                         "title": "Home Assistant API Toegang"
                     },
                     "host_network": {
-                        "description": "Invoegtoepassingen draaien meestal in hun eigen geïsoleerde netwerklaag, waardoor ze geen toegang hebben tot het netwerk van het host-besturingssysteem. In sommige gevallen kan deze netwerkisolatie invoegtoepassingen beperken in het leveren van hun diensten en daarom kan de isolatie worden opgeheven door de auteur van deze invoegtoepassingen, waardoor de invoegtoepassing volledige toegang krijgt tot de netwerk mogelijkheden van de host-machine. Dit geeft de invoegtoepassing meer netwerkmogelijkheden maar verlaagt de beveiliging, vandaar dat de beveiligingsclassificatie van de invoegtoepassing zal worden verlaagd als deze optie door de invoegtoepassing wordt gebruikt.",
+                        "description": "Invoegtoepassingen draaien gewoonlijk in hun eigen geïsoleerde netwerklaag waardoor ze geen toegang hebben tot het netwerk van het host-besturingssysteem. In sommige gevallen kan deze netwerkisolatie invoegtoepassingen beperken in het leveren van hun diensten en daarom kan de isolatie worden opgeheven door de auteur van deze invoegtoepassingen. Hierdoor heeft de invoegtoepassing volledige toegang tot de netwerk mogelijkheden van de host-machine. De invoegtoepassing heeft dan meer netwerkmogelijkheden maar verlaagt de beveiliging. Vandaar dat de beveiligingsscore van de invoegtoepassing zal worden verlaagd als deze optie door de invoegtoepassing wordt gebruikt.",
                         "title": "Hostnetwerk"
                     },
                     "host_pid": {
-                        "description": "Gewoonlijk zijn de processen die de invoegtoepassing uitvoert, geïsoleerd van alle andere systeemprocessen. De auteur van de invoegtoepassing heeft toegang gevraagd  tot de systeemprocessen die op het hostsysteem draaien, en staat toe dat de invoegtoepassing ook processen op het hostsysteem start. Deze modus geeft de invoegtoepassing volledige toegang tot en controle over uw gehele Home Assistant-systeem, wat veiligheidsrisico's toevoegt en bij misbruik uw systeem kan beschadigen. Daarom heeft deze functie een negatieve invloed op de beveiligingscode van de invoegtoepassing.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
+                        "description": "Gewoonlijk zijn de processen die de invoegtoepassing uitvoert, geïsoleerd van alle andere systeemprocessen. De auteur van de invoegtoepassing heeft toegang gevraagd  tot de systeemprocessen die op het host-systeem draaien en om toe te staan dat de invoegtoepassing ook processen op het host-systeem start. Deze modus geeft de invoegtoepassing volledige toegang tot en controle over uw gehele Home Assistant-systeem, wat veiligheidsrisico's toevoegt. Bij misbruik kan uw systeem beschadigd worden. Daarom heeft deze functie een negatieve invloed op de beveiligingsscore van de invoegtoepassing.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
                         "title": "Host Processes Namespace"
                     },
                     "ingress": {
@@ -190,7 +190,7 @@
                     },
                     "rating": {
                         "description": "Home Assistant geeft een veiligheidsscore aan elke add-on, die aangeeft welke risico's het gebruik van deze add-on met zich meebrengt. Hoe meer toegang een add-on tot je systeem vereist, hoe lager de score, waardoor de mogelijke veiligheidsrisico's toenemen.\n\nEen score is op een schaal van 1 tot 6. Waarbij 1 de laagste score is (beschouwd als het meest onveilige en het grootste risico) en een score van 6 de hoogste score is (beschouwd als het meest veilige en het minste risico).",
-                        "title": "Invoegtoepassing veiligheidsbeoordeling"
+                        "title": "Beveilingsscore Invoegtoepassing"
                     },
                     "role": {
                         "admin": "admin",
@@ -200,7 +200,7 @@
                         "manager": "manager"
                     },
                     "stage": {
-                        "description": "invoegtoepassingen kunnen een van de drie stadia hebben:\n\n{icon_stable} **Stabiel**: Dit zijn add-ons die klaar zijn om in productie gebruikt te worden.\n\n{icon_experimental} **Experimenteel**: Deze kunnen bugs bevatten, en kunnen onvoltooid zijn.\n\n{icon_deprecated} *Vervallen**: Deze add-ons zullen niet langer updates ontvangen.",
+                        "description": "Invoegtoepassingen kunnen een van de drie stadia hebben:\n\n{icon_stable} **Stabiel**: Dit zijn add-ons die klaar zijn om in productie gebruikt te worden.\n\n{icon_experimental} **Experimenteel**: Deze kunnen fouten bevatten en kunnen onvoltooid zijn.\n\n{icon_deprecated} **Vervallen**: Deze add-ons zullen niet langer updates ontvangen.",
                         "title": "Add-on stadium"
                     }
                 },
@@ -222,7 +222,7 @@
                         "title": "Start bij opstarten"
                     },
                     "ingress_panel": {
-                        "description": "Voeg deze invoegtoepassing toe aan je zijbalk",
+                        "description": "Deze invoegtoepassing toevoegen aan je zijbalk",
                         "title": "Weergeven in zijbalk"
                     },
                     "protected": {
@@ -230,7 +230,7 @@
                         "title": "Beschermingsmodus"
                     },
                     "watchdog": {
-                        "description": "Dit zal de invoegtoepassing starten als deze crasht",
+                        "description": "Dit zal de invoegtoepassing starten als deze vastloopt",
                         "title": "Watchdog"
                     }
                 },
@@ -292,7 +292,7 @@
             "save": "Opslaan",
             "show_more": "Toon meer informatie hierover",
             "update": "Update",
-            "update_available": "Er staan {count, plural, one {Update} other {{count} Updates}} klaar",
+            "update_available": "Er {count, plural, one {staat een update} other {{count} staan updates}} klaar",
             "version": "Versie",
             "yes": "Ja"
         },
@@ -351,7 +351,7 @@
             "repositories": {
                 "add": "Toevoegen",
                 "remove": "Verwijderen",
-                "title": "Beheer de invoegtoepassing repository's"
+                "title": "Beheer de invoegtoepassing repositories"
             },
             "restart_addon": {
                 "confirm_text": "Herstart de invoegtoepassing",
@@ -405,10 +405,10 @@
             "upload_snapshot": "Upload snapshot"
         },
         "store": {
-            "missing_addons": "Mis je de invoegtoepassingen? Schakel de geavanceerde modus in op uw gebruikersprofielpagina",
+            "missing_addons": "Mis je de invoegtoepassingen? Schakel de geavanceerde modus in op uw gebruikersprofiel pagina",
             "no_results_found": "Geen resultaten gevonden in {repository}.",
             "registries": "Registers",
-            "repositories": "Repository's"
+            "repositories": "Repositories"
         },
         "system": {
             "core": {
@@ -3008,9 +3008,9 @@
                 "go_back": "Ga terug",
                 "supervisor": {
                     "ask": "Vraag om hulp",
-                    "observer": "Check de Observer",
+                    "observer": "Controleer de Observer",
                     "reboot": "Probeer de host opnieuw op te starten",
-                    "system_health": "Check de systeemstatus",
+                    "system_health": "Controleer de systeemstatus",
                     "title": "Kan het supervisor scherm niet laden!",
                     "wait": "Als Home Assistant net is gestart, zorg ervoor dat de supervisor genoeg tijd heeft gehad om op te starten."
                 }

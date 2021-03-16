@@ -148,11 +148,20 @@
                         "title": "Home Assistant 身份认证"
                     },
                     "docker_api": {
-                        "description": "加载项要求其有权访问并管理系统上运行的 Docker 实例。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用加载项的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。"
+                        "description": "加载项要求其有权访问并管理系统上运行的 Docker 实例。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用加载项的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                        "title": "完全 Docker 访问"
+                    },
+                    "full_access": {
+                        "description": "加载项要求其对系统的硬件有完全的访问权限，相当于 Docker 中的特权模式。这增加了安全风险，因此会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用加载项的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                        "title": "完全硬件访问"
                     },
                     "hassio_api": {
                         "description": "加载项要求其有权访问 Supervisor API。默认情况下，加载项只能访问系统的常规版本信息。如果加载项要求了“管理”或“超级管理”级别的 API 访问权限，就有权控制 Home Assistant 系统的多个部分。此标识代表加载项是否请求此项权限，此权限会降低加载项的安全评分。",
-                        "title": "Supervisor API 访问权限"
+                        "title": "Supervisor API 访问"
+                    },
+                    "homeassistant_api": {
+                        "description": "此加载项可以直接通过 Home Assistant API 访问正在运行的 Home Assistant 实例。此模式还处理加载项的身份验证，使加载项无需再经过其他验证即可与 Home Assistant 进行交互。",
+                        "title": "Home Assistant API 访问"
                     },
                     "host_network": {
                         "description": "加载项通常在各自隔离的网络层中运行，以阻止其访问宿主操作系统的网络。某些情况下，这种网络隔离会限制加载项的正常工作，因此加载项可以要求解除隔离，给予加载项完全的宿主网络访问权限。这为加载项提供了更多的网络功能，也增加了安全风险。因此，此功能会降低加载项的安全评分。",
@@ -167,6 +176,14 @@
                         "title": "Ingress"
                     },
                     "label": {
+                        "apparmor": "apparmor",
+                        "auth": "身份认证",
+                        "docker": "docker",
+                        "hardware": "硬件访问",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "宿主网络",
+                        "host_pid": "宿主进程",
                         "ingress": "ingress",
                         "rating": "评分",
                         "stage": "状态"
@@ -177,6 +194,9 @@
                     },
                     "role": {
                         "admin": "超级管理",
+                        "backup": "备份",
+                        "default": "默认",
+                        "homeassistant": "homeassistant",
                         "manager": "管理"
                     },
                     "stage": {

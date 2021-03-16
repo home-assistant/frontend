@@ -10,7 +10,7 @@
     "groups": {
         "owner": "Omistaja",
         "system-admin": "Järjestelmänvalvojat",
-        "system-read-only": "Pelkästään luku -käyttäjät",
+        "system-read-only": "Vain luku -käyttäjät",
         "system-users": "Käyttäjät"
     },
     "panel": {
@@ -44,9 +44,9 @@
             "preset_mode": {
                 "activity": "Toiminta",
                 "away": "Poissa",
-                "boost": "Boost",
-                "comfort": "Comfort",
-                "eco": "Ekonominen",
+                "boost": "Tehostus",
+                "comfort": "Mukavuus",
+                "eco": "Taloudellinen",
                 "home": "Kotona",
                 "none": "Asettamatta",
                 "sleep": "Nukkumassa"
@@ -54,12 +54,12 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "Automaatilla",
+                "auto": "Automaattinen",
                 "away": "Poissa",
                 "baby": "Vauva",
                 "boost": "Tehostus",
                 "comfort": "Mukavuus",
-                "eco": "Ekonominen",
+                "eco": "Taloudellinen",
                 "home": "Koti",
                 "normal": "Normaali",
                 "sleep": "Nukkumassa"
@@ -73,14 +73,14 @@
             "armed_custom_bypass": "Viritetty",
             "armed_home": "Viritetty",
             "armed_night": "Viritetty",
-            "arming": "Viritys kesken",
+            "arming": "Virittyy",
             "disarmed": "Ei viritetty",
             "disarming": "Ei viritetty",
             "pending": "Odot",
-            "triggered": "Vakaa"
+            "triggered": "Lauennut"
         },
         "default": {
-            "entity_not_found": "Olemusta ei löydetty",
+            "entity_not_found": "Kohdetta ei löydy",
             "error": "Virhe",
             "unavailable": "Ei saat",
             "unknown": "Tunt"
@@ -188,9 +188,11 @@
                 "install": "asenna",
                 "new_update_available": "{name} {version} on saatavilla",
                 "not_available_arch": "Tämä lisäosa ei ole yhteensopiva laitteesi prosessorin tai laitteeseesi asennetun käyttöjärjestelmän kanssa.",
+                "not_available_version": "Käytössäsi on Home Assistant {core_version_installed}. Päivittääksesi lisäosan tähän versioon tarvitset vähintään Home Assistantin version {core_version_needed}.",
                 "open_web_ui": "Avaa käyttöliittymä",
                 "option": {
                     "auto_update": {
+                        "description": "Päivitä lisäosa automaattisesti, kun uusi versio on saatavilla",
                         "title": "Automaattinen päivitys"
                     },
                     "boot": {
@@ -198,7 +200,12 @@
                         "title": "Automaattinen käynnistys"
                     },
                     "ingress_panel": {
-                        "description": "Lisää tämä lisäosa sivupalkkiin"
+                        "description": "Lisää tämä lisäosa sivupalkkiin",
+                        "title": "Näytä sivupalkissa"
+                    },
+                    "protected": {
+                        "description": "Estää lisäosalta laajan pääsyn järjestelmään",
+                        "title": "Suojaustila"
                     },
                     "watchdog": {
                         "description": "Käynnistää lisäosan, jos se kaatuu",
@@ -217,8 +224,14 @@
                 "uninstall": "poista",
                 "visit_addon_page": "Lisätietoja on sivulla {name}"
             },
+            "documentation": {
+                "get_documentation": "Lisäosan dokumentaation hakeminen epäonnistui, {error}"
+            },
             "failed_to_reset": "Lisäosan asetusten nollaaminen epäonnistui, {error}",
             "failed_to_save": "Lisäosan asetusten tallentaminen epäonnistui, {error}",
+            "logs": {
+                "get_logs": "Lisäosan lokien hakeminen epäonnistui, {error}"
+            },
             "panel": {
                 "configuration": "Asetukset",
                 "documentation": "Dokumentaatio",
@@ -244,6 +257,9 @@
             "newest_version": "Uusin versio",
             "no": "Ei",
             "refresh": "Päivitä",
+            "reload": "Lataa uudelleen",
+            "reset_defaults": "Palauta oletukset",
+            "reset_options": "Nollaa asetukset",
             "restart": "Käynnistä uudelleen",
             "restart_name": "Käynnistä {name} uudelleen",
             "running_version": "Käytät tällä hetkellä versiota {version}",
@@ -255,6 +271,10 @@
             "yes": "Kyllä"
         },
         "confirm": {
+            "reset_options": {
+                "text": "Haluatko varmasti nollata kaikki asetuksesi?",
+                "title": "Nollaa asetukset"
+            },
             "restart": {
                 "title": "Käynnistä {name} uudelleen"
             },
@@ -282,6 +302,7 @@
                 "scan_ap": "Etsi tukiasemia",
                 "static": "Staattinen",
                 "title": "Verkkoasetukset",
+                "unsaved": "Sinulla on tallentamattomia muutoksia, jotka menetetään, jos vaihdat välilehteä. Haluatko jatkaa?",
                 "warning": "Jos vaihdat Wi-Fi-, IP- tai yhdyskäytävän osoitteita, yhteys saattaa katketa!",
                 "wep": "WEP",
                 "wpa": "wpa-psk"
@@ -304,6 +325,7 @@
             "error_addon_not_found": "Lisäosaa ei löydy"
         },
         "panel": {
+            "dashboard": "Kojelauta",
             "store": "Lisäosakauppa",
             "system": "Järjestelmä"
         },
@@ -315,6 +337,7 @@
                 "addons/local": "Paikalliset lisäosat",
                 "homeassistant": "Home Assistantin asetukset",
                 "media": "Media",
+                "share": "Jaetut tiedostot",
                 "ssl": "SSL"
             },
             "folders": "Kansiot",
@@ -325,6 +348,9 @@
             "security": "Suojaus",
             "type": "Tyyppi"
         },
+        "store": {
+            "no_results_found": "Ei tuloksia kohteesta {repository}."
+        },
         "system": {
             "core": {
                 "cpu_usage": "Ytimen CPU-käyttö",
@@ -333,18 +359,28 @@
             "host": {
                 "change": "Muuta",
                 "change_hostname": "Vaihda isäntänimi",
+                "confirm_reboot": "Haluatko varmasti käynnistää isännän uudelleen?",
+                "confirm_shutdown": "Haluatko varmasti sammuttaa isännän?",
                 "deployment": "Käyttöönotto",
                 "docker_version": "Docker-versio",
                 "failed_to_get_hardware_list": "Laitteistoluettelon luominen epäonnistui",
                 "failed_to_import_from_usb": "Tuonti USB:stä epäonnistui",
+                "failed_to_reboot": "Isännän uudelleenkäynnistys epäonnistui",
                 "failed_to_set_hostname": "Isäntänimen asettaminen epäonnistui",
+                "failed_to_shutdown": "Isännän sammuttaminen epäonnistui",
                 "hardware": "Laitteisto",
                 "hostname": "Isäntänimi",
                 "import_from_usb": "Tuo USB:stä",
                 "ip_address": "IP-osoite",
                 "new_hostname": "Syötä uusi isäntänimi:",
                 "operating_system": "Käyttöjärjestelmä",
+                "reboot_host": "Käynnistä isäntä uudelleen",
+                "shutdown_host": "Sammuta isäntä",
                 "used_space": "Käytetty tila"
+            },
+            "log": {
+                "get_logs": "{provider} -lokien hakeminen epäonnistui, {error}",
+                "log_provider": "Lokien lähde"
             },
             "supervisor": {
                 "beta_backup": "Varmista, että sinulla on varmuuskopiot tiedoistasi, ennen kuin aktivoit tämän ominaisuuden.",
@@ -354,11 +390,17 @@
                 "channel": "Kanava",
                 "cpu_usage": "Supervisorin CPU-käyttö",
                 "failed_to_reload": "Supervisorin uudelleenlataus epäonnistui",
+                "failed_to_set_option": "Supervisor-asetuksen asettaminen epäonnistui",
                 "failed_to_update": "Supervisorin päivittäminen epäonnistui",
                 "join_beta_action": "Liity betakanavaan",
+                "join_beta_description": "Vastaanota betapäivityksiä Home Assistantille (RC:t), Supervisorille ja isännälle",
                 "leave_beta_action": "Poistu betakanavasta",
+                "leave_beta_description": "Vastaanota vakaita päivityksiä Home Assistantille, Supervisorille ja isännälle",
                 "ram_usage": "Supervisorin muistinkäyttö",
                 "reload_supervisor": "Lataa Supervisor uudelleen",
+                "share_diagnostics": "Jaa diagnostiikka",
+                "share_diagnostics_description": "Jaa kaatumisraportit ja diagnostiikkatiedot.",
+                "share_diagonstics_description": "Haluatko jakaa kaatumisraportit ja diagnostiikkatiedot automaattisesti, kun Supervisor havaitsee odottamattomia virheitä? {line_break} Tämän avulla voimme korjata ongelmat. Tiedot ovat vain Home Assistant Core -tiimin käytettävissä, eikä niitä jaeta muille. {line_break} Tiedot eivät sisällä yksityisiä tai arkaluontoisia tietoja, ja voit poistaa tämän käytöstä asetuksissa milloin tahansa.",
                 "share_diagonstics_title": "Auta parantamaan Home Assistanttia",
                 "unhealthy_reason": {
                     "docker": "Docker-ympäristö ei toimi oikein",

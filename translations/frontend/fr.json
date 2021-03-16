@@ -117,7 +117,7 @@
                     "header": "Réseau",
                     "host": "Hôte"
                 },
-                "no_configuration": "Cet add-on n'expose pas de configuration pour que vous puissiez jouer avec ...",
+                "no_configuration": "Ce module complémentaire n'expose pas de configuration pour que vous puissiez jouer avec ...",
                 "options": {
                     "edit_in_ui": "Modifier dans l'interface utilisateur",
                     "edit_in_yaml": "Modifier en tant que YAML",
@@ -136,7 +136,7 @@
                     "start_invalid_config": "Aller à la configuration",
                     "stop": "Échec de l'arrêt de l'extension",
                     "uninstall": "Échec de la désinstallation de l'extension",
-                    "validate_config": "Échec de la validation de la configuration de l'add-on"
+                    "validate_config": "Échec de la validation de la configuration du module complémentaire"
                 },
                 "capability": {
                     "apparmor": {
@@ -156,8 +156,8 @@
                         "title": "Accès complet au matériel"
                     },
                     "hassio_api": {
-                        "description": "Le module complémentaire a eu accès à l'API du superviseur, à la demande de l'auteur du module complémentaire. Par défaut, le module complémentaire peut accéder aux informations générales sur la version de votre système. Lorsque le module complémentaire demande un accès de niveau \"gestionnaire\" ou \"administrateur\" à l'API, il aura accès pour contrôler plusieurs parties de votre système Home Assistant. Cette autorisation est indiquée par ce badge et aura un impact négatif sur le score de sécurité du module complémentaire.",
-                        "title": "Accès à l'API du superviseur"
+                        "description": "Le module complémentaire a eu accès à l'API du Supervisor, à la demande de l'auteur du module complémentaire. Par défaut, le module complémentaire peut accéder aux informations générales sur la version de votre système. Lorsque le module complémentaire demande un accès de niveau \"gestionnaire\" ou \"administrateur\" à l'API, il aura accès pour contrôler plusieurs parties de votre système Home Assistant. Cette autorisation est indiquée par ce badge et aura un impact négatif sur le score de sécurité du module complémentaire.",
+                        "title": "Accès à l'API du Supervisor"
                     },
                     "homeassistant_api": {
                         "description": "Ce module complémentaire est autorisé à accéder à votre instance Home Assistant en cours d'exécution directement via l'API Home Assistant. Ce mode gère également l'authentification pour le module complémentaire, ce qui permet à un module complémentaire d'interagir avec Home Assistant sans avoir besoin de jetons d'authentification supplémentaires.",
@@ -210,7 +210,7 @@
                 "install": "installer",
                 "new_update_available": "{name} {version} est disponible",
                 "not_available_arch": "Ce module complémentaire n'est pas compatible avec le processeur de votre appareil ou le système d'exploitation que vous avez installé sur votre appareil.",
-                "not_available_version": "Votre Home Assistant est en version {core_version_installed}, pour mettre à jour cet add-on, vous devez êtes au minimum en version {core_version_needed} de Home Assistant",
+                "not_available_version": "Votre Home Assistant est en version {core_version_installed}, pour mettre à jour ce module complémentaire, vous devez êtes au minimum en version {core_version_needed} de Home Assistant",
                 "open_web_ui": "Ouvrir l'interface utilisateur Web",
                 "option": {
                     "auto_update": {
@@ -262,9 +262,9 @@
                 "log": "Journal"
             },
             "state": {
-                "installed": "l'add-on est installé.",
+                "installed": "Le module complémentaire est installé",
                 "not_available": "L'extension n'est pas disponible sur votre système",
-                "not_installed": "l'add-on n'est pas installé"
+                "not_installed": "Le module complémentaire n'est pas installé"
             }
         },
         "common": {
@@ -351,11 +351,11 @@
             "repositories": {
                 "add": "Ajouter",
                 "remove": "Supprimer",
-                "title": "Gérer les dépôts d'add-ons"
+                "title": "Gérer les référentiels de modules complémentaires"
             },
             "restart_addon": {
-                "confirm_text": "Redémarrer add-on",
-                "text": "Voulez-vous redémarrer l’add-on avec vos modifications?"
+                "confirm_text": "Redémarrer le module complémentaire",
+                "text": "Voulez-vous redémarrer le module complémentaire avec vos modifications?"
             },
             "update": {
                 "create_snapshot": "Créez un instantané de {name} avant de mettre à jour",
@@ -366,7 +366,7 @@
         },
         "my": {
             "error": "Une erreur inconnue s'est produite",
-            "error_addon_not_found": "Add-on non trouvé",
+            "error_addon_not_found": "Module complémentaire introuvable",
             "faq_link": "FAQ de My Home Assistant",
             "not_supported": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vérifiez le {link} pour les redirections prises en charge et la version dans laquelle elles ont été introduites."
         },
@@ -377,7 +377,7 @@
             "system": "Système"
         },
         "snapshot": {
-            "addons": "Add-ons",
+            "addons": "Modules complémentaires",
             "available_snapshots": "Instantanés disponibles",
             "could_not_create": "Impossible de créer un instantané",
             "create": "Créer",
@@ -386,7 +386,7 @@
             "description": "Les instantanés vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
             "enter_password": "Veuillez entrer un mot de passe.",
             "folder": {
-                "addons/local": "Add-ons locaux",
+                "addons/local": "Modules complémentaires locaux",
                 "homeassistant": "Configuration Home Assistant",
                 "media": "Médias",
                 "share": "Partager",
@@ -448,26 +448,26 @@
                 "beta_release_items": "Cela inclut les versions bêta pour:",
                 "beta_warning": "Les versions bêta sont destinées aux testeurs et aux utilisateurs précoces et peuvent contenir des modifications de code instables",
                 "channel": "Canal",
-                "cpu_usage": "Utilisation du processeur par le superviseur",
+                "cpu_usage": "Utilisation du processeur par le Supervisor",
                 "failed_to_reload": "Échec du rechargement de Supervisor",
-                "failed_to_set_option": "Échec lors du paramétrage de l'option du Superviseur",
+                "failed_to_set_option": "Échec lors du paramétrage de l'option du Supervisor",
                 "failed_to_update": "Échec de la mise à jour de Supervisor",
                 "join_beta_action": "Rejoignez le canal bêta",
-                "join_beta_description": "Obtenez des mises à jour bêta pour Home Assistant (RCs), Superviseur et l'hôte",
+                "join_beta_description": "Obtenez des mises à jour bêta pour Home Assistant (RCs), Supervisor et l'hôte",
                 "leave_beta_action": "Quitter le canal bêta",
-                "leave_beta_description": "Obtenez des mises à jour stables pour l'assistant domestique, le superviseur et l'hôte",
-                "ram_usage": "Utilisation de la RAM du superviseur",
-                "reload_supervisor": "Recharger le superviseur",
+                "leave_beta_description": "Obtenez des mises à jour stables pour l'assistant domestique, le Supervisor et l'hôte",
+                "ram_usage": "Utilisation de la RAM du Supervisor",
+                "reload_supervisor": "Recharger le Supervisor",
                 "share_diagnostics": "Partager les diagnostics",
                 "share_diagnostics_description": "Partagez les rapports d'incident et les informations de diagnostic.",
-                "share_diagonstics_description": "Souhaitez-vous partager automatiquement les rapports d'erreur et les informations de diagnostic lorsque le superviseur rencontre des erreurs inattendues? {line_break} Cela nous permettra de résoudre les problèmes, les informations ne sont accessibles qu'à l'équipe Home Assistant Core et ne seront pas partagées avec d'autres. {line_break} Les données n'incluent aucune information privée / sensible et vous pouvez désactiver cela dans les paramètres à tout moment.",
+                "share_diagonstics_description": "Souhaitez-vous partager automatiquement les rapports d'erreur et les informations de diagnostic lorsque le Supervisor rencontre des erreurs inattendues? {line_break} Cela nous permettra de résoudre les problèmes, les informations ne sont accessibles qu'à l'équipe Home Assistant Core et ne seront pas partagées avec d'autres. {line_break} Les données n'incluent aucune information privée / sensible et vous pouvez désactiver cela dans les paramètres à tout moment.",
                 "share_diagonstics_title": "Aider à améliorer Home Assistant",
                 "unhealthy_description": "L'exécution d'une installation défectueuse entraînera des problèmes. Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
                 "unhealthy_reason": {
                     "docker": "L'environnement Docker ne fonctionne pas correctement",
-                    "privileged": "Le superviseur n'est pas privilégié",
-                    "setup": "La configuration du superviseur a échoué",
-                    "supervisor": "Le superviseur ne peut pas mettre à jour"
+                    "privileged": "Le Supervisor n'est pas privilégié",
+                    "setup": "La configuration du Supervisor a échoué",
+                    "supervisor": "Le Supervisor ne peut pas mettre à jour"
                 },
                 "unhealthy_title": "Votre installation est défectueuse",
                 "unsupported_description": "Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
@@ -480,7 +480,7 @@
                     "lxc": "LXC",
                     "network_manager": "Gestionnaire de réseaux",
                     "os": "Système d'exploitation",
-                    "privileged": "Le superviseur n'est pas privilégié",
+                    "privileged": "Le Supervisor n'est pas privilégié",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Vous exécutez une installation non prise en charge",
@@ -691,8 +691,8 @@
                         "title": "Erreur lors de la récupération des modules complémentaires"
                     },
                     "no_supervisor": {
-                        "description": "Aucun Superviseur n'a été trouvé, donc les modules complémentaires n'ont pas pu être chargés.",
-                        "title": "Aucun superviseur"
+                        "description": "Aucun Supervisor n'a été trouvé, donc les modules complémentaires n'ont pas pu être chargés.",
+                        "title": "Aucun Supervisor"
                     }
                 }
             },
@@ -3011,8 +3011,8 @@
                     "observer": "Vérifiez l'observateur",
                     "reboot": "Essayez un redémarrage de l’hôte",
                     "system_health": "Vérifier la santé du système",
-                    "title": "Impossible de charger le panneau du superviseur!",
-                    "wait": "Si vous venez de commencer, assurez-vous d’avoir donné au superviseur suffisamment de temps pour démarrer."
+                    "title": "Impossible de charger le panneau du Supervisor!",
+                    "wait": "Si vous venez de commencer, assurez-vous d’avoir donné au Supervisor suffisamment de temps pour démarrer."
                 }
             },
             "history": {
