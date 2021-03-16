@@ -22,6 +22,7 @@ import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
+import { AutomationTraceContexts } from "../../data/automation_debug";
 import { LogbookEntry } from "../../data/logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -31,6 +32,9 @@ class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public userIdToName = {};
+
+  @property({ attribute: false })
+  public traceContexts: AutomationTraceContexts = {};
 
   @property({ attribute: false }) public entries: LogbookEntry[] = [];
 
@@ -55,12 +59,16 @@ class HaLogbook extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  protected shouldUpdate(changedProps: PropertyValues) {
+  protected shouldUpdate(changedProps: PropertyValues<this>) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const languageChanged =
       oldHass === undefined || oldHass.language !== this.hass.language;
 
-    return changedProps.has("entries") || languageChanged;
+    return (
+      changedProps.has("entries") ||
+      changedProps.has("traceContexts") ||
+      languageChanged
+    );
   }
 
   protected updated(_changedProps: PropertyValues) {
@@ -204,6 +212,22 @@ class HaLogbook extends LitElement {
                   .hass=${this.hass}
                   .datetime=${item.when}
                 ></ha-relative-time>
+                ${item.domain === "automation" &&
+                item.context_id! in this.traceContexts
+                  ? html`
+                      -
+                      <a
+                        href=${`/config/automation/trace/${
+                          this.traceContexts[item.context_id!].automation_id
+                        }?run_id=${
+                          this.traceContexts[item.context_id!].run_id
+                        }`}
+                        >${this.hass.localize(
+                          "ui.components.logbook.show_trace"
+                        )}</a
+                      >
+                    `
+                  : ""}
               </div>
             </div>
           </div>
@@ -278,6 +302,10 @@ class HaLogbook extends LitElement {
         .secondary {
           font-size: 12px;
           line-height: 1.7;
+        }
+
+        .secondary a {
+          color: var(--secondary-text-color);
         }
 
         .date {

@@ -300,6 +300,7 @@
         "entries_not_found": "No logbook entries found.",
         "by": "by",
         "by_service": "by service",
+        "show_trace": "Show trace",
         "messages": {
           "was_away": "was detected away",
           "was_at_state": "was detected at {state}",
