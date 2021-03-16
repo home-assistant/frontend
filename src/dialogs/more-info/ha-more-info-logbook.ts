@@ -9,10 +9,15 @@ import {
   TemplateResult,
 } from "lit-element";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { closeDialog } from "../make-dialog-manager";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
+import {
+  AutomationTraceContexts,
+  loadAutomationTraceContexts,
+} from "../../data/automation_debug";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import "../../panels/logbook/ha-logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
@@ -25,6 +30,8 @@ export class MoreInfoLogbook extends LitElement {
   @property() public entityId!: string;
 
   @internalProperty() private _logbookEntries?: LogbookEntry[];
+
+  @internalProperty() private _traceContexts?: AutomationTraceContexts;
 
   @internalProperty() private _persons = {};
 
@@ -63,6 +70,7 @@ export class MoreInfoLogbook extends LitElement {
                 relative-time
                 .hass=${this.hass}
                 .entries=${this._logbookEntries}
+                .traceContexts=${this._traceContexts}
                 .userIdToName=${this._persons}
               ></ha-logbook>
             `
@@ -75,6 +83,11 @@ export class MoreInfoLogbook extends LitElement {
 
   protected firstUpdated(): void {
     this._fetchPersonNames();
+    this.addEventListener("click", (ev) => {
+      if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
+        setTimeout(() => closeDialog("ha-more-info-dialog"), 500);
+      }
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -115,17 +128,21 @@ export class MoreInfoLogbook extends LitElement {
       this._lastLogbookDate ||
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     const now = new Date();
-    const newEntries = await getLogbookData(
-      this.hass,
-      lastDate.toISOString(),
-      now.toISOString(),
-      this.entityId,
-      true
-    );
+    const [newEntries, traceContexts] = await Promise.all([
+      getLogbookData(
+        this.hass,
+        lastDate.toISOString(),
+        now.toISOString(),
+        this.entityId,
+        true
+      ),
+      loadAutomationTraceContexts(this.hass),
+    ]);
     this._logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]
       : newEntries;
     this._lastLogbookDate = now;
+    this._traceContexts = traceContexts;
   }
 
   private _fetchPersonNames() {

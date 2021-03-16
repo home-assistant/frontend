@@ -72,6 +72,20 @@ export const loadAutomationTraces = (
     automation_id,
   });
 
+export type AutomationTraceContexts = Record<
+  string,
+  { run_id: string; automation_id: string }
+>;
+
+export const loadAutomationTraceContexts = (
+  hass: HomeAssistant,
+  automation_id?: string
+): Promise<AutomationTraceContexts> =>
+  hass.callWS({
+    type: "automation/trace/contexts",
+    automation_id,
+  });
+
 export const getDataFromPath = (
   config: AutomationConfig,
   path: string
