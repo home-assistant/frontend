@@ -199,7 +199,9 @@ export class HaAutomationTrace extends LitElement {
 
   private _downloadTrace() {
     const aEl = document.createElement("a");
-    aEl.download = `trace-${this._entityId}.json`;
+    aEl.download = `trace ${this._entityId} ${
+      this._trace!.timestamp.start
+    }.json`;
     aEl.href = `data:application/json;charset=utf-8,${encodeURI(
       JSON.stringify(
         {
