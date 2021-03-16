@@ -8,7 +8,10 @@ describe("formatDate", () => {
 
   it("Formats English dates", () => {
     assert.strictEqual(
-      formatDate(dateObj, { language: "en", number_format: NumberFormat.auto }),
+      formatDate(dateObj, {
+        language: "en",
+        number_format: NumberFormat.language,
+      }),
       "November 18, 2017"
     );
   });

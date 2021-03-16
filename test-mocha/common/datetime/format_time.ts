@@ -11,7 +11,10 @@ describe("formatTime", () => {
 
   it("Formats English times", () => {
     assert.strictEqual(
-      formatTime(dateObj, { language: "en", number_format: NumberFormat.auto }),
+      formatTime(dateObj, {
+        language: "en",
+        number_format: NumberFormat.language,
+      }),
       "11:12 AM"
     );
   });
@@ -24,7 +27,7 @@ describe("formatTimeWithSeconds", () => {
     assert.strictEqual(
       formatTimeWithSeconds(dateObj, {
         language: "en",
-        number_format: NumberFormat.auto,
+        number_format: NumberFormat.language,
       }),
       "11:12:13 AM"
     );

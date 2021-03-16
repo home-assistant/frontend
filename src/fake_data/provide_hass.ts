@@ -203,7 +203,7 @@ export const provideHass = (
     selectedLanguage: localLanguage,
     locale: {
       language: localLanguage,
-      number_format: NumberFormat.auto,
+      number_format: NumberFormat.language,
     },
     resources: null as any,
     localize: () => "",
