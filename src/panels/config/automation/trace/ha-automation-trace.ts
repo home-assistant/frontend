@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { AutomationEntity } from "../../../../data/automation";
 import {
+  AutomationTrace,
   AutomationTraceExtended,
   loadAutomationTrace,
   loadAutomationTraces,
@@ -23,6 +24,9 @@ import {
   getLogbookDataForContext,
   LogbookEntry,
 } from "../../../../data/logbook";
+import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
+import { repeat } from "lit-html/directives/repeat";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -39,6 +43,10 @@ export class HaAutomationTrace extends LitElement {
   @property() public route!: Route;
 
   @internalProperty() private _entityId?: string;
+
+  @internalProperty() private _traces?: AutomationTrace[];
+
+  @internalProperty() private _runId?: string;
 
   @internalProperty() private _trace?: AutomationTraceExtended;
 
@@ -63,15 +71,37 @@ export class HaAutomationTrace extends LitElement {
           }`}
         >
           <div class="actions">
-            <button @click=${this._loadTrace}>
-              Load last trace
+            ${this._traces && this._traces.length > 0
+              ? html`
+                  <select .value=${this._runId} @change=${this._pickTrace}>
+                    ${repeat(
+                      this._traces,
+                      (trace) => trace.run_id,
+                      (trace) =>
+                        html`<option value=${trace.run_id}
+                          >${formatDateTimeWithSeconds(
+                            new Date(trace.timestamp.start),
+                            this.hass.language
+                          )}</option
+                        >`
+                    )}
+                  </select>
+                `
+              : ""}
+            <button @click=${this._loadTraces}>
+              Refresh
             </button>
             <button @click=${this._downloadTrace}>
               Download
             </button>
           </div>
-          ${this._trace
-            ? html`
+          ${this._traces === undefined
+            ? "Loading…"
+            : this._traces.length === 0
+            ? "No traces found"
+            : this._trace === undefined
+            ? "Loading…"
+            : html`
                 <div class="card-content">
                   <hat-trace
                     .hass=${this.hass}
@@ -79,8 +109,7 @@ export class HaAutomationTrace extends LitElement {
                     .logbookEntries=${this._logbookEntries}
                   ></hat-trace>
                 </div>
-              `
-            : ""}
+              `}
         </ha-card>
       </hass-tabs-subpage>
     `;
@@ -90,10 +119,22 @@ export class HaAutomationTrace extends LitElement {
     super.updated(changedProps);
 
     if (changedProps.has("automationId")) {
+      this._traces = undefined;
       this._entityId = undefined;
+      this._runId = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
-      this._loadTrace();
+      if (this.automationId) {
+        this._loadTraces();
+      }
+    }
+
+    if (changedProps.has("_runId") && this._runId) {
+      this._trace = undefined;
+      this._logbookEntries = undefined;
+      if (this._runId) {
+        this._loadTrace();
+      }
     }
 
     if (
@@ -101,24 +142,41 @@ export class HaAutomationTrace extends LitElement {
       this.automationId &&
       !this._entityId
     ) {
-      this._setEntityId();
+      const automation = this.automations.find(
+        (entity: AutomationEntity) => entity.attributes.id === this.automationId
+      );
+      this._entityId = automation?.entity_id;
+    }
+  }
+
+  private _pickTrace(ev) {
+    this._runId = ev.target.value;
+  }
+
+  private async _loadTraces() {
+    this._traces = await loadAutomationTraces(this.hass, this.automationId);
+    // Newest will be on top.
+    this._traces.reverse();
+
+    if (this._runId) {
+      if (!this._traces.some((trace) => trace.run_id === this._runId)) {
+        showAlertDialog(this, {
+          text: "Chosen trace is no longer available",
+          confirm: () => {
+            this._runId = this._traces![0].run_id;
+          },
+        });
+      }
+    } else {
+      this._runId = this._traces[0].run_id;
     }
   }
 
   private async _loadTrace() {
-    const traces = await loadAutomationTraces(this.hass);
-    const automationTraces = traces[this.automationId];
-
-    if (!automationTraces || automationTraces.length === 0) {
-      // TODO no trace found.
-      alert("NO traces found");
-      return;
-    }
-
     const trace = await loadAutomationTrace(
       this.hass,
       this.automationId,
-      automationTraces[automationTraces.length - 1].run_id
+      this._runId!
     );
     this._logbookEntries = await getLogbookDataForContext(
       this.hass,
@@ -127,13 +185,6 @@ export class HaAutomationTrace extends LitElement {
     );
 
     this._trace = trace;
-  }
-
-  private _setEntityId() {
-    const automation = this.automations.find(
-      (entity: AutomationEntity) => entity.attributes.id === this.automationId
-    );
-    this._entityId = automation?.entity_id;
   }
 
   private _backTapped(): void {

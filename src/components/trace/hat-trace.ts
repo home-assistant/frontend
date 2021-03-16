@@ -77,7 +77,7 @@ export class HaAutomationTracer extends LitElement {
     }
 
     if (this.trace.action_trace && this.logbookEntries) {
-      const actionTraces = Object.entries(this.trace.action_trace);
+      const actionTraces = Object.values(this.trace.action_trace);
 
       let logbookIndex = 0;
       let actionTraceIndex = 0;
@@ -123,7 +123,7 @@ export class HaAutomationTracer extends LitElement {
         // Find next item time-wise.
         const logbookItem = this.logbookEntries[logbookIndex];
         const actionTrace = actionTraces[actionTraceIndex];
-        const actionTimestamp = new Date(actionTrace[1][0].timestamp);
+        const actionTimestamp = new Date(actionTrace[0].timestamp);
 
         if (new Date(logbookItem.when) > actionTimestamp) {
           actionTraceIndex++;
@@ -133,7 +133,7 @@ export class HaAutomationTracer extends LitElement {
             groupedLogbookItems = [];
           }
           maybeRenderTime(actionTimestamp);
-          entries.push(this._renderActionTrace(...actionTrace));
+          entries.push(this._renderActionTrace(actionTrace));
         } else {
           logbookIndex++;
           groupedLogbookItems.push(logbookItem);
@@ -152,8 +152,8 @@ export class HaAutomationTracer extends LitElement {
 
       while (actionTraceIndex < actionTraces.length) {
         const trace = actionTraces[actionTraceIndex];
-        maybeRenderTime(new Date(trace[1][0].timestamp));
-        entries.push(this._renderActionTrace(...trace));
+        maybeRenderTime(new Date(trace[0].timestamp));
+        entries.push(this._renderActionTrace(trace));
         actionTraceIndex++;
       }
     }
@@ -221,8 +221,11 @@ export class HaAutomationTracer extends LitElement {
     `;
   }
 
-  private _renderActionTrace(path: string, _value: ActionTrace[]) {
-    const action = getConfigFromPath(this.trace!.config, path) as Action;
+  private _renderActionTrace(value: ActionTrace[]) {
+    const action = getConfigFromPath(
+      this.trace!.config,
+      value[0].path
+    ) as Action;
     return html`
       <ha-timeline .icon=${mdiRecordCircleOutline}>
         ${action.alias || describeAction(action, this.hass.localize)}

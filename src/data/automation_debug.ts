@@ -10,6 +10,7 @@ interface TraceVariables extends Record<string, unknown> {
 }
 
 interface BaseTrace {
+  path: string;
   timestamp: string;
   changed_variables?: Record<string, unknown>;
 }
@@ -18,7 +19,18 @@ export interface ConditionTrace extends BaseTrace {
   result: { result: boolean };
 }
 
-export type ActionTrace = BaseTrace;
+export interface ChooseActionTrace extends BaseTrace {
+  result: { choice: number };
+}
+
+export interface ChooseChoiceActionTrace extends BaseTrace {
+  result: { result: boolean };
+}
+
+export type ActionTrace =
+  | BaseTrace
+  | ChooseActionTrace
+  | ChooseChoiceActionTrace;
 
 export interface AutomationTrace {
   last_action: string | null;
@@ -53,10 +65,12 @@ export const loadAutomationTrace = (
   });
 
 export const loadAutomationTraces = (
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  automation_id?: string
 ): Promise<AutomationTrace[]> =>
   hass.callWS({
     type: "automation/trace/list",
+    automation_id,
   });
 
 export const getConfigFromPath = <T extends Condition | Action>(

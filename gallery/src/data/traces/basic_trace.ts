@@ -15,6 +15,7 @@ export const basicTrace: DemoTrace = {
     action_trace: {
       "action/0": [
         {
+          path: "action/0",
           timestamp: "2021-03-12T21:38:48.054395+00:00",
           changed_variables: {
             trigger: {
@@ -60,6 +61,7 @@ export const basicTrace: DemoTrace = {
     condition_trace: {
       "condition/0": [
         {
+          path: "condition/0",
           timestamp: "2021-03-12T21:38:48.050783+00:00",
           changed_variables: {
             trigger: {
