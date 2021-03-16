@@ -336,7 +336,7 @@ export class HaAutomationTracer extends LitElement {
           Triggered by the ${this.trace.variables.trigger.description} at
           ${formatDateTimeWithSeconds(
             new Date(this.trace.timestamp.start),
-            this.hass.language
+            this.hass.locale
           )}
         </ha-timeline>
       `,
@@ -415,7 +415,7 @@ export class HaAutomationTracer extends LitElement {
             ? html`Finished at
               ${formatDateTimeWithSeconds(
                 new Date(this.trace.timestamp.finish),
-                this.hass.language
+                this.hass.locale
               )}
               (runtime:
               ${(
