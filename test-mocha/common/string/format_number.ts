@@ -9,7 +9,7 @@ describe("formatNumber", () => {
     assert.strictEqual(
       formatNumber(1234.5, {
         language: "en",
-        number_format: NumberFormat.auto,
+        number_format: NumberFormat.language,
       }),
       "1,234.5"
     );
@@ -21,7 +21,7 @@ describe("formatNumber", () => {
         1234.5,
         {
           language: "en",
-          number_format: NumberFormat.auto,
+          number_format: NumberFormat.language,
         },
         {
           minimumFractionDigits: 2,
