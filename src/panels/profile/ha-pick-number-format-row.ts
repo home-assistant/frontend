@@ -41,21 +41,6 @@ class NumberFormatRow extends LitElement {
             @iron-select=${this._handleFormatSelection}
             attr-for-selected="format"
           >
-            <paper-item .format=${NumberFormat.auto}>
-              <paper-item-body two-line>
-                <div>
-                  ${this.hass.localize(
-                    "ui.panel.profile.number_format.formats.auto"
-                  )}
-                </div>
-                <div secondary>
-                  ${formatNumber(1234567.89, {
-                    language: this.hass.locale.language,
-                    number_format: NumberFormat.auto,
-                  })}
-                </div>
-              </paper-item-body>
-            </paper-item>
             <paper-item .format=${NumberFormat.language}>
               <paper-item-body two-line>
                 <div>
@@ -67,6 +52,21 @@ class NumberFormatRow extends LitElement {
                   ${formatNumber(1234567.89, {
                     language: this.hass.locale.language,
                     number_format: NumberFormat.language,
+                  })}
+                </div>
+              </paper-item-body>
+            </paper-item>
+            <paper-item .format=${NumberFormat.system}>
+              <paper-item-body two-line>
+                <div>
+                  ${this.hass.localize(
+                    "ui.panel.profile.number_format.formats.system"
+                  )}
+                </div>
+                <div secondary>
+                  ${formatNumber(1234567.89, {
+                    language: this.hass.locale.language,
+                    number_format: NumberFormat.system,
                   })}
                 </div>
               </paper-item-body>

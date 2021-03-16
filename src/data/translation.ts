@@ -2,8 +2,8 @@ import { HomeAssistant } from "../types";
 import { fetchFrontendUserData, saveFrontendUserData } from "./frontend";
 
 export enum NumberFormat {
-  auto = "auto",
   language = "language",
+  system = "system",
   comma_decimal = "comma_decimal",
   decimal_comma = "decimal_comma",
   space_comma = "space_comma",

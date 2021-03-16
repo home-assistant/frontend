@@ -46,7 +46,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         selectedLanguage: null,
         locale: {
           language: getLocalLanguage(),
-          number_format: NumberFormat.auto,
+          number_format: NumberFormat.language,
         },
         resources: null as any,
         localize: () => "",
