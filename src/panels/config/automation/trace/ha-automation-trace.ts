@@ -115,10 +115,22 @@ export class HaAutomationTrace extends LitElement {
     `;
   }
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
+    if (!this.automationId) {
+      return;
+    }
+
+    const params = new URLSearchParams(location.search);
+    this._loadTraces(params.get("run_id") || undefined);
+  }
+
   protected updated(changedProps) {
     super.updated(changedProps);
 
-    if (changedProps.has("automationId")) {
+    // Only reset if automationId has changed and we had one before.
+    if (changedProps.get("automationId")) {
       this._traces = undefined;
       this._entityId = undefined;
       this._runId = undefined;
@@ -132,9 +144,8 @@ export class HaAutomationTrace extends LitElement {
     if (changedProps.has("_runId") && this._runId) {
       this._trace = undefined;
       this._logbookEntries = undefined;
-      if (this._runId) {
-        this._loadTrace();
-      }
+      this.shadowRoot!.querySelector("select")!.value = this._runId;
+      this._loadTrace();
     }
 
     if (
@@ -153,20 +164,36 @@ export class HaAutomationTrace extends LitElement {
     this._runId = ev.target.value;
   }
 
-  private async _loadTraces() {
+  private async _loadTraces(runId?: string) {
     this._traces = await loadAutomationTraces(this.hass, this.automationId);
     // Newest will be on top.
     this._traces.reverse();
+
+    if (runId) {
+      this._runId = runId;
+    }
 
     // Check if current run ID still exists
     if (
       this._runId &&
       !this._traces.some((trace) => trace.run_id === this._runId)
     ) {
+      this._runId = undefined;
+
+      // If we came here from a trace passed into the url, clear it.
+      if (runId) {
+        const params = new URLSearchParams(location.search);
+        params.delete("run_id");
+        history.replaceState(
+          null,
+          "",
+          `${location.pathname}?${params.toString()}`
+        );
+      }
+
       await showAlertDialog(this, {
         text: "Chosen trace is no longer available",
       });
-      this._runId = undefined;
     }
 
     // See if we can set a default runID
