@@ -1,6 +1,5 @@
 import { HomeAssistant, Context } from "../types";
-import { AutomationConfig, Condition } from "./automation";
-import { Action } from "./script";
+import { AutomationConfig } from "./automation";
 
 interface TraceVariables extends Record<string, unknown> {
   trigger: {

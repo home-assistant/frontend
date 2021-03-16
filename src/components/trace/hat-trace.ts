@@ -24,7 +24,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { LogbookEntry } from "../../data/logbook";
-import { Action, describeAction } from "../../data/script";
+import { describeAction } from "../../data/script";
 import relativeTime from "../../common/datetime/relative_time";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
