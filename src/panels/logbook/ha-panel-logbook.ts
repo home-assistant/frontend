@@ -17,7 +17,7 @@ import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import { loadAutomationTraceContexts } from "../../data/automation_debug";
+import { AutomationTraceContexts, loadAutomationTraceContexts } from "../../data/automation_debug";
 import {
   clearLogbookCache,
   getLogbookData,
@@ -54,10 +54,7 @@ export class HaPanelLogbook extends LitElement {
 
   @internalProperty() private _userIdToName = {};
 
-  @internalProperty() private _traceContexts: Record<
-    string,
-    { run_id: string; automation_id: string }
-  > = {};
+  @internalProperty() private _traceContexts: AutomationTraceContexts = {};
 
   public constructor() {
     super();
