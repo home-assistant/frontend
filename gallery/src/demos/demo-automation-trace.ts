@@ -13,13 +13,8 @@ import { HomeAssistant } from "../../../src/types";
 import { DemoTrace } from "../data/traces/types";
 import { basicTrace } from "../data/traces/basic_trace";
 import { motionLightTrace } from "../data/traces/motion-light-trace";
-import { deviceTriggerEventTrace } from "../data/traces/device_trigger_event_trace";
 
-const traces: DemoTrace[] = [
-  basicTrace,
-  motionLightTrace,
-  deviceTriggerEventTrace,
-];
+const traces: DemoTrace[] = [basicTrace, motionLightTrace];
 
 @customElement("demo-automation-trace")
 export class DemoAutomationTrace extends LitElement {

@@ -118,6 +118,36 @@ class HaAutomationPicker extends LitElement {
           ></ha-icon-button>
         `,
       };
+      columns.trace = {
+        title: "",
+        type: "icon-button",
+        template: (_info, automation: any) => html`
+          <a
+            href=${ifDefined(
+              automation.attributes.id
+                ? `/config/automation/trace/${automation.attributes.id}`
+                : undefined
+            )}
+          >
+            <ha-icon-button
+              icon="hass:hammer"
+              .disabled=${!automation.attributes.id}
+              title="${this.hass.localize(
+                "ui.panel.config.automation.picker.dev_automation"
+              )}"
+            ></ha-icon-button>
+          </a>
+          ${!automation.attributes.id
+            ? html`
+                <paper-tooltip animation-delay="0" position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.dev_only_editable"
+                  )}
+                </paper-tooltip>
+              `
+            : ""}
+        `,
+      };
       columns.edit = {
         title: "",
         type: "icon-button",
