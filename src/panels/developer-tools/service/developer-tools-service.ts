@@ -21,6 +21,7 @@ import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../data/script";
+import { callExecuteScript } from "../../../data/service";
 import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
@@ -250,17 +251,10 @@ class HaPanelDevService extends LitElement {
   );
 
   private _callService() {
-    const domain = computeDomain(this._serviceData!.service);
-    const service = computeObjectId(this._serviceData!.service);
-    if (!domain || !service) {
+    if (!this._serviceData?.service) {
       return;
     }
-    this.hass.callService(
-      domain,
-      service,
-      this._serviceData!.data,
-      this._serviceData!.target
-    );
+    callExecuteScript(this.hass, [this._serviceData]);
   }
 
   private _toggleYaml() {
