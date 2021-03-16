@@ -12,6 +12,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { debounce } from "../../../../../common/util/debounce";
@@ -58,6 +59,15 @@ class ZWaveJSNodeConfig extends LitElement {
 
   protected firstUpdated() {
     if (this.hass) {
+      this._fetchData();
+    }
+  }
+
+  protected updated() {
+    if (!this.hass) {
+      return;
+    }
+    if (!this._device && this.devices.length > 0) {
       this._fetchData();
     }
   }
