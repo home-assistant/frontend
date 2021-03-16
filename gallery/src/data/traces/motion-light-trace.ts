@@ -15,6 +15,7 @@ export const motionLightTrace: DemoTrace = {
     action_trace: {
       "action/0": [
         {
+          path: "action/0",
           timestamp: "2021-03-14T06:07:01.771038+00:00",
           changed_variables: {
             trigger: {
@@ -64,12 +65,11 @@ export const motionLightTrace: DemoTrace = {
         },
       ],
       "action/1": [
-        {
-          timestamp: "2021-03-14T06:07:01.875316+00:00",
-        },
+        { path: "action/1", timestamp: "2021-03-14T06:07:01.875316+00:00" },
       ],
       "action/2": [
         {
+          path: "action/2",
           timestamp: "2021-03-14T06:07:53.195013+00:00",
           changed_variables: {
             wait: {
@@ -118,6 +118,7 @@ export const motionLightTrace: DemoTrace = {
       ],
       "action/3": [
         {
+          path: "action/3",
           timestamp: "2021-03-14T06:07:53.196014+00:00",
         },
       ],

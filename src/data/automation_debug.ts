@@ -1,6 +1,5 @@
 import { HomeAssistant, Context } from "../types";
-import { AutomationConfig, Condition } from "./automation";
-import { Action } from "./script";
+import { AutomationConfig } from "./automation";
 
 interface TraceVariables extends Record<string, unknown> {
   trigger: {
@@ -10,6 +9,7 @@ interface TraceVariables extends Record<string, unknown> {
 }
 
 interface BaseTrace {
+  path: string;
   timestamp: string;
   changed_variables?: Record<string, unknown>;
 }
@@ -18,7 +18,18 @@ export interface ConditionTrace extends BaseTrace {
   result: { result: boolean };
 }
 
-export type ActionTrace = BaseTrace;
+export interface ChooseActionTrace extends BaseTrace {
+  result: { choice: number };
+}
+
+export interface ChooseChoiceActionTrace extends BaseTrace {
+  result: { result: boolean };
+}
+
+export type ActionTrace =
+  | BaseTrace
+  | ChooseActionTrace
+  | ChooseChoiceActionTrace;
 
 export interface AutomationTrace {
   last_action: string | null;
@@ -53,16 +64,40 @@ export const loadAutomationTrace = (
   });
 
 export const loadAutomationTraces = (
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  automation_id?: string
 ): Promise<AutomationTrace[]> =>
   hass.callWS({
     type: "automation/trace/list",
+    automation_id,
   });
 
-export const getConfigFromPath = <T extends Condition | Action>(
+export const getDataFromPath = (
   config: AutomationConfig,
   path: string
-): T => {
-  const parts = path.split("/");
-  return config[parts[0]][Number(parts[1])];
+): any => {
+  const parts = path.split("/").reverse();
+
+  let result: any = config;
+
+  while (parts.length) {
+    const raw = parts.pop()!;
+    const asNumber = Number(raw);
+
+    if (isNaN(asNumber)) {
+      result = result[raw];
+      continue;
+    }
+
+    if (Array.isArray(result)) {
+      result = result[asNumber];
+      continue;
+    }
+
+    if (asNumber !== 0) {
+      throw new Error("If config is not an array, can only return index 0");
+    }
+  }
+
+  return result;
 };

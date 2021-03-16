@@ -38,6 +38,7 @@ export interface ManualAutomationConfig {
     | "info"
     | "debug"
     | "notset";
+  variables?: Record<string, unknown>;
 }
 
 export interface BlueprintAutomationConfig extends ManualAutomationConfig {
@@ -55,7 +56,7 @@ export interface StateTrigger {
   entity_id: string;
   attribute?: string;
   from?: string | number;
-  to?: string | number;
+  to?: string | string[] | number;
   for?: string | number | ForDict;
 }
 

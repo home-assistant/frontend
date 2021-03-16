@@ -11,7 +11,7 @@ import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_tim
 import {
   ActionTrace,
   AutomationTraceExtended,
-  getConfigFromPath,
+  getDataFromPath,
 } from "../../data/automation_debug";
 import { HomeAssistant } from "../../types";
 import "./ha-timeline";
@@ -24,7 +24,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { LogbookEntry } from "../../data/logbook";
-import { Action, describeAction } from "../../data/script";
+import { describeAction } from "../../data/script";
 import relativeTime from "../../common/datetime/relative_time";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
@@ -68,7 +68,7 @@ export class HaAutomationTracer extends LitElement {
               ? mdiCheckCircleOutline
               : mdiStopCircleOutline}
           >
-            ${getConfigFromPath(this.trace!.config, path).alias ||
+            ${getDataFromPath(this.trace!.config, path).alias ||
             pathToName(path)}
             ${value[0].result.result ? "passed" : "failed"}
           </ha-timeline>
@@ -77,7 +77,7 @@ export class HaAutomationTracer extends LitElement {
     }
 
     if (this.trace.action_trace && this.logbookEntries) {
-      const actionTraces = Object.entries(this.trace.action_trace);
+      const actionTraces = Object.values(this.trace.action_trace);
 
       let logbookIndex = 0;
       let actionTraceIndex = 0;
@@ -123,7 +123,7 @@ export class HaAutomationTracer extends LitElement {
         // Find next item time-wise.
         const logbookItem = this.logbookEntries[logbookIndex];
         const actionTrace = actionTraces[actionTraceIndex];
-        const actionTimestamp = new Date(actionTrace[1][0].timestamp);
+        const actionTimestamp = new Date(actionTrace[0].timestamp);
 
         if (new Date(logbookItem.when) > actionTimestamp) {
           actionTraceIndex++;
@@ -133,7 +133,7 @@ export class HaAutomationTracer extends LitElement {
             groupedLogbookItems = [];
           }
           maybeRenderTime(actionTimestamp);
-          entries.push(this._renderActionTrace(...actionTrace));
+          entries.push(this._renderActionTrace(actionTrace));
         } else {
           logbookIndex++;
           groupedLogbookItems.push(logbookItem);
@@ -152,8 +152,8 @@ export class HaAutomationTracer extends LitElement {
 
       while (actionTraceIndex < actionTraces.length) {
         const trace = actionTraces[actionTraceIndex];
-        maybeRenderTime(new Date(trace[1][0].timestamp));
-        entries.push(this._renderActionTrace(...trace));
+        maybeRenderTime(new Date(trace[0].timestamp));
+        entries.push(this._renderActionTrace(trace));
         actionTraceIndex++;
       }
     }
@@ -221,11 +221,25 @@ export class HaAutomationTracer extends LitElement {
     `;
   }
 
-  private _renderActionTrace(path: string, _value: ActionTrace[]) {
-    const action = getConfigFromPath(this.trace!.config, path) as Action;
+  private _renderActionTrace(value: ActionTrace[]) {
+    const path = value[0].path;
+    let data;
+    try {
+      data = getDataFromPath(this.trace!.config, path);
+    } catch (err) {
+      return html`Unable to extract path ${path}. Download trace and report as
+      bug`;
+    }
+
+    const description =
+      // Top-level we know it's an action
+      path.split("/").length === 2
+        ? data.alias || describeAction(data, this.hass.localize)
+        : path.replace(/\//g, " ");
+
     return html`
       <ha-timeline .icon=${mdiRecordCircleOutline}>
-        ${action.alias || describeAction(action, this.hass.localize)}
+        ${description}
       </ha-timeline>
     `;
   }
