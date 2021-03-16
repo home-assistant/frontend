@@ -1145,6 +1145,7 @@
                 "buttons": {
                     "add": "Tambahkan Perangkat melalui perangkat ini",
                     "clusters": "Kelola Cluster",
+                    "device_children": "Lihat Anakan",
                     "reconfigure": "Konfigurasi Ulang Perangkat",
                     "remove": "Hapus Perangkat",
                     "view_in_visualization": "Tampilkan dalam Visualisasi",
@@ -1153,6 +1154,7 @@
                 "confirmations": {
                     "remove": "Yakin ingin menghapus perangkat?"
                 },
+                "device_children": "Anakan perangkat Zigbee",
                 "device_signature": "Tanda tangan perangkat Zigbee",
                 "last_seen": "Terakhir Terlihat",
                 "manuf": "oleh {manufacturer}",
@@ -1187,6 +1189,7 @@
                 "key_missing": "Kunci yang diperlukan \"{key}\" tidak ada.",
                 "key_not_expected": "Kunci \"{key}\" tidak diharapkan atau tidak didukung oleh editor visual.",
                 "key_wrong_type": "Nilai yang disediakan untuk \"{key}\" tidak didukung oleh editor visual. Kami mendukung ({type_correct}) tetapi diterima ({type_wrong}).",
+                "no_template_editor_support": "Templat tidak didukung di editor visual",
                 "no_type_provided": "Tidak ada tipe yang tersedia."
             }
         },
@@ -1626,6 +1629,8 @@
                         },
                         "introduction": "Konfigurasi blueprint memungkinkan Anda untuk mengimpor dan mengelola blueprint.",
                         "learn_more": "Pelajari lebih lanjut tentang blueprint",
+                        "share_blueprint": "Bagikan blueprint",
+                        "share_blueprint_no_url": "Gagal membagikan blueprint: tidak ada sumber URL",
                         "use_blueprint": "Buat otomasi"
                     }
                 },
@@ -2722,6 +2727,7 @@
                         "caption": "Jaringan"
                     },
                     "visualization": {
+                        "auto_zoom": "Perbesaran Otomatis",
                         "caption": "Visualisasi",
                         "header": "Visualisasi Jaringan",
                         "highlight_label": "Sorot Perangkat",
@@ -2985,6 +2991,17 @@
                         "title": "Templat",
                         "unknown_error_template": "Kesalahan tidak diketahui saat merender templat"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Kembali",
+                "supervisor": {
+                    "ask": "Dapatkan bantuan",
+                    "observer": "Periksa Observer",
+                    "reboot": "Coba me-reboot host",
+                    "system_health": "Periksa Kesehatan Sistem",
+                    "title": "Tidak dapat memuat panel Supervisor!",
+                    "wait": "Jika Anda baru saja memulai, pastikan Anda telah memberikan cukup waktu kepada supervisor untuk memulai."
                 }
             },
             "history": {
