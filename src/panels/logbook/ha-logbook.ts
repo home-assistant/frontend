@@ -222,7 +222,9 @@ class HaLogbook extends LitElement {
                         }?run_id=${
                           this.traceContexts[item.context_id!].run_id
                         }`}
-                        >show trace</a
+                        >${this.hass.localize(
+                          "ui.components.logbook.show_trace"
+                        )}</a
                       >
                     `
                   : ""}
