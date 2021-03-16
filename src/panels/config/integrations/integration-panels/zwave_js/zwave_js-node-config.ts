@@ -12,7 +12,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { debounce } from "../../../../../common/util/debounce";
