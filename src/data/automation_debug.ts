@@ -73,10 +73,32 @@ export const loadAutomationTraces = (
     automation_id,
   });
 
-export const getConfigFromPath = <T extends Condition | Action>(
+export const getDataFromPath = (
   config: AutomationConfig,
   path: string
-): T => {
-  const parts = path.split("/");
-  return config[parts[0]][Number(parts[1])];
+): any => {
+  const parts = path.split("/").reverse();
+
+  let result: any = config;
+
+  while (parts.length) {
+    const raw = parts.pop()!;
+    const asNumber = Number(raw);
+
+    if (isNaN(asNumber)) {
+      result = result[raw];
+      continue;
+    }
+
+    if (Array.isArray(result)) {
+      result = result[asNumber];
+      continue;
+    }
+
+    if (asNumber !== 0) {
+      throw new Error("If config is not an array, can only return index 0");
+    }
+  }
+
+  return result;
 };

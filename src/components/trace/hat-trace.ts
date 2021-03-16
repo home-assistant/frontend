@@ -11,7 +11,7 @@ import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_tim
 import {
   ActionTrace,
   AutomationTraceExtended,
-  getConfigFromPath,
+  getDataFromPath,
 } from "../../data/automation_debug";
 import { HomeAssistant } from "../../types";
 import "./ha-timeline";
@@ -68,7 +68,7 @@ export class HaAutomationTracer extends LitElement {
               ? mdiCheckCircleOutline
               : mdiStopCircleOutline}
           >
-            ${getConfigFromPath(this.trace!.config, path).alias ||
+            ${getDataFromPath(this.trace!.config, path).alias ||
             pathToName(path)}
             ${value[0].result.result ? "passed" : "failed"}
           </ha-timeline>
@@ -222,13 +222,24 @@ export class HaAutomationTracer extends LitElement {
   }
 
   private _renderActionTrace(value: ActionTrace[]) {
-    const action = getConfigFromPath(
-      this.trace!.config,
-      value[0].path
-    ) as Action;
+    const path = value[0].path;
+    let data;
+    try {
+      data = getDataFromPath(this.trace!.config, path);
+    } catch (err) {
+      return html`Unable to extract path ${path}. Download trace and report as
+      bug`;
+    }
+
+    const description =
+      // Top-level we know it's an action
+      path.split("/").length === 2
+        ? data.alias || describeAction(data, this.hass.localize)
+        : path.replace(/\//g, " ");
+
     return html`
       <ha-timeline .icon=${mdiRecordCircleOutline}>
-        ${action.alias || describeAction(action, this.hass.localize)}
+        ${description}
       </ha-timeline>
     `;
   }
