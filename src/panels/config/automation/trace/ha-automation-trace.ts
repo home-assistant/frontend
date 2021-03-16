@@ -161,13 +161,10 @@ export class HaAutomationTrace extends LitElement {
     // Check if current run ID still exists
     if (
       this._runId &&
-      !this._traces.every((trace) => trace.run_id === this._runId)
+      !this._traces.some((trace) => trace.run_id === this._runId)
     ) {
       await showAlertDialog(this, {
         text: "Chosen trace is no longer available",
-        confirm: () => {
-          this._runId = this._traces![0].run_id;
-        },
       });
       this._runId = undefined;
     }
