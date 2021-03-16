@@ -95,21 +95,21 @@ export class HaAutomationTrace extends LitElement {
               Download
             </button>
           </div>
-          ${this._traces === undefined
-            ? "Loading…"
-            : this._traces.length === 0
-            ? "No traces found"
-            : this._trace === undefined
-            ? "Loading…"
-            : html`
-                <div class="card-content">
+          <div class="card-content">
+            ${this._traces === undefined
+              ? "Loading…"
+              : this._traces.length === 0
+              ? "No traces found"
+              : this._trace === undefined
+              ? "Loading…"
+              : html`
                   <hat-trace
                     .hass=${this.hass}
                     .trace=${this._trace}
                     .logbookEntries=${this._logbookEntries}
                   ></hat-trace>
-                </div>
-              `}
+                `}
+          </div>
         </ha-card>
       </hass-tabs-subpage>
     `;
@@ -158,16 +158,22 @@ export class HaAutomationTrace extends LitElement {
     // Newest will be on top.
     this._traces.reverse();
 
-    if (this._runId) {
-      if (!this._traces.some((trace) => trace.run_id === this._runId)) {
-        showAlertDialog(this, {
-          text: "Chosen trace is no longer available",
-          confirm: () => {
-            this._runId = this._traces![0].run_id;
-          },
-        });
-      }
-    } else {
+    // Check if current run ID still exists
+    if (
+      this._runId &&
+      !this._traces.every((trace) => trace.run_id === this._runId)
+    ) {
+      await showAlertDialog(this, {
+        text: "Chosen trace is no longer available",
+        confirm: () => {
+          this._runId = this._traces![0].run_id;
+        },
+      });
+      this._runId = undefined;
+    }
+
+    // See if we can set a default runID
+    if (!this._runId && this._traces.length > 0) {
       this._runId = this._traces[0].run_id;
     }
   }
