@@ -373,7 +373,7 @@
         "panel": {
             "dashboard": "Pannello di controllo",
             "snapshots": "Istantanee",
-            "store": "Negozio dei componenti aggiuntivi",
+            "store": "Raccolta di Componenti Aggiuntivi",
             "system": "Sistema"
         },
         "snapshot": {
@@ -691,8 +691,8 @@
                         "title": "Errore durante il recupero dei componenti aggiuntivi"
                     },
                     "no_supervisor": {
-                        "description": "Nessun Supervisore trovato, quindi non è stato possibile caricare i componenti aggiuntivi.",
-                        "title": "Nessun Supervisore"
+                        "description": "Nessun Supervisor trovato, quindi i componenti aggiuntivi non possono essere caricati.",
+                        "title": "Nessun Supervisor"
                     }
                 }
             },
@@ -1566,6 +1566,8 @@
                         "add_automation": "Aggiungi Automazione",
                         "delete_automation": "Cancellare l'automazione",
                         "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
+                        "dev_automation": "Debug dell'automazione",
+                        "dev_only_editable": "È possibile eseguire il debug solo delle automazioni definite in automations.yaml.",
                         "duplicate": "Duplica",
                         "duplicate_automation": "Duplica automazione",
                         "edit_automation": "Modifica automazione",

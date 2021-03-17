@@ -1566,6 +1566,8 @@
                         "add_automation": "Añadir automatización",
                         "delete_automation": "Eliminar la automatización",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta automatización?",
+                        "dev_automation": "Depurar automatización",
+                        "dev_only_editable": "Solo las automatizaciones definidas en automations.yaml se pueden depurar",
                         "duplicate": "Duplicar",
                         "duplicate_automation": "Duplicar la automatización",
                         "edit_automation": "Editar automatización",

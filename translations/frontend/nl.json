@@ -1145,7 +1145,7 @@
                 "buttons": {
                     "add": "Apparaten toevoegen via dit apparaat",
                     "clusters": "Clusters beheren",
-                    "device_children": "Toon kinderen",
+                    "device_children": "Bekijk onderliggende apparaten",
                     "reconfigure": "Apparaat opnieuw configureren",
                     "remove": "Verwijder apparaat",
                     "view_in_visualization": "Bekijk in Visualisatie",
@@ -1566,6 +1566,8 @@
                         "add_automation": "Automatisering toevoegen",
                         "delete_automation": "Verwijder automatisering",
                         "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
+                        "dev_automation": "Debug automatisering",
+                        "dev_only_editable": "Alleen automatiseringen in automations.yaml kunnen zijn debuggable",
                         "duplicate": "Dupliceren",
                         "duplicate_automation": "Dupliceer automatisering",
                         "edit_automation": "Bewerk automatisering",

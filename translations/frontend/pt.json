@@ -213,6 +213,7 @@
                 "get_documentation": "Falha ao obter documentação do add-on, {error}"
             },
             "failed_to_reset": "Falha ao redefinir a configuração do add-on, {error}",
+            "failed_to_save": "Falha ao guardar a configuração do add-on, {error}",
             "logs": {
                 "get_logs": "Falha ao obter logs do add-on, {error}"
             },
@@ -826,7 +827,9 @@
             },
             "service-control": {
                 "required": "Este campo é obrigatório",
-                "target": "Alvos"
+                "service_data": "Dados do serviço",
+                "target": "Alvos",
+                "target_description": "O que deve este serviço utilizar como áreas, dispositivos ou entidades alvo."
             },
             "service-picker": {
                 "service": "Serviço"

@@ -785,7 +785,8 @@
                     "was_unlocked": "was unlocked",
                     "was_unplugged": "was unplugged",
                     "was_unsafe": "was unsafe"
-                }
+                },
+                "show_trace": "Show trace"
             },
             "media-browser": {
                 "audio_not_supported": "Your browser does not support the audio element.",
@@ -1566,6 +1567,8 @@
                         "add_automation": "Add automation",
                         "delete_automation": "Delete automation",
                         "delete_confirm": "Are you sure you want to delete this automation?",
+                        "dev_automation": "Debug automation",
+                        "dev_only_editable": "Only automations defined in automations.yaml are debuggable.",
                         "duplicate": "Duplicate",
                         "duplicate_automation": "Duplicate automation",
                         "edit_automation": "Edit automation",

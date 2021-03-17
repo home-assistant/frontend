@@ -315,7 +315,7 @@
             "addon_running": "Add-on wird ausgeführt",
             "addon_stopped": "Add-on ist gestoppt",
             "addons": "Add-ons",
-            "no_addons": "Du hast noch keine Add-ons installiert. Gehe zum Add-on Shop, um loszulegen!"
+            "no_addons": "Du hast noch keine Add-ons installiert. Gehe zum Add-on Store, um loszulegen!"
         },
         "dialog": {
             "network": {
@@ -373,17 +373,17 @@
         "panel": {
             "dashboard": "Dashboard",
             "snapshots": "Datensicherungen",
-            "store": "Add-on Shop",
+            "store": "Add-on Store",
             "system": "System"
         },
         "snapshot": {
             "addons": "Add-ons",
-            "available_snapshots": "Verfügbare Sicherungen",
+            "available_snapshots": "Verfügbare Datensicherungen",
             "could_not_create": "Datensicherung konnte nicht erstellt werden",
             "create": "Erstellen",
             "create_blocked_not_running": "Das Erstellen eines Snapshots ist derzeit nicht möglich, da sich das System im Zustand {state} befindet.",
             "create_snapshot": "Datensicherung erstellen",
-            "description": "Sicherungen ermöglichen dir das leichte Speichern und Wiederherstellen von allen Daten aus Home Assistant.",
+            "description": "Datensicherungen ermöglichen dir das leichte Speichern und Wiederherstellen von allen Daten aus Home Assistant.",
             "enter_password": "Bitte Passwort eingeben.",
             "folder": {
                 "addons/local": "Lokale Add-ons",
@@ -395,7 +395,7 @@
             "folders": "Ordner",
             "full_snapshot": "Vollständige Datensicherung",
             "name": "Name",
-            "no_snapshots": "Du hast bisher keine Sicherungen erstellt.",
+            "no_snapshots": "Du hast bisher keine Datensicherungen erstellt.",
             "partial_snapshot": "Selektive Datensicherung",
             "password": "Passwort",
             "password_protected": "Passwort geschützt",
@@ -413,14 +413,14 @@
         "system": {
             "core": {
                 "cpu_usage": "Core-CPU Auslastung",
-                "ram_usage": "Core-RAM Nutzung"
+                "ram_usage": "Core Arbeitsspeicherbedarf"
             },
             "host": {
                 "change": "Ändern",
                 "change_hostname": "Hostname ändern",
                 "confirm_reboot": "Bist du sicher, dass du den Host neu starten willst?",
                 "confirm_shutdown": "Bist du sicher, dass du den Host herunterfahren willst?",
-                "deployment": "Deployment",
+                "deployment": "Einsatz",
                 "docker_version": "Docker-Version",
                 "emmc_lifetime_used": "eMMC verschlissen",
                 "failed_to_get_hardware_list": "Fehler beim Abrufen der Hardwareliste",
@@ -3008,9 +3008,10 @@
                 "go_back": "Zurück",
                 "supervisor": {
                     "ask": "Um Hilfe bitten",
+                    "observer": "Überprüfe den Observer",
                     "reboot": "Versuche den Host neuzustarten",
                     "system_health": "Überprüfe Systemzustand",
-                    "title": "Supervisor-Bedienfeld konnte nicht geladen werden.",
+                    "title": "Supervisor-Bedienfeld konnte nicht geladen werden!",
                     "wait": "Wenn du gerade erst hochgefahren hast, dann stelle sicher dass du den Supervisor genug Zeit zum Starten gegeben hast."
                 }
             },

@@ -439,7 +439,7 @@
                 "used_space": "已用空间"
             },
             "log": {
-                "get_logs": "无法获取 {provider} 日志: {error}",
+                "get_logs": "获取 {provider} 日志失败: {error}",
                 "log_provider": "日志提供方"
             },
             "supervisor": {
