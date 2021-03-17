@@ -160,7 +160,7 @@
                         "title": "Supervisor API 액세스"
                     },
                     "homeassistant_api": {
-                        "description": "이 추가 기능은 Home Assistant API를 통해 실행 중인 Home Assistant 인스턴스에 직접 액세스할 수 있습니다. 이 모드는 추가 기능에 대한 인증도 처리하므로 추가 인증 토큰 없이도 추가 기능이 Home Assistant와 상호 작용할 수 있습니다.",
+                        "description": "이 추가 기능은 Home Assistant API를 통해 실행 중인 Home Assistant 인스턴스에 직접 액세스할 수 있습니다. 이 모드는 추가 기능에 대한 인증도 처리하므로 추가 인증 토큰 없이 추가 기능이 Home Assistant와 상호 작용할 수 있습니다.",
                         "title": "Home Assistant API 액세스"
                     },
                     "host_network": {
@@ -321,7 +321,7 @@
             "network": {
                 "connected_to": "{ssid}에 연결되었습니다",
                 "dhcp": "자동 구성",
-                "disabled": "비활성화",
+                "disabled": "비활성화됨",
                 "dns_servers": "DNS 서버",
                 "failed_to_change": "네트워크 설정을 변경하지 못했습니다",
                 "gateway": "게이트웨이 주소",
@@ -588,10 +588,10 @@
             "script": {
                 "cancel": "취소",
                 "cancel_multiple": "{number}개 취소하기",
-                "run": "실행"
+                "run": "실행하기"
             },
             "service": {
-                "run": "실행"
+                "run": "실행하기"
             },
             "timer": {
                 "actions": {
@@ -785,7 +785,8 @@
                     "was_unlocked": "이(가) 잠금이 해제되었습니다.",
                     "was_unplugged": "의 플러그가 뽑혔습니다.",
                     "was_unsafe": "이(가) 안전하지 않은 상태가 되었습니다."
-                }
+                },
+                "show_trace": "추적 표시하기"
             },
             "media-browser": {
                 "audio_not_supported": "브라우저가 오디오를 지원하지 않습니다.",
@@ -909,7 +910,7 @@
             "entity_registry": {
                 "control": "제어하기",
                 "customize_link": "구성요소 사용자화",
-                "dismiss": "해제",
+                "dismiss": "해제하기",
                 "editor": {
                     "advanced": "고급 설정",
                     "area": "구성 요소 영역만 설정하기",
@@ -1145,7 +1146,7 @@
                 "buttons": {
                     "add": "이 기기를 통해 기기 추가하기",
                     "clusters": "클러스터 관리",
-                    "device_children": "자식 보기",
+                    "device_children": "하위 기기 보기",
                     "reconfigure": "기기 재구성하기",
                     "remove": "기기 제거하기",
                     "view_in_visualization": "시각화에서보기",
@@ -1154,7 +1155,7 @@
                 "confirmations": {
                     "remove": "이 기기를 제거하시겠습니까?"
                 },
-                "device_children": "Zigbee 기기 자식",
+                "device_children": "Zigbee 하위 기기",
                 "device_signature": "Zigbee 기기 서명",
                 "last_seen": "마지막 확인",
                 "manuf": "{manufacturer} 제조",
@@ -1201,13 +1202,13 @@
         "notification_drawer": {
             "click_to_configure": "버튼을 클릭하여 {entity}을(를) 구성",
             "close": "닫기",
-            "dismiss_all": "모두 해제",
+            "dismiss_all": "모두 해제하기",
             "empty": "알림 내용이 없습니다.",
             "title": "알림"
         },
         "notification_toast": {
             "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결하는 중...",
-            "dismiss": "해제",
+            "dismiss": "해제하기",
             "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
             "started": "Home Assistant가 시작되었습니다!",
             "starting": "Home Assistant가 시작됩니다. 완료될 때까지 모든 기능을 사용할 수 있는 것은 아닙니다.",
@@ -1566,6 +1567,8 @@
                         "add_automation": "자동화 추가하기",
                         "delete_automation": "자동화 삭제하기",
                         "delete_confirm": "이 자동화를 삭제하시겠습니까?",
+                        "dev_automation": "자동화 디버그하기",
+                        "dev_only_editable": "automations.yaml에서 설정한 자동화만 디버그 할 수 있습니다.",
                         "duplicate": "복제하기",
                         "duplicate_automation": "자동화 복제하기",
                         "edit_automation": "자동화 편집하기",
@@ -2418,7 +2421,7 @@
                     "no_persons_created_yet": "아직 생성된 구성원이 없는 것 같습니다.",
                     "note_about_persons_configured_in_yaml": "참고: configuration.yaml에서 구성된 구성원은 UI에서 편집할 수 없습니다.",
                     "person_not_found": "편집하려는 구성원을 찾을 수 없습니다.",
-                    "person_not_found_title": "구성원을 찾을 수 없음"
+                    "person_not_found_title": "구성원을 찾을 수 없습니다"
                 },
                 "scene": {
                     "activated": "{name} 씬이 활성화 됨.",
@@ -2579,7 +2582,7 @@
                     "create_automation": "태그로 자동화 구성하기",
                     "description": "NFC 태그, QR 코드 등이 스캔될 때 자동화를 트리거합니다",
                     "detail": {
-                        "companion_apps": "지원하는 앱",
+                        "companion_apps": "컴패니언 앱",
                         "create": "만들기",
                         "create_and_write": "만들고 쓰기",
                         "delete": "삭제하기",
@@ -3420,7 +3423,7 @@
                         "error_remove": "구성을 제거할 수 없습니다: {error}",
                         "error_save_yaml": "YAML을 저장할 수 없습니다: {error}",
                         "header": "구성 코드 편집하기",
-                        "lovelace_changed": "Lovelace 구성이 업데이트되었습니다. 업데이트된 구성 내용을 편집기에서 읽어 들이고 현재 변경 내용을 버리시겠습니까?",
+                        "lovelace_changed": "Lovelace 설정이 업데이트되었습니다. 업데이트된 설정 내용을 편집기에서 읽어 들이고 현재 변경 내용을 바꾸시겠습니까?",
                         "reload": "다시 읽어오기",
                         "resources_moved": "리소스는 더 이상 Lovelace 구성에서 추가할 수 없으며 Lovelace 구성 패널에서 추가할 수 있습니다.",
                         "save": "저장하기",

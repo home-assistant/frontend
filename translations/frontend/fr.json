@@ -1566,6 +1566,7 @@
                         "add_automation": "Ajouter une automatisation",
                         "delete_automation": "Supprimer l'automatisation",
                         "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
+                        "dev_only_editable": "Seules les automatisations dans automations.yaml sont debuggables.",
                         "duplicate": "Dupliquer",
                         "duplicate_automation": "Dupliquer l'automatisation",
                         "edit_automation": "Modifier l'automatisation",

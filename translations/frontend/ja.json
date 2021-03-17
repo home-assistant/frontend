@@ -263,6 +263,7 @@
         },
         "common": {
             "cancel": "キャンセル",
+            "close": "閉じる",
             "description": "説明",
             "error": {
                 "unknown": "不明なエラー",
@@ -359,6 +360,7 @@
         },
         "my": {
             "error": "不明なエラーが発生しました",
+            "error_addon_not_found": "アドオンが見つかりません",
             "faq_link": "マイホームアシスタントFAQ",
             "not_supported": "このリダイレクトは、HomeAssistantインスタンスではサポートされていません。 サポートされているリダイレクトとそれらが導入されたバージョンについては、{link}を確認してください。"
         },
@@ -1003,6 +1005,9 @@
                 "person": {
                     "create_zone": "現在地からゾーンを作成"
                 },
+                "remote": {
+                    "activity": "現在のアクティビティ"
+                },
                 "restored": {
                     "confirm_remove_text": "このエンティティを削除しますか?",
                     "confirm_remove_title": "エンティティを削除しますか?",
@@ -1132,6 +1137,7 @@
                 "buttons": {
                     "add": "このデバイス経由でデバイスを追加",
                     "clusters": "クラスタの管理",
+                    "device_children": "子を見る",
                     "reconfigure": "デバイスを再設定",
                     "remove": "デバイスを削除",
                     "view_in_visualization": "ビジュアライゼーションで表示",
@@ -1140,6 +1146,7 @@
                 "confirmations": {
                     "remove": "デバイスを削除してもよろしいですか？"
                 },
+                "device_children": "Zigbeeデバイスの子",
                 "device_signature": "Zigbee デバイス署名",
                 "last_seen": "最後に見た",
                 "manuf": "{manufacturer}",
@@ -1550,6 +1557,8 @@
                         "add_automation": "オートメーションの追加",
                         "delete_automation": "オートメーションを削除",
                         "delete_confirm": "このオートメーションを削除してもよろしいですか？",
+                        "dev_automation": "デバッグの自動化",
+                        "dev_only_editable": "automations.yaml で定義されたオートメーションのみがデバッグ可能です。",
                         "duplicate": "複製",
                         "duplicate_automation": "オートメーションを複製",
                         "edit_automation": "オートメーションを編集",
@@ -1613,6 +1622,8 @@
                         },
                         "introduction": "設計図エディターを使用すると、設計図を作成および編集できます。",
                         "learn_more": "設計図の詳細",
+                        "share_blueprint": "設計図を共有する",
+                        "share_blueprint_no_url": "設計図を共有できません: ソース URL がありません",
                         "use_blueprint": "オートメーションを作成"
                     }
                 },
@@ -2066,6 +2077,7 @@
                         "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
                         "disable_restart_confirm": "Homeassistantを再起動して、このintegrationを無効にします。",
                         "disable": {
+                            "disable_confirm": "この設定項目を無効にしてよろしいですか？そのデバイスやエンティティは無効になります。",
                             "disabled": "無効",
                             "disabled_by": {
                                 "device": "デバイス",
@@ -2708,6 +2720,7 @@
                         "caption": "ネットワーク"
                     },
                     "visualization": {
+                        "auto_zoom": "自動ズーム",
                         "caption": "可視化",
                         "header": "ネットワークの視覚化",
                         "highlight_label": "デバイスを強調表示",
@@ -2981,6 +2994,17 @@
                         "title": "テンプレート",
                         "unknown_error_template": "不明なテンプレートレンダリングエラー"
                     }
+                }
+            },
+            "error": {
+                "go_back": "戻る",
+                "supervisor": {
+                    "ask": "助けを求める",
+                    "observer": "オブザーバーの確認",
+                    "reboot": "ホストの再起動を試みる",
+                    "system_health": "システムの状態の確認",
+                    "title": "Supervisorパネルを読み込めませんでした。",
+                    "wait": "開始したばかりの場合は、開始するのに十分な時間をsupervisorに与えていることを確認してください。"
                 }
             },
             "history": {

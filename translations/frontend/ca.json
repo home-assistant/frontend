@@ -1566,6 +1566,8 @@
                         "add_automation": "Afegeix automatització",
                         "delete_automation": "Elimina l'automatització",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
+                        "dev_automation": "Depurar automatització",
+                        "dev_only_editable": "Només es poden depurar les automatitzacions definides al fitxer automations.yaml.",
                         "duplicate": "Duplica",
                         "duplicate_automation": "Duplica l'automatització",
                         "edit_automation": "Edita automatització",

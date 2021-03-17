@@ -308,17 +308,30 @@
                 "wpa": "wpa-psk"
             },
             "registries": {
+                "add_new_registry": "Lisää uusi rekisteri",
+                "add_registry": "Lisää rekisteri",
+                "failed_to_add": "Rekisterin lisääminen epäonnistui",
+                "failed_to_remove": "Rekisterin poistaminen epäonnistui",
+                "no_registries": "Rekistereitä ei ole määritetty",
                 "password": "Salasana",
+                "registry": "Rekisteri",
                 "remove": "Poista",
+                "title_add": "Lisää uusi säilörekisteri",
+                "title_manage": "Säilörekisterien hallinta",
                 "username": "Käyttäjätunnus"
             },
             "repositories": {
                 "add": "Lisää",
-                "remove": "Poista"
+                "remove": "Poista",
+                "title": "Hallinnoi lisäosavarastoja"
             },
             "restart_addon": {
                 "confirm_text": "Käynnistä lisäosa uudelleen",
                 "text": "Haluatko käynnistää lisäosan uudelleen muutostesi kanssa?"
+            },
+            "update": {
+                "create_snapshot": "Luo tilannevedos kohteesta {name} ennen päivittämistä",
+                "snapshot": "Tilannevedos"
             }
         },
         "my": {
@@ -332,6 +345,7 @@
         "snapshot": {
             "addons": "Lisäosat",
             "create": "Luo",
+            "create_snapshot": "Luo tilannevedos",
             "enter_password": "Syötä salasana.",
             "folder": {
                 "addons/local": "Paikalliset lisäosat",
@@ -341,12 +355,15 @@
                 "ssl": "SSL"
             },
             "folders": "Kansiot",
+            "full_snapshot": "Täysi tilannevedos",
             "name": "Nimi",
+            "partial_snapshot": "Osittainen tilannevedos",
             "password": "Salasana",
             "password_protected": "salasanasuojattu",
             "password_protection": "Salasanasuojaus",
             "security": "Suojaus",
-            "type": "Tyyppi"
+            "type": "Tyyppi",
+            "upload_snapshot": "Lähetä tilannevedos"
         },
         "store": {
             "no_results_found": "Ei tuloksia kohteesta {repository}."
@@ -2584,6 +2601,7 @@
                         "caption": "Verkko"
                     },
                     "visualization": {
+                        "auto_zoom": "Automaattinen zoomaus",
                         "caption": "Visualisointi",
                         "header": "Verkon visualisointi"
                     }
@@ -2818,9 +2836,12 @@
                 }
             },
             "error": {
+                "go_back": "Mene takaisin",
                 "supervisor": {
                     "ask": "Pyydä apua",
-                    "system_health": "Tarkista järjestelmän kunto"
+                    "reboot": "Yritä uudelleenkäynnistää isäntä ",
+                    "system_health": "Tarkista järjestelmän kunto",
+                    "title": "Supervisor-paneelia ei voitu ladata!"
                 }
             },
             "history": {
