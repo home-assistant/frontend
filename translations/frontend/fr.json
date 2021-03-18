@@ -372,18 +372,18 @@
         },
         "panel": {
             "dashboard": "Tableau de bord",
-            "snapshots": "Instantanés",
+            "snapshots": "Snapshots",
             "store": "Boutique des modules complémentaires",
             "system": "Système"
         },
         "snapshot": {
             "addons": "Modules complémentaires",
-            "available_snapshots": "Instantanés disponibles",
+            "available_snapshots": "Snapshots disponibles",
             "could_not_create": "Impossible de créer un instantané",
             "create": "Créer",
             "create_blocked_not_running": "La création d’un instantané n’est pas possible en ce moment car le système est en état {state}.",
             "create_snapshot": "Créer un instantané",
-            "description": "Les instantanés vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
+            "description": "Les snapshots vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
             "enter_password": "Veuillez entrer un mot de passe.",
             "folder": {
                 "addons/local": "Modules complémentaires locaux",
@@ -395,7 +395,7 @@
             "folders": "Dossiers",
             "full_snapshot": "Instantané complet",
             "name": "Nom",
-            "no_snapshots": "Vous n'avez pas encore d'instantanés.",
+            "no_snapshots": "Vous n'avez pas encore de snapshots.",
             "partial_snapshot": "Instantané partiel",
             "password": "Mot de passe",
             "password_protected": "protégé par mot de passe",

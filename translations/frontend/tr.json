@@ -785,7 +785,8 @@
                     "was_unlocked": "kilidi açıldı",
                     "was_unplugged": "fişi çekildi",
                     "was_unsafe": "güvensiz"
-                }
+                },
+                "show_trace": "İzi göster"
             },
             "media-browser": {
                 "audio_not_supported": "Tarayıcınız ses öğesini desteklemiyor.",
@@ -1566,6 +1567,8 @@
                         "add_automation": "Otomasyon ekle",
                         "delete_automation": "Otomasyonu sil",
                         "delete_confirm": "Bu otomasyonu silmek istediğinizden emin misiniz?",
+                        "dev_automation": "Hata ayıklama otomasyonu",
+                        "dev_only_editable": "Yalnızca automations.yaml'de tanımlanan otomasyonlarda hata ayıklama yapılabilir.",
                         "duplicate": "Çiftleme",
                         "duplicate_automation": "Yinelenen otomasyon",
                         "edit_automation": "Otomasyonu düzenle",

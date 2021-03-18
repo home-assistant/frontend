@@ -785,7 +785,8 @@
                     "was_unlocked": "ble låst opp",
                     "was_unplugged": "ble frakoblet",
                     "was_unsafe": "var utrygt"
-                }
+                },
+                "show_trace": "Vis spor"
             },
             "media-browser": {
                 "audio_not_supported": "Nettleseren din støtter ikke lydelementet.",
@@ -1566,6 +1567,8 @@
                         "add_automation": "Legg til automasjon",
                         "delete_automation": "Slett automasjon",
                         "delete_confirm": "Er du sikker på at du vil slette denne automasjonen?",
+                        "dev_automation": "Feilsøk automatisering",
+                        "dev_only_editable": "Bare automatiseringer definert i automations.yaml kan feilsøkes.",
                         "duplicate": "Dupliser",
                         "duplicate_automation": "Dupliser automasjon",
                         "edit_automation": "Rediger automasjon",

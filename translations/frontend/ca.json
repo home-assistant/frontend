@@ -785,7 +785,8 @@
                     "was_unlocked": "s'ha desbloquejat",
                     "was_unplugged": "s'ha desendollat",
                     "was_unsafe": "és insegur"
-                }
+                },
+                "show_trace": "Mostra la traça"
             },
             "media-browser": {
                 "audio_not_supported": "El teu navegador no és compatible amb l'element d'àudio.",

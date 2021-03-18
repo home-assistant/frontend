@@ -785,7 +785,8 @@
                     "was_unlocked": "avanes",
                     "was_unplugged": "eemaldati",
                     "was_unsafe": "oli turvamata"
-                }
+                },
+                "show_trace": "Kuva täitmise samme"
             },
             "media-browser": {
                 "audio_not_supported": "Teie brauser ei toeta helielementi.",
@@ -1566,6 +1567,8 @@
                         "add_automation": "Lisa automatiseering",
                         "delete_automation": "Kustuta automatiseering",
                         "delete_confirm": "Oled kindel, et soovid selle automatiseeringu kustutada?",
+                        "dev_automation": "Automatiseeringu silumine",
+                        "dev_only_editable": "Siluda saab ainult kirjes automations.yaml olevaid automatiseeringuid.",
                         "duplicate": "Paljunda",
                         "duplicate_automation": "Paljunda automatiseering",
                         "edit_automation": "Muuda automatiseeringut",

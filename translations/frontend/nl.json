@@ -128,7 +128,7 @@
             },
             "dashboard": {
                 "action_error": {
-                    "get_changelog": "Ophalen changelog van de invoegtoepassing is mislukt",
+                    "get_changelog": "Ophalen logboek van de invoegtoepassing is mislukt",
                     "go_to_config": "Starten van de invoegtoepassing is mislukt - configuratie validatie mislukt!",
                     "install": "De installatie van de invoegtoepassing is mislukt",
                     "restart": "Herstarten van de invoegtoepassing is mislukt",
@@ -785,7 +785,8 @@
                     "was_unlocked": "ontgrendeld",
                     "was_unplugged": "is niet aangesloten",
                     "was_unsafe": "was onveilig"
-                }
+                },
+                "show_trace": "Tracering weergeven"
             },
             "media-browser": {
                 "audio_not_supported": "Uw browser ondersteunt het audio-element niet.",
