@@ -1410,7 +1410,7 @@
                         "introduction": "Den Automatismen-Editor erméiglecht et fir Automatismen z'erstellen an ze änneren. Lies w.e.g. [d'Instruktioune](https://home-assistant.io/docs/automation/editor/) fir sécher ze stellen dass den Home Assistant richteg agestallt ass.",
                         "learn_more": "Méi iwwert Automatioune liesen",
                         "no_automations": "Keen Automatismus fir ze ännere fonnt",
-                        "only_editable": "Nëmmen Automatiounen déi am automations.yaml séfinéiert sinn kënnen editéiert ginn.",
+                        "only_editable": "Nëmmen Automatiounen déi am automations.yaml définéiert sinn kënnen editéiert ginn.",
                         "pick_automation": "Automatismus fir ze änneren auswielen",
                         "show_info_automation": "Informatiounen vum Automatisme uweisen"
                     },

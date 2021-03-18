@@ -785,7 +785,8 @@
                     "was_unlocked": "se desbloqueó",
                     "was_unplugged": "se desenchufó",
                     "was_unsafe": "era inseguro"
-                }
+                },
+                "show_trace": "Mostrar traza"
             },
             "media-browser": {
                 "audio_not_supported": "Tu navegador no es compatible con el elemento de audio.",

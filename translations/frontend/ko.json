@@ -15,7 +15,7 @@
     },
     "panel": {
         "calendar": "캘린더",
-        "config": "설정",
+        "config": "구성",
         "developer_tools": "개발자 도구",
         "history": "기록 그래프",
         "logbook": "로그북",
@@ -76,7 +76,7 @@
             "arming": "경비 중",
             "disarmed": "해제",
             "disarming": "해제",
-            "pending": "지연",
+            "pending": "보류",
             "triggered": "작동됨"
         },
         "default": {
@@ -117,7 +117,7 @@
                     "header": "네트워크",
                     "host": "호스트"
                 },
-                "no_configuration": "이 추가 기능은 사용자가 가지고 놀만한 노출된 구성이 없습니다...",
+                "no_configuration": "이 애드온은 사용자가 가지고 놀만한 노출된 구성이 없습니다...",
                 "options": {
                     "edit_in_ui": "UI로 편집하기",
                     "edit_in_yaml": "YAML로 편집하기",
@@ -128,51 +128,51 @@
             },
             "dashboard": {
                 "action_error": {
-                    "get_changelog": "추가 기능 변경 로그를 가져오지 못했습니다",
-                    "go_to_config": "추가 기능을 시작하지 못했습니다 - 구성 유효성 검사에 실패했습니다!",
-                    "install": "추가 기능을 설치하지 못했습니다",
-                    "restart": "추가 기능을 다시 시작하지 못했습니다",
-                    "start": "추가 기능을 시작하지 못했습니다",
+                    "get_changelog": "애드온 변경 로그를 불러오지 못했습니다",
+                    "go_to_config": "애드온을 시작하지 못했습니다 - 구성 유효성 검사에 실패했습니다!",
+                    "install": "애드온을 설치하지 못했습니다",
+                    "restart": "애드온을 다시 시작하지 못했습니다",
+                    "start": "애드온을 시작하지 못했습니다",
                     "start_invalid_config": "구성으로 이동하기",
-                    "stop": "추가 기능을 중지하지 못했습니다",
-                    "uninstall": "추가 기능을 제거하지 못했습니다",
-                    "validate_config": "추가 기능 구성의 유효성을 검사하지 못했습니다"
+                    "stop": "애드온을 중지하지 못했습니다",
+                    "uninstall": "애드온을 제거하지 못했습니다",
+                    "validate_config": "애드온 구성의 유효성을 검사하지 못했습니다"
                 },
                 "capability": {
                     "apparmor": {
-                        "description": "AppArmor ('Application Armor')는 네트워크 액세스, 원시 소켓 액세스 및 특정 파일의 읽기, 쓰기 또는 실행 권한과 같은 추가 기능을 제한하는 Linux 커널 보안 모듈입니다.\n\n추가 기능 작성자는 추가 기능에 최적화된 보안 프로필을 제공하거나 비활성화하도록 요청할 수 있습니다. AppArmor가 비활성화되면 보안 위험이 증가하므로 추가 기능의 보안 점수에 부정적인 영향을 미칩니다.",
+                        "description": "AppArmor ('Application Armor')는 네트워크 및 원시 소켓 접근이나 특정 파일의 읽기, 쓰기 또는 실행 권한과 같은 애드온의 기능을 제한하는 Linux 커널 보안 모듈입니다.\n\n애드온 제작자는 애드온에 최적화된 보안 프로필을 제공하거나 비활성화하도록 요청할 수 있습니다. AppArmor가 비활성화되면 보안 위험이 증가하므로 애드온의 보안 점수에 부정적인 영향을 미칩니다.",
                         "title": "AppArmor"
                     },
                     "auth_api": {
-                        "description": "추가 기능은 Home Assistant에 대해 사용자를 인증할 수 있으므로 추가 기능을 통해 사용자가 Home Assistant 사용자이름/비밀번호를 사용하여 추가 기능 내에서 실행되는 응용 프로그램에 로그인할 수 있습니다. 이 배지는 추가 기능 작성자가 이 기능을 요청하는지 여부를 나타냅니다.",
+                        "description": "애드온은 Home Assistant에 대해 사용자를 인증할 수 있으므로 애드온을 통해 사용자가 Home Assistant 사용자이름/비밀번호를 사용하여 애드온 내에서 실행되는 응용 프로그램에 로그인할 수 있습니다. 이 배지는 애드온 제작자가 이 기능을 요구하는지 여부를 나타냅니다.",
                         "title": "Home Assistant 인증"
                     },
                     "docker_api": {
-                        "description": "추가 기능 작성자가 시스템에서 실행 중인 Docker 인스턴스에 대한 관리 액세스 권한을 추가 기능에 요청했습니다. 이 모드는 추가 기능이 Home Assistant 시스템 전체에 대해 완전한 액세스 및 제어 기능을 제공하므로 보안 위험이 추가되며 잘못 사용될 경우 시스템이 손상될 수 있습니다. 따라서 이 기능은 추가 기능 보안 점수에 부정적인 영향을 미칩니다.\n\n이 액세스 수준은 자동으로 부여되지 않으므로 사용자가 확인해야 합니다. 이렇게 하려면 추가 기능에서 보호 모드를 수동으로 비활성화해야 합니다. 이 추가 기능의 출처를 알고 있으며 신뢰하고 사용이 필요한 경우에만 보호 모드를 비활성화하십시오.",
-                        "title": "완전한 Docker 액세스"
+                        "description": "애드온 제작자가 시스템에서 실행 중인 Docker 인스턴스에 대한 관리 접근 권한을 애드온에 요청했습니다. 이 모드는 애드온이 Home Assistant 시스템 전체에 대해 완전한 접근 및 제어 기능을 제공하므로 보안 위험이 추가되며 잘못 사용될 경우 시스템이 손상될 수 있습니다. 따라서 이 기능은 애드온 보안 점수에 부정적인 영향을 미칩니다.\n\n이 접근 수준은 자동으로 부여되지 않으므로 사용자가 확인해야 합니다. 이렇게 하려면 애드온에서 보호 모드를 수동으로 비활성화해야 합니다. 이 애드온의 출처를 알고 있으며 신뢰하고 사용이 필요한 경우에만 보호 모드를 비활성화하십시오.",
+                        "title": "완전한 Docker 접근"
                     },
                     "full_access": {
-                        "description": "추가 기능 작성자의 요청에 의해 추가 기능에 시스템의 하드웨어에 대한 완전한 액세스 권한이 부여되었습니다. 액세스는 Docker의 권한 모드와 비슷합니다. 이로 인해 보안 위험이 발생할 수 있으므로 이 기능은 추가 기능 보안 점수에 부정적인 영향을 미칩니다.\n\n이 액세스 수준은 자동으로 부여되지 않으므로 사용자가 확인해야 합니다. 이렇게 하려면 추가 기능에서 보호 모드를 수동으로 비활성화해야 합니다. 이 추가 기능의 출처를 알고 있으며 신뢰하고 사용이 필요한 경우에만 보호 모드를 비활성화하십시오.",
-                        "title": "완전한 하드웨어 액세스"
+                        "description": "애드온 제작자의 요청에 의해 애드온에 시스템의 하드웨어에 대한 완전한 접근 권한이 부여되었습니다. 애드온의 접근 권한은 Docker의 권한 모드와 비슷합니다. 이로 인해 보안 위험이 발생할 수 있으므로 이 기능은 애드온 보안 점수에 부정적인 영향을 미칩니다.\n\n이 접근 수준은 자동으로 부여되지 않으므로 사용자가 확인해야 합니다. 이렇게 하려면 애드온에서 보호 모드를 수동으로 비활성화해야 합니다. 이 애드온의 출처를 알고 있으며 신뢰하고 사용이 필요한 경우에만 보호 모드를 비활성화하십시오.",
+                        "title": "완전한 하드웨어 접근"
                     },
                     "hassio_api": {
-                        "description": "추가 기능 작성자의 요청에 의해 추가 기능에 Supervisor API에 대한 액세스 권한이 부여되었습니다. 기본적으로 추가 기능은 시스템의 일반 버전 정보에 액세스 할 수 있습니다. 추가 기능이 API에 대해 '매니저' 또는 '관리자' 수준의 액세스를 요청할 때 Home Assistant 시스템의 여러 부분을 제어할 수 있는 액세스 권한을 얻게 됩니다. 이 권한은 이 배지로 표시되며 추가 기능의 보안 점수에 부정적인 영향을 미칩니다.",
-                        "title": "Supervisor API 액세스"
+                        "description": "애드온 제작자의 요청에 의해 애드온에 Supervisor API에 대한 접근 권한이 부여되었습니다. 기본적으로 애드온은 시스템의 일반 버전 정보에 접근할 수 있습니다. 애드온이 API에 대해 '매니저' 또는 '관리자' 수준의 접근 권한을 요청할 때 Home Assistant 시스템의 여러 부분을 제어할 수 있는 접근 권한을 얻게 됩니다. 이 권한은 이 배지로 표시되며 애드온의 보안 점수에 부정적인 영향을 미칩니다.",
+                        "title": "Supervisor API 접근"
                     },
                     "homeassistant_api": {
-                        "description": "이 추가 기능은 Home Assistant API를 통해 실행 중인 Home Assistant 인스턴스에 직접 액세스할 수 있습니다. 이 모드는 추가 기능에 대한 인증도 처리하므로 추가 인증 토큰 없이 추가 기능이 Home Assistant와 상호 작용할 수 있습니다.",
-                        "title": "Home Assistant API 액세스"
+                        "description": "이 애드온은 Home Assistant API를 통해 실행 중인 Home Assistant 인스턴스에 직접 접근할 수 있습니다. 이 모드는 애드온에 대한 인증도 처리하므로 추가 인증 토큰 없이 애드온이 Home Assistant와 상호 작용할 수 있습니다.",
+                        "title": "Home Assistant API 접근"
                     },
                     "host_network": {
-                        "description": "추가 기능은 일반적으로 자체 격리된 네트워크 계층에서 실행되므로 호스트 운영 체제의 네트워크에 액세스 할 수 없습니다. 경우에 따라 이 네트워크 격리에 의해 추가 기능의 서비스 제공이 제한될 수 있으므로 추가 기능 작성자가 격리를 해제하여 추가 기능에 호스트 시스템의 네트워크 기능에 대한 전체 액세스 권한을 부여할 수 있습니다. 이렇게 하면 추가 기능에 더 많은 네트워크 기능이 제공되지만 보안이 저하되므로 추가 기능에서 이 옵션을 사용하면 추가 기능의 보안 등급이 낮아집니다.",
+                        "description": "애드온은 일반적으로 자체 격리된 네트워크 계층에서 실행되므로 호스트 운영 체제의 네트워크에 접근할 수 없습니다. 경우에 따라 이러한 네트워크 격리에 의해 애드온의 서비스 제공이 제한될 수 있으므로 애드온 제작자가 격리를 해제하여 애드온에 호스트 시스템의 네트워크 기능에 대한 전체 접근 권한을 부여할 수 있습니다. 이렇게 하면 애드온에 더 많은 네트워크 기능이 제공되지만 보안이 저하되므로 애드온에서 이 옵션을 사용하면 애드온의 보안 등급이 낮아집니다.",
                         "title": "호스트 네트워크"
                     },
                     "host_pid": {
-                        "description": "일반적으로 추가 기능이 실행하는 프로세스는 다른 모든 시스템 프로세스와 격리됩니다. 추가 기능 작성자는 추가 기능이 호스트 시스템 인스턴스에서 실행 중인 시스템 프로세스에 액세스 할 수 있도록 요청하고 호스트 시스템에서 프로세스를 생성할 수 있도록 허용했습니다. 이 모드는 추가 기능이 Home Assistant 시스템 전체에 대해 완전한 액세스 및 제어 기능을 제공하므로 보안 위험이 추가되며 잘못 사용될 경우 시스템이 손상될 수 있습니다. 따라서 이 기능은 추가 기능 보안 점수에 부정적인 영향을 미칩니다.\n\n이 액세스 수준은 자동으로 부여되지 않으므로 사용자가 확인해야 합니다. 이렇게 하려면 추가 기능에서 보호 모드를 수동으로 비활성화해야 합니다. 이 추가 기능의 출처를 알고 있으며 신뢰하고 사용이 필요한 경우에만 보호 모드를 비활성화하십시오.",
+                        "description": "일반적으로 애드온이 실행하는 프로세스는 다른 모든 시스템 프로세스와 격리됩니다. 애드온 제작자는 애드온이 호스트 시스템 인스턴스에서 실행 중인 시스템 프로세스에 접근할 수 있도록 요청하고 호스트 시스템에서 프로세스를 생성할 수 있도록 허용했습니다. 이 모드는 애드온이 Home Assistant 시스템 전체에 대해 완전한 접근 및 제어 기능을 제공하므로 보안 위험이 추가되며 잘못 사용될 경우 시스템이 손상될 수 있습니다. 따라서 이 기능은 애드온 보안 점수에 부정적인 영향을 미칩니다.\n\n이 접근 수준은 자동으로 부여되지 않으므로 사용자가 확인해야 합니다. 이렇게 하려면 애드온에서 보호 모드를 수동으로 비활성화해야 합니다. 이 애드온의 출처를 알고 있으며 신뢰하고 사용이 필요한 경우에만 보호 모드를 비활성화하십시오.",
                         "title": "호스트 프로세스 네임스페이스"
                     },
                     "ingress": {
-                        "description": "이 추가 기능은 인그레스를 사용하여 추가 기능의 인터페이스를 Home Assistant에 안전하게 적용합니다.",
+                        "description": "이 애드온은 인그레스를 사용하여 애드온의 인터페이스를 Home Assistant에 안전하게 적용합니다.",
                         "title": "인그레스"
                     },
                     "label": {
@@ -189,8 +189,8 @@
                         "stage": "단계"
                     },
                     "rating": {
-                        "description": "Home Assistant는 각 추가 기능에 대해 보안 등급을 제공하며, 이 추가 기능을 사용할 때 발생할 수 있는 위험 정도를 나타냅니다. 시스템에 대한 추가 기능에 더 많은 액세스 권한이 필요할수록 점수가 낮아지며 보안 위험이 높아질 수 있습니다.\n\n보안 등급 점수는 1부터 6까지입니다. 여기서 1은 최저 점수(가장 불안전하고 가장 높은 위험으로 간주됨)이고 6은 최고 점수(가장 안전하고 가장 낮은 위험으로 간주됨)입니다.",
-                        "title": "추가 기능 보안 등급"
+                        "description": "Home Assistant는 각 애드온에 대해 보안 등급을 제공하며, 이 애드온을 사용할 때 발생할 수 있는 위험 정도를 나타냅니다. 애드온이 시스템에 대한 더 많은 접근 권한을 요구할수록 점수가 낮아지며 보안 위험이 높아질 수 있습니다.\n\n보안 등급 점수는 1부터 6까지입니다. 여기서 1은 최저 점수(가장 불안전하고 가장 높은 위험으로 간주됨)이고 6은 최고 점수(가장 안전하고 가장 낮은 위험으로 간주됨)입니다.",
+                        "title": "애드온 보안 등급"
                     },
                     "role": {
                         "admin": "관리자",
@@ -200,46 +200,46 @@
                         "manager": "매니저"
                     },
                     "stage": {
-                        "description": "추가 기능은 다음 세 가지 단계 중 하나일 수 있습니다:\n\n{icon_stable} **안정*: 실제 환경에서 바로 사용할 수 있는 추가 기능입니다.\n\n{icon_experimental} **실험**: 버그를 포함할 수 있으며 완성되지 않았을 수 있습니다.\n\n{icon_deprecated} **중단**: 이러한 추가 기능은 더 이상 업데이트되지 않습니다.",
-                        "title": "추가 기능 단계"
+                        "description": "애드온은 다음 세 가지 단계 중 하나일 수 있습니다:\n\n{icon_stable} **안정적*: 실제 환경에서 바로 사용할 수 있는 애드온입니다.\n\n{icon_experimental} **실험적**: 버그를 포함할 수 있으며 완성되지 않았을 수 있습니다.\n\n{icon_deprecated} **지원중단**: 이러한 애드온은 더 이상 업데이트되지 않습니다.",
+                        "title": "애드온 단계"
                     }
                 },
                 "changelog": "변경 로그",
-                "cpu_usage": "추가 기능 CPU 사용량",
+                "cpu_usage": "애드온 CPU 사용량",
                 "hostname": "호스트 이름",
                 "install": "설치하기",
                 "new_update_available": "{name} {version}을(를) 사용할 수 있습니다",
-                "not_available_arch": "이 추가 기능은 시스템의 프로세서 또는 시스템에 설치된 운영 체제와 호환되지 않습니다.",
-                "not_available_version": "Home Assistant {core_version_installed}을(를) 실행 중입니다. 이 추가 기능의 버전으로 업데이트하려면 Home Assistant의 버전 {core_version_needed} 이상이 필요합니다",
+                "not_available_arch": "이 애드온은 시스템의 프로세서 또는 설치된 운영 체제와 호환되지 않습니다.",
+                "not_available_version": "Home Assistant {core_version_installed}을(를) 실행 중입니다. 이 애드온의 버전으로 업데이트하려면 Home Assistant의 버전 {core_version_needed} 이상이 필요합니다",
                 "open_web_ui": "웹 UI 열기",
                 "option": {
                     "auto_update": {
-                        "description": "사용 가능한 새로운 버전이 있을 경우 추가 기능을 자동으로 업데이트합니다",
+                        "description": "사용 가능한 새로운 버전의 애드온이 있을 경우 자동으로 업데이트합니다",
                         "title": "자동 업데이트"
                     },
                     "boot": {
-                        "description": "시스템이 부팅될 때 추가 기능을 시작합니다",
+                        "description": "시스템이 부팅될 때 애드온을 시작합니다",
                         "title": "자동 시작"
                     },
                     "ingress_panel": {
-                        "description": "이 추가 기능을 사이드바에 추가합니다",
+                        "description": "이 애드온을 사이드바에 추가합니다",
                         "title": "사이드바에 표시하기"
                     },
                     "protected": {
-                        "description": "추가 기능에서 상위 시스템에 접근하는 것을 차단합니다",
+                        "description": "애드온에서 상위 시스템에 접근하는 것을 차단합니다",
                         "title": "보호 모드"
                     },
                     "watchdog": {
-                        "description": "추가 기능이 충돌한 경우 다시 시작합니다",
+                        "description": "애드온이 충돌한 경우 다시 시작합니다",
                         "title": "실행 감시"
                     }
                 },
                 "protection_mode": {
-                    "content": "이 추가 기능의 보호 모드가 비활성화되었습니다! 이렇게 하면 추가 기능에 전체 시스템에 대한 완전한 액세스 권한을 부여하여 보안 위험을 가중시키고 잘못 사용하면 시스템이 손상될 수 있습니다. 이 추가 기능의 출처를 알고 있으며 신뢰하고 사용이 필요한 경우에만 보호 모드를 비활성화하십시오.",
+                    "content": "이 애드온의 보호 모드가 비활성화되었습니다! 이렇게 하면 애드온에 전체 시스템에 대한 완전한 접근 권한을 부여하여 보안 위험을 가중시키고 잘못 사용하면 시스템이 손상될 수 있습니다. 이 애드온의 출처를 알고 있으며 신뢰하고 사용이 필요한 경우에만 보호 모드를 비활성화하십시오.",
                     "enable": "보호 모드 활성화하기",
                     "title": "경고: 보호 모드가 비활성화되었습니다!"
                 },
-                "ram_usage": "추가 기능 RAM 사용량",
+                "ram_usage": "애드온 RAM 사용량",
                 "rebuild": "다시 빌드하기",
                 "restart": "다시 시작하기",
                 "start": "시작하기",
@@ -248,12 +248,12 @@
                 "visit_addon_page": "자세한 내용은 {name} 페이지를 참조해주세요"
             },
             "documentation": {
-                "get_documentation": "추가 기능 문서를 가져오지 못했습니다. {error}"
+                "get_documentation": "애드온 관련 문서를 가져오지 못했습니다. {error}"
             },
-            "failed_to_reset": "추가 기능 구성을 재설정하지 못했습니다. {error}",
-            "failed_to_save": "추가 기능 구성을 저장하지 못했습니다. {error}",
+            "failed_to_reset": "애드온 설정을 재설정하지 못했습니다. {error}",
+            "failed_to_save": "애드온 설정을 저장하지 못했습니다. {error}",
             "logs": {
-                "get_logs": "추가 기능 로그를 가져오지 못했습니다. {error}"
+                "get_logs": "애드온 로그를 가져오지 못했습니다. {error}"
             },
             "panel": {
                 "configuration": "구성",
@@ -262,9 +262,9 @@
                 "log": "로그"
             },
             "state": {
-                "installed": "추가 기능이 설치되었습니다",
-                "not_available": "시스템에서 추가 기능을 사용할 수 없습니다",
-                "not_installed": "추가 기능이 설치되지 않았습니다"
+                "installed": "애드온이 설치되었습니다",
+                "not_available": "시스템에서 애드온을 사용할 수 없습니다",
+                "not_installed": "애드온이 설치되지 않았습니다"
             }
         },
         "common": {
@@ -312,10 +312,10 @@
         },
         "dashboard": {
             "addon_new_version": "새로운 버전을 사용할 수 있습니다",
-            "addon_running": "추가 기능이 실행 중입니다",
-            "addon_stopped": "추가 기능이 중지되었습니다",
-            "addons": "추가 기능",
-            "no_addons": "아직 설치된 추가 기능이 없습니다. 시작하려면 추가 기능 스토어로 이동해보세요!"
+            "addon_running": "애드온이 실행 중입니다",
+            "addon_stopped": "애드온이 중지되었습니다",
+            "addons": "애드온",
+            "no_addons": "아직 설치된 애드온이 없습니다. 시작하려면 애드온 스토어로 이동해보세요!"
         },
         "dialog": {
             "network": {
@@ -351,11 +351,11 @@
             "repositories": {
                 "add": "추가하기",
                 "remove": "제거하기",
-                "title": "추가 기능 저장소 관리"
+                "title": "애드온 저장소 관리"
             },
             "restart_addon": {
-                "confirm_text": "추가 기능 다시 시작하기",
-                "text": "변경 사항과 함께 추가 기능을 다시 시작하시겠습니까?"
+                "confirm_text": "애드온 다시 시작하기",
+                "text": "변경 사항과 함께 애드온을 다시 시작하시겠습니까?"
             },
             "update": {
                 "create_snapshot": "업데이트하기 전에 {name}의 스냅숏 만들기",
@@ -366,18 +366,18 @@
         },
         "my": {
             "error": "알 수 없는 오류가 발생했습니다",
-            "error_addon_not_found": "추가 기능을 찾을 수 없습니다",
+            "error_addon_not_found": "애드온을 찾을 수 없습니다.",
             "faq_link": "내 Home Assistant 자주 묻는 질문",
             "not_supported": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. {link}에서 지원되는 리디렉션과 리디렉션이 도입된 버전을 확인해주세요."
         },
         "panel": {
             "dashboard": "대시보드",
             "snapshots": "스냅숏",
-            "store": "추가 기능 스토어",
+            "store": "애드온 스토어",
             "system": "시스템"
         },
         "snapshot": {
-            "addons": "추가 기능",
+            "addons": "애드온",
             "available_snapshots": "사용 가능한 스냅숏",
             "could_not_create": "스냅숏을 만들 수 없습니다",
             "create": "생성하기",
@@ -386,7 +386,7 @@
             "description": "스냅숏을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
             "enter_password": "비밀번호를 입력해주세요",
             "folder": {
-                "addons/local": "로컬 추가 기능",
+                "addons/local": "로컬 애드온",
                 "homeassistant": "Home Assistant 구성 내용",
                 "media": "미디어",
                 "share": "공유 내용",
@@ -405,7 +405,7 @@
             "upload_snapshot": "스냅숏 올리기"
         },
         "store": {
-            "missing_addons": "추가 기능이 보이지 않으신가요? 사용자 프로필 페이지에서 고급 모드를 활성화해보세요",
+            "missing_addons": "애드온이 보이지 않으신가요? 사용자 프로필 페이지에서 고급 모드를 활성화해보세요",
             "no_results_found": "{repository}에 결과가 존재하지 않습니다",
             "registries": "레지스트리",
             "repositories": "저장소"
@@ -580,7 +580,7 @@
                 "turn_on": "켜기"
             },
             "persistent_notification": {
-                "dismiss": "해제"
+                "dismiss": "해제하기"
             },
             "scene": {
                 "activate": "활성화"
@@ -684,14 +684,14 @@
         },
         "components": {
             "addon-picker": {
-                "addon": "추가 기능",
+                "addon": "애드온",
                 "error": {
                     "fetch_addons": {
-                        "description": "추가 기능을 가져오는 중 오류가 반환되었습니다.",
-                        "title": "추가 기능 가져오기 오류"
+                        "description": "애드온을 가져오는 중 오류가 반환되었습니다.",
+                        "title": "애드온 가져오기 오류"
                     },
                     "no_supervisor": {
-                        "description": "Supervisor를 찾을 수 없으므로 추가 기능을 읽어 들일 수 없습니다.",
+                        "description": "Supervisor를 찾을 수 없으므로 애드온을 읽어 들일 수 없습니다.",
                         "title": "Supervisor가 없습니다"
                     }
                 }
@@ -949,8 +949,8 @@
             "helper_settings": {
                 "counter": {
                     "initial": "초기값",
-                    "maximum": "최대값",
-                    "minimum": "최소값",
+                    "maximum": "최댓값",
+                    "minimum": "최솟값",
                     "restore": "Home Assistant가 시작될 때 최근 값으로 복원",
                     "step": "계수 간격"
                 },
@@ -966,8 +966,8 @@
                 },
                 "input_number": {
                     "box": "입력란",
-                    "max": "최대값",
-                    "min": "최소값",
+                    "max": "최댓값",
+                    "min": "최솟값",
                     "mode": "디스플레이 모드",
                     "slider": "슬라이더",
                     "step": "슬라이더 간격",
@@ -1272,7 +1272,7 @@
                             "add": "동작 추가하기",
                             "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
-                            "duplicate": "복제",
+                            "duplicate": "복제하기",
                             "header": "동작",
                             "introduction": "동작은 자동화가 트리거 될 때 Home Assistant가 수행할 작업입니다.",
                             "learn_more": "동작에 대해 더 알아보기",
@@ -1359,7 +1359,7 @@
                             "add": "조건 추가하기",
                             "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
-                            "duplicate": "복제",
+                            "duplicate": "복제하기",
                             "header": "조건",
                             "introduction": "조건은 선택 사항이며 자동화가 트리거 될 때 설정된 모든 조건이 충족되지 않으면 동작되지 않도록 할 수 있습니다.",
                             "learn_more": "조건에 대해 더 알아보기",
@@ -1463,7 +1463,7 @@
                             "add": "트리거 추가하기",
                             "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
-                            "duplicate": "복제",
+                            "duplicate": "복제하기",
                             "header": "트리거",
                             "introduction": "트리거는 자동화 규칙을 처리하는 시작점입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다.",
                             "learn_more": "트리거에 대해 더 알아보기",
@@ -1680,7 +1680,7 @@
                         "nabu_casa_account": "Nabu Casa 계정",
                         "not_connected": "연결되지 않음",
                         "remote": {
-                            "access_is_being_prepared": "원격 액세스가 준비 중입니다. 준비가 되면 알려드리겠습니다.",
+                            "access_is_being_prepared": "원격 접속이 준비 중입니다. 준비가 되면 알려드리겠습니다.",
                             "certificate_info": "인증서 정보",
                             "info": "Home Assistant Cloud는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다.",
                             "instance_is_available": "구성요소는 다음의 주소에서 사용할 수 있습니다.",
@@ -1707,7 +1707,7 @@
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "웹 훅을 비활성화하지 못했습니다:",
-                            "info": "웹 훅에 의해 트리거 되도록 구성된 모든 구성요소에 공개적으로 액세스 할 수 있는 URL을 제공하여 인스턴스를 인터넷에 노출하지 않고도 어디에서나 Home Assistant로 데이터를 보낼 수 있습니다.",
+                            "info": "웹 훅에 의해 트리거 되도록 구성된 모든 구성요소에 공개적으로 접근할 수 있는 URL을 제공하여 인스턴스를 인터넷에 노출하지 않고도 어디에서나 Home Assistant로 데이터를 보낼 수 있습니다.",
                             "link_learn_more": "웹 훅 기반 자동화 생성에 대해 더 알아보기.",
                             "loading": "읽는 중 ...",
                             "manage": "관리",
@@ -1945,7 +1945,7 @@
                     },
                     "scene": {
                         "create": "기기로 씬 구성하기",
-                        "create_disable": "비활성화된 기기로 씬을 만들 수 없습니다",
+                        "create_disable": "비활성화된 기기로 장면을 만들 수 없습니다",
                         "no_scenes": "씬 없음",
                         "scenes": "씬"
                     },
@@ -2016,7 +2016,7 @@
                     "filtering_by": "필터링",
                     "show": "표시하기"
                 },
-                "header": "Home Assistant 구성",
+                "header": "Home Assistant 구성하기",
                 "helpers": {
                     "caption": "도우미",
                     "description": "자동화 구축에 도움이 되는 요소를 관리합니다",
@@ -2054,8 +2054,8 @@
                     "description": "버전, 시스템 상태 및 관련 문서에 대한 링크입니다",
                     "developed_by": "Home Assistant는 수많은 멋진 사람들에 의해 개발되었습니다.",
                     "documentation": "관련 문서",
-                    "frontend": "프런트엔드-UI",
-                    "frontend_version": "프런트엔드 버전: {version} - {type}",
+                    "frontend": "Frontend-UI",
+                    "frontend_version": "Frontend 버전: {version} - {type}",
                     "home_assistant_logo": "Home Assistant 로고",
                     "icons_by": "아이콘 출처",
                     "integrations": "통합 구성요소",
@@ -2400,7 +2400,7 @@
                     "description": "Home Assistant가 추적하는 구성원을 관리합니다",
                     "detail": {
                         "admin": "관리자",
-                        "allow_login": "로그인 허용",
+                        "allow_login": "로그인 허용하기",
                         "confirm_delete_user": "{name} 구성원에 대한 사용자 계정을 삭제하시겠습니까? 여전히 해당 사용자를 추적할 수는 있지만 해당 구성원은 더 이상 로그인할 수 없습니다.",
                         "create": "만들기",
                         "delete": "삭제하기",
@@ -2648,7 +2648,7 @@
                             "username": "사용자 이름"
                         }
                     },
-                    "users_privileges_note": "사용자 그룹 기능은 현재 작업 중이며, 사용자는 UI를 통해 인스턴스를 관리할 수 없습니다. 모든 사용자 관리 API 엔드포인트가 관리자에 대한 액세스를 올바르게 제한하는지를 확인하는 중입니다."
+                    "users_privileges_note": "사용자 그룹 기능은 현재 작업 중이며, 사용자는 UI를 통해 인스턴스를 관리할 수 없습니다. 모든 사용자 관리 API 엔드포인트가 관리자에 대한 접근을 올바르게 제한하는지를 확인하는 중입니다."
                 },
                 "zha": {
                     "add_device": "기기 추가하기",
@@ -2755,31 +2755,31 @@
                         "name": "이름",
                         "new_zone": "새로운 지역",
                         "passive": "자동화 전용",
-                        "passive_note": "자동화 전용은 프런트엔드에 숨겨져 있으며 추적 기기의 위치로 사용되지 않습니다. 자동화에 사용하려는 경우에 유용합니다.",
+                        "passive_note": "자동화 전용은 Frontend에 숨겨져 있으며 추적 기기의 위치로 사용되지 않습니다. 자동화에 사용하려는 경우에 유용합니다.",
                         "radius": "반경",
                         "required_error_msg": "이 입력란은 필수 요소입니다",
                         "update": "업데이트"
                     },
-                    "edit_home_zone": "집 지역의 반경은 아직 프런트엔드에서 편집할 수 없습니다. 집 지역을 이동하려면 지도에서 마커를 끌어놓아 주세요.",
-                    "edit_home_zone_narrow": "집 지역의 반경은 아직 프런트엔드에서 편집할 수 없습니다. 위치는 일반 구성에서 변경할 수 있습니다.",
+                    "edit_home_zone": "집 지역의 반경은 아직 Frontend에서 편집할 수 없습니다. 집 지역을 이동하려면 지도에서 마커를 끌어놓아 주세요.",
+                    "edit_home_zone_narrow": "집 지역의 반경은 아직 Frontend에서 편집할 수 없습니다. 위치는 일반 구성에서 변경할 수 있습니다.",
                     "go_to_core_config": "일반 구성으로 이동하시겠습니까?",
-                    "home_zone_core_config": "집 지역의 위치는 일반 구성 페이지에서 편집할 수 있습니다. 집 지역의 반경은 아직 프런트엔드에서 편집할 수 없습니다. 일반 구성으로 이동하시겠습니까?",
+                    "home_zone_core_config": "집 지역의 위치는 일반 구성 페이지에서 편집할 수 있습니다. 집 지역의 반경은 아직 Frontend에서 편집할 수 없습니다. 일반 구성으로 이동하시겠습니까?",
                     "introduction": "지역을 사용하면 지구 상의 특정 위치를 지정할 수 있습니다. 구성원이 지역 내에 있으면 구성요소 상태에서 지역의 이름을 가져옵니다. 자동화 설정 내에서 지역을 트리거 또는 조건으로 사용할 수도 있습니다.",
                     "no_zones_created_yet": "아직 설정한 지역이 없는 것 같습니다."
                 },
                 "zwave_js": {
                     "add_node": {
-                        "cancel_inclusion": "포함 취소하기",
-                        "controller_in_inclusion_mode": "Z-Wave 컨트롤러가 이제 포함 모드에 있습니다",
-                        "follow_device_instructions": "기기에서 페어링을 트리거하려면 기기와 함께 제공된 지침을 따라주세요.",
+                        "cancel_inclusion": "연결 거부하기",
+                        "controller_in_inclusion_mode": "Z-Wave 컨트롤러가 이제 연결 허용 모드에 있습니다",
+                        "follow_device_instructions": "기기를 연결하려면 기기의 설명서를 따라주세요.",
                         "inclusion_failed": "노드를 추가할 수 없습니다. 자세한 내용은 로그를 확인해주세요.",
                         "inclusion_finished": "노드가 추가되었습니다. 백그라운드에서 노드 설정을 마치면 모든 구성요소가 표시되는 데 몇 분 정도 걸릴 수 있습니다.",
                         "introduction": "이 마법사는 Z-Wave 네트워크에 노드를 추가하는 과정을 안내해드립니다.",
-                        "secure_inclusion_warning": "보안 기기에는 추가 대역폭이 필요합니다. 보안 기기가 너무 많으면 Z-Wave 네트워크의 속도가 느려질 수 있습니다. 잠금장치나 차고 문 열림과 같이 보안이 필요한 기기에만 보안 포함을 사용하는 것이 좋습니다.",
-                        "start_inclusion": "포함 시작하기",
-                        "start_secure_inclusion": "보안 포함 시작하기",
+                        "secure_inclusion_warning": "보안 기기에는 추가 대역폭이 필요합니다. 보안 기기가 너무 많으면 Z-Wave 네트워크의 속도가 느려질 수 있습니다. 잠금장치나 차고 문 개폐기와 같이 보안이 필요한 기기에만 보안 포함을 사용하는 것이 좋습니다.",
+                        "start_inclusion": "연결 시작하기",
+                        "start_secure_inclusion": "암호화 연결 시작하기",
                         "title": "Z-Wave 노드 추가하기",
-                        "use_secure_inclusion": "보안 포함 사용하기",
+                        "use_secure_inclusion": "암호화 연결 사용하기",
                         "view_device": "기기 보기"
                     },
                     "button": "구성하기",
@@ -2898,7 +2898,7 @@
                     },
                     "ozw_log": {
                         "header": "OZW 로그",
-                        "introduction": "로그를 봐주세요. 최소값은 0(전체 로그를 불러올 때)이고 최대값은 1000 입니다. 로드된 로그는 정적 로그를 보여주며 로그의 끝 부분은 최근 기록된 로그로 자동으로 업데이트됩니다.",
+                        "introduction": "로그를 봐주세요. 최솟값은 0(전체 로그를 불러올 때)이고 최댓값은 1000 입니다. 로드된 로그는 정적 로그를 보여주며 로그의 끝 부분은 최근 기록된 로그로 자동으로 업데이트됩니다.",
                         "last_log_lines": "최근 기록된 로그 수",
                         "load": "로드",
                         "tail": "로그의 끝 부분"
@@ -2930,7 +2930,7 @@
             },
             "custom": {
                 "external_panel": {
-                    "complete_access": "Home Assistant의 모든 데이터에 액세스 할 수 있습니다.",
+                    "complete_access": "Home Assistant의 모든 데이터에 접근할 수 있습니다.",
                     "hide_message": "이 메시지를 숨기려면 panel_custom 구성요소에 대한 문서를 확인해주세요",
                     "question_trust": "{link}의 외부 패널 {name}을(를) 신뢰하십니까?"
                 }
@@ -3014,7 +3014,7 @@
                     "observer": "Observer 확인하기",
                     "reboot": "호스트 재부팅 시도하기",
                     "system_health": "시스템 상태 확인하기",
-                    "title": "Supervisor 패널을 로드할 수 없습니다!",
+                    "title": "Supervisor 화면을 불러올 수 없습니다!",
                     "wait": "방금 시작한 경우 Supervisor에게 시작할 충분한 시간을 주었는지 확인해주세요."
                 }
             },
@@ -3255,7 +3255,7 @@
                             "name": "조명"
                         },
                         "logbook": {
-                            "description": "로그북 카드에는 구성요소에 대한 이벤트 목록이 표시됩니다.",
+                            "description": "로그북 카드는 구성요소 이벤트 목록이 표시됩니다.",
                             "name": "로그북"
                         },
                         "map": {
@@ -3384,8 +3384,8 @@
                     "header": "UI 편집하기",
                     "header-footer": {
                         "choose_header_footer": "{type} 선택하기",
-                        "footer": "푸터",
-                        "header": "헤더",
+                        "footer": "꼬릿말",
+                        "header": "머릿말",
                         "types": {
                             "buttons": {
                                 "name": "버튼"
@@ -3448,8 +3448,8 @@
                     },
                     "sub-element-editor": {
                         "types": {
-                            "footer": "푸터 편집기",
-                            "header": "헤더 편집기",
+                            "footer": "꼬릿말 편집기",
+                            "header": "머릿말 편집기",
                             "row": "구성요소 행 편집기"
                         }
                     },
@@ -3520,7 +3520,7 @@
             },
             "page-authorize": {
                 "abort_intro": "로그인이 중단되었습니다",
-                "authorizing_client": "{clientId}에 Home Assistant 구성요소에 대한 액세스 권한을 부여하려고 합니다.",
+                "authorizing_client": "{clientId}에 Home Assistant 구성요소에 대한 접근 권한을 부여하려고 합니다.",
                 "form": {
                     "error": "오류: {error}",
                     "next": "다음",
@@ -3779,7 +3779,7 @@
                     },
                     "description": "이 기기에 알림을 보냅니다.",
                     "error_load_platform": "notify.html5를 구성해주세요.",
-                    "error_use_https": "SSL을 통한 보안 연결된 환경이 필요합니다.",
+                    "error_use_https": "Frontend에 대해 SSL을 사용하도록 설정해야 합니다.",
                     "header": "푸시 알림",
                     "link_promo": "알림에 대해 더 알아보기",
                     "push_notifications": "푸시 알림"

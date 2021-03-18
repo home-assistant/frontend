@@ -785,7 +785,8 @@
                     "was_unlocked": "wurde entsperrt",
                     "was_unplugged": "wurde ausgesteckt",
                     "was_unsafe": "war unsicher"
-                }
+                },
+                "show_trace": "Trace anzeigen"
             },
             "media-browser": {
                 "audio_not_supported": "Ihr Browser unterstützt das Audioelement nicht.",
@@ -1120,7 +1121,7 @@
                         "smtp": "SMTP-Benachrichtigungsdienst neu laden",
                         "statistics": "Statistikentitäten neu laden",
                         "telegram": "Telegram-Benachrichtigungsdienst neu laden",
-                        "template": "Templates neu laden",
+                        "template": "Template-Entitäten neu laden",
                         "trend": "Trend-Entitäten neu laden",
                         "universal": "Universelle Medien-Player-Entitäten neu laden",
                         "zone": "Zonen neu laden"
@@ -1566,6 +1567,8 @@
                         "add_automation": "Automatisierung hinzufügen",
                         "delete_automation": "Automatisierung löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
+                        "dev_automation": "Automatisierung debuggen",
+                        "dev_only_editable": "Nur Automatisierungen in automations.yaml können debuggt werden.",
                         "duplicate": "Duplizieren",
                         "duplicate_automation": "Automatisierung duplizieren",
                         "edit_automation": "Automatisierung bearbeiten",
@@ -2115,7 +2118,7 @@
                         "aborted": "Abgebrochen",
                         "close": "Schließen",
                         "could_not_load": "Der Konfigurationsfluss konnte nicht geladen werden",
-                        "created_config": "Erstellte Konfiguration für {name}.",
+                        "created_config": "Konfiguration für {name} erstellt.",
                         "dismiss": "Dialog schließen",
                         "error": "Fehler",
                         "error_saving_area": "Fehler beim Speichern des Bereichs: {error}",

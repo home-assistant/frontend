@@ -785,7 +785,8 @@
                     "was_unlocked": "狀態為解鎖",
                     "was_unplugged": "狀態為拔下",
                     "was_unsafe": "狀態為不安全"
-                }
+                },
+                "show_trace": "顯示紀錄"
             },
             "media-browser": {
                 "audio_not_supported": "瀏覽器不支援音效元件。",
@@ -1566,6 +1567,8 @@
                         "add_automation": "新增一個自動化",
                         "delete_automation": "刪除自動化",
                         "delete_confirm": "確定要刪除此自動化？",
+                        "dev_automation": "自動化除錯",
+                        "dev_only_editable": "僅有於 automations.yaml 內定義的自動化、方能進行除錯。",
                         "duplicate": "複製",
                         "duplicate_automation": "複製自動化",
                         "edit_automation": "編輯自動化",
