@@ -1,9 +1,4 @@
-import {
-  customElement,
-  internalProperty,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { customElement, property } from "lit-element";
 import {
   HassRouterPage,
   RouterOptions,
@@ -13,11 +8,6 @@ import { navigate } from "../../../../../common/navigate";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
 import { mdiServerNetwork } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../../../data/device_registry";
 
 export const configTabs: PageNavigation[] = [
   {
