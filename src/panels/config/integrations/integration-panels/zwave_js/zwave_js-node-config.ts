@@ -32,10 +32,13 @@ import { configTabs } from "./zwave_js-config-router";
 import {
   DeviceRegistryEntry,
   computeDeviceName,
+  subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 @customElement("zwave_js-node-config")
-class ZWaveJSNodeConfig extends LitElement {
+class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ type: Object }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public route!: Route;
@@ -50,7 +53,8 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @property() public deviceId?: string;
 
-  @property({ type: Array }) public devices!: DeviceRegistryEntry[];
+  @property({ type: Array })
+  private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
   @internalProperty() private _device?: DeviceRegistryEntry;
 
@@ -62,11 +66,19 @@ class ZWaveJSNodeConfig extends LitElement {
     }
   }
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeDeviceRegistry(this.hass.connection, (entries) => {
+        this._deviceRegistryEntries = entries;
+      }),
+    ];
+  }
+
   protected updated() {
-    if (!this.hass) {
+    if (!this.hass || !this._deviceRegistryEntries) {
       return;
     }
-    if (!this._device && this.devices.length > 0) {
+    if (!this._device && this._deviceRegistryEntries.length > 0) {
       this._fetchData();
     }
   }
@@ -321,8 +333,10 @@ class ZWaveJSNodeConfig extends LitElement {
       return;
     }
 
-    this._device = this.devices
-      ? this.devices.find((device) => device.id === this.deviceId)
+    this._device = this._deviceRegistryEntries
+      ? this._deviceRegistryEntries.find(
+          (device) => device.id === this.deviceId
+        )
       : undefined;
 
     if (!this._device) {
