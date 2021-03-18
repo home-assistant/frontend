@@ -16,7 +16,7 @@ import { storeState } from "../util/ha-pref-storage";
 import {
   getTranslation,
   getLocalLanguage,
-  getUserLanguage,
+  findAvailableLanguage,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -80,7 +80,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.hassConnected();
       const result = await fetchTranslationPreferences(this.hass!);
       const userNumberFormat = result?.number_format;
-      const userLanguage = getUserLanguage(result);
+      const userLanguage = result?.language
+        ? findAvailableLanguage(result.language)
+        : null;
 
       const prefs: FrontendTranslationData = {
         language: userLanguage || this.hass!.locale?.language,

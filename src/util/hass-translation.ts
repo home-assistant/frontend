@@ -18,7 +18,7 @@ const LOCALE_LOOKUP = {
 /**
  * Search for a matching translation from most specific to general
  */
-function findAvailableLanguage(language: string) {
+export function findAvailableLanguage(language: string) {
   // In most case, the language has the same format with our translation meta data
   if (language in translationMetadata.translations) {
     return language;
@@ -35,20 +35,6 @@ function findAvailableLanguage(language: string) {
   return Object.keys(translationMetadata.translations).find(
     (lang) => lang.toLowerCase() === langLower
   );
-}
-
-/**
- * Get user selected language from backend
- */
-export function getUserLanguage(lang: FrontendTranslationData | null) {
-  const language = lang ? lang.language : null;
-  if (language) {
-    const availableLanguage = findAvailableLanguage(language);
-    if (availableLanguage) {
-      return availableLanguage;
-    }
-  }
-  return null;
 }
 
 /**
