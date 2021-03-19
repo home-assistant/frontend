@@ -38,11 +38,12 @@ import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 
-const getDevice = memoizeOne((entries, deviceId) =>
-  entries.find((device) => device.id === deviceId)
+const getDevice = memoizeOne(
+  (entries: DeviceRegistryEntry[], deviceId: string) =>
+    entries.find((device) => device.id === deviceId)
 );
 
-const getIdentifier = memoizeOne((device) =>
+const getIdentifier = memoizeOne((device: DeviceRegistryEntry) =>
   device.identifiers.find((ident) => ident[0] === "zwave_js")
 );
 
@@ -60,7 +61,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @property({ type: Number }) public nodeId?: number;
 
-  @property() public deviceId?: string;
+  @property() public deviceId!: string;
 
   @property({ type: Array })
   private _deviceRegistryEntries?: DeviceRegistryEntry[];
@@ -69,7 +70,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     if (this.hass) {
       this._fetchData();
     }
@@ -83,7 +84,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected updated() {
+  protected updated(): void {
     if (!this.hass || !this._deviceRegistryEntries) {
       return;
     }
@@ -171,7 +172,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _generateConfigBox(id, item) {
+  private _generateConfigBox(id, item): TemplateResult {
     const labelAndDescription = html`
       <div class="config-label">
         <b>${item.metadata.label}</b><br />
@@ -263,7 +264,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       <p>${item.value}</p>`;
   }
 
-  private _isEnumeratedBool(item) {
+  private _isEnumeratedBool(item): boolean {
     // Some Z-Wave config values use a states list with two options where index 0 = Disabled and 1 = Enabled
     // We want those to be considered boolean and show a toggle switch
     const disabledStates = ["disable", "disabled"];
