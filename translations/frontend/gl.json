@@ -1,5 +1,146 @@
 {
+    "supervisor": {
+        "common": {
+            "close": "Pechar"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Conectado a {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Desactivado",
+                "dns_servers": "Servidores DNS",
+                "failed_to_change": "Non se puido cambiar a configuración de rede",
+                "gateway": "Enderezo de porta de enlace",
+                "ip_netmask": "Enderezo IP / máscara de rede",
+                "open": "Aberto",
+                "scan_ap": "Buscar puntos de acceso",
+                "static": "Estático",
+                "title": "Configuración de rede",
+                "unsaved": "Tes cambios sen gardar, estes perderanse se cambias a pestana, queres continuar?",
+                "warning": "Se está a cambiar os enderezos de wifi, IP ou porta de enlace, podería perder a súa conexión!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Engadir un novo rexistro",
+                "add_registry": "Engadir rexistro",
+                "failed_to_add": "Non se puido engadir o rexistro",
+                "failed_to_remove": "Non se puido eliminar o rexistro",
+                "no_registries": "Non hai rexistros configurados",
+                "password": "Contrasinal",
+                "registry": "Rexistro",
+                "remove": "Eliminar",
+                "title_add": "Engade un novo rexistro de contedor",
+                "title_manage": "Xestionar rexistros de contedores",
+                "username": "Nome de usuario"
+            },
+            "repositories": {
+                "add": "Engadir",
+                "remove": "Eliminar",
+                "title": "Xestionar os repositorios de complementos"
+            },
+            "restart_addon": {
+                "confirm_text": "Reiniciar complemento",
+                "text": "¿Queres reiniciar o complemento cos teus cambios?"
+            },
+            "update": {
+                "create_snapshot": "Crea unha instantánea de {name} antes de actualizar",
+                "snapshot": "Instantánea",
+                "snapshotting": "Creando instantánea de {name}",
+                "updating": "Actualizando {name} á versión {version}"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "Complemento non atopado"
+        },
+        "snapshot": {
+            "addons": "Complementos",
+            "available_snapshots": "Instantáneas dispoñibles",
+            "could_not_create": "Non se puido crear unha instantánea",
+            "create": "Crear",
+            "create_blocked_not_running": "Non é posible crear unha instantánea neste momento porque o sistema está {state} .",
+            "create_snapshot": "Crear instantánea",
+            "description": "As instantáneas permiten facer copias de seguridade e restaurar facilmente todos os datos da súa instancia de Home Assistant.",
+            "enter_password": "Insira un contrasinal.",
+            "folder": {
+                "addons/local": "Complementos locais",
+                "homeassistant": "Configuración de Home Assistant",
+                "media": "Medios",
+                "share": "Compartir",
+                "ssl": "SSL"
+            },
+            "folders": "Carpetas",
+            "full_snapshot": "Instantánea completa",
+            "name": "Nome",
+            "no_snapshots": "Aínda non tes instantáneas.",
+            "partial_snapshot": "Instantánea parcial",
+            "password": "Contrasinal",
+            "password_protected": "Protexido por contrasinal",
+            "password_protection": "Protección por contrasinal",
+            "security": "Seguridade",
+            "type": "Tipo",
+            "upload_snapshot": "Subir instantánea"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Uso de CPU principal",
+                "ram_usage": "Uso de RAM principal"
+            },
+            "host": {
+                "change": "Cambiar",
+                "change_hostname": "Cambiar nome de host",
+                "confirm_reboot": "Seguro que queres reiniciar o host?",
+                "confirm_shutdown": "Seguro que queres apagar o host?",
+                "docker_version": "Versión Docker",
+                "failed_to_get_hardware_list": "Non foi posíbel obter a lista de hardware",
+                "failed_to_import_from_usb": "Non se puido importar dende USB",
+                "failed_to_reboot": "Non se puido reiniciar o host",
+                "failed_to_set_hostname": "Non se puido configurar o nome do host",
+                "failed_to_shutdown": "Non se puido apagar o host",
+                "hardware": "Hardware",
+                "hostname": "Nome do host",
+                "import_from_usb": "Importar dende USB",
+                "ip_address": "Enderezo IP",
+                "new_hostname": "Insira un novo nome de host:",
+                "operating_system": "Sistema operativo",
+                "reboot_host": "Reiniciar o host",
+                "shutdown_host": "Apagar o host",
+                "used_space": "Espazo usado"
+            },
+            "supervisor": {
+                "unhealthy_reason": {
+                    "docker": "O entorno Docker non funciona correctamente",
+                    "privileged": "O supervisor non é privilexiado",
+                    "setup": "Fallou a configuración do supervisor",
+                    "supervisor": "Non se puido actualizar o supervisor"
+                }
+            }
+        }
+    },
     "ui": {
+        "components": {
+            "logbook": {
+                "show_trace": "Mostrar rastro"
+            }
+        },
+        "dialogs": {
+            "more_info_control": {
+                "remote": {
+                    "activity": "Actividade actual"
+                }
+            },
+            "zha_device_info": {
+                "buttons": {
+                    "device_children": "Ver fillos"
+                },
+                "device_children": "Dispositivos Zigbee fillos"
+            }
+        },
+        "errors": {
+            "config": {
+                "no_template_editor_support": "Os modelos non son compatibles co editor visual"
+            }
+        },
         "panel": {
             "config": {
                 "automation": {
@@ -13,7 +154,33 @@
                                 }
                             }
                         }
+                    },
+                    "picker": {
+                        "dev_automation": "Depurar automatización",
+                        "dev_only_editable": "Só se poden depurar os automatismos definidos en automations.yaml"
                     }
+                },
+                "blueprint": {
+                    "overview": {
+                        "share_blueprint": "Compartir plano",
+                        "share_blueprint_no_url": "O plano non se pode compartir, sen URL de orixe"
+                    }
+                },
+                "zha": {
+                    "visualization": {
+                        "auto_zoom": "Zoom automático"
+                    }
+                }
+            },
+            "error": {
+                "go_back": "Retornar",
+                "supervisor": {
+                    "ask": "Pide axuda",
+                    "observer": "Comprobe o observador",
+                    "reboot": "Tenta reiniciar o host",
+                    "system_health": "Comprobe a saúde do sistema",
+                    "title": "Non se puido cargar o panel de supervisores.",
+                    "wait": "Se estás principiando, asegúrate de terlle dado ao supervisor o tempo suficiente para comezar."
                 }
             }
         }
