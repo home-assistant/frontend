@@ -38,6 +38,14 @@ import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 
+const getDevice = memoizeOne((entries, deviceId) =>
+  entries.find((device) => device.id === deviceId)
+);
+
+const getIdentifier = memoizeOne((device) =>
+  device.identifiers.find((ident) => ident[0] === "zwave_js")
+);
+
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ type: Object }) public hass!: HomeAssistant;
@@ -328,10 +336,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const getDevice = memoizeOne((entries, deviceId) =>
-      entries.find((device) => device.id === deviceId)
-    );
-
     this._device = this._deviceRegistryEntries
       ? getDevice(this._deviceRegistryEntries, this.deviceId)
       : undefined;
@@ -339,9 +343,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (!this._device) {
       return;
     }
-    const getIdentifier = memoizeOne((device) =>
-      device.identifiers.find((ident) => ident[0] === "zwave_js")
-    );
 
     const identifier = getIdentifier(this._device);
 
