@@ -23,7 +23,6 @@ import {
   fetchNodeConfigParameters,
   setNodeConfigParameter,
   ZWaveJSNodeConfigParams,
-  ZWaveJSSetConfigParamData,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
