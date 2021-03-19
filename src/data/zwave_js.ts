@@ -97,6 +97,27 @@ export const fetchNodeConfigParameters = (
     node_id,
   });
 
+export const setNodeConfigParameter = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number,
+  property: number,
+  value: number,
+  property_key: number | null
+): void => {
+  const data: ZWaveJSSetConfigParamData = {
+    type: "zwave_js/set_config_parameter",
+    entry_id: entry_id,
+    node_id: node_id,
+    property: property,
+    value: value,
+  };
+  if (property_key !== null) {
+    data.property_key = property_key;
+  }
+  hass.callWS(data);
+};
+
 export const getIdentifiersFromDevice = function (
   device: DeviceRegistryEntry
 ): ZWaveJSNodeIdentifiers | undefined {

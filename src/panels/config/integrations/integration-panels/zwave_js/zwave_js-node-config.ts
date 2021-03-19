@@ -21,6 +21,7 @@ import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-switch";
 import {
   fetchNodeConfigParameters,
+  setNodeConfigParameter,
   ZWaveJSNodeConfigParams,
   ZWaveJSSetConfigParamData,
 } from "../../../../../data/zwave_js";
@@ -312,20 +313,14 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private _updateConfigParameter(target, value) {
-    const data: ZWaveJSSetConfigParamData = {
-      type: "zwave_js/set_config_parameter",
-      entry_id: this.configEntryId!,
-      node_id: this.nodeId!,
-      property: target.property,
-      value: value,
-    };
-
-    if (target.propertyKey !== null) {
-      data.property_key = target.propertyKey;
-    }
-
-    this.hass.callWS(data);
-
+    setNodeConfigParameter(
+      this.hass,
+      this.configEntryId!,
+      this.nodeId!,
+      target.property,
+      value,
+      target.propertyKey ? target.propertyKey : null
+    );
     this._config![target.key].value = value;
   }
 
