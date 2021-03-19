@@ -187,6 +187,8 @@ export interface MapCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   geo_location_sources?: string[];
   dark_mode?: boolean;
+  show_timestamps?: boolean;
+  timestamp_format?: string;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

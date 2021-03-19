@@ -46,6 +46,8 @@ const cardConfigStruct = object({
   entities: array(entitiesConfigStruct),
   hours_to_show: optional(number()),
   geo_location_sources: optional(array()),
+  show_timestamps: optional(boolean()),
+  timestamp_format: optional(string()),
 });
 
 @customElement("hui-map-card-editor")
@@ -86,6 +88,14 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   get _dark_mode(): boolean {
     return this._config!.dark_mode || false;
+  }
+
+  get _show_timestamps(): boolean {
+    return this._config!.show_timestamps || false;
+  }
+
+  get _timestamp_format(): string {
+    return this._config!.timestamp_format || "MMM D, HH:mm";
   }
 
   protected render(): TemplateResult {
@@ -154,6 +164,31 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             type="number"
             .value=${this._hours_to_show}
             .configValue=${"hours_to_show"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+        </div>
+        <div class="side-by-side">
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.show_timestamps"
+            )}
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked=${this._show_timestamps}
+              .configValue=${"show_timestamps"}
+              @change=${this._valueChanged}
+            ></ha-switch
+          ></ha-formfield>
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.timestamp_format"
+            )}
+            (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            .value=${this._timestamp_format}
+            .configValue=${"timestamp_format"}
             @value-changed=${this._valueChanged}
           ></paper-input>
         </div>

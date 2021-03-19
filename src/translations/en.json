@@ -2875,7 +2875,9 @@
               "default_zoom": "Default Zoom",
               "hours_to_show": "Hours to Show",
               "source": "Source",
-              "description": "The Map card that allows you to display entities on a map."
+              "description": "The Map card that allows you to display entities on a map.",
+              "show_timestamps": "Show timestamps?",
+              "timestamp_format": "Timestamp format"
             },
             "markdown": {
               "name": "Markdown",
