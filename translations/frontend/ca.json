@@ -507,7 +507,7 @@
             },
             "automation": {
                 "last_triggered": "Última execució",
-                "trigger": "Executar accions"
+                "trigger": "Executa accions"
             },
             "camera": {
                 "not_available": "Imatge no disponible"
