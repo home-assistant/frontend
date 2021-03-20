@@ -50,9 +50,6 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     el.isWide = this.isWide;
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
-    if (this._currentPage === "node_config") {
-      el.deviceId = this.routeTail.path.substr(1);
-    }
 
     const searchParams = new URLSearchParams(window.location.search);
     if (this._configEntry && !searchParams.has("config_entry")) {

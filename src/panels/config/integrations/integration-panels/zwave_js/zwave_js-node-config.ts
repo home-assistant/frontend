@@ -49,17 +49,15 @@ const getIdentifier = memoizeOne((device: DeviceRegistryEntry) =>
 
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public isWide!: boolean;
 
   @property() public configEntryId?: string;
-
-  @property({ type: Number }) public nodeId?: number;
 
   @property() public deviceId!: string;
 
@@ -70,10 +68,17 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
 
+  @internalProperty() private _nodeId?: number;
+
   protected firstUpdated(): void {
     if (this.hass) {
       this._fetchData();
     }
+  }
+
+  protected connectedCallback(): void {
+    super.connectedCallback();
+    this.deviceId = this.route.path.substr(1);
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -103,7 +108,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       ></hass-error-screen>`;
     }
 
-    if (!this.nodeId) {
+    if (!this._nodeId) {
       return html`<hass-error-screen
         .hass=${this.hass}
         .error=${this.hass.localize(
@@ -324,7 +329,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     setNodeConfigParameter(
       this.hass,
       this.configEntryId!,
-      this.nodeId!,
+      this._nodeId!,
       target.property,
       value,
       target.propertyKey ? target.propertyKey : undefined
@@ -351,12 +356,12 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this.nodeId = parseInt(identifier[1].split("-")[1]);
+    this._nodeId = parseInt(identifier[1].split("-")[1]);
 
     this._config = await fetchNodeConfigParameters(
       this.hass,
       this.configEntryId,
-      this.nodeId
+      this._nodeId
     );
   }
 
