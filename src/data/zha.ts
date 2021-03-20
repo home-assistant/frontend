@@ -282,6 +282,20 @@ export const addGroup = (
     members: membersToAdd,
   });
 
+export const fetchZHAConfiguration = (hass: HomeAssistant): Promise<any> =>
+  hass.callWS({
+    type: "zha/configuration",
+  });
+
+export const updateZHAConfiguration = (
+  hass: HomeAssistant,
+  data: any
+): Promise<any> =>
+  hass.callWS({
+    type: "zha/configuration/update",
+    data: data,
+  });
+
 export const INITIALIZED = "INITIALIZED";
 export const INTERVIEW_COMPLETE = "INTERVIEW_COMPLETE";
 export const CONFIGURED = "CONFIGURED";

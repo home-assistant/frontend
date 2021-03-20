@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
@@ -20,6 +21,11 @@ import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
+import "../../../../../components/ha-form/ha-form";
+import {
+  fetchZHAConfiguration,
+  updateZHAConfiguration,
+} from "../../../../../data/zha";
 
 export const zhaTabs: PageNavigation[] = [
   {
@@ -51,6 +57,25 @@ class ZHAConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
+  @property() private _configuration?: any;
+
+  private _firstUpdatedCalled = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hass && this._firstUpdatedCalled) {
+      this._fetchConfiguration();
+    }
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    if (this.hass) {
+      this._fetchConfiguration();
+    }
+    this._firstUpdatedCalled = true;
+  }
+
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage
@@ -60,10 +85,7 @@ class ZHAConfigDashboard extends LitElement {
         .tabs=${zhaTabs}
         back-path="/config/integrations"
       >
-        <ha-card header="Zigbee Network">
-          <div class="card-content">
-            In the future you can change network settings for ZHA here.
-          </div>
+        <ha-card header="Shortcuts">
           ${this.configEntryId
             ? html`<div class="card-actions">
                 <a
@@ -87,6 +109,22 @@ class ZHAConfigDashboard extends LitElement {
               </div>`
             : ""}
         </ha-card>
+        <ha-card header="Configuration Options">
+          <div class="card-content">
+            ${this._configuration
+              ? html`<ha-form
+                  .schema=${this._configuration.schemas.options}
+                  .data=${this._configuration.data.options}
+                  @value-changed=${this._optionsDataChanged}
+                ></ha-form>`
+              : ""}
+          </div>
+          <div class="card-actions">
+            <mwc-button @click=${this._updateConfiguration}
+              >Update Configuration</mwc-button
+            >
+          </div>
+        </ha-card>
         <a href="/config/zha/add" slot="fab">
           <ha-fab
             .label=${this.hass.localize("ui.panel.config.zha.add_device")}
@@ -98,6 +136,36 @@ class ZHAConfigDashboard extends LitElement {
         </a>
       </hass-tabs-subpage>
     `;
+  }
+
+  private async _fetchConfiguration(): Promise<any> {
+    this._configuration = await fetchZHAConfiguration(this.hass!);
+  }
+
+  private _optionsDataChanged(ev: CustomEvent) {
+    this._configuration.data.options = ev.detail.value;
+  }
+
+  private async _updateConfiguration(): Promise<any> {
+    const sections = ["options"];
+    const data = {};
+    for (const section of sections) {
+      data[section] = {};
+      const sectionData = this._configuration.data[section];
+      const sectionSchema = this._configuration.schemas[section];
+      for (const field of sectionSchema) {
+        if (
+          field.name in sectionData &&
+          sectionData[field.name] !== field.default
+        ) {
+          data[section][field.name] = sectionData[field.name];
+        }
+      }
+      if (data[section] === {}) {
+        delete data[section];
+      }
+    }
+    await updateZHAConfiguration(this.hass!, data);
   }
 
   static get styles(): CSSResultArray {
