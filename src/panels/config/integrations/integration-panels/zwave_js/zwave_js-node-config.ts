@@ -70,13 +70,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _nodeId?: number;
 
-  protected firstUpdated(): void {
-    if (this.hass) {
-      this._fetchData();
-    }
-  }
-
-  protected connectedCallback(): void {
+  public connectedCallback(): void {
     super.connectedCallback();
     this.deviceId = this.route.path.substr(1);
   }
