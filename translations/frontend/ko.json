@@ -344,8 +344,8 @@
                 "password": "비밀번호",
                 "registry": "레지스트리",
                 "remove": "제거하기",
-                "title_add": "새로운 컨테이너 레지스트리 추가",
-                "title_manage": "컨테이너 레지스트리 관리",
+                "title_add": "새로운 컨테이너 레지스트리 추가하기",
+                "title_manage": "컨테이너 레지스트리 관리하기",
                 "username": "사용자 이름"
             },
             "repositories": {
@@ -366,7 +366,7 @@
         },
         "my": {
             "error": "알 수 없는 오류가 발생했습니다",
-            "error_addon_not_found": "애드온을 찾을 수 없습니다.",
+            "error_addon_not_found": "애드온을 찾을 수 없습니다",
             "faq_link": "내 Home Assistant 자주 묻는 질문",
             "not_supported": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. {link}에서 지원되는 리디렉션과 리디렉션이 도입된 버전을 확인해주세요."
         },
@@ -384,7 +384,7 @@
             "create_blocked_not_running": "시스템이 {state} 상태이기 때문에 지금은 스냅숏을 생성할 수 없습니다.",
             "create_snapshot": "스냅숏 생성하기",
             "description": "스냅숏을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
-            "enter_password": "비밀번호를 입력해주세요",
+            "enter_password": "비밀번호를 입력해주세요.",
             "folder": {
                 "addons/local": "로컬 애드온",
                 "homeassistant": "Home Assistant 구성 내용",
@@ -2418,7 +2418,7 @@
                     },
                     "introduction": "Home Assistant에서 추적할 구성원을 정의할 수 있습니다.",
                     "learn_more": "구성원에 대해 더 알아보기",
-                    "no_persons_created_yet": "아직 생성된 구성원이 없는 것 같습니다.",
+                    "no_persons_created_yet": "아직 등록한 구성원이 없는 것 같습니다.",
                     "note_about_persons_configured_in_yaml": "참고: configuration.yaml에서 구성된 구성원은 UI에서 편집할 수 없습니다.",
                     "person_not_found": "편집하려는 구성원을 찾을 수 없습니다.",
                     "person_not_found_title": "구성원을 찾을 수 없습니다"

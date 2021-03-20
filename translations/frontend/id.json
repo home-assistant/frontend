@@ -785,7 +785,8 @@
                     "was_unlocked": "tidak terkunci",
                     "was_unplugged": "telah dicabut",
                     "was_unsafe": "tidak aman"
-                }
+                },
+                "show_trace": "Tampilkan jejak"
             },
             "media-browser": {
                 "audio_not_supported": "Browser Anda tidak mendukung elemen audio.",
