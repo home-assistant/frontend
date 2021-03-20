@@ -103,19 +103,17 @@ export const setNodeConfigParameter = (
   node_id: number,
   property: number,
   value: number,
-  property_key: number | null
-): void => {
+  property_key?: number
+): Promise<unknown> => {
   const data: ZWaveJSSetConfigParamData = {
     type: "zwave_js/set_config_parameter",
-    entry_id: entry_id,
-    node_id: node_id,
-    property: property,
-    value: value,
+    entry_id,
+    node_id,
+    property,
+    value,
+    property_key,
   };
-  if (property_key !== null) {
-    data.property_key = property_key;
-  }
-  hass.callWS(data);
+  return hass.callWS(data);
 };
 
 export const getIdentifiersFromDevice = function (

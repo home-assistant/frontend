@@ -327,7 +327,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       this.nodeId!,
       target.property,
       value,
-      target.propertyKey ? target.propertyKey : null
+      target.propertyKey ? target.propertyKey : undefined
     );
     this._config![target.key].value = value;
   }
