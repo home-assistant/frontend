@@ -507,7 +507,7 @@
             },
             "automation": {
                 "last_triggered": "上次触发",
-                "trigger": "触发"
+                "trigger": "执行"
             },
             "camera": {
                 "not_available": "无图像"

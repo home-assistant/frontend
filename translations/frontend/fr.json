@@ -156,8 +156,8 @@
                         "title": "Accès complet au matériel"
                     },
                     "hassio_api": {
-                        "description": "Le module complémentaire a eu accès à l'API du Supervisor, à la demande de l'auteur du module complémentaire. Par défaut, le module complémentaire peut accéder aux informations générales sur la version de votre système. Lorsque le module complémentaire demande un accès de niveau \"gestionnaire\" ou \"administrateur\" à l'API, il aura accès pour contrôler plusieurs parties de votre système Home Assistant. Cette autorisation est indiquée par ce badge et aura un impact négatif sur le score de sécurité du module complémentaire.",
-                        "title": "Accès à l'API du Supervisor"
+                        "description": "Le module complémentaire a eu accès à l'API du Superviseur, à la demande de l'auteur du module complémentaire. Par défaut, le module complémentaire peut accéder aux informations générales sur la version de votre système. Lorsque le module complémentaire demande un accès de niveau \"gestionnaire\" ou \"administrateur\" à l'API, il aura accès pour contrôler plusieurs parties de votre système Home Assistant. Cette autorisation est indiquée par ce badge et aura un impact négatif sur le score de sécurité du module complémentaire.",
+                        "title": "Accès à l'API du Superviseur"
                     },
                     "homeassistant_api": {
                         "description": "Ce module complémentaire est autorisé à accéder à votre instance Home Assistant en cours d'exécution directement via l'API Home Assistant. Ce mode gère également l'authentification pour le module complémentaire, ce qui permet à un module complémentaire d'interagir avec Home Assistant sans avoir besoin de jetons d'authentification supplémentaires.",
@@ -204,7 +204,7 @@
                         "title": "Étape complémentaire"
                     }
                 },
-                "changelog": "Changelog",
+                "changelog": "Journal des modifications",
                 "cpu_usage": "Utilisation CPU de l'extension",
                 "hostname": "Nom d'hôte",
                 "install": "installer",
@@ -231,7 +231,7 @@
                     },
                     "watchdog": {
                         "description": "Cela démarrera l'extension en cas de panne",
-                        "title": "Watchdog"
+                        "title": "Chien de garde"
                     }
                 },
                 "protection_mode": {
@@ -359,7 +359,7 @@
             },
             "update": {
                 "create_snapshot": "Créez un instantané de {name} avant de mettre à jour",
-                "snapshot": "Snapshot",
+                "snapshot": "Instantané",
                 "snapshotting": "Création d'un instantané de {name}",
                 "updating": "Mise à jour de {name} vers la version {version}"
             }
@@ -372,18 +372,18 @@
         },
         "panel": {
             "dashboard": "Tableau de bord",
-            "snapshots": "Snapshots",
+            "snapshots": "Instantanés",
             "store": "Boutique des modules complémentaires",
             "system": "Système"
         },
         "snapshot": {
             "addons": "Modules complémentaires",
-            "available_snapshots": "Snapshots disponibles",
+            "available_snapshots": "Instantanés disponibles",
             "could_not_create": "Impossible de créer un instantané",
             "create": "Créer",
             "create_blocked_not_running": "La création d’un instantané n’est pas possible en ce moment car le système est en état {state}.",
             "create_snapshot": "Créer un instantané",
-            "description": "Les snapshots vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
+            "description": "Les instantanés vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
             "enter_password": "Veuillez entrer un mot de passe.",
             "folder": {
                 "addons/local": "Modules complémentaires locaux",
@@ -395,7 +395,7 @@
             "folders": "Dossiers",
             "full_snapshot": "Instantané complet",
             "name": "Nom",
-            "no_snapshots": "Vous n'avez pas encore de snapshots.",
+            "no_snapshots": "Vous n'avez pas encore d'instantanés.",
             "partial_snapshot": "Instantané partiel",
             "password": "Mot de passe",
             "password_protected": "protégé par mot de passe",
@@ -412,8 +412,8 @@
         },
         "system": {
             "core": {
-                "cpu_usage": "Utilisation du CPU Core",
-                "ram_usage": "Utilisation de la RAM Core"
+                "cpu_usage": "Utilisation du processeur principal",
+                "ram_usage": "Utilisation de la RAM principale"
             },
             "host": {
                 "change": "Changer",
@@ -448,26 +448,26 @@
                 "beta_release_items": "Cela inclut les versions bêta pour:",
                 "beta_warning": "Les versions bêta sont destinées aux testeurs et aux utilisateurs précoces et peuvent contenir des modifications de code instables",
                 "channel": "Canal",
-                "cpu_usage": "Utilisation du processeur par le Supervisor",
-                "failed_to_reload": "Échec du rechargement de Supervisor",
-                "failed_to_set_option": "Échec lors du paramétrage de l'option du Supervisor",
-                "failed_to_update": "Échec de la mise à jour de Supervisor",
+                "cpu_usage": "Utilisation du processeur par le Superviseur",
+                "failed_to_reload": "Échec de la mise à jour du Superviseur",
+                "failed_to_set_option": "Échec lors du paramétrage de l'option du Superviseur",
+                "failed_to_update": "Échec de la mise à jour du Superviseur",
                 "join_beta_action": "Rejoignez le canal bêta",
-                "join_beta_description": "Obtenez des mises à jour bêta pour Home Assistant (RCs), Supervisor et l'hôte",
+                "join_beta_description": "Obtenez des mises à jour bêta pour Home Assistant (RCs), Superviseur et l'hôte",
                 "leave_beta_action": "Quitter le canal bêta",
-                "leave_beta_description": "Obtenez des mises à jour stables pour l'assistant domestique, le Supervisor et l'hôte",
-                "ram_usage": "Utilisation de la RAM du Supervisor",
-                "reload_supervisor": "Recharger le Supervisor",
+                "leave_beta_description": "Obtenez des mises à jour stables pour l'assistant domestique, le Superviseur et l'hôte",
+                "ram_usage": "Utilisation de la RAM du Superviseur",
+                "reload_supervisor": "Recharger le Superviseur",
                 "share_diagnostics": "Partager les diagnostics",
                 "share_diagnostics_description": "Partagez les rapports d'incident et les informations de diagnostic.",
-                "share_diagonstics_description": "Souhaitez-vous partager automatiquement les rapports d'erreur et les informations de diagnostic lorsque le Supervisor rencontre des erreurs inattendues? {line_break} Cela nous permettra de résoudre les problèmes, les informations ne sont accessibles qu'à l'équipe Home Assistant Core et ne seront pas partagées avec d'autres. {line_break} Les données n'incluent aucune information privée / sensible et vous pouvez désactiver cela dans les paramètres à tout moment.",
+                "share_diagonstics_description": "Souhaitez-vous partager automatiquement les rapports d'erreur et les informations de diagnostic lorsque le Superviseur rencontre des erreurs inattendues? {line_break} Cela nous permettra de résoudre les problèmes, les informations ne sont accessibles qu'à l'équipe Home Assistant Core et ne seront pas partagées avec d'autres. {line_break} Les données n'incluent aucune information privée / sensible et vous pouvez désactiver cela dans les paramètres à tout moment.",
                 "share_diagonstics_title": "Aider à améliorer Home Assistant",
                 "unhealthy_description": "L'exécution d'une installation défectueuse entraînera des problèmes. Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
                 "unhealthy_reason": {
                     "docker": "L'environnement Docker ne fonctionne pas correctement",
-                    "privileged": "Le Supervisor n'est pas privilégié",
-                    "setup": "La configuration du Supervisor a échoué",
-                    "supervisor": "Le Supervisor ne peut pas mettre à jour"
+                    "privileged": "Le Superviseur n'est pas privilégié",
+                    "setup": "La configuration du Superviseur a échoué",
+                    "supervisor": "Le Superviseur ne peut pas mettre à jour"
                 },
                 "unhealthy_title": "Votre installation est défectueuse",
                 "unsupported_description": "Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
@@ -480,11 +480,11 @@
                     "lxc": "LXC",
                     "network_manager": "Gestionnaire de réseaux",
                     "os": "Système d'exploitation",
-                    "privileged": "Le Supervisor n'est pas privilégié",
+                    "privileged": "Le Superviseur n'est pas privilégié",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Vous exécutez une installation non prise en charge",
-                "update_supervisor": "Mettre à jour Supervisor",
+                "update_supervisor": "Mettre à jour Superviseur",
                 "warning": "AVERTISSEMENT"
             }
         }
@@ -691,8 +691,8 @@
                         "title": "Erreur lors de la récupération des modules complémentaires"
                     },
                     "no_supervisor": {
-                        "description": "Aucun Supervisor n'a été trouvé, donc les modules complémentaires n'ont pas pu être chargés.",
-                        "title": "Aucun Supervisor"
+                        "description": "Aucun Superviseur n'a été trouvé, donc les modules complémentaires n'ont pas pu être chargés.",
+                        "title": "Aucun Superviseur"
                     }
                 }
             },
@@ -762,7 +762,7 @@
                 "messages": {
                     "became_unavailable": "est devenu indisponible",
                     "changed_to_state": "changé en {state}.",
-                    "cleared_device_class": "effacé (no {device_class} detected)",
+                    "cleared_device_class": "effacé (aucun {device_class} détecté)",
                     "detected_device_class": "détecté {device_class}",
                     "is_closing": "se ferme",
                     "is_opening": "s'ouvre",
@@ -785,7 +785,8 @@
                     "was_unlocked": "Était déverrouillé",
                     "was_unplugged": "était débranché",
                     "was_unsafe": "n'était pas sûr"
-                }
+                },
+                "show_trace": "Afficher la trace"
             },
             "media-browser": {
                 "audio_not_supported": "Votre navigateur ne prend pas en charge l'élément audio.",
@@ -816,7 +817,7 @@
                 "learn_adding_local_media": "En savoir plus sur l'ajout de médias dans la {documentation} .",
                 "local_media_files": "Placez vos fichiers vidéo, audio et image dans le répertoire multimédia pour pouvoir les parcourir et les lire dans le navigateur ou sur les lecteurs multimédias pris en charge.",
                 "media_browsing_error": "Erreur de navigation multimédia",
-                "media_not_supported": "Le Browser Media Player ne prend pas en charge ce type de média",
+                "media_not_supported": "Le navigateur Media Player ne prend pas en charge ce type de médias",
                 "media_player": "Lecteur multimédia",
                 "media-player-browser": "Lecteur multimédia",
                 "no_items": "Aucun éléments",
@@ -1119,7 +1120,7 @@
                         "script": "Recharger les scripts",
                         "smtp": "Recharger les services de notification SMTP",
                         "statistics": "Recharger les entités de statistiques",
-                        "telegram": "Recharger les services de notification de telegram",
+                        "telegram": "Recharger les services de notification de Telegram",
                         "template": "Recharger les entités modèles",
                         "trend": "Recharger les entités de tendance",
                         "universal": "Recharger les entités de lecteur média universel",
@@ -1566,6 +1567,7 @@
                         "add_automation": "Ajouter une automatisation",
                         "delete_automation": "Supprimer l'automatisation",
                         "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
+                        "dev_automation": "Débogage de l'automatisation",
                         "dev_only_editable": "Seules les automatisations dans automations.yaml sont debuggables.",
                         "duplicate": "Dupliquer",
                         "duplicate_automation": "Dupliquer l'automatisation",
@@ -1591,7 +1593,7 @@
                         "task_selection": {
                             "error_empty": "Entrez une commande ou appuyez sur ignorer.",
                             "error_unsupported": "Nous n'avons pas pu créer une automatisation pour cela (pour le moment ?).",
-                            "for_example": "Par exemple : ",
+                            "for_example": "Par exemple :",
                             "header": "Créer une nouvelle automatisation",
                             "introduction": "Tapez ci-dessous ce que cette automatisation devrait faire, et nous allons essayer de la convertir en une automatisation Home Assistant.",
                             "language_note": "Remarque: pour l'instant, seul l'anglais est pris en charge."
@@ -2082,7 +2084,7 @@
                         "delete": "Supprimer",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
                         "device_unavailable": "Appareil non disponible",
-                        "devices": "{count} {count, plural,\n  zero {appareil}\n  one {appareil}\n  other {appareils}\n}",
+                        "devices": "{count} {count, plural,\n  one {appareil}\n  other {appareils}\n}",
                         "disable_restart_confirm": "Redémarrez Home Assistant pour terminer la désactivation de cette intégration",
                         "disable": {
                             "disable_confirm": "Voulez-vous vraiment désactiver cette entrée de configuration? Ses appareils et entités seront désactivés.",
@@ -2096,7 +2098,7 @@
                         },
                         "documentation": "Documentation",
                         "enable_restart_confirm": "Redémarrez Home Assistant pour terminer l'activation de cette intégration",
-                        "entities": "{count} {count, plural,\n  zero {entité}\n  one {entité}\n  other {entités}\n}",
+                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "Entité indisponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connecté via",
@@ -2135,7 +2137,7 @@
                     },
                     "configure": "Configurer",
                     "configured": "Configuré",
-                    "confirm_new": "Voulez-vous configurer {intégration} ?",
+                    "confirm_new": "Voulez-vous configurer {integration} ?",
                     "description": "Gérer les appareils et services connectés",
                     "details": "Détails de l'intégration",
                     "disable": {
@@ -2210,7 +2212,7 @@
                             "title_required": "Le titre est requis.",
                             "update": "Mise à jour",
                             "url": "URL",
-                            "url_error_msg": "L'url ne peut pas contenir d'espaces ni de caractères spéciaux, sauf pour _ et -"
+                            "url_error_msg": "L'URL ne peut pas contenir d'espaces ni de caractères spéciaux, sauf pour _ et -"
                         },
                         "picker": {
                             "add_dashboard": "Ajouter un tableau de bord",
@@ -2358,7 +2360,7 @@
                         "not_found": "Nœud introuvable"
                     },
                     "nodes_table": {
-                        "failed": "Echec",
+                        "failed": "Échec",
                         "id": "ID",
                         "manufacturer": "Fabricant",
                         "model": "Modèle",
@@ -2369,7 +2371,7 @@
                         "battery_note": "Si le nœud est alimenté par batterie, assurez-vous de l'activer avant de continuer",
                         "button": "Actualiser le nœud",
                         "complete": "Actualisation du nœud terminée",
-                        "description": "Cela indiquera à OpenZWave de réinterroger le nœud et de le mettre à jour (commandes, possibilités et valeurs).",
+                        "description": "Cela indiquera à OpenZWave de réinterroger un nœud et de mettre à jour les classes de commande, les capacités et les valeurs du nœud.",
                         "node_status": "État du nœud",
                         "refreshing_description": "Rafraîchissement des informations sur le nœud...",
                         "start_refresh_button": "Démarrer l'actualisation",
@@ -2548,7 +2550,7 @@
                             "script": "Recharger les scripts",
                             "smtp": "Recharger les services de notification SMTP",
                             "statistics": "Recharger les entités de statistiques",
-                            "telegram": "Recharger les services de notification de telegram",
+                            "telegram": "Recharger les services de notification de Telegram",
                             "template": "Recharger les entités modèles",
                             "trend": "Recharger les entités de tendance",
                             "universal": "Recharger les entités de lecteur média universel",
@@ -2582,7 +2584,7 @@
                     "detail": {
                         "companion_apps": "applications associées",
                         "create": "Créer",
-                        "create_and_write": "Créer et Ecrire",
+                        "create_and_write": "Créer et Écrire",
                         "delete": "Supprimer",
                         "description": "Description",
                         "name": "Nom",
@@ -2888,7 +2890,7 @@
                         "nodes": "Nœuds",
                         "nodes_hint": "Sélectionnez le nœud pour afficher les options par nœud",
                         "nodes_in_group": "Autres nœuds de ce groupe :",
-                        "pooling_intensity": "Intensité  polling",
+                        "pooling_intensity": "Intensité du sondage",
                         "protection": "Protection",
                         "remove_broadcast": "Supprimer la diffusion",
                         "remove_from_group": "Supprimer du groupe",
@@ -3012,8 +3014,8 @@
                     "observer": "Vérifiez l'observateur",
                     "reboot": "Essayez un redémarrage de l’hôte",
                     "system_health": "Vérifier la santé du système",
-                    "title": "Impossible de charger le panneau du Supervisor!",
-                    "wait": "Si vous venez de commencer, assurez-vous d’avoir donné au Supervisor suffisamment de temps pour démarrer."
+                    "title": "Impossible de charger le panneau du Superviseur!",
+                    "wait": "Si vous venez de commencer, assurez-vous d’avoir donné au Superviseur suffisamment de temps pour démarrer."
                 }
             },
             "history": {
@@ -3241,7 +3243,7 @@
                             "name": "Pile horizontale"
                         },
                         "humidifier": {
-                            "description": "La carte humidificateur donne le contrôle de votre entité humidificateur. Vous permettant de modifier l'humidité et le mode de l'entité.",
+                            "description": "La carte Humidificateur donne le contrôle de votre entité humidificateur. Vous permettant de changer l'humidité et le mode de l'entité.",
                             "name": "Humidificateur"
                         },
                         "iframe": {
@@ -3259,7 +3261,7 @@
                         "map": {
                             "dark_mode": "Mode sombre ?",
                             "default_zoom": "Zoom par défaut",
-                            "description": "La carte Carte vous permet d'afficher des entités sur une carte.",
+                            "description": "La carte Map vous permet d'afficher des entités sur une carte.",
                             "geo_location_sources": "Sources de géolocalisation",
                             "hours_to_show": "Heures à montrer",
                             "name": "Carte",
@@ -3677,7 +3679,7 @@
                 },
                 "intro": "Êtes-vous prêt à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs?",
                 "restore": {
-                    "description": "Vous pouvez également restaurer à partir d'un snapshot précédent.",
+                    "description": "Vous pouvez également restaurer à partir d'un instantané précédent.",
                     "hide_log": "Masquer le journal",
                     "in_progress": "Restauration en cours",
                     "show_log": "Afficher le journal"
