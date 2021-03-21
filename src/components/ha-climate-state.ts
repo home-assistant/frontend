@@ -101,7 +101,7 @@ class HaClimateState extends LitElement {
       )}-${formatNumber(
         this.stateObj.attributes.target_humidity_high,
         this.hass.locale
-      )}%`;
+      )} %`;
     }
 
     if (this.stateObj.attributes.humidity != null) {
