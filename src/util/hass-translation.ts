@@ -1,4 +1,3 @@
-import { FrontendTranslationData } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { getTranslation as commonGetTranslation } from "./common-translation";
 
