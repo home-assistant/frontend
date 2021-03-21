@@ -446,7 +446,7 @@
                 "beta_backup": "이 기능을 활성화하기 전에 백업된 데이터가 있는지 확인해주세요.",
                 "beta_join_confirm": "베타 채널에 가입하시겠습니까?",
                 "beta_release_items": "여기에는 다음에 대한 베타 릴리스가 포함됩니다:",
-                "beta_warning": "베타 릴리스는 테스터 및 얼리 어답터용이며 불안정한 코드 변경 내용을 포함할 수 있습니다",
+                "beta_warning": "베타 릴리스는 테스터 및 얼리 어답터용이며 불안정한 코드 변경 내용을 포함할 수 있습니다.",
                 "channel": "채널",
                 "cpu_usage": "Supervisor CPU 사용량",
                 "failed_to_reload": "Supervisor를 다시 읽어오지 못했습니다",

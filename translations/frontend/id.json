@@ -756,8 +756,8 @@
                 "no_history_found": "Tidak ada riwayat status ditemukan."
             },
             "logbook": {
-                "by": "berdasarkan",
-                "by_service": "berdasarkan layanan",
+                "by": "oleh",
+                "by_service": "oleh layanan",
                 "entries_not_found": "Tidak ada entri buku log yang ditemukan.",
                 "messages": {
                     "became_unavailable": "menjadi tidak tersedia",
@@ -771,7 +771,7 @@
                     "turned_off": "dimatikan",
                     "turned_on": "dinyalakan",
                     "was_at_home": "terdeteksi di rumah",
-                    "was_at_state": "terdeteksi pada {state}",
+                    "was_at_state": "terdeteksi di {state}",
                     "was_away": "terdeteksi keluar",
                     "was_closed": "telah ditutup",
                     "was_connected": "telah terhubung",
@@ -2528,7 +2528,7 @@
                             "generic": "Muat ulang entitas kamera IP generik",
                             "generic_thermostat": "Muat ulang entitas termostat generik",
                             "group": "Muat ulang grup, entitas grup, dan layanan notifikasi grup",
-                            "heading": "Konfigurasi YAML dimuat ulang",
+                            "heading": "Pemuatan ulang konfigurasi YAML",
                             "history_stats": "Muat ulang entitas statistik riwayat",
                             "homekit": "Muat ulang HomeKit",
                             "input_boolean": "Muat ulang input boolean",
@@ -2536,7 +2536,7 @@
                             "input_number": "Muat ulang input bilangan",
                             "input_select": "Muat ulang input pilihan",
                             "input_text": "Muat ulang input teks",
-                            "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan memulai ulang. Penekanan tombol muat ulang akan membatalkan konfigurasi YAML saat ini dan memuat konfigurasi yang baru.",
+                            "introduction": "Beberapa bagian Home Assistant dapat dimuat ulang tanpa memerlukan memulai ulang. Penekanan tombol muat ulang akan membatalkan konfigurasi YAML yang sedang dijalankan dan memuat konfigurasi yang baru.",
                             "min_max": "Muat ulang entitas min/maks",
                             "mqtt": "Muat ulang entitas MQTT yang dikonfigurasi secara manual",
                             "person": "Muat ulang orang",
