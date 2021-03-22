@@ -373,11 +373,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           color: var(--secondary-text-color);
         }
 
-        .tech-info {
-          font-size: 0.8em;
-          text-transform: uppercase;
-        }
-
         .flex {
           display: flex;
         }
