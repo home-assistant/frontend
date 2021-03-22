@@ -83,7 +83,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("_deviceRegistryEntries")) {
+    if (!this._config && changedProps.has("_deviceRegistryEntries")) {
       this._fetchData();
     }
   }
@@ -329,10 +329,13 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private get _nodeId(): number | undefined {
+    if (!this._device) {
+      return undefined;
+    }
+
     const identifier = getIdentifier(this._device!);
 
     if (!identifier) {
-      this._error = "couldnt_get_node_id_from_device";
       return undefined;
     }
 
@@ -344,7 +347,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
 
-    if (this._device === undefined || this._nodeId === undefined) {
+    const device = this._device;
+    const nodeId = this._nodeId;
+
+    if (!device || !nodeId) {
       this._error = "device_not_found";
       return;
     }
@@ -352,7 +358,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     this._config = await fetchNodeConfigParameters(
       this.hass,
       this.configEntryId,
-      this._nodeId
+      nodeId!
     );
   }
 
