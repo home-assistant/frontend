@@ -622,11 +622,20 @@ export class HaConfigDevicePage extends LitElement {
       import(
         "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
       );
+      import(
+        "./device-detail/integration-elements/zwave_js/ha-device-actions-zwave_js"
+      );
       templates.push(html`
         <ha-device-info-zwave_js
           .hass=${this.hass}
           .device=${device}
         ></ha-device-info-zwave_js>
+        <div class="card-actions" slot="actions">
+          <ha-device-actions-zwave_js
+            .hass=${this.hass}
+            .device=${device}
+          ></ha-device-actions-zwave_js>
+        </div>
       `);
     }
     return templates;

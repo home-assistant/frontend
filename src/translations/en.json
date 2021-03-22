@@ -2521,7 +2521,17 @@
           "device_info": {
             "zwave_info": "Z-Wave Info",
             "node_status": "Node Status",
-            "node_ready": "Node Ready"
+            "node_ready": "Node Ready",
+            "device_config": "Configure Device"
+          },
+          "node_config": {
+            "header": "Z-Wave Device Configuration",
+            "introduction": "Manage and adjust device (node) specific configuration parameters for the selected device",
+            "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
+            "zwave_js_device_database": "Z-Wave JS Device Database",
+            "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
+            "parameter_is_read_only": "This parameter is read-only.",
+            "error_device_not_found": "Device not found"
           },
           "node_status": {
             "unknown": "Unknown",
@@ -3452,7 +3462,6 @@
     "addon": {
       "failed_to_reset": "Failed to reset add-on configuration, {error}",
       "failed_to_save": "Failed to save add-on configuration, {error}",
-
       "state": {
         "installed": "Add-on is installed",
         "not_installed": "Add-on is not installed",
@@ -3502,13 +3511,11 @@
         "uninstall": "uninstall",
         "rebuild": "rebuild",
         "open_web_ui": "Open web UI",
-
         "protection_mode": {
           "title": "Warning: Protection mode is disabled!",
           "content": "Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.",
           "enable": "Enable Protection mode"
         },
-
         "capability": {
           "stage": {
             "title": "Add-on Stage",
@@ -3575,7 +3582,6 @@
             "admin": "admin"
           }
         },
-
         "option": {
           "boot": {
             "title": "Start on boot",
@@ -3598,7 +3604,6 @@
             "description": "Blocks elevated system access from the add-on"
           }
         },
-
         "action_error": {
           "uninstall": "Failed to uninstall add-on",
           "install": "Failed to install add-on",
@@ -3642,7 +3647,6 @@
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending",
       "update": "Update",
       "version": "Version",
-
       "error": {
         "unknown": "Unknown error",
         "update_failed": "Update failed"
@@ -3787,7 +3791,6 @@
       "password_protection": "Password protection",
       "password_protected": "password protected",
       "enter_password": "Please enter a password.",
-
       "folder": {
         "homeassistant": "Home Assistant configuration",
         "ssl": "SSL",
