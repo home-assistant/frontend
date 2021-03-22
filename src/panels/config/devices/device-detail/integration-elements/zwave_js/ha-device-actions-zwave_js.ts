@@ -1,5 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -9,6 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { haStyle } from "../../../../../../resources/styles";
 
 import { HomeAssistant } from "../../../../../../types";
 
@@ -28,7 +31,9 @@ export class HaDeviceActionsZWaveJS extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <a .href=${`/config/zwave_js/node_config/${this.device.id}?config_entry=${this._entryId}`}></a>
+      <a
+        .href=${`/config/zwave_js/node_config/${this.device.id}?config_entry=${this._entryId}`}
+      >
         <mwc-button>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.device_info.device_config"
@@ -36,5 +41,16 @@ export class HaDeviceActionsZWaveJS extends LitElement {
         </mwc-button>
       </a>
     `;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        a {
+          text-decoration: none;
+        }
+      `,
+    ];
   }
 }
