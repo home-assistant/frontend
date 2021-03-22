@@ -90,7 +90,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (!this._config && changedProps.has("_deviceRegistryEntries")) {
+    if (
+      (!this._config || changedProps.has("deviceId")) &&
+      changedProps.has("_deviceRegistryEntries")
+    ) {
       this._fetchData();
     }
   }
