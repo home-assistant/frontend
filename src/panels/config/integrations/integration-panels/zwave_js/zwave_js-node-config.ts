@@ -40,8 +40,8 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 
 const getDevice = memoizeOne(
-  (entries: DeviceRegistryEntry[], deviceId: string) =>
-    entries.find((device) => device.id === deviceId)
+  (deviceId: string, entries?: DeviceRegistryEntry[]) =>
+    entries?.find((device) => device.id === deviceId)
 );
 
 const getNodeId = memoizeOne((device: DeviceRegistryEntry) => {
@@ -320,7 +320,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private _updateConfigParameter(target, value) {
-    const nodeId = this._getNodeId(this._device);
+    const nodeId = getNodeId(this._device!);
     setNodeConfigParameter(
       this.hass,
       this.configEntryId!,
@@ -334,16 +334,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   private get _device(): DeviceRegistryEntry | undefined {
     return this._deviceRegistryEntries
-      ? getDevice(this._deviceRegistryEntries, this.deviceId)
+      ? getDevice(this.deviceId, this._deviceRegistryEntries)
       : undefined;
-  }
-
-  private _getNodeId(device: DeviceRegistryEntry): number | undefined {
-    if (!device) {
-      return undefined;
-    }
-
-    const identifier = getIdentifier(device);
   }
 
   private async _fetchData() {
@@ -357,7 +349,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const nodeId = this._getNodeId(device);
+    const nodeId = getNodeId(device);
     if (!nodeId) {
       this._error = "device_not_found";
       return;
