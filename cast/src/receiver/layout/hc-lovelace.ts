@@ -94,7 +94,7 @@ class HcLovelace extends LitElement {
     return css`
       :host {
         min-height: 100vh;
-        height: 1px;
+        height: 0;
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
