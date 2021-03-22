@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResult,
