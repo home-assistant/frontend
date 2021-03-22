@@ -1367,7 +1367,9 @@
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
-                    "for": "Duration"
+                    "for": "Duration",
+                    "hvac_mode": "HVAC mode",
+                    "preset_mode": "Preset mode"
                   }
                 },
                 "not": {
@@ -1467,7 +1469,12 @@
                     "code": "Code",
                     "message": "Message",
                     "title": "Title",
-                    "position": "[%key:ui::card::cover::position%]"
+                    "position": "[%key:ui::card::cover::position%]",
+                    "mode": "Mode",
+                    "humidity": "Humidity",
+                    "value": "Value",
+                    "brightness_pct": "[%key:ui::card::light::brightness%]",
+                    "flash": "Flash"
                   }
                 },
                 "scene": {
