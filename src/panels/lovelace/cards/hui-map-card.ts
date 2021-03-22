@@ -72,9 +72,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
 
-  @property({ type: Boolean, reflect: true })
-  public editMode = false;
-
   @property()
   private _history?: HassEntity[][];
 
@@ -658,10 +655,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host([ispanel][editMode]) ha-card {
-        height: calc(100% - 51px);
-      }
-
       ha-card {
         overflow: hidden;
         width: 100%;
