@@ -313,10 +313,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private _updateConfigParameter(target, value) {
+    const nodeId = this._getNodeId(this._device);
     setNodeConfigParameter(
       this.hass,
       this.configEntryId!,
-      this._nodeId!,
+      nodeId!,
       target.property,
       value,
       target.propertyKey ? target.propertyKey : undefined
@@ -330,12 +331,12 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       : undefined;
   }
 
-  private get _nodeId(): number | undefined {
-    if (!this._device) {
+  private _getNodeId(device): number | undefined {
+    if (!device) {
       return undefined;
     }
 
-    const identifier = getIdentifier(this._device!);
+    const identifier = getIdentifier(device!);
 
     if (!identifier) {
       return undefined;
@@ -350,7 +351,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     }
 
     const device = this._device;
-    const nodeId = this._nodeId;
+    const nodeId = this._getNodeId(device);
 
     if (!device || !nodeId) {
       this._error = "device_not_found";
