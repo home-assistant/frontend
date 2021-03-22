@@ -206,7 +206,7 @@ const catchHandler: RouteHandler = async (options) => {
     return Response.error();
   }
   // eslint-disable-next-line no-console
-  console.log("Using fallback for request:", options.request);
+  console.log("Using fallback for:", url);
 
   return (await caches.match("/", { ignoreSearch: true })) || Response.error();
 };
