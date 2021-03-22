@@ -336,7 +336,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return undefined;
     }
 
-    const identifier = getIdentifier(device!);
+    const identifier = getIdentifier(device);
 
     if (!identifier) {
       return undefined;
