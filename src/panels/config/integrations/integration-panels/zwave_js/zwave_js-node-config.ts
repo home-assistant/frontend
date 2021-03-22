@@ -44,9 +44,16 @@ const getDevice = memoizeOne(
     entries.find((device) => device.id === deviceId)
 );
 
-const getIdentifier = memoizeOne((device: DeviceRegistryEntry) =>
-  device.identifiers.find((ident) => ident[0] === "zwave_js")
-);
+const getNodeId = memoizeOne((device: DeviceRegistryEntry) => {
+  const identifier = device.identifiers.find(
+    (ident) => ident[0] === "zwave_js"
+  );
+  if (!identifier) {
+    return undefined;
+  }
+
+  return parseInt(identifier[1].split("-")[1]);
+});
 
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
@@ -331,18 +338,12 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       : undefined;
   }
 
-  private _getNodeId(device): number | undefined {
+  private _getNodeId(device: DeviceRegistryEntry): number | undefined {
     if (!device) {
       return undefined;
     }
 
     const identifier = getIdentifier(device);
-
-    if (!identifier) {
-      return undefined;
-    }
-
-    return parseInt(identifier[1].split("-")[1]);
   }
 
   private async _fetchData() {
@@ -351,9 +352,13 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     }
 
     const device = this._device;
-    const nodeId = this._getNodeId(device);
+    if (!device) {
+      this._error = "device_not_found";
+      return;
+    }
 
-    if (!device || !nodeId) {
+    const nodeId = this._getNodeId(device);
+    if (!nodeId) {
       this._error = "device_not_found";
       return;
     }
