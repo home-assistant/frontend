@@ -118,16 +118,13 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configTabs}
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._fetchData}>
-          <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-        </mwc-icon-button>
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.zwave_js.node_config.header")}
           </div>
 
           <div slot="introduction">
-            ${this._device
+            ${device
               ? html`
                   <div class="device-info">
                     <h2>${computeDeviceName(device, this.hass)}</h2>
@@ -181,11 +178,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
             ? html`<br />`
             : ""}
           ${!item.metadata.writeable
-            ? html`<em
-                >${this.hass.localize(
+            ? html`<em>
+                ${this.hass.localize(
                   "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
-                )}</em
-              >`
+                )}
+              </em>`
             : ""}
         </span>
       </div>
@@ -333,9 +330,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private get _device(): DeviceRegistryEntry | undefined {
-    return this._deviceRegistryEntries
-      ? getDevice(this.deviceId, this._deviceRegistryEntries)
-      : undefined;
+    return getDevice(this.deviceId, this._deviceRegistryEntries);
   }
 
   private async _fetchData() {
