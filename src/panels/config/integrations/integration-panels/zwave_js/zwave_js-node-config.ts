@@ -383,14 +383,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           margin-top: 24px;
         }
 
-        .device-info h2 {
-          margin-bottom: 0px;
-        }
-
-        .device-info p {
-          margin-top: 0px;
-        }
-
         .sectionHeader {
           position: relative;
           padding-right: 40px;
