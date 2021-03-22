@@ -12,6 +12,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { debounce } from "../../../../../common/util/debounce";
@@ -64,11 +65,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ type: Array })
   private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
-  @internalProperty() private _device?: DeviceRegistryEntry;
-
   @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
 
   @internalProperty() private _nodeId?: number;
+
+  @internalProperty() private _error?: string;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -83,32 +84,24 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected updated(): void {
-    if (!this.hass || !this._deviceRegistryEntries) {
-      return;
-    }
-    if (!this._device && this._deviceRegistryEntries.length > 0) {
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("_deviceRegistryEntries")) {
       this._fetchData();
     }
   }
 
   protected render(): TemplateResult {
-    if (!this._device) {
+    if (this._error) {
       return html`<hass-error-screen
         .hass=${this.hass}
         .error=${this.hass.localize(
-          "ui.panel.config.zwave_js.node_config.error_device_not_found"
+          `ui.panel.config.zwave_js.node_config.error_${this._error}`
         )}
       ></hass-error-screen>`;
     }
 
-    if (!this._nodeId) {
-      return html`<hass-error-screen
-        .hass=${this.hass}
-        .error=${this.hass.localize(
-          "ui.panel.config.zwave_js.node_config.error_couldnt_determine_node_from_device"
-        )}
-      ></hass-error-screen>`;
+    if (!this._config) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
     return html`
@@ -331,22 +324,26 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     this._config![target.key].value = value;
   }
 
+  private get _device(): DeviceRegistryEntry | undefined {
+    return this._deviceRegistryEntries
+      ? getDevice(this._deviceRegistryEntries, this.deviceId)
+      : undefined;
+  }
+
   private async _fetchData() {
     if (!this.configEntryId || !this._deviceRegistryEntries) {
       return;
     }
 
-    this._device = this._deviceRegistryEntries
-      ? getDevice(this._deviceRegistryEntries, this.deviceId)
-      : undefined;
-
-    if (!this._device) {
+    if (this._device === undefined) {
+      this._error = "device_not_found";
       return;
     }
 
-    const identifier = getIdentifier(this._device);
+    const identifier = getIdentifier(this._device!);
 
     if (!identifier) {
+      this._error = "couldnt_get_node_id_from_device";
       return;
     }
 
