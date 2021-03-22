@@ -18,6 +18,14 @@ export interface ConditionTrace extends BaseTrace {
   result: { result: boolean };
 }
 
+export interface CallServiceActionTrace extends BaseTrace {
+  result: {
+    limit: number;
+    running_script: boolean;
+    params: Record<string, unknown>;
+  };
+}
+
 export interface ChooseActionTrace extends BaseTrace {
   result: { choice: number };
 }
@@ -28,10 +36,13 @@ export interface ChooseChoiceActionTrace extends BaseTrace {
 
 export type ActionTrace =
   | BaseTrace
+  | CallServiceActionTrace
   | ChooseActionTrace
   | ChooseChoiceActionTrace;
 
 export interface AutomationTrace {
+  automation_id: string;
+  unique_id: string;
   last_action: string | null;
   last_condition: string | null;
   run_id: string;
@@ -41,7 +52,6 @@ export interface AutomationTrace {
     finish: string | null;
   };
   trigger: unknown;
-  unique_id: string;
 }
 
 export interface AutomationTraceExtended extends AutomationTrace {
