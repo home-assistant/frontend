@@ -102,6 +102,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
+    const device = this._device!;
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -121,8 +123,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
             ${this._device
               ? html`
                   <div class="device-info">
-                    <h2>${computeDeviceName(this._device, this.hass)}</h2>
-                    <p>${this._device.manufacturer} ${this._device.model}</p>
+                    <h2>${computeDeviceName(device, this.hass)}</h2>
+                    <p>${device.manufacturer} ${device.model}</p>
                   </div>
                 `
               : ``}
