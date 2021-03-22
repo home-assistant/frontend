@@ -3,7 +3,6 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiRefresh } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -40,11 +39,16 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 
 const getDevice = memoizeOne(
-  (deviceId: string, entries?: DeviceRegistryEntry[]) =>
+  (
+    deviceId: string,
+    entries?: DeviceRegistryEntry[]
+  ): DeviceRegistryEntry | undefined =>
     entries?.find((device) => device.id === deviceId)
 );
 
-const getNodeId = memoizeOne((device: DeviceRegistryEntry) => {
+const getNodeId = memoizeOne((device: DeviceRegistryEntry):
+  | number
+  | undefined => {
   const identifier = device.identifiers.find(
     (ident) => ident[0] === "zwave_js"
   );
