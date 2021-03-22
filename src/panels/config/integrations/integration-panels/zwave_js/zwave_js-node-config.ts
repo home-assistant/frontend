@@ -67,8 +67,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
 
-  @internalProperty() private _nodeId?: number;
-
   @internalProperty() private _error?: string;
 
   public connectedCallback(): void {
@@ -330,24 +328,26 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       : undefined;
   }
 
+  private get _nodeId(): number | undefined {
+    const identifier = getIdentifier(this._device!);
+
+    if (!identifier) {
+      this._error = "couldnt_get_node_id_from_device";
+      return undefined;
+    }
+
+    return parseInt(identifier[1].split("-")[1]);
+  }
+
   private async _fetchData() {
     if (!this.configEntryId || !this._deviceRegistryEntries) {
       return;
     }
 
-    if (this._device === undefined) {
+    if (this._device === undefined || this._nodeId === undefined) {
       this._error = "device_not_found";
       return;
     }
-
-    const identifier = getIdentifier(this._device!);
-
-    if (!identifier) {
-      this._error = "couldnt_get_node_id_from_device";
-      return;
-    }
-
-    this._nodeId = parseInt(identifier[1].split("-")[1]);
 
     this._config = await fetchNodeConfigParameters(
       this.hass,
