@@ -48,6 +48,7 @@ const UNSUPPORTED_REASON_URL = {
   os: "/more-info/unsupported/os",
   privileged: "/more-info/unsupported/privileged",
   systemd: "/more-info/unsupported/systemd",
+  content_trust: "/more-info/unsupported/content_trust",
 };
 
 const UNHEALTHY_REASON_URL = {
@@ -55,6 +56,7 @@ const UNHEALTHY_REASON_URL = {
   supervisor: "/more-info/unhealthy/supervisor",
   setup: "/more-info/unhealthy/setup",
   docker: "/more-info/unhealthy/docker",
+  untrusted: "/more-info/unhealthy/untrusted",
 };
 
 @customElement("hassio-supervisor-info")
