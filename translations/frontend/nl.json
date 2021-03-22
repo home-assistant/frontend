@@ -1568,7 +1568,7 @@
                         "delete_automation": "Verwijder automatisering",
                         "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
                         "dev_automation": "Debug automatisering",
-                        "dev_only_editable": "Alleen automatiseringen in automations.yaml kunnen zijn debuggable",
+                        "dev_only_editable": "Alleen automatiseringen in automations.yaml kunnen worden gedebugd.",
                         "duplicate": "Dupliceren",
                         "duplicate_automation": "Dupliceer automatisering",
                         "edit_automation": "Bewerk automatisering",
