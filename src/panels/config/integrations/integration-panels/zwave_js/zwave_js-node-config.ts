@@ -1,3 +1,4 @@
+import "../../../../../components/ha-settings-row";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -156,20 +157,21 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
-          ${this._config
-            ? html`
-                ${Object.entries(this._config).map(
-                  ([id, item]) => html` <ha-card
-                    class="content config-item"
-                    .configId=${id}
-                  >
-                    <div class="card-content">
+          <ha-card>
+            ${this._config
+              ? html`
+                  ${Object.entries(this._config).map(
+                    ([id, item]) => html` <ha-settings-row
+                      class="content config-item"
+                      .configId=${id}
+                      .narrow=${this.narrow}
+                    >
                       ${this._generateConfigBox(id, item)}
-                    </div>
-                  </ha-card>`
-                )}
-              `
-            : ``}
+                    </ha-settings-row>`
+                  )}
+                `
+              : ``}
+          </ha-card>
         </ha-config-section>
       </hass-tabs-subpage>
     `;
@@ -177,22 +179,20 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   private _generateConfigBox(id, item): TemplateResult {
     const labelAndDescription = html`
-      <div class="config-label">
-        <b>${item.metadata.label}</b><br />
-        <span class="secondary">
-          ${item.metadata.description}
-          ${item.metadata.description !== null && !item.metadata.writeable
-            ? html`<br />`
-            : ""}
-          ${!item.metadata.writeable
-            ? html`<em>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
-                )}
-              </em>`
-            : ""}
-        </span>
-      </div>
+      <span slot="heading">${item.metadata.label}</span>
+      <span slot="description">
+        ${item.metadata.description}
+        ${item.metadata.description !== null && !item.metadata.writeable
+          ? html`<br />`
+          : ""}
+        ${!item.metadata.writeable
+          ? html`<em>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
+              )}
+            </em>`
+          : ""}
+      </span>
     `;
 
     // Numeric entries with a min value of 0 and max of 1 are considered boolean
@@ -203,18 +203,16 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       this._isEnumeratedBool(item)
     ) {
       return html`
-        <div class="flex">
-          ${labelAndDescription}
-          <div class="toggle">
-            <ha-switch
-              .property=${item.property}
-              .propertyKey=${item.property_key}
-              .checked=${item.value === 1}
-              .key=${id}
-              @change=${this._switchToggled}
-              .disabled=${!item.metadata.writeable}
-            ></ha-switch>
-          </div>
+        ${labelAndDescription}
+        <div class="toggle">
+          <ha-switch
+            .property=${item.property}
+            .propertyKey=${item.property_key}
+            .checked=${item.value === 1}
+            .key=${id}
+            @change=${this._switchToggled}
+            .disabled=${!item.metadata.writeable}
+          ></ha-switch>
         </div>
       `;
     }
@@ -381,12 +379,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           flex: 1;
         }
 
-        .flex .tech-info,
-        .flex .toggle {
-          width: 80px;
-          text-align: right;
-        }
-
         .content {
           margin-top: 24px;
         }
@@ -407,6 +399,16 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         ha-card {
           margin: 0 auto;
           max-width: 600px;
+        }
+
+        ha-settings-row {
+          --paper-time-input-justify-content: flex-end;
+          border-top: 1px solid var(--divider-color);
+        }
+
+        :host(:not([narrow])) ha-settings-row paper-input {
+          width: 30%;
+          text-align: right;
         }
 
         ha-card:last-child {
