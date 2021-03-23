@@ -12,6 +12,7 @@ import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
 import {
   domainToName,
+  integrationName,
   fetchIntegrationManifests,
   integrationIssuesUrl,
   IntegrationManifest,
@@ -28,7 +29,10 @@ class IntegrationsCard extends LitElement {
   };
 
   private _sortedIntegrations = memoizeOne((components: string[]) => {
-    return components.filter((comp) => !comp.includes(".")).sort();
+    return components
+      .map((comp) => (comp.includes(".") ? comp.split(".")[1] : comp))
+      .sort()
+      .filter((item, pos, ary) => !pos || item != ary[pos - 1]);
   });
 
   firstUpdated(changedProps) {
@@ -56,7 +60,9 @@ class IntegrationsCard extends LitElement {
                       />
                     </td>
                     <td class="name">
-                      ${domainToName(this.hass.localize, domain)}<br />
+                      ${manifest
+                        ? integrationName(this.hass.localize, manifest, domain)
+                        : domainToName(this.hass.localize, domain)}<br />
                       <span class="domain">${domain}</span>
                     </td>
                     ${!manifest
