@@ -10,11 +10,11 @@ export const getAnalyticsDetails = (hass: HomeAssistant) =>
     type: "analytics",
   });
 
-export const setAnalyticsPrefrences = (
+export const setAnalyticsPreferences = (
   hass: HomeAssistant,
   preferences: Analytics["preferences"]
 ) =>
-  hass.callWS<Analytics["preferences"]>({
+  hass.callWS<void>({
     type: "analytics/preferences",
     preferences,
   });

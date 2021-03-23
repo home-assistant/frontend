@@ -1,3 +1,4 @@
+import "./ha-help-tooltip";
 import "./ha-checkbox";
 import "./ha-settings-row";
 import {
@@ -10,13 +11,20 @@ import {
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../types";
-import "./ha-icon-button";
 import { haStyle } from "../resources/styles";
 import type { HaCheckbox } from "./ha-checkbox";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { Analytics } from "../data/analytics";
+import { fireEvent } from "../common/dom/fire_event";
+import { documentationUrl } from "../util/documentation-url";
 
-const PREFERENCES = ["base", "diagnostics", "usage", "statistics"];
+const ADDITIONAL_PREFERENCES = ["usage", "statistics"];
+
+declare global {
+  interface HASSDomEvents {
+    "analytics-preferences-changed": { preferences: Analytics["preferences"] };
+  }
+}
 
 @customElement("ha-analytics")
 export class HaAnalytics extends LitElement {
@@ -28,6 +36,7 @@ export class HaAnalytics extends LitElement {
     if (!this.analytics.huuid) {
       return html``;
     }
+
     return html`
       <p>
         ${this.hass.localize(
@@ -36,52 +45,101 @@ export class HaAnalytics extends LitElement {
           this.analytics.huuid
         )}
       </p>
-      ${PREFERENCES.map((preference) =>
-        preference === "base" || this.analytics.preferences.includes("base")
-          ? html`<ha-settings-row>
-              <span slot="prefix">
-                <ha-checkbox
-                  @change=${this._handleRowCheckboxClick}
-                  .checked=${this.analytics.preferences.includes(preference)}
-                  .preference=${preference}
-                >
-                </ha-checkbox>
-              </span>
-              <span slot="heading">
-                ${preference === "usage"
-                  ? isComponentLoaded(this.hass, "hassio")
-                    ? this.hass.localize(
-                        `ui.panel.config.core.section.core.analytics.preference.usage_supervisor.title`
-                      )
-                    : this.hass.localize(
-                        `ui.panel.config.core.section.core.analytics.preference.usage.title`
-                      )
+      <ha-settings-row>
+        <span slot="prefix">
+          <ha-checkbox
+            @change=${this._handleRowCheckboxClick}
+            .checked=${this.analytics.preferences.includes("base")}
+            .preference=${"base"}
+          >
+          </ha-checkbox>
+        </span>
+        <span slot="heading">
+          ${this.hass.localize(
+            `ui.panel.config.core.section.core.analytics.preference.base.title`
+          )}
+        </span>
+        <span slot="description">
+          ${this.hass.localize(
+            `ui.panel.config.core.section.core.analytics.preference.base.description`
+          )}
+        </span>
+      </ha-settings-row>
+      ${ADDITIONAL_PREFERENCES.map(
+        (preference) =>
+          html`<ha-settings-row>
+            <span slot="prefix">
+              <ha-checkbox
+                @change=${this._handleRowCheckboxClick}
+                .checked=${this.analytics.preferences.includes(preference)}
+                .preference=${preference}
+                .disabled=${!this.analytics.preferences.includes("base")}
+              >
+              </ha-checkbox>
+            </span>
+            <span slot="heading">
+              ${preference === "usage"
+                ? isComponentLoaded(this.hass, "hassio")
+                  ? this.hass.localize(
+                      `ui.panel.config.core.section.core.analytics.preference.usage_supervisor.title`
+                    )
                   : this.hass.localize(
-                      `ui.panel.config.core.section.core.analytics.preference.${preference}.title`
+                      `ui.panel.config.core.section.core.analytics.preference.usage.title`
+                    )
+                : this.hass.localize(
+                    `ui.panel.config.core.section.core.analytics.preference.${preference}.title`
+                  )}
+              ${!this.analytics.preferences.includes("base")
+                ? html`<ha-help-tooltip
+                    .title=${this.hass.localize(
+                      "ui.panel.config.core.section.core.analytics.needs_base"
                     )}
-              </span>
-              <span slot="description">
-                ${preference === "usage"
-                  ? isComponentLoaded(this.hass, "hassio")
-                    ? this.hass.localize(
-                        `ui.panel.config.core.section.core.analytics.preference.usage_supervisor.description`
-                      )
-                    : this.hass.localize(
-                        `ui.panel.config.core.section.core.analytics.preference.usage.description`
-                      )
+                  ></ha-help-tooltip>`
+                : ""}
+            </span>
+            <span slot="description">
+              ${preference === "usage"
+                ? isComponentLoaded(this.hass, "hassio")
+                  ? this.hass.localize(
+                      `ui.panel.config.core.section.core.analytics.preference.usage_supervisor.description`
+                    )
                   : this.hass.localize(
-                      `ui.panel.config.core.section.core.analytics.preference.${preference}.description`
-                    )}
-              </span>
-            </ha-settings-row>`
-          : ""
+                      `ui.panel.config.core.section.core.analytics.preference.usage.description`
+                    )
+                : this.hass.localize(
+                    `ui.panel.config.core.section.core.analytics.preference.${preference}.description`
+                  )}
+            </span>
+          </ha-settings-row>`
       )}
+      <ha-settings-row>
+        <span slot="prefix">
+          <ha-checkbox
+            @change=${this._handleRowCheckboxClick}
+            .checked=${this.analytics.preferences.includes("diagnostics")}
+            .preference=${"diagnostics"}
+          >
+          </ha-checkbox>
+        </span>
+        <span slot="heading">
+          ${this.hass.localize(
+            `ui.panel.config.core.section.core.analytics.preference.diagnostics.title`
+          )}
+        </span>
+        <span slot="description">
+          ${this.hass.localize(
+            `ui.panel.config.core.section.core.analytics.preference.diagnostics.description`
+          )}
+        </span>
+      </ha-settings-row>
       <p>
         ${this.hass.localize(
           "ui.panel.config.core.section.core.analytics.documentation",
           "link",
-          html`<a href="https://www.home-assistant.io/integrations/analytics">
-            https://www.home-assistant.io/integrations/analytics
+          html`<a
+            .href=${documentationUrl(this.hass, "/integrations/analytics/")}
+          >
+            ${documentationUrl(this.hass, "/integrations/analytics/")}
           </a>`
         )}
       </p>
@@ -91,7 +149,7 @@ export class HaAnalytics extends LitElement {
   private _handleRowCheckboxClick(ev: Event) {
     const checkbox = ev.currentTarget as HaCheckbox;
     const preference = (checkbox as any).preference;
-    let preferences = this.analytics.preferences;
+    let preferences = this.analytics.preferences || [];
 
     if (checkbox.checked) {
       if (preferences.includes(preference)) {
@@ -102,7 +160,7 @@ export class HaAnalytics extends LitElement {
       preferences = preferences.filter((entry) => entry !== preference);
     }
 
-    this.analytics = { ...this.analytics, preferences };
+    fireEvent(this, "analytics-preferences-changed", { preferences });
   }
 
   static get styles(): CSSResult[] {

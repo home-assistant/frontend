@@ -47,7 +47,6 @@ type OnboardingEvent =
     }
   | {
       type: "analytics";
-      result: OnboardingResponses["analytics"];
     };
 
 declare global {
@@ -111,7 +110,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       return html`
         <onboarding-analytics
           .hass=${this.hass}
-          .onboardingLocalize=${this.localize}
+          .localize=${this.localize}
         ></onboarding-analytics>
       `;
     }

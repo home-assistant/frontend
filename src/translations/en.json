@@ -979,6 +979,7 @@
                 "header": "Analytics",
                 "introduction": "Share analytics from your instance. This data will be publiclly available at {link}",
                 "instance_id": "Instance ID: {huuid}",
+                "needs_base": "You need to enable base analytics for this option to be available",
                 "preference": {
                   "base": {
                     "title": "Basic analytics",

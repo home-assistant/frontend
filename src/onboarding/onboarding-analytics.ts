@@ -7,18 +7,15 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-analytics";
-import type { HaAnalytics } from "../components/ha-analytics";
-import "../components/map/ha-location-editor";
 import {
   Analytics,
   getAnalyticsDetails,
-  setAnalyticsPrefrences,
+  setAnalyticsPreferences,
 } from "../data/analytics";
 import { onboardAnalyticsStep } from "../data/onboarding";
 import type { HomeAssistant } from "../types";
@@ -27,37 +24,37 @@ import type { HomeAssistant } from "../types";
 class OnboardingAnalytics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) private analyticsDetails?: Analytics;
-
-  @property() public onboardingLocalize!: LocalizeFunc;
+  @property() public localize!: LocalizeFunc;
 
   @internalProperty() private _error?: string;
 
-  @query("ha-analytics") private _analytics?: HaAnalytics;
+  @internalProperty() private _analyticsDetails?: Analytics;
 
   protected render(): TemplateResult {
-    if (!this.analyticsDetails?.huuid) {
+    if (!this._analyticsDetails?.huuid) {
       return html``;
     }
 
     return html`
       <p>
-        ${this.onboardingLocalize(
+        ${this.localize(
           "ui.panel.page-onboarding.analytics.intro",
           "link",
-          html`<a href="https://analaytics.home-assistant.io" target="_blank"
-            >https://analaytics.home-assistant.io</a
+          html`<a href="https://analytics.home-assistant.io" target="_blank"
+            >https://analytics.home-assistant.io</a
           >`
         )}
       </p>
-      <ha-analytics .hass=${this.hass} .analaytics=${this.analyticsDetails}>
+      <ha-analytics
+        @analytics-preferences-changed=${this._preferencesChanged}
+        .hass=${this.hass}
+        .analytics=${this._analyticsDetails}
+      >
       </ha-analytics>
       ${this._error ? html`<div class="error">${this._error}</div>` : ""}
       <div class="footer">
         <mwc-button @click=${this._save}>
-          ${this.onboardingLocalize(
-            "ui.panel.page-onboarding.analytics.finish"
-          )}
+          ${this.localize("ui.panel.page-onboarding.analytics.finish")}
         </mwc-button>
       </div>
     `;
@@ -73,20 +70,24 @@ class OnboardingAnalytics extends LitElement {
     this._load();
   }
 
+  private _preferencesChanged(event: CustomEvent): void {
+    this._analyticsDetails = {
+      ...this._analyticsDetails!,
+      preferences: event.detail.preferences,
+    };
+  }
+
   private async _save(ev) {
     ev.preventDefault();
     try {
-      await setAnalyticsPrefrences(
+      await setAnalyticsPreferences(
         this.hass,
-        this._analytics?.analytics.preferences.includes("base")
-          ? this._analytics?.analytics.preferences
-          : []
+        this._analyticsDetails!.preferences
       );
 
-      const result = await onboardAnalyticsStep(this.hass);
+      await onboardAnalyticsStep(this.hass);
       fireEvent(this, "onboarding-step", {
         type: "analytics",
-        result,
       });
     } catch (err) {
       alert(`Failed to save: ${err.message}`);
@@ -94,7 +95,12 @@ class OnboardingAnalytics extends LitElement {
   }
 
   private async _load() {
-    this.analyticsDetails = await getAnalyticsDetails(this.hass);
+    this._error = undefined;
+    try {
+      this._analyticsDetails = await getAnalyticsDetails(this.hass);
+    } catch (err) {
+      this._error = err.message || err;
+    }
   }
 
   static get styles(): CSSResult {

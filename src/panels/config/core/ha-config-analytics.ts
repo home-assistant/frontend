@@ -8,19 +8,17 @@ import {
   LitElement,
   property,
   PropertyValues,
-  query,
   TemplateResult,
 } from "lit-element";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
-import type { HaAnalytics } from "../../../components/ha-analytics";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-settings-row";
 import {
   Analytics,
   getAnalyticsDetails,
-  setAnalyticsPrefrences,
+  setAnalyticsPreferences,
 } from "../../../data/analytics";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -29,17 +27,15 @@ import type { HomeAssistant } from "../../../types";
 class ConfigAnalytics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) private analyticsDetails?: Analytics;
+  @internalProperty() private _analyticsDetails?: Analytics;
 
   @internalProperty() private _error?: string;
-
-  @query("ha-analytics") private _analytics?: HaAnalytics;
 
   protected render(): TemplateResult {
     if (
       !isComponentLoaded(this.hass, "analytics") ||
       !this.hass.user?.is_admin ||
-      !this.analyticsDetails?.huuid
+      !this._analyticsDetails?.huuid
     ) {
       return html``;
     }
@@ -56,20 +52,19 @@ class ConfigAnalytics extends LitElement {
             ${this.hass.localize(
               "ui.panel.config.core.section.core.analytics.introduction",
               "link",
-              html`<a
-                href="https://analaytics.home-assistant.io"
-                target="_blank"
-                >https://analaytics.home-assistant.io</a
+              html`<a href="https://analytics.home-assistant.io" target="_blank"
+                >https://analytics.home-assistant.io</a
               >`
             )}
           </p>
           <ha-analytics
+            @analytics-preferences-changed=${this._preferencesChanged}
             .hass=${this.hass}
-            .analytics=${this.analyticsDetails}
+            .analytics=${this._analyticsDetails}
           ></ha-analytics>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save} .disabled=${false}>
+          <mwc-button @click=${this._save}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
@@ -87,21 +82,31 @@ class ConfigAnalytics extends LitElement {
   }
 
   private async _load() {
-    this.analyticsDetails = await getAnalyticsDetails(this.hass);
+    this._error = undefined;
+    try {
+      this._analyticsDetails = await getAnalyticsDetails(this.hass);
+    } catch (err) {
+      this._error = err.message || err;
+    }
   }
 
   private async _save() {
     this._error = undefined;
     try {
-      this.analyticsDetails!.preferences = await setAnalyticsPrefrences(
+      await setAnalyticsPreferences(
         this.hass,
-        this._analytics?.analytics.preferences.includes("base")
-          ? this._analytics?.analytics.preferences
-          : []
+        this._analyticsDetails?.preferences!
       );
     } catch (err) {
       this._error = err.message || err;
     }
+  }
+
+  private _preferencesChanged(event: CustomEvent): void {
+    this._analyticsDetails = {
+      ...this._analyticsDetails!,
+      preferences: event.detail.preferences,
+    };
   }
 
   static get styles(): CSSResult[] {
