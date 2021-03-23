@@ -5,7 +5,6 @@ import {
 } from "home-assistant-js-websocket";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
-import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
 
