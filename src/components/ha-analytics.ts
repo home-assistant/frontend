@@ -16,7 +16,7 @@ import type { HaCheckbox } from "./ha-checkbox";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { Analytics } from "../data/analytics";
 
-const preferences = ["base", "diagnostics", "usage", "statistics"];
+const PREFERENCES = ["base", "diagnostics", "usage", "statistics"];
 
 @customElement("ha-analytics")
 export class HaAnalytics extends LitElement {
@@ -36,7 +36,7 @@ export class HaAnalytics extends LitElement {
           this.analytics.huuid
         )}
       </p>
-      ${preferences.map((preference) =>
+      ${PREFERENCES.map((preference) =>
         preference === "base" || this.analytics.preferences.includes("base")
           ? html`<ha-settings-row>
               <span slot="prefix">
