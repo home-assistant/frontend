@@ -1,7 +1,12 @@
 import { HomeAssistant } from "../types";
 
+export type AnalyticsPrefrence =
+  | "base"
+  | "statistics"
+  | "diagnostics"
+  | "usage";
 export interface Analytics {
-  preferences: string[];
+  preferences: AnalyticsPrefrence[];
   huuid: string;
 }
 

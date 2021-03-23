@@ -14,11 +14,11 @@ import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 import type { HaCheckbox } from "./ha-checkbox";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
-import { Analytics } from "../data/analytics";
+import { Analytics, AnalyticsPrefrence } from "../data/analytics";
 import { fireEvent } from "../common/dom/fire_event";
 import { documentationUrl } from "../util/documentation-url";
 
-const ADDITIONAL_PREFERENCES = ["usage", "statistics"];
+const ADDITIONAL_PREFERENCES: AnalyticsPrefrence[] = ["usage", "statistics"];
 
 declare global {
   interface HASSDomEvents {
