@@ -44,7 +44,6 @@ type OnboardingEvent =
     }
   | {
       type: "integration";
-      result: OnboardingResponses["integration"];
     }
   | {
       type: "analytics";
