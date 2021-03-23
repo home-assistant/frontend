@@ -27,7 +27,7 @@ export interface CallServiceActionTrace extends BaseTrace {
 }
 
 export interface ChooseActionTrace extends BaseTrace {
-  result: { choice: number };
+  result: { choice: number | "default" };
 }
 
 export interface ChooseChoiceActionTrace extends BaseTrace {
