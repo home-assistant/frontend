@@ -974,6 +974,34 @@
                 "save_button": "Save",
                 "external_url": "External URL",
                 "internal_url": "Internal URL"
+              },
+              "analytics": {
+                "header": "Analytics",
+                "introduction": "Share analytics from your instance. This data will be publiclly available at {link}",
+                "instance_id": "Instance ID: {huuid}",
+                "preference": {
+                  "base": {
+                    "title": "Basic analytics",
+                    "description": "This includes the Instance ID, the version and the installation type"
+                  },
+                  "diagnostics": {
+                    "title": "Diagnostics",
+                    "description": "Share crash reports and diagnostic information"
+                  },
+                  "usage": {
+                    "title": "Used integrations",
+                    "description": "This includes the names of your integrations"
+                  },
+                  "usage_supervisor": {
+                    "title": "Used integrations and add-ons",
+                    "description": "This includes the names and capabilities of your integrations and add-ons"
+                  },
+                  "statistics": {
+                    "title": "Usage statistics",
+                    "description": "This includes a count of elements in your installation, for a full list look at the documentation"
+                  }
+                },
+                "documentation": "Visit the analytics documentation page {link} to learn more."
               }
             }
           }
@@ -3382,6 +3410,8 @@
       },
       "page-onboarding": {
         "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+        "next": "Next",
+        "finish": "Finish",
         "user": {
           "intro": "Let's get started by creating a user account.",
           "required_field": "Required",
@@ -3410,6 +3440,10 @@
           "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
           "more_integrations": "More",
           "finish": "Finish"
+        },
+        "analytics": {
+          "intro": "Share analytics from your instance. This data will be publiclly available at {link}",
+          "finish": "Next"
         },
         "restore": {
           "description": "Alternatively you can restore from a previous snapshot.",

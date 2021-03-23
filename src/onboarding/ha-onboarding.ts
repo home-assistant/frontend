@@ -31,6 +31,7 @@ import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-create-user";
 import "./onboarding-loading";
+import "./onboarding-analytics";
 
 type OnboardingEvent =
   | {
@@ -43,6 +44,11 @@ type OnboardingEvent =
     }
   | {
       type: "integration";
+      result: OnboardingResponses["integration"];
+    }
+  | {
+      type: "analytics";
+      result: OnboardingResponses["analytics"];
     };
 
 declare global {
@@ -102,6 +108,15 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         ></onboarding-core-config>
       `;
     }
+    if (step.step === "analytics") {
+      return html`
+        <onboarding-analytics
+          .hass=${this.hass}
+          .onboardingLocalize=${this.localize}
+        ></onboarding-analytics>
+      `;
+    }
+
     if (step.step === "integration") {
       return html`
         <onboarding-integrations
