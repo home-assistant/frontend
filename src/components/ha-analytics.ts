@@ -149,7 +149,7 @@ export class HaAnalytics extends LitElement {
   private _handleRowCheckboxClick(ev: Event) {
     const checkbox = ev.currentTarget as HaCheckbox;
     const preference = (checkbox as any).preference;
-    let preferences = this.analytics.preferences || [];
+    let preferences = [...(this.analytics.preferences || [])];
 
     if (checkbox.checked) {
       if (preferences.includes(preference)) {
