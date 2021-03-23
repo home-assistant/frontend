@@ -1566,6 +1566,8 @@
                         "add_automation": "Přidat automatizaci",
                         "delete_automation": "Odstranit automatizaci",
                         "delete_confirm": "Opravdu chcete odstranit tuto automatizaci?",
+                        "dev_automation": "Debugování automatizace",
+                        "dev_only_editable": "Pouze automatizace definované v automations.yaml jsou debugovatelné",
                         "duplicate": "Duplikát",
                         "duplicate_automation": "Duplikovat automatizaci",
                         "edit_automation": "Upravit automatizaci",
@@ -1658,9 +1660,9 @@
                             "devices_pin": "PIN pro zabezpečovací zařízení",
                             "enable_ha_skill": "Povolte Home Assistant skill pro Google Assistant",
                             "enable_state_reporting": "Povolit hlášení stavu",
-                            "enter_pin_error": "Nelze uložit pin:",
+                            "enter_pin_error": "Nelze uložit PIN:",
                             "enter_pin_hint": "Chcete-li používat zabezpečovací zařízení, zadejte kód PIN",
-                            "enter_pin_info": "Chcete-li komunikovat se zabezpečovacími zařízeními, zadejte kód PIN. Zabezpečovací zařízení jsou dveře, garážová vrata a zámky. Při interakci s takovými zařízeními budete požádáni o zadání / zadání tohoto kódu PIN pomocí Google Assistant.",
+                            "enter_pin_info": "Chcete-li komunikovat se zabezpečovacími zařízeními, zadejte kód PIN. Zabezpečovací zařízení jsou dveře, garážová vrata a zámky. Při interakci s takovými zařízeními budete požádáni o zadání tohoto PIN kódu pomocí Google Assistant.",
                             "info": "Díky integraci Google Assistant pro Home Assistant Cloud budete moci ovládat všechna zařízení v Home Assistant pomocí jakéhokoli zařízení podporujícího Google Assistant.",
                             "info_state_reporting": "Pokud povolíte hlášení stavu, Home Assistant bude posílat veškeré změny stavů všech exponovaných entit do Google. Toto vám umožní sledovat vždy aktuální stavy entit v aplikaci Google.",
                             "manage_entities": "Správa entit",
@@ -3007,7 +3009,8 @@
             "error": {
                 "go_back": "Vrátit se",
                 "supervisor": {
-                    "ask": "Požádat o pomoc"
+                    "ask": "Požádat o pomoc",
+                    "system_health": "Kontrola stavu systému"
                 }
             },
             "history": {

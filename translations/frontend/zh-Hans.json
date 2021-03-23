@@ -1299,9 +1299,12 @@
                                     "action": "动作",
                                     "extra_fields": {
                                         "code": "代码",
+                                        "humidity": "湿度",
                                         "message": "消息",
+                                        "mode": "模式",
                                         "position": "位置",
-                                        "title": "标题"
+                                        "title": "标题",
+                                        "value": "值"
                                     },
                                     "label": "设备"
                                 },
@@ -1374,7 +1377,9 @@
                                     "extra_fields": {
                                         "above": "大于",
                                         "below": "小于",
-                                        "for": "持续时间"
+                                        "for": "持续时间",
+                                        "hvac_mode": "空调模式",
+                                        "preset_mode": "预设模式"
                                     },
                                     "label": "设备"
                                 },

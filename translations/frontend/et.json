@@ -467,12 +467,14 @@
                     "docker": "Dockeri keskkond ei tööta korralikult",
                     "privileged": "Supervisoril pole piisavalt õigusi",
                     "setup": "Supervisori seadistamine nurjus",
-                    "supervisor": "Supervisorit ei saanud värskendada"
+                    "supervisor": "Supervisorit ei saanud värskendada",
+                    "untrusted": "Tuvastati ebausaldusväärne sisu"
                 },
                 "unhealthy_title": "Paigaldus on vigane",
                 "unsupported_description": "Allpool on loend paigaldusel leitud probleemidest. Klõpsa linkidel, et saada teada, kuidas saad probleeme lahendada.",
                 "unsupported_reason": {
                     "container": "Konteinerid mis teadaolevalt põhjustavad probleeme",
+                    "content-trust": "Sisu usaldatavuse kontroll on keelatud",
                     "dbus": "DBUS",
                     "docker_configuration": "Dockeri sätted",
                     "docker_version": "Dockeri versioon",
@@ -1298,10 +1300,15 @@
                                 "device_id": {
                                     "action": "Tegevus",
                                     "extra_fields": {
+                                        "brightness_pct": "Heledus",
                                         "code": "Kood",
+                                        "flash": "Kiir",
+                                        "humidity": "Niiskus",
                                         "message": "Sõnum",
+                                        "mode": "Režiim",
                                         "position": "Asend",
-                                        "title": "Nimetus"
+                                        "title": "Nimetus",
+                                        "value": "Väärtus"
                                     },
                                     "label": "Seade"
                                 },
@@ -1374,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "Üle",
                                         "below": "Alla",
-                                        "for": "Kestus"
+                                        "for": "Kestus",
+                                        "hvac_mode": "Soojuspumba režiim",
+                                        "preset_mode": "Eelseadistatud režiim"
                                     },
                                     "label": "Seade"
                                 },
