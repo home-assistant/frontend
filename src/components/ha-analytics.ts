@@ -1,3 +1,4 @@
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
@@ -75,13 +76,15 @@ export class HaAnalytics extends LitElement {
                 .checked=${this.analytics.preferences.includes(preference)}
                 .preference=${preference}
                 .disabled=${!enabled}
-                .title=${!enabled
-                  ? this.hass.localize(
-                      "ui.panel.config.core.section.core.analytics.needs_base"
-                    )
-                  : ""}
               >
               </ha-checkbox>
+              ${!enabled
+                ? html`<paper-tooltip animation-delay="0" position="right"
+                    >${this.hass.localize(
+                      "ui.panel.config.core.section.core.analytics.needs_base"
+                    )}
+                  </paper-tooltip>`
+                : ""}
             </span>
             <span slot="heading">
               ${preference === "usage"
