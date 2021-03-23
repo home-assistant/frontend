@@ -43,66 +43,26 @@ class NumberFormatRow extends LitElement {
             @iron-select=${this._handleFormatSelection}
             attr-for-selected="format"
           >
-            <paper-item .format=${NumberFormat.language}>
-              <paper-item-body two-line>
-                <div>
-                  ${this.hass.localize(
-                    "ui.panel.profile.number_format.formats.language"
-                  )}
-                </div>
-                <div secondary>
-                  ${formatNumber(1234567.89, {
-                    language: this.hass.locale.language,
-                    number_format: NumberFormat.language,
-                  })}
-                </div>
-              </paper-item-body>
-            </paper-item>
-            <paper-item .format=${NumberFormat.system}>
-              <paper-item-body two-line>
-                <div>
-                  ${this.hass.localize(
-                    "ui.panel.profile.number_format.formats.system"
-                  )}
-                </div>
-                <div secondary>
-                  ${formatNumber(1234567.89, {
-                    language: this.hass.locale.language,
-                    number_format: NumberFormat.system,
-                  })}
-                </div>
-              </paper-item-body>
-            </paper-item>
-            <paper-item .format=${NumberFormat.comma_decimal}>
-              ${this.hass.localize(
-                "ui.panel.profile.number_format.formats.comma_decimal"
-              )}
-            </paper-item>
-            <paper-item .format=${NumberFormat.decimal_comma}>
-              ${this.hass.localize(
-                "ui.panel.profile.number_format.formats.decimal_comma"
-              )}
-            </paper-item>
-            <paper-item .format=${NumberFormat.space_comma}>
-              ${this.hass.localize(
-                "ui.panel.profile.number_format.formats.space_comma"
-              )}
-            </paper-item>
-            <paper-item .format=${NumberFormat.none}>
-              <paper-item-body two-line>
-                <div>
-                  ${this.hass.localize(
-                    "ui.panel.profile.number_format.formats.none"
-                  )}
-                </div>
-                <div secondary>
-                  ${formatNumber(1234567.89, {
-                    language: this.hass.locale.language,
-                    number_format: NumberFormat.none,
-                  })}
-                </div>
-              </paper-item-body>
-            </paper-item>
+            ${Object.values(NumberFormat).map((format) => {
+              const formattedNumber = formatNumber(1234567.89, {
+                language: this.hass.locale.language,
+                number_format: format,
+              });
+              const value = this.hass.localize(
+                `ui.panel.profile.number_format.formats.${format}`
+              );
+              const twoLine = value.slice(value.length - 2) !== "89"; // Display explicit number formats on one line
+              return html`
+                <paper-item .format=${format}>
+                  <paper-item-body ?two-line=${twoLine}>
+                    <div>${value}</div>
+                    ${twoLine
+                      ? html`<div secondary>${formattedNumber}</div>`
+                      : ""}
+                  </paper-item-body>
+                </paper-item>
+              `;
+            })}
           </paper-listbox>
         </ha-paper-dropdown-menu>
       </ha-settings-row>
