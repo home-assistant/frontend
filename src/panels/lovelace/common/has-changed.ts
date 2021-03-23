@@ -15,7 +15,7 @@ function hasConfigChanged(element: any, changedProps: PropertyValues): boolean {
   if (
     oldHass.connected !== element.hass!.connected ||
     oldHass.themes !== element.hass!.themes ||
-    oldHass.locale.language !== element.hass!.locale.language ||
+    oldHass.locale !== element.hass!.locale ||
     oldHass.localize !== element.hass.localize ||
     oldHass.config.state !== element.hass.config.state
   ) {

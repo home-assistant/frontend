@@ -245,7 +245,7 @@ class HaSidebar extends LitElement {
       hass.panelUrl !== oldHass.panelUrl ||
       hass.user !== oldHass.user ||
       hass.localize !== oldHass.localize ||
-      hass.locale.language !== oldHass.locale.language ||
+      hass.locale !== oldHass.locale ||
       hass.states !== oldHass.states ||
       hass.defaultPanel !== oldHass.defaultPanel
     );
@@ -281,7 +281,7 @@ class HaSidebar extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.locale.language !== this.hass.locale.language) {
+    if (!oldHass || oldHass.locale !== this.hass.locale) {
       this.rtl = computeRTL(this.hass);
     }
 

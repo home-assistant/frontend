@@ -43,7 +43,7 @@ export class HaDateRangePicker extends LitElement {
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.locale.language !== this.hass.locale.language) {
+      if (!oldHass || oldHass.locale !== this.hass.locale) {
         this._hour24format = this._compute24hourFormat();
         this._rtlDirection = computeRTLDirection(this.hass);
       }

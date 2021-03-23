@@ -62,8 +62,7 @@ class HaLogbook extends LitElement {
   protected shouldUpdate(changedProps: PropertyValues<this>) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const languageChanged =
-      oldHass === undefined ||
-      oldHass.locale.language !== this.hass.locale.language;
+      oldHass === undefined || oldHass.locale !== this.hass.locale;
 
     return (
       changedProps.has("entries") ||

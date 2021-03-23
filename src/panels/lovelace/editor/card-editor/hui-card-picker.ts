@@ -147,7 +147,7 @@ export class HuiCardPicker extends LitElement {
       return true;
     }
 
-    if (oldHass.locale.language !== this.hass!.locale.language) {
+    if (oldHass.locale !== this.hass!.locale) {
       return true;
     }
 

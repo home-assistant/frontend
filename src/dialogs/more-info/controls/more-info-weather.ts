@@ -68,7 +68,7 @@ class MoreInfoWeather extends LitElement {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
       !oldHass ||
-      oldHass.locale.language !== this.hass.locale.language ||
+      oldHass.locale !== this.hass.locale ||
       oldHass.config.unit_system !== this.hass.config.unit_system
     ) {
       return true;

@@ -118,7 +118,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.locale.language !== this.hass!.locale.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
