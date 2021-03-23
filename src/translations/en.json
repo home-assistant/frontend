@@ -3109,6 +3109,7 @@
         },
         "number_format": {
           "header": "Number Format",
+          "dropdown_label": "Number format",
           "description": "Choose how numbers are formatted.",
           "formats": {
             "language": "Auto (use language setting)",

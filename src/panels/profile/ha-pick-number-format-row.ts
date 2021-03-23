@@ -31,7 +31,9 @@ class NumberFormatRow extends LitElement {
           ${this.hass.localize("ui.panel.profile.number_format.description")}
         </span>
         <ha-paper-dropdown-menu
-          label="Number Format"
+          label=${this.hass.localize(
+            "ui.panel.profile.number_format.dropdown_label"
+          )}
           dynamic-align
           .disabled=${this.hass.locale === undefined}
         >
