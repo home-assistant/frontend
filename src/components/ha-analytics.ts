@@ -1,6 +1,3 @@
-import "./ha-help-tooltip";
-import "./ha-checkbox";
-import "./ha-settings-row";
 import {
   css,
   CSSResult,
@@ -10,13 +7,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../types";
-import { haStyle } from "../resources/styles";
-import type { HaCheckbox } from "./ha-checkbox";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
-import { Analytics, AnalyticsPrefrence } from "../data/analytics";
 import { fireEvent } from "../common/dom/fire_event";
+import { Analytics, AnalyticsPrefrence } from "../data/analytics";
+import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
 import { documentationUrl } from "../util/documentation-url";
+import "./ha-checkbox";
+import type { HaCheckbox } from "./ha-checkbox";
+import "./ha-settings-row";
 
 const ADDITIONAL_PREFERENCES: AnalyticsPrefrence[] = ["usage", "statistics"];
 
@@ -76,6 +75,11 @@ export class HaAnalytics extends LitElement {
                 .checked=${this.analytics.preferences.includes(preference)}
                 .preference=${preference}
                 .disabled=${!enabled}
+                .title=${!enabled
+                  ? this.hass.localize(
+                      "ui.panel.config.core.section.core.analytics.needs_base"
+                    )
+                  : ""}
               >
               </ha-checkbox>
             </span>
@@ -91,13 +95,6 @@ export class HaAnalytics extends LitElement {
                 : this.hass.localize(
                     `ui.panel.config.core.section.core.analytics.preference.${preference}.title`
                   )}
-              ${!enabled
-                ? html`<ha-help-tooltip
-                    .title=${this.hass.localize(
-                      "ui.panel.config.core.section.core.analytics.needs_base"
-                    )}
-                  ></ha-help-tooltip>`
-                : ""}
             </span>
             <span slot="description">
               ${preference === "usage"
