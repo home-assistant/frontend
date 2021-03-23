@@ -37,6 +37,8 @@ export class HaAnalytics extends LitElement {
       return html``;
     }
 
+    const enabled = this.analytics.preferences.includes("base");
+
     return html`
       <p>
         ${this.hass.localize(
@@ -49,7 +51,7 @@ export class HaAnalytics extends LitElement {
         <span slot="prefix">
           <ha-checkbox
             @change=${this._handleRowCheckboxClick}
-            .checked=${this.analytics.preferences.includes("base")}
+            .checked=${enabled}
             .preference=${"base"}
           >
           </ha-checkbox>
@@ -73,7 +75,7 @@ export class HaAnalytics extends LitElement {
                 @change=${this._handleRowCheckboxClick}
                 .checked=${this.analytics.preferences.includes(preference)}
                 .preference=${preference}
-                .disabled=${!this.analytics.preferences.includes("base")}
+                .disabled=${!enabled}
               >
               </ha-checkbox>
             </span>
@@ -89,7 +91,7 @@ export class HaAnalytics extends LitElement {
                 : this.hass.localize(
                     `ui.panel.config.core.section.core.analytics.preference.${preference}.title`
                   )}
-              ${!this.analytics.preferences.includes("base")
+              ${!enabled
                 ? html`<ha-help-tooltip
                     .title=${this.hass.localize(
                       "ui.panel.config.core.section.core.analytics.needs_base"

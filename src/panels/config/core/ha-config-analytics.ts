@@ -34,7 +34,7 @@ class ConfigAnalytics extends LitElement {
   protected render(): TemplateResult {
     if (
       !isComponentLoaded(this.hass, "analytics") ||
-      !this.hass.user?.is_admin ||
+      !this.hass.user?.is_owner ||
       !this._analyticsDetails?.huuid
     ) {
       return html``;
