@@ -467,12 +467,14 @@
                     "docker": "L'ambiente Docker non funziona correttamente",
                     "privileged": "Il Supervisor non è privilegiato",
                     "setup": "Configurazione del Supervisor non riuscita",
-                    "supervisor": "Il Supervisor non è stato in grado di aggiornare"
+                    "supervisor": "Il Supervisor non è stato in grado di aggiornare",
+                    "untrusted": "Rilevato contenuto non attendibile"
                 },
                 "unhealthy_title": "L'installazione non è integra",
                 "unsupported_description": "Di seguito è riportato un elenco dei problemi riscontrati con l'installazione, fare clic sui collegamenti per scoprire come risolvere i problemi.",
                 "unsupported_reason": {
                     "container": "Container noti per causare problemi",
+                    "content-trust": "La convalida dell'attendibilità del contenuto è disabilitata",
                     "dbus": "DBUS",
                     "docker_configuration": "Configurazione Docker",
                     "docker_version": "Versione Docker",
@@ -1298,10 +1300,15 @@
                                 "device_id": {
                                     "action": "Azione",
                                     "extra_fields": {
+                                        "brightness_pct": "Luminosità",
                                         "code": "Codice",
+                                        "flash": "Flash",
+                                        "humidity": "Umidità",
                                         "message": "Messaggio",
+                                        "mode": "Modalità",
                                         "position": "Apertura",
-                                        "title": "Titolo"
+                                        "title": "Titolo",
+                                        "value": "Valore"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1374,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "Maggiore di",
                                         "below": "Minore di",
-                                        "for": "Durata"
+                                        "for": "Durata",
+                                        "hvac_mode": "Modalità HVAC",
+                                        "preset_mode": "Modalità Predefinita"
                                     },
                                     "label": "Dispositivo"
                                 },

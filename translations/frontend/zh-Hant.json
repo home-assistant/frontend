@@ -467,12 +467,14 @@
                     "docker": "Docker 環境未正常工作",
                     "privileged": "未獲得 Supervisor 特權",
                     "setup": "設定 Supervisor 失敗",
-                    "supervisor": "Supervisor 無法進行更新"
+                    "supervisor": "Supervisor 無法進行更新",
+                    "untrusted": "偵測到未認證內容"
                 },
                 "unhealthy_title": "安裝版本不健康",
                 "unsupported_description": "執行不健康的安裝版本可能會導致問題。下方列表為安裝問題清單，點選連結以了解如何解決問題。",
                 "unsupported_reason": {
                     "container": "已知造成問題的 Container",
+                    "content-trust": "內容認證已關閉",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker 設定",
                     "docker_version": "Docker 版本",
@@ -1298,10 +1300,15 @@
                                 "device_id": {
                                     "action": "動作",
                                     "extra_fields": {
+                                        "brightness_pct": "亮度",
                                         "code": "碼",
+                                        "flash": "閃光",
+                                        "humidity": "濕度",
                                         "message": "訊息",
+                                        "mode": "模式",
                                         "position": "位置",
-                                        "title": "標題"
+                                        "title": "標題",
+                                        "value": "數值"
                                     },
                                     "label": "裝置"
                                 },
@@ -1374,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "在...之上",
                                         "below": "在...之下",
-                                        "for": "持續時間"
+                                        "for": "持續時間",
+                                        "hvac_mode": "暖通空調模式",
+                                        "preset_mode": "預置模式"
                                     },
                                     "label": "裝置"
                                 },

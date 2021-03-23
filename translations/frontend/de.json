@@ -1298,10 +1298,14 @@
                                 "device_id": {
                                     "action": "Aktion",
                                     "extra_fields": {
+                                        "brightness_pct": "Helligkeit",
                                         "code": "Code",
+                                        "humidity": "Luftfeuchtigkeit",
                                         "message": "Nachricht",
+                                        "mode": "Modus",
                                         "position": "Position",
-                                        "title": "Titel"
+                                        "title": "Titel",
+                                        "value": "Wert"
                                     },
                                     "label": "Gerät"
                                 },
@@ -1374,7 +1378,9 @@
                                     "extra_fields": {
                                         "above": "Über",
                                         "below": "Unter",
-                                        "for": "Dauer"
+                                        "for": "Dauer",
+                                        "hvac_mode": "HLK-Modus",
+                                        "preset_mode": "Voreinstellung"
                                     },
                                     "label": "Gerät"
                                 },

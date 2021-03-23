@@ -77,6 +77,20 @@
             "unknown": "غير معروف"
         }
     },
+    "supervisor": {
+        "common": {
+            "close": "إغلق"
+        },
+        "dialog": {
+            "restart_addon": {
+                "confirm_text": "أعد تشغيل الإضافة",
+                "text": "هل تريد إعادة تشغيل الإضافة بالتغييرات التي قمت بها؟"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "لم يتم العثور على الإضافة"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "هل تريد حفظ هذا الدخول؟",
@@ -229,6 +243,9 @@
                 "history_disabled": "تم تعطيل سجل التكامل",
                 "loading_history": "جارٍ تحميل سجل الحالات ...",
                 "no_history_found": "لم يتم العثور على سجل الحالات."
+            },
+            "logbook": {
+                "show_trace": "عرض التتبع"
             },
             "related-items": {
                 "integration": "تكامل"
@@ -411,6 +428,7 @@
                                 "device_id": {
                                     "action": "أضف إجراء",
                                     "extra_fields": {
+                                        "mode": "الوضع",
                                         "position": "مكان"
                                     }
                                 },

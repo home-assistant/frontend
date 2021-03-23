@@ -467,12 +467,14 @@
                     "docker": "L'entorn Docker no està funcionant correctament",
                     "privileged": "El Supervisor no és privilegiat",
                     "setup": "Ha fallat la configuració del Supervisor",
-                    "supervisor": "El Supervisor no s'ha pogut actualitzar"
+                    "supervisor": "El Supervisor no s'ha pogut actualitzar",
+                    "untrusted": "S'ha detectat algun contingut que no és de confiança"
                 },
                 "unhealthy_title": "La teva instal·lació no és bona",
                 "unsupported_description": "A continuació es mostra una llista de problemes relacionats amb la instal·lació, fes clic als enllaços per obtenir informació sobre com resoldre'ls.",
                 "unsupported_reason": {
                     "container": "Els contenidors són coneguts per causar problemes",
+                    "content-trust": "Validació de continguts de confiança desactivada",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuració de Docker",
                     "docker_version": "Versió de Docker",
@@ -1298,10 +1300,15 @@
                                 "device_id": {
                                     "action": "Acció",
                                     "extra_fields": {
+                                        "brightness_pct": "Brillantor",
                                         "code": "Codi",
+                                        "flash": "Flaix",
+                                        "humidity": "Humitat",
                                         "message": "Missatge",
+                                        "mode": "Mode",
                                         "position": "Posició",
-                                        "title": "Títol"
+                                        "title": "Títol",
+                                        "value": "Valor"
                                     },
                                     "label": "Dispositiu"
                                 },
@@ -1374,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "A sobre",
                                         "below": "A sota",
-                                        "for": "Durada"
+                                        "for": "Durada",
+                                        "hvac_mode": "Mode HVAC",
+                                        "preset_mode": "Mode predefinit"
                                     },
                                     "label": "Dispositiu"
                                 },
