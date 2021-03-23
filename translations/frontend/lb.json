@@ -1135,7 +1135,10 @@
                                 "device_id": {
                                     "action": "Aktioun",
                                     "extra_fields": {
-                                        "code": "Code"
+                                        "code": "Code",
+                                        "humidity": "Loftfiichtegkeet",
+                                        "mode": "Modus",
+                                        "value": "Wäert"
                                     },
                                     "label": "Apparat"
                                 },

@@ -467,12 +467,14 @@
                     "docker": "El entorno de Docker no funciona correctamente",
                     "privileged": "El supervisor no es privilegiado",
                     "setup": "La configuración del supervisor falló",
-                    "supervisor": "El supervisor no se pudo actualizar"
+                    "supervisor": "El supervisor no se pudo actualizar",
+                    "untrusted": "Contenido no confiable detectado"
                 },
                 "unhealthy_title": "Tu instalación está en mal estado",
                 "unsupported_description": "A continuación se muestra una lista de problemas encontrados con tu instalación, haz clic en los enlaces para saber cómo puedes resolver los problemas.",
                 "unsupported_reason": {
                     "container": "Contenedores conocidos por causar problemas",
+                    "content-trust": "La validación de contenido de confianza está deshabilitada",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuración de Docker",
                     "docker_version": "Versión de Docker",
@@ -1298,10 +1300,15 @@
                                 "device_id": {
                                     "action": "Acción",
                                     "extra_fields": {
+                                        "brightness_pct": "Brillo",
                                         "code": "Código",
+                                        "flash": "Destello",
+                                        "humidity": "Humedad",
                                         "message": "Mensaje",
+                                        "mode": "Modo",
                                         "position": "Posición",
-                                        "title": "Título"
+                                        "title": "Título",
+                                        "value": "Valor"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1374,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "Por encima de",
                                         "below": "Por debajo de",
-                                        "for": "Duración"
+                                        "for": "Duración",
+                                        "hvac_mode": "Modo del sistema de climatización",
+                                        "preset_mode": "Modo preestablecido"
                                     },
                                     "label": "Dispositivo"
                                 },

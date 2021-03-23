@@ -2,6 +2,7 @@ import { DemoTrace } from "./types";
 
 export const motionLightTrace: DemoTrace = {
   trace: {
+    automation_id: "",
     last_action: "action/3",
     last_condition: null,
     run_id: "1",
