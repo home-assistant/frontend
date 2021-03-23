@@ -95,7 +95,7 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   languageSelectionChanged(newVal) {
     // Only fire event if language was changed. This prevents select updates when
     // responding to hass changes.
-    if (newVal !== this.hass.locale.language) {
+    if (newVal !== this.hass.language) {
       this.fire("hass-language-select", {
         locale: { ...this.hass.locale, language: newVal },
       });
@@ -104,8 +104,8 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
-    if (this.hass && this.hass.locale && this.hass.locale.language) {
-      this.setLanguageSelection(this.hass.locale.language);
+    if (this.hass && this.hass.locale && this.hass.language) {
+      this.setLanguageSelection(this.hass.language);
     }
   }
 }

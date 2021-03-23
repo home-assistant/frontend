@@ -214,7 +214,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .tabs=${lovelaceTabs}
         .columns=${this._columns(
           this.narrow,
-          this.hass.locale.language,
+          this.hass.language,
           this._dashboards
         )}
         .data=${this._getItems(this._dashboards)}

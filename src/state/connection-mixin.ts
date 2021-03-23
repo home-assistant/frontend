@@ -136,7 +136,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         loadBackendTranslation: (category, integration?, configFlow?) =>
           // @ts-ignore
           this._loadHassTranslations(
-            this.hass?.locale.language,
+            this.hass?.language,
             category,
             integration,
             configFlow

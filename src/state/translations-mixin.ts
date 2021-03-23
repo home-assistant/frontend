@@ -70,7 +70,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const oldHass = changedProps.get("hass");
       if (this.hass?.panels && oldHass.panels !== this.hass.panels) {
         this._loadFragmentTranslations(
-          this.hass.locale?.language,
+          this.hass.locale.language,
           this.hass.panelUrl
         );
       }
@@ -117,7 +117,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.panelUrlChanged(newPanelUrl);
       // this may be triggered before hassConnected
       this._loadFragmentTranslations(
-        this.hass ? this.hass.locale.language : getLocalLanguage(),
+        this.hass ? this.hass.language : getLocalLanguage(),
         newPanelUrl
       );
     }
@@ -145,13 +145,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _applyTranslations(hass: HomeAssistant) {
-      document
-        .querySelector("html")!
-        .setAttribute("lang", hass.locale.language);
+      document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
-      this._loadCoreTranslations(hass.locale.language);
+      this._loadCoreTranslations(hass.language);
       this.__loadedFragmetTranslations = new Set();
-      this._loadFragmentTranslations(hass.locale.language, hass.panelUrl);
+      this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
     /**
@@ -179,7 +177,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         const resources = await getHassTranslationsPre109(this.hass!, language);
 
         // Ignore the repsonse if user switched languages before we got response
-        if (this.hass!.locale?.language !== language) {
+        if (this.hass!.language !== language) {
           return this.hass!.localize;
         }
 
@@ -233,7 +231,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
 
       // Ignore the repsonse if user switched languages before we got response
-      if (this.hass!.locale?.language !== language) {
+      if (this.hass!.language !== language) {
         return this.hass!.localize;
       }
 
@@ -298,7 +296,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // Allow hass to be updated
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      if (language !== (this.hass ?? this._pendingHass).locale?.language) {
+      if (language !== (this.hass ?? this._pendingHass).language) {
         // the language was changed, abort
         return;
       }
@@ -314,7 +312,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         localize: await computeLocalize(this, language, resources),
       };
 
-      if (language === (this.hass ?? this._pendingHass).locale?.language) {
+      if (language === (this.hass ?? this._pendingHass).language) {
         this._updateHass(changes);
       }
     }
@@ -331,7 +329,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         }
         if (cache.setup) {
           this._loadHassTranslations(
-            this.hass!.locale.language,
+            this.hass!.language,
             category as TranslationCategory,
             undefined,
             includeConfigFlow && cache.configFlow,

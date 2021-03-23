@@ -196,7 +196,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .columns=${this._columns(
           this.narrow,
           this._canWriteTags,
-          this.hass.locale.language
+          this.hass.language
         )}
         .data=${this._data(this._tags)}
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}

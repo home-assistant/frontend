@@ -74,10 +74,7 @@ class HaLogbook extends LitElement {
   protected updated(_changedProps: PropertyValues) {
     const oldHass = _changedProps.get("hass") as HomeAssistant | undefined;
 
-    if (
-      oldHass === undefined ||
-      oldHass.locale.language !== this.hass.locale.language
-    ) {
+    if (oldHass === undefined || oldHass.language !== this.hass.language) {
       this._rtl = computeRTL(this.hass);
     }
   }

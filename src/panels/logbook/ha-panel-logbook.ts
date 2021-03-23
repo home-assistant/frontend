@@ -195,7 +195,7 @@ export class HaPanelLogbook extends LitElement {
 
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.locale.language !== this.hass.locale.language) {
+      if (!oldHass || oldHass.language !== this.hass.language) {
         this.rtl = computeRTL(this.hass);
       }
     }

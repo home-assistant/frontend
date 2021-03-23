@@ -283,7 +283,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                         ${dayNight
                           ? html`
                               ${new Date(item.datetime).toLocaleDateString(
-                                this.hass!.locale.language,
+                                this.hass!.language,
                                 { weekday: "short" }
                               )}
                               <div class="daynight">
@@ -303,7 +303,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             `
                           : html`
                               ${new Date(item.datetime).toLocaleDateString(
-                                this.hass!.locale.language,
+                                this.hass!.language,
                                 { weekday: "short" }
                               )}
                             `}

@@ -111,7 +111,7 @@ export class HaDateRangePicker extends LitElement {
 
   private _compute24hourFormat() {
     return (
-      new Intl.DateTimeFormat(this.hass.locale.language, {
+      new Intl.DateTimeFormat(this.hass.language, {
         hour: "numeric",
       })
         .formatToParts(new Date(2020, 0, 1, 13))
