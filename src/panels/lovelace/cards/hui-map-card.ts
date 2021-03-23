@@ -284,7 +284,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this.updateMap(changedProps.get("_config") as MapCardConfig);
     }
 
-    if (this._config!.hours_to_show && this._configEntities?.length) {
+    if (this._config?.hours_to_show && this._configEntities?.length) {
       const minute = 60000;
       if (changedProps.has("_config")) {
         this._getHistory();
