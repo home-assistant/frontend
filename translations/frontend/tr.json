@@ -467,12 +467,14 @@
                     "docker": "Docker ortamı düzgün çalışmıyor",
                     "privileged": "Süpervizör ayrıcalıklı değil",
                     "setup": "Süpervizörün kurulumu başarısız oldu",
-                    "supervisor": "Süpervizör güncellenemedi"
+                    "supervisor": "Süpervizör güncellenemedi",
+                    "untrusted": "Güvenilmeyen içerik tespit edildi"
                 },
                 "unhealthy_title": "Kurulumunuz sağlıksız",
                 "unsupported_description": "Aşağıda, kurulumunuzla ilgili bulunan sorunların bir listesi verilmiştir, sorunları nasıl çözebileceğinizi öğrenmek için bağlantılara tıklayın.",
                 "unsupported_reason": {
                     "container": "Sorunlara neden olduğu bilinen kapsayıcılar",
+                    "content-trust": "İçerik güveni doğrulaması devre dışı bırakıldı",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker Yapılandırması",
                     "docker_version": "Docker Sürümü",
@@ -1298,10 +1300,15 @@
                                 "device_id": {
                                     "action": "Aksiyon",
                                     "extra_fields": {
+                                        "brightness_pct": "Parlaklık",
                                         "code": "Kod",
+                                        "flash": "Flaş",
+                                        "humidity": "Nem",
                                         "message": "İleti",
+                                        "mode": "Mod",
                                         "position": "Konum",
-                                        "title": "Başlık"
+                                        "title": "Başlık",
+                                        "value": "Değer"
                                     },
                                     "label": "Cihaz"
                                 },
@@ -1374,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "Üzerinde",
                                         "below": "Altında",
-                                        "for": "Süre"
+                                        "for": "Süre",
+                                        "hvac_mode": "HVAC modu",
+                                        "preset_mode": "Ön ayar modu"
                                     },
                                     "label": "Cihaz"
                                 },

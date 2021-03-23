@@ -467,12 +467,14 @@
                     "docker": "Docker 환경이 제대로 작동하지 않습니다",
                     "privileged": "Supervisor가 권한이 없습니다",
                     "setup": "Supervisor 설치에 실패했습니다",
-                    "supervisor": "Supervisor가 업데이트할 수 없습니다"
+                    "supervisor": "Supervisor가 업데이트할 수 없습니다",
+                    "untrusted": "신뢰할 수 없는 내용이 발견되었습니다"
                 },
                 "unhealthy_title": "설치가 비정상적입니다",
                 "unsupported_description": "다음은 설치 시 발견된 문제 목록입니다. 문제를 해결하는 방법에 대해 알아보려면 링크를 클릭해주세요.",
                 "unsupported_reason": {
                     "container": "문제를 일으키는 것으로 알려진 컨테이너입니다",
+                    "content-trust": "이미지 무결성 검사가 비활성화되었습니다",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker 구성 내용",
                     "docker_version": "Docker 버전",
@@ -1298,10 +1300,15 @@
                                 "device_id": {
                                     "action": "동작",
                                     "extra_fields": {
+                                        "brightness_pct": "밝기",
                                         "code": "코드",
+                                        "flash": "플래시",
+                                        "humidity": "습도",
                                         "message": "메시지",
+                                        "mode": "모드",
                                         "position": "위치",
-                                        "title": "제목"
+                                        "title": "제목",
+                                        "value": "값"
                                     },
                                     "label": "기기"
                                 },
@@ -1374,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "이상",
                                         "below": "이하",
-                                        "for": "동안"
+                                        "for": "동안",
+                                        "hvac_mode": "공조 모드",
+                                        "preset_mode": "프리셋 모드"
                                     },
                                     "label": "기기"
                                 },
