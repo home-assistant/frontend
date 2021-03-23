@@ -32,7 +32,7 @@ class IntegrationsCard extends LitElement {
     return components
       .map((comp) => (comp.includes(".") ? comp.split(".")[1] : comp))
       .sort()
-      .filter((item, pos, ary) => !pos || item != ary[pos - 1]);
+      .filter((item, pos, ary) => !pos || item !== ary[pos - 1]);
   });
 
   firstUpdated(changedProps) {
