@@ -26,6 +26,9 @@ declare global {
     "hass-language-select": {
       locale: FrontendTranslationData;
     };
+    "hass-number-format-select": {
+      locale: FrontendTranslationData;
+    };
   }
 }
 
@@ -58,6 +61,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) => {
         this._selectLanguage((e as CustomEvent).detail.locale, true);
+      });
+      this.addEventListener("hass-number-format-select", (e) => {
+        this._selectNumberFormat((e as CustomEvent).detail.locale, true);
       });
       this._loadCoreTranslations(getLocalLanguage());
     }
@@ -120,6 +126,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this.hass ? this.hass.language : getLocalLanguage(),
         newPanelUrl
       );
+    }
+
+    private _selectNumberFormat(
+      locale: FrontendTranslationData,
+      saveToBackend: boolean
+    ) {
+      this._updateHass({
+        locale,
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, locale);
+      }
     }
 
     private _selectLanguage(
