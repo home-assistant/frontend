@@ -80,9 +80,9 @@ export class HaAnalytics extends LitElement {
         ${this.hass.localize(
           "ui.panel.config.core.section.core.analytics.documentation",
           "link",
-          html`<a href="#"
-            >https://www.home-assistant.io/integrations/analytics</a
-          >`
+          html`<a href="https://www.home-assistant.io/integrations/analytics">
+            https://www.home-assistant.io/integrations/analytics
+          </a>`
         )}
       </p>
     `;
@@ -91,17 +91,18 @@ export class HaAnalytics extends LitElement {
   private _handleRowCheckboxClick(ev: Event) {
     const checkbox = ev.currentTarget as HaCheckbox;
     const preference = (checkbox as any).preference;
+    let preferences = this.analytics.preferences;
 
     if (checkbox.checked) {
-      if (this.analytics.preferences.includes(preference)) {
+      if (preferences.includes(preference)) {
         return;
       }
-      this.analytics.preferences = [...this.analytics.preferences, preference];
+      preferences.push(preference);
     } else {
-      this.analytics.preferences = this.analytics.preferences.filter(
-        (entry) => entry !== preference
-      );
+      preferences = preferences.filter((entry) => entry !== preference);
     }
+
+    this.analytics = { ...this.analytics, preferences };
   }
 
   static get styles(): CSSResult[] {
