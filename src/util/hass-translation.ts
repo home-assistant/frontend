@@ -1,4 +1,9 @@
+import {
+  fetchTranslationPreferences,
+  FrontendTranslationData,
+} from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
+import { HomeAssistant } from "../types";
 import { getTranslation as commonGetTranslation } from "./common-translation";
 
 const STORAGE = window.localStorage || {};
@@ -34,6 +39,30 @@ export function findAvailableLanguage(language: string) {
   return Object.keys(translationMetadata.translations).find(
     (lang) => lang.toLowerCase() === langLower
   );
+}
+
+/**
+ * Get user selected locale data from backend
+ */
+export async function getUserLocale(
+  hass: HomeAssistant
+): Promise<FrontendTranslationData | null> {
+  const result = await fetchTranslationPreferences(hass);
+  const language = result?.language || hass.locale.language;
+  const number_format = result?.number_format || hass.locale.number_format;
+  if (result?.language) {
+    const availableLanguage = findAvailableLanguage(language);
+    if (availableLanguage) {
+      return {
+        language: availableLanguage,
+        number_format,
+      };
+    }
+  }
+  return {
+    language,
+    number_format,
+  };
 }
 
 /**

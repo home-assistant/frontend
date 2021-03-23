@@ -4,7 +4,6 @@ import { computeRTL } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
   FrontendTranslationData,
-  fetchTranslationPreferences,
   getHassTranslations,
   getHassTranslationsPre109,
   saveTranslationPreferences,
@@ -16,7 +15,7 @@ import { storeState } from "../util/ha-pref-storage";
 import {
   getTranslation,
   getLocalLanguage,
-  findAvailableLanguage,
+  getUserLocale,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -73,36 +72,29 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!changedProps.has("hass")) {
         return;
       }
-      const oldHass = changedProps.get("hass");
-      if (this.hass?.panels && oldHass.panels !== this.hass.panels) {
-        this._loadFragmentTranslations(
-          this.hass.locale.language,
-          this.hass.panelUrl
-        );
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        this.hass?.panels &&
+        (!oldHass || oldHass.panels !== this.hass.panels)
+      ) {
+        this._loadFragmentTranslations(this.hass.language, this.hass.panelUrl);
       }
     }
 
-    protected async hassConnected() {
+    protected hassConnected() {
       super.hassConnected();
-      const result = await fetchTranslationPreferences(this.hass!);
-      const userNumberFormat = result?.number_format;
-      const userLanguage = result?.language
-        ? findAvailableLanguage(result.language)
-        : null;
-
-      const prefs: FrontendTranslationData = {
-        language: userLanguage || this.hass!.locale?.language,
-        number_format: userNumberFormat || this.hass!.locale?.number_format,
-      };
-
-      if (
-        result &&
-        (this.hass!.locale?.number_format !== userNumberFormat ||
-          this.hass!.locale?.language !== userLanguage)
-      ) {
-        // We just get language and number_format from backend, no need to save back
-        this._selectLanguage(prefs, false);
-      }
+      getUserLocale(this.hass!).then((locale) => {
+        if (locale && this.hass!.language !== locale.language) {
+          // We just got language from backend, no need to save back
+          this._selectLanguage(locale, false);
+        } else if (
+          locale &&
+          this.hass!.locale.number_format !== locale.number_format
+        ) {
+          // We just got number_format from backend, no need to save back
+          this._selectNumberFormat(locale, false);
+        }
+      });
 
       this.hass!.connection.subscribeEvents(
         debounce(() => {
@@ -152,6 +144,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // update selectedLanguage so that it can be saved to local storage
       this._updateHass({
         locale,
+        //language: locale.language,
         selectedLanguage: locale.language,
       });
       storeState(this.hass);
