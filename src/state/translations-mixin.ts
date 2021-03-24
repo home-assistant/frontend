@@ -3,9 +3,9 @@ import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
-  FrontendTranslationData,
   getHassTranslations,
   getHassTranslationsPre109,
+  NumberFormat,
   saveTranslationPreferences,
   TranslationCategory,
 } from "../data/translation";
@@ -23,10 +23,10 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-language-select": {
-      locale: FrontendTranslationData;
+      language: string;
     };
     "hass-number-format-select": {
-      locale: FrontendTranslationData;
+      number_format: NumberFormat;
     };
   }
 }
@@ -59,10 +59,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) => {
-        this._selectLanguage((e as CustomEvent).detail.locale, true);
+        this._selectLanguage((e as CustomEvent).detail, true);
       });
       this.addEventListener("hass-number-format-select", (e) => {
-        this._selectNumberFormat((e as CustomEvent).detail.locale, true);
+        this._selectNumberFormat((e as CustomEvent).detail, true);
       });
       this._loadCoreTranslations(getLocalLanguage());
     }
@@ -84,15 +84,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected hassConnected() {
       super.hassConnected();
       getUserLocale(this.hass!).then((locale) => {
-        if (locale && this.hass!.language !== locale.language) {
+        if (locale?.language && this.hass!.language !== locale.language) {
           // We just got language from backend, no need to save back
-          this._selectLanguage(locale, false);
-        } else if (
-          locale &&
+          this._selectLanguage(locale.language, false);
+        }
+        if (
+          locale?.number_format &&
           this.hass!.locale.number_format !== locale.number_format
         ) {
           // We just got number_format from backend, no need to save back
-          this._selectNumberFormat(locale, false);
+          this._selectNumberFormat(locale.number_format, false);
         }
       });
 
@@ -121,21 +122,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _selectNumberFormat(
-      locale: FrontendTranslationData,
+      number_format: NumberFormat,
       saveToBackend: boolean
     ) {
       this._updateHass({
-        locale,
+        locale: { ...this.hass!.locale, number_format: number_format },
       });
       if (saveToBackend) {
-        saveTranslationPreferences(this.hass!, locale);
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
       }
     }
 
-    private _selectLanguage(
-      locale: FrontendTranslationData,
-      saveToBackend: boolean
-    ) {
+    private _selectLanguage(language: string, saveToBackend: boolean) {
       if (!this.hass) {
         // should not happen, do it to avoid use this.hass!
         return;
@@ -143,12 +141,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       // update selectedLanguage so that it can be saved to local storage
       this._updateHass({
-        locale,
+        locale: { ...this.hass!.locale, language: language },
         selectedLanguage: locale.language,
       });
       storeState(this.hass);
       if (saveToBackend) {
-        saveTranslationPreferences(this.hass, locale);
+        saveTranslationPreferences(this.hass, this.hass.locale);
       }
       this._applyTranslations(this.hass);
       this._refetchCachedHassTranslations(true, true);

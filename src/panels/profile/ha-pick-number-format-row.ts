@@ -70,12 +70,7 @@ class NumberFormatRow extends LitElement {
   }
 
   private async _handleFormatSelection(ev: CustomEvent) {
-    fireEvent(this, "hass-number-format-select", {
-      locale: {
-        ...this.hass.locale,
-        number_format: ev.detail.item.format,
-      },
-    });
+    fireEvent(this, "hass-number-format-select", ev.detail.item.format);
   }
 }
 
