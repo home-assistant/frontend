@@ -37,7 +37,7 @@ export class HaChip extends LitElement {
         <div class="mdc-chip__ripple" .ripple="${ripple()}"></div>
         <span role="gridcell">
           <span role="button" tabindex="0" class="mdc-chip__primary-action">
-            <span class="mdc-chip__text"><slot name="label"></slot></span>
+            <span class="mdc-chip__text"><slot></slot></span>
           </span>
         </span>
       </div>
