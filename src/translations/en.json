@@ -1770,7 +1770,7 @@
               "manage_entities": "Manage Entities",
               "enter_pin_error": "Unable to store PIN:",
               "not_configured_title": "Google Assistant not configured",
-              "not_configured_text": "It seems you have not setup Google Assistant with this Home Assistant Cloud account. Please setup Google Assistant with Home Assistant Cloud first."
+              "not_configured_text": "Before you can make changes to your Google settings you need to link Google Assistant with Home Assistant Cloud in the Google Home app first."
             },
             "webhooks": {
               "title": "Webhooks",
