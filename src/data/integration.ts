@@ -25,14 +25,11 @@ export const integrationIssuesUrl = (
   manifest.issue_tracker ||
   `https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
 
-export const integrationName = (
+export const domainToName = (
   localize: LocalizeFunc,
-  manifest: IntegrationManifest,
-  domain: string
-) => localize(`component.${domain}.title`) || manifest.name || domain;
-
-export const domainToName = (localize: LocalizeFunc, domain: string) =>
-  localize(`component.${domain}.title`) || domain;
+  domain: string,
+  manifest?: IntegrationManifest
+) => localize(`component.${domain}.title`) || manifest?.name || domain;
 
 export const fetchIntegrationManifests = (hass: HomeAssistant) =>
   hass.callWS<IntegrationManifest[]>({ type: "manifest/list" });
