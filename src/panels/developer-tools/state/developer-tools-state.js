@@ -379,7 +379,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           return false;
         }
 
-        if (!value.state.includes(_stateFilter.toLowerCase())) {
+        if (!value.state.toLowerCase().includes(_stateFilter.toLowerCase())) {
           return false;
         }
 
