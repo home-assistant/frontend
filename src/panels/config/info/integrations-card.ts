@@ -32,9 +32,8 @@ class IntegrationsCard extends LitElement {
       new Set(
         components
           .map((comp) => (comp.includes(".") ? comp.split(".")[1] : comp))
-          .sort()
       )
-    );
+    ).sort();
   });
 
   firstUpdated(changedProps) {
