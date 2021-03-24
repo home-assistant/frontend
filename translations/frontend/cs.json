@@ -1297,10 +1297,15 @@
                                 "device_id": {
                                     "action": "Akce",
                                     "extra_fields": {
+                                        "brightness_pct": "Jas",
                                         "code": "Kód",
+                                        "flash": "Blikat",
+                                        "humidity": "Vlhkost vzduchu",
                                         "message": "Zpráva",
+                                        "mode": "Režim",
                                         "position": "Pozice",
-                                        "title": "Název"
+                                        "title": "Název",
+                                        "value": "Hodnota"
                                     },
                                     "label": "Zařízení"
                                 },
@@ -1373,7 +1378,9 @@
                                     "extra_fields": {
                                         "above": "Větší než",
                                         "below": "Menší než",
-                                        "for": "Doba trvání"
+                                        "for": "Doba trvání",
+                                        "hvac_mode": "Režim HVAC",
+                                        "preset_mode": "Předvolba"
                                     },
                                     "label": "Zařízení"
                                 },
@@ -2816,6 +2823,10 @@
                         "connected": "Připojeno",
                         "connecting": "Připojování",
                         "unknown": "Nezjištěno"
+                    },
+                    "node_config": {
+                        "error_device_not_found": "Zařízení nenalezeno",
+                        "parameter_is_read_only": "Tento parametr je jen pro čtení."
                     },
                     "node_status": {
                         "alive": "Naživu",

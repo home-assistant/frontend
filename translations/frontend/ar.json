@@ -17,6 +17,7 @@
         "logbook": "سجل",
         "mailbox": "البريد",
         "map": "خريطة",
+        "media_browser": "متصفح الوسائط",
         "profile": "الملف الشخصي",
         "shopping_list": "قائمة التسوق",
         "states": "نظرة عامة"
@@ -82,9 +83,43 @@
             "close": "إغلق"
         },
         "dialog": {
+            "network": {
+                "dhcp": "DHCP",
+                "disabled": "معطل",
+                "dns_servers": "خوادم DNS",
+                "failed_to_change": "فشل تغيير إعدادات الشبكة",
+                "gateway": "عنوان البوابة",
+                "ip_netmask": "عنوان IP / قناع الشبكة",
+                "static": "ثابتة",
+                "unsaved": "لديك تغييرات غير محفوظة ، ستضيع هذه التغييرات إذا قمت بتغيير علامات التبويب ، هل تريد المتابعة؟",
+                "warning": "إذا كنت تقوم بتغيير عناوين Wi-Fi أو IP أو البوابة ، فقد تفقد الاتصال!"
+            },
+            "registries": {
+                "add_new_registry": "إضافة سجل جديد",
+                "add_registry": "إضافة سجل",
+                "failed_to_add": "فشل في إضافة السجل",
+                "failed_to_remove": "فشل في إزالة السجل",
+                "no_registries": "لم يتم تكوين سجلات",
+                "password": "كلمة السر",
+                "registry": "سجل",
+                "remove": "إزالة",
+                "title_add": "إضافة سجل حاوية جديد",
+                "title_manage": "إدارة سجلات الحاويات",
+                "username": "اسم المستخدم"
+            },
+            "repositories": {
+                "remove": "إزالة",
+                "title": "إدارة مستودعات الإضافات"
+            },
             "restart_addon": {
                 "confirm_text": "أعد تشغيل الإضافة",
                 "text": "هل تريد إعادة تشغيل الإضافة بالتغييرات التي قمت بها؟"
+            },
+            "update": {
+                "create_snapshot": "قم بإنشاء لقطة من {name} قبل التحديث",
+                "snapshot": "لقط",
+                "snapshotting": "إنشاء لقطة لـ {name}",
+                "updating": "تحديث {name} إلى الإصدار {version}"
             }
         },
         "my": {
@@ -1067,6 +1102,16 @@
                     "templates": {
                         "title": "نماذج"
                     }
+                }
+            },
+            "error": {
+                "supervisor": {
+                    "ask": "طلب المساعدة",
+                    "observer": "تحقق من المراقب",
+                    "reboot": "حاول إعادة تشغيل المضيف",
+                    "system_health": "تحقق من صحة النظام",
+                    "title": "تعذر تحميل لوحة المشرف!",
+                    "wait": "إذا كنت قد بدأت للتو ، فتأكد من منح المشرف الوقت الكافي للبدء."
                 }
             },
             "history": {
