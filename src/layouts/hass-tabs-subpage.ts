@@ -88,23 +88,23 @@ class HassTabsSubpage extends LitElement {
       return shownTabs.map(
         (page) =>
           html`
-            <ha-tab
-              .hass=${this.hass}
-              @click=${this._tabTapped}
-              .path=${page.path}
-              .active=${page === activeTab}
-              .narrow=${this.narrow}
-              .name=${page.translationKey
-                ? localizeFunc(page.translationKey)
-                : page.name}
-            >
-              ${page.iconPath
-                ? html`<ha-svg-icon
-                    slot="icon"
-                    .path=${page.iconPath}
-                  ></ha-svg-icon>`
-                : html`<ha-icon slot="icon" .icon=${page.icon}></ha-icon>`}
-            </ha-tab>
+            <a href=${page.path}>
+              <ha-tab
+                .hass=${this.hass}
+                .active=${page === activeTab}
+                .narrow=${this.narrow}
+                .name=${page.translationKey
+                  ? localizeFunc(page.translationKey)
+                  : page.name}
+              >
+                ${page.iconPath
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${page.iconPath}
+                    ></ha-svg-icon>`
+                  : html`<ha-icon slot="icon" .icon=${page.icon}></ha-icon>`}
+              </ha-tab>
+            </a>
           `
       );
     }
@@ -185,10 +185,6 @@ class HassTabsSubpage extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  private _tabTapped(ev: Event): void {
-    navigate(this, (ev.currentTarget as any).path, true);
-  }
-
   private _backTapped(): void {
     if (this.backPath) {
       navigate(this, this.backPath);
@@ -230,7 +226,10 @@ class HassTabsSubpage extends LitElement {
         padding: 0 16px;
         box-sizing: border-box;
       }
-
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
       #tabbar {
         display: flex;
         font-size: 14px;
