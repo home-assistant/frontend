@@ -1,7 +1,4 @@
-import {
-  fetchTranslationPreferences,
-  FrontendTranslationData,
-} from "../data/translation";
+import { fetchTranslationPreferences } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
 import { getTranslation as commonGetTranslation } from "./common-translation";
@@ -44,13 +41,11 @@ export function findAvailableLanguage(language: string) {
 /**
  * Get user selected locale data from backend
  */
-export async function getUserLocale(
-  hass: HomeAssistant
-): Promise<FrontendTranslationData | null> {
+export async function getUserLocale(hass: HomeAssistant): Promise<any> {
   const result = await fetchTranslationPreferences(hass);
-  const language = result?.language || hass.locale.language;
-  const number_format = result?.number_format || hass.locale.number_format;
-  if (result?.language) {
+  const language = result?.language;
+  const number_format = result?.number_format;
+  if (language) {
     const availableLanguage = findAvailableLanguage(language);
     if (availableLanguage) {
       return {
@@ -60,7 +55,7 @@ export async function getUserLocale(
     }
   }
   return {
-    language,
+    language: null,
     number_format,
   };
 }
