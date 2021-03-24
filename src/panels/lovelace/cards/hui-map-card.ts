@@ -477,7 +477,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                     new Date(pathDates[markerIndex]),
                     this._config!.timestamp_format
                   ),
-                  { permanent: true }
                 )
                 .openTooltip()
             );
