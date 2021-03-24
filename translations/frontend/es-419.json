@@ -467,12 +467,14 @@
                     "docker": "El entorno Docker no funciona correctamente",
                     "privileged": "Supervisor no tiene privilegios",
                     "setup": "Falló la configuración de Supervisor",
-                    "supervisor": "No se pudo actualizar Supervisor"
+                    "supervisor": "No se pudo actualizar Supervisor",
+                    "untrusted": "Se ha detectado contenido no confiable"
                 },
                 "unhealthy_title": "La instalación tiene problemas",
                 "unsupported_description": "A continuación se muestra una lista de problemas encontrados con su instalación, haga clic en los enlaces para saber cómo puede resolverlos.",
                 "unsupported_reason": {
                     "container": "Contenedores conocidos por causar problemas",
+                    "content-trust": "La validación de contenido de confianza está desactivada",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuración de Docker",
                     "docker_version": "Versión de Docker",
@@ -785,7 +787,8 @@
                     "was_unlocked": "fue desbloqueado",
                     "was_unplugged": "fue desenchufado",
                     "was_unsafe": "estaba inseguro"
-                }
+                },
+                "show_trace": "Mostrar registro"
             },
             "media-browser": {
                 "audio_not_supported": "Su navegador no soporta el elemento de audio.",
@@ -1297,10 +1300,15 @@
                                 "device_id": {
                                     "action": "Acción",
                                     "extra_fields": {
+                                        "brightness_pct": "Brillo",
                                         "code": "Código",
+                                        "flash": "Flash",
+                                        "humidity": "Humedad",
                                         "message": "Mensaje",
+                                        "mode": "Modo",
                                         "position": "Posición",
-                                        "title": "Título"
+                                        "title": "Título",
+                                        "value": "Valor"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1373,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "Por encima de",
                                         "below": "Por debajo de",
-                                        "for": "Duración"
+                                        "for": "Duración",
+                                        "hvac_mode": "Modo HVAC",
+                                        "preset_mode": "Modo preestablecido"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -2805,6 +2815,7 @@
                         "server_version": "Versión del servidor"
                     },
                     "device_info": {
+                        "device_config": "Configurar dispositivo",
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del nodo",
                         "zwave_info": "Información de Z-Wave"
@@ -2816,6 +2827,15 @@
                         "connected": "Conectado",
                         "connecting": "Conectando",
                         "unknown": "Desconocido"
+                    },
+                    "node_config": {
+                        "attribution": "Los parámetros de configuración de los dispositivos y sus descripciones son provistos por la {device_database}",
+                        "battery_device_notice": "Los dispositivos de batería deben estar activos para actualizar su configuración. Consulte el manual de su dispositivo para obtener instrucciones sobre cómo reactivarlo.",
+                        "error_device_not_found": "Dispositivo no encontrado",
+                        "header": "Configuración del dispositivo Z-Wave",
+                        "introduction": "Gestionar y ajustar los parámetros de configuración específicos del dispositivo (nodo) para el dispositivo seleccionado",
+                        "parameter_is_read_only": "Este parámetro es de solo lectura.",
+                        "zwave_js_device_database": "Base de datos de dispositivos Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Vivo",
@@ -3011,7 +3031,7 @@
                 "supervisor": {
                     "ask": "Solicitar ayuda",
                     "observer": "Verificar Observer",
-                    "reboot": "Intente reiniciar el host",
+                    "reboot": "Intentar reiniciar el host",
                     "system_health": "Verificar estado del sistema",
                     "title": "No se pudo cargar el panel de Supervisor",
                     "wait": "Si recién inicia, asegúrese de darle tiempo suficiente a Supervisor para que se inicie."

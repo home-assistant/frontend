@@ -2815,6 +2815,7 @@
                         "server_version": "Versión del servidor"
                     },
                     "device_info": {
+                        "device_config": "Configurar dispositivo",
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del Nodo",
                         "zwave_info": "Información de Z-Wave"
@@ -2826,6 +2827,15 @@
                         "connected": "Conectado",
                         "connecting": "Conectando",
                         "unknown": "Desconocido"
+                    },
+                    "node_config": {
+                        "attribution": "{device_database} proporciona los parámetros de configuración del dispositivo y las descripciones.",
+                        "battery_device_notice": "Los dispositivos de batería deben estar activos para actualizar su configuración. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo reactivar el dispositivo.",
+                        "error_device_not_found": "Dispositivo no encontrado",
+                        "header": "Configuración del dispositivo Z-Wave",
+                        "introduction": "Administra y ajusta los parámetros de configuración específicos del dispositivo (nodo) para el dispositivo seleccionado",
+                        "parameter_is_read_only": "Este parámetro es de solo lectura.",
+                        "zwave_js_device_database": "Base de datos de dispositivos Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Vivo",

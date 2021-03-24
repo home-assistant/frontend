@@ -2815,6 +2815,7 @@
                         "server_version": "伺服器版本"
                     },
                     "device_info": {
+                        "device_config": "設定裝置",
                         "node_ready": "就緒節點",
                         "node_status": "節點狀態",
                         "zwave_info": "Z-Wave 資訊"
@@ -2826,6 +2827,15 @@
                         "connected": "已連線",
                         "connecting": "連線中",
                         "unknown": "未知"
+                    },
+                    "node_config": {
+                        "attribution": "由 {device_database} 所提供之裝置設定參數與說明",
+                        "battery_device_notice": "電池供電裝置必須喚醒以更新其設定。請參考您的裝置手冊以了解如何喚醒裝置。",
+                        "error_device_not_found": "找不到裝置",
+                        "header": "Z-Wave 裝置設定",
+                        "introduction": "管理與調整所選擇裝置 (節點) 之特定設定參數",
+                        "parameter_is_read_only": "此參數為唯讀。",
+                        "zwave_js_device_database": "Z-Wave JS 裝置資料庫"
                     },
                     "node_status": {
                         "alive": "線上",

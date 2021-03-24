@@ -1299,9 +1299,11 @@
                                     "action": "Actie",
                                     "extra_fields": {
                                         "code": "Code",
+                                        "humidity": "Vochtigheid",
                                         "message": "Bericht",
                                         "position": "Positie",
-                                        "title": "Titel"
+                                        "title": "Titel",
+                                        "value": "Waarde"
                                     },
                                     "label": "Apparaat"
                                 },
@@ -2806,6 +2808,7 @@
                         "server_version": "Server Versie"
                     },
                     "device_info": {
+                        "device_config": "Configureer Apparaat",
                         "node_ready": "Knooppunt gereed",
                         "node_status": "Knooppuntstatus",
                         "zwave_info": "Z-Wave info"
@@ -2817,6 +2820,10 @@
                         "connected": "Verbonden",
                         "connecting": "Verbinden",
                         "unknown": "Onbekend"
+                    },
+                    "node_config": {
+                        "error_device_not_found": "Apparaat niet gevonden",
+                        "parameter_is_read_only": "Deze parameter is alleen-lezen."
                     },
                     "node_status": {
                         "alive": "Levend",

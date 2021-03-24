@@ -2338,7 +2338,7 @@
                     },
                     "node_config": {
                         "header": "노드 구성",
-                        "help_source": "구성 매개 변수 설명 및 도움말 텍스트는 OpenZWave 프로젝트에서 제공합니다.",
+                        "help_source": "구성 매개 변수 설명 및 도움말 텍스트는 OpenZWave 프로젝트에서 제공됩니다.",
                         "introduction": "Z-Wave 노드에 대한 다양한 구성 매개 변수를 관리합니다.",
                         "wakeup_help": "배터리 전원을 사용하는 노드는 구성을 변경하려면 반드시 절전 해제된 상태이어야 합니다. 노드가 절전 상태면 Openzwave는 절전 해제될 때 노드의 구성 업데이트를 시도합니다. 이 과정은 몇 시간 (또는 며칠) 후에 이루어질 수 있습니다. 기기를 절전 해제하려면 다음 단계를 따라주세요."
                     },
@@ -2815,6 +2815,7 @@
                         "server_version": "서버 버전"
                     },
                     "device_info": {
+                        "device_config": "기기 구성하기",
                         "node_ready": "노드 준비",
                         "node_status": "노드 상태",
                         "zwave_info": "Z-Wave 정보"
@@ -2826,6 +2827,15 @@
                         "connected": "연결됨",
                         "connecting": "연결 중",
                         "unknown": "알 수 없슴"
+                    },
+                    "node_config": {
+                        "attribution": "기기의 매개 변수 설정방법 및 설명은 {device_database}에서 제공됩니다",
+                        "battery_device_notice": "배터리 방식 기기의 구성을 업데이트하려면 기기가 절전 해제된 상태이어야 합니다. 기기의 절전 모드를 해제하는 방법은 기기의 설명서를 참조해주세요.",
+                        "error_device_not_found": "기기를 찾을 수 없습니다",
+                        "header": "Z-Wave 기기 구성",
+                        "introduction": "선택한 기기(노드)에 대한 매개 변수를 관리하고 조정합니다.",
+                        "parameter_is_read_only": "이 매개 변수는 읽기 전용입니다.",
+                        "zwave_js_device_database": "Z-Wave JS 기기 데이터베이스"
                     },
                     "node_status": {
                         "alive": "사용가능",
@@ -3024,7 +3034,7 @@
                     "reboot": "호스트 재부팅 시도하기",
                     "system_health": "시스템 상태 확인하기",
                     "title": "Supervisor 화면을 불러올 수 없습니다!",
-                    "wait": "방금 시작한 경우 Supervisor에게 시작할 충분한 시간을 주었는지 확인해주세요."
+                    "wait": "방금 시작한 경우 Supervisor가 완전히 시작되기까지 잠시 기다려주세요."
                 }
             },
             "history": {
@@ -3444,7 +3454,7 @@
                         "close": "닫기",
                         "empty_config": "비어있는 대시보드로 시작",
                         "header": "Lovelace UI 직접 관리하기",
-                        "para": "이 대시보드는 현재 Home Assistant에 의해 유지 관리되고 있습니다. 사용할 수 있는 새로운 구성요소나 Lovelace UI 구성요소가 있을 때 자동으로 업데이트됩니다. 사용자가 직접 관리하는 경우 이 대시보드는 더 이상 자동으로 업데이트되지 않습니다. 언제든지 설정에서 새로운 대시보드를 만들 수 있습니다.",
+                        "para": "이 대시보드는 현재 Home Assistant에 의해 유지 관리되고 있습니다. 사용할 수 있는 새로운 구성요소나 Lovelace UI 구성요소가 있을 때 자동으로 업데이트됩니다. 사용자가 직접 관리하는 경우 이 대시보드는 더 이상 자동으로 업데이트되지 않습니다. 언제든지 구성에서 새로운 대시보드를 만들 수 있습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
                         "save": "직접 관리할게요",
                         "yaml_config": "시작하는데 도움이 될 수 있는 대시보드의 현재 구성은 다음과 같습니다:",
@@ -3683,7 +3693,7 @@
                 },
                 "integration": {
                     "finish": "완료",
-                    "intro": "기기 및 서비스는 Home Assistant에서 통합 구성요소로 표시됩니다. 지금 구성하거나 나중에 설정 화면에서 구성할 수 있습니다.",
+                    "intro": "기기 및 서비스는 Home Assistant에서 통합 구성요소로 표시됩니다. 지금 설정하거나 나중에 구성 화면에서 설정할 수 있습니다.",
                     "more_integrations": "더보기"
                 },
                 "intro": "잠들어 있는 집을 깨우고 개인정보를 보호하며 전세계의 공돌이 커뮤니티에 가입 할 준비가 되셨나요?",

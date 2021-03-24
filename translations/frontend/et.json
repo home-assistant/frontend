@@ -2815,6 +2815,7 @@
                         "server_version": "Serveri versioon"
                     },
                     "device_info": {
+                        "device_config": "Seadme häälestamine",
                         "node_ready": "Sõlm on aktiivne",
                         "node_status": "Sõlme olek",
                         "zwave_info": "Z-Wave teave"
@@ -2826,6 +2827,15 @@
                         "connected": "Ühendatud",
                         "connecting": "Ühendun",
                         "unknown": "Tundmatu"
+                    },
+                    "node_config": {
+                        "attribution": "Seadme parameetrid ja kirjeldused on esitatud {device_database}",
+                        "battery_device_notice": "Patareitoitel seadmed peavad olema ärkvel, et värskendada oma sätteid. Seadme äratamiseks vaata oma seadme kasutusjuhendit.",
+                        "error_device_not_found": "Seadet ei leitud",
+                        "header": "Z-Wave seadme häälestamine",
+                        "introduction": "Valitud seadme (sõlme) spetsiifiliste seadistuste haldamine ja muutmine",
+                        "parameter_is_read_only": "See parameeter on kirjutuskaitstud.",
+                        "zwave_js_device_database": "Z-Wave JS seadmete andmebaas"
                     },
                     "node_status": {
                         "alive": "Aktiivne",

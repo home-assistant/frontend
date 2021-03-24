@@ -406,7 +406,8 @@
                 "unhealthy_reason": {
                     "docker": "A Docker futtatókörnyezet nem működik megfelelően",
                     "setup": "A Supervisor beállítása sikertelen volt",
-                    "supervisor": "A Supervisor nem tudott frissíteni"
+                    "supervisor": "A Supervisor nem tudott frissíteni",
+                    "untrusted": "Nem megbízható tartalom észlelése"
                 },
                 "unhealthy_title": "A telepítés nem megfelelő",
                 "unsupported_reason": {
@@ -1218,10 +1219,14 @@
                                 "device_id": {
                                     "action": "Művelet",
                                     "extra_fields": {
+                                        "brightness_pct": "Fényerő",
                                         "code": "Kód",
+                                        "humidity": "Páratartalom",
                                         "message": "Üzenet",
+                                        "mode": "Üzemmód",
                                         "position": "Pozíció",
-                                        "title": "Cím"
+                                        "title": "Cím",
+                                        "value": "Érték"
                                     },
                                     "label": "Eszköz"
                                 },
@@ -1294,7 +1299,9 @@
                                     "extra_fields": {
                                         "above": "Felett",
                                         "below": "Alatt",
-                                        "for": "Időtartam"
+                                        "for": "Időtartam",
+                                        "hvac_mode": "HVAC üzemmód",
+                                        "preset_mode": "Előre beállított üzemmód"
                                     },
                                     "label": "Eszköz"
                                 },
@@ -2642,6 +2649,7 @@
                         "caption": "Hálózat"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatikus nagyítás",
                         "caption": "Megjelenítés",
                         "header": "Hálózati megjelenítés",
                         "highlight_label": "Kiemelt ezközök",
@@ -2679,18 +2687,36 @@
                     "no_zones_created_yet": "Úgy tűnik, még nem hoztál létre zónákat."
                 },
                 "zwave_js": {
+                    "add_node": {
+                        "view_device": "Eszköz megtekintése"
+                    },
                     "button": "Konfigurálja",
                     "common": {
-                        "close": "Bezárás"
+                        "add_node": "Node hozzáadása",
+                        "close": "Bezárás",
+                        "network": "Hálózat",
+                        "node_id": "Node azonosító",
+                        "remove_node": "Node eltávolítása"
                     },
                     "dashboard": {
                         "dump_not_ready_confirm": "Letöltés",
                         "server_version": "Szerver verzió"
                     },
+                    "device_info": {
+                        "device_config": "Eszköz beállítása"
+                    },
+                    "navigation": {
+                        "network": "Hálózat"
+                    },
                     "network_status": {
                         "connected": "Csatlakoztatva",
                         "connecting": "Csatlakozás",
                         "unknown": "Ismeretlen"
+                    },
+                    "node_config": {
+                        "error_device_not_found": "Az eszköz nem található",
+                        "header": "Z-Wave eszköz konfigurálása",
+                        "parameter_is_read_only": "Ez a paraméter csak olvasható"
                     },
                     "node_status": {
                         "unknown": "Ismeretlen"
@@ -2867,9 +2893,12 @@
                 }
             },
             "error": {
-                "go_back": "Menjen vissza",
+                "go_back": "Visszalépés",
                 "supervisor": {
-                    "system_health": "A rendszer állapotának ellenőrzése"
+                    "ask": "Kérjen segítséget",
+                    "reboot": "Próbálja újraindítani a gazdagépet",
+                    "system_health": "A rendszer állapotának ellenőrzése",
+                    "title": "Nem sikerült betölteni a Supervisor panelt!"
                 }
             },
             "history": {
