@@ -983,7 +983,7 @@
                 "preference": {
                   "base": {
                     "title": "Basic analytics",
-                    "description": "This includes the Instance ID, the version and the installation type"
+                    "description": "This includes the instance ID, the version and the installation type"
                   },
                   "diagnostics": {
                     "title": "Diagnostics",
