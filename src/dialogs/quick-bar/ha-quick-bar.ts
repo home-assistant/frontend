@@ -3,7 +3,7 @@ import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
-import { mdiConsoleLine } from "@mdi/js";
+import { mdiConsoleLine, mdiEarth, mdiReload, mdiServerNetwork } from "@mdi/js";
 import {
   css,
   customElement,
@@ -48,11 +48,8 @@ import {
 import { QuickBarParams } from "./show-dialog-quick-bar";
 import "../../components/ha-chip";
 
-const DEFAULT_SERVER_ICON = "hass:server";
-
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
-  icon?: string;
   iconPath?: string;
   action(data?: any): void;
 }
@@ -62,9 +59,11 @@ interface CommandItem extends QuickBarItem {
   categoryText: string;
 }
 
-const isCommandItem = (
-  item: QuickBarItem | CommandItem
-): item is CommandItem => {
+interface EntityItem extends QuickBarItem {
+  icon?: string;
+}
+
+const isCommandItem = (item: EntityItem | CommandItem): item is CommandItem => {
   return (item as CommandItem).categoryKey !== undefined;
 };
 
@@ -84,7 +83,7 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _commandItems?: CommandItem[];
 
-  @internalProperty() private _entityItems?: QuickBarItem[];
+  @internalProperty() private _entityItems?: EntityItem[];
 
   @internalProperty() private _items?: QuickBarItem[] = [];
 
@@ -220,7 +219,7 @@ export class QuickBar extends LitElement {
       : this._renderEntityItem(item, index);
   }
 
-  private _renderEntityItem(item: QuickBarItem, index?: number) {
+  private _renderEntityItem(item: EntityItem, index?: number) {
     return html`
       <mwc-list-item
         .twoline=${Boolean(item.altText)}
@@ -233,9 +232,14 @@ export class QuickBar extends LitElement {
         ${item.iconPath
           ? html`<ha-svg-icon
               .path=${item.iconPath}
+              class="entity"
               slot="graphic"
             ></ha-svg-icon>`
-          : html`<ha-icon .icon=${item.icon} slot="graphic"></ha-icon>`}
+          : html`<ha-icon
+              .icon=${item.icon}
+              class="entity"
+              slot="graphic"
+            ></ha-icon>`}
         <span>${item.primaryText}</span>
         ${item.altText
           ? html`
@@ -257,9 +261,18 @@ export class QuickBar extends LitElement {
       >
         <span>
           <ha-chip
-            text="${item.categoryText}"
+            .label="${item.categoryText}"
+            .hasIcon=${true}
             class="command-category ${item.categoryKey}"
-          ></ha-chip>
+          >
+            ${item.iconPath
+              ? html`<ha-svg-icon
+                  .path=${item.iconPath}
+                  slot="icon"
+                ></ha-svg-icon>`
+              : ""}
+            <span slot="label">${item.categoryText}</span></ha-chip
+          >
         </span>
 
         <span>${item.primaryText}</span>
@@ -404,9 +417,9 @@ export class QuickBar extends LitElement {
       return {
         primaryText,
         filterText: `${categoryText} ${primaryText}`,
-        icon: domainIcon(domain),
         action: () => this.hass.callService(domain, "reload"),
         categoryKey: "reload",
+        iconPath: mdiReload,
         categoryText,
       };
     });
@@ -433,8 +446,8 @@ export class QuickBar extends LitElement {
           primaryText,
           filterText: `${categoryText} ${primaryText}`,
           categoryKey,
+          iconPath: mdiServerNetwork,
           categoryText,
-          icon: DEFAULT_SERVER_ICON,
           action: () => this.hass.callService("homeassistant", action),
         },
         this.hass.localize("ui.dialogs.generic.ok")
@@ -528,6 +541,7 @@ export class QuickBar extends LitElement {
       return {
         ...item,
         categoryKey,
+        iconPath: mdiEarth,
         categoryText,
         filterText: `${categoryText} ${item.primaryText}`,
         action: () => navigate(this, item.path),
@@ -574,8 +588,8 @@ export class QuickBar extends LitElement {
           }
         }
 
-        ha-icon,
-        ha-svg-icon {
+        ha-icon.entity,
+        ha-svg-icon.entity {
           margin-left: 20px;
         }
 
@@ -593,16 +607,18 @@ export class QuickBar extends LitElement {
         }
 
         .command-category.reload {
-          --ha-chip-background-color: pink;
+          --ha-chip-background-color: #cddc39;
+          --ha-chip-text-color: black;
         }
 
         .command-category.navigation {
-          --ha-chip-background-color: lightblue;
+          --ha-chip-background-color: var(--light-primary-color);
+          --ha-chip-text-color: black;
         }
 
         .command-category.server_control {
-          --ha-chip-background-color: orange;
-          --ha-chip-text-color: white;
+          --ha-chip-background-color: var(--warning-color);
+          --ha-chip-text-color: black;
         }
 
         .uni-virtualizer-host {

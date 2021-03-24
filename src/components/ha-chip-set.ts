@@ -1,6 +1,5 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
 import {
   css,
   CSSResult,
@@ -12,6 +11,7 @@ import {
   unsafeCSS,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
+import "./ha-chip";
 
 declare global {
   // for fire event
@@ -33,11 +33,9 @@ export class HaChipSet extends LitElement {
         ${this.items.map(
           (item, idx) =>
             html`
-              <ha-chip
-                .index=${idx}
-                @click=${this._handleClick}
-                .label=${item}
-              />
+              <ha-chip .index=${idx} @click=${this._handleClick}>
+                <span slot="label">${item}</span>
+              </ha-chip>
             `
         )}
       </div>
@@ -53,10 +51,6 @@ export class HaChipSet extends LitElement {
   static get styles(): CSSResult {
     return css`
       ${unsafeCSS(chipStyles)}
-      .mdc-chip {
-        background-color: rgba(var(--rgb-primary-text-color), 0.15);
-        color: var(--primary-text-color);
-      }
     `;
   }
 }
