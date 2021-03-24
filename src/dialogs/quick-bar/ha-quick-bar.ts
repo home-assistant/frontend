@@ -271,7 +271,7 @@ export class QuickBar extends LitElement {
                   slot="icon"
                 ></ha-svg-icon>`
               : ""}
-            <span slot="label">${item.categoryText}</span></ha-chip
+            ${item.categoryText}</ha-chip
           >
         </span>
 
