@@ -46,6 +46,7 @@ export interface CloudPreferences {
 
 export type CloudStatusLoggedIn = CloudStatusBase & {
   email: string;
+  google_registered: boolean;
   google_entities: EntityFilter;
   google_domains: string[];
   alexa_entities: EntityFilter;

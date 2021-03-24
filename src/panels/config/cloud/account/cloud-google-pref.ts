@@ -48,31 +48,48 @@ export class CloudGooglePref extends LitElement {
           ></ha-switch>
         </div>
         <div class="card-content">
-          ${this.hass.localize("ui.panel.config.cloud.account.google.info")}
-          <ul>
-            <li>
-              <a
-                href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.google.enable_ha_skill"
-                )}
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.nabucasa.com/config/google_assistant/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.google.config_documentation"
-                )}
-              </a>
-            </li>
-          </ul>
+          <p>
+            ${this.hass.localize("ui.panel.config.cloud.account.google.info")}
+          </p>
+          ${!this.cloudStatus.google_registered
+            ? html`
+                <h3 class="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.google.not_configured_title"
+                  )}
+                </h3>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.google.not_configured_text"
+                  )}
+                </p>
+
+                <ul>
+                  <li>
+                    <a
+                      href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.cloud.account.google.enable_ha_skill"
+                      )}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.nabucasa.com/config/google_assistant/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.cloud.account.google.config_documentation"
+                      )}
+                    </a>
+                  </li>
+                </ul>
+              `
+            : ""}
           ${google_enabled
             ? html`
                 <div class="state-reporting">
@@ -120,7 +137,8 @@ export class CloudGooglePref extends LitElement {
         <div class="card-actions">
           <ha-call-api-button
             .hass=${this.hass}
-            .disabled="${!google_enabled}"
+            .disabled="${!this.cloudStatus.google_registered ||
+            !google_enabled}"
             @hass-api-called=${this._syncEntitiesCalled}
             path="cloud/google_actions/sync"
           >
@@ -128,13 +146,12 @@ export class CloudGooglePref extends LitElement {
               "ui.panel.config.cloud.account.google.sync_entities"
             )}
           </ha-call-api-button>
-          <div class="spacer"></div>
           <a href="/config/cloud/google-assistant">
-            <mwc-button
-              >${this.hass.localize(
+            <mwc-button>
+              ${this.hass.localize(
                 "ui.panel.config.cloud.account.google.manage_entities"
-              )}</mwc-button
-            >
+              )}
+            </mwc-button>
           </a>
         </div>
       </ha-card>
@@ -156,9 +173,6 @@ export class CloudGooglePref extends LitElement {
         "ui.panel.config.cloud.account.google.not_configured_text"
       ),
     });
-    await updateCloudPref(this.hass, {
-      google_enabled: false,
-    });
     fireEvent(this, "ha-refresh-cloud-status");
   }
 
@@ -166,14 +180,6 @@ export class CloudGooglePref extends LitElement {
     const toggle = ev.target as HaSwitch;
     try {
       await updateCloudPref(this.hass, { [toggle.id]: toggle.checked! });
-      try {
-        await this.hass.callApi("POST", "cloud/google_actions/sync");
-      } catch (err) {
-        if (err.status_code === 404) {
-          this._syncFailed();
-        }
-        throw err;
-      }
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       toggle.checked = !toggle.checked;
@@ -233,20 +239,21 @@ export class CloudGooglePref extends LitElement {
         color: var(--primary-color);
         font-weight: 500;
       }
-      .secure_devices {
-        padding-top: 8px;
-      }
       paper-input {
         width: 250px;
       }
       .card-actions {
         display: flex;
+        justify-content: space-between;
       }
       .card-actions a {
         text-decoration: none;
       }
-      .spacer {
-        flex-grow: 1;
+      .warning {
+        color: var(--error-color);
+      }
+      .secure_devices {
+        padding-top: 8px;
       }
       .state-reporting {
         display: flex;
