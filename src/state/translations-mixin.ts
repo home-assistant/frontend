@@ -142,7 +142,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // update selectedLanguage so that it can be saved to local storage
       this._updateHass({
         locale: { ...this.hass!.locale, language: language },
-        selectedLanguage: locale.language,
+        language: language,
+        selectedLanguage: language,
       });
       storeState(this.hass);
       if (saveToBackend) {

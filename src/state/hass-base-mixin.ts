@@ -48,12 +48,6 @@ export class HassBaseEl extends LitElement {
       this._pendingHass = { ...this._pendingHass, ...obj };
       return;
     }
-
-    // Object.assign and the spread operator only copy static values from a getter to the new object; Object.defineProperty must be used to retain the getter for hass.language
-    this.hass = Object.defineProperty({ ...this.hass, ...obj }, "language", {
-      get() {
-        return this.locale.language;
-      },
-    });
+    this.hass = { ...this.hass, ...obj };
   }
 }

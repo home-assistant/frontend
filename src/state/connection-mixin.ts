@@ -40,9 +40,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         user: null as any,
         panelUrl: (this as any)._panelUrl,
         defaultPanel: DEFAULT_PANEL,
-        get language() {
-          return this.locale.language;
-        },
+        language: getLocalLanguage(),
         selectedLanguage: null,
         locale: {
           language: getLocalLanguage(),
