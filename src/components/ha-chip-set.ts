@@ -34,7 +34,7 @@ export class HaChipSet extends LitElement {
           (item, idx) =>
             html`
               <ha-chip .index=${idx} @click=${this._handleClick}>
-                <span slot="label">${item}</span>
+                ${item}
               </ha-chip>
             `
         )}
