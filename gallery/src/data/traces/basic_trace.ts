@@ -2,7 +2,6 @@ import { DemoTrace } from "./types";
 
 export const basicTrace: DemoTrace = {
   trace: {
-    automation_id: "1615419646544",
     last_action: "action/0/choose/0/sequence/0",
     last_condition: "condition/0",
     run_id: "0",
@@ -12,7 +11,8 @@ export const basicTrace: DemoTrace = {
       finish: "2021-03-22T19:17:09.556129+00:00",
     },
     trigger: "state of input_boolean.toggle_1",
-    unique_id: "1615419646544",
+    domain: "automation",
+    item_id: "1615419646544",
     action_trace: {
       "action/0": [
         {

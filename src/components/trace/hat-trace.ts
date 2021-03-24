@@ -12,7 +12,7 @@ import {
   AutomationTraceExtended,
   ChooseActionTrace,
   getDataFromPath,
-} from "../../data/automation_debug";
+} from "../../data/trace";
 import { HomeAssistant } from "../../types";
 import "./ha-timeline";
 import {
@@ -288,7 +288,7 @@ class ActionRenderer {
     }
 
     // Render choice
-    for (; i < this.keys.length; i++) {
+    while (i < this.keys.length) {
       const path = this.keys[i];
       const parts = path.split("/");
 
@@ -299,7 +299,7 @@ class ActionRenderer {
 
       // We know it's an action sequence, so force the type like that
       // for rendering.
-      this._renderItem(i, getActionType(this._getDataFromPath(path)));
+      i = this._renderItem(i, getActionType(this._getDataFromPath(path)));
     }
 
     return i;

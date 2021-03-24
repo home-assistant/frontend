@@ -22,7 +22,7 @@ import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
-import { AutomationTraceContexts } from "../../data/automation_debug";
+import { TraceContexts } from "../../data/trace";
 import { LogbookEntry } from "../../data/logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -34,7 +34,7 @@ class HaLogbook extends LitElement {
   @property({ attribute: false }) public userIdToName = {};
 
   @property({ attribute: false })
-  public traceContexts: AutomationTraceContexts = {};
+  public traceContexts: TraceContexts = {};
 
   @property({ attribute: false }) public entries: LogbookEntry[] = [];
 
@@ -218,7 +218,7 @@ class HaLogbook extends LitElement {
                       -
                       <a
                         href=${`/config/automation/trace/${
-                          this.traceContexts[item.context_id!].automation_id
+                          this.traceContexts[item.context_id!].item_id
                         }?run_id=${
                           this.traceContexts[item.context_id!].run_id
                         }`}
