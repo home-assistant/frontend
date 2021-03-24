@@ -29,7 +29,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
-import { format } from "fecha";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -431,26 +431,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
         // filter location data from states and remove all invalid locations
         const path = entityStates.reduce(
-          (accumulator: LatLngTuple[], state) => {
+          (accumulator: [LatLngTuple, Date][], state) => {
             const latitude = state.attributes.latitude;
             const longitude = state.attributes.longitude;
             if (latitude && longitude) {
-              accumulator.push([latitude, longitude] as LatLngTuple);
+              accumulator.push([[latitude, longitude] as LatLngTuple, new Date(state.last_updated)]);
             }
             return accumulator;
           },
           []
-        ) as LatLngTuple[];
-
-        // filter location data to get correct timestamps
-        const pathDates = entityStates.reduce((accumulator: Date[], state) => {
-          const latitude = state.attributes.latitude;
-          const longitude = state.attributes.longitude;
-          if (latitude && longitude) {
-            accumulator.push(state.last_updated);
-          }
-          return accumulator;
-        }, []) as Date[];
+        ) as [LatLngTuple, Date];
 
         // DRAW HISTORY
         for (
@@ -461,7 +451,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           const opacityStep = 0.8 / (path.length - 2);
           const opacity = 0.2 + markerIndex * opacityStep;
 
-          let marker = Leaflet.circleMarker(path[markerIndex], {
+          let marker = Leaflet.circleMarker(path[markerIndex][0], {
             radius: 3,
             color: this._getColor(entityId),
             opacity,
@@ -473,10 +463,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             mapPaths.push(
               marker
                 .bindTooltip(
-                  format(
-                    new Date(pathDates[markerIndex]),
-                    this._config!.timestamp_format
-                  ),
+                  formatDateTime(
+                    new Date(path[markerIndex][1])
+                  )
                 )
                 .openTooltip()
             );
@@ -485,7 +474,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           }
 
           // DRAW history path lines
-          const line = [path[markerIndex], path[markerIndex + 1]];
+          const line = [path[markerIndex][0], path[markerIndex + 1][0]];
           mapPaths.push(
             Leaflet.polyline(line, {
               color: this._getColor(entityId),
