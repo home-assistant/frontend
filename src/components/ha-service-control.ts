@@ -335,7 +335,10 @@ export class HaServiceControl extends LitElement {
     ev.stopPropagation();
     const key = (ev.currentTarget as any).key;
     const value = ev.detail.value;
-    if (this.value?.data && this.value.data[key] === value) {
+    if (
+      this.value?.data?.[key] === value ||
+      (!this.value?.data?.[key] && (value === "" || value === undefined))
+    ) {
       return;
     }
 
