@@ -24,7 +24,7 @@ declare global {
 export class HaChip extends LitElement {
   @property() public index = 0;
 
-  @property() public hasIcon = false;
+  @property({type: Boolean}) public hasIcon = false;
 
   protected render(): TemplateResult {
     return html`
