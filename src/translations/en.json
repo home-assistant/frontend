@@ -3360,7 +3360,8 @@
             "ui_mode": "Go to UI mode",
             "yaml_parameters": "Parameters only available in YAML mode",
             "all_parameters": "All available parameters",
-            "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`"
+            "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`",
+            "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor."
           },
           "states": {
             "title": "States",
