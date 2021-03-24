@@ -262,7 +262,7 @@ export class QuickBar extends LitElement {
         <span>
           <ha-chip
             .label="${item.categoryText}"
-            .hasIcon=${true}
+            hasIcon
             class="command-category ${item.categoryKey}"
           >
             ${item.iconPath
