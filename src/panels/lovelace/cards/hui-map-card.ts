@@ -465,7 +465,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             radius: 3,
             color: this._getColor(entityId),
             opacity,
-            interactive: false,
+            interactive: this._config!.show_timestamps,
           });
 
           // DRAW history path dots
