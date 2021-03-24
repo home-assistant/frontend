@@ -12,9 +12,9 @@ import { AutomationEntity } from "../../../../data/automation";
 import {
   AutomationTrace,
   AutomationTraceExtended,
-  loadAutomationTrace,
-  loadAutomationTraces,
-} from "../../../../data/automation_debug";
+  loadTrace,
+  loadTraces,
+} from "../../../../data/trace";
 import "../../../../components/ha-card";
 import "../../../../components/trace/hat-trace";
 import { haStyle } from "../../../../resources/styles";
@@ -165,7 +165,7 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    this._traces = await loadAutomationTraces(this.hass, this.automationId);
+    this._traces = await loadTraces(this.hass, "automation", this.automationId);
     // Newest will be on top.
     this._traces.reverse();
 
@@ -203,8 +203,9 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTrace() {
-    const trace = await loadAutomationTrace(
+    const trace = await loadTrace(
       this.hass,
+      "automation",
       this.automationId,
       this._runId!
     );

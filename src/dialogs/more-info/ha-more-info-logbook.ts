@@ -14,10 +14,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
-import {
-  AutomationTraceContexts,
-  loadAutomationTraceContexts,
-} from "../../data/automation_debug";
+import { TraceContexts, loadTraceContexts } from "../../data/trace";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import "../../panels/logbook/ha-logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
@@ -31,7 +28,7 @@ export class MoreInfoLogbook extends LitElement {
 
   @internalProperty() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _traceContexts?: AutomationTraceContexts;
+  @internalProperty() private _traceContexts?: TraceContexts;
 
   @internalProperty() private _persons = {};
 
@@ -136,7 +133,7 @@ export class MoreInfoLogbook extends LitElement {
         this.entityId,
         true
       ),
-      loadAutomationTraceContexts(this.hass),
+      loadTraceContexts(this.hass),
     ]);
     this._logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]
