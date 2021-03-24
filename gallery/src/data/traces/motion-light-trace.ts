@@ -2,7 +2,6 @@ import { DemoTrace } from "./types";
 
 export const motionLightTrace: DemoTrace = {
   trace: {
-    automation_id: "",
     last_action: "action/3",
     last_condition: null,
     run_id: "1",
@@ -12,7 +11,8 @@ export const motionLightTrace: DemoTrace = {
       finish: "2021-03-14T06:07:53.287525+00:00",
     },
     trigger: "state of binary_sensor.pauluss_macbook_pro_camera_in_use",
-    unique_id: "1614732497392",
+    domain: "automation",
+    item_id: "1614732497392",
     action_trace: {
       "action/0": [
         {

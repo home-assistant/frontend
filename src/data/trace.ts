@@ -41,8 +41,8 @@ export type ActionTrace =
   | ChooseChoiceActionTrace;
 
 export interface AutomationTrace {
-  automation_id: string;
-  unique_id: string;
+  domain: string;
+  item_id: string;
   last_action: string | null;
   last_condition: string | null;
   run_id: string;
@@ -62,38 +62,51 @@ export interface AutomationTraceExtended extends AutomationTrace {
   config: AutomationConfig;
 }
 
-export const loadAutomationTrace = (
+interface TraceTypes {
+  automation: {
+    short: AutomationTrace;
+    extended: AutomationTraceExtended;
+  };
+}
+
+export const loadTrace = <T extends keyof TraceTypes>(
   hass: HomeAssistant,
-  automation_id: string,
+  domain: T,
+  item_id: string,
   run_id: string
-): Promise<AutomationTraceExtended> =>
+): Promise<TraceTypes[T]["extended"]> =>
   hass.callWS({
-    type: "automation/trace/get",
-    automation_id,
+    type: "trace/get",
+    domain,
+    item_id,
     run_id,
   });
 
-export const loadAutomationTraces = (
+export const loadTraces = <T extends keyof TraceTypes>(
   hass: HomeAssistant,
-  automation_id?: string
-): Promise<AutomationTrace[]> =>
+  domain: T,
+  item_id: string
+): Promise<Array<TraceTypes[T]["short"]>> =>
   hass.callWS({
-    type: "automation/trace/list",
-    automation_id,
+    type: "trace/list",
+    domain,
+    item_id,
   });
 
-export type AutomationTraceContexts = Record<
+export type TraceContexts = Record<
   string,
-  { run_id: string; automation_id: string }
+  { run_id: string; domain: string; item_id: string }
 >;
 
-export const loadAutomationTraceContexts = (
+export const loadTraceContexts = (
   hass: HomeAssistant,
-  automation_id?: string
-): Promise<AutomationTraceContexts> =>
+  domain?: string,
+  item_id?: string
+): Promise<TraceContexts> =>
   hass.callWS({
-    type: "automation/trace/contexts",
-    automation_id,
+    type: "trace/contexts",
+    domain,
+    item_id,
   });
 
 export const getDataFromPath = (
