@@ -304,8 +304,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     this._updateConfigParameter(ev.target, Number(ev.target.selected));
   }
 
-  private debouncedUpdate = debounce((target) => {
-    const value = Number(target.value);
+  private debouncedUpdate = debounce((target, value) => {
     this._config![target.key].value = value;
 
     this._updateConfigParameter(target, value);
@@ -315,12 +314,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (
-      Number(this._config![ev.target.key].value) === Number(ev.target.value)
-    ) {
+    const value = Number(ev.target.value);
+    if (Number(this._config![ev.target.key].value) === value) {
       return;
     }
-    this.debouncedUpdate(ev.target);
+    this.debouncedUpdate(ev.target, value);
   }
 
   private _updateConfigParameter(target, value) {
