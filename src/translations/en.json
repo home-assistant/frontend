@@ -2135,7 +2135,8 @@
             },
             "loading_first_time": "Please wait while the integration is being installed",
             "error": "Error",
-            "could_not_load": "Config flow could not be loaded"
+            "could_not_load": "Config flow could not be loaded",
+            "not_loaded": "The integration could not be loaded, try to restart Home Assistant."
           }
         },
         "users": {

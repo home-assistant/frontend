@@ -159,8 +159,9 @@ export class HaIntegrationCard extends LitElement {
                         )}
                       </paper-tooltip>
                     </span>`
-                  : ""}<ha-icon-next></ha-icon-next
-              ></paper-item>`
+                  : ""}
+                <ha-icon-next></ha-icon-next>
+              </paper-item>`
           )}
         </paper-listbox>
       </ha-card>
