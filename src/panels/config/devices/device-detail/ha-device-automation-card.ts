@@ -7,7 +7,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../../components/ha-card";
-import "../../../../components/ha-chips";
+import "../../../../components/ha-chip-set";
 import { showAutomationEditor } from "../../../../data/automation";
 import {
   DeviceAction,
@@ -65,13 +65,13 @@ export abstract class HaDeviceAutomationCard<
         ${this.hass.localize(this.headerKey)}
       </h3>
       <div class="content">
-        <ha-chips
+        <ha-chip-set
           @chip-clicked=${this._handleAutomationClicked}
           .items=${this.automations.map((automation) =>
             this._localizeDeviceAutomation(this.hass, automation)
           )}
         >
-        </ha-chips>
+        </ha-chip-set>
       </div>
     `;
   }
