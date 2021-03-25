@@ -95,7 +95,7 @@ class ConfigAnalytics extends LitElement {
     try {
       await setAnalyticsPreferences(
         this.hass,
-        this._analyticsDetails?.preferences || []
+        this._analyticsDetails?.preferences || {}
       );
     } catch (err) {
       this._error = err.message || err;

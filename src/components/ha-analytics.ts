@@ -10,7 +10,7 @@ import {
 } from "lit-element";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
-import { Analytics, AnalyticsPrefrence } from "../data/analytics";
+import { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import { documentationUrl } from "../util/documentation-url";
@@ -18,11 +18,11 @@ import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-settings-row";
 
-const ADDITIONAL_PREFERENCES: AnalyticsPrefrence[] = ["usage", "statistics"];
+const ADDITIONAL_PREFERENCES = ["usage", "statistics"];
 
 declare global {
   interface HASSDomEvents {
-    "analytics-preferences-changed": { preferences: Analytics["preferences"] };
+    "analytics-preferences-changed": { preferences: AnalyticsPreferences };
   }
 }
 
@@ -37,7 +37,7 @@ export class HaAnalytics extends LitElement {
       return html``;
     }
 
-    const enabled = this.analytics.preferences.includes("base");
+    const enabled = this.analytics.preferences.base;
 
     return html`
       <p>
@@ -73,7 +73,7 @@ export class HaAnalytics extends LitElement {
             <span slot="prefix">
               <ha-checkbox
                 @change=${this._handleRowCheckboxClick}
-                .checked=${this.analytics.preferences.includes(preference)}
+                .checked=${this.analytics.preferences[preference]}
                 .preference=${preference}
                 .disabled=${!enabled}
               >
@@ -118,7 +118,7 @@ export class HaAnalytics extends LitElement {
         <span slot="prefix">
           <ha-checkbox
             @change=${this._handleRowCheckboxClick}
-            .checked=${this.analytics.preferences.includes("diagnostics")}
+            .checked=${this.analytics.preferences.diagnostics}
             .preference=${"diagnostics"}
           >
           </ha-checkbox>
@@ -151,15 +151,15 @@ export class HaAnalytics extends LitElement {
   private _handleRowCheckboxClick(ev: Event) {
     const checkbox = ev.currentTarget as HaCheckbox;
     const preference = (checkbox as any).preference;
-    let preferences = [...(this.analytics.preferences || [])];
+    const preferences = { ...this.analytics.preferences };
 
     if (checkbox.checked) {
-      if (preferences.includes(preference)) {
+      if (preferences[preference]) {
         return;
       }
-      preferences.push(preference);
+      preferences[preference] = true;
     } else {
-      preferences = preferences.filter((entry) => entry !== preference);
+      preferences[preference] = false;
     }
 
     fireEvent(this, "analytics-preferences-changed", { preferences });
