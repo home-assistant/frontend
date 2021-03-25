@@ -70,9 +70,12 @@ export class HuiPictureGlanceCardEditor extends LitElement
   }
 
   get _image(): string {
-    return this._config!.image || this._camera_image
-      ? ""
-      : "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png";
+    return (
+      this._config!.image ||
+      (this._camera_image
+        ? ""
+        : "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png")
+    );
   }
 
   get _camera_image(): string {
