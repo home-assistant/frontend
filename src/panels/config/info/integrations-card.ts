@@ -107,7 +107,7 @@ class IntegrationsCard extends LitElement {
                               `
                             : html`<td></td>`}
                         `}
-                    ${setup && setup?.seconds
+                    ${setup?.seconds
                       ? html`<td>${setup.seconds.toFixed(2)}s</td>`
                       : html`<td></td>`}
                   </tr>
