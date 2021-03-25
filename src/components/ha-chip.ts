@@ -24,7 +24,7 @@ declare global {
 export class HaChip extends LitElement {
   @property() public index = 0;
 
-  @property({type: Boolean}) public hasIcon = false;
+  @property({ type: Boolean }) public hasIcon = false;
 
   protected render(): TemplateResult {
     return html`
@@ -48,7 +48,6 @@ export class HaChip extends LitElement {
     return css`
       ${unsafeCSS(chipStyles)}
       .mdc-chip {
-        margin: 4px;
         background-color: var(
           --ha-chip-background-color,
           rgba(var(--rgb-primary-text-color), 0.15)
