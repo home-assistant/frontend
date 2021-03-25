@@ -2815,6 +2815,7 @@
                         "server_version": "Versió del servidor"
                     },
                     "device_info": {
+                        "device_config": "Configura dispositiu",
                         "node_ready": "Node preparat",
                         "node_status": "Estat del node",
                         "zwave_info": "Informació Z-Wave"
@@ -2828,7 +2829,13 @@
                         "unknown": "Desconegut"
                     },
                     "node_config": {
-                        "error_device_not_found": "Dispositiu no trobat"
+                        "attribution": "Els paràmetres de configuració i descripcions del dispositiu els proporcionen {device_database}",
+                        "battery_device_notice": "Els dispositius amb bateria han d'estar desperts per actualitzar-ne la configuració. Consulta el manual del dispositiu per saber com despertar-lo.",
+                        "error_device_not_found": "Dispositiu no trobat",
+                        "header": "Configuració de dispositiu Z-Wave",
+                        "introduction": "Gestiona i ajusta els paràmetres de configuració específics del dispositiu (node) seleccionat",
+                        "parameter_is_read_only": "Aquest paràmetre de només lectura.",
+                        "zwave_js_device_database": "Base de dades de dispositiu Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Viu",

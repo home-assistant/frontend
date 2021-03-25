@@ -467,12 +467,14 @@
                     "docker": "Docker 环境无法正常工作",
                     "privileged": "Supervisor 权限不够",
                     "setup": "Supervisor 设置失败",
-                    "supervisor": "Supervisor 未能更新"
+                    "supervisor": "Supervisor 未能更新",
+                    "untrusted": "检测到不受信任的内容"
                 },
                 "unhealthy_title": "系统状态不佳",
                 "unsupported_description": "以下是系统存在的问题的列表，请点击链接以了解如何解决问题。",
                 "unsupported_reason": {
                     "container": "已知会导致问题的容器",
+                    "content-trust": "内容信任验证已禁用",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker 配置",
                     "docker_version": "Docker 版本",
@@ -1298,7 +1300,9 @@
                                 "device_id": {
                                     "action": "动作",
                                     "extra_fields": {
+                                        "brightness_pct": "亮度",
                                         "code": "代码",
+                                        "flash": "闪烁",
                                         "humidity": "湿度",
                                         "message": "消息",
                                         "mode": "模式",
@@ -2811,6 +2815,7 @@
                         "server_version": "服务器版本"
                     },
                     "device_info": {
+                        "device_config": "配置设备",
                         "node_ready": "节点就绪",
                         "node_status": "节点状态",
                         "zwave_info": "Z-Wave 信息"
@@ -2822,6 +2827,15 @@
                         "connected": "已连接",
                         "connecting": "正在连接",
                         "unknown": "未知"
+                    },
+                    "node_config": {
+                        "attribution": "设备配置参数和描述由 {device_database} 提供。",
+                        "battery_device_notice": "电池供电的设备必须处于唤醒状态才能更新配置。请参阅设备说明书，了解如何唤醒设备。",
+                        "error_device_not_found": "未找到设备",
+                        "header": "Z-Wave 设备配置",
+                        "introduction": "管理并调整所选设备（节点）的具体配置参数。",
+                        "parameter_is_read_only": "此参数为只读。",
+                        "zwave_js_device_database": "Z-Wave JS 设备数据库"
                     },
                     "node_status": {
                         "alive": "在线",

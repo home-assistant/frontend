@@ -98,8 +98,8 @@
         "default": {
             "off": "끄기",
             "on": "켜기",
-            "unavailable": "사용불가",
-            "unknown": "알수없음"
+            "unavailable": "사용 불가",
+            "unknown": "알 수 없음"
         }
     },
     "supervisor": {
@@ -2806,7 +2806,7 @@
                         "dump_dead_nodes_title": "일부 노드가 작동하지 않습니다",
                         "dump_debug": "문제 진단에 도움이 되는 네트워크 덤프 내려받기",
                         "dump_not_ready_confirm": "내려받기",
-                        "dump_not_ready_text": "모든 노드가 준비되지 않은 상태에서 내보내기를 생성하면 필요한 데이터가 누락될 수 있습니다. 네트워크에 모든 노드를 쿼리 할 시간을 주세요. 덤프를 계속하시겠습니까?",
+                        "dump_not_ready_text": "모든 노드가 준비되지 않은 상태에서 내보내기를 생성하면 필요한 데이터가 누락될 수 있습니다. 네트워크에 모든 노드를 등록 할 시간을 주세요. 덤프를 계속하시겠습니까?",
                         "dump_not_ready_title": "모든 노드가 아직 준비되지 않았습니다",
                         "header": "Z-Wave 네트워크를 관리합니다",
                         "home_id": "집 ID",
@@ -2826,14 +2826,14 @@
                     "network_status": {
                         "connected": "연결됨",
                         "connecting": "연결 중",
-                        "unknown": "알 수 없슴"
+                        "unknown": "알 수 없음"
                     },
                     "node_config": {
-                        "attribution": "기기의 매개 변수 설정방법 및 설명은 {device_database}에서 제공됩니다",
+                        "attribution": "기기 구성 매개 변수 및 설명은 {device_database}에서 제공됩니다",
                         "battery_device_notice": "배터리 방식 기기의 구성을 업데이트하려면 기기가 절전 해제된 상태이어야 합니다. 기기의 절전 모드를 해제하는 방법은 기기의 설명서를 참조해주세요.",
                         "error_device_not_found": "기기를 찾을 수 없습니다",
                         "header": "Z-Wave 기기 구성",
-                        "introduction": "선택한 기기(노드)에 대한 매개 변수를 관리하고 조정합니다.",
+                        "introduction": "선택한 기기(노드)의 매개 변수를 관리하고 조정합니다.",
                         "parameter_is_read_only": "이 매개 변수는 읽기 전용입니다.",
                         "zwave_js_device_database": "Z-Wave JS 기기 데이터베이스"
                     },
@@ -2842,14 +2842,14 @@
                         "asleep": "절전",
                         "awake": "절전해제",
                         "dead": "사용불가",
-                        "unknown": "알 수 없슴"
+                        "unknown": "알 수 없음"
                     },
                     "remove_node": {
                         "cancel_exclusion": "제외 취소하기",
                         "controller_in_exclusion_mode": "Z-Wave 컨트롤러가 이제 제외 모드에 있습니다",
                         "exclusion_failed": "노드를 제거할 수 없습니다. 자세한 내용은 로그를 확인해주세요.",
                         "exclusion_finished": "Z-Wave 네트워크에서 {id} 노드가 제거되었습니다.",
-                        "follow_device_instructions": "기기에서 제외를 트리거하려면  기기와 함께 제공된 지침을 따라주세요.",
+                        "follow_device_instructions": "기기를 제거하려면 기기의 설명서를 따라주세요.",
                         "introduction": "Z-Wave 네트워크에서 노드를 제거하고 Home Assistant에서 연결된 기기와 구성요소를 제거합니다.",
                         "start_exclusion": "제외 시작하기",
                         "title": "Z-Wave 노드 제거하기"
