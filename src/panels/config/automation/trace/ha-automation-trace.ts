@@ -288,6 +288,7 @@ ${safeDump(
 
         .details {
           display: flex;
+          margin: 0 16px;
         }
         .details > * {
           flex: 1 1 0px;
