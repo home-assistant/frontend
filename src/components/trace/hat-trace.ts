@@ -38,7 +38,7 @@ const pathToName = (path: string) => path.split("/").join(" ");
 /* eslint max-classes-per-file: "off" */
 
 // Report time entry when more than this time has passed
-const SIGNIFICANT_TIME_CHANGE = 5000; // 5 seconds
+const SIGNIFICANT_TIME_CHANGE = 1000; // 1 seconds
 
 const isSignificantTimeChange = (a: Date, b: Date) =>
   Math.abs(b.getTime() - a.getTime()) > SIGNIFICANT_TIME_CHANGE;
