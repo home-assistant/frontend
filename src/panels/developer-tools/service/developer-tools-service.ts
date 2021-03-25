@@ -3,6 +3,7 @@ import {
   css,
   CSSResultArray,
   html,
+  internalProperty,
   LitElement,
   property,
   query,
@@ -11,6 +12,7 @@ import memoizeOne from "memoize-one";
 import { LocalStorage } from "../../../common/decorators/local-storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
+import { hasTemplate } from "../../../common/string/has-template";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
@@ -30,7 +32,9 @@ import "../../../util/app-localstorage-document";
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  @internalProperty() private _uiAvailable = true;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
@@ -68,6 +72,7 @@ class HaPanelDevService extends LitElement {
         );
       }
     }
+    this._checkUiSupported();
   }
 
   protected render() {
@@ -109,15 +114,27 @@ class HaPanelDevService extends LitElement {
       </div>
       <div class="button-row">
         <div class="buttons">
-          <mwc-button @click=${this._toggleYaml}>
-            ${this._yamlMode
-              ? this.hass.localize(
-                  "ui.panel.developer-tools.tabs.services.ui_mode"
-                )
-              : this.hass.localize(
-                  "ui.panel.developer-tools.tabs.services.yaml_mode"
-                )}
-          </mwc-button>
+          <div class="switch-mode-container">
+            <mwc-button
+              @click=${this._toggleYaml}
+              .disabled=${!this._uiAvailable}
+            >
+              ${this._yamlMode
+                ? this.hass.localize(
+                    "ui.panel.developer-tools.tabs.services.ui_mode"
+                  )
+                : this.hass.localize(
+                    "ui.panel.developer-tools.tabs.services.yaml_mode"
+                  )}
+            </mwc-button>
+            ${!this._uiAvailable
+              ? html`<span class="error"
+                  >${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.services.no_template_ui_support"
+                  )}</span
+                >`
+              : ""}
+          </div>
           <mwc-button .disabled=${!isValid} raised @click=${this._callService}>
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.services.call_service"
@@ -268,8 +285,18 @@ class HaPanelDevService extends LitElement {
     this._serviceDataChanged(ev);
   }
 
+  private _checkUiSupported() {
+    if (hasTemplate(this._serviceData)) {
+      this._yamlMode = true;
+      this._uiAvailable = false;
+    } else {
+      this._uiAvailable = true;
+    }
+  }
+
   private _serviceDataChanged(ev) {
     this._serviceData = ev.detail.value;
+    this._checkUiSupported();
   }
 
   private _serviceChanged(ev) {
@@ -318,14 +345,19 @@ class HaPanelDevService extends LitElement {
           box-sizing: border-box;
           width: 100%;
         }
-
         .button-row .buttons {
           display: flex;
           justify-content: space-between;
           max-width: 1200px;
           margin: auto;
         }
-
+        .switch-mode-container {
+          display: flex;
+          align-items: center;
+        }
+        .switch-mode-container .error {
+          margin-left: 8px;
+        }
         .attributes {
           width: 100%;
         }
