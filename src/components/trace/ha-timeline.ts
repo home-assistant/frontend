@@ -12,8 +12,10 @@ import { buttonLinkStyle } from "../../resources/styles";
 import "../ha-svg-icon";
 
 @customElement("ha-timeline")
-class HaTimeline extends LitElement {
+export class HaTimeline extends LitElement {
   @property({ type: Boolean, reflect: true }) public label = false;
+
+  @property({ type: Boolean, reflect: true }) public raised = false;
 
   @property({ type: Boolean }) public lastItem = false;
 
@@ -86,6 +88,10 @@ class HaTimeline extends LitElement {
             --timeline-ball-color,
             var(--timeline-color, var(--secondary-text-color))
           );
+          border-radius: 50%;
+        }
+        :host([raised]) ha-svg-icon {
+          transform: scale(1.3);
         }
         .line {
           flex: 1;
