@@ -13,8 +13,10 @@ import "../../../components/ha-card";
 import {
   domainToName,
   fetchIntegrationManifests,
+  fetchIntegrationSetups,
   integrationIssuesUrl,
   IntegrationManifest,
+  IntegrationSetup,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -27,11 +29,16 @@ class IntegrationsCard extends LitElement {
     [domain: string]: IntegrationManifest;
   };
 
+  @internalProperty() private _setups?: {
+    [domain: string]: IntegrationSetup;
+  };
+
   private _sortedIntegrations = memoizeOne((components: string[]) => {
     return Array.from(
       new Set(
-        components
-          .map((comp) => (comp.includes(".") ? comp.split(".")[1] : comp))
+        components.map((comp) =>
+          comp.includes(".") ? comp.split(".")[1] : comp
+        )
       )
     ).sort();
   });
@@ -39,6 +46,7 @@ class IntegrationsCard extends LitElement {
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._fetchManifests();
+    this._fetchSetups();
   }
 
   protected render(): TemplateResult {
@@ -51,6 +59,7 @@ class IntegrationsCard extends LitElement {
             ${this._sortedIntegrations(this.hass!.config.components).map(
               (domain) => {
                 const manifest = this._manifests && this._manifests[domain];
+                const setup = this._setups && this._setups[domain];
                 return html`
                   <tr>
                     <td>
@@ -65,7 +74,8 @@ class IntegrationsCard extends LitElement {
                       <span class="domain">${domain}</span>
                     </td>
                     ${!manifest
-                      ? ""
+                      ? html`<td></td>
+                          <td></td>`
                       : html`
                           <td>
                             <a
@@ -95,8 +105,11 @@ class IntegrationsCard extends LitElement {
                                   </a>
                                 </td>
                               `
-                            : ""}
+                            : html`<td></td>`}
                         `}
+                    ${setup && setup?.seconds
+                      ? html`<td>${setup.seconds.toFixed(2)}s</td>`
+                      : html`<td></td>`}
                   </tr>
                 `;
               }
@@ -113,6 +126,14 @@ class IntegrationsCard extends LitElement {
       manifests[manifest.domain] = manifest;
     }
     this._manifests = manifests;
+  }
+
+  private async _fetchSetups() {
+    const setups = {};
+    for (const setup of await fetchIntegrationSetups(this.hass)) {
+      setups[setup.domain] = setup;
+    }
+    this._setups = setups;
   }
 
   static get styles(): CSSResult {
