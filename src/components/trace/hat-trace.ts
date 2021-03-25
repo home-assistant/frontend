@@ -454,9 +454,9 @@ export class HaAutomationTracer extends LitElement {
 
     // Pick first path when we load a new trace.
     if (props.has("trace")) {
-      const element = this.shadowRoot!.querySelector(
+      const element = this.shadowRoot!.querySelector<HaTimeline>(
         "ha-timeline[data-path]"
-      ) as HaTimeline | null;
+      );
       if (element) {
         fireEvent(this, "value-changed", { value: element.dataset.path });
         this._selectedPath = element.dataset.path;
