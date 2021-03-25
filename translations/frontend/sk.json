@@ -373,7 +373,7 @@
         },
         "store": {
             "missing_addons": "Chýbajú doplnky? Povoľte rozšírený režim na stránke profilu.",
-            "no_results_found": "V {repozitári} sa nenašli žiadne výsledky.",
+            "no_results_found": "V {repository} sa nenašli žiadne výsledky.",
             "registries": "Registre",
             "repositories": "Repozitáre"
         },

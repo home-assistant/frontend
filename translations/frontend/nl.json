@@ -467,12 +467,14 @@
                     "docker": "De Docker omgeving werkt niet goed",
                     "privileged": "Supervisor heeft onvoldoende toegangsrechten",
                     "setup": "Setup van de Supervisor mislukt",
-                    "supervisor": "Supervisor kon niet worden bijgewerkt"
+                    "supervisor": "Supervisor kon niet worden bijgewerkt",
+                    "untrusted": "Onvertrouwde inhoud gedetecteerd"
                 },
                 "unhealthy_title": "Er is iets mis met je installatie",
                 "unsupported_description": "Hieronder vindt je een lijst met problemen die bij je installatie zijn aangetroffen. Klik op de links om te zien hoe je de problemen kunt oplossen.",
                 "unsupported_reason": {
                     "container": "Containers waarvan bekend is dat ze problemen veroorzaken",
+                    "content-trust": "Validatie van content-trust is uitgeschakeld",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker Configuratie",
                     "docker_version": "Docker versie",
@@ -1298,9 +1300,12 @@
                                 "device_id": {
                                     "action": "Actie",
                                     "extra_fields": {
+                                        "brightness_pct": "Helderheid",
                                         "code": "Code",
+                                        "flash": "Flash",
                                         "humidity": "Vochtigheid",
                                         "message": "Bericht",
+                                        "mode": "Modus",
                                         "position": "Positie",
                                         "title": "Titel",
                                         "value": "Waarde"
@@ -1376,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "Boven",
                                         "below": "Onder",
-                                        "for": "Duur"
+                                        "for": "Duur",
+                                        "hvac_mode": "HVAC-modus",
+                                        "preset_mode": "Vooraf ingestelde modus"
                                     },
                                     "label": "Apparaat"
                                 },

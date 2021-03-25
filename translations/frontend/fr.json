@@ -467,12 +467,14 @@
                     "docker": "L'environnement Docker ne fonctionne pas correctement",
                     "privileged": "Le Superviseur n'est pas privilégié",
                     "setup": "La configuration du Superviseur a échoué",
-                    "supervisor": "Le Superviseur ne peut pas mettre à jour"
+                    "supervisor": "Le Superviseur ne peut pas mettre à jour",
+                    "untrusted": "Contenu non approuvé détecté"
                 },
                 "unhealthy_title": "Votre installation est défectueuse",
                 "unsupported_description": "Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
                 "unsupported_reason": {
                     "container": "Conteneurs connus pour causer des problèmes",
+                    "content-trust": "La validation de la confiance du contenu est désactivée",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuration de Docker",
                     "docker_version": "Version Docker",
@@ -1298,10 +1300,15 @@
                                 "device_id": {
                                     "action": "Action",
                                     "extra_fields": {
+                                        "brightness_pct": "Luminosité",
                                         "code": "Code",
+                                        "flash": "Flash",
+                                        "humidity": "Humidité",
                                         "message": "Message",
+                                        "mode": "Mode",
                                         "position": "Position",
-                                        "title": "Titre"
+                                        "title": "Titre",
+                                        "value": "Valeur"
                                     },
                                     "label": "Appareil"
                                 },
@@ -1374,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "Au-dessus de",
                                         "below": "Au-dessous de",
-                                        "for": "Durée"
+                                        "for": "Durée",
+                                        "hvac_mode": "Mode HVAC",
+                                        "preset_mode": "Mode préréglé"
                                     },
                                     "label": "Appareil"
                                 },
@@ -2806,6 +2815,7 @@
                         "server_version": "Version du serveur"
                     },
                     "device_info": {
+                        "device_config": "Configurer l'appareil",
                         "node_ready": "Nœud prêt",
                         "node_status": "État du nœud",
                         "zwave_info": "Informations Z-Wave"
@@ -2817,6 +2827,15 @@
                         "connected": "Connecté",
                         "connecting": "Connexion",
                         "unknown": "Inconnu"
+                    },
+                    "node_config": {
+                        "attribution": "Les paramètres et descriptions de configuration des appareils sont fournis par {device_database}",
+                        "battery_device_notice": "Les appareils à batterie doivent être réveillés pour mettre à jour leur configuration. Veuillez consulter le manuel de votre appareil pour savoir comment réveiller l'appareil.",
+                        "error_device_not_found": "Appareil non trouvé",
+                        "header": "Configuration du périphérique Z-Wave",
+                        "introduction": "Gérer et ajuster les paramètres de configuration spécifiques au périphérique (nœud) pour le périphérique sélectionné",
+                        "parameter_is_read_only": "Ce paramètre est en lecture seule.",
+                        "zwave_js_device_database": "Base de données de périphériques Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Actif",

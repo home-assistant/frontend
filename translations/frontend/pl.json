@@ -467,12 +467,14 @@
                     "docker": "Środowisko dockera nie działa poprawnie",
                     "privileged": "Supervisor nie jest uprzywilejowany",
                     "setup": "Konfiguracja Supervisora nie powiodła się",
-                    "supervisor": "Supervisor nie mógł się zaktualizować"
+                    "supervisor": "Supervisor nie mógł się zaktualizować",
+                    "untrusted": "Wykryto niezaufaną zawartość"
                 },
                 "unhealthy_title": "Twoja instalacja jest \"niezdrowa\"",
                 "unsupported_description": "Poniżej znajduje się lista problemów z Twoją instalacją. Kliknij łącza, aby dowiedzieć się, jak możesz je rozwiązać.",
                 "unsupported_reason": {
                     "container": "Kontenery, o których wiadomo, że powodują problemy",
+                    "content-trust": "Weryfikacja zaufania zawartości jest wyłączona",
                     "dbus": "DBUS",
                     "docker_configuration": "Konfiguracja dockera",
                     "docker_version": "Wersja dockera",
@@ -1297,10 +1299,15 @@
                                 "device_id": {
                                     "action": "Akcja",
                                     "extra_fields": {
+                                        "brightness_pct": "Jasność",
                                         "code": "Kod",
+                                        "flash": "Flash",
+                                        "humidity": "Wilgotność",
                                         "message": "Wiadomość",
+                                        "mode": "Tryb",
                                         "position": "Pozycja",
-                                        "title": "Tytuł"
+                                        "title": "Tytuł",
+                                        "value": "Wartość"
                                     },
                                     "label": "Urządzenie"
                                 },
@@ -1373,7 +1380,9 @@
                                     "extra_fields": {
                                         "above": "Powyżej",
                                         "below": "Poniżej",
-                                        "for": "Czas trwania"
+                                        "for": "Czas trwania",
+                                        "hvac_mode": "Tryb pracy HVAC",
+                                        "preset_mode": "Ustawienie predefiniowane"
                                     },
                                     "label": "Urządzenie"
                                 },
@@ -2805,6 +2814,7 @@
                         "server_version": "Wersja serwera"
                     },
                     "device_info": {
+                        "device_config": "Konfiguruj urządzenie",
                         "node_ready": "gotowy",
                         "node_status": "Stan węzła",
                         "zwave_info": "Informacje Z-Wave"
@@ -2816,6 +2826,15 @@
                         "connected": "połączono",
                         "connecting": "łączenie",
                         "unknown": "nieznany"
+                    },
+                    "node_config": {
+                        "attribution": "Parametry konfiguracyjne urządzenia oraz opisy są dostarczane przez {device_database}",
+                        "battery_device_notice": "Urządzenia zasilane bateriami muszą być aktywne, aby zaktualizować ich konfigurację. Zapoznaj się z instrukcją obsługi urządzenia, aby uzyskać instrukcje dotyczące wybudzania urządzenia.",
+                        "error_device_not_found": "Nie znaleziono urządzenia",
+                        "header": "Konfiguracja urządzenia Z-Wave",
+                        "introduction": "Zarządzaj i dostosuj specyficznymi parametrami konfiguracyjnymi dla wybranego urządzenia (nody)",
+                        "parameter_is_read_only": "Ten parametr jest tylko do odczytu.",
+                        "zwave_js_device_database": "Baza danych urządzeń Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "żywy",
