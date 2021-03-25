@@ -1,3 +1,4 @@
+import { safeDump } from "js-yaml";
 import {
   css,
   CSSResult,
@@ -12,6 +13,7 @@ import { AutomationEntity } from "../../../../data/automation";
 import {
   AutomationTrace,
   AutomationTraceExtended,
+  getDataFromPath,
   loadTrace,
   loadTraces,
 } from "../../../../data/trace";
@@ -47,6 +49,8 @@ export class HaAutomationTrace extends LitElement {
   @internalProperty() private _traces?: AutomationTrace[];
 
   @internalProperty() private _runId?: string;
+
+  @internalProperty() private _path?: string;
 
   @internalProperty() private _trace?: AutomationTraceExtended;
 
@@ -107,10 +111,31 @@ export class HaAutomationTrace extends LitElement {
                     .hass=${this.hass}
                     .trace=${this._trace}
                     .logbookEntries=${this._logbookEntries}
+                    @value-changed=${this._pickPath}
                   ></hat-trace>
                 `}
           </div>
         </ha-card>
+        ${!this._path || !this._trace
+          ? ""
+          : html`
+              <div class="details">
+                <ha-card header="Config">
+                  <pre class="config card-content">
+${safeDump(getDataFromPath(this._trace.config, this._path))}</pre
+                  >
+                </ha-card>
+                <ha-card header="Trace">
+                  <pre class="trace card-content">
+${safeDump(
+                      (this._path.split("/")[0] === "condition"
+                        ? this._trace.condition_trace
+                        : this._trace.action_trace)[this._path]
+                    )}</pre
+                  >
+                </ha-card>
+              </div>
+            `}
       </hass-tabs-subpage>
     `;
   }
@@ -162,6 +187,11 @@ export class HaAutomationTrace extends LitElement {
 
   private _pickTrace(ev) {
     this._runId = ev.target.value;
+    this._path = undefined;
+  }
+
+  private _pickPath(ev) {
+    this._path = ev.detail.value;
   }
 
   private async _loadTraces(runId?: string) {
@@ -179,6 +209,7 @@ export class HaAutomationTrace extends LitElement {
       !this._traces.some((trace) => trace.run_id === this._runId)
     ) {
       this._runId = undefined;
+      this._path = undefined;
 
       // If we came here from a trace passed into the url, clear it.
       if (runId) {
@@ -253,6 +284,16 @@ export class HaAutomationTrace extends LitElement {
           position: absolute;
           top: 8px;
           right: 8px;
+        }
+
+        .details {
+          display: flex;
+        }
+        .details > * {
+          flex: 1 1 0px;
+        }
+        .details > *:first-child {
+          margin-right: 16px;
         }
       `,
     ];

@@ -3,6 +3,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -30,6 +31,7 @@ import {
   getActionType,
 } from "../../data/script";
 import relativeTime from "../../common/datetime/relative_time";
+import { fireEvent } from "../../common/dom/fire_event";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
@@ -242,7 +244,7 @@ class ActionRenderer {
     const isTopLevel = path.split("/").length === 2;
 
     if (!isTopLevel && !actionType) {
-      this._renderEntry(path.replace(/\//g, " "));
+      this._renderEntry(path, path.replace(/\//g, " "));
       return index + 1;
     }
 
@@ -254,7 +256,7 @@ class ActionRenderer {
       return this._handleChoose(index);
     }
 
-    this._renderEntry(data.alias || actionType);
+    this._renderEntry(path, data.alias || actionType);
     return index + 1;
   }
 
@@ -273,7 +275,8 @@ class ActionRenderer {
     // +3: 'sequence'
     // +4: executed sequence
 
-    const startLevel = this.keys[index].split("/").length - 1;
+    const choosePath = this.keys[index];
+    const startLevel = choosePath.split("/").length - 1;
 
     const chooseTrace = this._getItem(index)[0] as ChooseActionTrace;
     const defaultExecuted = chooseTrace.result.choice === "default";
@@ -283,14 +286,14 @@ class ActionRenderer {
     const name = chooseConfig.alias || "Choose";
 
     if (defaultExecuted) {
-      this._renderEntry(`${name}: Default action executed`);
+      this._renderEntry(choosePath, `${name}: Default action executed`);
     } else {
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/choose/${chooseTrace.result.choice}`
       ) as ChooseActionChoice;
       const choiceName =
         choiceConfig.alias || `Choice ${chooseTrace.result.choice}`;
-      this._renderEntry(`${name}: ${choiceName} executed`);
+      this._renderEntry(choosePath, `${name}: ${choiceName} executed`);
     }
 
     let i;
@@ -328,9 +331,9 @@ class ActionRenderer {
     return i;
   }
 
-  private _renderEntry(description: string) {
+  private _renderEntry(path: string, description: string) {
     this.entries.push(html`
-      <ha-timeline .icon=${mdiRecordCircleOutline}>
+      <ha-timeline .icon=${mdiRecordCircleOutline} data-path=${path}>
         ${description}
       </ha-timeline>
     `);
@@ -345,9 +348,11 @@ class ActionRenderer {
 export class HaAutomationTracer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) private trace?: AutomationTraceExtended;
+  @property({ attribute: false }) public trace?: AutomationTraceExtended;
 
-  @property({ attribute: false }) private logbookEntries?: LogbookEntry[];
+  @property({ attribute: false }) public logbookEntries?: LogbookEntry[];
+
+  @internalProperty() private _selectedPath?: string;
 
   protected render(): TemplateResult {
     if (!this.trace) {
@@ -374,6 +379,7 @@ export class HaAutomationTracer extends LitElement {
             .icon=${value[0].result.result
               ? mdiCheckCircleOutline
               : mdiStopCircleOutline}
+            data-path=${path}
           >
             ${getDataFromPath(this.trace!.config, path).alias ||
             pathToName(path)}
@@ -442,11 +448,52 @@ export class HaAutomationTracer extends LitElement {
     return html`${entries}`;
   }
 
+  protected updated(props) {
+    super.updated(props);
+
+    // Pick first path when we load a new trace.
+    if (props.has("trace")) {
+      for (const el of Array.from(
+        this.shadowRoot!.querySelectorAll("ha-timeline")
+      )) {
+        if (el.dataset.path) {
+          fireEvent(this, "value-changed", { value: el.dataset.path });
+          this._selectedPath = el.dataset.path;
+          break;
+        }
+      }
+    }
+
+    this.shadowRoot!.querySelectorAll("ha-timeline").forEach((el) => {
+      el.style.setProperty(
+        "--timeline-ball-color",
+        this._selectedPath === el.dataset.path ? "var(--primary-color)" : null
+      );
+      if (!el.dataset.path || el.dataset.upgraded) {
+        return;
+      }
+      el.dataset.upgraded = "1";
+      el.addEventListener("click", () => {
+        fireEvent(this, "value-changed", { value: el.dataset.path });
+        this._selectedPath = el.dataset.path;
+      });
+      el.addEventListener("mouseover", () => {
+        el.raised = true;
+      });
+      el.addEventListener("mouseout", () => {
+        el.raised = false;
+      });
+    });
+  }
+
   static get styles(): CSSResult[] {
     return [
       css`
         ha-timeline[lastItem].condition {
           --timeline-ball-color: var(--error-color);
+        }
+        ha-timeline[data-path] {
+          cursor: pointer;
         }
       `,
     ];
