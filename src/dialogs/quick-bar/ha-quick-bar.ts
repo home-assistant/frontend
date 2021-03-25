@@ -227,7 +227,6 @@ export class QuickBar extends LitElement {
         hasMeta
         index=${ifDefined(index)}
         graphic="icon"
-        class=${this._commandMode ? "command-item" : ""}
       >
         ${item.iconPath
           ? html`<ha-svg-icon
@@ -258,6 +257,7 @@ export class QuickBar extends LitElement {
         .twoline=${Boolean(item.altText)}
         .item=${item}
         index=${ifDefined(index)}
+        class="command-item"
       >
         <span>
           <ha-chip
