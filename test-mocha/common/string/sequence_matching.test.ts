@@ -1,4 +1,9 @@
 import { assert } from "chai";
+import {
+  createMatches,
+  fuzzyScore,
+  FuzzyScorer,
+} from "../../../src/common/string/filter/filter";
 
 import {
   fuzzyFilterSort,
@@ -80,14 +85,10 @@ describe("fuzzySequentialMatch", () => {
 
 describe("fuzzyFilterSort", () => {
   const filter = "ticker";
-  const item1 = {
-    filterText: "automation.ticker",
-    altText: "Stocks",
-    score: 0,
-  };
-  const item2 = { filterText: "sensor.ticker", altText: "Stocks up", score: 0 };
+  const item1 = { text: "automation.ticker", altText: "Stocks", score: 0 };
+  const item2 = { text: "sensor.ticker", altText: "Stocks up", score: 0 };
   const item3 = {
-    filterText: "automation.check_router",
+    text: "automation.check_router",
     altText: "Timer Check Router",
     score: 0,
   };
@@ -105,3 +106,45 @@ describe("fuzzyFilterSort", () => {
     assert.deepEqual(res, expectedItemsAfterFilter);
   });
 });
+
+describe("createMatches", () => {
+  it(`sorts correctly`, () => {
+    assertMatches("tit", "win.tit", "win.^t^i^t", fuzzyScore);
+  });
+});
+
+function assertMatches(
+  pattern: string,
+  word: string,
+  decoratedWord: string | undefined,
+  filter: FuzzyScorer,
+  opts: {
+    patternPos?: number;
+    wordPos?: number;
+    firstMatchCanBeWeak?: boolean;
+  } = {}
+) {
+  const r = filter(
+    pattern,
+    pattern.toLowerCase(),
+    opts.patternPos || 0,
+    word,
+    word.toLowerCase(),
+    opts.wordPos || 0,
+    opts.firstMatchCanBeWeak || false
+  );
+  assert.ok(!decoratedWord === !r);
+  if (r) {
+    const matches = createMatches(r);
+    let actualWord = "";
+    let pos = 0;
+    for (const match of matches) {
+      actualWord += word.substring(pos, match.start);
+      actualWord +=
+        "^" + word.substring(match.start, match.end).split("").join("^");
+      pos = match.end;
+    }
+    actualWord += word.substring(pos);
+    assert.equal(actualWord, decoratedWord);
+  }
+}
