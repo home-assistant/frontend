@@ -2104,6 +2104,7 @@
             "entity_unavailable": "Entity unavailable",
             "area": "In {area}",
             "no_area": "No Area",
+            "not_loaded": "Not loaded",
             "disable": {
               "disabled": "Disabled",
               "disabled_cause": "Disabled by {cause}",
