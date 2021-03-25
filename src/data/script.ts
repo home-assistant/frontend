@@ -87,6 +87,7 @@ export interface RepeatAction {
 }
 
 interface BaseRepeat {
+  alias?: string;
   sequence: Action[];
 }
 
@@ -102,14 +103,15 @@ export interface UntilRepeat extends BaseRepeat {
   until: Condition[];
 }
 
+export interface ChooseActionChoice {
+  alias?: string;
+  conditions: string | Condition[];
+  sequence: Action[];
+}
+
 export interface ChooseAction {
-  choose: [
-    {
-      alias?: string;
-      conditions: string | Condition[];
-      sequence: Action[];
-    }
-  ];
+  alias?: string;
+  choose: ChooseActionChoice[];
   default?: Action[];
 }
 

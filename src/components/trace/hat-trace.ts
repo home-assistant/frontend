@@ -24,7 +24,11 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { LogbookEntry } from "../../data/logbook";
-import { getActionType } from "../../data/script";
+import {
+  ChooseAction,
+  ChooseActionChoice,
+  getActionType,
+} from "../../data/script";
 import relativeTime from "../../common/datetime/relative_time";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
@@ -34,7 +38,7 @@ const pathToName = (path: string) => path.split("/").join(" ");
 /* eslint max-classes-per-file: "off" */
 
 // Report time entry when more than this time has passed
-const SIGNIFICANT_TIME_CHANGE = 5000; // 5 seconds
+const SIGNIFICANT_TIME_CHANGE = 1000; // 1 seconds
 
 const isSignificantTimeChange = (a: Date, b: Date) =>
   Math.abs(b.getTime() - a.getTime()) > SIGNIFICANT_TIME_CHANGE;
@@ -184,6 +188,7 @@ class ActionRenderer {
   constructor(
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
+    private logbookRenderer: LogbookRenderer,
     private timeTracker: RenderedTimeTracker
   ) {
     this.keys = Object.keys(trace.action_trace);
@@ -212,6 +217,15 @@ class ActionRenderer {
     const value = this._getItem(index);
     const timestamp = new Date(value[0].timestamp);
 
+    // Render all logbook items that are in front of this item.
+    while (
+      this.logbookRenderer.hasNext &&
+      new Date(this.logbookRenderer.curItem.when) < timestamp
+    ) {
+      this.logbookRenderer.maybeRenderItem();
+    }
+
+    this.logbookRenderer.flush();
     this.timeTracker.maybeRenderTime(timestamp);
 
     const path = value[0].path;
@@ -263,11 +277,20 @@ class ActionRenderer {
 
     const chooseTrace = this._getItem(index)[0] as ChooseActionTrace;
     const defaultExecuted = chooseTrace.result.choice === "default";
+    const chooseConfig = this._getDataFromPath(
+      this.keys[index]
+    ) as ChooseAction;
+    const name = chooseConfig.alias || "Choose";
 
     if (defaultExecuted) {
-      this._renderEntry(`Choose: Default action executed`);
+      this._renderEntry(`${name}: Default action executed`);
     } else {
-      this._renderEntry(`Choose: Choice ${chooseTrace.result.choice} executed`);
+      const choiceConfig = this._getDataFromPath(
+        `${this.keys[index]}/choose/${chooseTrace.result.choice}`
+      ) as ChooseActionChoice;
+      const choiceName =
+        choiceConfig.alias || `Choice ${chooseTrace.result.choice}`;
+      this._renderEntry(`${name}: ${choiceName} executed`);
     }
 
     let i;
@@ -374,21 +397,12 @@ export class HaAutomationTracer extends LitElement {
       const actionRenderer = new ActionRenderer(
         entries,
         this.trace,
+        logbookRenderer,
         timeTracker
       );
 
-      while (logbookRenderer.hasNext && actionRenderer.hasNext) {
-        // Find next item time-wise.
-        const logbookItem = logbookRenderer.curItem;
-        const actionTrace = actionRenderer.curItem;
-        const actionTimestamp = new Date(actionTrace[0].timestamp);
-
-        if (new Date(logbookItem.when) > actionTimestamp) {
-          logbookRenderer.flush();
-          actionRenderer.renderItem();
-        } else {
-          logbookRenderer.maybeRenderItem();
-        }
+      while (actionRenderer.hasNext) {
+        actionRenderer.renderItem();
       }
 
       while (logbookRenderer.hasNext) {
@@ -396,10 +410,6 @@ export class HaAutomationTracer extends LitElement {
       }
 
       logbookRenderer.flush();
-
-      while (actionRenderer.hasNext) {
-        actionRenderer.renderItem();
-      }
     }
 
     // null means it was stopped by a condition
