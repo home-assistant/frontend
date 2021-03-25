@@ -51,6 +51,10 @@ export class HaChipSet extends LitElement {
   static get styles(): CSSResult {
     return css`
       ${unsafeCSS(chipStyles)}
+
+      ha-chip {
+        margin: 4px;
+      }
     `;
   }
 }
