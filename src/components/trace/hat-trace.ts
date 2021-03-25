@@ -6,6 +6,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -449,7 +450,7 @@ export class HaAutomationTracer extends LitElement {
     return html`${entries}`;
   }
 
-  protected updated(props) {
+  protected updated(props: PropertyValues) {
     super.updated(props);
 
     // Pick first path when we load a new trace.
@@ -463,28 +464,30 @@ export class HaAutomationTracer extends LitElement {
       }
     }
 
-    this.shadowRoot!.querySelectorAll<HaTimeline>(
-      "ha-timeline[data-path]"
-    ).forEach((el) => {
-      el.style.setProperty(
-        "--timeline-ball-color",
-        this._selectedPath === el.dataset.path ? "var(--primary-color)" : null
-      );
-      if (el.dataset.upgraded) {
-        return;
-      }
-      el.dataset.upgraded = "1";
-      el.addEventListener("click", () => {
-        this._selectedPath = el.dataset.path;
-        fireEvent(this, "value-changed", { value: el.dataset.path });
+    if (props.has("trace") || props.has("_selectedPath")) {
+      this.shadowRoot!.querySelectorAll<HaTimeline>(
+        "ha-timeline[data-path]"
+      ).forEach((el) => {
+        el.style.setProperty(
+          "--timeline-ball-color",
+          this._selectedPath === el.dataset.path ? "var(--primary-color)" : null
+        );
+        if (el.dataset.upgraded) {
+          return;
+        }
+        el.dataset.upgraded = "1";
+        el.addEventListener("click", () => {
+          this._selectedPath = el.dataset.path;
+          fireEvent(this, "value-changed", { value: el.dataset.path });
+        });
+        el.addEventListener("mouseover", () => {
+          el.raised = true;
+        });
+        el.addEventListener("mouseout", () => {
+          el.raised = false;
+        });
       });
-      el.addEventListener("mouseover", () => {
-        el.raised = true;
-      });
-      el.addEventListener("mouseout", () => {
-        el.raised = false;
-      });
-    });
+    }
   }
 
   static get styles(): CSSResult[] {
