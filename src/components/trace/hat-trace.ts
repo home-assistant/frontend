@@ -16,6 +16,7 @@ import {
 } from "../../data/trace";
 import { HomeAssistant } from "../../types";
 import "./ha-timeline";
+import type { HaTimeline } from "./ha-timeline";
 import {
   mdiCheckCircleOutline,
   mdiCircle,
@@ -453,29 +454,29 @@ export class HaAutomationTracer extends LitElement {
 
     // Pick first path when we load a new trace.
     if (props.has("trace")) {
-      for (const el of Array.from(
-        this.shadowRoot!.querySelectorAll("ha-timeline")
-      )) {
-        if (el.dataset.path) {
-          fireEvent(this, "value-changed", { value: el.dataset.path });
-          this._selectedPath = el.dataset.path;
-          break;
-        }
+      const element = this.shadowRoot!.querySelector(
+        "ha-timeline[data-path]"
+      ) as HaTimeline | null;
+      if (element) {
+        fireEvent(this, "value-changed", { value: element.dataset.path });
+        this._selectedPath = element.dataset.path;
       }
     }
 
-    this.shadowRoot!.querySelectorAll("ha-timeline").forEach((el) => {
+    this.shadowRoot!.querySelectorAll<HaTimeline>(
+      "ha-timeline[data-path]"
+    ).forEach((el) => {
       el.style.setProperty(
         "--timeline-ball-color",
         this._selectedPath === el.dataset.path ? "var(--primary-color)" : null
       );
-      if (!el.dataset.path || el.dataset.upgraded) {
+      if (el.dataset.upgraded) {
         return;
       }
       el.dataset.upgraded = "1";
       el.addEventListener("click", () => {
-        fireEvent(this, "value-changed", { value: el.dataset.path });
         this._selectedPath = el.dataset.path;
+        fireEvent(this, "value-changed", { value: el.dataset.path });
       });
       el.addEventListener("mouseover", () => {
         el.raised = true;

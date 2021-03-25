@@ -91,7 +91,6 @@ export class HaTimeline extends LitElement {
           border-radius: 50%;
         }
         :host([raised]) ha-svg-icon {
-          box-shadow: var(--shadow-elevation-8dp_-_box-shadow);
           transform: scale(1.3);
         }
         .line {
