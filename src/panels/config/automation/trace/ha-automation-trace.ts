@@ -19,6 +19,7 @@ import {
 } from "../../../../data/trace";
 import "../../../../components/ha-card";
 import "../../../../components/trace/hat-trace";
+import "../../../../components/trace/hat-script-graph";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
 import { configSections } from "../../ha-panel-config";
@@ -69,53 +70,62 @@ export class HaAutomationTrace extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        <ha-card
-          .header=${`Trace for ${
-            stateObj?.attributes.friendly_name || this._entityId
-          }`}
-        >
-          <div class="actions">
-            ${this._traces && this._traces.length > 0
-              ? html`
-                  <select .value=${this._runId} @change=${this._pickTrace}>
-                    ${repeat(
-                      this._traces,
-                      (trace) => trace.run_id,
-                      (trace) =>
-                        html`<option value=${trace.run_id}
-                          >${formatDateTimeWithSeconds(
-                            new Date(trace.timestamp.start),
-                            this.hass.locale
-                          )}</option
-                        >`
-                    )}
-                  </select>
-                `
-              : ""}
-            <button @click=${this._loadTraces}>
-              Refresh
-            </button>
-            <button @click=${this._downloadTrace}>
-              Download
-            </button>
-          </div>
-          <div class="card-content">
-            ${this._traces === undefined
-              ? "Loading…"
-              : this._traces.length === 0
-              ? "No traces found"
-              : this._trace === undefined
-              ? "Loading…"
-              : html`
-                  <hat-trace
-                    .hass=${this.hass}
-                    .trace=${this._trace}
-                    .logbookEntries=${this._logbookEntries}
-                    @value-changed=${this._pickPath}
-                  ></hat-trace>
-                `}
-          </div>
-        </ha-card>
+        <div class="details">
+          ${!this._trace
+            ? ""
+            : html`
+                <ha-card>
+                  <hat-script-graph .trace=${this._trace}></hat-script-graph>
+                </ha-card>
+              `}
+          <ha-card
+            .header=${`Trace for ${
+              stateObj?.attributes.friendly_name || this._entityId
+            }`}
+          >
+            <div class="actions">
+              ${this._traces && this._traces.length > 0
+                ? html`
+                    <select .value=${this._runId} @change=${this._pickTrace}>
+                      ${repeat(
+                        this._traces,
+                        (trace) => trace.run_id,
+                        (trace) =>
+                          html`<option value=${trace.run_id}
+                            >${formatDateTimeWithSeconds(
+                              new Date(trace.timestamp.start),
+                              this.hass.locale
+                            )}</option
+                          >`
+                      )}
+                    </select>
+                  `
+                : ""}
+              <button @click=${this._loadTraces}>
+                Refresh
+              </button>
+              <button @click=${this._downloadTrace}>
+                Download
+              </button>
+            </div>
+            <div class="card-content">
+              ${this._traces === undefined
+                ? "Loading…"
+                : this._traces.length === 0
+                ? "No traces found"
+                : this._trace === undefined
+                ? "Loading…"
+                : html`
+                    <hat-trace
+                      .hass=${this.hass}
+                      .trace=${this._trace}
+                      .logbookEntries=${this._logbookEntries}
+                      @value-changed=${this._pickPath}
+                    ></hat-trace>
+                  `}
+            </div>
+          </ha-card>
+        </div>
         ${!this._path || !this._trace
           ? ""
           : html`
