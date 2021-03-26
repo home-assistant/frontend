@@ -155,7 +155,11 @@ export class HaIntegrationCard extends LitElement {
                       ></ha-svg-icon
                       ><paper-tooltip animation-delay="0" position="left">
                         ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.not_loaded"
+                          "ui.panel.config.integrations.config_entry.not_loaded",
+                          "logs_link",
+                          this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.logs"
+                          )
                         )}
                       </paper-tooltip>
                     </span>`
@@ -203,7 +207,13 @@ export class HaIntegrationCard extends LitElement {
           : item.state === "not_loaded"
           ? html`<div class="header">
               ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.not_loaded"
+                "ui.panel.config.integrations.config_entry.not_loaded",
+                "logs_link",
+                html`<a href="/config/logs"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.logs"
+                  )}</a
+                >`
               )}
             </div>`
           : ""}
@@ -600,6 +610,9 @@ export class HaIntegrationCard extends LitElement {
         }
         .not-loaded .header {
           background: var(--error-color);
+          color: var(--text-primary-color);
+        }
+        .not-loaded .header a {
           color: var(--text-primary-color);
         }
         .card-content {

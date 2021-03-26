@@ -2104,7 +2104,8 @@
             "entity_unavailable": "Entity unavailable",
             "area": "In {area}",
             "no_area": "No Area",
-            "not_loaded": "Not loaded",
+            "not_loaded": "Not loaded, check the {logs_link}",
+            "logs": "logs",
             "disable": {
               "disabled": "Disabled",
               "disabled_cause": "Disabled by {cause}",
