@@ -3,7 +3,14 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { AutomationTraceExtended } from "../../data/trace";
 import "./hat-graph";
-import { ActionHandler } from "./script-to-graph";
+import { ActionHandler, SelectParams } from "./script-to-graph";
+
+declare global {
+  interface HASSDomEvents {
+    "graph-node-selected": SelectParams;
+    change: undefined;
+  }
+}
 
 @customElement("hat-script-graph")
 class HatScriptGraph extends LitElement {
@@ -17,7 +24,7 @@ class HatScriptGraph extends LitElement {
       (params) => {
         // eslint-disable-next-line no-console
         console.log(params);
-        fireEvent(this, "value-changed", { value: params.path });
+        fireEvent(this, "graph-node-selected", params);
         this.requestUpdate();
       },
       [],

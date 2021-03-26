@@ -355,6 +355,8 @@ export class HaAutomationTracer extends LitElement {
 
   @property({ attribute: false }) public selectedPath?: string;
 
+  @property({ type: Boolean }) public allowPick = false;
+
   protected render(): TemplateResult {
     if (!this.trace) {
       return html``;
@@ -453,7 +455,7 @@ export class HaAutomationTracer extends LitElement {
     super.updated(props);
 
     // Pick first path when we load a new trace.
-    if (props.has("trace")) {
+    if (this.allowPick && props.has("trace")) {
       const element = this.shadowRoot!.querySelector<HaTimeline>(
         "ha-timeline[data-path]"
       );
@@ -471,7 +473,7 @@ export class HaAutomationTracer extends LitElement {
           "--timeline-ball-color",
           this.selectedPath === el.dataset.path ? "var(--primary-color)" : null
         );
-        if (el.dataset.upgraded) {
+        if (!this.allowPick || el.dataset.upgraded) {
           return;
         }
         el.dataset.upgraded = "1";

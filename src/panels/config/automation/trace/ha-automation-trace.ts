@@ -11,6 +11,7 @@ import {
 } from "lit-element";
 import { AutomationEntity } from "../../../../data/automation";
 import {
+  ActionTrace,
   AutomationTrace,
   AutomationTraceExtended,
   getDataFromPath,
@@ -30,6 +31,7 @@ import {
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { repeat } from "lit-html/directives/repeat";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { SelectParams } from "../../../../components/trace/script-to-graph";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -51,7 +53,7 @@ export class HaAutomationTrace extends LitElement {
 
   @internalProperty() private _runId?: string;
 
-  @internalProperty() private _path?: string;
+  @internalProperty() private _selected?: SelectParams;
 
   @internalProperty() private _trace?: AutomationTraceExtended;
 
@@ -70,87 +72,113 @@ export class HaAutomationTrace extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        <div class="details">
-          ${!this._trace
-            ? ""
-            : html`
-                <ha-card>
+        <div class="toolbar">
+          <div>
+            Trace for ${stateObj?.attributes.friendly_name || this._entityId}
+          </div>
+          <div class="actions">
+            ${this._traces && this._traces.length > 0
+              ? html`
+                  <select .value=${this._runId} @change=${this._pickTrace}>
+                    ${repeat(
+                      this._traces,
+                      (trace) => trace.run_id,
+                      (trace) =>
+                        html`<option value=${trace.run_id}
+                          >${formatDateTimeWithSeconds(
+                            new Date(trace.timestamp.start),
+                            this.hass.language
+                          )}</option
+                        >`
+                    )}
+                  </select>
+                `
+              : ""}
+            <button @click=${this._loadTraces}>
+              Refresh
+            </button>
+            <button @click=${this._downloadTrace}>
+              Download
+            </button>
+          </div>
+        </div>
+
+        ${this._traces === undefined
+          ? "Loading…"
+          : this._traces.length === 0
+          ? "No traces found"
+          : this._trace === undefined
+          ? "Loading…"
+          : html`
+              <div class="main">
+                <div class="graph">
                   <hat-script-graph
                     .trace=${this._trace}
-                    @value-changed=${this._pickPath}
+                    @graph-node-selected=${this._pickNode}
                   ></hat-script-graph>
-                </ha-card>
-              `}
-          <ha-card
-            .header=${`Trace for ${
-              stateObj?.attributes.friendly_name || this._entityId
-            }`}
-          >
-            <div class="actions">
-              ${this._traces && this._traces.length > 0
-                ? html`
-                    <select .value=${this._runId} @change=${this._pickTrace}>
-                      ${repeat(
-                        this._traces,
-                        (trace) => trace.run_id,
-                        (trace) =>
-                          html`<option value=${trace.run_id}
-                            >${formatDateTimeWithSeconds(
-                              new Date(trace.timestamp.start),
-                              this.hass.locale
-                            )}</option
-                          >`
-                      )}
-                    </select>
-                  `
-                : ""}
-              <button @click=${this._loadTraces}>
-                Refresh
-              </button>
-              <button @click=${this._downloadTrace}>
-                Download
-              </button>
-            </div>
-            <div class="card-content">
-              ${this._traces === undefined
-                ? "Loading…"
-                : this._traces.length === 0
-                ? "No traces found"
-                : this._trace === undefined
-                ? "Loading…"
-                : html`
+                </div>
+
+                <div class="details">
+                  ${this._renderSelectedTraceInfo()}
+                  <div>
                     <hat-trace
                       .hass=${this.hass}
                       .trace=${this._trace}
                       .logbookEntries=${this._logbookEntries}
-                      .selectedPath=${this._path}
-                      @value-changed=${this._pickPath}
+                      .selectedPath=${this._selected?.path}
                     ></hat-trace>
-                  `}
-            </div>
-          </ha-card>
-        </div>
-        ${!this._path || !this._trace
-          ? ""
-          : html`
-              <div class="details">
-                <ha-card header="Config">
-                  <pre class="config card-content">
-${safeDump(getDataFromPath(this._trace.config, this._path))}</pre
-                  >
-                </ha-card>
-                <ha-card header="Trace">
-                  <pre class="trace card-content">
-${safeDump(
-                      (this._path.split("/")[0] === "condition"
-                        ? this._trace.condition_trace
-                        : this._trace.action_trace)[this._path]
-                    )}</pre
-                  >
-                </ha-card>
+                  </div>
+                  ${this._renderSelectedConfig()}
+                </div>
               </div>
             `}
       </hass-tabs-subpage>
+    `;
+  }
+
+  private _getPaths() {
+    if (!this._selected?.path) {
+      return {};
+    }
+    return this._selected.path.split("/")[0] === "condition"
+      ? this._trace!.condition_trace
+      : this._trace!.action_trace;
+  }
+
+  private _renderSelectedTraceInfo() {
+    const paths = this._getPaths();
+
+    if (!this._selected?.path || !(this._selected.path in paths)) {
+      return "";
+    }
+
+    let data: ActionTrace | ActionTrace[] = paths[this._selected.path];
+
+    if (Array.isArray(data) && data.length === 1) {
+      data = data[0];
+    }
+
+    return html`
+      <div class="trace">
+        <b>Selected path:</b> ${this._selected.path}<br />
+        <pre>${safeDump(data)}</pre>
+      </div>
+    `;
+  }
+
+  private _renderSelectedConfig() {
+    const paths = this._getPaths();
+
+    if (!this._selected?.path || !(this._selected.path in paths)) {
+      return "";
+    }
+    const config = getDataFromPath(this._trace!.config, this._selected.path);
+    return html`
+      <div class="config">
+        ${config
+          ? html`<pre>${safeDump(config)}</pre>`
+          : "Unable to find config"}
+      </div>
     `;
   }
 
@@ -201,11 +229,15 @@ ${safeDump(
 
   private _pickTrace(ev) {
     this._runId = ev.target.value;
-    this._path = undefined;
+    this._selected = undefined;
   }
 
   private _pickPath(ev) {
-    this._path = ev.detail.value;
+    this._selected = ev.detail.value;
+  }
+
+  private _pickNode(ev) {
+    this._selected = ev.detail;
   }
 
   private async _loadTraces(runId?: string) {
@@ -223,7 +255,7 @@ ${safeDump(
       !this._traces.some((trace) => trace.run_id === this._runId)
     ) {
       this._runId = undefined;
-      this._path = undefined;
+      this._selected = undefined;
 
       // If we came here from a trace passed into the url, clear it.
       if (runId) {
@@ -289,23 +321,33 @@ ${safeDump(
     return [
       haStyle,
       css`
-        ha-card {
-          max-width: 800px;
-          margin: 24px auto;
+        .toolbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 20px;
+          height: var(--header-height);
+          padding: 0 16px;
+          pointer-events: none;
+          background-color: var(--primary-background-color);
+          font-weight: 400;
+          color: var(--app-header-text-color, white);
+          border-bottom: var(--app-header-border-bottom, none);
+          box-sizing: border-box;
         }
 
-        .actions {
-          position: absolute;
-          top: 8px;
-          right: 8px;
+        .main {
+          display: flex;
+          background-color: var(--ha-card-background);
+        }
+
+        .graph {
+          border-right: 1px solid var(--divider-color);
         }
 
         .details {
-          display: flex;
-          margin: 0 16px;
-        }
-        .details > *:first-child {
-          margin-right: 16px;
+          flex: 1;
+          padding: 16px;
         }
       `,
     ];

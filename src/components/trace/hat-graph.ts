@@ -195,15 +195,18 @@ class HatGraph extends LitElement {
   static get styles() {
     return css`
       :host {
-        --stroke-clr: var(--stroke-color, rgb(3, 169, 244));
-        --hover-clr: var(--hover-color, rgb(255, 152, 0));
+        --stroke-clr: var(--stroke-color, var(--secondary-text-color));
+        --active-clr: var(--active-color, var(--primary-color));
+        --hover-clr: var(--hover-color, var(--primary-color));
+        --track-clr: var(--track-color, var(--accent-color));
       }
       circle,
       line {
         stroke: var(--stroke-clr);
-        stroke-width: 5;
+        stroke-width: 3px;
         fill: white;
       }
+      circle:hover,
       .newnode:hover {
         stroke: var(--hover-clr);
       }
