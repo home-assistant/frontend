@@ -47,12 +47,6 @@ export class CloudTTSPref extends LitElement {
     const languages = this.getLanguages(this.ttsInfo);
     const defaultVoice = this.cloudStatus.prefs.tts_default_voice;
     const genders = this.getSupportedGenders(defaultVoice[0], this.ttsInfo);
-    const defaultLangEntryIndex = languages.findIndex(
-      ([lang]) => lang === defaultVoice[0]
-    );
-    const defaultGenderEntryIndex = genders.findIndex(
-      ([gender]) => gender === defaultVoice[1]
-    );
 
     return html`
       <ha-card
@@ -70,15 +64,13 @@ export class CloudTTSPref extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.default_language"
             )}
-            .value=${defaultLangEntryIndex !== -1
-              ? languages[defaultLangEntryIndex][1]
-              : ""}
             .disabled=${this.savingPreferences}
-            @iron-select=${this._handleLanguageChange}
           >
             <paper-listbox
               slot="dropdown-content"
-              .selected=${defaultLangEntryIndex}
+              .selected=${defaultVoice[0]}
+              attr-for-selected="value"
+              @iron-select=${this._handleLanguageChange}
             >
               ${languages.map(
                 ([key, label]) =>
@@ -87,16 +79,12 @@ export class CloudTTSPref extends LitElement {
             </paper-listbox>
           </paper-dropdown-menu-light>
 
-          <paper-dropdown-menu-light
-            .value=${defaultGenderEntryIndex !== -1
-              ? genders[defaultGenderEntryIndex][1]
-              : ""}
-            .disabled=${this.savingPreferences}
-            @iron-select=${this._handleGenderChange}
-          >
+          <paper-dropdown-menu-light .disabled=${this.savingPreferences}>
             <paper-listbox
               slot="dropdown-content"
-              .selected=${defaultGenderEntryIndex}
+              .selected=${defaultVoice[1]}
+              attr-for-selected="value"
+              @iron-select=${this._handleGenderChange}
             >
               ${genders.map(
                 ([key, label]) =>
@@ -191,10 +179,11 @@ export class CloudTTSPref extends LitElement {
   }
 
   async _handleLanguageChange(ev) {
+    if (ev.detail.item.value === this.cloudStatus!.prefs.tts_default_voice[0]) {
+      return;
+    }
     this.savingPreferences = true;
-    const langLabel = ev.currentTarget.value;
-    const languages = this.getLanguages(this.ttsInfo);
-    const language = languages.find((item) => item[1] === langLabel)![0];
+    const language = ev.detail.item.value;
 
     const curGender = this.cloudStatus!.prefs.tts_default_voice[1];
     const genders = this.getSupportedGenders(language, this.ttsInfo);
@@ -219,11 +208,12 @@ export class CloudTTSPref extends LitElement {
   }
 
   async _handleGenderChange(ev) {
+    if (ev.detail.item.value === this.cloudStatus!.prefs.tts_default_voice[1]) {
+      return;
+    }
     this.savingPreferences = true;
     const language = this.cloudStatus!.prefs.tts_default_voice[0];
-    const genderLabel = ev.currentTarget.value;
-    const genders = this.getSupportedGenders(language, this.ttsInfo);
-    const gender = genders.find((item) => item[1] === genderLabel)![0];
+    const gender = ev.detail.item.value;
 
     try {
       await updateCloudPref(this.hass, {
