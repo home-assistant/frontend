@@ -354,7 +354,7 @@ export class HaAutomationTracer extends LitElement {
 
   @property({ attribute: false }) public logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _selectedPath?: string;
+  @property({ attribute: false }) public selectedPath?: string;
 
   protected render(): TemplateResult {
     if (!this.trace) {
@@ -460,24 +460,24 @@ export class HaAutomationTracer extends LitElement {
       );
       if (element) {
         fireEvent(this, "value-changed", { value: element.dataset.path });
-        this._selectedPath = element.dataset.path;
+        this.selectedPath = element.dataset.path;
       }
     }
 
-    if (props.has("trace") || props.has("_selectedPath")) {
+    if (props.has("trace") || props.has("selectedPath")) {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
         el.style.setProperty(
           "--timeline-ball-color",
-          this._selectedPath === el.dataset.path ? "var(--primary-color)" : null
+          this.selectedPath === el.dataset.path ? "var(--primary-color)" : null
         );
         if (el.dataset.upgraded) {
           return;
         }
         el.dataset.upgraded = "1";
         el.addEventListener("click", () => {
-          this._selectedPath = el.dataset.path;
+          this.selectedPath = el.dataset.path;
           fireEvent(this, "value-changed", { value: el.dataset.path });
         });
         el.addEventListener("mouseover", () => {

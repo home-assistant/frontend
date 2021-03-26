@@ -75,7 +75,10 @@ export class HaAutomationTrace extends LitElement {
             ? ""
             : html`
                 <ha-card>
-                  <hat-script-graph .trace=${this._trace}></hat-script-graph>
+                  <hat-script-graph
+                    .trace=${this._trace}
+                    @value-changed=${this._pickPath}
+                  ></hat-script-graph>
                 </ha-card>
               `}
           <ha-card
@@ -120,6 +123,7 @@ export class HaAutomationTrace extends LitElement {
                       .hass=${this.hass}
                       .trace=${this._trace}
                       .logbookEntries=${this._logbookEntries}
+                      .selectedPath=${this._path}
                       @value-changed=${this._pickPath}
                     ></hat-trace>
                   `}
@@ -299,9 +303,6 @@ ${safeDump(
         .details {
           display: flex;
           margin: 0 16px;
-        }
-        .details > * {
-          flex: 1 1 0px;
         }
         .details > *:first-child {
           margin-right: 16px;

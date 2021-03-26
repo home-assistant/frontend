@@ -1,5 +1,6 @@
 import { html, LitElement, property, customElement } from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../common/dom/fire_event";
 import { AutomationTraceExtended } from "../../data/trace";
 import "./hat-graph";
 import { ActionHandler } from "./script-to-graph";
@@ -13,11 +14,14 @@ class HatScriptGraph extends LitElement {
       trace.config.action,
       false,
       undefined,
-      (path, action, update) => {
+      (params) => {
         // eslint-disable-next-line no-console
-        console.log(path);
+        console.log(params);
+        fireEvent(this, "value-changed", { value: params.path });
         this.requestUpdate();
-      }
+      },
+      [],
+      this.trace
     );
   });
 
