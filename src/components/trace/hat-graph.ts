@@ -71,7 +71,7 @@ class HatGraph extends LitElement {
     `;
   }
 
-  private _draw_tree(tree?: TreeNode | TreeNode[]) {
+  private _draw_tree(tree?: ValueOrArray<TreeNode>) {
     if (!tree) return { svg: `Hello`, width: 0, height: 0 };
     if (!Array.isArray(tree)) {
       let height = this.nodeSize;
