@@ -2983,6 +2983,7 @@
                         "column_parameter": "Parámetro",
                         "description": "La herramienta de desarrollo de servicios te permite llamar a cualquier servicio disponible en Home Assistant.",
                         "fill_example_data": "Rellenar datos de ejemplo",
+                        "no_template_ui_support": "La interfaz de usuario no admite plantillas, pero puedes utilizar el editor YAML.",
                         "title": "Servicios",
                         "ui_mode": "Ir al modo IU",
                         "yaml_mode": "Ir al modo YAML",
