@@ -622,7 +622,7 @@ export class QuickBar extends LitElement {
         }
 
         span.command-text {
-          margin-left: 6px;
+          margin-left: 8px;
         }
 
         .uni-virtualizer-host {
