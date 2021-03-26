@@ -1132,6 +1132,11 @@
                         "perform_action": "서버 {action}",
                         "restart": "다시 시작하기",
                         "stop": "중지하기"
+                    },
+                    "types": {
+                        "navigation": "탐색",
+                        "reload": "다시 읽어오기",
+                        "server_control": "서버"
                     }
                 },
                 "filter_placeholder": "구성요소 필터"
@@ -2983,6 +2988,7 @@
                         "column_parameter": "매개 변수",
                         "description": "서비스 개발 도구를 사용하면 Home Assistant에서 사용 가능한 서비스를 호출할 수 있습니다.",
                         "fill_example_data": "예제 데이터를 입력란에 넣기",
+                        "no_template_ui_support": "UI에서 템플릿을 지원하지 않습니다. YAML편집기를 이용하세요.",
                         "title": "서비스",
                         "ui_mode": "UI 모드로 이동하기",
                         "yaml_mode": "YAML 모드로 이동하기",

@@ -2829,8 +2829,13 @@
                         "unknown": "Onbekend"
                     },
                     "node_config": {
+                        "attribution": "Apparaat configuratie parameters en beschrijvingen worden geleverd door de {device_database}",
+                        "battery_device_notice": "Batterij-apparaten moeten wakker zijn om hun configuratie bij te werken. Raadpleeg de handleiding van uw toestel voor instructies over hoe u het toestel kunt wekken.",
                         "error_device_not_found": "Apparaat niet gevonden",
-                        "parameter_is_read_only": "Deze parameter is alleen-lezen."
+                        "header": "Z-Wave apparaatconfiguratie",
+                        "introduction": "Beheren en aanpassen van apparaat (node) specifieke configuratieparameters voor het geselecteerde apparaat",
+                        "parameter_is_read_only": "Deze parameter is alleen-lezen.",
+                        "zwave_js_device_database": "Z-Wave JS Apparaat Database"
                     },
                     "node_status": {
                         "alive": "Levend",
@@ -2978,6 +2983,7 @@
                         "column_parameter": "Parameter",
                         "description": "Met het service ontwikkelhulpmiddel kunt je elke beschikbare service in Home Assistant aanroepen.",
                         "fill_example_data": "Voorbeeldgegeven invullen",
+                        "no_template_ui_support": "De UI ondersteunt geen sjablonen, u kunt nog steeds de YAML editor gebruiken.",
                         "title": "Services",
                         "ui_mode": "Ga naar UI modus",
                         "yaml_mode": "Ga naar YAML mode",

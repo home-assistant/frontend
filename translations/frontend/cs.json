@@ -208,7 +208,7 @@
                 "cpu_usage": "Využití procesoru doplňkem",
                 "hostname": "Název hostitele",
                 "install": "nainstalovat",
-                "new_update_available": "{name} {verze} je k dispozici",
+                "new_update_available": "{name} {version} je k dispozici",
                 "not_available_arch": "Tento doplněk není kompatibilní s procesorem vašeho zařízení nebo operačním systémem, který jste do zařízení nainstalovali.",
                 "not_available_version": "Používáte Home Assistant {core_version_installed}, pro aktualizaci na tuto verzi doplňku potřebujete alespoň Home Assistant ve verzi {core_version_needed}",
                 "open_web_ui": "Otevřít webové rozhraní",
@@ -467,12 +467,14 @@
                     "docker": "Prostředí Docker nefunguje správně",
                     "privileged": "Supervisor není privilegovaný",
                     "setup": "Nastavení Supervisora se nezdařilo",
-                    "supervisor": "Supervisor se nepodařilo aktualizovat"
+                    "supervisor": "Supervisor se nepodařilo aktualizovat",
+                    "untrusted": "Zjištěn nedůvěryhodný obsah"
                 },
                 "unhealthy_title": "Instalace není v pořádku",
                 "unsupported_description": "Níže je uveden seznam problémů nalezených ve vaší instalaci. Kliknutím na odkazy se dozvíte, jak tyto problémy vyřešit.",
                 "unsupported_reason": {
                     "container": "Kontejnery, o nichž je známo, že způsobují problémy",
+                    "content-trust": "Ověřování důvěryhodnosti obsahu je zakázáno.",
                     "dbus": "DBUS",
                     "docker_configuration": "Konfigurace Dockeru",
                     "docker_version": "Verze Dockeru",
@@ -785,7 +787,8 @@
                     "was_unlocked": "bylo odemčeno",
                     "was_unplugged": "bylo odpojeno",
                     "was_unsafe": "bylo v nebezpečí"
-                }
+                },
+                "show_trace": "Zobrazit stopu"
             },
             "media-browser": {
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
@@ -1129,6 +1132,11 @@
                         "perform_action": "{action} server",
                         "restart": "Restartovat",
                         "stop": "Zastavit"
+                    },
+                    "types": {
+                        "navigation": "Navigovat",
+                        "reload": "Znovu načíst",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Filtr entit"
@@ -2812,6 +2820,7 @@
                         "server_version": "Verze serveru"
                     },
                     "device_info": {
+                        "device_config": "Nakonfigurujte zařízení",
                         "node_ready": "Uzel připraven",
                         "node_status": "Stav uzlu",
                         "zwave_info": "Z-Wave Info"
@@ -2825,8 +2834,13 @@
                         "unknown": "Nezjištěno"
                     },
                     "node_config": {
+                        "attribution": "Konfigurační parametry a popis zařízení poskytuje {device_database}",
+                        "battery_device_notice": "Aby bylo možné aktualizovat konfiguraci, musí být bateriová zařízení vzhůru. Pokyny k probuzení zařízení naleznete v příručce k zařízení.",
                         "error_device_not_found": "Zařízení nenalezeno",
-                        "parameter_is_read_only": "Tento parametr je jen pro čtení."
+                        "header": "Konfigurace zařízení Z-Wave",
+                        "introduction": "Spravujte a upravujte specifické konfigurační parametry zařízení (uzlu) pro vybrané zařízení",
+                        "parameter_is_read_only": "Tento parametr je jen pro čtení.",
+                        "zwave_js_device_database": "Databáze zařízení Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Naživu",
@@ -2974,6 +2988,7 @@
                         "column_parameter": "Parametr",
                         "description": "Vývojářský nástroj pro služby umožňuje zavolat jakoukoli dostupnou službu v Home Assistant",
                         "fill_example_data": "Vyplnit ukázková data",
+                        "no_template_ui_support": "Uživatelské rozhraní nepodporuje šablony, stále můžete použít editor YAML.",
                         "title": "Služby",
                         "ui_mode": "Přejít do režimu uživatelského rozhraní",
                         "yaml_mode": "Přejít do režimu YAML",
@@ -3021,7 +3036,11 @@
                 "go_back": "Vrátit se",
                 "supervisor": {
                     "ask": "Požádat o pomoc",
-                    "system_health": "Kontrola stavu systému"
+                    "observer": "Zkontrolujte pozorovatele",
+                    "reboot": "Zkuste restartovat hostitele",
+                    "system_health": "Kontrola stavu systému",
+                    "title": "Nelze načíst panel pro správu!",
+                    "wait": "Pokud jste právě začali, ujistěte se, že jste správci poskytli dostatek času k rozběhnutí."
                 }
             },
             "history": {

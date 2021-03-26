@@ -168,6 +168,7 @@
                 "hostname": "Име на хоста",
                 "install": "инсталиране",
                 "new_update_available": "{name} {version} е налично",
+                "not_available_arch": "Тази добавка не е съвместима с процесора на вашето устройство или операционната система, която сте инсталирали на вашето устройство.",
                 "not_available_version": "Изпълнявате Home Assistant {core_version_installed}, за да актуализирате до тази версия на добавката ви е необходима поне версия {core_version_needed} на Home Assistant",
                 "option": {
                     "auto_update": {
@@ -367,6 +368,7 @@
                 "failed_to_get_hardware_list": "Неуспешно получаване на списъка с хардуер",
                 "failed_to_import_from_usb": "Неуспешно импортиране от USB",
                 "failed_to_reboot": "Неуспешно рестартиране на хоста",
+                "failed_to_set_hostname": "Неуспешно задаване на име на хост",
                 "failed_to_shutdown": "Неуспешно изключване на хоста",
                 "hardware": "Хардуер",
                 "hostname": "Име на хоста",
@@ -397,6 +399,7 @@
                 "share_diagonstics_title": "Помогнете за подобряването на Home Assistant",
                 "unhealthy_reason": {
                     "docker": "Средата на Docker не работи правилно",
+                    "privileged": "Supervisor не е привилегирован",
                     "setup": "Настройката на Supervisor не бе успешна",
                     "supervisor": "Supervisor не успя да се актуализира"
                 },
@@ -408,6 +411,7 @@
                     "lxc": "LXC",
                     "network_manager": "Мрежов мениджър",
                     "os": "Операционна система",
+                    "privileged": "Supervisor не е привилегирован",
                     "systemd": "Systemd"
                 },
                 "update_supervisor": "Актуализиране на Supervisor",
@@ -1138,10 +1142,14 @@
                                 "device_id": {
                                     "action": "Действие",
                                     "extra_fields": {
+                                        "brightness_pct": "Яркост",
                                         "code": "Код",
+                                        "humidity": "Влажност",
                                         "message": "Съобщение",
+                                        "mode": "Режим",
                                         "position": "Позиция",
-                                        "title": "Заглавие"
+                                        "title": "Заглавие",
+                                        "value": "Стойност"
                                     },
                                     "label": "Устройство"
                                 },
@@ -1645,11 +1653,13 @@
                             "no_conditions": "Няма условия",
                             "unknown_condition": "Неизвестно условие"
                         },
+                        "create": "Създаване на автоматизация с устройство",
                         "create_disable": "Не може да се създаде автоматизация с деактивирано устройство",
                         "no_automations": "Няма автоматизации",
                         "no_device_automations": "Няма налични автоматизации за това устройство.",
                         "unknown_automation": "Неизвестна автоматизация"
                     },
+                    "cant_edit": "Можете да редактирате само елементи, които са създадени в потребителския интерфейс.",
                     "caption": "Устройства",
                     "confirm_delete": "Сигурни ли сте, че искате да изтриете устройството?",
                     "data_table": {
@@ -1690,12 +1700,14 @@
                         "search": "Търсене на устройства"
                     },
                     "scene": {
+                        "create": "Създаване на сцена с устройство",
                         "create_disable": "Не може да се създаде сцена с деактивирано устройство",
                         "no_scenes": "Няма сцени",
                         "scenes": "Сцени"
                     },
                     "scenes": "Сцени",
                     "script": {
+                        "create": "Създаване на скрипт с устройство",
                         "create_disable": "Не може да се създаде скрипт с деактивирано устройство",
                         "no_scripts": "Няма скриптове",
                         "scripts": "Скриптове"
@@ -1752,7 +1764,8 @@
                     },
                     "picker": {
                         "headers": {
-                            "name": "Име"
+                            "name": "Име",
+                            "type": "Тип"
                         }
                     },
                     "types": {
@@ -1965,7 +1978,8 @@
                         "zwave_plus": "Z-Wave плюс"
                     },
                     "refresh_node": {
-                        "button": "Обнови възела"
+                        "button": "Обнови възела",
+                        "step": "Стъпка"
                     },
                     "select_instance": {
                         "none_found": "Не можахме да намерим OpenZWave инстанция. Ако смятате че не е вярно, проверете Вашите OpenZWare и MQTT и се уверете. че Home Assistant може да комуникира със MQTT брокера."
@@ -2190,6 +2204,7 @@
                 "zha": {
                     "add_device": "Добавяне на устройство",
                     "add_device_page": {
+                        "discovered_text": "Устройствата ще се показват тук, след като бъдат открити.",
                         "no_devices_found": "Не бяха намерени устройства, уверете се, че са в режим на сдвояване и ги дръжте будни, докато откриването работи.",
                         "search_again": "Потърси отново",
                         "spinner": "Търсене на ZHA Zigbee устройства..."
@@ -2253,6 +2268,7 @@
                         "longitude": "Географска дължина",
                         "name": "Име",
                         "new_zone": "Нова зона",
+                        "passive": "Пасивна",
                         "radius": "Радиус",
                         "required_error_msg": "Полето е задължително",
                         "update": "Актуализиране"
@@ -2267,7 +2283,9 @@
                         "network": "Мрежа"
                     },
                     "dashboard": {
-                        "dump_not_ready_confirm": "Изтегляне"
+                        "driver_version": "Версия на драйвера",
+                        "dump_not_ready_confirm": "Изтегляне",
+                        "server_version": "Версия на сървъра"
                     },
                     "navigation": {
                         "network": "Мрежа"
@@ -2616,6 +2634,7 @@
                     },
                     "common": {
                         "add": "Добавяне",
+                        "clear": "Изчистване",
                         "edit": "Редактиране",
                         "none": "Без"
                     },
@@ -2624,6 +2643,7 @@
                     },
                     "edit_card": {
                         "add": "Добавяне на карта",
+                        "clear": "Изчистване",
                         "confirm_cancel": "Сигурни ли сте, че искате да отмените?",
                         "delete": "Изтриване на карта",
                         "duplicate": "Дублиране на карта",
