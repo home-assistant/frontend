@@ -103,7 +103,9 @@ class HatGraph extends LitElement {
           );
 
           let endNode = tree.children[idx];
-          if (Array.isArray(endNode)) endNode = endNode[endNode.length - 1];
+          while (Array.isArray(endNode)) {
+            endNode = endNode[endNode.length - 1];
+          }
           if (endNode.end !== false) {
             // Draw bottom fill
             pieces.push(

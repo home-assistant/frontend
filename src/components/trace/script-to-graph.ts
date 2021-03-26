@@ -202,7 +202,6 @@ export class ActionHandler {
           },
           {
             icon: ICONS.FALSE,
-            end: false,
             clickCallback: () =>
               this._selectNode({
                 idx: [idx, 3],
