@@ -2380,6 +2380,15 @@
             "manufacturer_code_override": "Manufacturer Code Override",
             "value": "Value"
           },
+          "configuration_page": {
+            "shortcuts_title": "Shortcuts",
+            "configuration_options_title": "Configuration Options",
+            "update_button": "Update Configuration",
+            "zha_options": {
+              "enable_identify_on_join": "Enable identify effect when devices join the network",
+              "default_light_transition": "Default light transition time (seconds)"
+            }
+          },
           "add_device_page": {
             "spinner": "Searching for ZHA Zigbee devices...",
             "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",

@@ -45,6 +45,8 @@ export const zhaTabs: PageNavigation[] = [
   },
 ];
 
+const ZHA_OPTIONS = "zha_options";
+
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
@@ -85,7 +87,11 @@ class ZHAConfigDashboard extends LitElement {
         .tabs=${zhaTabs}
         back-path="/config/integrations"
       >
-        <ha-card header="Shortcuts">
+        <ha-card
+          header=${this.hass.localize(
+            "ui.panel.config.zha.configuration_page.shortcuts_title"
+          )}
+        >
           ${this.configEntryId
             ? html`<div class="card-actions">
                 <a
@@ -109,19 +115,29 @@ class ZHAConfigDashboard extends LitElement {
               </div>`
             : ""}
         </ha-card>
-        <ha-card header="Configuration Options">
+        <ha-card
+          header=${this.hass.localize(
+            "ui.panel.config.zha.configuration_page.configuration_options_title"
+          )}
+        >
           <div class="card-content">
             ${this._configuration
               ? html`<ha-form
-                  .schema=${this._configuration.schemas.options}
-                  .data=${this._configuration.data.options}
+                  .schema=${this._configuration.schemas.zha_options}
+                  .data=${this._configuration.data.zha_options}
                   @value-changed=${this._optionsDataChanged}
+                  .computeLabel=${this._computeLabelCallback(
+                    this.hass.localize,
+                    ZHA_OPTIONS
+                  )}
                 ></ha-form>`
               : ""}
           </div>
           <div class="card-actions">
             <mwc-button @click=${this._updateConfiguration}
-              >Update Configuration</mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.zha.configuration_page.update_button"
+              )}</mwc-button
             >
           </div>
         </ha-card>
@@ -143,11 +159,11 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private _optionsDataChanged(ev: CustomEvent) {
-    this._configuration.data.options = ev.detail.value;
+    this._configuration.data.zha_options = ev.detail.value;
   }
 
   private async _updateConfiguration(): Promise<any> {
-    const sections = ["options"];
+    const sections = ["zha_options"];
     const data = {};
     for (const section of sections) {
       data[section] = {};
@@ -166,6 +182,14 @@ class ZHAConfigDashboard extends LitElement {
       }
     }
     await updateZHAConfiguration(this.hass!, data);
+  }
+
+  private _computeLabelCallback(localize, section) {
+    // Returns a callback for ha-form to calculate labels per schema object
+    return (schema) =>
+      localize(
+        `ui.panel.config.zha.configuration_page.${section}.${schema.name}`
+      ) || schema.name;
   }
 
   static get styles(): CSSResultArray {
