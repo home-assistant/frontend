@@ -153,9 +153,9 @@ export class HaComboBox extends LitElement {
     fireEvent(this, ev.type, ev.detail);
   }
 
-  private _filterChanged(ev: PolymerChangedEvent<boolean>) {
+  private _filterChanged(ev: PolymerChangedEvent<string>) {
     // @ts-ignore
-    fireEvent(this, ev.type, ev.detail);
+    fireEvent(this, ev.type, ev.detail, { composed: false });
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
