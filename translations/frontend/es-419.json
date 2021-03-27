@@ -1129,9 +1129,14 @@
                         "zone": "Recargar zonas"
                     },
                     "server_control": {
-                        "perform_action": "{action} Servidor",
+                        "perform_action": "{action} servidor",
                         "restart": "Reiniciar",
                         "stop": "Detener"
+                    },
+                    "types": {
+                        "navigation": "Navegar",
+                        "reload": "Recargar",
+                        "server_control": "Servidor"
                     }
                 },
                 "filter_placeholder": "Filtro de entidad"
@@ -2554,13 +2559,13 @@
                             "ping": "Recargar entidades de sensor binario PING",
                             "reload": "Recargar {domain}",
                             "rest": "Recargar entidades y servicios de notificación REST.",
-                            "rpi_gpio": "Recargue las entidades GPIO de la Raspberry Pi",
+                            "rpi_gpio": "Recargar las entidades GPIO de la Raspberry Pi",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",
                             "smtp": "Recargar servicios de notificación SMTP",
                             "statistics": "Recargar entidades de estadísticas",
                             "telegram": "Recargar servicios de notificación de telegram",
-                            "template": "Recargar las entidades de la plantilla",
+                            "template": "Recargar las entidades de plantilla",
                             "trend": "Recargar entidades de tendencia",
                             "universal": "Recargar entidades de reproductor multimedia universal",
                             "zone": "Recargar zonas"
@@ -2983,6 +2988,7 @@
                         "column_parameter": "Parámetro",
                         "description": "La herramienta de desarrollo de servicios le permite llamar a cualquier servicio disponible en Home Assistant.",
                         "fill_example_data": "Rellenar datos de ejemplo",
+                        "no_template_ui_support": "La interfaz de usuario no admite plantillas, sin embargo puede usar el editor YAML.",
                         "title": "Servicios",
                         "ui_mode": "Ir al modo IU",
                         "yaml_mode": "Ir al modo YAML",

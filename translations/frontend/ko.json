@@ -200,7 +200,7 @@
                         "manager": "매니저"
                     },
                     "stage": {
-                        "description": "애드온은 다음 세 가지 단계 중 하나일 수 있습니다:\n\n{icon_stable} **안정적*: 실제 환경에서 바로 사용할 수 있는 애드온입니다.\n\n{icon_experimental} **실험적**: 버그를 포함할 수 있으며 완성되지 않았을 수 있습니다.\n\n{icon_deprecated} **지원중단**: 이러한 애드온은 더 이상 업데이트되지 않습니다.",
+                        "description": "애드온은 다음 세 가지 단계 중 하나일 수 있습니다:\n\n{icon_stable} **안정 버전**: 실제 환경에서 바로 사용할 수 있는 애드온입니다.\n\n{icon_experimental} **실험 버전**: 버그를 포함할 수 있으며 완성되지 않았을 수 있습니다.\n\n{icon_deprecated} **지원 중단**: 이러한 애드온은 더 이상 업데이트되지 않습니다.",
                         "title": "애드온 단계"
                     }
                 },
@@ -764,7 +764,7 @@
                 "messages": {
                     "became_unavailable": "이(가) 사용 불가능 상태가 되었습니다.",
                     "changed_to_state": "이(가) {state}으(로) 변경되었습니다.",
-                    "cleared_device_class": "이(가) 더 이상 {device_class}을(를) 감지하지 못했습니다.",
+                    "cleared_device_class": "이(가) 더 이상 {device_class}을(를) 감지하지 않습니다.",
                     "detected_device_class": "이(가) {device_class}을(를) 감지했습니다.",
                     "is_closing": "이(가) 닫히는 중입니다.",
                     "is_opening": "이(가) 열리는 중입니다.",
@@ -950,7 +950,7 @@
             },
             "helper_settings": {
                 "counter": {
-                    "initial": "초기값",
+                    "initial": "초깃값",
                     "maximum": "최댓값",
                     "minimum": "최솟값",
                     "restore": "Home Assistant가 시작될 때 최근 값으로 복원",
@@ -1086,7 +1086,7 @@
                         "integrations": "통합 구성요소",
                         "logs": "로그",
                         "lovelace": "Lovelace 대시보드",
-                        "navigate_to": "{panel} 뷰로 이동하기",
+                        "navigate_to": "{panel}(으)로 이동하기",
                         "person": "구성원",
                         "scene": "씬",
                         "script": "스크립트",
@@ -1096,37 +1096,37 @@
                         "zone": "지역"
                     },
                     "reload": {
-                        "automation": "자동화 다시 읽어오기",
-                        "command_line": "명령줄 구성요소 다시 읽어오기",
-                        "core": "위치 및 사용자화 다시 읽어오기",
-                        "filesize": "파일 크기 구성요소 다시 읽어오기",
-                        "filter": "필터 구성요소 다시 읽어오기",
-                        "generic": "일반 IP 카메라 구성요소 다시 읽어오기",
-                        "generic_thermostat": "일반 온도 조절기 구성요소 다시 읽어오기",
-                        "group": "그룹, 그룹 구성요소 및 알림 서비스 다시 읽어오기",
-                        "history_stats": "기록 통계 구성요소 다시 읽어오기",
-                        "homekit": "HomeKit 다시 읽어오기",
-                        "input_boolean": "논리입력 다시 읽어오기",
-                        "input_datetime": "날짜 / 시간입력 다시 읽어오기",
-                        "input_number": "숫자입력 다시 읽어오기",
-                        "input_select": "선택입력 다시 읽어오기",
-                        "input_text": "문자입력 다시 읽어오기",
-                        "min_max": "최소/최대 구성요소 다시 읽어오기",
-                        "mqtt": "직접 구성한 MQTT 구성요소 다시 읽어오기",
-                        "person": "구성원 다시 읽어오기",
-                        "ping": "ping 이진 센서 구성요소 다시 읽어오기",
-                        "reload": "{domain} 다시 읽어오기",
-                        "rest": "REST 구성요소 및 알림 서비스 다시 읽어오기",
-                        "rpi_gpio": "Raspberry Pi GPIO 구성요소 다시 읽어오기",
-                        "scene": "씬 다시 읽어오기",
-                        "script": "스크립트 다시 읽어오기",
-                        "smtp": "SMTP 알림 서비스 다시 읽어오기",
-                        "statistics": "통계 구성요소 다시 읽어오기",
-                        "telegram": "Telegram 알림 서비스 다시 읽어오기",
-                        "template": "템플릿 구성요소 다시 읽어오기",
-                        "trend": "추세 구성요소 다시 읽어오기",
-                        "universal": "범용 미디어 플레이어 구성요소 다시 읽어오기",
-                        "zone": "지역 다시 읽어오기"
+                        "automation": "자동화",
+                        "command_line": "명령줄 구성요소",
+                        "core": "위치 및 사용자화",
+                        "filesize": "파일 크기 구성요소",
+                        "filter": "필터 구성요소",
+                        "generic": "일반 IP 카메라 구성요소",
+                        "generic_thermostat": "일반 온도 조절기 구성요소",
+                        "group": "그룹, 그룹 구성요소 및 알림 서비스",
+                        "history_stats": "기록 통계 구성요소",
+                        "homekit": "HomeKit",
+                        "input_boolean": "논리 입력",
+                        "input_datetime": "날짜/시간 입력",
+                        "input_number": "숫자 입력",
+                        "input_select": "선택 입력",
+                        "input_text": "문자 입력",
+                        "min_max": "최소/최대 구성요소",
+                        "mqtt": "직접 구성한 MQTT 구성요소",
+                        "person": "구성원",
+                        "ping": "Ping 이진 센서 구성요소",
+                        "reload": "{domain}",
+                        "rest": "REST 구성요소 및 알림 서비스",
+                        "rpi_gpio": "Raspberry Pi GPIO 구성요소",
+                        "scene": "씬",
+                        "script": "스크립트",
+                        "smtp": "SMTP 알림 서비스",
+                        "statistics": "통계 구성요소",
+                        "telegram": "Telegram 알림 서비스",
+                        "template": "템플릿 구성요소",
+                        "trend": "추세 구성요소",
+                        "universal": "범용 미디어 플레이어 구성요소",
+                        "zone": "지역"
                     },
                     "server_control": {
                         "perform_action": "서버 {action}",
@@ -1134,9 +1134,9 @@
                         "stop": "중지하기"
                     },
                     "types": {
-                        "navigation": "탐색",
+                        "navigation": "탐색하기",
                         "reload": "다시 읽어오기",
-                        "server_control": "서버"
+                        "server_control": "서버 제어하기"
                     }
                 },
                 "filter_placeholder": "구성요소 필터"
@@ -1151,7 +1151,7 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "이 기기를 통해 기기 추가하기",
+                    "add": "이 기기를 통해 하위 기기 추가하기",
                     "clusters": "클러스터 관리",
                     "device_children": "하위 기기 보기",
                     "reconfigure": "기기 재구성하기",
@@ -1582,7 +1582,7 @@
                         "delete_automation": "자동화 삭제하기",
                         "delete_confirm": "이 자동화를 삭제하시겠습니까?",
                         "dev_automation": "자동화 디버그하기",
-                        "dev_only_editable": "automations.yaml에서 설정한 자동화만 디버그 할 수 있습니다.",
+                        "dev_only_editable": "automations.yaml에 정의된 자동화 만 디버깅할 수 있습니다.",
                         "duplicate": "복제하기",
                         "duplicate_automation": "자동화 복제하기",
                         "edit_automation": "자동화 편집하기",
@@ -1593,7 +1593,7 @@
                         "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "자동화에 대해 더 알아보기",
                         "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
-                        "only_editable": "automations.yaml에 정의 된 자동화 만 편집 할 수 있습니다.",
+                        "only_editable": "automations.yaml에 정의된 자동화 만 편집할 수 있습니다.",
                         "pick_automation": "편집할 자동화 선택",
                         "show_info_automation": "자동화에 대한 정보 표시하기"
                     },
@@ -2477,7 +2477,7 @@
                         "introduction": "씬 편집기를 사용하여 씬을 작성하고 편집 할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "씬에 대해 더 알아보기",
                         "no_scenes": "편집 가능한 씬을 찾을 수 없습니다",
-                        "only_editable": "scenes.yaml에 정의 된 씬 만 편집 할 수 있습니다.",
+                        "only_editable": "scenes.yaml에 정의된 씬 만 편집할 수 있습니다.",
                         "pick_scene": "편집할 씬 선택하기",
                         "show_info_scene": "씬에 대한 정보 표시하기"
                     }
@@ -2536,39 +2536,39 @@
                     "description": "Home Assistant 서버를 다시 시작하거나 중지합니다",
                     "section": {
                         "reloading": {
-                            "automation": "자동화 다시 읽어오기",
-                            "command_line": "명령줄 구성요소 다시 읽어오기",
-                            "core": "위치 및 사용자화 다시 읽어오기",
-                            "filesize": "파일 크기 구성요소 다시 읽어오기",
-                            "filter": "필터 구성요소 다시 읽어오기",
-                            "generic": "일반 IP 카메라 구성요소 다시 읽어오기",
-                            "generic_thermostat": "일반 온도 조절기 구성요소 다시 읽어오기",
-                            "group": "그룹, 그룹 구성요소 및 알림 서비스 다시 읽어오기",
+                            "automation": "자동화",
+                            "command_line": "명령줄 구성요소",
+                            "core": "위치 및 사용자화",
+                            "filesize": "파일 크기 구성요소",
+                            "filter": "필터 구성요소",
+                            "generic": "일반 IP 카메라 구성요소",
+                            "generic_thermostat": "일반 온도 조절기 구성요소",
+                            "group": "그룹, 그룹 구성요소 및 알림 서비스",
                             "heading": "YAML 구성 다시 읽어오기",
-                            "history_stats": "기록 통계 구성요소 다시 읽어오기",
-                            "homekit": "HomeKit 다시 읽어오기",
-                            "input_boolean": "논리입력 다시 읽어오기",
-                            "input_datetime": "날짜 / 시간입력 다시 읽어오기",
-                            "input_number": "숫자입력 다시 읽어오기",
-                            "input_select": "선택입력 다시 읽어오기",
-                            "input_text": "문자입력 다시 읽어오기",
+                            "history_stats": "기록 통계 구성요소",
+                            "homekit": "HomeKit",
+                            "input_boolean": "논리 입력",
+                            "input_datetime": "날짜/시간 입력",
+                            "input_number": "숫자 입력",
+                            "input_select": "선택 입력",
+                            "input_text": "문자 입력",
                             "introduction": "Home Assistant의 일부 구성 내용은 다시 시작할 필요 없이 다시 읽어 들일 수 있습니다. 다시 읽어오기를 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
-                            "min_max": "최소/최대 구성요소 다시 읽어오기",
-                            "mqtt": "직접 구성한 MQTT 구성요소 다시 읽어오기",
-                            "person": "구성원 다시 읽어오기",
-                            "ping": "ping 이진 센서 구성요소 다시 읽어오기",
-                            "reload": "{domain} 다시 읽어오기",
-                            "rest": "REST 구성요소 및 알림 서비스 다시 읽어오기",
-                            "rpi_gpio": "Raspberry Pi GPIO 구성요소 다시 읽어오기",
-                            "scene": "씬 다시 읽어오기",
-                            "script": "스크립트 다시 읽어오기",
-                            "smtp": "SMTP 알림 서비스 다시 읽어오기",
-                            "statistics": "통계 구성요소 다시 읽어오기",
-                            "telegram": "Telegram 알림 서비스 다시 읽어오기",
-                            "template": "템플릿 구성요소 다시 읽어오기",
-                            "trend": "추세 구성요소 다시 읽어오기",
-                            "universal": "범용 미디어 플레이어 구성요소 다시 읽어오기",
-                            "zone": "지역 다시 읽어오기"
+                            "min_max": "최소/최대 구성요소",
+                            "mqtt": "직접 구성한 MQTT 구성요소",
+                            "person": "구성원",
+                            "ping": "Ping 이진 센서 구성요소",
+                            "reload": "{domain}",
+                            "rest": "REST 구성요소 및 알림 서비스",
+                            "rpi_gpio": "Raspberry Pi GPIO 구성요소",
+                            "scene": "씬",
+                            "script": "스크립트",
+                            "smtp": "SMTP 알림 서비스",
+                            "statistics": "통계 구성요소",
+                            "telegram": "Telegram 알림 서비스",
+                            "template": "템플릿 구성요소",
+                            "trend": "추세 구성요소",
+                            "universal": "범용 미디어 플레이어 구성요소",
+                            "zone": "지역"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant를 다시 시작하시겠습니까?",
@@ -2988,7 +2988,7 @@
                         "column_parameter": "매개 변수",
                         "description": "서비스 개발 도구를 사용하면 Home Assistant에서 사용 가능한 서비스를 호출할 수 있습니다.",
                         "fill_example_data": "예제 데이터를 입력란에 넣기",
-                        "no_template_ui_support": "UI에서 템플릿을 지원하지 않습니다. YAML편집기를 이용하세요.",
+                        "no_template_ui_support": "UI에서 템플릿을 지원하지 않습니다. YAML 편집기를 이용해주세요.",
                         "title": "서비스",
                         "ui_mode": "UI 모드로 이동하기",
                         "yaml_mode": "YAML 모드로 이동하기",
@@ -3122,7 +3122,7 @@
                             "call-service": "서비스 호출",
                             "default_action": "기본 동작",
                             "more-info": "추가 정보",
-                            "navigate": "뷰 탐색",
+                            "navigate": "탐색",
                             "none": "동작 없음",
                             "toggle": "토글",
                             "url": "URL"
@@ -3655,12 +3655,12 @@
                 "config": {
                     "arsaboo": {
                         "labels": {
-                            "activity": "활동",
+                            "activity": "프리셋",
                             "air": "공조기",
                             "commute_home": "집으로 퇴근",
                             "entertainment": "엔터테인먼트",
                             "hdmi_input": "HDMI 입력",
-                            "hdmi_switcher": "HDMI 선택기",
+                            "hdmi_switcher": "HDMI 선택",
                             "information": "정보",
                             "lights": "조명",
                             "morning_commute": "아침 출근",
@@ -3677,7 +3677,7 @@
                             "mirror": "거울",
                             "patio": "마당",
                             "right": "오른쪽",
-                            "temperature_study": "온도 학습",
+                            "temperature_study": "서재 온도",
                             "upstairs": "위층"
                         },
                         "unit": {
@@ -3776,12 +3776,12 @@
                     "create_failed": "액세스 토큰을 생성을 할 수 없습니다.",
                     "created": "{date}에 생성 됨",
                     "delete_failed": "액세스 토큰을 삭제할 수 없습니다.",
-                    "description": "스크립트가 Home Assistant 구성요소와 상호 작용할 수 있도록 장기 액세스 토큰을 생성하세요. 각 토큰은 생성 후 10년 동안 유효합니다. 현재 활성 상태인 장기 액세스 토큰은 다음과 같습니다.",
+                    "description": "스크립트가 Home Assistant 구성요소와 상호 작용할 수 있도록 장기 액세스 토큰을 생성할 수 있습니다. 각 토큰은 생성 후 10년 동안 유효합니다. 현재 활성 상태인 장기 액세스 토큰은 다음과 같습니다.",
                     "empty_state": "장기 액세스 토큰이 없습니다.",
                     "header": "장기 액세스 토큰",
                     "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아보세요.",
                     "name": "이름",
-                    "prompt_copy_token": "Ctrl + C를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
+                    "prompt_copy_token": "액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
                     "prompt_name": "토큰 이름을 지어주세요."
                 },
                 "mfa_setup": {
@@ -3840,7 +3840,7 @@
                 },
                 "vibrate": {
                     "description": "기기를 제어할 때 이 기기에서 진동을 활성화 또는 비활성화합니다.",
-                    "header": "진동효과"
+                    "header": "진동 효과"
                 }
             },
             "shopping_list": {
