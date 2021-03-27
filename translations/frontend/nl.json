@@ -1132,6 +1132,11 @@
                         "perform_action": "{action} Server",
                         "restart": "Herstarten",
                         "stop": "Stop"
+                    },
+                    "types": {
+                        "navigation": "Navigeer",
+                        "reload": "Herlaad",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Entiteitsfilter"

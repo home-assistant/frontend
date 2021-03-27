@@ -1025,12 +1025,18 @@
                         "script": "Lataa skriptit uudelleen",
                         "smtp": "Lataa smtp-ilmoituspalvelut uudelleen",
                         "telegram": "Päivitä Telegram-ilmoituspalvelut",
+                        "template": "Malli entiteetit",
                         "zone": "Lataa alueet uudelleen"
                     },
                     "server_control": {
                         "perform_action": "{action} Palvelin",
                         "restart": "Käynnistä uudelleen",
                         "stop": "Pysäytä"
+                    },
+                    "types": {
+                        "navigation": "Siirry",
+                        "reload": "Lataa uudelleen",
+                        "server_control": "Palvelin"
                     }
                 },
                 "filter_placeholder": "Kohdesuodatin"
@@ -1081,6 +1087,7 @@
         },
         "errors": {
             "config": {
+                "no_template_editor_support": "Visuaalinen editori ei tue malleja",
                 "no_type_provided": "Tyyppiä ei ole annettu."
             }
         },
@@ -2423,7 +2430,7 @@
                             "smtp": "Lataa smtp-ilmoituspalvelut uudelleen",
                             "statistics": "Lataa tilastoentiteetit uudelleen",
                             "telegram": "Päivitä Telegram-ilmoituspalvelut",
-                            "template": "Lataa mallientiteetiteetit uudelleen",
+                            "template": "Malli entiteetit",
                             "trend": "Lataa trendientiteetiteetit uudelleen",
                             "universal": "Lataa universaali mediasoittimen entiteetit uudelleen",
                             "zone": "Lataa alueet uudelleen"
@@ -2661,6 +2668,12 @@
                         "connecting": "Yhdistetään",
                         "unknown": "Tuntematon"
                     },
+                    "node_config": {
+                        "battery_device_notice": "Akkulaitteiden on oltava hereillä, jotta ne voivat päivittää konfiguraationsa. Katso laitteen käyttöoppaasta ohjeet laitteen herättämiseen.",
+                        "error_device_not_found": "Laitetta ei löydy.",
+                        "parameter_is_read_only": "Tämä parametri on vain luku -tyyppinen.",
+                        "zwave_js_device_database": "Z-Wave JS -laitetietokanta"
+                    },
                     "node_status": {
                         "alive": "Elossa",
                         "asleep": "Unessa",
@@ -2795,6 +2808,7 @@
                         "column_parameter": "Parametri",
                         "description": "Service dev -työkalun avulla voit kutsua mitä tahansa käytettävissä olevaan palvelua Home Assistant -sovelluksessa.",
                         "fill_example_data": "Täytä esimerkkitiedoilla",
+                        "no_template_ui_support": "Käyttöliittymä ei tue malleja, mutta voit silti käyttää YAML-editoria.",
                         "title": "Palvelut",
                         "ui_mode": "Siirry käyttöliittymätilaan",
                         "yaml_mode": "Siirry YAML-tilaan"

@@ -125,7 +125,40 @@
                 }
             },
             "dashboard": {
+                "action_error": {
+                    "get_changelog": "Feeler beim ausliesen vum add-on changelog",
+                    "go_to_config": "Feeler beim starten vum add-on - Validatioun vun der Konfiguratioun gescheitert!",
+                    "install": "Feeler beim installéieren vum add-on",
+                    "restart": "Feeler beim frësch starten vum add-on",
+                    "start": "Feeler beim starten vum add-on",
+                    "start_invalid_config": "Zur Konfiguratioun goen",
+                    "stop": "Feeler beim stoppen vum add-om",
+                    "validate_config": "Feeler beim validéieren vun der add-on Konfiguratioun"
+                },
                 "capability": {
+                    "docker_api": {
+                        "description": "Den Auteur vum add-on huet den Zougang ugefrot fir Zougangsadministratioun zu der Docker Instanz op dengem System. Dëse Modus gëtt dem add-on vollen Zougang a Kontroll zu dengem komplette Home Assistant System, wat Sécherheetsrisiken mat sech bréngt an däin System beschiedegen wann et mëssbraucht gëtt. Dofir beaflosst dëse Feature den Add-on Security Score negativ.\n\nDësen Zougangsniveau gëtt net automatesch erlabt a muss vun Dir bestätegt ginn. Fir dëst ze maachen, muss Du de Schutzmodus vum Add-on manuell deaktivéieren. Desaktivéier de Schutzmodus nëmmen wann Dir d'Quell vun dësem add-on bekannt ass, brauchs an vertraus.",
+                        "title": "Kompletten Docker Zougang"
+                    },
+                    "full_access": {
+                        "description": "Dësen add-on kritt vollen Zougang zu der Hardware vun dengem System, op Ufro vum Auteur vum add-on. Zougang ass vergläichbar mam privilegéierte Modus am Docker. Well dëst méiglech Sécherheetsrisiken opmécht, beaflosst dëse Feature den add-on Security Score negativ.\n\nDësen Zougangsniveau gëtt net automatesch erlabt a muss vun Dir bestätegt ginn. Fir dëst ze maachen, muss Du de Schutzmodus vum Add-on manuell deaktivéieren. Desaktivéier nëmmen de Schutzmodus wann Dir d'Quell vun dësem add-on bekannt ass, brauchs an vertraus.",
+                        "title": "Kompletten Hardware Zougang"
+                    },
+                    "hassio_api": {
+                        "description": "Den Zousaz krut Zougang zum Supervisor API, op Ufro vum Auteur vum add-on. Par défaut kann den add-on op allgemeng Versiounsinformatioun vun dengem System zougräifen. Wann den add-on 'Manager' oder 'Admin' Niveau Zougang zu der API freet, kritt en Zougang fir méi Deeler vun dengem Home Assistant System ze kontrolléieren. Dës Erlaabnis gëtt vun dësem Badge uginn a wäert d'Sécherheetsscore vum add-on negativ beaflossen. ",
+                        "title": "Supervisor API Zougang"
+                    },
+                    "homeassistant_api": {
+                        "description": "Dësen add-on ass et erlaabt Zougang zu denger lafender Home Assistant Instanz direkt iwwert Home Assistant API ze kréien. Dëse Modus behandelt d'Authentifikatioun fir den add-on och, wat et dem add-on erméiglecht mam Home Assistant ze interagéieren ouni zousätzlech Authentifikatiounsjeton ze brauchen.",
+                        "title": "Home Assistant API Zougang"
+                    },
+                    "host_network": {
+                        "description": "Add-ons laafen normalerweis an hirer eegener isoléierter Netzwierkschicht, déi verhënnert datt se Zougang zum Netz vum Host Betribssystem kréien. An e puer Fäll kann dës Netzwierkisolatioun Add-ons limitéieren fir hir Servicer unzebidden an dofir kann d'Isolatioun opgehuewe ginn duerch den Auteur vum Add-on, andeems den Add-on volle Zougang zu de Netzwierkkapazitéite vun der Hostmaschinn kritt. Dëst gëtt den Add-on méi Netzwierkkapazitéiten awer sénkt d'Sécherheet, dofir gëtt d'Sécherheetsbewäertung vum Add-On erofgesat wann dës Optioun vum Add-on benotzt gëtt.",
+                        "title": "Host Netzwierk"
+                    },
+                    "host_pid": {
+                        "title": "Host Prozesser Namespace"
+                    },
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "auth",
@@ -137,6 +170,10 @@
                         "host_pid": "host pid",
                         "rating": "bewäertung",
                         "stage": "stage"
+                    },
+                    "rating": {
+                        "description": "Home Assistant bitt eng Sécherheetswäertung fir all Add-on un, wat d'Risiken uginn wann dësen Add-on benotzt gëtt. Wat méi Zougang vun engem Add-on op dengem System erfuerdert gëtt, wat de Score méi niddereg ass, sou datt méiglech Sécherheetsrisiken erhéicht ginn.\n\nE Score ass op enger Skala vun 1 bis 6. Wou 1 deen niddregste Score ass (als deen onséchersten an héichste Risiko ugesinn) an e Score vu 6 ass deen héichste Score (als dee séchersten an niddregste Risiko).",
+                        "title": "Add-on Sécherheetsbewäertung"
                     },
                     "role": {
                         "admin": "admin",
@@ -357,12 +394,14 @@
                     "docker": "Den Docker Environnement ass feelerhaft",
                     "privileged": "Supervisor ass net privilegéiert",
                     "setup": "Feeler beim ariichten vum Supervisor",
-                    "supervisor": "Supervisor konnt net aktualiséiert ginn"
+                    "supervisor": "Supervisor konnt net aktualiséiert ginn",
+                    "untrusted": "Net vertrauten Inhalt entdeckt"
                 },
                 "unhealthy_title": "Deng Installation ass ongesond",
                 "unsupported_description": "Hei drënner ass eng Lëscht vu Probleemer déi an denger Installatioun fonnt goufen, klick op d'Links fir ze léieren wéi's Du Problemer léise kanns.",
                 "unsupported_reason": {
                     "container": "Container vun deene mir wësse dass sie Problemer verursaachen",
+                    "content-trust": "Vertrauen's Validatioun vum Inhalt ass déaktivéiert",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker Konfiguratioun",
                     "docker_version": "Docker Versioun",
@@ -660,7 +699,8 @@
                     "was_unlocked": "war net gespaart",
                     "was_unplugged": "war net ugeschloss",
                     "was_unsafe": "war onsécher"
-                }
+                },
+                "show_trace": "Spuer uweisen"
             },
             "media-browser": {
                 "audio_not_supported": "Däin Browser ënnerstëtzt dësen Audio Element net.",
@@ -969,6 +1009,11 @@
                         "perform_action": "{action} Server",
                         "restart": "Restart",
                         "stop": "Stop"
+                    },
+                    "types": {
+                        "navigation": "Navigéieren",
+                        "reload": "Nei lueden",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Entitéite Filter"
@@ -1135,7 +1180,9 @@
                                 "device_id": {
                                     "action": "Aktioun",
                                     "extra_fields": {
+                                        "brightness_pct": "Hellegkeet",
                                         "code": "Code",
+                                        "flash": "Flash",
                                         "humidity": "Loftfiichtegkeet",
                                         "mode": "Modus",
                                         "value": "Wäert"
@@ -1211,7 +1258,9 @@
                                     "extra_fields": {
                                         "above": "Iwwert",
                                         "below": "Ënnert",
-                                        "for": "Dauer"
+                                        "for": "Dauer",
+                                        "hvac_mode": "HVAC Modus",
+                                        "preset_mode": "Virastellungs Modus"
                                     },
                                     "label": "Apparat"
                                 },
@@ -1403,6 +1452,8 @@
                         "add_automation": "Automatismus dobäisetzen",
                         "delete_automation": "Automatisme läschen",
                         "delete_confirm": "Sécher fir dës Automatisme ze läschen?",
+                        "dev_automation": "Automatisme debuggen",
+                        "dev_only_editable": "Nëmmen Automatisme déi am automations.yaml définéiert sinn könne debugged ginn.",
                         "duplicate": "Duplizéieren",
                         "duplicate_automation": "Automatisme duplizéieren",
                         "edit_automation": "Automatisme änneren",
@@ -2575,6 +2626,18 @@
                         "dump_not_ready_confirm": "Eroflueden",
                         "server_version": "Server Versioun"
                     },
+                    "device_info": {
+                        "device_config": "Apparat ariichten"
+                    },
+                    "node_config": {
+                        "attribution": "Parameter fir d'Konfiguratioun vum Apparat a seng Beschréiwungen gin duerch {device_database} zur Verfügung gestallt.",
+                        "battery_device_notice": "Batterie bedriwwen Apparater mussen un sinn fir hier Konfiguratioun z'aktualiséieren. Kuck wegl d'Instruktiounen vum Hiersteller fir den Apparat unzeschalten.",
+                        "error_device_not_found": "Apparat net fonnt",
+                        "header": "Z-Wave Apparat Konfiguratioun",
+                        "introduction": "Verwalt a pass verschidde (node) spezifesch Konfiguratioun's Parameter vum Apparat un.",
+                        "parameter_is_read_only": "Dëse Parameter ass schréif geschützt",
+                        "zwave_js_device_database": "Z-Wave JS Apparat Datebank"
+                    },
                     "node_status": {
                         "unknown": "Onbekannt"
                     }
@@ -2705,6 +2768,7 @@
                         "column_parameter": "Parameter",
                         "description": "De Service am Entwécklungsgeschir erlaabt Iech e verfügbare Service am Home Assistant opzeruffen.",
                         "fill_example_data": "Gitt Beispill Donnéeën un",
+                        "no_template_ui_support": "Den UI ënnerstëtzt kenge Modeller, du kanns awer den YAML Editeur benotzen.",
                         "title": "Servicen"
                     },
                     "states": {

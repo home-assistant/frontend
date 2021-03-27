@@ -999,6 +999,9 @@
                         "perform_action": "{action} Сървъра",
                         "restart": "Рестартиране",
                         "stop": "Спиране"
+                    },
+                    "types": {
+                        "server_control": "Сървър"
                     }
                 },
                 "filter_placeholder": "Филтър на обектите"
@@ -1221,7 +1224,8 @@
                                     "extra_fields": {
                                         "above": "Над",
                                         "below": "Под",
-                                        "for": "Продължителност"
+                                        "for": "Продължителност",
+                                        "preset_mode": "Предварително зададен режим"
                                     },
                                     "label": "Устройство"
                                 },
@@ -1845,6 +1849,7 @@
                     "confirm_new": "Искате ли да настроите {integration}?",
                     "description": "Управление на интеграции с услуги, устройства, ...",
                     "disable": {
+                        "disabled_integrations": "{number} деактивирани",
                         "hide_disabled": "Скриване на деактивираните интеграции",
                         "show_disabled": "Показване на деактивираните интеграции"
                     },
@@ -2010,6 +2015,7 @@
                         "new_person": "Нов човек",
                         "update": "Актуализиране"
                     },
+                    "learn_more": "Научете повече за хората",
                     "no_persons_created_yet": "Изглежда все още не сте добавили хора.",
                     "note_about_persons_configured_in_yaml": "Забележка: хората, конфигурирани чрез configuration.yaml, не могат да бъдат редактирани чрез потребителския интерфейс."
                 },
@@ -2293,6 +2299,9 @@
                     "network_status": {
                         "connected": "Свързан",
                         "connecting": "Свързване"
+                    },
+                    "node_config": {
+                        "parameter_is_read_only": "Този параметър е само за четене."
                     }
                 },
                 "zwave": {
