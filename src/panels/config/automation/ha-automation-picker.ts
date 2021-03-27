@@ -23,8 +23,6 @@ import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-button-filter-menu";
-import "../../../components/ha-area-picker";
-import "../../../components/device/ha-device-picker";
 import {
   AutomationEntity,
   triggerAutomationActions,
@@ -310,8 +308,8 @@ class HaAutomationPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
-    return [haStyle];
+  static get styles(): CSSResult {
+    return haStyle;
   }
 }
 
