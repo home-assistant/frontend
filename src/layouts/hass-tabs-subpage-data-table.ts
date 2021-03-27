@@ -12,7 +12,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
-import { navigate } from "../common/navigate";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
 import type {
@@ -23,6 +22,14 @@ import type {
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "search-changed": { value: string };
+    "clear-filter": undefined;
+  }
+}
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
