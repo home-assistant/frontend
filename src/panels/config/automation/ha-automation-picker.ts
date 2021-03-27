@@ -1,8 +1,7 @@
 import "@material/mwc-icon-button";
-import { mdiFilterVariant, mdiHelpCircle, mdiPlus } from "@mdi/js";
+import { mdiHelpCircle, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  css,
   CSSResult,
   customElement,
   html,

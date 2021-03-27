@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button";
-import type { Corner, Menu } from "@material/mwc-menu";
+import type { Corner } from "@material/mwc-menu";
 import { mdiFilterVariant } from "@mdi/js";
 import {
   css,
@@ -9,7 +9,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import "@material/mwc-menu/mwc-menu-surface";
