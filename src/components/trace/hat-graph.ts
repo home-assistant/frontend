@@ -7,24 +7,47 @@ import {
   SVGTemplateResult,
   css,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 const SIZE = 35;
 const DIST = 20;
 
 type ValueOrArray<T> = T | ValueOrArray<T>[];
 
+// Return value is undefined if it's an empty array
+const extractFirstValue = <T>(val: ValueOrArray<T>): T | undefined =>
+  Array.isArray(val) ? extractFirstValue(val[0]) : val;
+const extractLastValue = <T>(val: ValueOrArray<T>): T | undefined =>
+  Array.isArray(val) ? extractLastValue(val[val.length - 1]) : val;
+
 export interface TreeNode {
   icon: string;
-  styles?: string;
   end?: boolean;
   children?: Array<ValueOrArray<TreeNode>>;
   clickCallback?: (ev: MouseEvent) => void;
   addCallback?: () => void;
+  isActive: boolean;
+  isTracked: boolean | undefined;
+  isNew?: boolean;
+}
+
+interface RenderedTree {
+  svg: SVGTemplateResult[];
+  width: number;
+  height: number;
+  // These are the parts rendered before/after this tree
+  previousPartTracked: boolean | undefined;
+  nextPartTracked: boolean | undefined;
+  // These are the parts inside the tree
+  firstNodeTracked: boolean | undefined;
+  lastNodeTracked: boolean | undefined;
 }
 
 @customElement("hat-graph")
 class HatGraph extends LitElement {
-  @property() tree?: TreeNode[];
+  @property() tree!: TreeNode[];
+
+  @property() finishedActive = false;
 
   @property() nodeSize = SIZE;
 
@@ -36,9 +59,12 @@ class HatGraph extends LitElement {
         cx="${x}"
         cy="${y + this.nodeSize / 2}"
         r="${this.nodeSize / 2}"
-        class="node"
+        class="node ${classMap({
+          active: node.isActive || false,
+          track: node.isTracked || false,
+          new: node.isNew || false,
+        })}"
         @click=${node.clickCallback}
-        style=${node.styles}
       />
       <g style="pointer-events: none" transform="translate(${x - 12} ${
       y + this.nodeSize / 2 - 12
@@ -60,9 +86,10 @@ class HatGraph extends LitElement {
     `;
   }
 
-  private _draw_connector(x1, y1, x2, y2) {
+  private _draw_connector(x1, y1, x2, y2, track) {
     return svg`
       <line
+        class=${classMap({ track })}
         x1=${x1}
         y1=${y1}
         x2=${x2}
@@ -71,105 +98,197 @@ class HatGraph extends LitElement {
     `;
   }
 
-  private _draw_tree(tree?: ValueOrArray<TreeNode>) {
-    if (!tree) return { svg: `Hello`, width: 0, height: 0 };
-    if (!Array.isArray(tree)) {
-      let height = this.nodeSize;
-      let width = this.nodeSize;
-      const pieces: SVGTemplateResult[] = [];
+  private _draw_tree(
+    tree: ValueOrArray<TreeNode>,
+    previousPartTracked: boolean | undefined,
+    nextPartTracked: boolean | undefined
+  ): RenderedTree {
+    if (!tree) {
+      return {
+        svg: [],
+        width: 0,
+        height: 0,
+        previousPartTracked,
+        nextPartTracked,
+        firstNodeTracked: false,
+        lastNodeTracked: false,
+      };
+    }
 
-      if (tree.children) {
-        const childTrees = tree.children.map((c) => this._draw_tree(c));
-        height += childTrees.reduce((a, i) => Math.max(a, i.height), 0);
-        width =
-          childTrees.reduce((a, i) => a + i.width, 0) +
-          this.nodeSeparation * (tree.children.length - 1);
-        const offsets = childTrees.map(
-          ((sum) => (value) => sum + value.width + this.nodeSeparation)(0)
+    if (!Array.isArray(tree)) {
+      return this._draw_tree_single(tree, previousPartTracked, nextPartTracked);
+    }
+
+    if (tree.length === 0) {
+      return {
+        svg: [],
+        width: 0,
+        height: 0,
+        previousPartTracked,
+        nextPartTracked,
+        firstNodeTracked: false,
+        lastNodeTracked: false,
+      };
+    }
+
+    return this._draw_tree_array(tree, previousPartTracked, nextPartTracked);
+  }
+
+  private _draw_tree_single(
+    tree: TreeNode,
+    previousPartTracked: boolean | undefined,
+    nextPartTracked: boolean | undefined
+  ): RenderedTree {
+    let height = this.nodeSize;
+    let width = this.nodeSize;
+    const pieces: SVGTemplateResult[] = [];
+
+    let lastNodeTracked = tree.isTracked;
+
+    // These children are drawn in parallel to one another.
+    if (tree.children && tree.children.length > 0) {
+      lastNodeTracked = extractFirstValue(
+        tree.children[tree.children.length - 1]
+      )?.isTracked;
+
+      const childTrees: RenderedTree[] = [];
+      tree.children.forEach((child) => {
+        childTrees.push(
+          this._draw_tree(child, previousPartTracked, nextPartTracked)
+        );
+      });
+      height += childTrees.reduce((a, i) => Math.max(a, i.height), 0);
+      width =
+        childTrees.reduce((a, i) => a + i.width, 0) +
+        this.nodeSeparation * (tree.children.length - 1);
+      const offsets = childTrees.map(
+        ((sum) => (value) => sum + value.width + this.nodeSeparation)(0)
+      );
+
+      let bottomConnectors = false;
+
+      for (const [idx, child] of childTrees.entries()) {
+        const x = -width / 2 + (idx ? offsets[idx - 1] : 0) + child.width / 2;
+        // Draw top connectors
+        pieces.push(
+          this._draw_connector(
+            0,
+            this.nodeSize / 2,
+            x,
+            this.nodeSize + this.nodeSeparation,
+            child.previousPartTracked && child.firstNodeTracked
+          )
         );
 
-        let bottomConnectors = false;
+        const endNode = extractLastValue(tree.children[idx])!;
 
-        for (const [idx, child] of childTrees.entries()) {
-          const x = -width / 2 + (idx ? offsets[idx - 1] : 0) + child.width / 2;
-          // Draw top connectors
+        if (endNode.end !== false) {
+          // Draw bottom fill
           pieces.push(
             this._draw_connector(
-              0,
-              this.nodeSize / 2,
               x,
-              this.nodeSize + this.nodeSeparation
+              this.nodeSeparation + child.height,
+              x,
+              this.nodeSeparation + height,
+              child.lastNodeTracked && child.nextPartTracked
             )
           );
 
-          let endNode = tree.children[idx];
-          while (Array.isArray(endNode)) {
-            endNode = endNode[endNode.length - 1];
-          }
-          if (endNode.end !== false) {
-            // Draw bottom fill
-            pieces.push(
-              this._draw_connector(
-                x,
-                this.nodeSeparation + child.height,
-                x,
-                this.nodeSeparation + height
-              )
-            );
-
-            // Draw bottom connectors
-            pieces.push(
-              this._draw_connector(
-                x,
-                this.nodeSeparation + height,
-                0,
-                this.nodeSeparation +
-                  height +
-                  this.nodeSize / 2 +
-                  this.nodeSeparation
-              )
-            );
-            bottomConnectors = true;
-          }
-
-          // Draw child tree
-          pieces.push(svg`
-            <g class="a" transform="translate(${x} ${
-            this.nodeSize + this.nodeSeparation
-          })">
-            ${child.svg}
-            </g>
-          `);
+          // Draw bottom connectors
+          pieces.push(
+            this._draw_connector(
+              x,
+              this.nodeSeparation + height,
+              0,
+              this.nodeSeparation +
+                height +
+                this.nodeSize / 2 +
+                this.nodeSeparation,
+              child.lastNodeTracked && child.nextPartTracked
+            )
+          );
+          bottomConnectors = true;
         }
-        if (bottomConnectors) height += this.nodeSize + this.nodeSeparation;
-      }
-      if (tree.addCallback) {
-        pieces.push(
-          this._draw_connector(0, height, 0, height + this.nodeSeparation)
-        );
-        pieces.push(this._draw_new_node(0, height + this.nodeSeparation, tree));
-        height += this.nodeSeparation + this.nodeSize / 2;
-      }
-      if (tree.end !== false) {
-        // Draw bottom connector
-        pieces.push(
-          this._draw_connector(0, height, 0, height + this.nodeSeparation)
-        );
-        height += this.nodeSeparation;
-      }
 
-      // Draw the node itself
-      pieces.push(this._draw_node(0, 0, tree));
-
-      return { svg: pieces, width, height };
+        // Draw child tree
+        pieces.push(svg`
+          <g class="a" transform="translate(${x} ${
+          this.nodeSize + this.nodeSeparation
+        })">
+          ${child.svg}
+          </g>
+        `);
+      }
+      if (bottomConnectors) {
+        height += this.nodeSize + this.nodeSeparation;
+      }
+    }
+    if (tree.addCallback) {
+      pieces.push(
+        this._draw_connector(
+          0,
+          height,
+          0,
+          height + this.nodeSeparation,
+          nextPartTracked
+        )
+      );
+      pieces.push(this._draw_new_node(0, height + this.nodeSeparation, tree));
+      height += this.nodeSeparation + this.nodeSize / 2;
+    }
+    if (tree.end !== false) {
+      // Draw bottom connector
+      pieces.push(
+        this._draw_connector(
+          0,
+          height,
+          0,
+          height + this.nodeSeparation,
+          nextPartTracked
+        )
+      );
+      height += this.nodeSeparation;
     }
 
-    // Array of trees
+    // Draw the node itself
+    pieces.push(this._draw_node(0, 0, tree));
+
+    return {
+      svg: pieces,
+      width,
+      height,
+      previousPartTracked,
+      nextPartTracked,
+      firstNodeTracked: tree.isTracked,
+      lastNodeTracked,
+    };
+  }
+
+  private _draw_tree_array(
+    tree: ValueOrArray<TreeNode>[],
+    previousPartTracked: boolean | undefined,
+    nextPartTracked: boolean | undefined
+  ): RenderedTree {
     const pieces: SVGTemplateResult[] = [];
     let height = 0;
-    const children = tree.map((n) => this._draw_tree(n));
-    const width = children.reduce((a, i) => Math.max(a, i.width), 0);
-    for (const [_, node] of children.entries()) {
+
+    // Render each entry while keeping track of the "track" variable.
+    const childTrees: RenderedTree[] = [];
+    let lastChildTracked: boolean | undefined = previousPartTracked;
+    tree.forEach((child, idx) => {
+      const lastNodeTracked = extractLastValue(child)?.isTracked;
+      const nextChildTracked =
+        idx < tree.length - 1
+          ? extractFirstValue(tree[idx + 1])?.isTracked
+          : lastNodeTracked && nextPartTracked;
+      childTrees.push(
+        this._draw_tree(child, lastChildTracked, nextChildTracked)
+      );
+      lastChildTracked = lastNodeTracked;
+    });
+
+    const width = childTrees.reduce((a, i) => Math.max(a, i.width), 0);
+    for (const [_, node] of childTrees.entries()) {
       pieces.push(svg`
         <g class="b" transform="translate(0, ${height})">
           ${node.svg}
@@ -178,11 +297,23 @@ class HatGraph extends LitElement {
       height += node.height;
     }
 
-    return { svg: pieces, width, height };
+    return {
+      svg: pieces,
+      width,
+      height,
+      previousPartTracked,
+      nextPartTracked,
+      firstNodeTracked: extractFirstValue(tree[0])?.isTracked,
+      lastNodeTracked: extractFirstValue(tree[tree.length - 1])?.isTracked,
+    };
   }
 
   render() {
-    const tree = this._draw_tree(this.tree);
+    const tree = this._draw_tree(
+      this.tree,
+      this.tree.length > 0 && this.tree[0].isTracked,
+      this.finishedActive
+    );
     return html`
       <svg width=${tree.width + 32} height=${tree.height + 32}>
         <g transform="translate(${tree.width / 2 + 16} 16)">
@@ -206,9 +337,17 @@ class HatGraph extends LitElement {
         stroke-width: 3px;
         fill: white;
       }
-      circle:hover,
-      .newnode:hover {
+      circle:hover {
         stroke: var(--hover-clr);
+      }
+      circle {
+        cursor: pointer;
+      }
+      .track {
+        stroke: var(--track-clr);
+      }
+      .active {
+        stroke: var(--active-clr);
       }
     `;
   }

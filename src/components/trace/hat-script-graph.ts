@@ -37,7 +37,7 @@ class HatScriptGraph extends LitElement {
       return html``;
     }
     const actionHandler = this.getActionHandler(this.trace);
-    return html` <hat-graph .tree=${actionHandler.graph}></hat-graph> `;
+    return html`<hat-graph .tree=${actionHandler.graph}></hat-graph>`;
   }
 }
 

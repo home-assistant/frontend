@@ -14,12 +14,14 @@ import {
   ActionTrace,
   AutomationTrace,
   AutomationTraceExtended,
+  ChooseActionTrace,
   getDataFromPath,
   loadTrace,
   loadTraces,
 } from "../../../../data/trace";
 import "../../../../components/ha-card";
-import "../../../../components/trace/hat-trace";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-code-editor";
 import "../../../../components/trace/hat-script-graph";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
@@ -74,11 +76,18 @@ export class HaAutomationTrace extends LitElement {
       >
         <div class="toolbar">
           <div>
-            Trace for ${stateObj?.attributes.friendly_name || this._entityId}
+            ${stateObj?.attributes.friendly_name || this._entityId}
           </div>
-          <div class="actions">
-            ${this._traces && this._traces.length > 0
-              ? html`
+          ${this._traces && this._traces.length > 0
+            ? html`
+                <div>
+                  <ha-icon-button
+                    .disabled=${this._traces[this._traces.length - 1].run_id ===
+                    this._runId}
+                    label="Older trace"
+                    icon="hass:ray-end-arrow"
+                    @click=${this._pickOlderTrace}
+                  ></ha-icon-button>
                   <select .value=${this._runId} @change=${this._pickTrace}>
                     ${repeat(
                       this._traces,
@@ -92,14 +101,27 @@ export class HaAutomationTrace extends LitElement {
                         >`
                     )}
                   </select>
-                `
-              : ""}
-            <button @click=${this._loadTraces}>
-              Refresh
-            </button>
-            <button @click=${this._downloadTrace}>
-              Download
-            </button>
+                  <ha-icon-button
+                    .disabled=${this._traces[0].run_id === this._runId}
+                    label="Newer trace"
+                    icon="hass:ray-start-arrow"
+                    @click=${this._pickNewerTrace}
+                  ></ha-icon-button>
+                </div>
+              `
+            : ""}
+          <div>
+            <ha-icon-button
+              label="Refresh"
+              icon="hass:refresh"
+              @click=${this._loadTraces}
+            ></ha-icon-button>
+            <ha-icon-button
+              .disabled=${!this._runId}
+              label="Download Trace"
+              icon="hass:download"
+              @click=${this._downloadTrace}
+            ></ha-icon-button>
           </div>
         </div>
 
@@ -108,7 +130,7 @@ export class HaAutomationTrace extends LitElement {
           : this._traces.length === 0
           ? "No traces found"
           : this._trace === undefined
-          ? "Loading…"
+          ? ""
           : html`
               <div class="main">
                 <div class="graph">
@@ -120,14 +142,6 @@ export class HaAutomationTrace extends LitElement {
 
                 <div class="details">
                   ${this._renderSelectedTraceInfo()}
-                  <div>
-                    <hat-trace
-                      .hass=${this.hass}
-                      .trace=${this._trace}
-                      .logbookEntries=${this._logbookEntries}
-                      .selectedPath=${this._selected?.path}
-                    ></hat-trace>
-                  </div>
                   ${this._renderSelectedConfig()}
                 </div>
               </div>
@@ -148,35 +162,71 @@ export class HaAutomationTrace extends LitElement {
   private _renderSelectedTraceInfo() {
     const paths = this._getPaths();
 
-    if (!this._selected?.path || !(this._selected.path in paths)) {
-      return "";
+    if (!this._selected?.path) {
+      return "Select a node on the left for more information.";
     }
 
-    let data: ActionTrace | ActionTrace[] = paths[this._selected.path];
+    // HACK: default choice node is not part of paths. We filter them out here by checking parent.
+    const pathParts = this._selected.path.split("/");
+    if (pathParts[pathParts.length - 1] === "default") {
+      const parentTraceInfo = paths[
+        pathParts.slice(0, pathParts.length - 1).join("/")
+      ] as ChooseActionTrace[];
 
-    if (Array.isArray(data) && data.length === 1) {
-      data = data[0];
+      if (parentTraceInfo && parentTraceInfo[0]?.result?.choice === "default") {
+        return "The default node was executed because no choices matched.";
+      }
     }
+
+    if (!(this._selected.path in paths)) {
+      return "This node was not executed and so no further trace information is available.";
+    }
+
+    const data: ActionTrace[] = paths[this._selected.path];
 
     return html`
       <div class="trace">
-        <b>Selected path:</b> ${this._selected.path}<br />
-        <pre>${safeDump(data)}</pre>
+        ${data.map((trace, idx) => {
+          const {
+            path,
+            timestamp,
+            result,
+            changed_variables,
+            ...rest
+          } = trace as any;
+
+          return html`
+            ${idx === 0 ? "" : `<p>Iteration ${idx + 1}</p>`} Executed:
+            ${formatDateTimeWithSeconds(
+              new Date(timestamp),
+              this.hass.language
+            )}<br />
+            ${result
+              ? html`Result:
+                  <pre>${safeDump(result)}</pre>`
+              : ""}
+            ${Object.keys(rest).length === 0
+              ? ""
+              : html`<pre>${safeDump(rest)}</pre>`}
+          `;
+        })}
       </div>
     `;
   }
 
   private _renderSelectedConfig() {
-    const paths = this._getPaths();
-
-    if (!this._selected?.path || !(this._selected.path in paths)) {
+    if (!this._selected?.path) {
       return "";
     }
     const config = getDataFromPath(this._trace!.config, this._selected.path);
     return html`
       <div class="config">
+        <h2>Config</h2>
         ${config
-          ? html`<pre>${safeDump(config)}</pre>`
+          ? html`<ha-code-editor
+              .value=${safeDump(config)}
+              readOnly
+            ></ha-code-editor>`
           : "Unable to find config"}
       </div>
     `;
@@ -225,6 +275,18 @@ export class HaAutomationTrace extends LitElement {
       );
       this._entityId = automation?.entity_id;
     }
+  }
+
+  private _pickOlderTrace() {
+    const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
+    this._runId = this._traces![curIndex + 1].run_id;
+    this._selected = undefined;
+  }
+
+  private _pickNewerTrace() {
+    const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
+    this._runId = this._traces![curIndex - 1].run_id;
+    this._selected = undefined;
   }
 
   private _pickTrace(ev) {
@@ -328,12 +390,16 @@ export class HaAutomationTrace extends LitElement {
           font-size: 20px;
           height: var(--header-height);
           padding: 0 16px;
-          pointer-events: none;
           background-color: var(--primary-background-color);
           font-weight: 400;
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
+        }
+
+        .toolbar > * {
+          display: flex;
+          align-items: center;
         }
 
         .main {
