@@ -275,7 +275,7 @@ export class QuickBar extends LitElement {
           >
         </span>
 
-        <span>${item.primaryText}</span>
+        <span class="command-text">${item.primaryText}</span>
         ${item.altText
           ? html`
               <span slot="secondary" class="item-text secondary"
@@ -619,6 +619,10 @@ export class QuickBar extends LitElement {
         .command-category.server_control {
           --ha-chip-background-color: var(--warning-color);
           --ha-chip-text-color: black;
+        }
+
+        span.command-text {
+          margin-left: 8px;
         }
 
         .uni-virtualizer-host {
