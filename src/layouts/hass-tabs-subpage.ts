@@ -89,9 +89,9 @@ class HassTabsSubpage extends LitElement {
         (page) =>
           html`
             <ha-tab
+              .hass=${this.hass}
               @click=${this._tabTapped}
               .path=${page.path}
-              .hass=${this.hass}
               .active=${page === activeTab}
               .narrow=${this.narrow}
               .name=${page.translationKey
@@ -229,10 +229,6 @@ class HassTabsSubpage extends LitElement {
         border-bottom: 1px solid var(--divider-color);
         padding: 0 16px;
         box-sizing: border-box;
-      }
-      a {
-        text-decoration: none;
-        color: inherit;
       }
       #tabbar {
         display: flex;
