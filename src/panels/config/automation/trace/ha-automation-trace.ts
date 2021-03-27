@@ -294,10 +294,6 @@ export class HaAutomationTrace extends LitElement {
     this._selected = undefined;
   }
 
-  private _pickPath(ev) {
-    this._selected = ev.detail.value;
-  }
-
   private _pickNode(ev) {
     this._selected = ev.detail;
   }
