@@ -127,7 +127,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _opened?: boolean;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) public comboBox!: HTMLElement;
 
   private _init = false;
 
@@ -319,7 +319,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       (changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this._comboBox as any).items = this._getAreas(
+      (this.comboBox as any).items = this._getAreas(
         this._areas!,
         this._devices!,
         this._entities!,

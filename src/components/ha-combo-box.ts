@@ -86,6 +86,10 @@ export class HaComboBox extends LitElement {
     });
   }
 
+  public get selectedItem() {
+    return (this._comboBox as any).selectedItem;
+  }
+
   protected render(): TemplateResult {
     return html`
       <vaadin-combo-box-light
