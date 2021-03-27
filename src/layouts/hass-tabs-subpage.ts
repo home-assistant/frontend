@@ -88,23 +88,23 @@ class HassTabsSubpage extends LitElement {
       return shownTabs.map(
         (page) =>
           html`
-            <a href=${page.path}>
-              <ha-tab
-                .hass=${this.hass}
-                .active=${page === activeTab}
-                .narrow=${this.narrow}
-                .name=${page.translationKey
-                  ? localizeFunc(page.translationKey)
-                  : page.name}
-              >
-                ${page.iconPath
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${page.iconPath}
-                    ></ha-svg-icon>`
-                  : html`<ha-icon slot="icon" .icon=${page.icon}></ha-icon>`}
-              </ha-tab>
-            </a>
+            <ha-tab
+              @click=${this._tabTapped}
+              .path=${page.path}
+              .hass=${this.hass}
+              .active=${page === activeTab}
+              .narrow=${this.narrow}
+              .name=${page.translationKey
+                ? localizeFunc(page.translationKey)
+                : page.name}
+            >
+              ${page.iconPath
+                ? html`<ha-svg-icon
+                    slot="icon"
+                    .path=${page.iconPath}
+                  ></ha-svg-icon>`
+                : html`<ha-icon slot="icon" .icon=${page.icon}></ha-icon>`}
+            </ha-tab>
           `
       );
     }
@@ -183,6 +183,10 @@ class HassTabsSubpage extends LitElement {
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
+  private _tabTapped(ev: Event): void {
+    navigate(this, (ev.currentTarget as any).path);
   }
 
   private _backTapped(): void {
