@@ -118,7 +118,7 @@ export class HaAutomationTracePathDetails extends LitElement {
       return html`
         ${data.length === 1 ? "" : html`<h3>Iteration ${idx + 1}</h3>`}
         Executed:
-        ${formatDateTimeWithSeconds(new Date(timestamp), this.hass.language)}<br />
+        ${formatDateTimeWithSeconds(new Date(timestamp), this.hass.locale)}<br />
         ${result
           ? html`Result:
               <pre>${safeDump(result)}</pre>`
