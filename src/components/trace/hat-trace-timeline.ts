@@ -179,7 +179,8 @@ class LogbookRenderer {
   }
 
   private _renderLogbookEntryHelper(entry: LogbookEntry) {
-    return html`${entry.name} (${entry.entity_id}) turned ${entry.state}<br />`;
+    return html`${entry.name} (${entry.entity_id})
+      ${entry.message || `turned ${entry.state}`}<br />`;
   }
 }
 
@@ -345,7 +346,7 @@ class ActionRenderer {
   }
 }
 
-@customElement("hat-trace")
+@customElement("hat-trace-timeline")
 export class HaAutomationTracer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -507,6 +508,6 @@ export class HaAutomationTracer extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hat-trace": HaAutomationTracer;
+    "hat-trace-timeline": HaAutomationTracer;
   }
 }

@@ -29,6 +29,10 @@ import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_da
 import { repeat } from "lit-html/directives/repeat";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "./ha-automation-trace-path-details";
+import "./ha-automation-trace-timeline";
+import "./ha-automation-trace-config";
+import { classMap } from "lit-html/directives/class-map";
+import { traceTabStyles } from "./styles";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -56,10 +60,17 @@ export class HaAutomationTrace extends LitElement {
 
   @internalProperty() private _logbookEntries?: LogbookEntry[];
 
+  @internalProperty() private _view: "details" | "config" | "timeline" =
+    "details";
+
   protected render(): TemplateResult {
     const stateObj = this._entityId
       ? this.hass.states[this._entityId]
       : undefined;
+
+    const trackedNodes = this.shadowRoot!.querySelector(
+      "hat-script-graph"
+    )?.getTrackedNodes();
 
     return html`
       <hass-tabs-subpage
@@ -136,13 +147,54 @@ export class HaAutomationTrace extends LitElement {
                   ></hat-script-graph>
                 </div>
 
-                <div class="details">
-                  <ha-automation-trace-path-details
-                    .hass=${this.hass}
-                    .trace=${this._trace}
-                    .selected=${this._selected}
-                    .logbookEntries=${this._logbookEntries}
-                  ></ha-automation-trace-path-details>
+                <div class="info">
+                  <div class="tabs top">
+                    ${[
+                      ["details", "Step Details"],
+                      ["timeline", "Trace Timeline"],
+                      ["config", "Automation Config"],
+                    ].map(
+                      ([view, label]) => html`
+                        <div
+                          .view=${view}
+                          class=${classMap({ active: this._view === view })}
+                          @click=${this._showTab}
+                        >
+                          ${label}
+                        </div>
+                      `
+                    )}
+                  </div>
+                  ${this._selected === undefined ||
+                  this._logbookEntries === undefined ||
+                  trackedNodes === undefined
+                    ? ""
+                    : this._view === "details"
+                    ? html`
+                        <ha-automation-trace-path-details
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                          .selected=${this._selected}
+                          .logbookEntries=${this._logbookEntries}
+                          .trackedNodes=${trackedNodes}
+                        ></ha-automation-trace-path-details>
+                      `
+                    : this._view === "config"
+                    ? html`
+                        <ha-automation-trace-config
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                        ></ha-automation-trace-config>
+                      `
+                    : html`
+                        <ha-automation-trace-timeline
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                          .logbookEntries=${this._logbookEntries}
+                          .selected=${this._selected}
+                          @value-changed=${this._timelinePathPicked}
+                        ></ha-automation-trace-timeline>
+                      `}
                 </div>
               </div>
             `}
@@ -293,9 +345,22 @@ export class HaAutomationTrace extends LitElement {
     aEl.click();
   }
 
+  private _showTab(ev) {
+    this._view = (ev.target as any).view;
+  }
+
+  private _timelinePathPicked(ev) {
+    const path = ev.detail.value;
+    const nodes = this.shadowRoot!.querySelector(
+      "hat-script-graph"
+    )!.getTrackedNodes();
+    this._selected = nodes[path].nodeInfo;
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
+      traceTabStyles,
       css`
         .toolbar {
           display: flex;
@@ -317,17 +382,18 @@ export class HaAutomationTrace extends LitElement {
         }
 
         .main {
+          height: calc(100% - 56px);
           display: flex;
-          background-color: var(--ha-card-background);
+          background-color: var(--card-background-color);
         }
 
         .graph {
           border-right: 1px solid var(--divider-color);
         }
 
-        .details {
+        .info {
           flex: 1;
-          padding: 16px;
+          background-color: var(--card-background-color);
         }
       `,
     ];
