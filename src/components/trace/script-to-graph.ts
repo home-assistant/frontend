@@ -18,6 +18,7 @@ import memoizeOne from "memoize-one";
 import { Condition } from "../../data/automation";
 import { Action, ChooseAction, RepeatAction } from "../../data/script";
 import {
+  ActionTrace,
   AutomationTraceExtended,
   ChooseActionTrace,
   ChooseChoiceActionTrace,
@@ -114,19 +115,14 @@ export class ActionHandler {
     ) {
       return [];
     }
-    return this.trace.config.condition.map((condition, idx) => {
-      const path = `condition/${idx}`;
-      const nodeInfo: NodeInfo = { path, config: condition };
-      // For now we render each icon with TRUE
-      // But we should look up result in trace.
-      return {
-        icon: ICONS.TRUE,
-        nodeInfo,
-        clickCallback: () => this._selectNode(nodeInfo),
-        isActive: path === this.selected,
-        isTracked: this.trace && path in this.trace.condition_trace,
-      };
-    });
+    return this.trace.config.condition.map((condition, idx) =>
+      this._createConditionNode(
+        "condition/",
+        this.trace?.condition_trace,
+        idx,
+        condition
+      )
+    );
   }
 
   _updateAction(idx: number, action) {
@@ -199,43 +195,13 @@ export class ActionHandler {
   }
 
   SPECIAL: Record<string, (idx: number, action: any) => TreeNode> = {
-    condition: (idx, action: Condition): TreeNode => {
-      const path = `${this.pathPrefix}${idx}`;
-      let result: boolean | undefined;
-
-      if (this.trace?.action_trace && path in this.trace.action_trace) {
-        const conditionResult = this.trace.action_trace[
-          path
-        ] as ConditionTrace[];
-        result = conditionResult[0].result.result;
-      }
-
-      const nodeInfo: NodeInfo = {
-        path,
-        config: action,
-        update: (conf) => this._updateAction(idx, conf),
-      };
-
-      return {
-        icon: ICONS.condition,
-        nodeInfo,
-        clickCallback: () => this._selectNode(nodeInfo),
-        isActive: path === this.selected,
-        isTracked: this.trace && path in this.trace.action_trace,
-        children: [
-          {
-            icon: ICONS.TRUE,
-            isActive: false,
-            isTracked: result === true,
-          },
-          {
-            icon: ICONS.FALSE,
-            isActive: false,
-            isTracked: result === false,
-          },
-        ],
-      };
-    },
+    condition: (idx, action: Condition): TreeNode =>
+      this._createConditionNode(
+        this.pathPrefix,
+        this.trace?.action_trace,
+        idx,
+        action
+      ),
 
     repeat: (idx, action: RepeatAction): TreeNode => {
       let seq: Array<Action | NoAction> = action.repeat.sequence;
@@ -389,4 +355,51 @@ export class ActionHandler {
       };
     },
   };
+
+  private _createConditionNode(
+    pathPrefix: string,
+    tracePaths: Record<string, ActionTrace[]> | undefined,
+    idx: number,
+    action: Condition
+  ): TreeNode {
+    const path = `${pathPrefix}${idx}`;
+    let result: boolean | undefined;
+    let isTracked = false;
+
+    if (tracePaths && path in tracePaths) {
+      const conditionResult = tracePaths[path] as ConditionTrace[];
+      result = conditionResult[0].result.result;
+      isTracked = true;
+    }
+
+    const nodeInfo: NodeInfo = {
+      path,
+      config: action,
+      update: (conf) => this._updateAction(idx, conf),
+    };
+
+    const isActive = path === this.selected;
+
+    return {
+      icon: ICONS.condition,
+      nodeInfo,
+      clickCallback: () => this._selectNode(nodeInfo),
+      isActive,
+      isTracked,
+      children: [
+        {
+          icon: ICONS.TRUE,
+          clickCallback: () => this._selectNode(nodeInfo),
+          isActive,
+          isTracked: result === true,
+        },
+        {
+          icon: ICONS.FALSE,
+          clickCallback: () => this._selectNode(nodeInfo),
+          isActive,
+          isTracked: result === false,
+        },
+      ],
+    };
+  }
 }

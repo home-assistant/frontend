@@ -74,7 +74,7 @@ class HatScriptGraph extends LitElement {
 
     for (const node of bfsIterateTreeNodes(actionHandler.createGraph())) {
       if (pathMatched) {
-        if (node.isTracked) {
+        if (node.isTracked && node.nodeInfo) {
           selected = node.nodeInfo;
           break;
         }

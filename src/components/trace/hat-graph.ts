@@ -361,11 +361,11 @@ class HatGraph extends LitElement {
         stroke-width: 3px;
         fill: white;
       }
-      circle:hover {
-        stroke: var(--hover-clr);
-      }
       .click {
         cursor: pointer;
+      }
+      .click:hover {
+        stroke: var(--hover-clr);
       }
       .track {
         stroke: var(--track-clr);
