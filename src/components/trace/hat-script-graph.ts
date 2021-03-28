@@ -2,13 +2,12 @@ import { html, LitElement, property, customElement } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { AutomationTraceExtended } from "../../data/trace";
-import "./hat-graph";
-import { ActionHandler, SelectParams } from "./script-to-graph";
+import { bfsIterateTreeNodes, NodeInfo } from "./hat-graph";
+import { ActionHandler } from "./script-to-graph";
 
 declare global {
   interface HASSDomEvents {
-    "graph-node-selected": SelectParams;
-    change: undefined;
+    "graph-node-selected": NodeInfo;
   }
 }
 
@@ -21,10 +20,10 @@ class HatScriptGraph extends LitElement {
       trace.config.action,
       false,
       undefined,
-      (params) => {
+      (nodeInfo) => {
         // eslint-disable-next-line no-console
-        console.log(params);
-        fireEvent(this, "graph-node-selected", params);
+        console.log(nodeInfo);
+        fireEvent(this, "graph-node-selected", nodeInfo);
         this.requestUpdate();
       },
       [],
@@ -37,7 +36,58 @@ class HatScriptGraph extends LitElement {
       return html``;
     }
     const actionHandler = this.getActionHandler(this.trace);
-    return html`<hat-graph .tree=${actionHandler.graph}></hat-graph>`;
+    return html`<hat-graph .tree=${actionHandler.createGraph()}></hat-graph>`;
+  }
+
+  public selectPath(path: string) {
+    const actionHandler = this.getActionHandler(this.trace!);
+    let selected: NodeInfo | undefined;
+
+    for (const node of actionHandler.createGraph()) {
+      if (node.nodeInfo.path === path) {
+        selected = node.nodeInfo;
+        break;
+      }
+    }
+
+    actionHandler.selected = selected?.idx || [];
+    this.requestUpdate();
+  }
+
+  public getNodes() {
+    if (!this.trace) {
+      return [];
+    }
+    return Array.from(
+      bfsIterateTreeNodes(this.getActionHandler(this.trace).createGraph())
+    );
+  }
+
+  /**
+   * Select the next trackced node.
+   * @param path Optional path. Will select next node after this one.
+   */
+  public selectNextTrackedNode(path?: string) {
+    const actionHandler = this.getActionHandler(this.trace!);
+    let selected: NodeInfo | undefined;
+    let pathMatched = path === undefined;
+
+    for (const node of bfsIterateTreeNodes(actionHandler.createGraph())) {
+      if (pathMatched) {
+        if (node.isTracked) {
+          selected = node.nodeInfo;
+          break;
+        }
+        continue;
+      }
+
+      if (node.nodeInfo.path === path) {
+        pathMatched = true;
+      }
+    }
+
+    actionHandler.selected = selected?.idx || [];
+    this.requestUpdate();
   }
 }
 

@@ -20,15 +20,39 @@ const extractFirstValue = <T>(val: ValueOrArray<T>): T | undefined =>
 const extractLastValue = <T>(val: ValueOrArray<T>): T | undefined =>
   Array.isArray(val) ? extractLastValue(val[val.length - 1]) : val;
 
+export interface NodeInfo {
+  idx: Array<string | number>;
+  path: string;
+  config: any;
+  update?: (conf: any) => void;
+}
+
 export interface TreeNode {
   icon: string;
   end?: boolean;
+  nodeInfo: NodeInfo;
   children?: Array<ValueOrArray<TreeNode>>;
-  clickCallback?: (ev: MouseEvent) => void;
+  clickCallback?: () => void;
   addCallback?: () => void;
   isActive: boolean;
   isTracked: boolean | undefined;
   isNew?: boolean;
+}
+
+export function* bfsIterateTreeNodes(
+  nodeOrNodes: ValueOrArray<TreeNode>
+): IterableIterator<TreeNode> {
+  if (Array.isArray(nodeOrNodes)) {
+    for (const node of nodeOrNodes) {
+      yield* bfsIterateTreeNodes(node);
+    }
+    return;
+  }
+  yield nodeOrNodes;
+
+  if (nodeOrNodes.children) {
+    yield* bfsIterateTreeNodes(nodeOrNodes.children);
+  }
 }
 
 interface RenderedTree {

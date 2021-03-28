@@ -14,6 +14,7 @@ import {
   mdiCheckboxBlankOutline,
   mdiAsterisk,
 } from "@mdi/js";
+import memoizeOne from "memoize-one";
 import { Condition } from "../../data/automation";
 import { Action, ChooseAction, RepeatAction } from "../../data/script";
 import {
@@ -23,7 +24,7 @@ import {
   ConditionTrace,
 } from "../../data/trace";
 
-import { TreeNode } from "./hat-graph";
+import { NodeInfo, TreeNode } from "./hat-graph";
 
 const ICONS = {
   new: mdiAsterisk,
@@ -57,19 +58,10 @@ const OPTIONS = [
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface NoAction {}
 
-type SomeConfig = any;
-
 const cmpLists = (a: Array<unknown>, b: Array<unknown>) =>
   a.length === b.length && a.every((itm, idx) => b[idx] === itm);
 
 type Index = Array<string | number>;
-
-export interface SelectParams {
-  idx: Index;
-  path?: string;
-  config: SomeConfig;
-  update: (action: SomeConfig) => void;
-}
 
 export class ActionHandler {
   public pathPrefix: string;
@@ -79,7 +71,7 @@ export class ActionHandler {
     /**
      * Do we allow adding new nodes
      */
-    public allowAdd: boolean,
+    private allowAdd: boolean,
     /**
      * Called when the data has changed
      */
@@ -87,13 +79,15 @@ export class ActionHandler {
     /**
      * Called when a node is clicked.
      */
-    private selectCallback?: (params: SelectParams) => void,
+    private selectCallback?: (params: NodeInfo) => void,
 
     public selected: Index = [],
 
     public trace?: AutomationTraceExtended,
 
-    pathPrefix?: string
+    pathPrefix?: string,
+
+    private idxPrefix: Index = []
   ) {
     if (pathPrefix !== undefined) {
       this.pathPrefix = pathPrefix;
@@ -104,11 +98,15 @@ export class ActionHandler {
     }
   }
 
-  get graph() {
-    return this._renderConditions().concat(
-      this.actions.map((action, idx) => this._createTreeNode(idx, action))
-    );
+  createGraph(): TreeNode[] {
+    return this._createGraph(this.actions, this.selected, this.trace);
   }
+
+  _createGraph = memoizeOne((_actions, _selected, _trace) =>
+    this._renderConditions().concat(
+      this.actions.map((action, idx) => this._createTreeNode(idx, action))
+    )
+  );
 
   _renderConditions(): TreeNode[] {
     // action/ = default pathPrefix for trace-based actions
@@ -118,19 +116,13 @@ export class ActionHandler {
     return this.trace.config.condition.map((condition, idx) => {
       const fullIdx = ["condition", idx];
       const path = `condition/${idx}`;
+      const nodeInfo: NodeInfo = { idx: fullIdx, path, config: condition };
       // For now we render each icon with TRUE
       // But we should look up result in trace.
       return {
         icon: ICONS.TRUE,
-        clickCallback: () =>
-          this._selectNode({
-            idx: fullIdx,
-            path,
-            config: condition,
-            update: (_config) => {
-              alert("Updating conditions is not supported yet");
-            },
-          }),
+        nodeInfo,
+        clickCallback: () => this._selectNode(nodeInfo),
         isActive: cmpLists(this.selected, fullIdx),
         isTracked: this.trace && path in this.trace.condition_trace,
       };
@@ -152,16 +144,17 @@ export class ActionHandler {
       this.updateCallback(this.actions);
     }
     this._selectNode({
-      idx: [idx],
+      idx: [...this.idxPrefix, idx],
+      path: `${this.pathPrefix}${idx}`,
       config: {},
       update: (a) => this._updateAction(idx, a),
     });
   }
 
-  _selectNode(params: SelectParams) {
-    this.selected = params.idx;
+  _selectNode(nodeInfo: NodeInfo) {
+    this.selected = nodeInfo.idx;
     if (this.selectCallback) {
-      this.selectCallback(params);
+      this.selectCallback(nodeInfo);
     }
   }
 
@@ -181,15 +174,17 @@ export class ActionHandler {
       node = this.SPECIAL[_type](idx, action);
     } else {
       const path = `${this.pathPrefix}${idx}`;
+      const nodeInfo: NodeInfo = {
+        idx: [...this.idxPrefix, idx],
+        path,
+        config: action,
+        update: (a) => this._updateAction(idx, a),
+      };
       node = {
         icon: ICONS[_type],
+        nodeInfo,
         clickCallback: () => {
-          this._selectNode({
-            idx: [idx],
-            path,
-            config: action,
-            update: (a) => this._updateAction(idx, a),
-          });
+          this._selectNode(nodeInfo);
         },
         isActive: selected,
         isTracked: this.trace && path in this.trace.action_trace,
@@ -207,7 +202,7 @@ export class ActionHandler {
   }
 
   SPECIAL: Record<string, (idx: number, action: any) => TreeNode> = {
-    condition: (idx, action: Condition) => {
+    condition: (idx, action: Condition): TreeNode => {
       /*
         1: condition root
         2: positive case
@@ -225,39 +220,43 @@ export class ActionHandler {
         result = conditionResult[0].result.result;
       }
 
+      const conditionNodeInfo: NodeInfo = {
+        idx: [...this.idxPrefix, idx, 1],
+        path,
+        config: action,
+        update: (conf) => this._updateAction(idx, conf),
+      };
+      const conditionNodeTrueInfo = {
+        idx: [...this.idxPrefix, idx, 2],
+        path,
+        config: action,
+        update: (conf) => this._updateAction(idx, conf),
+      };
+      const conditionNodeFalseInfo = {
+        idx: [...this.idxPrefix, idx, 3],
+        path,
+        config: action,
+        update: (conf) => this._updateAction(idx, conf),
+      };
+
       return {
         icon: ICONS.condition,
-        clickCallback: () =>
-          this._selectNode({
-            idx: [idx, 1],
-            path,
-            config: action,
-            update: (conf) => this._updateAction(idx, conf),
-          }),
+        nodeInfo: conditionNodeInfo,
+        clickCallback: () => this._selectNode(conditionNodeInfo),
         isActive: isSelected,
         isTracked: this.trace && path in this.trace.action_trace,
         children: [
           {
             icon: ICONS.TRUE,
-            clickCallback: () =>
-              this._selectNode({
-                idx: [idx, 2],
-                path,
-                config: action,
-                update: (conf) => this._updateAction(idx, conf),
-              }),
+            nodeInfo: conditionNodeTrueInfo,
+            clickCallback: () => this._selectNode(conditionNodeTrueInfo),
             isActive: isSelected && this.selected[1] === 2,
             isTracked: result === true,
           },
           {
             icon: ICONS.FALSE,
-            clickCallback: () =>
-              this._selectNode({
-                idx: [idx, 3],
-                path,
-                config: action,
-                update: (conf) => this._updateAction(idx, conf),
-              }),
+            nodeInfo: conditionNodeFalseInfo,
+            clickCallback: () => this._selectNode(conditionNodeFalseInfo),
             isActive: isSelected && this.selected[1] === 3,
             isTracked: result === false,
           },
@@ -265,7 +264,7 @@ export class ActionHandler {
       };
     },
 
-    repeat: (idx, action: RepeatAction) => {
+    repeat: (idx, action: RepeatAction): TreeNode => {
       let seq: Array<Action | NoAction> = action.repeat.sequence;
       if (!seq || !seq.length) {
         seq = [{}];
@@ -274,28 +273,24 @@ export class ActionHandler {
       const isSelected = this.selected[0] === idx;
       const path = `${this.pathPrefix}${idx}`;
       const isTracked = this.trace && path in this.trace.action_trace;
+      const nodeInfo: NodeInfo = {
+        idx: [...this.idxPrefix, idx, -1],
+        path,
+        config: action,
+        update: (conf) => this._updateAction(idx, conf),
+      };
 
       return {
         icon: ICONS.repeat,
-        clickCallback: () =>
-          this._selectNode({
-            idx: [idx, -1],
-            path,
-            config: action,
-            update: (conf) => this._updateAction(idx, conf),
-          }),
+        nodeInfo,
+        clickCallback: () => this._selectNode(nodeInfo),
         isActive: isSelected,
         isTracked,
         children: [
           {
             icon: ICONS.repeatReturn,
-            clickCallback: () =>
-              this._selectNode({
-                idx: [idx, -1],
-                path,
-                config: action,
-                update: (conf) => this._updateAction(idx, conf),
-              }),
+            nodeInfo,
+            clickCallback: () => this._selectNode(nodeInfo),
             isActive: isSelected && this.selected[1] === -1,
             isTracked,
           },
@@ -306,24 +301,21 @@ export class ActionHandler {
               action.repeat.sequence = a as Action[];
               this._updateAction(idx, action);
             },
-            (params) =>
-              this._selectNode({
-                ...params,
-                idx: [idx as number | string].concat(params.idx),
-              }),
+            (params) => this._selectNode(params),
             isSelected &&
             this.selected[1] !== undefined &&
             this.selected[1] !== -1
               ? this.selected.slice(1)
               : [],
             this.trace,
-            `${this.pathPrefix}${idx}/sequence/`
-          ).graph,
+            `${this.pathPrefix}${idx}/sequence/`,
+            [...this.idxPrefix, idx]
+          ).createGraph(),
         ],
       };
     },
 
-    choose: (idx, action: ChooseAction) => {
+    choose: (idx, action: ChooseAction): TreeNode => {
       /*
       Special paths:
       -1 root of the 'choose'
@@ -352,20 +344,21 @@ export class ActionHandler {
             ] as ChooseChoiceActionTrace[];
             chosen = choiceResult[0].result.result;
           }
+          const choiceNodeInfo: NodeInfo = {
+            idx: [...this.idxPrefix, idx, choiceIdx],
+            path: choicePath,
+            config: b,
+            update: (conf) => {
+              action.choose[choiceIdx] = conf;
+              this._updateAction(idx, action);
+            },
+          };
 
           return [
             {
               icon: ICONS.chooseChoice,
-              clickCallback: () =>
-                this._selectNode({
-                  idx: [idx, choiceIdx],
-                  path: choicePath,
-                  config: b,
-                  update: (conf) => {
-                    action.choose[choiceIdx] = conf;
-                    this._updateAction(idx, action);
-                  },
-                }),
+              nodeInfo: choiceNodeInfo,
+              clickCallback: () => this._selectNode(choiceNodeInfo),
               isActive: isChoiceSelected,
               isTracked: chosen,
             },
@@ -378,15 +371,13 @@ export class ActionHandler {
                 this._updateAction(idx, action);
               },
               (params) => {
-                this._selectNode({
-                  ...params,
-                  idx: [idx as number | string, choiceIdx].concat(params.idx),
-                });
+                this._selectNode(params);
               },
               isChoiceSelected ? this.selected.slice(2) : [],
               this.trace,
-              `${this.pathPrefix}${idx}/choose/${choiceIdx}/sequence/`
-            ).graph,
+              `${this.pathPrefix}${idx}/choose/${choiceIdx}/sequence/`,
+              [...this.idxPrefix, idx, choiceIdx]
+            ).createGraph(),
           ];
         }
       );
@@ -400,17 +391,18 @@ export class ActionHandler {
         };
 
         const isDefaultSelected = isSelected && this.selected[1] === -2;
+        const defaultNodeInfo: NodeInfo = {
+          idx: [...this.idxPrefix, idx, -2],
+          path: `${this.pathPrefix}${idx}/default`,
+          config: def,
+          update: updateDefault,
+        };
 
         children.push([
           {
             icon: ICONS.chooseDefault,
-            clickCallback: () =>
-              this._selectNode({
-                idx: [idx, -2],
-                path: `${this.pathPrefix}${idx}/default`,
-                config: def,
-                update: updateDefault,
-              }),
+            nodeInfo: defaultNodeInfo,
+            clickCallback: () => this._selectNode(defaultNodeInfo),
             isActive: isDefaultSelected,
             isTracked: choice === "default",
           },
@@ -418,27 +410,26 @@ export class ActionHandler {
             def,
             this.allowAdd,
             updateDefault,
-            (params) =>
-              this._selectNode({
-                ...params,
-                idx: [idx as number | string, -2].concat(params.idx),
-              }),
+            (params) => this._selectNode(params),
             isDefaultSelected ? this.selected.slice(2) : [],
             this.trace,
-            `${this.pathPrefix}${idx}/default/`
-          ).graph,
+            `${this.pathPrefix}${idx}/default/`,
+            [...this.idxPrefix, idx, -2]
+          ).createGraph(),
         ]);
       }
 
+      const chooseNodeInfo: NodeInfo = {
+        idx: [...this.idxPrefix, idx, -1],
+        path,
+        config: action,
+        update: (conf) => this._updateAction(idx, conf),
+      };
+
       return {
         icon: ICONS.choose,
-        clickCallback: () =>
-          this._selectNode({
-            idx: [idx, -1],
-            path,
-            config: action,
-            update: (conf) => this._updateAction(idx, conf),
-          }),
+        nodeInfo: chooseNodeInfo,
+        clickCallback: () => this._selectNode(chooseNodeInfo),
         isActive: isSelected,
         isTracked: choice !== undefined,
         children,

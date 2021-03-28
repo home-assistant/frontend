@@ -1,4 +1,3 @@
-import { safeDump } from "js-yaml";
 import {
   css,
   CSSResult,
@@ -11,18 +10,14 @@ import {
 } from "lit-element";
 import { AutomationEntity } from "../../../../data/automation";
 import {
-  ActionTrace,
   AutomationTrace,
   AutomationTraceExtended,
-  ChooseActionTrace,
-  getDataFromPath,
   loadTrace,
   loadTraces,
 } from "../../../../data/trace";
-import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-code-editor";
 import "../../../../components/trace/hat-script-graph";
+import type { NodeInfo } from "../../../../components/trace/hat-graph";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
 import { configSections } from "../../ha-panel-config";
@@ -33,7 +28,7 @@ import {
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { repeat } from "lit-html/directives/repeat";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { SelectParams } from "../../../../components/trace/script-to-graph";
+import "./ha-automation-trace-path-details";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -55,7 +50,7 @@ export class HaAutomationTrace extends LitElement {
 
   @internalProperty() private _runId?: string;
 
-  @internalProperty() private _selected?: SelectParams;
+  @internalProperty() private _selected?: NodeInfo;
 
   @internalProperty() private _trace?: AutomationTraceExtended;
 
@@ -141,94 +136,16 @@ export class HaAutomationTrace extends LitElement {
                 </div>
 
                 <div class="details">
-                  ${this._renderSelectedTraceInfo()}
-                  ${this._renderSelectedConfig()}
+                  <ha-automation-trace-path-details
+                    .hass=${this.hass}
+                    .trace=${this._trace}
+                    .selected=${this._selected}
+                    .logbookEntries=${this._logbookEntries}
+                  ></ha-automation-trace-path-details>
                 </div>
               </div>
             `}
       </hass-tabs-subpage>
-    `;
-  }
-
-  private _getPaths() {
-    if (!this._selected?.path) {
-      return {};
-    }
-    return this._selected.path.split("/")[0] === "condition"
-      ? this._trace!.condition_trace
-      : this._trace!.action_trace;
-  }
-
-  private _renderSelectedTraceInfo() {
-    const paths = this._getPaths();
-
-    if (!this._selected?.path) {
-      return "Select a node on the left for more information.";
-    }
-
-    // HACK: default choice node is not part of paths. We filter them out here by checking parent.
-    const pathParts = this._selected.path.split("/");
-    if (pathParts[pathParts.length - 1] === "default") {
-      const parentTraceInfo = paths[
-        pathParts.slice(0, pathParts.length - 1).join("/")
-      ] as ChooseActionTrace[];
-
-      if (parentTraceInfo && parentTraceInfo[0]?.result?.choice === "default") {
-        return "The default node was executed because no choices matched.";
-      }
-    }
-
-    if (!(this._selected.path in paths)) {
-      return "This node was not executed and so no further trace information is available.";
-    }
-
-    const data: ActionTrace[] = paths[this._selected.path];
-
-    return html`
-      <div class="trace">
-        ${data.map((trace, idx) => {
-          const {
-            path,
-            timestamp,
-            result,
-            changed_variables,
-            ...rest
-          } = trace as any;
-
-          return html`
-            ${idx === 0 ? "" : `<p>Iteration ${idx + 1}</p>`} Executed:
-            ${formatDateTimeWithSeconds(
-              new Date(timestamp),
-              this.hass.language
-            )}<br />
-            ${result
-              ? html`Result:
-                  <pre>${safeDump(result)}</pre>`
-              : ""}
-            ${Object.keys(rest).length === 0
-              ? ""
-              : html`<pre>${safeDump(rest)}</pre>`}
-          `;
-        })}
-      </div>
-    `;
-  }
-
-  private _renderSelectedConfig() {
-    if (!this._selected?.path) {
-      return "";
-    }
-    const config = getDataFromPath(this._trace!.config, this._selected.path);
-    return html`
-      <div class="config">
-        <h2>Config</h2>
-        ${config
-          ? html`<ha-code-editor
-              .value=${safeDump(config)}
-              readOnly
-            ></ha-code-editor>`
-          : "Unable to find config"}
-      </div>
     `;
   }
 
