@@ -111,7 +111,8 @@ export class ActionHandler {
         this._createTreeNode(
           idx,
           action,
-          this.end ?? this.actions.length === idx + 1
+          this.actions.length === idx + 1 &&
+            (this.end === undefined || this.end === true)
         )
       )
     )
@@ -230,7 +231,7 @@ export class ActionHandler {
 
       const repeats =
         this.trace &&
-        this.trace.action_trace[`${path}/repeat/sequence/0`].length;
+        this.trace.action_trace[`${path}/repeat/sequence/0`]?.length;
 
       const nodeInfo: NodeInfo = {
         path,
