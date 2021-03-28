@@ -28,6 +28,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
 ) =>
   class extends superClass {
     protected initializeHass(auth: Auth, conn: Connection) {
+      const language = getLocalLanguage();
+
       this.hass = {
         auth,
         connection: conn,
@@ -40,10 +42,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         user: null as any,
         panelUrl: (this as any)._panelUrl,
         defaultPanel: DEFAULT_PANEL,
-        language: getLocalLanguage(),
+        language,
         selectedLanguage: null,
         locale: {
-          language: getLocalLanguage(),
+          language,
           number_format: NumberFormat.language,
         },
         resources: null as any,

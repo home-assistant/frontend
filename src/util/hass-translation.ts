@@ -60,7 +60,6 @@ export async function getUserLocale(
     }
   }
   return {
-    language,
     number_format,
   };
 }
