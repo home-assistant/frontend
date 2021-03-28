@@ -120,7 +120,7 @@ export class HaAutomationTrace extends LitElement {
             <ha-icon-button
               label="Refresh"
               icon="hass:refresh"
-              @click=${this._loadTraces}
+              @click=${() => this._loadTraces()}
             ></ha-icon-button>
             <ha-icon-button
               .disabled=${!this._runId}
