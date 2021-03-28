@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { HaFormSchema } from "../components/ha-form/ha-form";
 import { HomeAssistant } from "../types";
 
 export interface ZHAEntityReference extends HassEntity {
@@ -73,6 +74,11 @@ export interface ZHAGroup {
   name: string;
   group_id: number;
   members: ZHADeviceEndpoint[];
+}
+
+export interface ZHAConfiguration {
+  data: Record<string, Record<string, unknown>>;
+  schemas: Record<string, HaFormSchema[]>;
 }
 
 export interface ZHAGroupMember {
@@ -282,7 +288,9 @@ export const addGroup = (
     members: membersToAdd,
   });
 
-export const fetchZHAConfiguration = (hass: HomeAssistant): Promise<any> =>
+export const fetchZHAConfiguration = (
+  hass: HomeAssistant
+): Promise<ZHAConfiguration> =>
   hass.callWS({
     type: "zha/configuration",
   });

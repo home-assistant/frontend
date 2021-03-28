@@ -25,6 +25,7 @@ import "../../../../../components/ha-form/ha-form";
 import {
   fetchZHAConfiguration,
   updateZHAConfiguration,
+  ZHAConfiguration,
 } from "../../../../../data/zha";
 
 export const zhaTabs: PageNavigation[] = [
@@ -45,8 +46,6 @@ export const zhaTabs: PageNavigation[] = [
   },
 ];
 
-const ZHA_OPTIONS = "zha_options";
-
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
@@ -59,7 +58,7 @@ class ZHAConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() private _configuration?: any;
+  @property() private _configuration?: ZHAConfiguration;
 
   private _firstUpdatedCalled = false;
 
@@ -122,15 +121,19 @@ class ZHAConfigDashboard extends LitElement {
         >
           <div class="card-content">
             ${this._configuration
-              ? html`<ha-form
-                  .schema=${this._configuration.schemas.zha_options}
-                  .data=${this._configuration.data.zha_options}
-                  @value-changed=${this._optionsDataChanged}
-                  .computeLabel=${this._computeLabelCallback(
-                    this.hass.localize,
-                    ZHA_OPTIONS
-                  )}
-                ></ha-form>`
+              ? Object.entries(this._configuration.schemas).map(
+                  ([section, schema]) => html`<ha-form
+                    .schema=${schema}
+                    .data=${this._configuration
+                      ? this._configuration.data[section]
+                      : {}}
+                    @value-changed=${this._dataChangedCallback(section)}
+                    .computeLabel=${this._computeLabelCallback(
+                      this.hass.localize,
+                      section
+                    )}
+                  ></ha-form>`
+                )
               : ""}
           </div>
           <div class="card-actions">
@@ -154,21 +157,22 @@ class ZHAConfigDashboard extends LitElement {
     `;
   }
 
-  private async _fetchConfiguration(): Promise<any> {
+  private async _fetchConfiguration(): Promise<void> {
     this._configuration = await fetchZHAConfiguration(this.hass!);
   }
 
-  private _optionsDataChanged(ev: CustomEvent) {
-    this._configuration.data.zha_options = ev.detail.value;
+  private _dataChangedCallback(section: string) {
+    return (ev: CustomEvent) => {
+      this._configuration!.data[section] = ev.detail.value;
+    };
   }
 
   private async _updateConfiguration(): Promise<any> {
-    const sections = ["zha_options"];
     const data = {};
-    for (const section of sections) {
+    for (const section of Object.keys(this._configuration!.schemas)) {
       data[section] = {};
-      const sectionData = this._configuration.data[section];
-      const sectionSchema = this._configuration.schemas[section];
+      const sectionData = this._configuration!.data[section];
+      const sectionSchema = this._configuration!.schemas[section];
       for (const field of sectionSchema) {
         if (
           field.name in sectionData &&
