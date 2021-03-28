@@ -93,7 +93,7 @@ class HatGraph extends LitElement {
       <g style="pointer-events: none" transform="translate(${x - 12} ${
       y + this.nodeSize / 2 - 12
     })">
-        <path d="${node.icon}"/>
+        ${node.icon ? svg`<path d="${node.icon}"/>` : ""}
       </g>
     `;
   }
@@ -186,13 +186,18 @@ class HatGraph extends LitElement {
         childTrees.reduce((a, i) => a + i.width, 0) +
         this.nodeSeparation * (tree.children.length - 1);
       const offsets = childTrees.map(
-        ((sum) => (value) => sum + value.width + this.nodeSeparation)(0)
+        ((sum) => (value) => {
+          return sum + value.width + this.nodeSeparation;
+        })(0)
       );
 
       let bottomConnectors = false;
 
+      let prevOffset = 0;
+
       for (const [idx, child] of childTrees.entries()) {
-        const x = -width / 2 + (idx ? offsets[idx - 1] : 0) + child.width / 2;
+        prevOffset += idx ? offsets[idx - 1] : 0;
+        const x = -width / 2 + prevOffset + child.width / 2;
         // Draw top connectors
         pieces.push(
           this._draw_connector(
@@ -206,7 +211,7 @@ class HatGraph extends LitElement {
 
         const endNode = extractLastValue(tree.children[idx])!;
 
-        if (endNode.end !== false) {
+        if (endNode.end !== true) {
           // Draw bottom fill
           pieces.push(
             this._draw_connector(
@@ -222,12 +227,13 @@ class HatGraph extends LitElement {
           pieces.push(
             this._draw_connector(
               x,
-              this.nodeSeparation + height,
+              this.nodeSeparation + height - 1,
               0,
               this.nodeSeparation +
                 height +
                 this.nodeSize / 2 +
-                this.nodeSeparation,
+                this.nodeSeparation -
+                1,
               child.lastNodeTracked && child.nextPartTracked
             )
           );
@@ -254,13 +260,13 @@ class HatGraph extends LitElement {
           height,
           0,
           height + this.nodeSeparation,
-          nextPartTracked
+          tree.isTracked && nextPartTracked
         )
       );
       pieces.push(this._draw_new_node(0, height + this.nodeSeparation, tree));
       height += this.nodeSeparation + this.nodeSize / 2;
     }
-    if (tree.end !== false) {
+    if (tree.end !== true) {
       // Draw bottom connector
       pieces.push(
         this._draw_connector(
@@ -268,7 +274,7 @@ class HatGraph extends LitElement {
           height,
           0,
           height + this.nodeSeparation,
-          nextPartTracked
+          tree.isTracked && nextPartTracked
         )
       );
       height += this.nodeSeparation;
@@ -339,7 +345,7 @@ class HatGraph extends LitElement {
       this.finishedActive
     );
     return html`
-      <svg width=${tree.width + 32} height=${tree.height + 32}>
+      <svg width=${tree.width + 32} height=${tree.height + 64}>
         <g transform="translate(${tree.width / 2 + 16} 16)">
           ${tree.svg}
         </g>

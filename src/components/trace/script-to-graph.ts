@@ -13,6 +13,7 @@ import {
   mdiCheckBoxOutline,
   mdiCheckboxBlankOutline,
   mdiAsterisk,
+  mdiDevices,
 } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { Condition } from "../../data/automation";
@@ -29,6 +30,7 @@ import { NodeInfo, TreeNode } from "./hat-graph";
 
 const ICONS = {
   new: mdiAsterisk,
+  device_id: mdiDevices,
   service: mdiChevronRight,
   condition: mdiAbTesting,
   TRUE: mdiCheck,
@@ -86,7 +88,9 @@ export class ActionHandler {
 
     public trace?: AutomationTraceExtended,
 
-    pathPrefix?: string
+    pathPrefix?: string,
+
+    public end?: boolean
   ) {
     if (pathPrefix !== undefined) {
       this.pathPrefix = pathPrefix;
@@ -103,7 +107,13 @@ export class ActionHandler {
 
   _createGraph = memoizeOne((_actions, _selected, _trace) =>
     this._renderConditions().concat(
-      this.actions.map((action, idx) => this._createTreeNode(idx, action))
+      this.actions.map((action, idx) =>
+        this._createTreeNode(
+          idx,
+          action,
+          this.end ?? this.actions.length === idx + 1
+        )
+      )
     )
   );
 
@@ -120,7 +130,8 @@ export class ActionHandler {
         "condition/",
         this.trace?.condition_trace,
         idx,
-        condition
+        condition,
+        !this.actions.length && this.trace!.config.condition!.length === idx + 1
       )
     );
   }
@@ -153,7 +164,7 @@ export class ActionHandler {
     }
   }
 
-  _createTreeNode(idx: number, action): TreeNode {
+  _createTreeNode(idx: number, action, end: boolean): TreeNode {
     let _type = "yaml";
 
     if (Object.keys(action).length === 0) {
@@ -164,8 +175,10 @@ export class ActionHandler {
 
     let node: TreeNode;
 
+    console.log(_type);
+
     if (_type in this.SPECIAL) {
-      node = this.SPECIAL[_type](idx, action);
+      node = this.SPECIAL[_type](idx, action, end);
     } else {
       const path = `${this.pathPrefix}${idx}`;
       const nodeInfo: NodeInfo = {
@@ -181,6 +194,7 @@ export class ActionHandler {
         },
         isActive: path === this.selected,
         isTracked: this.trace && path in this.trace.action_trace,
+        end,
       };
     }
 
@@ -194,16 +208,20 @@ export class ActionHandler {
     return node;
   }
 
-  SPECIAL: Record<string, (idx: number, action: any) => TreeNode> = {
-    condition: (idx, action: Condition): TreeNode =>
+  SPECIAL: Record<
+    string,
+    (idx: number, action: any, end: boolean) => TreeNode
+  > = {
+    condition: (idx, action: Condition, end: boolean): TreeNode =>
       this._createConditionNode(
         this.pathPrefix,
         this.trace?.action_trace,
         idx,
-        action
+        action,
+        end
       ),
 
-    repeat: (idx, action: RepeatAction): TreeNode => {
+    repeat: (idx, action: RepeatAction, end: boolean): TreeNode => {
       let seq: Array<Action | NoAction> = action.repeat.sequence;
       if (!seq || !seq.length) {
         seq = [{}];
@@ -223,12 +241,14 @@ export class ActionHandler {
         clickCallback: () => this._selectNode(nodeInfo),
         isActive: path === this.selected,
         isTracked,
+        end,
         children: [
           {
             icon: ICONS.repeatReturn,
             clickCallback: () => this._selectNode(nodeInfo),
             isActive: path === this.selected,
             isTracked,
+            end,
           },
           new ActionHandler(
             seq,
@@ -240,13 +260,14 @@ export class ActionHandler {
             (params) => this._selectNode(params),
             this.selected,
             this.trace,
-            `${this.pathPrefix}${idx}/sequence/`
+            `${this.pathPrefix}${idx}/sequence/`,
+            true
           ).createGraph(),
         ],
       };
     },
 
-    choose: (idx, action: ChooseAction): TreeNode => {
+    choose: (idx, action: ChooseAction, end: boolean): TreeNode => {
       const choosePath = `${this.pathPrefix}${idx}`;
       let choice: number | "default" | undefined;
 
@@ -298,7 +319,8 @@ export class ActionHandler {
               },
               this.selected,
               this.trace,
-              `${this.pathPrefix}${idx}/choose/${choiceIdx}/sequence/`
+              `${this.pathPrefix}${idx}/choose/${choiceIdx}/sequence/`,
+              !chosen || end
             ).createGraph(),
           ];
         }
@@ -335,7 +357,8 @@ export class ActionHandler {
             (params) => this._selectNode(params),
             this.selected,
             this.trace,
-            `${this.pathPrefix}${idx}/default/`
+            `${this.pathPrefix}${idx}/default/`,
+            choice !== "default" || end
           ).createGraph(),
         ]);
       }
@@ -349,6 +372,7 @@ export class ActionHandler {
       return {
         icon: ICONS.choose,
         nodeInfo: chooseNodeInfo,
+        end,
         clickCallback: () => this._selectNode(chooseNodeInfo),
         isActive: choosePath === this.selected,
         isTracked: choice !== undefined,
@@ -361,7 +385,8 @@ export class ActionHandler {
     pathPrefix: string,
     tracePaths: Record<string, ActionTrace[]> | undefined,
     idx: number,
-    action: Condition
+    action: Condition,
+    end: boolean
   ): TreeNode {
     const path = `${pathPrefix}${idx}`;
     let result: boolean | undefined;
@@ -387,6 +412,7 @@ export class ActionHandler {
       clickCallback: () => this._selectNode(nodeInfo),
       isActive,
       isTracked,
+      end,
       children: [
         {
           icon: ICONS.TRUE,
@@ -399,6 +425,7 @@ export class ActionHandler {
           clickCallback: () => this._selectNode(nodeInfo),
           isActive,
           isTracked: result === false,
+          end: true,
         },
       ],
     };

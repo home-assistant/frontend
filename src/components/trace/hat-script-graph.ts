@@ -6,12 +6,14 @@ import {
   PropertyValues,
   css,
 } from "lit-element";
+import "@material/mwc-icon-button/mwc-icon-button";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-icon-button";
+import "../ha-svg-icon";
 import { AutomationTraceExtended } from "../../data/trace";
 import { bfsIterateTreeNodes, NodeInfo, TreeNode } from "./hat-graph";
 import { ActionHandler } from "./script-to-graph";
+import { mdiChevronDown, mdiChevronUp } from "@mdi/js";
 
 declare global {
   interface HASSDomEvents {
@@ -47,17 +49,19 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph .tree=${actionHandler.createGraph()}></hat-graph>
       <div class="actions">
-        <ha-icon-button
-          icon="hass:chevron-up"
+        <mwc-icon-button
           .disabled=${paths.length === 0 || paths[0] === this.selected}
           @click=${this.previousTrackedNode}
-        ></ha-icon-button>
-        <ha-icon-button
-          icon="hass:chevron-down"
+        >
+          <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
+        </mwc-icon-button>
+        <mwc-icon-button
           .disabled=${paths.length === 0 ||
           paths[paths.length - 1] === this.selected}
           @click=${this.nextTrackedNode}
-        ></ha-icon-button>
+        >
+          <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
+        </mwc-icon-button>
       </div>
     `;
   }
