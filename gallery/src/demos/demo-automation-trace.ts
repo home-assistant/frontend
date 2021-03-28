@@ -7,7 +7,7 @@ import {
   property,
 } from "lit-element";
 import "../../../src/components/ha-card";
-import "../../../src/components/trace/hat-trace";
+import "../../../src/components/trace/hat-trace-timeline";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../src/types";
 import { DemoTrace } from "../data/traces/types";
@@ -29,11 +29,11 @@ export class DemoAutomationTrace extends LitElement {
         (trace) => html`
           <ha-card .heading=${trace.trace.config.alias}>
             <div class="card-content">
-              <hat-trace
+              <hat-trace-timeline
                 .hass=${this.hass}
                 .trace=${trace.trace}
                 .logbookEntries=${trace.logbookEntries}
-              ></hat-trace>
+              ></hat-trace-timeline>
             </div>
           </ha-card>
         `
