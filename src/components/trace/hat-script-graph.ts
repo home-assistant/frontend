@@ -26,7 +26,7 @@ class HatScriptGraph extends LitElement {
         fireEvent(this, "graph-node-selected", nodeInfo);
         this.requestUpdate();
       },
-      [],
+      "",
       this.trace
     );
   });
@@ -44,13 +44,13 @@ class HatScriptGraph extends LitElement {
     let selected: NodeInfo | undefined;
 
     for (const node of actionHandler.createGraph()) {
-      if (node.nodeInfo.path === path) {
+      if (node.nodeInfo?.path === path) {
         selected = node.nodeInfo;
         break;
       }
     }
 
-    actionHandler.selected = selected?.idx || [];
+    actionHandler.selected = selected?.path || "";
     this.requestUpdate();
   }
 
@@ -81,12 +81,12 @@ class HatScriptGraph extends LitElement {
         continue;
       }
 
-      if (node.nodeInfo.path === path) {
+      if (node.nodeInfo?.path === path) {
         pathMatched = true;
       }
     }
 
-    actionHandler.selected = selected?.idx || [];
+    actionHandler.selected = selected?.path || "";
     this.requestUpdate();
   }
 }

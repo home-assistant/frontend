@@ -21,7 +21,6 @@ const extractLastValue = <T>(val: ValueOrArray<T>): T | undefined =>
   Array.isArray(val) ? extractLastValue(val[val.length - 1]) : val;
 
 export interface NodeInfo {
-  idx: Array<string | number>;
   path: string;
   config: any;
   update?: (conf: any) => void;
@@ -30,7 +29,7 @@ export interface NodeInfo {
 export interface TreeNode {
   icon: string;
   end?: boolean;
-  nodeInfo: NodeInfo;
+  nodeInfo?: NodeInfo;
   children?: Array<ValueOrArray<TreeNode>>;
   clickCallback?: () => void;
   addCallback?: () => void;
@@ -87,6 +86,7 @@ class HatGraph extends LitElement {
           active: node.isActive || false,
           track: node.isTracked || false,
           new: node.isNew || false,
+          click: !!node.clickCallback,
         })}"
         @click=${node.clickCallback}
       />
@@ -364,7 +364,7 @@ class HatGraph extends LitElement {
       circle:hover {
         stroke: var(--hover-clr);
       }
-      circle {
+      .click {
         cursor: pointer;
       }
       .track {
