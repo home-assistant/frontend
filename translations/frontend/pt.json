@@ -1,7 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "Editar configuração",
+            "config_entry": "Entrada de configuração",
             "device": "Dispositivo",
             "integration": "Integração",
             "user": "Utilizador"
@@ -207,7 +207,8 @@
                 "restart": "Reiniciar",
                 "start": "Iniciar",
                 "stop": "Parar",
-                "uninstall": "Desinstalar"
+                "uninstall": "Desinstalar",
+                "visit_addon_page": "Visite {name} para mais detalhes"
             },
             "documentation": {
                 "get_documentation": "Falha ao obter documentação do add-on, {error}"
@@ -427,12 +428,14 @@
                     "docker": "O ambiente Docker não está a funcionar corretamente",
                     "privileged": "O supervisor não é privilegiado",
                     "setup": "A configuração do Supervisor falhou",
-                    "supervisor": "O supervisor não foi capaz de atualizar"
+                    "supervisor": "O supervisor não foi capaz de atualizar",
+                    "untrusted": "Detectado conteúdo não confiável"
                 },
                 "unhealthy_title": "Sua instalação não está íntegra",
                 "unsupported_description": "Abaixo está uma lista de problemas detetados na sua instalação, clique nos links para saber como poderá resolver os problemas.",
                 "unsupported_reason": {
                     "container": "Contentores conhecidos por causar problemas",
+                    "content-trust": "A validação da confiança no conteúdo está desactivada",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuração do Docker",
                     "docker_version": "Versão Docker",
@@ -740,7 +743,8 @@
                     "was_unlocked": "foi destrancado",
                     "was_unplugged": "foi desconectado",
                     "was_unsafe": "estava inseguro"
-                }
+                },
+                "show_trace": "Mostrar registo"
             },
             "media-browser": {
                 "audio_not_supported": "O seu navegador não suporta o elemento de áudio.",
@@ -1083,6 +1087,11 @@
                         "perform_action": "Servidor de {action}",
                         "restart": "Recomeçar",
                         "stop": "Parar"
+                    },
+                    "types": {
+                        "navigation": "Navegar",
+                        "reload": "Recarregar",
+                        "server_control": "Servidor"
                     }
                 },
                 "filter_placeholder": "Filtro de Entidade"
@@ -1250,10 +1259,15 @@
                                 "device_id": {
                                     "action": "Ação",
                                     "extra_fields": {
+                                        "brightness_pct": "Brilho",
                                         "code": "Código",
+                                        "flash": "Flash",
+                                        "humidity": "Humidade",
                                         "message": "Mensagem",
+                                        "mode": "Modo",
                                         "position": "Posição",
-                                        "title": "Título"
+                                        "title": "Título",
+                                        "value": "Valor"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1326,7 +1340,9 @@
                                     "extra_fields": {
                                         "above": "Acima de",
                                         "below": "Abaixo de",
-                                        "for": "Duração"
+                                        "for": "Duração",
+                                        "hvac_mode": "Modo HVAC",
+                                        "preset_mode": "Modo Pré-definido"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1519,6 +1535,7 @@
                         "add_automation": "Acrescentar automação",
                         "delete_automation": "Apagar automação",
                         "delete_confirm": "Tem a certeza que quer apagar esta automação?",
+                        "dev_automation": "Depurar automação",
                         "duplicate": "Duplicado",
                         "duplicate_automation": "Duplicar automação",
                         "edit_automation": "Editar automação",
@@ -1849,6 +1866,7 @@
                     "cant_edit": "Só pode editar itens que são criados na IU.",
                     "caption": "Dispositivos",
                     "confirm_delete": "Tem a certeza que quer apagar este dispositivo?",
+                    "confirm_disable_config_entry": "Não há mais dispositivos para a entrada de configuração {entry_name}, deseja antes desativar a entrada de configuração?",
                     "confirm_rename_entity_ids": "Deseja também renomear os id's de entidade de suas entidades?",
                     "confirm_rename_entity_ids_warning": "Tal não altera nenhuma configuração (como automações, scripts, cenas, Lovelace) que esteja a usar essas entidades, terá que atualizá-las por si.",
                     "data_table": {
@@ -1866,7 +1884,7 @@
                     "device_not_found": "Dispositivo não encontrado.",
                     "disabled": "Desativado",
                     "disabled_by": {
-                        "config_entry": "",
+                        "config_entry": "Entrada de configuração",
                         "integration": "Integração",
                         "user": "Utilizador"
                     },
@@ -2035,6 +2053,7 @@
                         "devices": "{count} {count, plural,\n one {dispositivo}\n other {dispositivos}\n}",
                         "disable_restart_confirm": "Reinicie o Home Assistant para termina a desactivação desta integração",
                         "disable": {
+                            "disable_confirm": "Tem certeza de que deseja desativar esta entrada de configuração? Os respectivos dispositivos e entidades serão desativados.",
                             "disabled": "Desativado",
                             "disabled_by": {
                                 "device": "Dispositivo",
@@ -2746,6 +2765,7 @@
                         "server_version": "Versão do servidor"
                     },
                     "device_info": {
+                        "device_config": "Configurar Dispositivo",
                         "node_ready": "Nó Pronto",
                         "node_status": "Estado do Nó",
                         "zwave_info": "Informações sobre Z-Wave"

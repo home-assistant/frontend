@@ -373,7 +373,7 @@
         "panel": {
             "dashboard": "Панель",
             "snapshots": "Снимки",
-            "store": "Магазин",
+            "store": "Магазин дополнений",
             "system": "Система"
         },
         "snapshot": {
@@ -444,7 +444,7 @@
             },
             "supervisor": {
                 "beta_backup": "Перед активацией этой функции убедитесь, что у Вас есть резервная копия Ваших данных.",
-                "beta_join_confirm": "Получать бета-версии",
+                "beta_join_confirm": "Перейти на бета-версии?",
                 "beta_release_items": "Канал обновлений включает в себя бета-версии для:",
                 "beta_warning": "Бета-версии предназначены для тестирования и могут содержать нестабильные изменения кода.",
                 "channel": "Канал обновлений",
@@ -452,9 +452,9 @@
                 "failed_to_reload": "Не удалось перезагрузить Supervisor.",
                 "failed_to_set_option": "Не удалось настроить параметр Supervisor.",
                 "failed_to_update": "Не удалось обновить Supervisor.",
-                "join_beta_action": "Получать бета-версии",
+                "join_beta_action": "Перейти на бета",
                 "join_beta_description": "Получать тестовые версии обновлений для Home Assistant, Supervisor и операционной системы хоста",
-                "leave_beta_action": "Не получать бета-версии",
+                "leave_beta_action": "Покинуть бета",
                 "leave_beta_description": "Получать стабильные версии обновлений для Home Assistant, Supervisor и операционной системы хоста",
                 "ram_usage": "Использование ОЗУ",
                 "reload_supervisor": "Перезагрузить Supervisor",
@@ -485,7 +485,7 @@
                     "privileged": "Supervisor не имеет привилегий",
                     "systemd": "Systemd"
                 },
-                "unsupported_title": "Вы используете неподдерживаемый способ установки",
+                "unsupported_title": "Используется неподдерживаемый вариант установки",
                 "update_supervisor": "Обновить Supervisor",
                 "warning": "ВНИМАНИЕ"
             }
