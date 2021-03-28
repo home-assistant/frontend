@@ -1,4 +1,3 @@
-import { safeDump } from "js-yaml";
 import {
   css,
   CSSResult,
@@ -13,12 +12,12 @@ import { AutomationEntity } from "../../../../data/automation";
 import {
   AutomationTrace,
   AutomationTraceExtended,
-  getDataFromPath,
   loadTrace,
   loadTraces,
 } from "../../../../data/trace";
-import "../../../../components/ha-card";
-import "../../../../components/trace/hat-trace";
+import "../../../../components/ha-icon-button";
+import "../../../../components/trace/hat-script-graph";
+import type { NodeInfo } from "../../../../components/trace/hat-graph";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
 import { configSections } from "../../ha-panel-config";
@@ -29,6 +28,11 @@ import {
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { repeat } from "lit-html/directives/repeat";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import "./ha-automation-trace-path-details";
+import "./ha-automation-trace-timeline";
+import "./ha-automation-trace-config";
+import { classMap } from "lit-html/directives/class-map";
+import { traceTabStyles } from "./styles";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -50,16 +54,23 @@ export class HaAutomationTrace extends LitElement {
 
   @internalProperty() private _runId?: string;
 
-  @internalProperty() private _path?: string;
+  @internalProperty() private _selected?: NodeInfo;
 
   @internalProperty() private _trace?: AutomationTraceExtended;
 
   @internalProperty() private _logbookEntries?: LogbookEntry[];
 
+  @internalProperty() private _view: "details" | "config" | "timeline" =
+    "details";
+
   protected render(): TemplateResult {
     const stateObj = this._entityId
       ? this.hass.states[this._entityId]
       : undefined;
+
+    const trackedNodes = this.shadowRoot!.querySelector(
+      "hat-script-graph"
+    )?.getTrackedNodes();
 
     return html`
       <hass-tabs-subpage
@@ -69,14 +80,20 @@ export class HaAutomationTrace extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        <ha-card
-          .header=${`Trace for ${
-            stateObj?.attributes.friendly_name || this._entityId
-          }`}
-        >
-          <div class="actions">
-            ${this._traces && this._traces.length > 0
-              ? html`
+        <div class="toolbar">
+          <div>
+            ${stateObj?.attributes.friendly_name || this._entityId}
+          </div>
+          ${this._traces && this._traces.length > 0
+            ? html`
+                <div>
+                  <ha-icon-button
+                    .disabled=${this._traces[this._traces.length - 1].run_id ===
+                    this._runId}
+                    label="Older trace"
+                    icon="hass:ray-end-arrow"
+                    @click=${this._pickOlderTrace}
+                  ></ha-icon-button>
                   <select .value=${this._runId} @change=${this._pickTrace}>
                     ${repeat(
                       this._traces,
@@ -90,50 +107,95 @@ export class HaAutomationTrace extends LitElement {
                         >`
                     )}
                   </select>
-                `
-              : ""}
-            <button @click=${this._loadTraces}>
-              Refresh
-            </button>
-            <button @click=${this._downloadTrace}>
-              Download
-            </button>
+                  <ha-icon-button
+                    .disabled=${this._traces[0].run_id === this._runId}
+                    label="Newer trace"
+                    icon="hass:ray-start-arrow"
+                    @click=${this._pickNewerTrace}
+                  ></ha-icon-button>
+                </div>
+              `
+            : ""}
+          <div>
+            <ha-icon-button
+              label="Refresh"
+              icon="hass:refresh"
+              @click=${() => this._loadTraces()}
+            ></ha-icon-button>
+            <ha-icon-button
+              .disabled=${!this._runId}
+              label="Download Trace"
+              icon="hass:download"
+              @click=${this._downloadTrace}
+            ></ha-icon-button>
           </div>
-          <div class="card-content">
-            ${this._traces === undefined
-              ? "Loading…"
-              : this._traces.length === 0
-              ? "No traces found"
-              : this._trace === undefined
-              ? "Loading…"
-              : html`
-                  <hat-trace
-                    .hass=${this.hass}
-                    .trace=${this._trace}
-                    .logbookEntries=${this._logbookEntries}
-                    @value-changed=${this._pickPath}
-                  ></hat-trace>
-                `}
-          </div>
-        </ha-card>
-        ${!this._path || !this._trace
+        </div>
+
+        ${this._traces === undefined
+          ? "Loading…"
+          : this._traces.length === 0
+          ? "No traces found"
+          : this._trace === undefined
           ? ""
           : html`
-              <div class="details">
-                <ha-card header="Config">
-                  <pre class="config card-content">
-${safeDump(getDataFromPath(this._trace.config, this._path))}</pre
-                  >
-                </ha-card>
-                <ha-card header="Trace">
-                  <pre class="trace card-content">
-${safeDump(
-                      (this._path.split("/")[0] === "condition"
-                        ? this._trace.condition_trace
-                        : this._trace.action_trace)[this._path]
-                    )}</pre
-                  >
-                </ha-card>
+              <div class="main">
+                <div class="graph">
+                  <hat-script-graph
+                    .trace=${this._trace}
+                    .selected=${this._selected?.path}
+                    @graph-node-selected=${this._pickNode}
+                  ></hat-script-graph>
+                </div>
+
+                <div class="info">
+                  <div class="tabs top">
+                    ${[
+                      ["details", "Step Details"],
+                      ["timeline", "Trace Timeline"],
+                      ["config", "Automation Config"],
+                    ].map(
+                      ([view, label]) => html`
+                        <div
+                          .view=${view}
+                          class=${classMap({ active: this._view === view })}
+                          @click=${this._showTab}
+                        >
+                          ${label}
+                        </div>
+                      `
+                    )}
+                  </div>
+                  ${this._selected === undefined ||
+                  this._logbookEntries === undefined ||
+                  trackedNodes === undefined
+                    ? ""
+                    : this._view === "details"
+                    ? html`
+                        <ha-automation-trace-path-details
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                          .selected=${this._selected}
+                          .logbookEntries=${this._logbookEntries}
+                          .trackedNodes=${trackedNodes}
+                        ></ha-automation-trace-path-details>
+                      `
+                    : this._view === "config"
+                    ? html`
+                        <ha-automation-trace-config
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                        ></ha-automation-trace-config>
+                      `
+                    : html`
+                        <ha-automation-trace-timeline
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                          .logbookEntries=${this._logbookEntries}
+                          .selected=${this._selected}
+                          @value-changed=${this._timelinePathPicked}
+                        ></ha-automation-trace-timeline>
+                      `}
+                </div>
               </div>
             `}
       </hass-tabs-subpage>
@@ -185,13 +247,25 @@ ${safeDump(
     }
   }
 
-  private _pickTrace(ev) {
-    this._runId = ev.target.value;
-    this._path = undefined;
+  private _pickOlderTrace() {
+    const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
+    this._runId = this._traces![curIndex + 1].run_id;
+    this._selected = undefined;
   }
 
-  private _pickPath(ev) {
-    this._path = ev.detail.value;
+  private _pickNewerTrace() {
+    const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
+    this._runId = this._traces![curIndex - 1].run_id;
+    this._selected = undefined;
+  }
+
+  private _pickTrace(ev) {
+    this._runId = ev.target.value;
+    this._selected = undefined;
+  }
+
+  private _pickNode(ev) {
+    this._selected = ev.detail;
   }
 
   private async _loadTraces(runId?: string) {
@@ -209,7 +283,7 @@ ${safeDump(
       !this._traces.some((trace) => trace.run_id === this._runId)
     ) {
       this._runId = undefined;
-      this._path = undefined;
+      this._selected = undefined;
 
       // If we came here from a trace passed into the url, clear it.
       if (runId) {
@@ -271,30 +345,55 @@ ${safeDump(
     aEl.click();
   }
 
+  private _showTab(ev) {
+    this._view = (ev.target as any).view;
+  }
+
+  private _timelinePathPicked(ev) {
+    const path = ev.detail.value;
+    const nodes = this.shadowRoot!.querySelector(
+      "hat-script-graph"
+    )!.getTrackedNodes();
+    this._selected = nodes[path].nodeInfo;
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
+      traceTabStyles,
       css`
-        ha-card {
-          max-width: 800px;
-          margin: 24px auto;
-        }
-
-        .actions {
-          position: absolute;
-          top: 8px;
-          right: 8px;
-        }
-
-        .details {
+        .toolbar {
           display: flex;
-          margin: 0 16px;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 20px;
+          height: var(--header-height);
+          padding: 0 16px;
+          background-color: var(--primary-background-color);
+          font-weight: 400;
+          color: var(--app-header-text-color, white);
+          border-bottom: var(--app-header-border-bottom, none);
+          box-sizing: border-box;
         }
-        .details > * {
-          flex: 1 1 0px;
+
+        .toolbar > * {
+          display: flex;
+          align-items: center;
         }
-        .details > *:first-child {
-          margin-right: 16px;
+
+        .main {
+          height: calc(100% - 56px);
+          display: flex;
+          background-color: var(--card-background-color);
+        }
+
+        .graph {
+          border-right: 1px solid var(--divider-color);
+        }
+
+        .info {
+          flex: 1;
+          background-color: var(--card-background-color);
         }
       `,
     ];

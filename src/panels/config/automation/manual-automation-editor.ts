@@ -139,12 +139,21 @@ export class HaManualAutomationEditor extends LitElement {
                       "ui.panel.config.automation.editor.enable_disable"
                     )}
                   </div>
-                  <mwc-button
-                    @click=${this._runActions}
-                    .stateObj=${this.stateObj}
-                  >
-                    ${this.hass.localize("ui.card.automation.trigger")}
-                  </mwc-button>
+                  <div>
+                    <a href="/config/automation/trace/${this.config.id}">
+                      <mwc-button>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.show_trace"
+                        )}
+                      </mwc-button>
+                    </a>
+                    <mwc-button
+                      @click=${this._runActions}
+                      .stateObj=${this.stateObj}
+                    >
+                      ${this.hass.localize("ui.card.automation.trigger")}
+                    </mwc-button>
+                  </div>
                 </div>
               `
             : ""}
