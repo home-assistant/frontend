@@ -175,8 +175,6 @@ export class ActionHandler {
 
     let node: TreeNode;
 
-    console.log(_type);
-
     if (_type in this.SPECIAL) {
       node = this.SPECIAL[_type](idx, action, end);
     } else {
