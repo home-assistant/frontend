@@ -73,7 +73,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Add an extra row at the bottom of the data table
    * @type {TemplateResult}
    */
-  @property({ attribute: false }) public appendRow?;
+  @property({ attribute: false }) public appendRow?: TemplateResult;
 
   /**
    * Field with a unique id per entry in data.
@@ -95,8 +95,16 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property({ type: Array }) public activeFilters?;
 
+  /**
+   * Text to how how many items are hidden.
+   * @type {String}
+   */
   @property() public hiddenLabel?: string;
 
+  /**
+   * How many items are hidden because of active filters.
+   * @type {Number}
+   */
   @property({ type: Number }) public numHidden = 0;
 
   /**
