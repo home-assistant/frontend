@@ -21,7 +21,7 @@ import { DataTableColumnContainer } from "../../../components/data-table/ha-data
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-button-filter-menu";
+import "../../../components/ha-button-related-filter-menu";
 import {
   AutomationEntity,
   triggerAutomationActions,
@@ -225,15 +225,15 @@ class HaAutomationPicker extends LitElement {
         <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
         </mwc-icon-button>
-        <ha-button-filter-menu
+        <ha-button-related-filter-menu
           slot="filter-menu"
           corner="BOTTOM_START"
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}
-          @filter-changed=${this._filterChanged}
+          @related-changed=${this._relatedFilterChanged}
         >
-        </ha-button-filter-menu>
+        </ha-button-related-filter-menu>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -248,7 +248,7 @@ class HaAutomationPicker extends LitElement {
     `;
   }
 
-  private _filterChanged(ev: CustomEvent) {
+  private _relatedFilterChanged(ev: CustomEvent) {
     this._filterValue = ev.detail.value;
     if (!this._filterValue) {
       this._filteredAutomations = undefined;

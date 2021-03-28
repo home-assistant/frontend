@@ -22,7 +22,7 @@ import "./device/ha-device-picker";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "filter-changed": {
+    "related-changed": {
       value?: FilterValue;
       items?: RelatedResult;
       filter?: string;
@@ -35,8 +35,8 @@ interface FilterValue {
   device?: string;
 }
 
-@customElement("ha-button-filter-menu")
-export class HaButtonMenu extends LitElement {
+@customElement("ha-button-related-filter-menu")
+export class HaRelatedFilterButtonMenu extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() public corner: Corner = "TOP_START";
@@ -96,14 +96,14 @@ export class HaButtonMenu extends LitElement {
   private async _devicePicked(ev: CustomEvent) {
     const deviceId = ev.detail.value;
     if (!deviceId) {
-      fireEvent(this, "filter-changed", { value: undefined });
+      fireEvent(this, "related-changed", { value: undefined });
       return;
     }
     const filter =
       "device: " + (ev.currentTarget as any).comboBox.selectedItem.name;
     const items = await findRelated(this.hass, "device", deviceId);
 
-    fireEvent(this, "filter-changed", {
+    fireEvent(this, "related-changed", {
       value: { device: deviceId },
       filter,
       items,
@@ -113,13 +113,13 @@ export class HaButtonMenu extends LitElement {
   private async _areaPicked(ev: CustomEvent) {
     const areaId = ev.detail.value;
     if (!areaId) {
-      fireEvent(this, "filter-changed", { value: undefined });
+      fireEvent(this, "related-changed", { value: undefined });
       return;
     }
     const filter =
       "area: " + (ev.currentTarget as any).comboBox.selectedItem.name;
     const items = await findRelated(this.hass, "area", areaId);
-    fireEvent(this, "filter-changed", {
+    fireEvent(this, "related-changed", {
       value: { area: areaId },
       filter,
       items,
@@ -152,6 +152,6 @@ export class HaButtonMenu extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-button-filter-menu": HaButtonMenu;
+    "ha-button-related-filter-menu": HaRelatedFilterButtonMenu;
   }
 }
