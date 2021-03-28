@@ -226,7 +226,8 @@ export class ActionHandler {
         children: [
           {
             icon: ICONS.repeatReturn,
-            isActive: false,
+            clickCallback: () => this._selectNode(nodeInfo),
+            isActive: path === this.selected,
             isTracked,
           },
           new ActionHandler(

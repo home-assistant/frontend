@@ -131,6 +131,7 @@ export class HaAutomationTrace extends LitElement {
                 <div class="graph">
                   <hat-script-graph
                     .trace=${this._trace}
+                    .selected=${this._selected?.path}
                     @graph-node-selected=${this._pickNode}
                   ></hat-script-graph>
                 </div>

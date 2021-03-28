@@ -1,8 +1,16 @@
-import { html, LitElement, property, customElement } from "lit-element";
+import {
+  html,
+  LitElement,
+  property,
+  customElement,
+  PropertyValues,
+  css,
+} from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-icon-button";
 import { AutomationTraceExtended } from "../../data/trace";
-import { bfsIterateTreeNodes, NodeInfo } from "./hat-graph";
+import { bfsIterateTreeNodes, NodeInfo, TreeNode } from "./hat-graph";
 import { ActionHandler } from "./script-to-graph";
 
 declare global {
@@ -13,7 +21,9 @@ declare global {
 
 @customElement("hat-script-graph")
 class HatScriptGraph extends LitElement {
-  @property({ attribute: false }) public trace?: AutomationTraceExtended;
+  @property({ attribute: false }) public trace!: AutomationTraceExtended;
+
+  @property({ attribute: false }) public selected;
 
   private getActionHandler = memoizeOne((trace: AutomationTraceExtended) => {
     return new ActionHandler(
@@ -26,17 +36,30 @@ class HatScriptGraph extends LitElement {
         fireEvent(this, "graph-node-selected", nodeInfo);
         this.requestUpdate();
       },
-      "",
+      this.selected,
       this.trace
     );
   });
 
   protected render() {
-    if (!this.trace) {
-      return html``;
-    }
     const actionHandler = this.getActionHandler(this.trace);
-    return html`<hat-graph .tree=${actionHandler.createGraph()}></hat-graph>`;
+    const paths = Object.keys(this.getTrackedNodes());
+    return html`
+      <hat-graph .tree=${actionHandler.createGraph()}></hat-graph>
+      <div class="actions">
+        <ha-icon-button
+          icon="hass:chevron-up"
+          .disabled=${paths.length === 0 || paths[0] === this.selected}
+          @click=${this.previousTrackedNode}
+        ></ha-icon-button>
+        <ha-icon-button
+          icon="hass:chevron-down"
+          .disabled=${paths.length === 0 ||
+          paths[paths.length - 1] === this.selected}
+          @click=${this.nextTrackedNode}
+        ></ha-icon-button>
+      </div>
+    `;
   }
 
   public selectPath(path: string) {
@@ -54,40 +77,81 @@ class HatScriptGraph extends LitElement {
     this.requestUpdate();
   }
 
-  public getNodes() {
-    if (!this.trace) {
-      return [];
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+
+    // Select first node if new trace loaded but no selection given.
+    if (changedProps.has("trace")) {
+      const tracked = this.getTrackedNodes();
+      const paths = Object.keys(tracked);
+
+      // If trace changed and we have no or an invalid selection, select first option.
+      if (this.selected === "" || !(this.selected in paths)) {
+        // Find first tracked node with node info
+        for (const path of paths) {
+          if (tracked[path].nodeInfo) {
+            fireEvent(this, "graph-node-selected", tracked[path].nodeInfo);
+            break;
+          }
+        }
+      }
     }
-    return Array.from(
-      bfsIterateTreeNodes(this.getActionHandler(this.trace).createGraph())
-    );
+
+    if (changedProps.has("selected")) {
+      this.getActionHandler(this.trace).selected = this.selected;
+      this.requestUpdate();
+    }
   }
 
-  /**
-   * Select the next trackced node.
-   * @param path Optional path. Will select next node after this one.
-   */
-  public selectNextTrackedNode(path?: string) {
-    const actionHandler = this.getActionHandler(this.trace!);
-    let selected: NodeInfo | undefined;
-    let pathMatched = path === undefined;
+  public getTrackedNodes() {
+    return this._getTrackedNodes(this.trace);
+  }
 
-    for (const node of bfsIterateTreeNodes(actionHandler.createGraph())) {
-      if (pathMatched) {
-        if (node.isTracked && node.nodeInfo) {
-          selected = node.nodeInfo;
-          break;
-        }
-        continue;
-      }
+  public previousTrackedNode() {
+    const tracked = this.getTrackedNodes();
+    const nodes = Object.keys(tracked);
 
-      if (node.nodeInfo?.path === path) {
-        pathMatched = true;
+    for (let i = nodes.indexOf(this.selected) - 1; i >= 0; i--) {
+      if (tracked[nodes[i]].nodeInfo) {
+        fireEvent(this, "graph-node-selected", tracked[nodes[i]].nodeInfo);
+        break;
       }
     }
+  }
 
-    actionHandler.selected = selected?.path || "";
-    this.requestUpdate();
+  public nextTrackedNode() {
+    const tracked = this.getTrackedNodes();
+    const nodes = Object.keys(tracked);
+    for (let i = nodes.indexOf(this.selected) + 1; i < nodes.length; i++) {
+      if (tracked[nodes[i]].nodeInfo) {
+        fireEvent(this, "graph-node-selected", tracked[nodes[i]].nodeInfo);
+        break;
+      }
+    }
+  }
+
+  private _getTrackedNodes = memoizeOne((trace) => {
+    const tracked: Record<string, TreeNode> = {};
+    for (const node of bfsIterateTreeNodes(
+      this.getActionHandler(trace).createGraph()
+    )) {
+      if (node.isTracked && node.nodeInfo) {
+        tracked[node.nodeInfo.path] = node;
+      }
+    }
+    return tracked;
+  });
+
+  static get styles() {
+    return css`
+      :host {
+        display: flex;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+      }
+    `;
   }
 }
 
