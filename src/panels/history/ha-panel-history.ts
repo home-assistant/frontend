@@ -181,8 +181,7 @@ class HaPanelHistory extends LitElement {
     this._stateHistory = computeHistory(
       this.hass,
       dateHistory,
-      this.hass.localize,
-      this.hass.language
+      this.hass.localize
     );
     this._isLoading = false;
   }

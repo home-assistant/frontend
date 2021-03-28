@@ -49,8 +49,8 @@ export abstract class HaDeviceAutomationCard<
     if (changedProps.has("deviceId") || changedProps.has("automations")) {
       return true;
     }
-    const oldHass = changedProps.get("hass");
-    if (!oldHass || this.hass.language !== oldHass.language) {
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.language !== this.hass.language) {
       return true;
     }
     return false;

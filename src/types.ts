@@ -9,7 +9,10 @@ import {
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { CoreFrontendUserData } from "./data/frontend";
-import { getHassTranslations } from "./data/translation";
+import {
+  FrontendTranslationData,
+  getHassTranslations,
+} from "./data/translation";
 import { Themes } from "./data/ws-themes";
 import { ExternalMessaging } from "./external_app/external_messaging";
 
@@ -193,9 +196,8 @@ export interface HomeAssistant {
   selectedTheme?: ThemeSettings | null;
   panels: Panels;
   panelUrl: string;
-
   // i18n
-  // current effective language, in that order:
+  // current effective language in that order:
   //   - backend saved user selected lanugage
   //   - language in local appstorage
   //   - browser language
@@ -203,6 +205,7 @@ export interface HomeAssistant {
   language: string;
   // local stored language, keep that name for backward compability
   selectedLanguage: string | null;
+  locale: FrontendTranslationData;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;

@@ -11,10 +11,13 @@ import { formatDate } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
 import relativeTime from "../../../common/datetime/relative_time";
+import { FrontendTranslationData } from "../../../data/translation";
 import { HomeAssistant } from "../../../types";
 import { TimestampRenderingFormats } from "./types";
 
-const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
+const FORMATS: {
+  [key: string]: (ts: Date, lang: FrontendTranslationData) => string;
+} = {
   date: formatDate,
   datetime: formatDateTime,
   time: formatTime,
@@ -64,7 +67,7 @@ class HuiTimestampDisplay extends LitElement {
       return html` ${this._relative} `;
     }
     if (format in FORMATS) {
-      return html` ${FORMATS[format](this.ts, this.hass.language)} `;
+      return html` ${FORMATS[format](this.ts, this.hass.locale)} `;
     }
     return html`${this.hass.localize(
       "ui.panel.lovelace.components.timestamp-display.invalid_format"

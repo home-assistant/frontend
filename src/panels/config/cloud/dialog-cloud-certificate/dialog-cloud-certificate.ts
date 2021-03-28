@@ -48,7 +48,7 @@ class DialogCloudCertificate extends LitElement {
             )}
             ${formatDateTime(
               new Date(certificateInfo.expire_date),
-              this.hass!.language
+              this.hass!.locale
             )}<br />
             (${this.hass!.localize(
               "ui.panel.config.cloud.dialog_certificate.will_be_auto_renewed"

@@ -221,7 +221,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         "{periodEnd}",
         formatDateTime(
           new Date(subInfo.plan_renewal_date * 1000),
-          this.hass.language
+          this.hass.locale
         )
       );
     }
