@@ -2086,8 +2086,8 @@
                 },
                 "integration_panel_move": {
                     "link_integration_page": "Sidumiste leht",
-                    "missing_zha": "Ei leiaZHA seadistamise spaneeli? See teisaldati lehele {integrations_page} ZHA kirje juurde.",
-                    "missing_zwave": "Puudub Z-Wave konfigureerimispaneel? See teisaldati lehele {integrations_page} Z-Wave kirje juurde."
+                    "missing_zha": "Ei leia ZHA seadistamise paneeli? See teisaldati lehele {integrations_page} ZHA kirje juurde.",
+                    "missing_zwave": "Puudub Z-Wave seadistamise paneel? See teisaldati lehele {integrations_page} Z-Wave kirje juurde."
                 },
                 "integrations": {
                     "add_integration": "Lisa sidumine",
@@ -2162,7 +2162,7 @@
                     "discovered": "Leitud",
                     "home_assistant_website": "Home Assistant veebisait",
                     "ignore": {
-                        "confirm_delete_ignore": "See muudab sidumise teie avastatud sidumistes uuesti ilmnema kui see avastatakse. See võib vajada taaskäivitamist või võtta veidi aega.",
+                        "confirm_delete_ignore": "See muudab sidumise avastatud sidumistes uuesti ilmnema kui see avastatakse. See võib vajada taaskäivitamist või võtta veidi aega.",
                         "confirm_delete_ignore_title": "Kas lõpetada {name} eiramine?",
                         "confirm_ignore": "Olete Te kindel, et ei soovi seda integratsiooni seadistada? Selle saate tagasi võtta klõpsates paremas ülanurgas menüüs valikul „Kuva ignoreeritud sidumised”.",
                         "confirm_ignore_title": "Kas eirata {name} avastamist?",
@@ -2427,7 +2427,7 @@
                         "name": "Nimi",
                         "name_error_msg": "Nimi on kohustuslik",
                         "new_person": "Uus isik",
-                        "no_device_tracker_available_intro": "Kui teil on seadmeid mis näitavad isiku kohalolekut saate need määrata siin ühele isikule. Esimese seadme lisamiseks lisage  sidumiste lehelt asukohatuvastuse sidumine.",
+                        "no_device_tracker_available_intro": "Kui on seadmeid mis näitavad isiku kohalolekut saad need määrata siin ühele isikule. Esimese seadme lisamiseks lisa Seaded->Sidumised all asukohatuvastuse sidumine.",
                         "update": "Uuenda"
                     },
                     "introduction": "Siin saate määratleda iga huvipakkuva isiku Home Assistantis.",
