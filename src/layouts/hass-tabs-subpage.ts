@@ -155,7 +155,7 @@ class HassTabsSubpage extends LitElement {
               ></ha-icon-button-arrow-prev>
             `}
         ${this.narrow
-          ? html` <div class="main-title"><slot name="header"></slot></div> `
+          ? html`<div class="main-title"><slot name="header"></slot></div>`
           : ""}
         ${showTabs
           ? html`
@@ -270,9 +270,7 @@ class HassTabsSubpage extends LitElement {
 
       .main-title {
         flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-height: 58px;
+        max-height: var(--header-height);
         line-height: 20px;
       }
 
