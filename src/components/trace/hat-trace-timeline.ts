@@ -3,7 +3,6 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -180,7 +179,8 @@ class LogbookRenderer {
   }
 
   private _renderLogbookEntryHelper(entry: LogbookEntry) {
-    return html`${entry.name} (${entry.entity_id}) turned ${entry.state}<br />`;
+    return html`${entry.name} (${entry.entity_id})
+      ${entry.message || `turned ${entry.state}`}<br />`;
   }
 }
 
@@ -346,7 +346,7 @@ class ActionRenderer {
   }
 }
 
-@customElement("hat-trace")
+@customElement("hat-trace-timeline")
 export class HaAutomationTracer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -354,7 +354,9 @@ export class HaAutomationTracer extends LitElement {
 
   @property({ attribute: false }) public logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _selectedPath?: string;
+  @property({ attribute: false }) public selectedPath?: string;
+
+  @property({ type: Boolean }) public allowPick = false;
 
   protected render(): TemplateResult {
     if (!this.trace) {
@@ -454,30 +456,30 @@ export class HaAutomationTracer extends LitElement {
     super.updated(props);
 
     // Pick first path when we load a new trace.
-    if (props.has("trace")) {
+    if (this.allowPick && props.has("trace")) {
       const element = this.shadowRoot!.querySelector<HaTimeline>(
         "ha-timeline[data-path]"
       );
       if (element) {
         fireEvent(this, "value-changed", { value: element.dataset.path });
-        this._selectedPath = element.dataset.path;
+        this.selectedPath = element.dataset.path;
       }
     }
 
-    if (props.has("trace") || props.has("_selectedPath")) {
+    if (props.has("trace") || props.has("selectedPath")) {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
         el.style.setProperty(
           "--timeline-ball-color",
-          this._selectedPath === el.dataset.path ? "var(--primary-color)" : null
+          this.selectedPath === el.dataset.path ? "var(--primary-color)" : null
         );
-        if (el.dataset.upgraded) {
+        if (!this.allowPick || el.dataset.upgraded) {
           return;
         }
         el.dataset.upgraded = "1";
         el.addEventListener("click", () => {
-          this._selectedPath = el.dataset.path;
+          this.selectedPath = el.dataset.path;
           fireEvent(this, "value-changed", { value: el.dataset.path });
         });
         el.addEventListener("mouseover", () => {
@@ -506,6 +508,6 @@ export class HaAutomationTracer extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hat-trace": HaAutomationTracer;
+    "hat-trace-timeline": HaAutomationTracer;
   }
 }

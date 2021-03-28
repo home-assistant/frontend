@@ -130,7 +130,7 @@ class HaAutomationPicker extends LitElement {
             )}
           >
             <ha-icon-button
-              icon="hass:hammer"
+              icon="hass:graph-outline"
               .disabled=${!automation.attributes.id}
               title="${this.hass.localize(
                 "ui.panel.config.automation.picker.dev_automation"

@@ -1211,6 +1211,7 @@
           },
           "editor": {
             "enable_disable": "Enable/Disable automation",
+            "show_trace": "Show trace",
             "introduction": "Use automations to bring your home to life.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
