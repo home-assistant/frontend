@@ -1,6 +1,15 @@
 import { assert } from "chai";
 import { computeStateDisplay } from "../../../src/common/entity/compute_state_display";
 import { UNKNOWN } from "../../../src/data/entity";
+import {
+  FrontendTranslationData,
+  NumberFormat,
+} from "../../../src/data/translation";
+
+const localeData: FrontendTranslationData = {
+  language: "en",
+  number_format: NumberFormat.comma_decimal,
+};
 
 describe("computeStateDisplay", () => {
   // Mock Localize function for testing
@@ -14,7 +23,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, localeData),
       "component.binary_sensor.state._.off"
     );
   });
@@ -28,7 +37,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, localeData),
       "component.binary_sensor.state.moisture.off"
     );
   });
@@ -48,7 +57,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "component.binary_sensor.state.invalid_device_class.off"
     );
   });
@@ -61,7 +70,10 @@ describe("computeStateDisplay", () => {
         unit_of_measurement: "m",
       },
     };
-    assert.strictEqual(computeStateDisplay(localize, stateObj, "en"), "123 m");
+    assert.strictEqual(
+      computeStateDisplay(localize, stateObj, localeData),
+      "123 m"
+    );
   });
 
   it("Localizes and formats numeric sensor value with units", () => {
@@ -73,7 +85,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, localeData),
       "1,234.5 m"
     );
   });
@@ -93,7 +105,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "state.default.unknown"
     );
   });
@@ -113,7 +125,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "state.default.unavailable"
     );
   });
@@ -131,7 +143,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "component.sensor.state._.custom_state"
     );
   });
@@ -152,7 +164,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, localeData),
       "November 18, 2017, 11:12 AM"
     );
   });
@@ -173,7 +185,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, localeData),
       "November 18, 2017"
     );
   });
@@ -194,7 +206,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
+      computeStateDisplay(localize, stateObj, localeData),
       "11:12 AM"
     );
   });
@@ -212,7 +224,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "state.default.unavailable"
     );
   });
@@ -228,7 +240,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, "en"),
+      computeStateDisplay(altLocalize, stateObj, localeData),
       "My Custom State"
     );
   });

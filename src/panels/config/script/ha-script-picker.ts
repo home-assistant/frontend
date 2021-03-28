@@ -89,7 +89,7 @@ class HaScriptPicker extends LitElement {
               ${script.attributes.last_triggered
                 ? formatDateTime(
                     new Date(script.attributes.last_triggered),
-                    this.hass.language
+                    this.hass.locale
                   )
                 : this.hass.localize("ui.components.relative_time.never")}
             </div>

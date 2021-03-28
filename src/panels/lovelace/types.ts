@@ -3,6 +3,7 @@ import {
   LovelaceCardConfig,
   LovelaceConfig,
 } from "../../data/lovelace";
+import { FrontendTranslationData } from "../../data/translation";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
@@ -20,7 +21,7 @@ export interface Lovelace {
   editMode: boolean;
   urlPath: string | null;
   mode: "generated" | "yaml" | "storage";
-  language: string;
+  locale: FrontendTranslationData;
   enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;

@@ -5,6 +5,7 @@ import {
 } from "../common/dom/apply_themes_on_element";
 import { computeLocalize } from "../common/translations/localize";
 import { DEFAULT_PANEL } from "../data/panel";
+import { NumberFormat } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
 import { getTranslation, getLocalLanguage } from "../util/hass-translation";
@@ -198,9 +199,12 @@ export const provideHass = (
     },
     panelUrl: "lovelace",
     defaultPanel: DEFAULT_PANEL,
-
     language: localLanguage,
     selectedLanguage: localLanguage,
+    locale: {
+      language: localLanguage,
+      number_format: NumberFormat.language,
+    },
     resources: null as any,
     localize: () => "",
 
