@@ -227,27 +227,25 @@ export class ActionHandler {
 
       const path = `${this.pathPrefix}${idx}`;
       const isTracked = this.trace && path in this.trace.action_trace;
+
+      const repeats =
+        this.trace &&
+        this.trace.action_trace[`${path}/repeat/sequence/0`].length;
+
       const nodeInfo: NodeInfo = {
         path,
         config: action,
         update: (conf) => this._updateAction(idx, conf),
       };
-
       return {
         icon: ICONS.repeat,
+        number: repeats,
         nodeInfo,
         clickCallback: () => this._selectNode(nodeInfo),
         isActive: path === this.selected,
         isTracked,
         end,
         children: [
-          {
-            icon: ICONS.repeatReturn,
-            clickCallback: () => this._selectNode(nodeInfo),
-            isActive: path === this.selected,
-            isTracked,
-            end,
-          },
           new ActionHandler(
             seq,
             this.allowAdd,
@@ -258,8 +256,8 @@ export class ActionHandler {
             (params) => this._selectNode(params),
             this.selected,
             this.trace,
-            `${this.pathPrefix}${idx}/sequence/`,
-            true
+            `${path}/repeat/sequence/`,
+            end
           ).createGraph(),
         ],
       };

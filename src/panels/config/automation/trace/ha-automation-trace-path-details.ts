@@ -116,7 +116,8 @@ export class HaAutomationTracePathDetails extends LitElement {
       } = trace as any;
 
       return html`
-        ${idx === 0 ? "" : `<p>Iteration ${idx + 1}</p>`} Executed:
+        ${data.length === 1 ? "" : html`<h3>Iteration ${idx + 1}</h3>`}
+        Executed:
         ${formatDateTimeWithSeconds(new Date(timestamp), this.hass.language)}<br />
         ${result
           ? html`Result:

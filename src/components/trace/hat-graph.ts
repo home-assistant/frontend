@@ -28,6 +28,7 @@ export interface NodeInfo {
 
 export interface TreeNode {
   icon: string;
+  number?: number;
   end?: boolean;
   nodeInfo?: NodeInfo;
   children?: Array<ValueOrArray<TreeNode>>;
@@ -94,6 +95,12 @@ class HatGraph extends LitElement {
       y + this.nodeSize / 2 - 12
     })">
         ${node.icon ? svg`<path d="${node.icon}"/>` : ""}
+        ${
+          node.number
+            ? svg`<g class="number"><circle r="8" cx="27" cy=0></circle>
+                <text x="27" y="1"  text-anchor="middle" alignment-baseline="middle">${node.number}</text></g>`
+            : ""
+        }
       </g>
     `;
   }
@@ -378,6 +385,13 @@ class HatGraph extends LitElement {
       }
       .active {
         stroke: var(--active-clr);
+      }
+      .number circle {
+        fill: var(--track-clr);
+        stroke: none;
+      }
+      .number text {
+        font-size: smaller;
       }
     `;
   }
