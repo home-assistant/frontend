@@ -39,7 +39,7 @@ class HcLovelace extends LitElement {
       urlPath: this.urlPath!,
       enableFullEditMode: () => undefined,
       mode: "storage",
-      language: "en",
+      locale: this.hass.locale,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,

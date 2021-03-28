@@ -468,7 +468,7 @@
                     "privileged": "Supervisor heeft onvoldoende toegangsrechten",
                     "setup": "Setup van de Supervisor mislukt",
                     "supervisor": "Supervisor kon niet worden bijgewerkt",
-                    "untrusted": "Onvertrouwde inhoud gedetecteerd"
+                    "untrusted": "Niet-vertrouwde inhoud gedetecteerd"
                 },
                 "unhealthy_title": "Er is iets mis met je installatie",
                 "unsupported_description": "Hieronder vindt je een lijst met problemen die bij je installatie zijn aangetroffen. Klik op de links om te zien hoe je de problemen kunt oplossen.",

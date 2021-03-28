@@ -24,6 +24,11 @@ export interface CallServiceActionTrace extends BaseTrace {
     running_script: boolean;
     params: Record<string, unknown>;
   };
+  child_id?: {
+    domain: string;
+    item_id: string;
+    run_id: string;
+  };
 }
 
 export interface ChooseActionTrace extends BaseTrace {

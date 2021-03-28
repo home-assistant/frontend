@@ -1115,7 +1115,7 @@
                         "mqtt": "Manuel olarak yapılandırılmış MQTT varlıklarını yeniden yükleyin",
                         "person": "Kişileri yeniden yükle",
                         "ping": "Ping ikili sensör varlıklarını yeniden yükle",
-                        "reload": "{domain} yükleyin",
+                        "reload": "{domain}",
                         "rest": "Rest varlıklarını yeniden yükleyin ve hizmetleri bilgilendirin",
                         "rpi_gpio": "Raspberry Pi GPIO varlıklarını yeniden yükleyin",
                         "scene": "Sahneleri yeniden yükle",
@@ -1129,9 +1129,14 @@
                         "zone": "Bölgeleri yeniden yükle"
                     },
                     "server_control": {
-                        "perform_action": "{action} Sunucu",
+                        "perform_action": "{action} sunucusu",
                         "restart": "Yeniden Başlat",
                         "stop": "Durdur"
+                    },
+                    "types": {
+                        "navigation": "Gezinme",
+                        "reload": "Tekrar yükle",
+                        "server_control": "Sunucu"
                     }
                 },
                 "filter_placeholder": "Varlık Filtresi"
@@ -2531,39 +2536,39 @@
                     "description": "Home Assistant sunucusunu yeniden başlatın veya durdurun.",
                     "section": {
                         "reloading": {
-                            "automation": "Otomasyonları yeniden yükle",
-                            "command_line": "Komut satırı varlıklarını yeniden yükleyin",
-                            "core": "Konumu ve özelleştirmeleri yeniden yükle",
-                            "filesize": "Dosya boyutu varlıklarını yeniden yükleyin",
-                            "filter": "Filtre varlıklarını yeniden yükleyin",
-                            "generic": "Genel IP kamera varlıklarını yeniden yükleyin",
-                            "generic_thermostat": "Genel termostat varlıklarını yeniden yükleyin",
+                            "automation": "Otomasyonlar",
+                            "command_line": "Komut satırı varlıkları",
+                            "core": "Konum ve özelleştirmeler",
+                            "filesize": "Dosya boyutu varlıkları",
+                            "filter": "Filtre varlıkları",
+                            "generic": "Genel IP kamera varlıkları",
+                            "generic_thermostat": "Genel termostat varlıkları",
                             "group": "Grupları, grup varlıklarını ve grup bildirim hizmetlerini yeniden yükleyin",
                             "heading": "YAML yapılandırması yeniden yükleniyor",
-                            "history_stats": "Geçmiş istatistik varlıklarını yeniden yükle",
-                            "homekit": "HomeKit'i yeniden yükle",
+                            "history_stats": "Geçmiş istatistikleri varlıkları",
+                            "homekit": "HomeKit",
                             "input_boolean": "Mantıksal veri tiplerini yeniden yükle",
                             "input_datetime": "Giriş tarih ve zamanı yeniden yükle",
                             "input_number": "Giriş numaralarını yeniden yükle",
-                            "input_select": "Giriş seçimlerini yeniden yükle",
+                            "input_select": "Giriş seçenekleri",
                             "input_text": "Giriş metinlerini yeniden yükle",
                             "introduction": "Home Assistant'ın bazı bölümleri, yeniden başlatma gerektirmeden yeniden yüklenebilir. Yeniden yüklemeye basmak, mevcut YAML yapılandırmasını kaldıracak ve yenisini yükleyecektir.",
-                            "min_max": "Min / maks varlıkları yeniden yükle",
-                            "mqtt": "Mqtt varlıklarını yeniden yükleme",
+                            "min_max": "Min/max varlıkları",
+                            "mqtt": "Manuel olarak yapılandırılmış MQTT varlıkları",
                             "person": "Kişileri yeniden yükleme",
-                            "ping": "Ping ikili sensör varlıklarını yeniden yükle",
-                            "reload": "{domain} yükleyin",
+                            "ping": "Ping ikili sensör varlıkları",
+                            "reload": "{domain}",
                             "rest": "Rest varlıklarını yeniden yükleyin ve hizmetleri bilgilendirin",
-                            "rpi_gpio": "Raspberry Pi GPIO varlıklarını yeniden yükleyin",
-                            "scene": "Sahneleri yeniden yükle",
-                            "script": "Senaryoları yeniden yükle",
-                            "smtp": "Smtp bildirim hizmetlerini yeniden yükle",
-                            "statistics": "İstatistik varlıklarını yeniden yükle",
-                            "telegram": "Telgraf bildirim hizmetlerini yeniden yükle",
-                            "template": "Şablon varlıklarını yeniden yükleyin",
-                            "trend": "Trend varlıklarını yeniden yükle",
+                            "rpi_gpio": "Raspberry Pi GPIO varlıkları",
+                            "scene": "Sahneler",
+                            "script": "Senaryolar",
+                            "smtp": "SMTP bilgilendirme hizmetleri",
+                            "statistics": "İstatistik varlıkları",
+                            "telegram": "Telgraf bilgilendirme hizmetleri",
+                            "template": "Şablon varlıkları",
+                            "trend": "Trend varlıkları",
                             "universal": "Evrensel medya oynatıcı varlıklarını yeniden yükleyin",
-                            "zone": "Bölgeleri yeniden yükle"
+                            "zone": "Bölgeler"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant'ı yeniden başlatmak istediğinizden emin misiniz?",
@@ -2815,6 +2820,7 @@
                         "server_version": "Sunucu Sürümü"
                     },
                     "device_info": {
+                        "device_config": "Cihazı Yapılandır",
                         "node_ready": "Düğüm Hazır",
                         "node_status": "Düğüm Durumu",
                         "zwave_info": "Z-Wave Bilgisi"
@@ -2826,6 +2832,15 @@
                         "connected": "Bağlı",
                         "connecting": "Bağlanıyor",
                         "unknown": "Bilinmeyen"
+                    },
+                    "node_config": {
+                        "attribution": "Cihaz yapılandırma parametreleri ve açıklamaları {device_database}",
+                        "battery_device_notice": "Yapılandırmalarını güncellemek için pil cihazlarının uyanık olması gerekir. Cihazı nasıl uyandıracağınıza ilişkin talimatlar için lütfen cihazınızın kılavuzuna bakın.",
+                        "error_device_not_found": "Cihaz bulunamadı",
+                        "header": "Z-Wave Cihaz Yapılandırması",
+                        "introduction": "Seçilen cihaz için cihaza (düğüm) özel yapılandırma parametrelerini yönetin ve ayarlayın",
+                        "parameter_is_read_only": "Bu parametre salt okunurdur.",
+                        "zwave_js_device_database": "Z-Wave JS Cihaz Veritabanı"
                     },
                     "node_status": {
                         "alive": "Canlı",
@@ -2973,6 +2988,7 @@
                         "column_parameter": "Parametre",
                         "description": "Servisler geliştirici araçı, Home Assistant'taki mevcut tüm hizmetleri aramanızı sağlar.",
                         "fill_example_data": "Örnek Verileri Doldur",
+                        "no_template_ui_support": "Kullanıcı arayüzü şablonları desteklemiyor, yine de YAML düzenleyicisini kullanabilirsiniz.",
                         "title": "Servisler",
                         "ui_mode": "UI moduna git",
                         "yaml_mode": "YAML moduna git",

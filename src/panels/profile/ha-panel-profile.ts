@@ -34,6 +34,7 @@ import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";
 import "./ha-pick-dashboard-row";
 import "./ha-pick-language-row";
+import "./ha-pick-number-format-row";
 import "./ha-pick-theme-row";
 import "./ha-push-notifications-row";
 import "./ha-refresh-tokens-card";
@@ -100,6 +101,10 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-language-row>
+            <ha-pick-number-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-number-format-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}

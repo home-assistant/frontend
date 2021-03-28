@@ -459,7 +459,10 @@
       },
       "data-table": {
         "search": "Search",
-        "no-data": "No data"
+        "no-data": "No data",
+        "filtering_by": "Filtering by",
+        "hidden": "{number} hidden",
+        "clear": "Clear"
       },
       "media-browser": {
         "pick": "Pick",
@@ -848,11 +851,6 @@
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
-        "filtering": {
-          "filtering_by": "Filtering by",
-          "clear": "Clear",
-          "show": "Show"
-        },
         "advanced_mode": {
           "hint_enable": "Missing config options? Enable advanced mode on",
           "link_profile_page": "your profile page"
@@ -2071,7 +2069,8 @@
           "disable": {
             "show_disabled": "Show disabled integrations",
             "hide_disabled": "Hide disabled integrations",
-            "disabled_integrations": "{number} disabled"
+            "disabled_integrations": "{number} disabled",
+            "show": "Show"
           },
           "ignore": {
             "ignore": "Ignore",
@@ -3110,6 +3109,19 @@
           "header": "Language",
           "link_promo": "Help translating",
           "dropdown_label": "Language"
+        },
+        "number_format": {
+          "header": "Number Format",
+          "dropdown_label": "Number format",
+          "description": "Choose how numbers are formatted.",
+          "formats": {
+            "language": "Auto (use language setting)",
+            "system": "Use system locale",
+            "comma_decimal": "1,234,567.89",
+            "decimal_comma": "1.234.567,89",
+            "space_comma": "1 234 567,89",
+            "none": "None"
+          }
         },
         "themes": {
           "header": "Theme",

@@ -82,10 +82,7 @@ class EventSubscribeCard extends LitElement {
                   "name",
                   ev.id
                 )}
-                ${formatTime(
-                  new Date(ev.event.time_fired),
-                  this.hass!.language
-                )}:
+                ${formatTime(new Date(ev.event.time_fired), this.hass!.locale)}:
                 <pre>${JSON.stringify(ev.event, null, 4)}</pre>
               </div>
             `

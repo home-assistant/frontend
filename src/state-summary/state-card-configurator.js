@@ -58,11 +58,7 @@ class StateCardConfigurator extends LocalizeMixin(PolymerElement) {
   }
 
   _localizeState(stateObj) {
-    return computeStateDisplay(
-      this.hass.localize,
-      stateObj,
-      this.hass.language
-    );
+    return computeStateDisplay(this.hass.localize, stateObj, this.hass.locale);
   }
 }
 customElements.define("state-card-configurator", StateCardConfigurator);

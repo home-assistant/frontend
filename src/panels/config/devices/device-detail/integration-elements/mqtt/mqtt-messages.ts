@@ -61,7 +61,7 @@ class MQTTMessages extends LitElement {
                       Received
                       ${formatTimeWithSeconds(
                         new Date(message.time),
-                        this.hass.language
+                        this.hass.locale
                       )}
                     </div>
                     ${this._renderSingleMessage(message)}
