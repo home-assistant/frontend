@@ -40,13 +40,13 @@ export class HaAutomationTrace extends LitElement {
 
   @property() public automationId!: string;
 
-  @property() public automations!: AutomationEntity[];
+  @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide?: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @internalProperty() private _entityId?: string;
 
@@ -72,6 +72,20 @@ export class HaAutomationTrace extends LitElement {
       "hat-script-graph"
     )?.getTrackedNodes();
 
+    const title = stateObj?.attributes.friendly_name || this._entityId;
+
+    const actionButtons = html`<ha-icon-button
+        label="Refresh"
+        icon="hass:refresh"
+        @click=${() => this._loadTraces()}
+      ></ha-icon-button>
+      <ha-icon-button
+        .disabled=${!this._runId}
+        label="Download Trace"
+        icon="hass:download"
+        @click=${this._downloadTrace}
+      ></ha-icon-button>`;
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -80,10 +94,20 @@ export class HaAutomationTrace extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
+        ${this.narrow
+          ? html`<span slot="header">
+                ${title}
+              </span>
+              <div slot="toolbar-icon">
+                ${actionButtons}
+              </div>`
+          : ""}
         <div class="toolbar">
-          <div>
-            ${stateObj?.attributes.friendly_name || this._entityId}
-          </div>
+          ${!this.narrow
+            ? html`<div>
+                ${title}
+              </div>`
+            : ""}
           ${this._traces && this._traces.length > 0
             ? html`
                 <div>
@@ -116,19 +140,7 @@ export class HaAutomationTrace extends LitElement {
                 </div>
               `
             : ""}
-          <div>
-            <ha-icon-button
-              label="Refresh"
-              icon="hass:refresh"
-              @click=${() => this._loadTraces()}
-            ></ha-icon-button>
-            <ha-icon-button
-              .disabled=${!this._runId}
-              label="Download Trace"
-              icon="hass:download"
-              @click=${this._downloadTrace}
-            ></ha-icon-button>
-          </div>
+          ${!this.narrow ? html`<div>${actionButtons}</div>` : ""}
         </div>
 
         ${this._traces === undefined
@@ -173,6 +185,7 @@ export class HaAutomationTrace extends LitElement {
                     ? html`
                         <ha-automation-trace-path-details
                           .hass=${this.hass}
+                          .narrow=${this.narrow}
                           .trace=${this._trace}
                           .selected=${this._selected}
                           .logbookEntries=${this._logbookEntries}
@@ -381,10 +394,19 @@ export class HaAutomationTrace extends LitElement {
           align-items: center;
         }
 
+        :host([narrow]) .toolbar > * {
+          display: contents;
+        }
+
         .main {
           height: calc(100% - 56px);
           display: flex;
           background-color: var(--card-background-color);
+        }
+
+        :host([narrow]) .main {
+          height: auto;
+          flex-direction: column;
         }
 
         .graph {
