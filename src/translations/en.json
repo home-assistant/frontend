@@ -398,6 +398,12 @@
           }
         }
       },
+      "related-filter-menu": {
+        "filter_by_device": "Filter by device",
+        "filter_by_area": "Filter by area",
+        "filtered_by_device": "device: {device_name}",
+        "filtered_by_area": "area: {area_name}"
+      },
       "picture-upload": {
         "label": "Picture",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG or GIF image."
