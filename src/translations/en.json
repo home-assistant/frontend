@@ -2097,7 +2097,6 @@
           "rename_input_label": "Entry name",
           "search": "Search integrations",
           "disable": {
-            "show_disabled": "Show disabled integrations",
             "hide_disabled": "Hide disabled integrations",
             "disabled_integrations": "{number} disabled",
             "show": "Show"
@@ -2107,7 +2106,6 @@
             "confirm_ignore_title": "Ignore discovery of {name}?",
             "confirm_ignore": "Are you sure you don't want to set up this integration? You can undo this by clicking the 'Show ignored integrations' in the overflow menu on the top right.",
             "show_ignored": "Show ignored integrations",
-            "hide_ignored": "Hide ignored integrations",
             "ignored": "Ignored",
             "confirm_delete_ignore_title": "Stop ignoring {name}?",
             "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
