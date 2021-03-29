@@ -31,6 +31,8 @@ import { classMap } from "lit-html/directives/class-map";
 export class HaAutomationTracePathDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
   @property() private selected!: NodeInfo;
 
   @property() public trace!: AutomationTraceExtended;
@@ -239,7 +241,7 @@ ${safeDump(trace.changed_variables).trimRight()}</pre
           margin: 16px;
         }
 
-        .trace-info {
+        :host(:not([narrow])) .trace-info {
           min-height: 250px;
         }
 

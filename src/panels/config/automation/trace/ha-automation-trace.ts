@@ -186,6 +186,7 @@ export class HaAutomationTrace extends LitElement {
                     ? html`
                         <ha-automation-trace-path-details
                           .hass=${this.hass}
+                          .narrow=${this.narrow}
                           .trace=${this._trace}
                           .selected=${this._selected}
                           .logbookEntries=${this._logbookEntries}
