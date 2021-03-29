@@ -211,6 +211,7 @@ class HaAutomationPicker extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
+        id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automation}
         .activeFilters=${this._activeFilters}
