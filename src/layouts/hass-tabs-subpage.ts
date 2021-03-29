@@ -186,7 +186,7 @@ class HassTabsSubpage extends LitElement {
   }
 
   private _tabTapped(ev: Event): void {
-    navigate(this, (ev.currentTarget as any).path, true);
+    navigate(this, (ev.currentTarget as any).path);
   }
 
   private _backTapped(): void {
@@ -230,7 +230,6 @@ class HassTabsSubpage extends LitElement {
         padding: 0 16px;
         box-sizing: border-box;
       }
-
       #tabbar {
         display: flex;
         font-size: 14px;
