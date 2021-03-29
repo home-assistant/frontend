@@ -1805,7 +1805,7 @@
             "google": {
               "title": "Google Assistant",
               "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
-              "enable_ha_skill": "Activate the Home Assistant skill for Google Assistant",
+              "enable_ha_skill": "Activate the Home Assistant Cloud skill for Google Assistant",
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This allows you to always see the latest states in the Google app.",
@@ -1816,7 +1816,9 @@
               "sync_entities": "Sync Entities to Google",
               "sync_entities_404_message": "Failed to sync your entities to Google, ask Google 'Hey Google, sync my devices' to sync your entities.",
               "manage_entities": "Manage Entities",
-              "enter_pin_error": "Unable to store PIN:"
+              "enter_pin_error": "Unable to store PIN:",
+              "not_configured_title": "Google Assistant is not activated",
+              "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app."
             },
             "webhooks": {
               "title": "Webhooks",
