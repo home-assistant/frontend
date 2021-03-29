@@ -63,8 +63,8 @@ export class HaRelatedFilterButtonMenu extends LitElement {
       >
         <ha-area-picker
           .label=${this.hass.localize(
-            "ui.panel.config.scene.picker.filter.device"
-          ) || "Filter by area"}
+            "ui.components.related-filter-menu.filter_by_area"
+          )}
           .hass=${this.hass}
           .value=${this.value?.area}
           no-add
@@ -72,8 +72,8 @@ export class HaRelatedFilterButtonMenu extends LitElement {
         ></ha-area-picker>
         <ha-device-picker
           .label=${this.hass.localize(
-            "ui.panel.config.scene.picker.filter.device"
-          ) || "Filter by device"}
+            "ui.components.related-filter-menu.filter_by_device"
+          )}
           .hass=${this.hass}
           .value=${this.value?.device}
           @value-changed=${this._devicePicked}
@@ -99,8 +99,11 @@ export class HaRelatedFilterButtonMenu extends LitElement {
       fireEvent(this, "related-changed", { value: undefined });
       return;
     }
-    const filter =
-      "device: " + (ev.currentTarget as any).comboBox.selectedItem.name;
+    const filter = this.hass.localize(
+      "ui.components.related-filter-menu.filtered_by_device",
+      "device_name",
+      (ev.currentTarget as any).comboBox.selectedItem.name
+    );
     const items = await findRelated(this.hass, "device", deviceId);
 
     fireEvent(this, "related-changed", {
@@ -116,8 +119,11 @@ export class HaRelatedFilterButtonMenu extends LitElement {
       fireEvent(this, "related-changed", { value: undefined });
       return;
     }
-    const filter =
-      "area: " + (ev.currentTarget as any).comboBox.selectedItem.name;
+    const filter = this.hass.localize(
+      "ui.components.related-filter-menu.filtered_by_area",
+      "area_name",
+      (ev.currentTarget as any).comboBox.selectedItem.name
+    );
     const items = await findRelated(this.hass, "area", areaId);
     fireEvent(this, "related-changed", {
       value: { area: areaId },

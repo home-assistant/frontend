@@ -251,8 +251,7 @@ class HaAutomationPicker extends LitElement {
   private _relatedFilterChanged(ev: CustomEvent) {
     this._filterValue = ev.detail.value;
     if (!this._filterValue) {
-      this._filteredAutomations = undefined;
-      this._activeFilters = undefined;
+      this._clearFilter();
       return;
     }
     this._activeFilters = [ev.detail.filter];
