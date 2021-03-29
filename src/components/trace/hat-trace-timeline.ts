@@ -11,19 +11,18 @@ import {
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   AutomationTraceExtended,
-  ChooseActionTrace,
+  ChooseActionTraceStep,
   getDataFromPath,
+  TriggerTraceStep,
 } from "../../data/trace";
 import { HomeAssistant } from "../../types";
 import "./ha-timeline";
 import type { HaTimeline } from "./ha-timeline";
 import {
-  mdiCheckCircleOutline,
   mdiCircle,
   mdiCircleOutline,
   mdiPauseCircleOutline,
   mdiRecordCircleOutline,
-  mdiStopCircleOutline,
 } from "@mdi/js";
 import { LogbookEntry } from "../../data/logbook";
 import {
@@ -35,8 +34,6 @@ import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
-
-const pathToName = (path: string) => path.split("/").join(" ");
 
 /* eslint max-classes-per-file: "off" */
 
@@ -190,12 +187,13 @@ class ActionRenderer {
   private keys: string[];
 
   constructor(
+    private hass: HomeAssistant,
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
     private logbookRenderer: LogbookRenderer,
     private timeTracker: RenderedTimeTracker
   ) {
-    this.keys = Object.keys(trace.action_trace);
+    this.keys = Object.keys(trace.trace);
   }
 
   get curItem() {
@@ -211,7 +209,7 @@ class ActionRenderer {
   }
 
   private _getItem(index: number) {
-    return this.trace.action_trace[this.keys[index]];
+    return this.trace.trace[this.keys[index]];
   }
 
   private _renderItem(
@@ -219,6 +217,11 @@ class ActionRenderer {
     actionType?: ReturnType<typeof getActionType>
   ): number {
     const value = this._getItem(index);
+
+    if (value[0].path === "trigger") {
+      return this._handleTrigger(index, value[0] as TriggerTraceStep);
+    }
+
     const timestamp = new Date(value[0].timestamp);
 
     // Render all logbook items that are in front of this item.
@@ -262,6 +265,20 @@ class ActionRenderer {
     return index + 1;
   }
 
+  private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
+    this._renderEntry(
+      "trigger",
+      `Triggered by the
+    ${triggerStep.changed_variables.trigger.description} at
+    ${formatDateTimeWithSeconds(
+      new Date(triggerStep.timestamp),
+      this.hass.locale
+    )}`,
+      mdiCircle
+    );
+    return index + 1;
+  }
+
   private _handleChoose(index: number): number {
     // startLevel: choose root config
 
@@ -280,7 +297,7 @@ class ActionRenderer {
     const choosePath = this.keys[index];
     const startLevel = choosePath.split("/").length - 1;
 
-    const chooseTrace = this._getItem(index)[0] as ChooseActionTrace;
+    const chooseTrace = this._getItem(index)[0] as ChooseActionTraceStep;
     const defaultExecuted = chooseTrace.result.choice === "default";
     const chooseConfig = this._getDataFromPath(
       this.keys[index]
@@ -333,9 +350,13 @@ class ActionRenderer {
     return i;
   }
 
-  private _renderEntry(path: string, description: string) {
+  private _renderEntry(
+    path: string,
+    description: string,
+    icon = mdiRecordCircleOutline
+  ) {
     this.entries.push(html`
-      <ha-timeline .icon=${mdiRecordCircleOutline} data-path=${path}>
+      <ha-timeline .icon=${icon} data-path=${path}>
         ${description}
       </ha-timeline>
     `);
@@ -362,65 +383,32 @@ export class HaAutomationTracer extends LitElement {
     if (!this.trace) {
       return html``;
     }
-    const entries = [
-      html`
-        <ha-timeline .icon=${mdiCircle}>
-          Triggered by the ${this.trace.variables.trigger.description} at
-          ${formatDateTimeWithSeconds(
-            new Date(this.trace.timestamp.start),
-            this.hass.locale
-          )}
-        </ha-timeline>
-      `,
-    ];
 
-    if (this.trace.condition_trace) {
-      for (const [path, value] of Object.entries(this.trace.condition_trace)) {
-        entries.push(html`
-          <ha-timeline
-            ?lastItem=${!value[0].result.result}
-            class="condition"
-            .icon=${value[0].result.result
-              ? mdiCheckCircleOutline
-              : mdiStopCircleOutline}
-            data-path=${path}
-          >
-            ${getDataFromPath(this.trace!.config, path).alias ||
-            pathToName(path)}
-            ${value[0].result.result ? "passed" : "failed"}
-          </ha-timeline>
-        `);
-      }
+    const entries: TemplateResult[] = [];
+
+    const timeTracker = new RenderedTimeTracker(this.hass, entries, this.trace);
+    const logbookRenderer = new LogbookRenderer(
+      entries,
+      timeTracker,
+      this.logbookEntries || []
+    );
+    const actionRenderer = new ActionRenderer(
+      this.hass,
+      entries,
+      this.trace,
+      logbookRenderer,
+      timeTracker
+    );
+
+    while (actionRenderer.hasNext) {
+      actionRenderer.renderItem();
     }
 
-    if (this.trace.action_trace && this.logbookEntries) {
-      const timeTracker = new RenderedTimeTracker(
-        this.hass,
-        entries,
-        this.trace
-      );
-      const logbookRenderer = new LogbookRenderer(
-        entries,
-        timeTracker,
-        this.logbookEntries
-      );
-      const actionRenderer = new ActionRenderer(
-        entries,
-        this.trace,
-        logbookRenderer,
-        timeTracker
-      );
-
-      while (actionRenderer.hasNext) {
-        actionRenderer.renderItem();
-      }
-
-      while (logbookRenderer.hasNext) {
-        logbookRenderer.maybeRenderItem();
-      }
-
-      logbookRenderer.flush();
+    while (logbookRenderer.hasNext) {
+      logbookRenderer.maybeRenderItem();
     }
+
+    logbookRenderer.flush();
 
     // null means it was stopped by a condition
     if (this.trace.last_action !== null) {
@@ -456,7 +444,13 @@ export class HaAutomationTracer extends LitElement {
     super.updated(props);
 
     // Pick first path when we load a new trace.
-    if (this.allowPick && props.has("trace")) {
+    if (
+      this.allowPick &&
+      props.has("trace") &&
+      this.trace &&
+      this.selectedPath &&
+      !(this.selectedPath in this.trace.trace)
+    ) {
       const element = this.shadowRoot!.querySelector<HaTimeline>(
         "ha-timeline[data-path]"
       );

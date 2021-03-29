@@ -1,24 +1,27 @@
 import { HomeAssistant, Context } from "../types";
 import { AutomationConfig } from "./automation";
 
-interface TraceVariables extends Record<string, unknown> {
-  trigger: {
-    description: string;
-    [key: string]: unknown;
-  };
-}
-
-interface BaseTrace {
+interface BaseTraceStep {
   path: string;
   timestamp: string;
   changed_variables?: Record<string, unknown>;
 }
 
-export interface ConditionTrace extends BaseTrace {
+export interface TriggerTraceStep extends BaseTraceStep {
+  changed_variables: {
+    trigger: {
+      description: string;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+}
+
+export interface ConditionTraceStep extends BaseTraceStep {
   result: { result: boolean };
 }
 
-export interface CallServiceActionTrace extends BaseTrace {
+export interface CallServiceActionTraceStep extends BaseTraceStep {
   result: {
     limit: number;
     running_script: boolean;
@@ -31,19 +34,20 @@ export interface CallServiceActionTrace extends BaseTrace {
   };
 }
 
-export interface ChooseActionTrace extends BaseTrace {
+export interface ChooseActionTraceStep extends BaseTraceStep {
   result: { choice: number | "default" };
 }
 
-export interface ChooseChoiceActionTrace extends BaseTrace {
+export interface ChooseChoiceActionTraceStep extends BaseTraceStep {
   result: { result: boolean };
 }
 
-export type ActionTrace =
-  | BaseTrace
-  | CallServiceActionTrace
-  | ChooseActionTrace
-  | ChooseChoiceActionTrace;
+export type ActionTraceStep =
+  | BaseTraceStep
+  | ConditionTraceStep
+  | CallServiceActionTraceStep
+  | ChooseActionTraceStep
+  | ChooseChoiceActionTraceStep;
 
 export interface AutomationTrace {
   domain: string;
@@ -60,10 +64,9 @@ export interface AutomationTrace {
 }
 
 export interface AutomationTraceExtended extends AutomationTrace {
-  condition_trace: Record<string, ConditionTrace[]>;
-  action_trace: Record<string, ActionTrace[]>;
+  trace: Record<string, ActionTraceStep[]>;
   context: Context;
-  variables: TraceVariables;
+  variables: Record<string, unknown>;
   config: AutomationConfig;
 }
 

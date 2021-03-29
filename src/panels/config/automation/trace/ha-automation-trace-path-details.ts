@@ -10,9 +10,9 @@ import {
   TemplateResult,
 } from "lit-element";
 import {
-  ActionTrace,
+  ActionTraceStep,
   AutomationTraceExtended,
-  ChooseActionTrace,
+  ChooseActionTraceStep,
   getDataFromPath,
 } from "../../../../data/trace";
 import "../../../../components/ha-icon-button";
@@ -75,14 +75,8 @@ export class HaAutomationTracePathDetails extends LitElement {
     `;
   }
 
-  private _getPaths() {
-    return this.selected.path.split("/")[0] === "condition"
-      ? this.trace!.condition_trace
-      : this.trace!.action_trace;
-  }
-
   private _renderSelectedTraceInfo() {
-    const paths = this._getPaths();
+    const paths = this.trace.trace;
 
     if (!this.selected?.path) {
       return "Select a node on the left for more information.";
@@ -93,7 +87,7 @@ export class HaAutomationTracePathDetails extends LitElement {
     if (pathParts[pathParts.length - 1] === "default") {
       const parentTraceInfo = paths[
         pathParts.slice(0, pathParts.length - 1).join("/")
-      ] as ChooseActionTrace[];
+      ] as ChooseActionTraceStep[];
 
       if (parentTraceInfo && parentTraceInfo[0]?.result?.choice === "default") {
         return "The default node was executed because no choices matched.";
@@ -104,7 +98,7 @@ export class HaAutomationTracePathDetails extends LitElement {
       return "This node was not executed and so no further trace information is available.";
     }
 
-    const data: ActionTrace[] = paths[this.selected.path];
+    const data: ActionTraceStep[] = paths[this.selected.path];
 
     return data.map((trace, idx) => {
       const {
@@ -144,16 +138,11 @@ export class HaAutomationTracePathDetails extends LitElement {
   }
 
   private _renderChangedVars() {
-    const paths = this._getPaths();
-    const data: ActionTrace[] = paths[this.selected.path];
+    const paths = this.trace.trace;
+    const data: ActionTraceStep[] = paths[this.selected.path];
 
     return html`
       <div class="padded-box">
-        <p>
-          The following variables have changed while the step ran. If this is
-          the first condition or action, this will include the trigger
-          variables.
-        </p>
         ${data.map(
           (trace, idx) => html`
             ${idx > 0 ? html`<p>Iteration ${idx + 1}</p>` : ""}
@@ -170,8 +159,8 @@ ${safeDump(trace.changed_variables).trimRight()}</pre
 
   private _renderLogbook() {
     const paths = {
-      ...this.trace.condition_trace,
-      ...this.trace.action_trace,
+      ...this.trace.trace,
+      ...this.trace.trace,
     };
 
     const startTrace = paths[this.selected.path];
