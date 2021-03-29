@@ -119,11 +119,7 @@ export class ActionHandler {
   );
 
   _renderTraceHead(): TreeNode[] {
-    // action/ = default pathPrefix for trace-based actions
-    if (
-      this.pathPrefix !== TRACE_ACTION_PREFIX ||
-      !this.trace?.config.condition
-    ) {
+    if (this.pathPrefix !== TRACE_ACTION_PREFIX) {
       return [];
     }
 
@@ -133,7 +129,7 @@ export class ActionHandler {
       config: this.trace!.config.trigger,
     };
 
-    return [
+    const nodes: TreeNode[] = [
       {
         icon: mdiFlare,
         nodeInfo: triggerNodeInfo,
@@ -143,16 +139,23 @@ export class ActionHandler {
         isActive: this.selected === "trigger",
         isTracked: true,
       },
-      ...this.trace.config.condition.map((condition, idx) =>
-        this._createConditionNode(
-          "condition/",
-          idx,
-          condition,
-          !this.actions.length &&
-            this.trace!.config.condition!.length === idx + 1
-        )
-      ),
     ];
+
+    if (this.trace!.config.condition) {
+      this.trace!.config.condition.forEach((condition, idx) =>
+        nodes.push(
+          this._createConditionNode(
+            "condition/",
+            idx,
+            condition,
+            !this.actions.length &&
+              this.trace!.config.condition!.length === idx + 1
+          )
+        )
+      );
+    }
+
+    return nodes;
   }
 
   _updateAction(idx: number, action) {
