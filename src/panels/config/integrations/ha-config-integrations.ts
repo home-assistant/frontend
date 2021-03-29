@@ -348,11 +348,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         "number",
                         disabledConfigEntries.size
                       )}
-                      <mwc-button @click=${this._toggleShowDisabled}
-                        >${this.hass.localize(
-                          "ui.panel.config.filtering.show"
-                        )}</mwc-button
-                      >
+                      <mwc-button @click=${this._toggleShowDisabled}>
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.disable.show"
+                        )}
+                      </mwc-button>
                     </div>`
                   : ""}
               </div>

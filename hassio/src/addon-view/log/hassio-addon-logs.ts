@@ -15,6 +15,7 @@ import {
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-ansi-to-html";
@@ -23,6 +24,8 @@ import { hassioStyle } from "../../resources/hassio-style";
 @customElement("hassio-addon-logs")
 class HassioAddonLogs extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
@@ -48,7 +51,9 @@ class HassioAddonLogs extends LitElement {
             : ""}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._refresh}>Refresh</mwc-button>
+          <mwc-button @click=${this._refresh}>
+            ${this.supervisor.localize("common.refresh")}
+          </mwc-button>
         </div>
       </ha-card>
     `;
@@ -76,7 +81,11 @@ class HassioAddonLogs extends LitElement {
     try {
       this._content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
     } catch (err) {
-      this._error = `Failed to get addon logs, ${extractApiErrorMessage(err)}`;
+      this._error = this.supervisor.localize(
+        "addon.logs.get_logs",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 

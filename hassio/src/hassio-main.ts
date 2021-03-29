@@ -3,7 +3,7 @@ import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
-import { supervisorCollection } from "../../src/data/supervisor/supervisor";
+import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import "../../src/layouts/hass-loading-screen";
 import { HomeAssistant, Route } from "../../src/types";
@@ -13,6 +13,8 @@ import { SupervisorBaseElement } from "./supervisor-base-element";
 @customElement("hassio-main")
 export class HassioMain extends SupervisorBaseElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public panel!: HassioPanelInfo;
 
@@ -72,18 +74,6 @@ export class HassioMain extends SupervisorBaseElement {
   }
 
   protected render() {
-    if (!this.supervisor || !this.hass) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
-    }
-
-    if (
-      Object.keys(supervisorCollection).some(
-        (colllection) => !this.supervisor![colllection]
-      )
-    ) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
-    }
-
     return html`
       <hassio-router
         .hass=${this.hass}

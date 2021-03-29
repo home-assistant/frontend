@@ -16,6 +16,10 @@ export type AddonStartup =
 export type AddonState = "started" | "stopped" | null;
 export type AddonRepository = "core" | "local" | string;
 
+interface AddonTranslations {
+  [key: string]: Record<string, Record<string, Record<string, string>>>;
+}
+
 export interface HassioAddonInfo {
   advanced: boolean;
   available: boolean;
@@ -82,6 +86,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
+  translations: AddonTranslations;
   watchdog: null | boolean;
   webui: null | string;
 }
@@ -304,13 +309,12 @@ export const updateHassioAddon = async (
       method: "post",
       timeout: null,
     });
-    return;
+  } else {
+    await hass.callApi<HassioResponse<void>>(
+      "POST",
+      `hassio/addons/${slug}/update`
+    );
   }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    `hassio/addons/${slug}/update`
-  );
 };
 
 export const restartHassioAddon = async (

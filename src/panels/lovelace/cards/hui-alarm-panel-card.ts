@@ -132,7 +132,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
@@ -191,6 +191,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 id="alarmCode"
                 .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
                 type="password"
+                .inputmode=${stateObj.attributes.code_format === FORMAT_NUMBER
+                  ? "numeric"
+                  : "text"}
               ></paper-input>
             `}
         ${stateObj.attributes.code_format !== FORMAT_NUMBER

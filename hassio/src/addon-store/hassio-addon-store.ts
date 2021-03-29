@@ -14,7 +14,9 @@ import { html, TemplateResult } from "lit-html";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import { navigate } from "../../../src/common/navigate";
 import "../../../src/common/search/search-input";
+import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-svg-icon";
 import {
@@ -69,20 +71,24 @@ class HassioAddonStore extends LitElement {
     if (this.supervisor.addon.repositories) {
       repos = this.addonRepositories(
         this.supervisor.addon.repositories,
-        this.supervisor.addon.addons
+        this.supervisor.addon.addons,
+        this._filter
       );
     }
 
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .route=${this.route}
-        hassio
-        main-page
         .tabs=${supervisorTabs}
+        main-page
+        supervisor
       >
-        <span slot="header">Add-on Store</span>
+        <span slot="header">
+          ${this.supervisor.localize("panel.store")}
+        </span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
@@ -92,15 +98,15 @@ class HassioAddonStore extends LitElement {
             <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item>
-            Repositories
+            ${this.supervisor.localize("store.repositories")}
           </mwc-list-item>
           <mwc-list-item>
-            Reload
+            ${this.supervisor.localize("common.reload")}
           </mwc-list-item>
           ${this.hass.userData?.showAdvanced &&
           atLeastVersion(this.hass.config.version, 0, 117)
             ? html`<mwc-list-item>
-                Registries
+                ${this.supervisor.localize("store.registries")}
               </mwc-list-item>`
             : ""}
         </ha-button-menu>
@@ -121,11 +127,9 @@ class HassioAddonStore extends LitElement {
         ${!this.hass.userData?.showAdvanced
           ? html`
               <div class="advanced">
-                Missing add-ons? Enable advanced mode on
                 <a href="/profile" target="_top">
-                  your profile page
+                  ${this.supervisor.localize("store.missing_addons")}
                 </a>
-                .
               </div>
             `
           : ""}
@@ -135,12 +139,22 @@ class HassioAddonStore extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    const repositoryUrl = extractSearchParam("repository_url");
+    navigate(this, "/hassio/store", true);
+    if (repositoryUrl) {
+      this._manageRepositories(repositoryUrl);
+    }
+
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
     this._loadData();
   }
 
   private addonRepositories = memoizeOne(
-    (repositories: HassioAddonRepository[], addons: HassioAddonInfo[]) => {
+    (
+      repositories: HassioAddonRepository[],
+      addons: HassioAddonInfo[],
+      filter?: string
+    ) => {
       return repositories.sort(sortRepos).map((repo) => {
         const filteredAddons = addons.filter(
           (addon) => addon.repository === repo.slug
@@ -152,7 +166,8 @@ class HassioAddonStore extends LitElement {
                 .hass=${this.hass}
                 .repo=${repo}
                 .addons=${filteredAddons}
-                .filter=${this._filter!}
+                .filter=${filter!}
+                .supervisor=${this.supervisor}
               ></hassio-addon-repository>
             `
           : html``;
@@ -163,7 +178,7 @@ class HassioAddonStore extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._manageRepositories();
+        this._manageRepositoriesClicked();
         break;
       case 1:
         this.refreshData();
@@ -180,21 +195,25 @@ class HassioAddonStore extends LitElement {
     }
   }
 
-  private async _manageRepositories() {
+  private _manageRepositoriesClicked() {
+    this._manageRepositories();
+  }
+
+  private async _manageRepositories(url?: string) {
     showRepositoriesDialog(this, {
-      repos: this.supervisor.addon.repositories,
-      loadData: () => this._loadData(),
+      supervisor: this.supervisor,
+      url,
     });
   }
 
   private async _manageRegistries() {
-    showRegistriesDialog(this);
+    showRegistriesDialog(this, { supervisor: this.supervisor });
   }
 
   private async _loadData() {
-    fireEvent(this, "supervisor-colllection-refresh", { colllection: "addon" });
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "supervisor",
+    fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
+    fireEvent(this, "supervisor-collection-refresh", {
+      collection: "supervisor",
     });
   }
 

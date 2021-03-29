@@ -118,7 +118,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
@@ -259,7 +259,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             ${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
-            this.hass!.language
+            this.hass!.locale
           )}
           `}
         ></ha-icon-button>
@@ -276,7 +276,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,
-                      this.hass!.language
+                      this.hass!.locale
                     )}
               </div>
             `}
@@ -314,7 +314,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: var(--ha-picture-card-background-color, rgba(0, 0, 0, 0.3));
+        background-color: var(
+          --ha-picture-card-background-color,
+          rgba(0, 0, 0, 0.3)
+        );
         padding: 4px 8px;
         font-size: 16px;
         line-height: 40px;

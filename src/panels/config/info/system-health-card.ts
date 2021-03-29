@@ -101,7 +101,7 @@ class SystemHealthCard extends LitElement {
                     `}
               `;
             } else if (info.type === "date") {
-              value = formatDateTime(new Date(info.value), this.hass.language);
+              value = formatDateTime(new Date(info.value), this.hass.locale);
             }
           } else {
             value = domainInfo.info[key];
@@ -228,7 +228,7 @@ class SystemHealthCard extends LitElement {
           } else if (info.type === "failed") {
             value = `failed to load: ${info.error}`;
           } else if (info.type === "date") {
-            value = formatDateTime(new Date(info.value), this.hass.language);
+            value = formatDateTime(new Date(info.value), this.hass.locale);
           }
         } else {
           value = domainInfo.info[key];

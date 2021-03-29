@@ -137,7 +137,12 @@ gulp.task("webpack-watch-hassio", () => {
       isProdBuild: false,
       latestBuild: true,
     })
-  ).watch({}, doneHandler());
+  ).watch({ ignored: /build-translations/ }, doneHandler());
+
+  gulp.watch(
+    path.join(paths.translations_src, "en.json"),
+    gulp.series("build-supervisor-translations", "copy-translations-supervisor")
+  );
 });
 
 gulp.task("webpack-prod-hassio", () =>

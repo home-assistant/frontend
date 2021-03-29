@@ -19,8 +19,12 @@ import {
 } from "../../src/panels/my/ha-panel-my";
 import { navigate } from "../../src/common/navigate";
 import { HomeAssistant, Route } from "../../src/types";
+import { Supervisor } from "../../src/data/supervisor/supervisor";
 
 const REDIRECTS: Redirects = {
+  supervisor: {
+    redirect: "/hassio/dashboard",
+  },
   supervisor_logs: {
     redirect: "/hassio/system",
   },
@@ -33,13 +37,16 @@ const REDIRECTS: Redirects = {
   supervisor_store: {
     redirect: "/hassio/store",
   },
-  supervisor: {
-    redirect: "/hassio/dashboard",
-  },
   supervisor_addon: {
     redirect: "/hassio/addon",
     params: {
       addon: "string",
+    },
+  },
+  supervisor_add_addon_repository: {
+    redirect: "/hassio/store",
+    params: {
+      repository_url: "url",
     },
   },
 };
@@ -48,7 +55,9 @@ const REDIRECTS: Redirects = {
 class HassioMyRedirect extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
+  @property({ attribute: false }) public route!: Route;
 
   @internalProperty() public _error?: TemplateResult | string;
 
@@ -58,15 +67,17 @@ class HassioMyRedirect extends LitElement {
     const redirect = REDIRECTS[path];
 
     if (!redirect) {
-      this._error = html`This redirect is not supported by your Home Assistant
-        instance. Check the
-        <a
+      this._error = this.supervisor.localize(
+        "my.not_supported",
+        "link",
+        html`<a
           target="_blank"
           rel="noreferrer noopener"
           href="https://my.home-assistant.io/faq.html#supported-pages"
-          >My Home Assistant FAQ</a
         >
-        for the supported redirects and the version they where introduced.`;
+          ${this.supervisor.localize("my.faq_link")}
+        </a>`
+      );
       return;
     }
 
@@ -74,7 +85,7 @@ class HassioMyRedirect extends LitElement {
     try {
       url = this._createRedirectUrl(redirect);
     } catch (err) {
-      this._error = "An unknown error occured";
+      this._error = this.supervisor.localize("my.error");
       return;
     }
 

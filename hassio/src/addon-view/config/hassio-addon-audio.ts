@@ -25,6 +25,7 @@ import {
   fetchHassioHardwareAudio,
   HassioHardwareAudioDevice,
 } from "../../../../src/data/hassio/hardware";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
@@ -33,6 +34,8 @@ import { hassioStyle } from "../../resources/hassio-style";
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
@@ -48,12 +51,16 @@ class HassioAddonAudio extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card header="Audio">
+      <ha-card
+        .header=${this.supervisor.localize("addon.configuration.audio.header")}
+      >
         <div class="card-content">
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
           <paper-dropdown-menu
-            label="Input"
+            .label=${this.supervisor.localize(
+              "addon.configuration.audio.input"
+            )}
             @iron-select=${this._setInputDevice}
           >
             <paper-listbox
@@ -64,15 +71,17 @@ class HassioAddonAudio extends LitElement {
               ${this._inputDevices &&
               this._inputDevices.map((item) => {
                 return html`
-                  <paper-item device=${item.device || ""}
-                    >${item.name}</paper-item
-                  >
+                  <paper-item device=${item.device || ""}>
+                    ${item.name}
+                  </paper-item>
                 `;
               })}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-dropdown-menu
-            label="Output"
+            .label=${this.supervisor.localize(
+              "addon.configuration.audio.output"
+            )}
             @iron-select=${this._setOutputDevice}
           >
             <paper-listbox
@@ -93,7 +102,7 @@ class HassioAddonAudio extends LitElement {
         </div>
         <div class="card-actions">
           <ha-progress-button @click=${this._saveSettings}>
-            Save
+            ${this.supervisor.localize("common.save")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -152,7 +161,7 @@ class HassioAddonAudio extends LitElement {
 
     const noDevice: HassioHardwareAudioDevice = {
       device: "default",
-      name: "Default",
+      name: this.supervisor.localize("addon.configuration.audio.default"),
     };
 
     try {
@@ -189,7 +198,7 @@ class HassioAddonAudio extends LitElement {
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
       if (this.addon?.state === "started") {
-        await suggestAddonRestart(this, this.hass, this.addon);
+        await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch {
       this._error = "Failed to set addon audio device";

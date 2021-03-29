@@ -31,9 +31,6 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
 
-  @property({ type: Boolean, reflect: true })
-  public editMode = false;
-
   @property() protected _config?: IframeCardConfig;
 
   public getCardSize(): number {
@@ -92,10 +89,6 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       :host([ispanel]) ha-card {
         width: 100%;
         height: 100%;
-      }
-
-      :host([ispanel][editMode]) ha-card {
-        height: calc(100% - 51px);
       }
 
       ha-card {

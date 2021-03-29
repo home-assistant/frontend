@@ -1,6 +1,13 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, html, LitElement, property } from "lit-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+} from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/entity/ha-entity-picker";
 import { HaFormTimeData } from "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-service-picker";
@@ -14,45 +21,57 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   @property() public action!: DelayAction;
 
+  @property() public _timeData!: HaFormTimeData;
+
   public static get defaultConfig() {
     return { delay: "" };
   }
 
-  protected render() {
-    let data: HaFormTimeData = {};
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return;
+    }
+    // Check for templates in action. If found, revert to YAML mode.
+    if (this.action && hasTemplate(this.action)) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
+      );
+      return;
+    }
 
     if (typeof this.action.delay !== "object") {
-      if (isNaN(this.action.delay)) {
+      if (typeof this.action.delay === "string" || isNaN(this.action.delay)) {
         const parts = this.action.delay?.toString().split(":") || [];
-        data = {
+        this._timeData = {
           hours: Number(parts[0]) || 0,
           minutes: Number(parts[1]) || 0,
           seconds: Number(parts[2]) || 0,
           milliseconds: Number(parts[3]) || 0,
         };
       } else {
-        data = { seconds: this.action.delay };
+        this._timeData = { seconds: this.action.delay };
       }
-    } else {
-      const { days, minutes, seconds, milliseconds } = this.action.delay;
-      let { hours } = this.action.delay || 0;
-      hours = (hours || 0) + (days || 0) * 24;
-      data = {
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-        milliseconds: milliseconds,
-      };
+      return;
     }
+    const { days, minutes, seconds, milliseconds } = this.action.delay;
+    let { hours } = this.action.delay || 0;
+    hours = (hours || 0) + (days || 0) * 24;
+    this._timeData = {
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+      milliseconds: milliseconds,
+    };
+  }
 
-    return html`
-      <ha-time-input
-        .data=${data}
-        enableMillisecond
-        @value-changed=${this._valueChanged}
-      >
-      </ha-time-input>
-    `;
+  protected render() {
+    return html`<ha-time-input
+      .data=${this._timeData}
+      enableMillisecond
+      @value-changed=${this._valueChanged}
+    ></ha-time-input>`;
   }
 
   private _valueChanged(ev: CustomEvent) {

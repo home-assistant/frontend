@@ -8,9 +8,10 @@ export const atLeastVersion = (
 
   return (
     Number(haMajor) > major ||
-    (Number(haMajor) === major && (patch === undefined
-      ? Number(haMinor) >= minor
-      : Number(haMinor) > minor)) ||
+    (Number(haMajor) === major &&
+      (patch === undefined
+        ? Number(haMinor) >= minor
+        : Number(haMinor) > minor)) ||
     (patch !== undefined &&
       Number(haMajor) === major &&
       Number(haMinor) === minor &&

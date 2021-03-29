@@ -3,6 +3,7 @@ import {
   css,
   CSSResultArray,
   html,
+  internalProperty,
   LitElement,
   property,
   query,
@@ -11,6 +12,7 @@ import memoizeOne from "memoize-one";
 import { LocalStorage } from "../../../common/decorators/local-storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
+import { hasTemplate } from "../../../common/string/has-template";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
@@ -21,6 +23,7 @@ import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../data/script";
+import { callExecuteScript } from "../../../data/service";
 import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
@@ -29,7 +32,9 @@ import "../../../util/app-localstorage-document";
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  @internalProperty() private _uiAvailable = true;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
@@ -67,6 +72,7 @@ class HaPanelDevService extends LitElement {
         );
       }
     }
+    this._checkUiSupported();
   }
 
   protected render() {
@@ -86,10 +92,15 @@ class HaPanelDevService extends LitElement {
         </p>
 
         ${this._yamlMode
-          ? html`<ha-yaml-editor
-              .defaultValue=${this._serviceData}
-              @value-changed=${this._yamlChanged}
-            ></ha-yaml-editor>`
+          ? html`<ha-service-picker
+                .hass=${this.hass}
+                .value=${this._serviceData?.service}
+                @value-changed=${this._serviceChanged}
+              ></ha-service-picker>
+              <ha-yaml-editor
+                .defaultValue=${this._serviceData}
+                @value-changed=${this._yamlChanged}
+              ></ha-yaml-editor>`
           : html`<ha-card
               ><div>
                 <ha-service-control
@@ -97,21 +108,33 @@ class HaPanelDevService extends LitElement {
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
                   showAdvanced
-                  @value-changed=${this._serviceChanged}
+                  @value-changed=${this._serviceDataChanged}
                 ></ha-service-control></div
             ></ha-card>`}
       </div>
       <div class="button-row">
         <div class="buttons">
-          <mwc-button @click=${this._toggleYaml}>
-            ${this._yamlMode
-              ? this.hass.localize(
-                  "ui.panel.developer-tools.tabs.services.ui_mode"
-                )
-              : this.hass.localize(
-                  "ui.panel.developer-tools.tabs.services.yaml_mode"
-                )}
-          </mwc-button>
+          <div class="switch-mode-container">
+            <mwc-button
+              @click=${this._toggleYaml}
+              .disabled=${!this._uiAvailable}
+            >
+              ${this._yamlMode
+                ? this.hass.localize(
+                    "ui.panel.developer-tools.tabs.services.ui_mode"
+                  )
+                : this.hass.localize(
+                    "ui.panel.developer-tools.tabs.services.yaml_mode"
+                  )}
+            </mwc-button>
+            ${!this._uiAvailable
+              ? html`<span class="error"
+                  >${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.services.no_template_ui_support"
+                  )}</span
+                >`
+              : ""}
+          </div>
           <mwc-button .disabled=${!isValid} raised @click=${this._callService}>
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.services.call_service"
@@ -245,17 +268,10 @@ class HaPanelDevService extends LitElement {
   );
 
   private _callService() {
-    const domain = computeDomain(this._serviceData!.service);
-    const service = computeObjectId(this._serviceData!.service);
-    if (!domain || !service) {
+    if (!this._serviceData?.service) {
       return;
     }
-    this.hass.callService(
-      domain,
-      service,
-      this._serviceData!.data,
-      this._serviceData!.target
-    );
+    callExecuteScript(this.hass, [this._serviceData]);
   }
 
   private _toggleYaml() {
@@ -266,11 +282,27 @@ class HaPanelDevService extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    this._serviceChanged(ev);
+    this._serviceDataChanged(ev);
+  }
+
+  private _checkUiSupported() {
+    if (hasTemplate(this._serviceData)) {
+      this._yamlMode = true;
+      this._uiAvailable = false;
+    } else {
+      this._uiAvailable = true;
+    }
+  }
+
+  private _serviceDataChanged(ev) {
+    this._serviceData = ev.detail.value;
+    this._checkUiSupported();
   }
 
   private _serviceChanged(ev) {
-    this._serviceData = ev.detail.value;
+    ev.stopPropagation();
+    this._serviceData = { service: ev.detail.value || "", data: {} };
+    this._yamlEditor?.setValue(this._serviceData);
   }
 
   private _fillExampleData() {
@@ -313,14 +345,19 @@ class HaPanelDevService extends LitElement {
           box-sizing: border-box;
           width: 100%;
         }
-
         .button-row .buttons {
           display: flex;
           justify-content: space-between;
           max-width: 1200px;
           margin: auto;
         }
-
+        .switch-mode-container {
+          display: flex;
+          align-items: center;
+        }
+        .switch-mode-container .error {
+          margin-left: 8px;
+        }
         .attributes {
           width: 100%;
         }

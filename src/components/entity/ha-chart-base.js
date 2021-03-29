@@ -371,7 +371,7 @@ class HaChartBase extends mixinBehaviors(
       return value;
     }
     const date = new Date(values[index].value);
-    return formatTime(date, this.hass.language);
+    return formatTime(date, this.hass.locale);
   }
 
   drawChart() {

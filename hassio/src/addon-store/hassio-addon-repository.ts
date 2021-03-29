@@ -15,6 +15,7 @@ import {
   HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../src/data/hassio/addon";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
 import { filterAndSort } from "../components/hassio-filter-addons";
@@ -22,6 +23,8 @@ import { hassioStyle } from "../resources/hassio-style";
 
 class HassioAddonRepositoryEl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public repo!: HassioAddonRepository;
 
@@ -54,7 +57,11 @@ class HassioAddonRepositoryEl extends LitElement {
       return html`
         <div class="content">
           <p class="description">
-            No results found in "${repo.name}."
+            ${this.supervisor.localize(
+              "store.no_results_found",
+              "repository",
+              repo.name
+            )}
           </p>
         </div>
       `;
@@ -83,11 +90,13 @@ class HassioAddonRepositoryEl extends LitElement {
                       : mdiPuzzle}
                     .iconTitle=${addon.installed
                       ? addon.update_available
-                        ? "New version available"
-                        : "Add-on is installed"
+                        ? this.supervisor.localize(
+                            "common.new_version_available"
+                          )
+                        : this.supervisor.localize("addon.installed")
                       : addon.available
-                      ? "Add-on is not installed"
-                      : "Add-on is not available on your system"}
+                      ? this.supervisor.localize("addon.not_installed")
+                      : this.supervisor.localize("addon.not_available")}
                     .iconClass=${addon.installed
                       ? addon.update_available
                         ? "update"

@@ -102,6 +102,395 @@
             "unknown": "Bilinmeyen"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Varsayılan",
+                    "header": "Ses",
+                    "input": "Giriş",
+                    "output": "Çıkış"
+                },
+                "network": {
+                    "container": "Konteyner",
+                    "disabled": "Devre dışı",
+                    "header": "Ağ",
+                    "host": "Ana bilgisayar"
+                },
+                "no_configuration": "Bu eklenti, yapılandırmayı sizin için karışıklığa maruz bırakmaz ...",
+                "options": {
+                    "edit_in_ui": "Kullanıcı arayüzünde düzenle",
+                    "edit_in_yaml": "YAML'de düzenle",
+                    "header": "Seçenekler",
+                    "invalid_yaml": "Geçersiz YAML",
+                    "show_unused_optional": "Kullanılmayan isteğe bağlı yapılandırma seçeneklerini göster"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "Eklenti değişiklik günlüğü alınamadı",
+                    "go_to_config": "Eklenti başlatılamadı - yapılandırma doğrulaması başarısız oldu!",
+                    "install": "Eklenti yüklenemedi",
+                    "restart": "Eklenti yeniden başlatılamadı",
+                    "start": "Eklenti başlatılamadı",
+                    "start_invalid_config": "Yapılandırmaya git",
+                    "stop": "Eklenti durdurulamadı",
+                    "uninstall": "Eklenti kaldırılamadı",
+                    "validate_config": "Eklenti yapılandırması doğrulanamadı"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Uygulama Zırhı'), ağ erişimi, ham soket erişimi ve belirli dosyaları okuma, yazma veya yürütme izni gibi eklenti yeteneklerini kısıtlayan bir Linux çekirdek güvenlik modülüdür. \n\n Eklenti yazarları, eklenti için optimize edilmiş güvenlik profillerini sağlayabilir veya devre dışı bırakılmasını isteyebilir. AppArmor devre dışı bırakılırsa, güvenlik riskleri artar ve bu nedenle eklentinin güvenlik puanı üzerinde olumsuz bir etkisi olur.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Bir eklenti, Home Assistant'a karşı kullanıcıların kimliğini doğrulayabilir ve eklentilerin kullanıcılara Home Assistant kullanıcı adlarını / şifrelerini kullanarak eklentiler içinde çalışan uygulamalarda oturum açmalarına olanak tanır. Bu rozet, eklenti yazarının bu özelliği isteyip istemediğini gösterir.",
+                        "title": "Home Assistant Kimlik Doğrulaması"
+                    },
+                    "docker_api": {
+                        "description": "Eklenti yazarı, eklentinin sisteminizde çalışan Docker örneğine yönetim erişimine sahip olmasını istedi. Bu mod, eklentiye tüm Ev Asistanı sisteminize tam erişim ve kontrol sağlar, bu da güvenlik riskleri ekler ve kötüye kullanıldığında sisteminize zarar verebilir. Bu nedenle, bu özellik eklenti güvenlik puanını olumsuz etkiler. \n\n Bu erişim düzeyi otomatik olarak verilmez ve sizin tarafınızdan onaylanması gerekir. Bunu yapmak için, eklentideki koruma modunu manuel olarak devre dışı bırakmanız gerekir. Koruma modunu yalnızca bu eklentinin kaynağını biliyorsanız, buna ihtiyaç duyuyorsanız VE güveniyorsanız devre dışı bırakın.",
+                        "title": "Tam Docker Erişimi"
+                    },
+                    "full_access": {
+                        "description": "Bu eklentiye, eklenti yazarının isteği üzerine sisteminizin donanımına tam erişim verilir. Erişim, Docker'daki ayrıcalıklı modla karşılaştırılabilir. Bu olası güvenlik risklerini ortaya çıkardığından, bu özellik eklenti güvenlik puanını olumsuz yönde etkiler. \n\n Bu erişim düzeyi otomatik olarak verilmez ve sizin tarafınızdan onaylanması gerekir. Bunu yapmak için, eklentideki koruma modunu manuel olarak devre dışı bırakmanız gerekir. Koruma modunu yalnızca bu eklentinin kaynağını biliyorsanız, buna ihtiyaç duyuyorsanız VE güveniyorsanız devre dışı bırakın.",
+                        "title": "Tam Donanım Erişimi"
+                    },
+                    "hassio_api": {
+                        "description": "Eklenti yazarının isteği üzerine eklentiye Supervisor API'ye erişim verildi. Varsayılan olarak eklenti, sisteminizin genel sürüm bilgilerine erişebilir. Eklenti, API'ye \"yönetici\" veya \"yönetici\" düzeyinde erişim istediğinde, Home Assistant sisteminizin birden çok bölümünü kontrol etme erişimi kazanır. Bu izin, bu rozetle belirtilir ve eklentinin güvenlik puanını olumsuz etkileyecektir.",
+                        "title": "Supervisor API Erişimi"
+                    },
+                    "homeassistant_api": {
+                        "description": "Bu eklentinin, çalışan Home Assistant örneğinize doğrudan Home Assistant API aracılığıyla erişmesine izin verilir. Bu mod, eklenti için kimlik doğrulamasını da yönetir, bu da bir eklentinin ek kimlik doğrulama belirteçlerine ihtiyaç duymadan Home Assistant ile etkileşime girmesini sağlar.",
+                        "title": "Home Assistant API Erişimi"
+                    },
+                    "host_network": {
+                        "description": "Eklentiler genellikle kendi yalıtılmış ağ katmanlarında çalışır ve bu da ana bilgisayar işletim sisteminin ağına erişmelerini engeller. Bazı durumlarda, bu ağ yalıtımı, hizmetlerini sağlamada eklentileri sınırlayabilir ve bu nedenle yalıtım, eklenti yazarı tarafından kaldırılarak eklentiye ana makinenin ağ yeteneklerine tam erişim sağlanabilir. Bu, eklentiye daha fazla ağ oluşturma yeteneği verir, ancak güvenliği düşürür, bu nedenle eklentinin güvenlik derecesi, eklenti tarafından bu seçenek kullanıldığında düşürülür.",
+                        "title": "Ana Bilgisayar Ağı"
+                    },
+                    "host_pid": {
+                        "description": "Eklentinin çalıştırdığı işlemler genellikle diğer tüm sistem işlemlerinden izole edilir. Eklenti yazarı, eklentinin ana bilgisayar sistemi örneğinde çalışan sistem işlemlerine erişmesini ve eklentinin ana bilgisayar sisteminde de işlemleri oluşturmasına izin vermesini istedi. Bu mod, eklentiye tüm Ev Asistanı sisteminize tam erişim ve kontrol sağlar, bu da güvenlik riskleri ekler ve kötüye kullanıldığında sisteminize zarar verebilir. Bu nedenle, bu özellik eklenti güvenlik puanını olumsuz etkiler. \n\n Bu erişim düzeyi otomatik olarak verilmez ve sizin tarafınızdan onaylanması gerekir. Bunu yapmak için, eklentideki koruma modunu manuel olarak devre dışı bırakmanız gerekir. Koruma modunu yalnızca bu eklentinin kaynağını biliyorsanız, buna ihtiyaç duyuyorsanız VE güveniyorsanız devre dışı bırakın.",
+                        "title": "Ana Bilgisayar İşlemleri Ad Alanı"
+                    },
+                    "ingress": {
+                        "description": "Bu eklenti, arayüzünü güvenli bir şekilde Home Assistant'a yerleştirmek için Ingress'i kullanıyor.",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "kimlik doğrulaması",
+                        "docker": "docker",
+                        "hardware": "donanım",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "ana bilgisayar",
+                        "host_pid": "ana bilgisayar pid'si",
+                        "ingress": "ingress",
+                        "rating": "değerlendirme",
+                        "stage": "sahne"
+                    },
+                    "rating": {
+                        "description": "Home Assistant, eklentilerin her biri için bu eklentiyi kullanırken ortaya çıkan riskleri gösteren bir güvenlik derecelendirmesi sağlar. Bir eklenti sisteminizde ne kadar çok erişim gerektirirse, puan o kadar düşük olur ve bu da olası güvenlik risklerini artırır. \n\n Puan 1'den 6'ya kadar bir skaladır. Burada 1 en düşük puan (en güvensiz ve en yüksek risk olarak kabul edilir) ve 6 puan en yüksek puandır (en güvenli ve en düşük risk olarak kabul edilir).",
+                        "title": "Eklenti Güvenlik Derecelendirmesi"
+                    },
+                    "role": {
+                        "admin": "yönetici",
+                        "backup": "yedekleme",
+                        "default": "varsayılan",
+                        "homeassistant": "homeassistant",
+                        "manager": "yönetici"
+                    },
+                    "stage": {
+                        "description": "Eklentiler üç aşamadan birine sahip olabilir: \n\n {icon_stable} ** Kararlı **: Bunlar, üretimde kullanılmaya hazır eklentilerdir. \n\n {icon_experimental} ** Deneysel **: Bunlar hatalar içerebilir ve tamamlanmamış olabilir. \n\n {icon_deprecated} ** Kullanımdan kaldırıldı **: Bu eklentiler artık herhangi bir güncelleme almayacak.",
+                        "title": "Eklenti Aşaması"
+                    }
+                },
+                "changelog": "Değişiklik günlüğü",
+                "cpu_usage": "Eklenti CPU Kullanımı",
+                "hostname": "Ana bilgisayar adı",
+                "install": "yükle",
+                "new_update_available": "{name} {version} mevcut",
+                "not_available_arch": "Bu eklenti, cihazınızın işlemcisi veya cihazınıza yüklediğiniz işletim sistemi ile uyumlu değildir.",
+                "not_available_version": "Home Assistant'ı {core_version_installed} çalıştırıyorsunuz, eklentinin bu sürümüne güncellemek için Home Assistant'ın {core_version_needed} sürümüne ihtiyacınız vardır",
+                "open_web_ui": "Web kullanıcı arayüzünü aç",
+                "option": {
+                    "auto_update": {
+                        "description": "Yeni bir sürüm mevcut olduğunda eklentiyi otomatik güncelle",
+                        "title": "Otomatik güncelleme"
+                    },
+                    "boot": {
+                        "description": "Eklentiyi bir sistem önyüklemesi sırasında başlatın",
+                        "title": "Önyüklemede başlat"
+                    },
+                    "ingress_panel": {
+                        "description": "Bu eklentiyi kenar çubuğunuza ekleyin",
+                        "title": "Kenar çubuğunda göster"
+                    },
+                    "protected": {
+                        "description": "Eklentiden yükseltilmiş sistem erişimini engeller",
+                        "title": "Koruma modu"
+                    },
+                    "watchdog": {
+                        "description": "Bu, çökerse eklentiyi başlatır",
+                        "title": "Watchdog"
+                    }
+                },
+                "protection_mode": {
+                    "content": "Bu eklentideki koruma modu devre dışı bırakıldı! Bu, eklentiye tüm sisteme tam erişim sağlar, bu da güvenlik riskleri ekler ve yanlış kullanıldığında sisteminize zarar verebilir. Koruma modunu yalnızca bu eklentinin kaynağını biliyorsanız, buna ihtiyaç duyuyorsanız VE güveniyorsanız devre dışı bırakın.",
+                    "enable": "Koruma modunu etkinleştir",
+                    "title": "Uyarı: Koruma modu devre dışı bırakıldı!"
+                },
+                "ram_usage": "Eklenti RAM Kullanımı",
+                "rebuild": "yeniden inşa et",
+                "restart": "yeniden başlat",
+                "start": "başlat",
+                "stop": "dur",
+                "uninstall": "kaldır",
+                "visit_addon_page": "Daha fazla ayrıntı için {name} sayfasını ziyaret edin"
+            },
+            "documentation": {
+                "get_documentation": "Eklenti belgeleri alınamadı, {error}"
+            },
+            "failed_to_reset": "Eklenti yapılandırması sıfırlanamadı, {error}",
+            "failed_to_save": "Eklenti yapılandırması kaydedilemedi, {error}",
+            "logs": {
+                "get_logs": "Eklenti günlükleri alınamadı, {error}"
+            },
+            "panel": {
+                "configuration": "Yapılandırma",
+                "documentation": "Dökümanlar",
+                "info": "Bilgi",
+                "log": "Günlük"
+            },
+            "state": {
+                "installed": "Eklenti yüklendi",
+                "not_available": "Eklenti sisteminizde kullanılamıyor",
+                "not_installed": "Eklenti yüklü değil"
+            }
+        },
+        "common": {
+            "cancel": "İptal",
+            "close": "Kapat",
+            "description": "Açıklama",
+            "error": {
+                "unknown": "Bilinmeyen hata",
+                "update_failed": "Güncelleştirme başarısız oldu"
+            },
+            "failed_to_restart_name": "{name} yeniden başlatılamadı",
+            "failed_to_update_name": "{name} güncellenemedi",
+            "learn_more": "Daha fazla bilgi edinin",
+            "new_version_available": "Yeni sürüm mevcut",
+            "newest_version": "En Yeni Sürüm",
+            "no": "Hayır",
+            "refresh": "Yenile",
+            "release_notes": "Sürüm notları",
+            "reload": "Tekrar yükle",
+            "reset_defaults": "Varsayılanlara dön",
+            "reset_options": "Ayarları sıfırla",
+            "restart": "Yeniden başlat",
+            "restart_name": "{name} yeniden başlatın",
+            "running_version": "Şu anda {version} sürümünü çalıştırıyorsunuz",
+            "save": "Kaydet",
+            "show_more": "Bununla ilgili daha fazla bilgi göster",
+            "update": "Güncelle",
+            "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending",
+            "version": "Sürüm",
+            "yes": "Evet"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Tüm seçeneklerinizi sıfırlamak istediğinizden emin misiniz?",
+                "title": "Ayarları sıfırla"
+            },
+            "restart": {
+                "text": "{name} yeniden başlatmak istediğinizden emin misiniz?",
+                "title": "{name} yeniden başlatın"
+            },
+            "update": {
+                "text": "{name} i {version} sürümüne güncellemek istediğinizden emin misiniz?",
+                "title": "{name} güncelleyin"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Yeni sürüm mevcut",
+            "addon_running": "Eklenti çalışıyor",
+            "addon_stopped": "Eklenti durduruldu",
+            "addons": "Eklentiler",
+            "no_addons": "Henüz yüklü eklentiniz yok. Başlamak için eklenti mağazasına gidin!"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "{ssid} bağlantı kuruldu",
+                "dhcp": "DHCP",
+                "disabled": "Devre dışı",
+                "dns_servers": "DNS Sunucuları",
+                "failed_to_change": "Ağ ayarları değiştirilemedi",
+                "gateway": "Ağ geçidi adresi",
+                "ip_netmask": "IP adresi / Ağ maskesi",
+                "open": "Açık",
+                "scan_ap": "Erişim noktalarını tara",
+                "static": "Statik",
+                "title": "Ağ ayarları",
+                "unsaved": "Kaydedilmemiş değişiklikleriniz var, sekmeleri değiştirirseniz bunlar kaybolacak, devam etmek istiyor musunuz?",
+                "warning": "Wi-Fi, IP veya ağ geçidi adreslerini değiştirirseniz, bağlantıyı kaybedebilirsiniz!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Yeni kayıt ekle",
+                "add_registry": "Kayıt ekle",
+                "failed_to_add": "Kayıt eklenemedi",
+                "failed_to_remove": "Kayıt kaldırılamadı",
+                "no_registries": "Yapılandırılmış kayıt yok",
+                "password": "Parola",
+                "registry": "Kayıt",
+                "remove": "Kaldır",
+                "title_add": "Yeni Kapsayıcı Kaydı Ekle",
+                "title_manage": "Kapsayıcı Kayıtlarını Yönetin",
+                "username": "Kullanıcı adı"
+            },
+            "repositories": {
+                "add": "Ekle",
+                "remove": "Kaldır",
+                "title": "Eklenti depolarını yönetme"
+            },
+            "restart_addon": {
+                "confirm_text": "Eklentiyi yeniden başlatın",
+                "text": "Eklentiyi değişikliklerinizle yeniden başlatmak istiyor musunuz?"
+            },
+            "update": {
+                "create_snapshot": "Güncellemeden önce {name} anlık görüntüsünü oluşturun",
+                "snapshot": "Anlık görüntü",
+                "snapshotting": "{name} anlık görüntüsü oluşturuluyor",
+                "updating": "{name} , {version} sürümüne güncelleniyor"
+            }
+        },
+        "my": {
+            "error": "Bilinmeyen bir hata oluştu",
+            "error_addon_not_found": "Eklenti bulunamadı",
+            "faq_link": "Home Assistant SSS",
+            "not_supported": "Bu yönlendirme, Home Assistant örneğiniz tarafından desteklenmiyor. Desteklenen yönlendirmeler ve bunların sunulduğu sürüm için {link} bağlantısını kontrol edin."
+        },
+        "panel": {
+            "dashboard": "Gösterge Paneli",
+            "snapshots": "Anlık görüntüler",
+            "store": "Eklenti Mağazası",
+            "system": "Sistem"
+        },
+        "snapshot": {
+            "addons": "Eklentiler",
+            "available_snapshots": "Kullanılabilir Anlık Görüntüler",
+            "could_not_create": "Anlık görüntü oluşturulamadı",
+            "create": "Oluştur",
+            "create_blocked_not_running": "{state} durumunda olduğundan şu anda anlık görüntü oluşturmak mümkün değil.",
+            "create_snapshot": "Anlık görüntü oluştur",
+            "description": "Anlık görüntüler, Home Assistant örneğinizin tüm verilerini kolayca yedeklemenizi ve geri yüklemenizi sağlar.",
+            "enter_password": "Lütfen bir parola girin.",
+            "folder": {
+                "addons/local": "Yerel eklentiler",
+                "homeassistant": "Home Assistant yapılandırması",
+                "media": "Medya",
+                "share": "Paylaş",
+                "ssl": "SSL"
+            },
+            "folders": "Klasörler",
+            "full_snapshot": "Tam anlık görüntü",
+            "name": "Ad",
+            "no_snapshots": "Henüz anlık görüntünüz yok.",
+            "partial_snapshot": "Kısmi anlık görüntü",
+            "password": "Parola",
+            "password_protected": "parola korumalı",
+            "password_protection": "Parola koruması",
+            "security": "Güvenlik",
+            "type": "Tür",
+            "upload_snapshot": "Anlık görüntü yükle"
+        },
+        "store": {
+            "missing_addons": "Eksik eklentiler mi var? Kullanıcı profili sayfanızda gelişmiş modu etkinleştirin",
+            "no_results_found": "{repository} içinde sonuç bulunamadı.",
+            "registries": "Kayıtlar",
+            "repositories": "Depolar"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Çekirdek CPU Kullanımı",
+                "ram_usage": "Çekirdek RAM Kullanımı"
+            },
+            "host": {
+                "change": "Değişiklik",
+                "change_hostname": "Ana Bilgisayar Adını Değiştirin",
+                "confirm_reboot": "Ana bilgisayarı yeniden başlatmak istediğinizden emin misiniz?",
+                "confirm_shutdown": "Ana bilgisayarı kapatmak istediğinizden emin misiniz?",
+                "deployment": "Dağıtım",
+                "docker_version": "Docker sürümü",
+                "emmc_lifetime_used": "eMMC Kullanım Ömrü",
+                "failed_to_get_hardware_list": "Donanım listesi alınamadı",
+                "failed_to_import_from_usb": "USB'den içe aktarılamadı",
+                "failed_to_reboot": "Ana bilgisayar yeniden başlatılamadı",
+                "failed_to_set_hostname": "Ana bilgisayar adı ayarlanamadı",
+                "failed_to_shutdown": "Ana bilgisayar kapatılamadı",
+                "hardware": "Donanım",
+                "hostname": "Ana bilgisayar adı",
+                "import_from_usb": "USB'den içe aktar",
+                "ip_address": "IP Adresi",
+                "new_hostname": "Lütfen yeni bir ana bilgisayar adı girin:",
+                "operating_system": "İşletim sistemi",
+                "reboot_host": "Ana bilgisayarı yeniden başlatın",
+                "shutdown_host": "Ana bilgisayarı kapat",
+                "used_space": "Kullanılan alan"
+            },
+            "log": {
+                "get_logs": "{provider} günlükleri alınamadı, {error}",
+                "log_provider": "Günlük Sağlayıcısı"
+            },
+            "supervisor": {
+                "beta_backup": "Bu özelliği etkinleştirmeden önce verilerinizin yedeğini aldığınızdan emin olun.",
+                "beta_join_confirm": "Beta kanalına katılmak ister misiniz?",
+                "beta_release_items": "Bu, aşağıdakiler için beta sürümlerini içerir:",
+                "beta_warning": "Beta sürümleri test ediciler ve ilk kullanıcılar içindir ve dengesiz kod değişiklikleri içerebilir",
+                "channel": "Kanal",
+                "cpu_usage": "Süpervizör CPU Kullanımı",
+                "failed_to_reload": "Süpervizör yeniden yüklenemedi",
+                "failed_to_set_option": "Süpervizör seçeneği ayarlanamadı",
+                "failed_to_update": "Süpervizör güncellenemedi",
+                "join_beta_action": "Beta kanalına katılın",
+                "join_beta_description": "Home Assistant (RC'ler), Süpervizör ve ana bilgisayar için beta güncellemelerini alın",
+                "leave_beta_action": "Beta kanalından ayrıl",
+                "leave_beta_description": "Home Assistant, Süpervizör ve ana bilgisayar için kararlı güncellemeler alın",
+                "ram_usage": "Süpervizör RAM Kullanımı",
+                "reload_supervisor": "Süpervizörü Yeniden Yükleme",
+                "share_diagnostics": "Tanılamayı Paylaş",
+                "share_diagnostics_description": "Kilitlenme raporlarını ve tanılama bilgilerini paylaşın.",
+                "share_diagonstics_description": "Süpervizör beklenmedik hatalarla karşılaştığında otomatik olarak kilitlenme raporlarını ve tanılama bilgilerini paylaşmak ister misiniz? {line_break} Bu, sorunları çözmemize olanak tanıyacak, bilgilere yalnızca Home Assistant Core ekibi erişebilecek ve başkalarıyla paylaşılmayacaktır. {line_break} Veriler hiçbir özel / hassas bilgi içermez ve bunu istediğiniz zaman ayarlardan devre dışı bırakabilirsiniz.",
+                "share_diagonstics_title": "Home Assistant'ı Geliştirmeye Yardım Edin",
+                "unhealthy_description": "Sağlıksız bir kurulum çalıştırmak sorunlara neden olacaktır. Aşağıda, kurulumunuzla ilgili bulunan sorunların bir listesi verilmiştir, sorunları nasıl çözebileceğinizi öğrenmek için bağlantılara tıklayın.",
+                "unhealthy_reason": {
+                    "docker": "Docker ortamı düzgün çalışmıyor",
+                    "privileged": "Süpervizör ayrıcalıklı değil",
+                    "setup": "Süpervizörün kurulumu başarısız oldu",
+                    "supervisor": "Süpervizör güncellenemedi",
+                    "untrusted": "Güvenilmeyen içerik tespit edildi"
+                },
+                "unhealthy_title": "Kurulumunuz sağlıksız",
+                "unsupported_description": "Aşağıda, kurulumunuzla ilgili bulunan sorunların bir listesi verilmiştir, sorunları nasıl çözebileceğinizi öğrenmek için bağlantılara tıklayın.",
+                "unsupported_reason": {
+                    "container": "Sorunlara neden olduğu bilinen kapsayıcılar",
+                    "content-trust": "İçerik güveni doğrulaması devre dışı bırakıldı",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker Yapılandırması",
+                    "docker_version": "Docker Sürümü",
+                    "job_conditions": "Yoksayılan iş koşulları",
+                    "lxc": "LXC",
+                    "network_manager": "Ağ yöneticisi",
+                    "os": "İşletim sistemi",
+                    "privileged": "Süpervizör ayrıcalıklı değil",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "Desteklenmeyen bir kurulum çalıştırıyorsunuz",
+                "update_supervisor": "Süpervizörü Güncelle",
+                "warning": "UYARI"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Oturumunuzun açık kalmasını istiyor musunuz?",
@@ -276,7 +665,7 @@
             "disable": "Devre dışı bırak",
             "enable": "Etkinleştir",
             "error_required": "Gerekli",
-            "leave": "Çıkınca",
+            "leave": "Ayrıl",
             "loading": "Yükleniyor",
             "menu": "Menü",
             "next": "Sonraki",
@@ -289,7 +678,7 @@
             "rename": "Yeniden adlandır",
             "save": "Kaydet",
             "skip": "Atla",
-            "stay": "Kalmak",
+            "stay": "Kal",
             "successfully_deleted": "Başarıyla silindi",
             "successfully_saved": "Başarıyla kaydedildi",
             "undo": "Geri al",
@@ -377,6 +766,8 @@
                     "changed_to_state": "{state} değiştirildi",
                     "cleared_device_class": "temizlendi ( {device_class} algılanmadı)",
                     "detected_device_class": "{device_class} algılandı",
+                    "is_closing": "kapanıyor",
+                    "is_opening": "açılıyor",
                     "rose": "gül",
                     "set": "Ayarlamak",
                     "turned_off": "Kapatıldı",
@@ -396,7 +787,8 @@
                     "was_unlocked": "kilidi açıldı",
                     "was_unplugged": "fişi çekildi",
                     "was_unsafe": "güvensiz"
-                }
+                },
+                "show_trace": "İzi göster"
             },
             "media-browser": {
                 "audio_not_supported": "Tarayıcınız ses öğesini desteklemiyor.",
@@ -624,6 +1016,9 @@
                 "person": {
                     "create_zone": "Geçerli konumdan bölge oluşturma"
                 },
+                "remote": {
+                    "activity": "Şu anki aktivite"
+                },
                 "restored": {
                     "confirm_remove_text": "Bu varlığı kaldırmak istediğinizden emin misiniz?",
                     "confirm_remove_title": "Varlık kaldırılsın mı?",
@@ -632,7 +1027,7 @@
                     "remove_intro": "Varlık artık kullanılmıyorsa, kaldırarak temizleyebilirsiniz."
                 },
                 "script": {
-                    "last_action": "Son Eylem",
+                    "last_action": "Son eylem",
                     "last_triggered": "Son Tetiklenen"
                 },
                 "settings": "Varlık ayarları",
@@ -697,7 +1092,6 @@
                         "script": "Senaryolar",
                         "server_control": "Sunucu Kontrolleri",
                         "tag": "Etiketler",
-                        "tags": "Etiketler",
                         "users": "Kullanıcılar",
                         "zone": "Bölgeler"
                     },
@@ -721,7 +1115,7 @@
                         "mqtt": "Manuel olarak yapılandırılmış MQTT varlıklarını yeniden yükleyin",
                         "person": "Kişileri yeniden yükle",
                         "ping": "Ping ikili sensör varlıklarını yeniden yükle",
-                        "reload": "{domain} yükleyin",
+                        "reload": "{domain}",
                         "rest": "Rest varlıklarını yeniden yükleyin ve hizmetleri bilgilendirin",
                         "rpi_gpio": "Raspberry Pi GPIO varlıklarını yeniden yükleyin",
                         "scene": "Sahneleri yeniden yükle",
@@ -735,9 +1129,14 @@
                         "zone": "Bölgeleri yeniden yükle"
                     },
                     "server_control": {
-                        "perform_action": "{action} Sunucu",
+                        "perform_action": "{action} sunucusu",
                         "restart": "Yeniden Başlat",
                         "stop": "Durdur"
+                    },
+                    "types": {
+                        "navigation": "Gezinme",
+                        "reload": "Tekrar yükle",
+                        "server_control": "Sunucu"
                     }
                 },
                 "filter_placeholder": "Varlık Filtresi"
@@ -754,13 +1153,16 @@
                 "buttons": {
                     "add": "Bu cihaz üzerinden Aygıt Ekleme",
                     "clusters": "Kümeleri Yönet",
+                    "device_children": "Alt cihazları görüntüle",
                     "reconfigure": "Cihazı Yeniden Yapılandır",
                     "remove": "Cihazı Kaldır",
+                    "view_in_visualization": "Görselleştirmede Görüntüle",
                     "zigbee_information": "Zigbee cihaz imzası"
                 },
                 "confirmations": {
                     "remove": "Cihazı kaldırmak istediğinize emin misiniz?"
                 },
+                "device_children": "Zigbee alt cihazları",
                 "device_signature": "Zigbee cihaz imzası",
                 "last_seen": "Son görülen",
                 "manuf": "{manufacturer} tarafından",
@@ -795,6 +1197,7 @@
                 "key_missing": "Gerekli anahtar \" {key} \" eksik.",
                 "key_not_expected": "Anahtar \"{key}\" beklenmiyor veya görsel düzenleyici tarafından desteklenmiyor.",
                 "key_wrong_type": "\"{key}\" için sağlanan değer görsel düzenleyici tarafından desteklenmez. Biz destek ({type_correct}) ama alınan ({type_wrong}).",
+                "no_template_editor_support": "Görsel düzenleyicide desteklenmeyen şablonlar",
                 "no_type_provided": "Tür sağlanmadı."
             }
         },
@@ -902,10 +1305,15 @@
                                 "device_id": {
                                     "action": "Aksiyon",
                                     "extra_fields": {
+                                        "brightness_pct": "Parlaklık",
                                         "code": "Kod",
+                                        "flash": "Flaş",
+                                        "humidity": "Nem",
                                         "message": "İleti",
+                                        "mode": "Mod",
                                         "position": "Konum",
-                                        "title": "Başlık"
+                                        "title": "Başlık",
+                                        "value": "Değer"
                                     },
                                     "label": "Cihaz"
                                 },
@@ -950,7 +1358,7 @@
                                     "wait_template": "Bekleme taslak"
                                 }
                             },
-                            "unsupported_action": "Eylem için kullanıcı arayüzü desteği yok: {action}"
+                            "unsupported_action": "Eylem için görsel düzenleyici desteği yok: {action}"
                         },
                         "alias": "İsim",
                         "blueprint": {
@@ -978,7 +1386,9 @@
                                     "extra_fields": {
                                         "above": "Üzerinde",
                                         "below": "Altında",
-                                        "for": "Süre"
+                                        "for": "Süre",
+                                        "hvac_mode": "HVAC modu",
+                                        "preset_mode": "Ön ayar modu"
                                     },
                                     "label": "Cihaz"
                                 },
@@ -1033,7 +1443,7 @@
                                     "zone": "Bölge"
                                 }
                             },
-                            "unsupported_condition": "Koşul için kullanıcı arayüzü desteği yok: {condition}"
+                            "unsupported_condition": "Koşul için görsel düzenleyici desteği yok: {condition}"
                         },
                         "copy_to_clipboard": "Panoya kopyala",
                         "default_name": "Yeni Otomasyon",
@@ -1041,8 +1451,8 @@
                             "label": "Açıklama",
                             "placeholder": "İsteğe bağlı açıklama"
                         },
-                        "edit_ui": "UI ile düzenle",
-                        "edit_yaml": "YAML olarak düzenle",
+                        "edit_ui": "Görsel düzenleyicide düzenle",
+                        "edit_yaml": "YAML'de düzenle",
                         "enable_disable": "Otomasyonu etkinleştirme / devre dışı bırakma",
                         "introduction": "Evinizi canlandırmak için otomasyonları kullanın",
                         "load_error_not_editable": "Yalnızca automations.yaml içindeki otomasyonlar düzenlenebilir.",
@@ -1096,7 +1506,7 @@
                                     "enter": "Girince",
                                     "event": "Olay:",
                                     "label": "Konum",
-                                    "leave": "Çıkınca",
+                                    "leave": "Ayrıl",
                                     "source": "Kaynak",
                                     "zone": "Bölge"
                                 },
@@ -1159,11 +1569,11 @@
                                     "entity": "Konumu olan varlık",
                                     "event": "Olay:",
                                     "label": "Bölge",
-                                    "leave": "Çıkınca",
+                                    "leave": "Ayrıl",
                                     "zone": "Bölge"
                                 }
                             },
-                            "unsupported_platform": "Platform için kullanıcı arayüzü desteği yok: {platform}"
+                            "unsupported_platform": "Platform için görsel düzenleyici desteği yok: {platform}"
                         },
                         "unsaved_confirm": "Kaydedilmemiş değişiklikleriniz var. Çıkmak istediğinize emin misiniz?"
                     },
@@ -1171,6 +1581,8 @@
                         "add_automation": "Otomasyon ekle",
                         "delete_automation": "Otomasyonu sil",
                         "delete_confirm": "Bu otomasyonu silmek istediğinizden emin misiniz?",
+                        "dev_automation": "Hata ayıklama otomasyonu",
+                        "dev_only_editable": "Yalnızca automations.yaml'de tanımlanan otomasyonlarda hata ayıklama yapılabilir.",
                         "duplicate": "Çiftleme",
                         "duplicate_automation": "Yinelenen otomasyon",
                         "edit_automation": "Otomasyonu düzenle",
@@ -1234,6 +1646,8 @@
                         },
                         "introduction": "Taslak düzenleyici, taslakları oluşturmanıza ve düzenlemenize olanak tanır.",
                         "learn_more": "Taslaklar hakkında daha fazla bilgi edinin",
+                        "share_blueprint": "Taslağı paylaş",
+                        "share_blueprint_no_url": "Taslak paylaşılamıyor: kaynak url yok",
                         "use_blueprint": "Otomasyon oluşturun"
                     }
                 },
@@ -1258,12 +1672,12 @@
                         "fetching_subscription": "Abonelik alınıyor…",
                         "google": {
                             "config_documentation": "Yapılandırma belgeleri",
-                            "devices_pin": "Güvenlik Cihazları Pın",
+                            "devices_pin": "Güvenlik Cihazları PIN'i",
                             "enable_ha_skill": "Home Assistant Google Assistant skillini etkinleştir",
                             "enable_state_reporting": "Durum Raporlamasını Etkinleştir",
                             "enter_pin_error": "PIN kaydedilemiyor:",
                             "enter_pin_hint": "Güvenlik cihazlarını kullanmak için bir PIN girin",
-                            "enter_pin_info": "Güvenlik cihazlarıyla etkileşim kurmak için lütfen bir pin girin. Güvenlik cihazları kapılar, garaj kapıları ve kilitlerdir. Google Asistan aracılığıyla bu tür cihazlarla etkileşim kurduğunuzda bu PIN kodunu söylemeniz / girmeniz istenecektir.",
+                            "enter_pin_info": "Güvenlik cihazlarıyla etkileşim kurmak için lütfen bir PIN girin. Güvenlik cihazları kapılar, garaj kapıları ve kilitlerdir. Google Asistan aracılığıyla bu tür cihazlarla etkileşim kurduğunuzda bu PIN kodunu söylemeniz / girmeniz istenecektir.",
                             "info": "Home Assistant Cloud için Google Assistant entegrasyonu ile, tüm Home Assistant cihazlarınızı herhangi bir Google Asistan özellikli cihaz üzerinden kontrol edebilirsiniz.",
                             "info_state_reporting": "Durum raporlamayı etkinleştirirseniz, Home Assistant sergilenmis varlıkların tüm durum değişikliklerini Google'e gönderir. Bu, Google Home uygulamasında her zaman en son durumları görmenizi ve rutin oluşturmak için durum değişikliklerini kullanmanızı sağlar.",
                             "manage_entities": "Varlıkları Yönetin",
@@ -1687,7 +2101,7 @@
                         "devices": "{count} {count, plural,\n  one {cihaz}\n  other {cihazlar}\n}",
                         "disable_restart_confirm": "Bu entegrasyonu devre dışı bırakmayı tamamlamak için Home Assistant'ı yeniden başlatın",
                         "disable": {
-                            "disable_confirm": "Bu yapılandırma girişini devre dışı bırakmak istediğinizden emin misiniz? Cihazlar ve varlıklar devre dışı bırakılacak.",
+                            "disable_confirm": "Bu yapılandırma girişini devre dışı bırakmak istediğinizden emin misiniz? Cihazları ve varlıkları devre dışı bırakılacak.",
                             "disabled": "Devre dışı",
                             "disabled_by": {
                                 "device": "cihaz",
@@ -1761,7 +2175,7 @@
                     "integration": "Entegrasyon",
                     "integration_not_found": "Entegrasyon bulunamadı.",
                     "new": "Yeni bir entegrasyon kur",
-                    "no_integrations": "Henüz yapılandırılmış hiçbir entegrasyonunuz yok gibi görünüyor. İlk entegrasyonunuzu eklemek için aşağıdaki düğmeyi tıklayın!",
+                    "no_integrations": "Henüz yapılandırılmış herhangi bir entegrasyonunuz yok gibi görünüyor. İlk entegrasyonunuzu eklemek için aşağıdaki düğmeyi tıklayın!",
                     "none": "Henüz hiçbir şey yapılandırılmamış",
                     "none_found": "Hiçbir entegrasyon bulunamadı",
                     "none_found_detail": "Arama ölçütlerinizi ayarlayın.",
@@ -2122,39 +2536,39 @@
                     "description": "Home Assistant sunucusunu yeniden başlatın veya durdurun.",
                     "section": {
                         "reloading": {
-                            "automation": "Otomasyonları yeniden yükle",
-                            "command_line": "Komut satırı varlıklarını yeniden yükleyin",
-                            "core": "Konumu ve özelleştirmeleri yeniden yükle",
-                            "filesize": "Dosya boyutu varlıklarını yeniden yükleyin",
-                            "filter": "Filtre varlıklarını yeniden yükleyin",
-                            "generic": "Genel IP kamera varlıklarını yeniden yükleyin",
-                            "generic_thermostat": "Genel termostat varlıklarını yeniden yükleyin",
+                            "automation": "Otomasyonlar",
+                            "command_line": "Komut satırı varlıkları",
+                            "core": "Konum ve özelleştirmeler",
+                            "filesize": "Dosya boyutu varlıkları",
+                            "filter": "Filtre varlıkları",
+                            "generic": "Genel IP kamera varlıkları",
+                            "generic_thermostat": "Genel termostat varlıkları",
                             "group": "Grupları, grup varlıklarını ve grup bildirim hizmetlerini yeniden yükleyin",
                             "heading": "YAML yapılandırması yeniden yükleniyor",
-                            "history_stats": "Geçmiş istatistik varlıklarını yeniden yükle",
-                            "homekit": "HomeKit'i yeniden yükle",
+                            "history_stats": "Geçmiş istatistikleri varlıkları",
+                            "homekit": "HomeKit",
                             "input_boolean": "Mantıksal veri tiplerini yeniden yükle",
                             "input_datetime": "Giriş tarih ve zamanı yeniden yükle",
                             "input_number": "Giriş numaralarını yeniden yükle",
-                            "input_select": "Giriş seçimlerini yeniden yükle",
+                            "input_select": "Giriş seçenekleri",
                             "input_text": "Giriş metinlerini yeniden yükle",
                             "introduction": "Home Assistant'ın bazı bölümleri, yeniden başlatma gerektirmeden yeniden yüklenebilir. Yeniden yüklemeye basmak, mevcut YAML yapılandırmasını kaldıracak ve yenisini yükleyecektir.",
-                            "min_max": "Min / maks varlıkları yeniden yükle",
-                            "mqtt": "Mqtt varlıklarını yeniden yükleme",
+                            "min_max": "Min/max varlıkları",
+                            "mqtt": "Manuel olarak yapılandırılmış MQTT varlıkları",
                             "person": "Kişileri yeniden yükleme",
-                            "ping": "Ping ikili sensör varlıklarını yeniden yükle",
-                            "reload": "{domain} yükleyin",
+                            "ping": "Ping ikili sensör varlıkları",
+                            "reload": "{domain}",
                             "rest": "Rest varlıklarını yeniden yükleyin ve hizmetleri bilgilendirin",
-                            "rpi_gpio": "Raspberry Pi GPIO varlıklarını yeniden yükleyin",
-                            "scene": "Sahneleri yeniden yükle",
-                            "script": "Senaryoları yeniden yükle",
-                            "smtp": "Smtp bildirim hizmetlerini yeniden yükle",
-                            "statistics": "İstatistik varlıklarını yeniden yükle",
-                            "telegram": "Telgraf bildirim hizmetlerini yeniden yükle",
-                            "template": "Şablon varlıklarını yeniden yükleyin",
-                            "trend": "Trend varlıklarını yeniden yükle",
+                            "rpi_gpio": "Raspberry Pi GPIO varlıkları",
+                            "scene": "Sahneler",
+                            "script": "Senaryolar",
+                            "smtp": "SMTP bilgilendirme hizmetleri",
+                            "statistics": "İstatistik varlıkları",
+                            "telegram": "Telgraf bilgilendirme hizmetleri",
+                            "template": "Şablon varlıkları",
+                            "trend": "Trend varlıkları",
                             "universal": "Evrensel medya oynatıcı varlıklarını yeniden yükleyin",
-                            "zone": "Bölgeleri yeniden yükle"
+                            "zone": "Bölgeler"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant'ı yeniden başlatmak istediğinizden emin misiniz?",
@@ -2254,7 +2668,7 @@
                     "add_device": "Cihaz Ekle",
                     "add_device_page": {
                         "discovered_text": "Cihazlar keşfedildikten sonra burada görünecektir.",
-                        "no_devices_found": "Hiçbir cihaz bulunamadı, eşleştirme modunda olduklarından emin olun ve keşfetme sırasında cihazı açık tutun.",
+                        "no_devices_found": "Hiçbir cihaz bulunamadı, eşleştirme modunda olduklarından emin olun ve çalışırken çalışırken onları uyanık tutun.",
                         "pairing_mode": "Cihazlarınızın eşleme modunda olduğundan emin olun. Bunun nasıl yapılacağı konusunda cihazınızın talimatlarını kontrol edin.",
                         "search_again": "Yeniden Ara",
                         "spinner": "ZHA Zigbee cihazları aranıyor ..."
@@ -2330,9 +2744,11 @@
                         "caption": "Ağ"
                     },
                     "visualization": {
+                        "auto_zoom": "Otomatik Yakınlaştırma",
                         "caption": "Görselleştirme",
                         "header": "Ağ Görselleştirme",
                         "highlight_label": "Cihazları Vurgula",
+                        "refresh_topology": "Topolojiyi Yenile",
                         "zoom_label": "Cihaza Yakınlaştır"
                     }
                 },
@@ -2404,6 +2820,7 @@
                         "server_version": "Sunucu Sürümü"
                     },
                     "device_info": {
+                        "device_config": "Cihazı Yapılandır",
                         "node_ready": "Düğüm Hazır",
                         "node_status": "Düğüm Durumu",
                         "zwave_info": "Z-Wave Bilgisi"
@@ -2415,6 +2832,15 @@
                         "connected": "Bağlı",
                         "connecting": "Bağlanıyor",
                         "unknown": "Bilinmeyen"
+                    },
+                    "node_config": {
+                        "attribution": "Cihaz yapılandırma parametreleri ve açıklamaları {device_database}",
+                        "battery_device_notice": "Yapılandırmalarını güncellemek için pil cihazlarının uyanık olması gerekir. Cihazı nasıl uyandıracağınıza ilişkin talimatlar için lütfen cihazınızın kılavuzuna bakın.",
+                        "error_device_not_found": "Cihaz bulunamadı",
+                        "header": "Z-Wave Cihaz Yapılandırması",
+                        "introduction": "Seçilen cihaz için cihaza (düğüm) özel yapılandırma parametrelerini yönetin ve ayarlayın",
+                        "parameter_is_read_only": "Bu parametre salt okunurdur.",
+                        "zwave_js_device_database": "Z-Wave JS Cihaz Veritabanı"
                     },
                     "node_status": {
                         "alive": "Canlı",
@@ -2441,7 +2867,7 @@
                         "instance": "Örnek",
                         "unknown": "Bilinmeyen",
                         "value": "Değer",
-                        "wakeup_interval": "Uyandırma Aralığı"
+                        "wakeup_interval": "Uyanma Aralığı"
                     },
                     "description": "Z-Wave ağınızı yönetin",
                     "learn_more": "Z-Wave hakkında daha fazla bilgi edinin",
@@ -2470,7 +2896,7 @@
                         "header": "Düğüm Yapılandırma Seçenekleri",
                         "seconds": "Saniye",
                         "set_config_parameter": "Yapılandırma parametresini belirle",
-                        "set_wakeup": "Uyandırma Aralığı Ayarla",
+                        "set_wakeup": "Uyanma Aralığını Ayarlama",
                         "true": "Doğru"
                     },
                     "node_management": {
@@ -2556,12 +2982,13 @@
                     "services": {
                         "accepts_target": "Bu hizmet bir hedefi kabul eder, örneğin: 'entity_id: light.bed_light'",
                         "all_parameters": "Mevcut tüm parametreler",
-                        "call_service": "Arama Servisi",
+                        "call_service": "Servisi Çağır",
                         "column_description": "Açıklama",
                         "column_example": "Örnek",
                         "column_parameter": "Parametre",
                         "description": "Servisler geliştirici araçı, Home Assistant'taki mevcut tüm hizmetleri aramanızı sağlar.",
                         "fill_example_data": "Örnek Verileri Doldur",
+                        "no_template_ui_support": "Kullanıcı arayüzü şablonları desteklemiyor, yine de YAML düzenleyicisini kullanabilirsiniz.",
                         "title": "Servisler",
                         "ui_mode": "UI moduna git",
                         "yaml_mode": "YAML moduna git",
@@ -2603,6 +3030,17 @@
                         "title": "Taslak",
                         "unknown_error_template": "Bilinmeyen taslak gösterim hatası"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Geri Git",
+                "supervisor": {
+                    "ask": "Yardım isteyin",
+                    "observer": "Gözlemciyi Kontrol Edin",
+                    "reboot": "Ana bilgisayarı yeniden başlatmayı deneyin",
+                    "system_health": "Sistem Sağlığını Kontrol Edin",
+                    "title": "Süpervizör paneli yüklenemedi!",
+                    "wait": "Yeni başladıysanız, süpervizöre başlaması için yeterince zaman verdiğinizden emin olun."
                 }
             },
             "history": {
@@ -3010,6 +3448,8 @@
                         "error_remove": "Yapılandırma kaldırılamıyor: {error}",
                         "error_save_yaml": "YAML kaydedilemiyor: {error}",
                         "header": "Yapılandırmayı Düzenle",
+                        "lovelace_changed": "Lovelace yapılandırması güncellendi, güncellenmiş yapılandırmayı düzenleyiciye yüklemek ve mevcut değişikliklerinizi kaybetmek ister misiniz?",
+                        "reload": "Tekrar yükle",
                         "resources_moved": "Kaynaklar artık Lovelace yapılandırmasına eklenemez, ancak Lovelace yapılandırma paneline eklenebilir.",
                         "save": "Kaydet",
                         "saved": "Kaydedildi",
