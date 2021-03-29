@@ -158,15 +158,9 @@ ${safeDump(trace.changed_variables).trimRight()}</pre
   }
 
   private _renderLogbook() {
-    const paths = {
-      ...this.trace.trace,
-      ...this.trace.trace,
-    };
-
+    const paths = this.trace.trace;
     const startTrace = paths[this.selected.path];
-
     const trackedPaths = Object.keys(this.trackedNodes);
-
     const index = trackedPaths.indexOf(this.selected.path);
 
     if (index === -1) {
