@@ -33,6 +33,7 @@ import "./ha-automation-trace-timeline";
 import "./ha-automation-trace-config";
 import { classMap } from "lit-html/directives/class-map";
 import { traceTabStyles } from "./styles";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -40,13 +41,13 @@ export class HaAutomationTrace extends LitElement {
 
   @property() public automationId!: string;
 
-  @property() public automations!: AutomationEntity[];
+  @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide?: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @internalProperty() private _entityId?: string;
 
@@ -80,7 +81,10 @@ export class HaAutomationTrace extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        <div class="toolbar">
+        <div
+          class="toolbar"
+          slot=${ifDefined(this.narrow ? "header" : undefined)}
+        >
           <div>
             ${stateObj?.attributes.friendly_name || this._entityId}
           </div>
@@ -381,10 +385,19 @@ export class HaAutomationTrace extends LitElement {
           align-items: center;
         }
 
+        :host([narrow]) .toolbar {
+          flex-direction: column;
+        }
+
         .main {
           height: calc(100% - 56px);
           display: flex;
           background-color: var(--card-background-color);
+        }
+
+        :host([narrow]) .main {
+          height: auto;
+          flex-direction: column;
         }
 
         .graph {
