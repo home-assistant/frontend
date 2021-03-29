@@ -723,6 +723,9 @@
                 "today": "Avui"
             },
             "data-table": {
+                "clear": "Esborra",
+                "filtering_by": "Filtratge per",
+                "hidden": "{number} amagat/s",
                 "no-data": "No hi ha dades",
                 "search": "Cerca"
             },
@@ -1473,6 +1476,7 @@
                         "move_down": "Mou avall",
                         "move_up": "Mou amunt",
                         "save": "Desa",
+                        "show_trace": "Mostra la traça",
                         "triggers": {
                             "add": "Afegeix disparador",
                             "delete": "Elimina",
@@ -2157,6 +2161,7 @@
                     "disable": {
                         "disabled_integrations": "{number} desactivada/es",
                         "hide_disabled": "Amaga integracions desactivades",
+                        "show": "Mostra",
                         "show_disabled": "Mostra integracions desactivades"
                     },
                     "discovered": "Descobertes",
@@ -3796,6 +3801,19 @@
                     "disable": "Desactiva",
                     "enable": "Activa",
                     "header": "Mòduls d'autenticació amb múltiples passos"
+                },
+                "number_format": {
+                    "description": "Trieu el format dels números.",
+                    "dropdown_label": "Format de número",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automàtic (utilitza la configuració d'idioma)",
+                        "none": "Cap",
+                        "space_comma": "1 234 567,89",
+                        "system": "Utilitza la configuració regional del sistema"
+                    },
+                    "header": "Format de número"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

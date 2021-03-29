@@ -462,7 +462,7 @@
                 "share_diagnostics_description": "충돌 보고서 및 진단 정보를 공유합니다.",
                 "share_diagonstics_description": "Supervisor에서 예기치 않은 오류가 발생할 경우 충돌 보고서 및 진단 정보를 자동으로 공유하시겠습니까? {line_break} 공유된 내용으로 발생된 문제를 해결할 수 있으며, 해당 정보는 Home Assistant Core 팀에서만 접근할 수 있을 뿐, 다른 사람과 공유되지 않습니다.{line_break} 데이터에는 개인 및 민감한 정보가 포함되어 있지 않으므로 언제든지 설정에서 이 정보를 사용하지 않도록 설정할 수 있습니다.",
                 "share_diagonstics_title": "Home Assistant 개선 도와주기",
-                "unhealthy_description": "비공식적인 방법으로 설치를 진행하면 문제가 발생합니다. 다음은 설치 시 발견된 문제 목록입니다. 문제를 해결하는 방법에 대해 알아보려면 링크를 클릭해주세요.",
+                "unhealthy_description": "비정상적으로 설치된 Supervisor를 실행하면 문제가 발생합니다. 다음은 설치 환경에서 발견된 문제 목록입니다. 문제를 해결하는 방법에 대해 알아보려면 링크를 클릭해주세요.",
                 "unhealthy_reason": {
                     "docker": "Docker 환경이 제대로 작동하지 않습니다",
                     "privileged": "Supervisor가 권한이 없습니다",
@@ -470,8 +470,8 @@
                     "supervisor": "Supervisor가 업데이트할 수 없습니다",
                     "untrusted": "신뢰할 수 없는 내용이 발견되었습니다"
                 },
-                "unhealthy_title": "비공식적인 방법으로 설치하였습니다.",
-                "unsupported_description": "다음은 설치 시 발견된 문제 목록입니다. 문제를 해결하는 방법에 대해 알아보려면 링크를 클릭해주세요.",
+                "unhealthy_title": "설치 상태가 비정상적입니다",
+                "unsupported_description": "다음은 설치된 Supervisor에서 발견된 문제 목록입니다. 문제를 해결하는 방법에 대해 알아보려면 링크를 클릭해주세요.",
                 "unsupported_reason": {
                     "container": "문제를 일으키는 것으로 알려진 컨테이너입니다",
                     "content-trust": "이미지 무결성 검사가 비활성화되었습니다",
@@ -2834,7 +2834,7 @@
                         "unknown": "알 수 없음"
                     },
                     "node_config": {
-                        "attribution": "기기 구성 매개 변수 및 설명은 {device_database}에서 제공됩니다",
+                        "attribution": "기기를 구성하는 매개 변수 및 설명은 {device_database}에서 제공됩니다",
                         "battery_device_notice": "배터리 방식 기기의 구성을 업데이트하려면 기기가 절전 해제된 상태이어야 합니다. 기기의 절전 모드를 해제하는 방법은 기기의 설명서를 참조해주세요.",
                         "error_device_not_found": "기기를 찾을 수 없습니다",
                         "header": "Z-Wave 기기 구성",

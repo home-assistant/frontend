@@ -723,6 +723,9 @@
                 "today": "Today"
             },
             "data-table": {
+                "clear": "Clear",
+                "filtering_by": "Filtering by",
+                "hidden": "{number} hidden",
                 "no-data": "No data",
                 "search": "Search"
             },
@@ -1473,6 +1476,7 @@
                         "move_down": "Move down",
                         "move_up": "Move up",
                         "save": "Save",
+                        "show_trace": "Show trace",
                         "triggers": {
                             "add": "Add trigger",
                             "delete": "Delete",
@@ -2157,6 +2161,7 @@
                     "disable": {
                         "disabled_integrations": "{number} disabled",
                         "hide_disabled": "Hide disabled integrations",
+                        "show": "Show",
                         "show_disabled": "Show disabled integrations"
                     },
                     "discovered": "Discovered",
@@ -3796,6 +3801,19 @@
                     "disable": "Disable",
                     "enable": "Enable",
                     "header": "Multi-factor Authentication Modules"
+                },
+                "number_format": {
+                    "description": "Choose how numbers are formatted.",
+                    "dropdown_label": "Number format",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Auto (use language setting)",
+                        "none": "None",
+                        "space_comma": "1 234 567,89",
+                        "system": "Use system locale"
+                    },
+                    "header": "Number Format"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

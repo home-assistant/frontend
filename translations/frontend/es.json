@@ -723,6 +723,9 @@
                 "today": "Hoy"
             },
             "data-table": {
+                "clear": "Limpiar",
+                "filtering_by": "Filtrando por",
+                "hidden": "{number} oculto",
                 "no-data": "Sin datos",
                 "search": "Buscar"
             },
@@ -2157,6 +2160,7 @@
                     "disable": {
                         "disabled_integrations": "{number} deshabilitadas",
                         "hide_disabled": "Ocultar integraciones deshabilitadas",
+                        "show": "Mostrar",
                         "show_disabled": "Mostrar integraciones deshabilitadas"
                     },
                     "discovered": "Descubierto",
@@ -3796,6 +3800,19 @@
                     "disable": "Deshabilitar",
                     "enable": "Activar",
                     "header": "Módulos de autenticación multifactor"
+                },
+                "number_format": {
+                    "description": "Elije cómo se formatean los números.",
+                    "dropdown_label": "Formato numérico",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automático (utilizar la configuración del idioma)",
+                        "none": "Ninguno",
+                        "space_comma": "1 234 567,89",
+                        "system": "Utilizar la configuración regional del sistema"
+                    },
+                    "header": "Formato numérico"
                 },
                 "push_notifications": {
                     "add_device_prompt": {
