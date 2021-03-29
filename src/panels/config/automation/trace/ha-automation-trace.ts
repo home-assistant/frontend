@@ -33,7 +33,6 @@ import "./ha-automation-trace-timeline";
 import "./ha-automation-trace-config";
 import { classMap } from "lit-html/directives/class-map";
 import { traceTabStyles } from "./styles";
-import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
