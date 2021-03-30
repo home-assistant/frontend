@@ -2232,6 +2232,9 @@
             "create": "Create"
           }
         },
+        "hassio": {
+          "button": "Configure"
+        },
         "mqtt": {
           "button": "Configure",
           "title": "MQTT",
