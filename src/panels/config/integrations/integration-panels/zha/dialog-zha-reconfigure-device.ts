@@ -15,7 +15,8 @@ import { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-
 import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 import "@polymer/paper-input/paper-textarea";
 import "../../../../../components/ha-circular-progress";
-import { LOG_OUTPUT } from "../../../../../data/zha";
+import { LOG_OUTPUT, reconfigureNode } from "../../../../../data/zha";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("dialog-zha-reconfigure-device")
 class DialogZHAReconfigureDevice extends LitElement {
@@ -39,12 +40,22 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._subscribe(params);
   }
 
+  public closeDialog(): void {
+    this._unsubscribe();
+    this._formattedEvents = "";
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
+    if (!this._params) {
+      return html``;
+    }
     return html`
       <ha-dialog
         open
         hideActions
-        @closing="${this._close}"
+        @closing="${this.closeDialog}"
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`)
@@ -78,21 +89,13 @@ class DialogZHAReconfigureDevice extends LitElement {
   private _handleMessage(message: any): void {
     if (message.type === LOG_OUTPUT) {
       this._formattedEvents += message.log_entry.message + "\n";
-      if (this.shadowRoot) {
-        const paperTextArea = this.shadowRoot.querySelector("paper-textarea");
-        if (paperTextArea) {
-          const textArea = (paperTextArea.inputElement as IronAutogrowTextareaElement)
-            .textarea;
-          textArea.scrollTop = textArea.scrollHeight;
-        }
+      const paperTextArea = this.shadowRoot!.querySelector("paper-textarea");
+      if (paperTextArea) {
+        const textArea = (paperTextArea.inputElement as IronAutogrowTextareaElement)
+          .textarea;
+        textArea.scrollTop = textArea.scrollHeight;
       }
     }
-  }
-
-  private _close(): void {
-    this._unsubscribe();
-    this._formattedEvents = "";
-    this._params = undefined;
   }
 
   private _unsubscribe(): void {
@@ -111,11 +114,10 @@ class DialogZHAReconfigureDevice extends LitElement {
       return;
     }
     this._active = true;
-    const data: any = { type: "zha/devices/reconfigure" };
-    data.ieee = params.device.ieee;
-    this._subscribed = this.hass.connection.subscribeMessage(
-      (message) => this._handleMessage(message),
-      data
+    this._subscribed = reconfigureNode(
+      this.hass,
+      params.device.ieee,
+      this._handleMessage
     );
     this._reconfigureDeviceTimeoutHandle = setTimeout(
       () => this._unsubscribe(),
