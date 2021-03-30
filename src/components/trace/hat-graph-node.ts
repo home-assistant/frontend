@@ -12,6 +12,8 @@ export class HatGraphNode extends LitElement {
 
   @property({ reflect: true, type: Boolean }) nofocus?: boolean;
 
+  @property() number?: number;
+
   connectedCallback() {
     super.connectedCallback();
     if (!this.hasAttribute("tabindex") && !this.nofocus)
@@ -61,6 +63,25 @@ export class HatGraphNode extends LitElement {
         cy="0"
         r="${NODE_SIZE / 2}"
       />
+      ${
+        this.number
+          ? svg`
+        <g class="number">
+          <circle
+            cx="8"
+            cy="${-NODE_SIZE / 2}"
+            r="8"
+          ></circle>
+          <text
+            x="8"
+            y="${-NODE_SIZE / 2}"
+            text-anchor="middle"
+            alignment-baseline="middle"
+          >${this.number > 9 ? "9+" : this.number}</text>
+        </g>
+      `
+          : ""
+      }
       <g
         style="pointer-events: none"
         transform="translate(${-12} ${-12})"
@@ -85,18 +106,22 @@ export class HatGraphNode extends LitElement {
         --default-trigger-color: 3, 169, 244;
         --rgb-trigger-color: var(--trigger-color, var(--default-trigger-color));
         --background-clr: var(--background-color, white);
-        --icon-clr: var(--icon-color, black);
+        --default-icon-clr: var(--icon-color, black);
+        --icon-clr: var(--stroke-clr);
       }
       :host(.track) {
         --stroke-clr: var(--track-clr);
+        --icon-clr: var(--default-icon-clr);
       }
       :host(.active),
       :host(:focus) {
         --stroke-clr: var(--active-clr);
+        --icon-clr: var(--default-icon-clr);
         outline: none;
       }
       :host(:hover) circle {
         --stroke-clr: var(--hover-clr);
+        --icon-clr: var(--default-icon-clr);
       }
       :host([disabled]) circle {
         stroke: var(--disabled-clr);
@@ -108,6 +133,7 @@ export class HatGraphNode extends LitElement {
       :host([nofocus]):host-context(.active),
       :host([nofocus]):host-context(:focus) {
         --stroke-clr: var(--active-clr);
+        --icon-clr: var(--default-icon-clr);
       }
 
       circle,
@@ -119,6 +145,14 @@ export class HatGraphNode extends LitElement {
       circle {
         fill: var(--background-clr);
         stroke: var(--circle-clr, var(--stroke-clr));
+      }
+      .number circle {
+        fill: var(--track-clr);
+        stroke: none;
+        stroke-width: 0;
+      }
+      .number text {
+        font-size: smaller;
       }
       path.icon {
         fill: var(--icon-clr);

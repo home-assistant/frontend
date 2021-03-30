@@ -18,6 +18,8 @@ import {
   mdiArrowUp,
   mdiAsterisk,
   mdiCallSplit,
+  mdiCheckboxBlankOutline,
+  mdiCheckBoxOutline,
   mdiChevronDown,
   mdiChevronRight,
   mdiChevronUp,
@@ -117,13 +119,58 @@ class HatScriptGraph extends LitElement {
   }
 
   private render_choose_node(node, path) {
+    const trace: any = this.trace.action_trace[path];
+    const trace_path = trace
+      ? trace[0].result.choice === "default"
+        ? [node.choose.length]
+        : [trace[0].result.choice]
+      : [];
     return html`
-      <hat-graph-node
-        .iconPath=${mdiCallSplit}
-        class=${classMap({
-          track: path in this.trace.action_trace,
+      <hat-graph
+        tabindex="0"
+        branching
+        .track_start=${trace_path}
+        .track_end=${trace_path}
+      >
+        <hat-graph-node
+          .iconPath=${mdiCallSplit}
+          class=${classMap({
+            track: trace,
+          })}
+          slot="head"
+          nofocus
+        ></hat-graph-node>
+
+        ${node.choose.map((branch, i) => {
+          const branch_path = `${path}/choose/${i}`;
+          return html`
+            <hat-graph>
+              <hat-graph-node
+                .iconPath=${mdiCheckBoxOutline}
+                nofocus
+                class=${classMap({
+                  track: trace && trace[0].result.choice === i,
+                })}
+              ></hat-graph-node>
+              ${branch.sequence.map((action, i) =>
+                this.render_node(action, `${branch_path}/sequence/${i}`)
+              )}
+            </hat-graph>
+          `;
         })}
-      ></hat-graph-node>
+        <hat-graph>
+          <hat-graph-node
+            .iconPath=${mdiCheckboxBlankOutline}
+            nofocus
+            class=${classMap({
+              track: trace && trace[0].result.choice === "default",
+            })}
+          ></hat-graph-node>
+          ${node.default.map((action, i) =>
+            this.render_node(action, `${path}/default/${i}`)
+          )}
+        </hat-graph>
+      </hat-graph>
     `;
   }
 
@@ -146,7 +193,7 @@ class HatScriptGraph extends LitElement {
         <hat-graph-node
           slot="head"
           class=${classMap({
-            track: path in this.trace.action_trace,
+            track: trace,
           })}
           .iconPath=${mdiAbTesting}
           nofocus
@@ -206,6 +253,8 @@ class HatScriptGraph extends LitElement {
   private render_repeat_node(node, path) {
     const trace: any = this.trace.action_trace[path];
     const track_path = trace ? [0, 1] : [];
+    const repeats = this.trace?.action_trace[`${path}/repeat/sequence/0`]
+      ?.length;
     return html`
       <hat-graph
         .track_start=${track_path}
@@ -216,7 +265,7 @@ class HatScriptGraph extends LitElement {
         <hat-graph-node
           .iconPath=${mdiRefresh}
           class=${classMap({
-            track: track_path.length > 0,
+            track: trace,
           })}
           slot="head"
           nofocus
@@ -227,6 +276,7 @@ class HatScriptGraph extends LitElement {
           class=${classMap({
             track: track_path.includes(1),
           })}
+          .number=${repeats}
         ></hat-graph-node>
         <hat-graph>
           ${node.repeat.sequence.map((action, i) =>
