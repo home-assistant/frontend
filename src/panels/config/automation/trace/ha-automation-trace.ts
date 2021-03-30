@@ -354,7 +354,9 @@ export class HaAutomationTrace extends LitElement {
     const nodes = this.shadowRoot!.querySelector(
       "hat-script-graph"
     )!.getTrackedNodes();
-    this._selected = nodes[path].nodeInfo;
+    if (nodes[path] !== undefined) {
+      this._selected = nodes[path];
+    }
   }
 
   static get styles(): CSSResult[] {

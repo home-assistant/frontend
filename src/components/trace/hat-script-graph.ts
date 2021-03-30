@@ -64,6 +64,7 @@ class HatScriptGraph extends LitElement {
 
   private render_condition(condition, i) {
     const path = `condition/${i}`;
+    this.renderedNodes[path] = { config: condition, path };
     const trace: any = this.trace.condition_trace[path];
     const track_path = trace === undefined ? 0 : trace[0].result.result ? 1 : 2;
     return html`
@@ -346,8 +347,7 @@ class HatScriptGraph extends LitElement {
 
     const type = Object.keys(NODE_TYPES).find((key) => key in node) || "yaml";
     const nodeEl = NODE_TYPES[type].bind(this)(node, path);
-    (nodeEl as any).nodeInfo = { config: node, path };
-    this.renderedNodes[path] = nodeEl;
+    this.renderedNodes[path] = { config: node, path };
     return nodeEl;
   }
 
@@ -399,8 +399,8 @@ class HatScriptGraph extends LitElement {
       if (this.selected === "" || !(this.selected in paths)) {
         // Find first tracked node with node info
         for (const path of paths) {
-          if (tracked[path].nodeInfo) {
-            fireEvent(this, "graph-node-selected", tracked[path].nodeInfo);
+          if (tracked[path]) {
+            fireEvent(this, "graph-node-selected", tracked[path]);
             break;
           }
         }
@@ -417,8 +417,8 @@ class HatScriptGraph extends LitElement {
     const nodes = Object.keys(tracked);
 
     for (let i = nodes.indexOf(this.selected) - 1; i >= 0; i--) {
-      if (tracked[nodes[i]].nodeInfo) {
-        fireEvent(this, "graph-node-selected", tracked[nodes[i]].nodeInfo);
+      if (tracked[nodes[i]]) {
+        fireEvent(this, "graph-node-selected", tracked[nodes[i]]);
         break;
       }
     }
@@ -428,8 +428,8 @@ class HatScriptGraph extends LitElement {
     const tracked = this.getTrackedNodes();
     const nodes = Object.keys(tracked);
     for (let i = nodes.indexOf(this.selected) + 1; i < nodes.length; i++) {
-      if (tracked[nodes[i]].nodeInfo) {
-        fireEvent(this, "graph-node-selected", tracked[nodes[i]].nodeInfo);
+      if (tracked[nodes[i]]) {
+        fireEvent(this, "graph-node-selected", tracked[nodes[i]]);
         break;
       }
     }
