@@ -161,9 +161,9 @@ export class HaAutomationTrace extends LitElement {
         </div>
 
         ${this._traces === undefined
-          ? "Loading…"
+          ? html`<div class="container">Loading…</div>`
           : this._traces.length === 0
-          ? "No traces found"
+          ? html`<div class="container">No traces found</div>`
           : this._trace === undefined
           ? ""
           : html`
@@ -424,6 +424,10 @@ export class HaAutomationTrace extends LitElement {
         :host([narrow]) .main {
           height: auto;
           flex-direction: column;
+        }
+
+        .container {
+          padding: 16px;
         }
 
         .graph {
