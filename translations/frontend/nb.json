@@ -723,6 +723,9 @@
                 "today": "I dag"
             },
             "data-table": {
+                "clear": "Tøm",
+                "filtering_by": "Filtrering etter",
+                "hidden": "{number} skjult",
                 "no-data": "Ingen data",
                 "search": "Søk"
             },
@@ -836,6 +839,12 @@
             "picture-upload": {
                 "label": "Bilde",
                 "unsupported_format": "Formatet støttes ikke, vennligst velge et JPEG-, PNG- eller GIF-bilde."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filtrer etter område",
+                "filter_by_device": "Filtrer etter enhet",
+                "filtered_by_area": "område: {area_name}",
+                "filtered_by_device": "enhet: {device_name}"
             },
             "related-items": {
                 "area": "Område",
@@ -1096,42 +1105,47 @@
                         "zone": "Soner"
                     },
                     "reload": {
-                        "automation": "Last inn automasjoner på nytt",
-                        "command_line": "Last inn kommandolinje entiteter på nytt",
-                        "core": "Last inn lokasjon og tilpassinger på nytt",
-                        "filesize": "Last inn filstørrelse entiteter på nytt",
-                        "filter": "Last inn filter entiteter på nytt",
-                        "generic": "Last inn generisk IP kamera entiteter på nytt",
-                        "generic_thermostat": "Last inn generisk termostat entiteter på nytt",
-                        "group": "Last inn grupper, gruppeentiteter og varslingstjenester på nytt",
-                        "history_stats": "Last inn historisk tilstand entiteter på nytt",
-                        "homekit": "Last inn HomeKit på nytt",
-                        "input_boolean": "Last inn innputt boolske på nytt",
-                        "input_datetime": "Last inn innputt dato tider på nytt",
-                        "input_number": "Last inn innputt numeriske på nytt",
-                        "input_select": "Last inn innputt valg på nytt",
-                        "input_text": "Last inn innputt tekster på nytt",
-                        "min_max": "Last inn min/maks entiteter på nytt",
-                        "mqtt": "Laste inn manuelt konfigurerte MQTT-enheter",
-                        "person": "Last inn personer på nytt",
-                        "ping": "Last inn Ping binær sensor entiteter på nytt",
-                        "reload": "Last inn {domain} på nytt",
-                        "rest": "Last inn REST entiteter og varslingstjenester på nytt",
-                        "rpi_gpio": "Last inn Raspberry Pi GPIO entiteter på nytt",
-                        "scene": "Last inn scener på nytt",
-                        "script": "Last inn skript på nytt",
-                        "smtp": "Last SMTP-varslingstjenester på nytt",
-                        "statistics": "Last inn statistiske entiteter på nytt",
-                        "telegram": "Last inn Telegram varslingstjenester på nytt",
-                        "template": "Laste inn mal entiteter på nytt",
-                        "trend": "Last inn trend entiteter på nytt",
-                        "universal": "Laste inn universelle mediespiller entiteter på nytt",
-                        "zone": "Last inn soner på nytt"
+                        "automation": "Automatisering",
+                        "command_line": "Kommandolinjeenheter",
+                        "core": "Plassering og tilpasninger",
+                        "filesize": "Enheter for filstørrelse",
+                        "filter": "Filtrere entiteter",
+                        "generic": "Generiske IP-kameraenheter",
+                        "generic_thermostat": "Generiske termostat enheter",
+                        "group": "Grupper, gruppeenheter og varsler tjenester",
+                        "history_stats": "Historikkstatistiske enheter",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Inngang booleans",
+                        "input_datetime": "Inngangsdato ganger",
+                        "input_number": "Inndatanumre",
+                        "input_select": "Inngang velges",
+                        "input_text": "Inngangstekster",
+                        "min_max": "Min/maks enheter",
+                        "mqtt": "Manuelt konfigurerte MQTT-enheter",
+                        "person": "Mennesker",
+                        "ping": "Ping binære sensorenheter",
+                        "reload": "{domain}",
+                        "rest": "Rest enheter og varsle tjenester",
+                        "rpi_gpio": "Raspberry Pi GPIO-enheter",
+                        "scene": "Scener",
+                        "script": "Skript",
+                        "smtp": "SMTP-varslingstjenester",
+                        "statistics": "Statistiske enheter",
+                        "telegram": "Telegram varsler tjenester",
+                        "template": "Malenheter",
+                        "trend": "Trend enheter",
+                        "universal": "Enheter for universell mediaspiller",
+                        "zone": "Soner"
                     },
                     "server_control": {
                         "perform_action": "{action} server",
                         "restart": "Omstart",
                         "stop": "Stopp"
+                    },
+                    "types": {
+                        "navigation": "Navigere",
+                        "reload": "Last inn på nytt",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Entitetsfilter"
@@ -1468,6 +1482,7 @@
                         "move_down": "Flytt ned",
                         "move_up": "Flytt opp",
                         "save": "Lagre",
+                        "show_trace": "Vis spor",
                         "triggers": {
                             "add": "Legg til utløser",
                             "delete": "Slett",
@@ -1838,6 +1853,35 @@
                     "description": "Enhetssystem, plassering, tidssone og andre generelle parametere",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Før du aktiverer dette, må du gå til analysedokumentasjonssiden {link} å forstå hva du sender og hvordan den er lagret.",
+                                "header": "Analytics",
+                                "instance_id": "Forekomst-ID: {huuid}",
+                                "introduction": "Del analyse fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}",
+                                "needs_base": "Du må aktivere basisanalyse for at dette alternativet skal være tilgjengelig",
+                                "preference": {
+                                    "base": {
+                                        "description": "Dette inkluderer forekomst-ID, versjon og installasjonstype",
+                                        "title": "Grunnleggende analyse"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Del krasjrapporter og diagnostisk informasjon",
+                                        "title": "Diagnostikk"
+                                    },
+                                    "statistics": {
+                                        "description": "Dette inkluderer en rekke elementer i installasjonen din, for å se en fullstendig liste i dokumentasjonen",
+                                        "title": "Bruksstatistikk"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Dette inkluderer navnene og funksjonene til integrasjonene og tilleggene dine",
+                                        "title": "Brukte integrasjoner og tillegg"
+                                    },
+                                    "usage": {
+                                        "description": "Dette inkluderer navnene på integrasjonene dine",
+                                        "title": "Brukte integrasjoner"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Redigering deaktivert da konfigurasjonen er lagret i configuration.yaml.",
                                 "elevation": "Høyde",
@@ -2111,8 +2155,10 @@
                         "entity_unavailable": "Enhet utilgjengelig",
                         "firmware": "Fastvare: {version}",
                         "hub": "Tilkoblet via",
+                        "logs": "Logger",
                         "manuf": "av {manufacturer}",
                         "no_area": "Intet område",
+                        "not_loaded": "Ikke lastet inn, sjekk {logs_link}",
                         "options": "Alternativer",
                         "reload": "Last inn på nytt",
                         "reload_confirm": "Integrasjonen ble lastet på nytt",
@@ -2138,6 +2184,7 @@
                         "finish": "Fullfør",
                         "loading_first_time": "Vennligst vent mens integrasjonen installeres",
                         "not_all_required_fields": "Ikke alle obligatoriske felt er fylt ut.",
+                        "not_loaded": "Integrasjonen kunne ikke lastes, prøv å starte Home Assistant på nytt.",
                         "pick_flow_step": {
                             "new_flow": "Nei, sett opp en annen forekomst av {integration}",
                             "title": "Vi oppdaget disse, vil du sette dem opp?"
@@ -2152,6 +2199,7 @@
                     "disable": {
                         "disabled_integrations": "{number} deaktivert",
                         "hide_disabled": "Skjul deaktiverte integrasjoner",
+                        "show": "Vis",
                         "show_disabled": "Vis deaktiverte integrasjoner"
                     },
                     "discovered": "Oppdaget",
@@ -2531,39 +2579,39 @@
                     "description": "Start på nytt og stopp Home Assistant-serveren",
                     "section": {
                         "reloading": {
-                            "automation": "Last inn automasjoner på nytt",
-                            "command_line": "Last inn kommandolinje entiteter på nytt",
-                            "core": "Last inn lokasjon og tilpassinger på nytt",
-                            "filesize": "Last inn filstørrelse entiteter på nytt",
-                            "filter": "Last inn filter entiteter på nytt",
-                            "generic": "Last inn generisk IP kamera entiteter på nytt",
-                            "generic_thermostat": "Last inn generisk termostat entiteter på nytt",
-                            "group": "Last inn grupper, gruppeentiteter og varslingstjenester på nytt",
+                            "automation": "Automatisering",
+                            "command_line": "Kommandolinjeenheter",
+                            "core": "Plassering og tilpasninger",
+                            "filesize": "Enheter for filstørrelse",
+                            "filter": "Filtrere entiteter",
+                            "generic": "Generiske IP-kameraenheter",
+                            "generic_thermostat": "Generiske termostat enheter",
+                            "group": "Grupper, gruppeenheter og varsler tjenester",
                             "heading": "YAML konfigurasjon lastes på nytt",
-                            "history_stats": "Last inn historisk tilstand entiteter på nytt",
-                            "homekit": "Last inn HomeKit på nytt",
-                            "input_boolean": "Last inn innputt boolske på nytt",
-                            "input_datetime": "Last inn innputt dato tider på nytt",
-                            "input_number": "Last inn innputt numeriske på nytt",
-                            "input_select": "Last inn innputt valg på nytt",
-                            "input_text": "Last inn innputt tekster på nytt",
+                            "history_stats": "Historikkstatistiske enheter",
+                            "homekit": "HomeKit",
+                            "input_boolean": "Inngang booleans",
+                            "input_datetime": "Inngangsdato ganger",
+                            "input_number": "Inndatanumre",
+                            "input_select": "Inngang velges",
+                            "input_text": "Inngangstekster",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
-                            "min_max": "Last inn min/maks entiteter på nytt",
-                            "mqtt": "Laste inn manuelt konfigurerte MQTT-enheter",
-                            "person": "Last inn personer på nytt",
-                            "ping": "Last inn Ping binær sensor entiteter på nytt",
-                            "reload": "Last inn {domain} på nytt",
-                            "rest": "Last inn REST entiteter og varslingstjenester på nytt",
-                            "rpi_gpio": "Last inn Raspberry Pi GPIO entiteter på nytt",
-                            "scene": "Last inn scener på nytt",
-                            "script": "Last inn skript på nytt",
-                            "smtp": "Last SMTP-varslingstjenester på nytt",
-                            "statistics": "Last inn statistiske entiteter på nytt",
-                            "telegram": "Last inn Telegram varslingstjenester på nytt",
-                            "template": "Laste inn mal entiteter på nytt",
-                            "trend": "Last inn trend entiteter på nytt",
-                            "universal": "Laste inn universelle mediespiller entiteter på nytt",
-                            "zone": "Last inn soner på nytt"
+                            "min_max": "Min/maks enheter",
+                            "mqtt": "Manuelt konfigurerte MQTT-enheter",
+                            "person": "Mennesker",
+                            "ping": "Ping binære sensorenheter",
+                            "reload": "{domain}",
+                            "rest": "Rest enheter og varsle tjenester",
+                            "rpi_gpio": "Raspberry Pi GPIO-enheter",
+                            "scene": "Scener",
+                            "script": "Skript",
+                            "smtp": "SMTP-varslingstjenester",
+                            "statistics": "Statistiske enheter",
+                            "telegram": "Telegram varsler tjenester",
+                            "template": "Malenheter",
+                            "trend": "Trend enheter",
+                            "universal": "Enheter for universell mediaspiller",
+                            "zone": "Soner"
                         },
                         "server_management": {
                             "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
@@ -2983,6 +3031,7 @@
                         "column_parameter": "",
                         "description": "Service utviklingsverktøyet lar deg tilkalle alle tilgjengelige tjenester i Home Assistant.",
                         "fill_example_data": "Fyll ut eksempeldata",
+                        "no_template_ui_support": "Brukergrensesnittet støtter ikke maler, du kan fortsatt bruke YAML-redigereren.",
                         "title": "Tjenester",
                         "ui_mode": "Gå til UI-modus",
                         "yaml_mode": "Gå til YAML-modus",
@@ -3682,6 +3731,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Neste",
+                    "intro": "Del analyse fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}"
+                },
                 "core-config": {
                     "button_detect": "Oppdag",
                     "finish": "Neste",
@@ -3691,12 +3744,14 @@
                     "location_name": "Navn på installasjonen av Home Assistant",
                     "location_name_default": "Hjem"
                 },
+                "finish": "Fullfør",
                 "integration": {
                     "finish": "Fullfør",
                     "intro": "Enheter og tjenester er representert i Home Assistant som integrasjoner. Du kan sette dem opp nå eller gjøre det senere fra konfigurasjonen.",
                     "more_integrations": "Mer"
                 },
                 "intro": "Er du klar til å ta kontroll over hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av entusiaster?",
+                "next": "Neste",
                 "restore": {
                     "description": "Alternativt kan du gjenopprette fra et forrige snapshot.",
                     "hide_log": "Skjul full logg",
@@ -3790,6 +3845,19 @@
                     "disable": "Deaktiver",
                     "enable": "Aktiver",
                     "header": "Flerfaktor godkjenningsmoduler"
+                },
+                "number_format": {
+                    "description": "Velg hvordan tallene skal formateres.",
+                    "dropdown_label": "Tallformat",
+                    "formats": {
+                        "comma_decimal": "1.234.567,89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automatisk (bruk språkinnstilling)",
+                        "none": "Ingen",
+                        "space_comma": "1 234 567,89",
+                        "system": "Bruk systemområdet"
+                    },
+                    "header": "Tallformat"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

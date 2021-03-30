@@ -723,6 +723,9 @@
                 "today": "Vandaag"
             },
             "data-table": {
+                "clear": "Wis",
+                "filtering_by": "Filteren op",
+                "hidden": "{number} verborgen",
                 "no-data": "Geen gegevens",
                 "search": "Zoek"
             },
@@ -836,6 +839,12 @@
             "picture-upload": {
                 "label": "Afbeelding",
                 "unsupported_format": "Niet-ondersteund formaat. Kies een JPEG-, PNG- of GIF-afbeelding."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filter op gebied",
+                "filter_by_device": "Filter op apparaat",
+                "filtered_by_area": "gebied: {area_name}",
+                "filtered_by_device": "apparaat: {device_name}"
             },
             "related-items": {
                 "area": "Gebied",
@@ -1473,6 +1482,7 @@
                         "move_down": "Verplaats omlaag",
                         "move_up": "Verplaats omhoog",
                         "save": "Opslaan",
+                        "show_trace": "Tracering weergeven",
                         "triggers": {
                             "add": "Trigger toevoegen",
                             "delete": "Verwijderen",
@@ -1681,6 +1691,8 @@
                             "info": "Met de Google Assistant integratie voor Home Assistant Cloud kun je al je Home Assistant apparaten bedienen via elk apparaat waarop Google Assistant is ingeschakeld.",
                             "info_state_reporting": "Als u statusrapportage inschakelt, stuurt Home Assistant alle statuswijzigingen van blootgestelde entiteiten naar Google. Hierdoor kunt u altijd de meest actuele statussen in de Google-app zien.",
                             "manage_entities": "Entiteiten beheren",
+                            "not_configured_text": "Voordat u Google Assistant kunt gebruiken, moet u de Home Assistant Cloud-skill voor Google Assistant activeren in de Google Home-app.",
+                            "not_configured_title": "Google Assistant is niet geactiveerd",
                             "security_devices": "Beveiligingsapparaten",
                             "sync_entities": "Synchroniseer entiteiten met Google",
                             "sync_entities_404_message": "Kan uw entiteiten niet synchroniseren met Google, vraag Google 'Hey Google, synchroniseer mijn apparaten' om uw entiteiten te synchroniseren.",
@@ -1843,6 +1855,35 @@
                     "description": "Eenheidssysteem, locatie, tijdzone en andere algemene parameters",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Voordat u dit inschakelt, moet u de analytics documentatie pagina {link} bezoeken om te begrijpen wat u verstuurt en hoe het wordt opgeslagen.",
+                                "header": "Analytics",
+                                "instance_id": "Instantie-ID: {huuid}",
+                                "introduction": "Deel analyses vanuit uw instantie. Deze gegevens zijn openbaar beschikbaar op {link}",
+                                "needs_base": "U moet basisanalyses inschakelen om deze optie beschikbaar te maken",
+                                "preference": {
+                                    "base": {
+                                        "description": "Dit bevat de instantie-ID, de versie en het installatietype",
+                                        "title": "Basisanalyses"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Deel crashrapporten en diagnostische informatie",
+                                        "title": "Diagnostiek"
+                                    },
+                                    "statistics": {
+                                        "description": "Dit omvat een telling van elementen in uw installatie, voor een volledige lijst zie de documentatie",
+                                        "title": "Gebruiksstatistieken"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Dit omvat de namen en mogelijkheden van uw integraties en add-ons",
+                                        "title": "Gebruikte integraties en add-ons"
+                                    },
+                                    "usage": {
+                                        "description": "Dit bevat de namen van uw integraties",
+                                        "title": "Gebruikte integraties"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor uitgeschakeld omdat de configuratie is opgeslagen in configuration.yaml",
                                 "elevation": "Hoogte",
@@ -2116,8 +2157,10 @@
                         "entity_unavailable": "Entiteit niet beschikbaar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonden via",
+                        "logs": "Logs",
                         "manuf": "door {manufacturer}",
                         "no_area": "Geen Gebied",
+                        "not_loaded": "Niet geladen, controleer de {logs_link}",
                         "options": "Opties",
                         "reload": "Herlaad",
                         "reload_confirm": "De integratie is opnieuw geladen",
@@ -2143,6 +2186,7 @@
                         "finish": "Voltooien",
                         "loading_first_time": "Even geduld a.u.b. terwijl de integratie wordt geïnstalleerd",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
+                        "not_loaded": "De integratie kan niet worden geladen, probeer Home Assistant opnieuw te starten.",
                         "pick_flow_step": {
                             "new_flow": "Nee, zet een andere instantie van {integration} op",
                             "title": "We hebben deze ontdekt. Wil je ze instellen?"
@@ -2157,6 +2201,7 @@
                     "disable": {
                         "disabled_integrations": "{number} uitgeschakeld",
                         "hide_disabled": "Verberg uitgeschakelde integraties",
+                        "show": "Toon",
                         "show_disabled": "Toon uitgeschakelde integraties"
                     },
                     "discovered": "Ontdekt",
@@ -3688,6 +3733,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Volgende",
+                    "intro": "Deel de analyses van uw instantie. Deze gegevens zullen publiekelijk beschikbaar zijn op {link}"
+                },
                 "core-config": {
                     "button_detect": "Detecteren",
                     "finish": "Volgende",
@@ -3697,12 +3746,14 @@
                     "location_name": "Naam van de Home Assistant installatie",
                     "location_name_default": "Huis"
                 },
+                "finish": "Voltooien",
                 "integration": {
                     "finish": "Voltooien",
                     "intro": "Apparaten en services worden in Home Assistant weergegeven als integraties. U kunt ze nu instellen of later via het configuratiescherm.",
                     "more_integrations": "Meer"
                 },
                 "intro": "Ben je klaar om je huis wakker te maken, je privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
+                "next": "Volgende",
                 "restore": {
                     "description": "Je kunt ook herstellen vanaf een eerdere snapshot.",
                     "hide_log": "Verberg volledig logboek",
@@ -3796,6 +3847,19 @@
                     "disable": "Uitschakelen",
                     "enable": "Inschakelen",
                     "header": "Twee-factor-authenticatie modules"
+                },
+                "number_format": {
+                    "description": "Kies hoe getallen worden opgemaakt.",
+                    "dropdown_label": "Getalnotatie",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automatisch (taalinstelling gebruiken)",
+                        "none": "Geen",
+                        "space_comma": "1 234 567,89",
+                        "system": "Systeemlokalen gebruiken"
+                    },
+                    "header": "Getalnotatie"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

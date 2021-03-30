@@ -723,6 +723,9 @@
                 "today": "Dzisiaj"
             },
             "data-table": {
+                "clear": "Wyczyść",
+                "filtering_by": "Filtrowanie przez",
+                "hidden": "{numer} ukryte(-ych)",
                 "no-data": "Brak danych",
                 "search": "Szukaj"
             },
@@ -835,6 +838,12 @@
             "picture-upload": {
                 "label": "Obraz",
                 "unsupported_format": "Nieobsługiwany format, wybierz obraz JPEG, PNG lub GIF."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filtruj według obszaru",
+                "filter_by_device": "Filtruj według urządzenia",
+                "filtered_by_area": "obszar: {area_name}",
+                "filtered_by_device": "urządzenie: {device_name}"
             },
             "related-items": {
                 "area": "Obszar",
@@ -1095,42 +1104,47 @@
                         "zone": "Strefy"
                     },
                     "reload": {
-                        "automation": "Wczytaj ponownie automatyzacje",
-                        "command_line": "Wczytaj ponownie encje komponentu linia komend",
-                        "core": "Wczytaj ponownie lokalizację i dostosowywanie",
-                        "filesize": "Wczytaj ponownie encje komponentu wielkość pliku",
-                        "filter": "Wczytaj ponownie encje komponentu filtr",
-                        "generic": "Wczytaj ponownie encje komponentu kamera IP generic",
-                        "generic_thermostat": "Wczytaj ponownie encje komponentu termostatu generic",
-                        "group": "Wczytaj ponownie grupy, ich encje oraz ich usługi powiadomień",
-                        "history_stats": "Wczytaj ponownie encje komponentu historia stanów",
-                        "homekit": "Wczytaj ponownie HomeKit",
-                        "input_boolean": "Wczytaj ponownie pomocników typu przełącznik",
-                        "input_datetime": "Wczytaj ponownie pomocników typu data i czas",
-                        "input_number": "Wczytaj ponownie pomocników typu numer",
-                        "input_select": "Wczytaj ponownie pomocników typu pole wyboru",
-                        "input_text": "Wczytaj ponownie pomocników typu tekst",
-                        "min_max": "Wczytaj ponownie encje komponentu min/max",
-                        "mqtt": "Wczytaj ponownie encje komponentu MQTT",
-                        "person": "Wczytaj ponownie osoby",
-                        "ping": "Wczytaj ponownie encje komponentu ping",
-                        "reload": "Wczytaj ponownie domenę {domain}",
-                        "rest": "Wczytaj ponownie encje komponentu rest i ich usługi powiadomień",
-                        "rpi_gpio": "Wczytaj ponownie encje komponentu Raspberry Pi GPIO",
-                        "scene": "Wczytaj ponownie sceny",
-                        "script": "Wczytaj ponownie skrypty",
-                        "smtp": "Wczytaj ponownie usługi powiadomień komponentu SMTP",
-                        "statistics": "Wczytaj ponownie encje komponentu statystyka",
-                        "telegram": "Wczytaj ponownie usługi powiadomień komponentu Telegram",
-                        "template": "Wczytaj ponownie encje zdefiniowane szablonami",
-                        "trend": "Wczytaj ponownie encje komponentu trend",
-                        "universal": "Wczytaj ponownie encje komponentu uniwersalny odtwarzacz mediów",
-                        "zone": "Wczytaj ponownie strefy"
+                        "automation": "Automatyzacje",
+                        "command_line": "Encje komponentu linia komend",
+                        "core": "Lokalizacja i dostosowywanie",
+                        "filesize": "Encje komponentu wielkość pliku",
+                        "filter": "Encje komponentu filtr",
+                        "generic": "Encje komponentu kamera IP generic",
+                        "generic_thermostat": "Encje komponentu termostatu generic",
+                        "group": "Grupy, ich encje oraz usługi powiadomień",
+                        "history_stats": "Encje komponentu historia stanów",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Pomocnicy typu przełącznik",
+                        "input_datetime": "Pomocnicy typu data i czas",
+                        "input_number": "Pomocnicy typu numer",
+                        "input_select": "Pomocnicy typu pole wyboru",
+                        "input_text": "Pomocnicy typu tekst",
+                        "min_max": "Encje komponentu min/max",
+                        "mqtt": "Encje komponentu MQTT",
+                        "person": "Osoby",
+                        "ping": "Encje komponentu ping",
+                        "reload": "Domenę {domain}",
+                        "rest": "Encje komponentu rest i usługi powiadomień",
+                        "rpi_gpio": "Encje komponentu Raspberry Pi GPIO",
+                        "scene": "Sceny",
+                        "script": "Skrypty",
+                        "smtp": "Usługi powiadomień komponentu SMTP",
+                        "statistics": "Encje komponentu statystyka",
+                        "telegram": "Usługi powiadomień komponentu Telegram",
+                        "template": "Encje zdefiniowane szablonami",
+                        "trend": "Encje komponentu trend",
+                        "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
+                        "zone": "Strefy"
                     },
                     "server_control": {
                         "perform_action": "{action} serwer",
                         "restart": "Uruchom ponownie",
                         "stop": "Zatrzymaj"
+                    },
+                    "types": {
+                        "navigation": "Przejdź",
+                        "reload": "Wczytaj ponownie",
+                        "server_control": "Serwer"
                     }
                 },
                 "filter_placeholder": "Filtr encji"
@@ -1667,7 +1681,7 @@
                         "google": {
                             "config_documentation": "Dokumentacja konfiguracji",
                             "devices_pin": "Kod PIN urządzeń bezpieczeństwa",
-                            "enable_ha_skill": "Włącz skill Home Assistant dla Asystenta Google",
+                            "enable_ha_skill": "Włącz skill Chmury Home Assistant dla Asystenta Google",
                             "enable_state_reporting": "Włącz raportowanie stanów",
                             "enter_pin_error": "Nie można zapisać kodu PIN:",
                             "enter_pin_hint": "Wprowadź kod PIN",
@@ -1675,6 +1689,8 @@
                             "info": "Dzięki integracji z Asystentem Google dla Chmury Home Assistant będzie możliwe kontrolowanie wszystkich urządzeń Home Assistanta za pośrednictwem dowolnego urządzenia obsługującego Asystenta Google.",
                             "info_state_reporting": "Jeśli włączysz raportowanie stanów, Home Assistant wyśle wszystkie zmiany stanu udostępnionych encji na serwery Google. Dzięki temu zawsze możesz zobaczyć najnowsze stany w aplikacji Google.",
                             "manage_entities": "Zarządzanie encjami",
+                            "not_configured_text": "Aby móc korzystać z Asystenta Google, musisz aktywować skill Chmury Home Assistant dla Asystenta Google w aplikacji Google Home.",
+                            "not_configured_title": "Asystent Google nie jest aktywowany",
                             "security_devices": "Urządzenia bezpieczeństwa",
                             "sync_entities": "Synchronizuj encje",
                             "sync_entities_404_message": "Nie udało się zsynchronizować encji z Google, poproś Google Asystenta 'Hej, Google, zsynchronizuj moje urządzenia', aby ponowić próbę synchronizacji.",
@@ -1837,6 +1853,35 @@
                     "description": "System metryczny, lokalizacja, strefa czasowa oraz inne parametry ogólne",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Zanim to włączysz, odwiedź stronę z dokumentacją analityczną {link}, aby zrozumieć, co wysyłasz i jak to jest przechowywane.",
+                                "header": "Analityka",
+                                "instance_id": "Identyfikator instancji: {huuid}",
+                                "introduction": "Udostępniaj dane analityczne ze swojej instancji. Te dane będą publicznie dostępne pod adresem {link}",
+                                "needs_base": "Aby ta opcja była dostępna, musisz włączyć podstawowe analityki",
+                                "preference": {
+                                    "base": {
+                                        "description": "Obejmuje to identyfikator instancji, wersję i typ instalacji",
+                                        "title": "Podstawowe analityki"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Udostępniaj raporty o awariach i informacje diagnostyczne",
+                                        "title": "Diagnostyka"
+                                    },
+                                    "statistics": {
+                                        "description": "Obejmuje to liczbę elementów w instalacji. Pełną listę można znaleźć w dokumentacji.",
+                                        "title": "Statystyki użycia"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Obejmuje to nazwy i możliwości twoich integracji i dodatków",
+                                        "title": "Użyte integracje i dodatki"
+                                    },
+                                    "usage": {
+                                        "description": "Obejmuje to nazwy twoich integracji",
+                                        "title": "Używane integracje"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Edytor wyłączony, ponieważ konfiguracja jest przechowywana w pliku configuration.yaml.",
                                 "elevation": "Wysokość",
@@ -2110,8 +2155,10 @@
                         "entity_unavailable": "encja niedostępna",
                         "firmware": "oprogramowanie: {version}",
                         "hub": "połączony poprzez:",
+                        "logs": "logi",
                         "manuf": "producent: {manufacturer}",
                         "no_area": "brak",
+                        "not_loaded": "Nie załadowano, sprawdź {logs_link}",
                         "options": "Opcje",
                         "reload": "Wczytaj ponownie",
                         "reload_confirm": "Integracja została ponownie wczytana",
@@ -2137,6 +2184,7 @@
                         "finish": "Zakończ",
                         "loading_first_time": "Proszę czekać, trwa instalowanie integracji...",
                         "not_all_required_fields": "Nie wszystkie wymagane pola są wypełnione.",
+                        "not_loaded": "Nie udało się załadować integracji, spróbuj ponownie uruchomić Home Assistanta.",
                         "pick_flow_step": {
                             "new_flow": "Nie, skonfiguruj inną instancję integracji {integration}",
                             "title": "Odkryliśmy je, chcesz je skonfigurować?"
@@ -2151,6 +2199,7 @@
                     "disable": {
                         "disabled_integrations": "Wyłączonych: {number}",
                         "hide_disabled": "Ukryj wyłączone integracje",
+                        "show": "Pokaż",
                         "show_disabled": "Pokaż wyłączone integracje"
                     },
                     "discovered": "Wykryte",
@@ -2530,39 +2579,39 @@
                     "description": "Uruchom ponownie i zatrzymaj serwer Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Wczytaj ponownie automatyzacje",
-                            "command_line": "Wczytaj ponownie encje komponentu linia komend",
-                            "core": "Wczytaj ponownie lokalizację i dostosowywanie",
-                            "filesize": "Wczytaj ponownie encje komponentu wielkość pliku",
-                            "filter": "Wczytaj ponownie encje komponentu filtr",
-                            "generic": "Wczytaj ponownie encje komponentu kamera IP generic",
-                            "generic_thermostat": "Wczytaj ponownie encje komponentu termostatu generic",
-                            "group": "Wczytaj ponownie grupy, ich encje oraz ich usługi powiadomień",
+                            "automation": "Automatyzacje",
+                            "command_line": "Encje komponentu linia komend",
+                            "core": "Lokalizacja i dostosowywanie",
+                            "filesize": "Encje komponentu wielkość pliku",
+                            "filter": "Encje komponentu filtr",
+                            "generic": "Encje komponentu kamera IP generic",
+                            "generic_thermostat": "Encje komponentu termostatu generic",
+                            "group": "Grupy, ich encje oraz usługi powiadomień",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
-                            "history_stats": "Wczytaj ponownie encje komponentu historia stanów",
-                            "homekit": "Wczytaj ponownie HomeKit",
-                            "input_boolean": "Wczytaj ponownie pomocników typu przełącznik",
-                            "input_datetime": "Wczytaj ponownie pomocników typu data i czas",
-                            "input_number": "Wczytaj ponownie pomocników typu numer",
-                            "input_select": "Wczytaj ponownie pomocników typu pole wyboru",
-                            "input_text": "Wczytaj ponownie pomocników typu tekst",
+                            "history_stats": "Encje komponentu historia stanów",
+                            "homekit": "HomeKit",
+                            "input_boolean": "Pomocnicy typu przełącznik",
+                            "input_datetime": "Pomocnicy typu data i czas",
+                            "input_number": "Pomocnicy typu numer",
+                            "input_select": "Pomocnicy typu pole wyboru",
+                            "input_text": "Pomocnicy typu tekst",
                             "introduction": "Niektóre fragmenty konfiguracji można wczytać ponownie bez konieczności restartowania Home Assistanta. Poniższe przyciski usuną z pamięci wybraną część konfiguracji YAML i wczytają ją ponownie.",
-                            "min_max": "Wczytaj ponownie encje komponentu min/max",
-                            "mqtt": "Wczytaj ponownie encje komponentu MQTT",
-                            "person": "Wczytaj ponownie osoby",
-                            "ping": "Wczytaj ponownie encje komponentu ping",
-                            "reload": "Wczytaj ponownie domenę {domain}",
-                            "rest": "Wczytaj ponownie encje komponentu rest i ich usługi powiadomień",
-                            "rpi_gpio": "Wczytaj ponownie encje komponentu Raspberry Pi GPIO",
-                            "scene": "Wczytaj ponownie sceny",
-                            "script": "Wczytaj ponownie skrypty",
-                            "smtp": "Wczytaj ponownie usługi powiadomień komponentu SMTP",
-                            "statistics": "Wczytaj ponownie encje komponentu statystyka",
-                            "telegram": "Wczytaj ponownie usługi powiadomień komponentu Telegram",
-                            "template": "Wczytaj ponownie encje zdefiniowane szablonami",
-                            "trend": "Wczytaj ponownie encje komponentu trend",
-                            "universal": "Wczytaj ponownie encje komponentu uniwersalny odtwarzacz mediów",
-                            "zone": "Wczytaj ponownie strefy"
+                            "min_max": "Encje komponentu min/max",
+                            "mqtt": "Encje komponentu MQTT",
+                            "person": "Osoby",
+                            "ping": "Encje komponentu ping",
+                            "reload": "Domenę {domain}",
+                            "rest": "Encje komponentu rest i usługi powiadomień",
+                            "rpi_gpio": "Encje komponentu Raspberry Pi GPIO",
+                            "scene": "Sceny",
+                            "script": "Skrypty",
+                            "smtp": "Usługi powiadomień komponentu SMTP",
+                            "statistics": "Encje komponentu statystyka",
+                            "telegram": "Usługi powiadomień komponentu Telegram",
+                            "template": "Encje zdefiniowane szablonami",
+                            "trend": "Encje komponentu trend",
+                            "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
+                            "zone": "Strefy"
                         },
                         "server_management": {
                             "confirm_restart": "Czy na pewno chcesz ponownie uruchomić Home Assistanta?",
@@ -2982,6 +3031,7 @@
                         "column_parameter": "Parametr",
                         "description": "Narzędzie deweloperskie Usługi pozwala na wywołanie dowolnej dostępnej usługi.",
                         "fill_example_data": "Wypełnij przykładowymi danymi",
+                        "no_template_ui_support": "Interfejs użytkownika nie obsługuje szablonów, nadal możesz używać edytora YAML.",
                         "title": "Usługi",
                         "ui_mode": "Przejdź do trybu interfejsu użytkownika",
                         "yaml_mode": "Przejdź do trybu YAML",
@@ -3681,6 +3731,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Dalej",
+                    "intro": "Udostępniaj dane analityczne ze swojej instancji. Te dane będą publicznie dostępne pod adresem {link}"
+                },
                 "core-config": {
                     "button_detect": "Wykryj",
                     "finish": "Dalej",
@@ -3690,12 +3744,14 @@
                     "location_name": "Nazwa instalacji Home Assistanta",
                     "location_name_default": "Dom"
                 },
+                "finish": "Zakończ",
                 "integration": {
                     "finish": "Koniec",
                     "intro": "Urządzenia i usługi są reprezentowane w Home Assistant jako integracje. Możesz je teraz skonfigurować lub zrobić to później w konfiguracji.",
                     "more_integrations": "Więcej"
                 },
                 "intro": "Czy jesteś gotowy, aby ożywić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
+                "next": "Dalej",
                 "restore": {
                     "description": "Alternatywnie możesz przywrócić z poprzedniej migawki.",
                     "hide_log": "Ukryj cały log",
@@ -3789,6 +3845,19 @@
                     "disable": "Wyłącz",
                     "enable": "Włącz",
                     "header": "Moduły uwierzytelniania wieloskładnikowego"
+                },
+                "number_format": {
+                    "description": "Wybierz sposób formatowania liczb.",
+                    "dropdown_label": "Format liczbowy",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Auto (użyj ustawień języka)",
+                        "none": "Brak",
+                        "space_comma": "1 234 567,89",
+                        "system": "Użyj ustawień regionalnych systemu"
+                    },
+                    "header": "Format liczbowy"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

@@ -1067,7 +1067,7 @@
                             "enable": "אפשור",
                             "enable_ha_skill": "הפעל את מיומנות Home Assistant עבור אלקסה",
                             "enable_state_reporting": "הפוך דיווח מצב לזמין",
-                            "info": "עם שילוב אלקסה עבור ענן Home Assistant תוכל לשלוט בכל המכשירים של Home Assistant באמצעות כל מכשיר המקושר לאלקסה.",
+                            "info": "עם האינטגרציה של Alexa עבור Home Assistant Cloud, תוכל לשלוט בכל מכשירי Home Assistant שלך באמצעות כל מכשיר המותאם לשימוש ב-Alexa.",
                             "info_state_reporting": "אם תאפשר דיווח על מצב, Home Assistant ישלח כל שינוי מצב של ישויות חשופות לאמזון. זה יאפשר לך לראות תמיד את המצב העדכני באפליקציית Alexa ולהשתמש בשינויי המצב ליצירת שגרות.",
                             "manage_entities": "נהל ישויות",
                             "state_reporting_error": "אין אפשרות לעשות {enable_disable} לדיווח מצב.",
@@ -1112,6 +1112,14 @@
                         },
                         "sign_out": "התנתק",
                         "thank_you_note": "תודה לך על היותך חלק בענן Home Assistant. בזכות אנשים כמוך אנחנו מסוגלים לייצר חווית בית חכם עבור כולם. תודה!",
+                        "tts": {
+                            "default_language": "שפת ברירת מחדל לשימוש",
+                            "female": "נקבה",
+                            "info": "הבא אישיות לביתך על-ידי כך שהוא ידבר אליך באמצעות שירותי המרת הטקסט לדיבור שלנו. באפשרותך להשתמש באפשרות זו באוטומציות ובקבצי Script באמצעות שירות {service}.",
+                            "male": "זכר",
+                            "title": "טקסט לדיבור",
+                            "try": "נסה"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "השבתת הwebhook נכשלה:",
                             "info": "לכל דבר שתצורתו נקבעה כמופעלת על-ידי webhook יכולה להינתן כתובת URL ציבורית כדי לאפשר לך לשלוח נתונים בחזרה ל Home Assistant מכל מקום, מבלי לחשוף את המערכת שלך לאינטרנט.",
@@ -1133,7 +1141,7 @@
                         "not_exposed_entities": "ישויות לא חשופות",
                         "title": "Alexa"
                     },
-                    "description_features": "שליטה הרחק מהבית, משתלב עם Alexa ו Google Assistant.",
+                    "description_features": "שליטה על הבית מרחוק, ואינטגרציה עם Alexa ו-Google Assistant.",
                     "description_login": "מחובר בתור {email} מה",
                     "description_not_login": "לא מחובר",
                     "dialog_certificate": {
@@ -1181,7 +1189,7 @@
                         "email": "דוא\"ל",
                         "email_error_msg": "דואר אלקטרוני לא חוקי",
                         "forgot_password": "שכחת סיסמא?",
-                        "introduction": "ענן Home Assistant מספק לך חיבור מרוחק מאובטח למערכת שלך כשאתה מחוץ לבית. זה גם מאפשר לך להתחבר לשירותים הזמינים בענן בלבד: Alexa ו- Google Assistant.",
+                        "introduction": "שירות Home Assistant Cloud מספק לך חיבור מרוחק מאובטח למערכת שלך כשאתה מחוץ לבית. הוא גם מאפשר לך להתחבר לשירותים הזמינים בענן בלבד: Alexa ו-Google Assistant.",
                         "introduction2": "שירות זה מנוהל על ידי השותף שלנו ",
                         "introduction2a": ", חברה שהוקמה על ידי מייסדי Home Assistant ו Hass.io.",
                         "introduction3": "ענן Home Assistant הוא שירות מנוי עם ניסיון חינם למשך חודש. אין צורך באמצעי תשלום.",
