@@ -41,7 +41,7 @@ import scrollToTarget from "../../common/dom/scroll-to-target";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import {
-  createSearchParam,
+  addSearchParam,
   extractSearchParam,
   removeSearchParam,
 } from "../../common/url/search-params";
@@ -536,6 +536,13 @@ class HUIRoot extends LitElement {
           view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
+  protected firstUpdated() {
+    // Check for requested edit mode
+    if (extractSearchParam("edit") === "1") {
+      this._enableEditMode();
+    }
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -578,11 +585,6 @@ class HUIRoot extends LitElement {
           }
         }
         newSelectView = index;
-      }
-
-      // Check for requested edit mode
-      if (extractSearchParam("edit") === "1") {
-        this._enableEditMode();
       }
     }
 
@@ -728,7 +730,7 @@ class HUIRoot extends LitElement {
     window.history.replaceState(
       null,
       "",
-      constructUrlCurrentHref(createSearchParam({ edit: "1" }))
+      constructUrlCurrentHref(addSearchParam({ edit: "1" }))
     );
   }
 
