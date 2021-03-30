@@ -840,6 +840,12 @@
                 "label": "Picture",
                 "unsupported_format": "Unsupported format, please choose a JPEG, PNG or GIF image."
             },
+            "related-filter-menu": {
+                "filter_by_area": "Filter by area",
+                "filter_by_device": "Filter by device",
+                "filtered_by_area": "area: {area_name}",
+                "filtered_by_device": "device: {device_name}"
+            },
             "related-items": {
                 "area": "Area",
                 "automation": "Part of the following automations",
@@ -1596,7 +1602,7 @@
                         },
                         "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about automations",
-                        "no_automations": "We couldn’t find any editable automations",
+                        "no_automations": "We couldn’t find any automations",
                         "only_editable": "Only automations defined in automations.yaml are editable.",
                         "pick_automation": "Pick automation to edit",
                         "show_info_automation": "Show info about automation"
@@ -1677,7 +1683,7 @@
                         "google": {
                             "config_documentation": "Configuration documentation",
                             "devices_pin": "Security Devices PIN",
-                            "enable_ha_skill": "Activate the Home Assistant skill for Google Assistant",
+                            "enable_ha_skill": "Activate the Home Assistant Cloud skill for Google Assistant",
                             "enable_state_reporting": "Enable State Reporting",
                             "enter_pin_error": "Unable to store PIN:",
                             "enter_pin_hint": "Enter a PIN to use security devices",
@@ -1685,6 +1691,8 @@
                             "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
                             "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This allows you to always see the latest states in the Google app.",
                             "manage_entities": "Manage Entities",
+                            "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
+                            "not_configured_title": "Google Assistant is not activated",
                             "security_devices": "Security Devices",
                             "sync_entities": "Sync Entities to Google",
                             "sync_entities_404_message": "Failed to sync your entities to Google, ask Google 'Hey Google, sync my devices' to sync your entities.",
@@ -1847,6 +1855,35 @@
                     "description": "Unit system, location, time zone & other general parameters",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Before you enable this make sure you visit the analytics documentation page {link} to understand what you are sending and how it's stored.",
+                                "header": "Analytics",
+                                "instance_id": "Instance ID: {huuid}",
+                                "introduction": "Share analytics from your instance. This data will be publiclly available at {link}",
+                                "needs_base": "You need to enable base analytics for this option to be available",
+                                "preference": {
+                                    "base": {
+                                        "description": "This includes the instance ID, the version and the installation type",
+                                        "title": "Basic analytics"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Share crash reports and diagnostic information",
+                                        "title": "Diagnostics"
+                                    },
+                                    "statistics": {
+                                        "description": "This includes a count of elements in your installation, for a full list look at the documentation",
+                                        "title": "Usage statistics"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "This includes the names and capabilities of your integrations and add-ons",
+                                        "title": "Used integrations and add-ons"
+                                    },
+                                    "usage": {
+                                        "description": "This includes the names of your integrations",
+                                        "title": "Used integrations"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
                                 "elevation": "Elevation",
@@ -2120,8 +2157,10 @@
                         "entity_unavailable": "Entity unavailable",
                         "firmware": "Firmware: {version}",
                         "hub": "Connected via",
+                        "logs": "logs",
                         "manuf": "by {manufacturer}",
                         "no_area": "No Area",
+                        "not_loaded": "Not loaded, check the {logs_link}",
                         "options": "Options",
                         "reload": "Reload",
                         "reload_confirm": "The integration was reloaded",
@@ -2147,6 +2186,7 @@
                         "finish": "Finish",
                         "loading_first_time": "Please wait while the integration is being installed",
                         "not_all_required_fields": "Not all required fields are filled in.",
+                        "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
                         "pick_flow_step": {
                             "new_flow": "No, set up an other instance of {integration}",
                             "title": "We discovered these, want to set them up?"
@@ -2481,7 +2521,7 @@
                         },
                         "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scenes",
-                        "no_scenes": "We couldn’t find any editable scenes",
+                        "no_scenes": "We couldn’t find any scenes",
                         "only_editable": "Only scenes defined in scenes.yaml are editable.",
                         "pick_scene": "Pick scene to edit",
                         "show_info_scene": "Show info about scene"
@@ -2531,7 +2571,7 @@
                         },
                         "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scripts",
-                        "no_scripts": "We couldn’t find any editable scripts",
+                        "no_scripts": "We couldn’t find any scripts",
                         "run_script": "Run script",
                         "show_info": "Show info about script"
                     }
@@ -3693,6 +3733,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Next",
+                    "intro": "Share analytics from your instance. This data will be publiclly available at {link}"
+                },
                 "core-config": {
                     "button_detect": "Detect",
                     "finish": "Next",
@@ -3702,12 +3746,14 @@
                     "location_name": "Name of your Home Assistant installation",
                     "location_name_default": "Home"
                 },
+                "finish": "Finish",
                 "integration": {
                     "finish": "Finish",
                     "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
                     "more_integrations": "More"
                 },
                 "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+                "next": "Next",
                 "restore": {
                     "description": "Alternatively you can restore from a previous snapshot.",
                     "hide_log": "Hide full log",

@@ -723,6 +723,9 @@
                 "today": "Oggi"
             },
             "data-table": {
+                "clear": "Cancella",
+                "filtering_by": "Filtraggio per",
+                "hidden": "{number} nascosto",
                 "no-data": "Nessun dato",
                 "search": "Ricerca"
             },
@@ -836,6 +839,12 @@
             "picture-upload": {
                 "label": "Immagine",
                 "unsupported_format": "Formato non supportato, scegliere un'immagine JPEG, PNG o GIF."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filtra per area",
+                "filter_by_device": "Filtra per dispositivo",
+                "filtered_by_area": "area: {area_name}",
+                "filtered_by_device": "dispositivo: {device_name}"
             },
             "related-items": {
                 "area": "Area",
@@ -1473,6 +1482,7 @@
                         "move_down": "Sposta sotto",
                         "move_up": "Sposta sopra",
                         "save": "Salva",
+                        "show_trace": "Mostra traccia",
                         "triggers": {
                             "add": "Aggiungi attivazione",
                             "delete": "Elimina",
@@ -1673,7 +1683,7 @@
                         "google": {
                             "config_documentation": "Documentazione di configurazione",
                             "devices_pin": "PIN dei dispositivi di sicurezza",
-                            "enable_ha_skill": "Abilitare la skill Home Assistant per Google Assistant",
+                            "enable_ha_skill": "Abilitare la skill Home Assistant Cloud per Google Assistant",
                             "enable_state_reporting": "Attivare la segnalazione dello Stato",
                             "enter_pin_error": "Impossibile memorizzare il pin:",
                             "enter_pin_hint": "Immettere un PIN per utilizzare i dispositivi di sicurezza",
@@ -1681,6 +1691,8 @@
                             "info": "Con l'integrazione di Google Assistant per Home Assistant Cloud sarai in grado di controllare tutti i tuoi dispositivi Home Assistant tramite qualsiasi dispositivo abilitato per Google Assistant.",
                             "info_state_reporting": "Se si abilita la segnalazione dello stato, Home Assistant invierà a Google tutte le modifiche di stato delle entità esposte. Questo ti permette di vedere sempre gli ultimi stati nell'app di Google.",
                             "manage_entities": "Gestire le entità",
+                            "not_configured_text": "Prima di poter utilizzare Google Assistant, è necessario attivare la skill Home Assistant Cloud per Google Assistant nell'app Google Home.",
+                            "not_configured_title": "Google Assistant non è attivato",
                             "security_devices": "Dispositivi di sicurezza",
                             "sync_entities": "Sincronizzare le entità con Google",
                             "sync_entities_404_message": "Impossibile sincronizzare le entità con Google, chiedere a Google \"Ehi Google, sincronizza i miei dispositivi\" per sincronizzare le entità.",
@@ -1843,6 +1855,35 @@
                     "description": "Sistema di unità, posizione, fuso orario e altri parametri generali",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Prima di abilitarlo, assicurati di visitare la pagina della documentazione di analisi {link} per capire cosa stai inviando e come viene archiviato.",
+                                "header": "Analisi",
+                                "instance_id": "ID istanza: {huuid}",
+                                "introduction": "Condividi l'analisi dalla tua istanza. Questi dati saranno disponibili pubblicamente all'indirizzo {link}",
+                                "needs_base": "È necessario abilitare l'analisi di base affinché questa opzione sia disponibile",
+                                "preference": {
+                                    "base": {
+                                        "description": "Questo include l'ID dell'istanza, la versione e il tipo di installazione",
+                                        "title": "Analisi di base"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Condividi i rapporti sugli arresti anomali e le informazioni diagnostiche",
+                                        "title": "Diagnostica"
+                                    },
+                                    "statistics": {
+                                        "description": "Questo include un conteggio degli elementi nella tua installazione, per un elenco completo guarda la documentazione",
+                                        "title": "Statistiche d'uso"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Questo include i nomi e le funzionalità delle integrazioni e dei componenti aggiuntivi",
+                                        "title": "Integrazioni e componenti aggiuntivi utilizzati"
+                                    },
+                                    "usage": {
+                                        "description": "Questo include i nomi delle tue integrazioni",
+                                        "title": "Integrazioni usate"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor disabilitato perché la configurazione è memorizzata in configuration.yaml.",
                                 "elevation": "Altitudine",
@@ -2116,8 +2157,10 @@
                         "entity_unavailable": "Entità non disponibile",
                         "firmware": "Firmware: {version}",
                         "hub": "Connesso tramite",
+                        "logs": "registri",
                         "manuf": "da {manufacturer}",
                         "no_area": "Nessuna area",
+                        "not_loaded": "Non caricato, controlla il {logs_link}",
                         "options": "Opzioni",
                         "reload": "Ricarica",
                         "reload_confirm": "L'integrazione è stata ricaricata",
@@ -2143,6 +2186,7 @@
                         "finish": "Finito",
                         "loading_first_time": "Si prega di attendere durante l'installazione dell'integrazione",
                         "not_all_required_fields": "Non tutti i campi obbligatori sono compilati.",
+                        "not_loaded": "L'integrazione non può essere caricata, prova a riavviare Home Assistant.",
                         "pick_flow_step": {
                             "new_flow": "No, configura un'altra istanza di {integration}",
                             "title": "Rilevati questi, li vuoi configurare?"
@@ -2157,6 +2201,7 @@
                     "disable": {
                         "disabled_integrations": "{number} disabilitate",
                         "hide_disabled": "Nascondi integrazioni disabilitate",
+                        "show": "Mostra",
                         "show_disabled": "Mostra integrazioni disabilitate"
                     },
                     "discovered": "Rilevato",
@@ -3688,6 +3733,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Avanti",
+                    "intro": "Condividi l'analisi dalla tua istanza. Questi dati saranno disponibili pubblicamente all'indirizzo {link}"
+                },
                 "core-config": {
                     "button_detect": "Rileva",
                     "finish": "Prossimo",
@@ -3697,12 +3746,14 @@
                     "location_name": "Nome della tua installazione di Home Assistant",
                     "location_name_default": "Casa"
                 },
+                "finish": "Finito",
                 "integration": {
                     "finish": "Finito",
                     "intro": "Dispositivi e servizi sono rappresentati in Home Assistant come integrazioni. È possibile impostarli ora, o farlo in seguito dalla schermata di configurazione.",
                     "more_integrations": "Di Più"
                 },
                 "intro": "Sei pronto per risvegliare la tua casa, reclamare la tua privacy e far parte di una comunità mondiale di smanettoni?",
+                "next": "Avanti",
                 "restore": {
                     "description": "In alternativa è possibile ripristinare da un'istantanea precedente.",
                     "hide_log": "Nascondi il registro completo",
@@ -3796,6 +3847,19 @@
                     "disable": "Disattivare",
                     "enable": "Abilita",
                     "header": "Codice di autenticazione a più fattori"
+                },
+                "number_format": {
+                    "description": "Scegli come vengono formattati i numeri.",
+                    "dropdown_label": "Formato numero",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Auto (usa l'impostazione della lingua)",
+                        "none": "Nessuno",
+                        "space_comma": "1 234 567,89",
+                        "system": "Usa le impostazioni locali del sistema"
+                    },
+                    "header": "Formato del numero"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

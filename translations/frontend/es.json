@@ -840,6 +840,10 @@
                 "label": "Imagen",
                 "unsupported_format": "Formato no soportado, por favor, selecciona una imagen JPEG, PNG o GIF."
             },
+            "related-filter-menu": {
+                "filter_by_area": "Filtrar por area",
+                "filter_by_device": "Filtrar por dispositivo"
+            },
             "related-items": {
                 "area": "Área",
                 "automation": "Parte de las siguientes automatizaciones",
@@ -1121,7 +1125,6 @@
                         "reload": "{domain}",
                         "rest": "Entidades rest y notificar servicios",
                         "rpi_gpio": "Entidades GPIO de Raspberry Pi",
-                        "scene": "Recargar escenas",
                         "script": "Scripts",
                         "smtp": "Servicios de notificación SMTP",
                         "statistics": "Entidades de estadísticas",
@@ -1476,6 +1479,7 @@
                         "move_down": "Mover hacia abajo",
                         "move_up": "Mover hacia arriba",
                         "save": "Guardar",
+                        "show_trace": "Mostrar traza",
                         "triggers": {
                             "add": "Añadir desencadenante",
                             "delete": "Eliminar",
@@ -1684,6 +1688,8 @@
                             "info": "Con la integración del Asistente de Google para Home Assistant Cloud, podrás controlar todos tus dispositivos Home Assistant a través de cualquier dispositivo habilitado para Asistente de Google.",
                             "info_state_reporting": "Si activas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Google. Esto te permite ver siempre los últimos estados en la aplicación de Google.",
                             "manage_entities": "Administrar entidades",
+                            "not_configured_text": "Antes de poder usar Google Assistant, necesitas activar el Home Assistant Cloud skill para Google Assistant en la aplicación Google Home.",
+                            "not_configured_title": "Google Assistant no está activado",
                             "security_devices": "Dispositivos de seguridad",
                             "sync_entities": "Sincronizar entidades con Google",
                             "sync_entities_404_message": "No se pudo sincronizar las entidades con Google, di a Google 'Ey Google, sincroniza mis dispositivos' para sincronizar tus entidades.",
@@ -1846,6 +1852,35 @@
                     "description": "Sistema de unidades, ubicación, zona horaria y otros parámetros generales",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Antes de habilitar esto, asegúrate de visitar la página de documentación de análisis {link} para comprender qué estás enviando y cómo se almacena.",
+                                "header": "Analítica",
+                                "instance_id": "ID de instancia: {huuid}",
+                                "introduction": "Comparte análisis de tu instancia. Estos datos estarán disponibles públicamente en {link}",
+                                "needs_base": "Debes habilitar el análisis base para que esta opción esté disponible",
+                                "preference": {
+                                    "base": {
+                                        "description": "Esto incluye el ID de la instancia, la versión y el tipo de instalación.",
+                                        "title": "Analítica básica"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Comparte informes de fallos e información de diagnóstico",
+                                        "title": "Diagnósticos"
+                                    },
+                                    "statistics": {
+                                        "description": "Esto incluye un recuento de elementos en tu instalación, para obtener una lista completa, consulta la documentación",
+                                        "title": "Estadísticas de uso"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Esto incluye los nombres y las capacidades de tus integraciones y complementos.",
+                                        "title": "Integraciones y complementos utilizados"
+                                    },
+                                    "usage": {
+                                        "description": "Esto incluye los nombres de tus integraciones.",
+                                        "title": "Integraciones utilizadas"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor deshabilitado debido a la configuración almacenada en configuration.yaml.",
                                 "elevation": "Altitud",
@@ -2119,8 +2154,10 @@
                         "entity_unavailable": "Entidad no disponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado a través de",
+                        "logs": "registros",
                         "manuf": "por {manufacturer}",
                         "no_area": "Ningún área",
+                        "not_loaded": "No se ha cargado, comprueba el {logs_link}",
                         "options": "Opciones",
                         "reload": "Recargar",
                         "reload_confirm": "La integración se ha recargado",
@@ -2146,6 +2183,7 @@
                         "finish": "Terminar",
                         "loading_first_time": "Por favor, espera mientras la integración está siendo instalada",
                         "not_all_required_fields": "No se han completado todos los campos requeridos.",
+                        "not_loaded": "La integración no se ha podido cargar, intenta reiniciar Home Assistant.",
                         "pick_flow_step": {
                             "new_flow": "No, configura otra instancia de {integration}",
                             "title": "Hemos descubierto éstas, ¿quieres configurarlas?"
@@ -2564,7 +2602,6 @@
                             "reload": "{domain}",
                             "rest": "Entidades rest y notificar servicios",
                             "rpi_gpio": "Entidades GPIO de Raspberry Pi",
-                            "scene": "Recargar escenas",
                             "script": "Scripts",
                             "smtp": "Servicios de notificación SMTP",
                             "statistics": "Entidades de estadísticas",
@@ -3692,6 +3729,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Siguiente",
+                    "intro": "Comparte análisis de tu instancia. Estos datos estarán disponibles públicamente en {link}"
+                },
                 "core-config": {
                     "button_detect": "Detectar",
                     "finish": "Siguiente",
@@ -3701,12 +3742,14 @@
                     "location_name": "Nombre de tu instalación de Home Assistant",
                     "location_name_default": "Casa"
                 },
+                "finish": "Terminar",
                 "integration": {
                     "finish": "Terminar",
                     "intro": "Los dispositivos y servicios están representados en Home Assistant como integraciones. Puedes configurarlos ahora, o hacerlo más tarde desde la pantalla de configuración.",
                     "more_integrations": "Más"
                 },
                 "intro": "¿Estás listo para despertar tu casa, reclamar tu privacidad y unirte a una comunidad mundial de pensadores?",
+                "next": "Siguiente",
                 "restore": {
                     "description": "Alternativamente, puedes restaurar desde una copia de seguridad anterior.",
                     "hide_log": "Ocultar registro completo",
