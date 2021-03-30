@@ -51,6 +51,8 @@ export class HUIView extends UpdatingElement {
 
   @internalProperty() private _badges: LovelaceBadge[] = [];
 
+  private _layoutElementType?: string;
+
   private _layoutElement?: LovelaceViewElement;
 
   // Public to make demo happy
@@ -116,8 +118,15 @@ export class HUIView extends UpdatingElement {
       };
     }
 
-    if (configChanged && !this._layoutElement) {
+    let replace = false;
+
+    if (
+      configChanged &&
+      (!this._layoutElement || this._layoutElementType !== viewConfig!.type)
+    ) {
+      replace = true;
       this._layoutElement = createViewElement(viewConfig!);
+      this._layoutElementType = viewConfig!.type;
       this._layoutElement.addEventListener("ll-create-card", () => {
         showCreateCardDialog(this, {
           lovelaceConfig: this.lovelace!.config,
@@ -195,7 +204,10 @@ export class HUIView extends UpdatingElement {
       );
     }
 
-    if (this._layoutElement && !this.lastChild) {
+    if (this._layoutElement && replace) {
+      while (this.lastChild) {
+        this.removeChild(this.lastChild);
+      }
       this.appendChild(this._layoutElement);
     }
   }

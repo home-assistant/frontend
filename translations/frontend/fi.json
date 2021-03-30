@@ -10,7 +10,7 @@
     "groups": {
         "owner": "Omistaja",
         "system-admin": "Järjestelmänvalvojat",
-        "system-read-only": "Pelkästään luku -käyttäjät",
+        "system-read-only": "Vain luku -käyttäjät",
         "system-users": "Käyttäjät"
     },
     "panel": {
@@ -44,9 +44,9 @@
             "preset_mode": {
                 "activity": "Toiminta",
                 "away": "Poissa",
-                "boost": "Boost",
-                "comfort": "Comfort",
-                "eco": "Ekonominen",
+                "boost": "Tehostus",
+                "comfort": "Mukavuus",
+                "eco": "Taloudellinen",
                 "home": "Kotona",
                 "none": "Asettamatta",
                 "sleep": "Nukkumassa"
@@ -54,12 +54,12 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "Automaatilla",
+                "auto": "Automaattinen",
                 "away": "Poissa",
                 "baby": "Vauva",
                 "boost": "Tehostus",
                 "comfort": "Mukavuus",
-                "eco": "Ekonominen",
+                "eco": "Taloudellinen",
                 "home": "Koti",
                 "normal": "Normaali",
                 "sleep": "Nukkumassa"
@@ -73,14 +73,14 @@
             "armed_custom_bypass": "Viritetty",
             "armed_home": "Viritetty",
             "armed_night": "Viritetty",
-            "arming": "Viritys kesken",
+            "arming": "Virittyy",
             "disarmed": "Ei viritetty",
             "disarming": "Ei viritetty",
             "pending": "Odot",
-            "triggered": "Vakaa"
+            "triggered": "Lauennut"
         },
         "default": {
-            "entity_not_found": "Olemusta ei löydetty",
+            "entity_not_found": "Kohdetta ei löydy",
             "error": "Virhe",
             "unavailable": "Ei saat",
             "unknown": "Tunt"
@@ -100,6 +100,344 @@
             "on": "Päällä",
             "unavailable": "Ei saatavissa",
             "unknown": "Tuntematon"
+        }
+    },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Oletus",
+                    "header": "Ääni",
+                    "input": "Tulo",
+                    "output": "Lähtö"
+                },
+                "network": {
+                    "container": "Kontti",
+                    "header": "Verkko",
+                    "host": "Isäntä"
+                },
+                "no_configuration": "Tämä lisäosa ei tarjoa asetuksia, joita voisit säätää...",
+                "options": {
+                    "edit_in_ui": "Muokkaa käyttöliittymässä",
+                    "edit_in_yaml": "Muokkaa YAML-tiedostona",
+                    "header": "Asetukset",
+                    "invalid_yaml": "Virheellinen YAML"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "install": "Lisäosan asennus epäonnistui",
+                    "restart": "Lisäosan uudelleenkäynnistys epäonnistui",
+                    "start": "Lisäosan käynnistäminen epäonnistui",
+                    "start_invalid_config": "Siirry asetuksiin",
+                    "stop": "Lisäosan pysäyttäminen epäonnistui",
+                    "uninstall": "Lisäosan poistaminen epäonnistui"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') on Linux-ytimen suojausmoduuli, joka rajoittaa lisäosien ominaisuuksia, kuten verkkoyhteyksiä, raakojen pistokkeiden käyttöä ja oikeutta lukea, kirjoittaa tai suorittaa tiettyjä tiedostoja. \n\nLisäosien tekijät voivat toimittaa lisäosalle optimoidut suojausprofiilinsa tai pyytää poistamaan AppArmorin käytöstä. AppArmorin käytöstä poistaminen lisää turvallisuusriskejä ja laskee siten lisäosan turvallisuuspisteitä.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Lisäosa voi todentaa käyttäjät Home Assistantin kautta, mikä antaa käyttäjien kirjautua lisäosien sisältämiin sovelluksiin Home Assistant -käytttäjätunnuksillaan ja -salasanoillaan. Tämä merkki osoittaa, pyytääkö lisäosan tekijä tätä toimintoa.",
+                        "title": "Home Assistant -todennus"
+                    },
+                    "docker_api": {
+                        "description": "Lisäosan tekijä on pyytänyt lisäosalle hallintaoikeuksia järjestelmäsi Docker-palveluun. Tämä tila antaa lisäosalle täyden pääsyn ja hallinnan koko Home Assistant -järjestelmääsi, mikä lisää tietoturvariskejä ja voi vahingoittaa järjestelmääsi väärinkäytettynä. Siksi tämä ominaisuus laskee lisäosan turvallisuuspisteitä.\n\nTätä käyttöoikeustasoa ei myönnetä automaattisesti, ja sinun on vahvistettava se. Tätä varten sinun on poistettava lisäosan suojaustila käytöstä manuaalisesti. Poista suojaustila käytöstä vain, jos tunnet, tarvitset JA luotat tämän lisäosan lähteeseen.",
+                        "title": "Täysi Docker-pääsy"
+                    },
+                    "full_access": {
+                        "description": "Lisäosan tekijän pyynnöstä lisäosalle annetaan täysi pääsy järjestelmäsi laitteistoon. Käyttöoikeudet vastaavat Dockerin privileged-tilaa. Koska tämä luo mahdollisia tietoturvariskejä, tämä ominaisuus laskee lisäosan turvallisuuspisteitä.\n\nTätä käyttöoikeustasoa ei myönnetä automaattisesti, ja sinun on vahvistettava se. Tätä varten sinun on poistettava lisäosan suojaustila käytöstä manuaalisesti. Poista suojaustila käytöstä vain, jos tunnet, tarvitset JA luotat tämän lisäosan lähteeseen.",
+                        "title": "Täysi laitteistopääsy"
+                    },
+                    "hassio_api": {
+                        "description": "Lisäosan tekijän pyynnöstä lisäosalle annettiin pääsy Supervisorin APIin. Oletusarvoisesti lisäosa voi käyttää järjestelmäsi yleisiä versiotietoja. Kun lisäosa pyytää 'manager'- tai 'admin'-tasoista pääsyä APIin, se voi hallita useita Home Assistant -järjestelmäsi osia. Tämä merkki ilmaisee tätä käyttöoikeutta ja laskee lisäosan turvallisuuspisteitä.",
+                        "title": "Pääsy Supervisorin APIin"
+                    },
+                    "homeassistant_api": {
+                        "description": "Tällä lisäosalla on suora pääsy Home Assistant -esiintymääsi Home Assistantin APIn kautta. Tämä tila huolehtii myös todennuksesta, mikä mahdollistaa lisäosan vuorovaikutuksen Home Assistantin kanssa ilman erillisiä todennustunnuksia.",
+                        "title": "Pääsy Home Assistantin APIin"
+                    },
+                    "host_network": {
+                        "description": "Yleensä lisäosat toimivat omassa eristetyssä verkkokerroksessaan, mikä estää niitä pääsemästä isäntäkäyttöjärjestelmän verkkoon. Joissakin tapauksissa eristys voi rajoittaa lisäosien tarjoamia palveluita, ja siksi lisäosan tekijä voi poistaa eristyksen, mikä antaa lisäosalle täyden pääsyn isäntäkoneen verkkotoimintoihin. Tämä antaa lisäosalle laajemmat verkkotoiminnot mutta heikentää turvallisuutta, minkä vuoksi tämän ominaisuuden käyttö laskee lisäosan turvallisuuspisteitä.",
+                        "title": "Isännän verkko"
+                    },
+                    "host_pid": {
+                        "description": "Yleensä lisäosan suorittamat prosessit eristetään kaikista muista järjestelmäprosesseista. Lisäosan tekijä on pyytänyt lisäosalle pääsyä isäntäjärjestelmän prosesseihin sekä oikeutta käynnistää prosesseja isäntäjärjestelmässä. Tämä tila antaa lisäosalle täyden pääsyn ja hallinnan koko Home Assistant -järjestelmääsi, mikä lisää tietoturvariskejä ja voi vahingoittaa järjestelmääsi väärinkäytettynä. Siksi tämä ominaisuus laskee lisäosan turvallisuuspisteitä.\n\nTätä käyttöoikeustasoa ei myönnetä automaattisesti, ja sinun on vahvistettava se. Tätä varten sinun on poistettava lisäosan suojaustila käytöstä manuaalisesti. Poista suojaustila käytöstä vain, jos tunnet, tarvitset JA luotat tämän lisäosan lähteeseen.",
+                        "title": "Isännän prosessinimiavaruus"
+                    },
+                    "ingress": {
+                        "description": "Tämä lisäosa käyttää Ingressiä upottaakseen käyttöliittymänsä turvallisesti Home Assistantiin.",
+                        "title": "Ingress"
+                    },
+                    "rating": {
+                        "description": "Home Assistant antaa jokaiselle lisäosalle turvallisuusluokituksen, joka kertoo lisäosan käyttöön liittyvistä riskeistä. Mitä enemmän käyttöoikeuksia lisäosa vaatii, sitä enemmän mahdollisia tietoturvariskejä se aiheuttaa, mikä alentaa pistemäärää.\n\nLuokituksen asteikko on 1–6, missä huonoin pistemäärä on 1 (heikoin turvallisuus ja suurimmat riskit) ja paras pistemäärä on 6 (turvallisin ja pienimmät riskit).",
+                        "title": "Lisäosan turvallisuusluokitus"
+                    },
+                    "role": {
+                        "default": "oletus"
+                    },
+                    "stage": {
+                        "description": "Lisäosat voivat olla yhdessä kolmesta vaiheesta:\n\n{icon_stable} **Vakaa**: Nämä lisäosat ovat valmiita tuotantokäyttöön.\n\n{icon_experimental} **Kokeellinen**: Nämä lisäosat voivat sisältää virheitä, ja saattavat olla keskeneräisiä.\n\n{icon_deprecated} **Vanhentunut**: Nämä lisäosat eivät enää saa päivityksiä.",
+                        "title": "Lisäosan vaihe"
+                    }
+                },
+                "changelog": "Muutosloki",
+                "cpu_usage": "Lisäosan CPU-käyttö",
+                "hostname": "Isäntänimi",
+                "install": "asenna",
+                "new_update_available": "{name} {version} on saatavilla",
+                "not_available_arch": "Tämä lisäosa ei ole yhteensopiva laitteesi prosessorin tai laitteeseesi asennetun käyttöjärjestelmän kanssa.",
+                "not_available_version": "Käytössäsi on Home Assistant {core_version_installed}. Päivittääksesi lisäosan tähän versioon tarvitset vähintään Home Assistantin version {core_version_needed}.",
+                "open_web_ui": "Avaa käyttöliittymä",
+                "option": {
+                    "auto_update": {
+                        "description": "Päivitä lisäosa automaattisesti, kun uusi versio on saatavilla",
+                        "title": "Automaattinen päivitys"
+                    },
+                    "boot": {
+                        "description": "Käynnistä lisäosa järjestelmän käynnistyessä",
+                        "title": "Automaattinen käynnistys"
+                    },
+                    "ingress_panel": {
+                        "description": "Lisää tämä lisäosa sivupalkkiin",
+                        "title": "Näytä sivupalkissa"
+                    },
+                    "protected": {
+                        "description": "Estää lisäosalta laajan pääsyn järjestelmään",
+                        "title": "Suojaustila"
+                    },
+                    "watchdog": {
+                        "description": "Käynnistää lisäosan, jos se kaatuu",
+                        "title": "Vahtikoira"
+                    }
+                },
+                "protection_mode": {
+                    "content": "Suojaustila on poistettu käytöstä tälle lisäosalle! Tämä antaa lisäosalle täyden pääsyn koko järjestelmään, mikä lisää tietoturvariskejä ja voi vahingoittaa järjestelmäsi väärinkäytettynä. Poista suojaustila käytöstä vain, jos tunnet, tarvitset JA luotat tämän lisäosan lähteeseen.",
+                    "enable": "Ota suojaustila käyttöön",
+                    "title": "Varoitus: Suojaustila ei ole käytössä!"
+                },
+                "ram_usage": "Lisäosan muistinkäyttö",
+                "restart": "käynnistä uudelleen",
+                "start": "käynnistä",
+                "stop": "pysäytä",
+                "uninstall": "poista",
+                "visit_addon_page": "Lisätietoja on sivulla {name}"
+            },
+            "documentation": {
+                "get_documentation": "Lisäosan dokumentaation hakeminen epäonnistui, {error}"
+            },
+            "failed_to_reset": "Lisäosan asetusten nollaaminen epäonnistui, {error}",
+            "failed_to_save": "Lisäosan asetusten tallentaminen epäonnistui, {error}",
+            "logs": {
+                "get_logs": "Lisäosan lokien hakeminen epäonnistui, {error}"
+            },
+            "panel": {
+                "configuration": "Asetukset",
+                "documentation": "Dokumentaatio",
+                "info": "Tiedot",
+                "log": "Loki"
+            },
+            "state": {
+                "installed": "Lisäosa on asennettu",
+                "not_available": "Lisäosa ei ole saatavilla järjestelmällesi",
+                "not_installed": "Lisäosaa ei ole asennettu"
+            }
+        },
+        "common": {
+            "cancel": "Peru",
+            "close": "Sulje",
+            "description": "Kuvaus",
+            "error": {
+                "unknown": "Tuntematon virhe",
+                "update_failed": "Päivitys epäonnistui"
+            },
+            "learn_more": "Lisätietoja",
+            "new_version_available": "Uusi versio saatavilla",
+            "newest_version": "Uusin versio",
+            "no": "Ei",
+            "refresh": "Päivitä",
+            "reload": "Lataa uudelleen",
+            "reset_defaults": "Palauta oletukset",
+            "reset_options": "Nollaa asetukset",
+            "restart": "Käynnistä uudelleen",
+            "restart_name": "Käynnistä {name} uudelleen",
+            "running_version": "Käytät tällä hetkellä versiota {version}",
+            "save": "Tallenna",
+            "show_more": "Näytä lisätietoa tästä",
+            "update": "Päivitä",
+            "update_available": "{count, plural,\n  one {Päivitys}\n  other {{count} päivitystä}\n} saatavilla",
+            "version": "Versio",
+            "yes": "Kyllä"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Haluatko varmasti nollata kaikki asetuksesi?",
+                "title": "Nollaa asetukset"
+            },
+            "restart": {
+                "title": "Käynnistä {name} uudelleen"
+            },
+            "update": {
+                "title": "Päivitä {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Uusi versio saatavilla",
+            "addon_running": "Lisäosa on käynnissä",
+            "addon_stopped": "Lisäosa on pysäytetty",
+            "addons": "Lisäosat",
+            "no_addons": "Et ole vielä asentanut lisäosia. Aloita siirtymällä lisäosakauppaan!"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Yhdistetty kohteeseen {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Poistettu käytöstä",
+                "dns_servers": "DNS-palvelimet",
+                "failed_to_change": "Verkkoasetusten muuttaminen epäonnistui",
+                "gateway": "Yhdyskäytävän osoite",
+                "ip_netmask": "IP-osoite/aliverkon peite",
+                "open": "Avoin",
+                "scan_ap": "Etsi tukiasemia",
+                "static": "Staattinen",
+                "title": "Verkkoasetukset",
+                "unsaved": "Sinulla on tallentamattomia muutoksia, jotka menetetään, jos vaihdat välilehteä. Haluatko jatkaa?",
+                "warning": "Jos vaihdat Wi-Fi-, IP- tai yhdyskäytävän osoitteita, yhteys saattaa katketa!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Lisää uusi rekisteri",
+                "add_registry": "Lisää rekisteri",
+                "failed_to_add": "Rekisterin lisääminen epäonnistui",
+                "failed_to_remove": "Rekisterin poistaminen epäonnistui",
+                "no_registries": "Rekistereitä ei ole määritetty",
+                "password": "Salasana",
+                "registry": "Rekisteri",
+                "remove": "Poista",
+                "title_add": "Lisää uusi säilörekisteri",
+                "title_manage": "Säilörekisterien hallinta",
+                "username": "Käyttäjätunnus"
+            },
+            "repositories": {
+                "add": "Lisää",
+                "remove": "Poista",
+                "title": "Hallinnoi lisäosavarastoja"
+            },
+            "restart_addon": {
+                "confirm_text": "Käynnistä lisäosa uudelleen",
+                "text": "Haluatko käynnistää lisäosan uudelleen muutostesi kanssa?"
+            },
+            "update": {
+                "create_snapshot": "Luo tilannevedos kohteesta {name} ennen päivittämistä",
+                "snapshot": "Tilannevedos"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "Lisäosaa ei löydy"
+        },
+        "panel": {
+            "dashboard": "Kojelauta",
+            "store": "Lisäosakauppa",
+            "system": "Järjestelmä"
+        },
+        "snapshot": {
+            "addons": "Lisäosat",
+            "create": "Luo",
+            "create_snapshot": "Luo tilannevedos",
+            "enter_password": "Syötä salasana.",
+            "folder": {
+                "addons/local": "Paikalliset lisäosat",
+                "homeassistant": "Home Assistantin asetukset",
+                "media": "Media",
+                "share": "Jaetut tiedostot",
+                "ssl": "SSL"
+            },
+            "folders": "Kansiot",
+            "full_snapshot": "Täysi tilannevedos",
+            "name": "Nimi",
+            "partial_snapshot": "Osittainen tilannevedos",
+            "password": "Salasana",
+            "password_protected": "salasanasuojattu",
+            "password_protection": "Salasanasuojaus",
+            "security": "Suojaus",
+            "type": "Tyyppi",
+            "upload_snapshot": "Lähetä tilannevedos"
+        },
+        "store": {
+            "no_results_found": "Ei tuloksia kohteesta {repository}."
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Ytimen CPU-käyttö",
+                "ram_usage": "Ytimen muistinkäyttö"
+            },
+            "host": {
+                "change": "Muuta",
+                "change_hostname": "Vaihda isäntänimi",
+                "confirm_reboot": "Haluatko varmasti käynnistää isännän uudelleen?",
+                "confirm_shutdown": "Haluatko varmasti sammuttaa isännän?",
+                "deployment": "Käyttöönotto",
+                "docker_version": "Docker-versio",
+                "failed_to_get_hardware_list": "Laitteistoluettelon luominen epäonnistui",
+                "failed_to_import_from_usb": "Tuonti USB:stä epäonnistui",
+                "failed_to_reboot": "Isännän uudelleenkäynnistys epäonnistui",
+                "failed_to_set_hostname": "Isäntänimen asettaminen epäonnistui",
+                "failed_to_shutdown": "Isännän sammuttaminen epäonnistui",
+                "hardware": "Laitteisto",
+                "hostname": "Isäntänimi",
+                "import_from_usb": "Tuo USB:stä",
+                "ip_address": "IP-osoite",
+                "new_hostname": "Syötä uusi isäntänimi:",
+                "operating_system": "Käyttöjärjestelmä",
+                "reboot_host": "Käynnistä isäntä uudelleen",
+                "shutdown_host": "Sammuta isäntä",
+                "used_space": "Käytetty tila"
+            },
+            "log": {
+                "get_logs": "{provider} -lokien hakeminen epäonnistui, {error}",
+                "log_provider": "Lokien lähde"
+            },
+            "supervisor": {
+                "beta_backup": "Varmista, että sinulla on varmuuskopiot tiedoistasi, ennen kuin aktivoit tämän ominaisuuden.",
+                "beta_join_confirm": "Haluatko liittyä betakanavaan?",
+                "beta_release_items": "Tämä sisältää betaversiot seuraaville:",
+                "beta_warning": "Betaversiot on suunnattu testaajille ja varhaisille omaksujille, ja ne voivat sisältää epävakaita koodimuutoksia",
+                "channel": "Kanava",
+                "cpu_usage": "Supervisorin CPU-käyttö",
+                "failed_to_reload": "Supervisorin uudelleenlataus epäonnistui",
+                "failed_to_set_option": "Supervisor-asetuksen asettaminen epäonnistui",
+                "failed_to_update": "Supervisorin päivittäminen epäonnistui",
+                "join_beta_action": "Liity betakanavaan",
+                "join_beta_description": "Vastaanota betapäivityksiä Home Assistantille (RC:t), Supervisorille ja isännälle",
+                "leave_beta_action": "Poistu betakanavasta",
+                "leave_beta_description": "Vastaanota vakaita päivityksiä Home Assistantille, Supervisorille ja isännälle",
+                "ram_usage": "Supervisorin muistinkäyttö",
+                "reload_supervisor": "Lataa Supervisor uudelleen",
+                "share_diagnostics": "Jaa diagnostiikka",
+                "share_diagnostics_description": "Jaa kaatumisraportit ja diagnostiikkatiedot.",
+                "share_diagonstics_description": "Haluatko jakaa kaatumisraportit ja diagnostiikkatiedot automaattisesti, kun Supervisor havaitsee odottamattomia virheitä? {line_break} Tämän avulla voimme korjata ongelmat. Tiedot ovat vain Home Assistant Core -tiimin käytettävissä, eikä niitä jaeta muille. {line_break} Tiedot eivät sisällä yksityisiä tai arkaluontoisia tietoja, ja voit poistaa tämän käytöstä asetuksissa milloin tahansa.",
+                "share_diagonstics_title": "Auta parantamaan Home Assistanttia",
+                "unhealthy_reason": {
+                    "docker": "Docker-ympäristö ei toimi oikein",
+                    "supervisor": "Supervisorin päivitys epäonnistui"
+                },
+                "unsupported_description": "Alla on lista asennuksestasi löydetyistä ongelmista. Klikkaa linkkejä saadaksesi ohjeita ongelmien ratkaisemiseen.",
+                "unsupported_reason": {
+                    "container": "Tunnetusti ongelmia aiheuttavat kontit",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker-asetukset",
+                    "docker_version": "Docker-versio",
+                    "lxc": "LXC",
+                    "network_manager": "Network Manager",
+                    "os": "Käyttöjärjestelmä",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "Käytät asennusta, jota ei tueta",
+                "update_supervisor": "Päivitä Supervisor",
+                "warning": "VAROITUS"
+            }
         }
     },
     "ui": {
@@ -200,7 +538,8 @@
             },
             "script": {
                 "cancel": "Peruuta",
-                "cancel_multiple": "Peruuta {number}"
+                "cancel_multiple": "Peruuta {number}",
+                "run": "Suorita"
             },
             "service": {
                 "run": "Suorita"
@@ -294,6 +633,9 @@
             "yes": "Kyllä"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Lisäosa"
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Lisää",
@@ -315,6 +657,7 @@
                 "select_blueprint": "Valitse piirustus"
             },
             "calendar": {
+                "my_calendars": "Omat kalenterit",
                 "today": "Tänään"
             },
             "data-table": {
@@ -357,13 +700,15 @@
                 "entries_not_found": "Lokikirjauksia ei löytynyt.",
                 "messages": {
                     "became_unavailable": "ei ollut käytettävissä",
-                    "changed_to_state": "vaihdettu tilaan {state}",
+                    "changed_to_state": "vaihdettiin tilaan {state}",
                     "cleared_device_class": "tyhjennetty (ei {device_class} havaittu)",
-                    "detected_device_class": "havaittu {device_class}",
+                    "detected_device_class": "havaittiin {device_class}",
+                    "is_closing": "sulkeutuu",
+                    "is_opening": "avautuu",
                     "rose": "nousi",
                     "set": "laski",
-                    "turned_off": "asetettiin pois päältä",
-                    "turned_on": "asetettiin päälle",
+                    "turned_off": "kytkettiin pois päältä",
+                    "turned_on": "kytkettiin päälle",
                     "was_at_home": "oli kotona",
                     "was_at_state": "oli paikassa {state}",
                     "was_away": "oli poissa",
@@ -406,8 +751,8 @@
                     "url": "URL",
                     "video": "Video"
                 },
-                "documentation": "dokumentaatio",
-                "learn_adding_local_media": "Lisätietoja median lisäämisestä  {documentation} .",
+                "documentation": "dokumentaatiosta",
+                "learn_adding_local_media": "Lue lisätietoja median lisäämisestä {documentation} .",
                 "local_media_files": "Sijoita video-, ääni- ja kuvatiedostot mediahakemistoon, jotta voit selata ja toistaa niitä selaimessa tai tuetuissa mediasoittimissa.",
                 "media_browsing_error": "Median selausvirhe",
                 "media_not_supported": "Browser Media Player ei tue tämän tyyppistä mediaa",
@@ -415,7 +760,7 @@
                 "media-player-browser": "Media Player -selain",
                 "no_items": "Ei kohteita",
                 "no_local_media_found": "Paikallista mediaa ei löytynyt",
-                "no_media_folder": "Näyttää siltä, että et ole vielä luonut mediahakemistoa.",
+                "no_media_folder": "Vaikuttaa siltä, että et ole vielä luonut mediahakemistoa.",
                 "pick": "Valitse",
                 "pick-media": "Valitse media",
                 "play": "Toista",
@@ -449,7 +794,7 @@
                 },
                 "future_duration": {
                     "day": "{count} {count, plural,\n  one {päivän}\n  other {päivän}\n} kuluessa",
-                    "hour": "{count} {count, plural,\none {tunnin\nother {tunnin}\n} kuluessa",
+                    "hour": "{count} {count, plural,\none {tunnin}\nother {tunnin}\n} kuluessa",
                     "minute": "{count} {count, plural,\none {minuutin}\nother {minuutin}\n} kuluessa",
                     "second": "{count} {count, plural,\none {sekunnin}\nother {sekunnin}\n} kuluessa",
                     "week": "{count} {count, plural,\n  one {viikon}\n  other {viikon}\n} kuluessa"
@@ -502,9 +847,10 @@
                     "delete": "Poista",
                     "device_disabled": "Tämän kohteen laite on poistettu käytöstä.",
                     "enabled_cause": "{cause} on poistanut sen käytöstä.",
+                    "enabled_delay_confirm": "Käyttöön otetut kohteet lisätään Home Assistantiin {delay} sekunnin kuluttua",
                     "enabled_description": "Käytöstä poistettuja kohteita ei lisätä Home Assistantiin.",
                     "enabled_label": "Ota kohte käyttöön",
-                    "enabled_restart_confirm": "Käynnistä Home Assistant uudelleen, jotta kohteet otetaan käyttöön",
+                    "enabled_restart_confirm": "Viimeistele kohteiden käyttöönotto käynnistämällä Home Assistant uudelleen",
                     "entity_id": "Kohde ID",
                     "follow_device_area": "Seuraa laitteen aluetta",
                     "icon": "Kuvakkeen yliajo",
@@ -587,6 +933,9 @@
                 "person": {
                     "create_zone": "Luo vyöhyke nykyisestä sijainnista"
                 },
+                "remote": {
+                    "activity": "Nykyinen aktiviteetti"
+                },
                 "restored": {
                     "confirm_remove_text": "Haluatko varmasti poistaa tämän kohteen?",
                     "confirm_remove_title": "Poistetaanko kohde?",
@@ -656,33 +1005,41 @@
                         "lovelace": "Lovelace-kojelaudat",
                         "navigate_to": "Siirry kohteeseen {panel}",
                         "person": "Henkilöt",
-                        "script": "Skriptit",
+                        "scene": "Tilanteet",
+                        "script": "Skripti",
                         "server_control": "Palvelimen hallinta",
+                        "tag": "Tunnisteet",
                         "users": "Käyttäjät",
                         "zone": "Alueet"
                     },
                     "reload": {
-                        "filesize": "Päivitä tiedostojen koot",
+                        "filesize": "Lataa tiedostokokokohteet uudelleen",
                         "homekit": "Lataa HomeKit uudelleen",
                         "input_boolean": "Lataa booleanit uudelleen",
                         "input_datetime": "Lataa syöttöpäivämäärät uudelleen",
                         "input_number": "Lataa syöttönumerot uudelleen",
-                        "mqtt": "Lataa mqtt entiteetit uudelleen",
+                        "mqtt": "Lataa mqtt-entiteetit uudelleen",
                         "person": "Lataa henkilöt uudelleen",
-                        "rpi_gpio": "Lataa Raspberry Pi GPIO entiteetit uudelleen",
+                        "rpi_gpio": "Lataa Raspberry Pi GPIO -entiteetit uudelleen",
                         "scene": "Lataa tilanteet uudelleen",
-                        "script": "Lataa scriptit uudelleen",
-                        "smtp": "Päivitä SMTP-ilmoituspalvelut",
+                        "script": "Lataa skriptit uudelleen",
+                        "smtp": "Lataa smtp-ilmoituspalvelut uudelleen",
                         "telegram": "Päivitä Telegram-ilmoituspalvelut",
+                        "template": "Malli entiteetit",
                         "zone": "Lataa alueet uudelleen"
                     },
                     "server_control": {
                         "perform_action": "{action} Palvelin",
                         "restart": "Käynnistä uudelleen",
                         "stop": "Pysäytä"
+                    },
+                    "types": {
+                        "navigation": "Siirry",
+                        "reload": "Lataa uudelleen",
+                        "server_control": "Palvelin"
                     }
                 },
-                "filter_placeholder": "Entiteetin suodatin"
+                "filter_placeholder": "Kohdesuodatin"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant ei kuullut mitään",
@@ -730,6 +1087,7 @@
         },
         "errors": {
             "config": {
+                "no_template_editor_support": "Visuaalinen editori ei tue malleja",
                 "no_type_provided": "Tyyppiä ei ole annettu."
             }
         },
@@ -798,9 +1156,12 @@
                         },
                         "header": "Luo uusi automaatio",
                         "how": "Miten haluat luoda uuden automaation?",
+                        "start_empty": "Aloita tyhjästä automaatiosta",
                         "thingtalk": {
+                            "create": "Luo",
                             "header": "Kuvaile automaatiota, jonka haluat luoda",
-                            "intro": "Ja yritämme luoda sen sinulle. Esimerkiksi: Sammuta valot, kun lähden."
+                            "input_label": "Mitä tämän automaation pitäisi tehdä?",
+                            "intro": "Ja yritämme luoda sen sinulle. Esimerkki: Sammuta valot, kun lähden."
                         }
                     },
                     "editor": {
@@ -1127,23 +1488,23 @@
                             "for_example": "Esimerkiksi:",
                             "header": "Luo uusi automaatio",
                             "introduction": "Kirjoita alle, mitä tämän automaation pitäisi tehdä, ja yritämme muuntaa sen Home Assistant -automaatioksi.",
-                            "language_note": "Huomautus: Toistaiseksi tuetaan vain englantia."
+                            "language_note": "Huomaa: Toistaiseksi vain englantia tuetaan."
                         }
                     }
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "yhteisön keskustelualueet",
+                        "community_forums": "yhteisön keskustelualueilta",
                         "error_no_url": "Ole hyvä ja kirjoita piirustuksen URL",
                         "file_name": "Piirustuksen polku",
                         "header": "Tuo piirustus",
                         "import_btn": "Piirustuksen esikatselu",
                         "import_header": "Piirustus \"{name}\"",
-                        "import_introduction_link": "Voit tuoda muiden käyttäjien piirustuksia Githubista ja {community_link}. Kirjoita piirustuksen URL-osoite alle.",
-                        "importing": "Lataan piirustusta...",
+                        "import_introduction_link": "Voit tuoda muiden käyttäjien piirustuksia GitHubista ja {community_link}. Kirjoita piirustuksen URL-osoite alle.",
+                        "importing": "Ladataan piirustusta...",
                         "raw_blueprint": "Piirustuksen sisältö",
                         "save_btn": "Tuo piirustus",
-                        "saving": "Tuon piirustusta...",
+                        "saving": "Tuodaan piirustusta...",
                         "unsupported_blueprint": "Tämä piirustus ei ole tuettu",
                         "url": "Piirustuksen URL"
                     },
@@ -1162,6 +1523,7 @@
                             "name": "Nimi"
                         },
                         "learn_more": "Lisätietoja piirustusten käytöstä",
+                        "share_blueprint": "Jaa piirustus",
                         "use_blueprint": "Luo automaatio"
                     }
                 },
@@ -1219,15 +1581,17 @@
                         "sign_out": "Kirjaudu ulos",
                         "thank_you_note": "Kiitos, että olet osa Home Assistant Cloudia. Sinun kaltaisten ihmisten takia pystymme tarjoamaan loistavan kodin automaatiokokemuksen kaikille. Kiitos!",
                         "tts": {
+                            "default_language": "Oletuskieli",
                             "dialog": {
-                                "header": "Kokeile \"teksti puheeksi\"-toimintoa",
+                                "header": "Kokeile \"teksti puheeksi\" -toimintoa",
                                 "play": "Toista",
                                 "target": "Kohde",
                                 "target_browser": "Selain"
                             },
                             "female": "Nainen",
                             "male": "Mies",
-                            "try": "Yritä"
+                            "title": "Teksti puheeksi",
+                            "try": "Kokeile"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Webhookin poistaminen epäonnistui:",
@@ -1411,7 +1775,7 @@
                             "unknown_condition": "Tuntematon ehto"
                         },
                         "create": "Luo automaatio laitteella",
-                        "create_disable": "Automaatiota ei voi luoda käytöstä poistetulla laitteella",
+                        "create_disable": "Automaatiota ei voi luoda käytöstä poistetulle laitteelle",
                         "no_automations": "Ei automaatioita",
                         "no_device_automations": "Tälle laitteelle ei ole käytettävissä automaatioita.",
                         "triggers": {
@@ -1445,8 +1809,8 @@
                         "integration": "Integraatio",
                         "user": "Käyttäjä"
                     },
-                    "enabled_cause": "Laite on poistettu käytöstä. Syy: {cause} .",
-                    "enabled_description": "Poistettuja laitteita ei näytetä, ja laitteeseen kuuluvat kohteet poistetaan käytöstä, eikä niitä lisätä Home Assistantiin.",
+                    "enabled_cause": "{cause} on poistanut laitteen käytöstä.",
+                    "enabled_description": "Poistettuja laitteita ei näytetä, ja laitteeseen kuuluvat entiteetit poistetaan käytöstä, eikä niitä lisätä Home Assistantiin.",
                     "enabled_label": "Ota laite käyttöön",
                     "entities": {
                         "add_entities_lovelace": "Lisää Lovelace näkymään",
@@ -1460,6 +1824,7 @@
                     "picker": {
                         "filter": {
                             "filter": "Suodatin",
+                            "hidden_devices": "{number} {number, plural,\n  one {piilotettu laite}\n  other {piilotettua laitetta}\n}",
                             "show_all": "Näytä kaikki",
                             "show_disabled": "Näytä käytöstä poistetut laitteet"
                         },
@@ -1467,14 +1832,14 @@
                     },
                     "scene": {
                         "create": "Luo tilanne laitteella",
-                        "create_disable": "Kohtausta ei voi luoda käytöstä poistetulla laitteella",
+                        "create_disable": "Tilannetta ei voi luoda käytöstä poistetulle laitteelle",
                         "no_scenes": "Ei tilanteita",
                         "scenes": "Tilanteet"
                     },
                     "scenes": "Tilanteet",
                     "script": {
                         "create": "Luo tilanne laitteella",
-                        "create_disable": "Skriptiä ei voi luoda käytöstä poistetulla laitteella",
+                        "create_disable": "Skriptiä ei voi luoda käytöstä poistetulle laitteelle",
                         "no_scripts": "Ei skriptejä",
                         "scripts": "Skriptit"
                     },
@@ -1605,7 +1970,19 @@
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
                         "device_unavailable": "laite ei saatavissa",
                         "devices": "{count} {count, plural,\n  one {laite}\n  other {laitteet}\n}",
+                        "disable_restart_confirm": "Viimeistele tämän integraation käytöstä poisto käynnistämällä Home Assistant uudelleen",
+                        "disable": {
+                            "disable_confirm": "Haluatko varmasti poistaa tämän asetusten osan käytöstä? Sen laitteet ja entiteetit poistetaan käytöstä.",
+                            "disabled": "Poistettu käytöstä",
+                            "disabled_by": {
+                                "device": "Laite",
+                                "integration": "Integraatio",
+                                "user": "Käyttäjä"
+                            },
+                            "disabled_cause": "{cause} poistanut käytöstä"
+                        },
                         "documentation": "Dokumentointi",
+                        "enable_restart_confirm": "Viimeistele tämän integraation käyttöönotto käynnistämällä Home Assistant uudelleen",
                         "entities": "{count} {count, plural,\n  one {kohde}\n  other {kohteet}\n}",
                         "entity_unavailable": "kohde ei saatavilla",
                         "firmware": "Laiteohjelmisto: {version}",
@@ -1618,7 +1995,7 @@
                         "reload_restart_confirm": "Viimeistele tämän integroinnin uudelleenlataaminen käynnistämällä Home Assistant uudelleen",
                         "rename": "Nimeä uudelleen",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
-                        "services": "{count} {count, plural,\n  one {palvelut}\n  other {palvelua}\n}",
+                        "services": "{count} {count, plural,\n  one {palvelu}\n  other {palvelua}\n}",
                         "system_options": "Järjestelmäasetukset",
                         "unnamed_entry": "Nimeämätön merkintä"
                     },
@@ -1627,6 +2004,7 @@
                         "close": "Sulje",
                         "created_config": "Asetus luotu {name}",
                         "dismiss": "Sulje ikkuna",
+                        "error": "Virhe",
                         "error_saving_area": "Virhe tallennettaessa aluetta: {error}",
                         "external_step": {
                             "description": "Tämä vaihe edellyttää, että vierailet ulkopuolisella verkkosivustolla.",
@@ -1641,6 +2019,11 @@
                     "configured": "Määritetty",
                     "description": "Hallitse liitettyjä laitteita ja palveluita",
                     "details": "Integroinnin yksityiskohdat",
+                    "disable": {
+                        "disabled_integrations": "{number} poistettu käytöstä",
+                        "hide_disabled": "Piilota käytöstä poistetut integraatiot",
+                        "show_disabled": "Näytä käytöstä poistetut integraatiot"
+                    },
                     "discovered": "Löydetty",
                     "home_assistant_website": "Home Assistant -sivusto",
                     "ignore": {
@@ -2047,7 +2430,7 @@
                             "smtp": "Lataa smtp-ilmoituspalvelut uudelleen",
                             "statistics": "Lataa tilastoentiteetit uudelleen",
                             "telegram": "Päivitä Telegram-ilmoituspalvelut",
-                            "template": "Lataa mallientiteetiteetit uudelleen",
+                            "template": "Malli entiteetit",
                             "trend": "Lataa trendientiteetiteetit uudelleen",
                             "universal": "Lataa universaali mediasoittimen entiteetit uudelleen",
                             "zone": "Lataa alueet uudelleen"
@@ -2077,7 +2460,7 @@
                     "create_automation": "Automaation luominen tunnisteella",
                     "description": "Hallitse tunnisteita",
                     "detail": {
-                        "companion_apps": "oheissovellukset",
+                        "companion_apps": "oheissovelluksillamme",
                         "create": "Luo",
                         "create_and_write": "Luo ja kirjoita",
                         "delete": "Poista",
@@ -2087,7 +2470,7 @@
                         "tag_id": "Tägin ID",
                         "tag_id_placeholder": "Luodaan automaattisesti, kun se jätetään tyhjäksi",
                         "update": "Päivitä",
-                        "usage": "Tunniste voi käynnistää automaation skannattaessa, voit käyttää NFC-tunnisteita, QR-koodeja tai mitä tahansa muuta tunnistetta. {companion_link} avulla voit kirjoittaa tämän tunnisteen ohjelmoitavaan NFC-tunnisteeseen tai luoda QR-koodin alla."
+                        "usage": "Tunniste voi käynnistää automaation skannattaessa; voit käyttää NFC-tunnisteita, QR-koodeja tai mitä tahansa muita tunnisteita. Kirjoitta tämä tunnisteen ohjelmoitavaan NFC-tunnisteeseen {companion_link} tai luo QR-koodin alla."
                     },
                     "edit": "Muokkaa",
                     "headers": {
@@ -2225,6 +2608,7 @@
                         "caption": "Verkko"
                     },
                     "visualization": {
+                        "auto_zoom": "Automaattinen zoomaus",
                         "caption": "Visualisointi",
                         "header": "Verkon visualisointi"
                     }
@@ -2284,6 +2668,12 @@
                         "connecting": "Yhdistetään",
                         "unknown": "Tuntematon"
                     },
+                    "node_config": {
+                        "battery_device_notice": "Akkulaitteiden on oltava hereillä, jotta ne voivat päivittää konfiguraationsa. Katso laitteen käyttöoppaasta ohjeet laitteen herättämiseen.",
+                        "error_device_not_found": "Laitetta ei löydy.",
+                        "parameter_is_read_only": "Tämä parametri on vain luku -tyyppinen.",
+                        "zwave_js_device_database": "Z-Wave JS -laitetietokanta"
+                    },
                     "node_status": {
                         "alive": "Elossa",
                         "asleep": "Unessa",
@@ -2303,6 +2693,12 @@
                     },
                     "description": "Z-Wave -verkon asetukset",
                     "learn_more": "Z-wave lisätietoja",
+                    "migration": {
+                        "ozw": {
+                            "header": "Siirry OpenZWaveen",
+                            "introduction": "Tämän ohjatun toiminnon avulla voit siirtyä vanhasta Z-Wave-integraatiosta OpenZWave-integraatioon, joka on tällä hetkellä betaversiossa."
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave-verkon hallinta",
                         "introduction": "Suorita Z-Wave-verkkoon vaikuttavia komentoja. Et saa palautetta siitä, onnistuiko useimmat komennot, mutta voit tarkistaa OZW-lokin ja yrittää selvittää sen."
@@ -2412,11 +2808,15 @@
                         "column_parameter": "Parametri",
                         "description": "Service dev -työkalun avulla voit kutsua mitä tahansa käytettävissä olevaan palvelua Home Assistant -sovelluksessa.",
                         "fill_example_data": "Täytä esimerkkitiedoilla",
-                        "title": "Palvelut"
+                        "no_template_ui_support": "Käyttöliittymä ei tue malleja, mutta voit silti käyttää YAML-editoria.",
+                        "title": "Palvelut",
+                        "ui_mode": "Siirry käyttöliittymätilaan",
+                        "yaml_mode": "Siirry YAML-tilaan"
                     },
                     "states": {
                         "alert_entity_field": "Kohde on pakollinen kenttä",
                         "attributes": "Määritteet",
+                        "copy_id": "Kopioi ID leikepöydälle",
                         "current_entities": "Nykyiset kohteet",
                         "description1": "Aseta laitteen esitys Home Assistant -sovelluksessa.",
                         "description2": "Tämä ei kommunikoi varsinaisen laitteen kanssa.",
@@ -2449,6 +2849,15 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Mene takaisin",
+                "supervisor": {
+                    "ask": "Pyydä apua",
+                    "reboot": "Yritä uudelleenkäynnistää isäntä ",
+                    "system_health": "Tarkista järjestelmän kunto",
+                    "title": "Supervisor-paneelia ei voitu ladata!"
+                }
+            },
             "history": {
                 "ranges": {
                     "last_week": "Viime viikolla",
@@ -2472,6 +2881,10 @@
                     "yaml_unsupported": "Tätä toimintoa ei voi käyttää, kun Lovelace-käyttöliittymää käytetään YAML-tilassa."
                 },
                 "cards": {
+                    "actions": {
+                        "no_service": "Suoritettavaa palvelua ei ole määritelty",
+                        "no_url": "Avattavaa URL-osoitetta ei ole määritetty"
+                    },
                     "confirm_delete": "Oletko varma, että haluat poistaa tämän kortin?",
                     "empty_state": {
                         "go_to_integrations_page": "Siirry integraatiot-sivulle",
@@ -2560,7 +2973,7 @@
                         },
                         "entities": {
                             "description": "Kohde-kortti on yleisin korttityyppi. Se ryhmittelee kohteet yhteen luetteloiksi.",
-                            "edit_special_row": "Näytä tämän rivin tiedot napsauttamalla Muokkaa-painiketta",
+                            "edit_special_row": "Näytä rivin tiedot klikkaamalla Muokkaa-painiketta",
                             "entity_row_editor": "Entiteetti rivi editori",
                             "entity_row": {
                                 "attribute": "Määrite",
@@ -2648,7 +3061,7 @@
                             "columns": "Sarakkeet",
                             "description": "Ruudukkokortin avulla voit näyttää useita kortteja ruudukossa.",
                             "name": "Ruudukko",
-                            "square": "Tee kortit neliöinä"
+                            "square": "Näytä kortit neliöinä"
                         },
                         "history-graph": {
                             "description": "Historiakaavio-kortin avulla voit näyttää kaavion kullekin luettelossa olevalle kohteelle.",
@@ -2751,7 +3164,7 @@
                         "none": "Ei mitään"
                     },
                     "edit_badges": {
-                        "panel_mode": "Näitä kylttejä ei näytetä, koska tämä näkymä on \"Paneelitilassa\"."
+                        "panel_mode": "Näitä merkkejä ei näytetä, koska tämä näkymä on \"Paneelitilassa\"."
                     },
                     "edit_card": {
                         "add": "Lisää kortti",
@@ -2860,7 +3273,7 @@
                     },
                     "sub-element-editor": {
                         "types": {
-                            "footer": "Alatunnisteen muokkausohjelma",
+                            "footer": "Alatunnisteen muokkaus",
                             "header": "Otsikkoeditori",
                             "row": "Kohderivieditori"
                         }
@@ -3018,6 +3431,7 @@
                     "working": "Ole hyvä ja odota"
                 },
                 "initializing": "Alustetaan",
+                "logging_in_to_with": "Kirjaudutaan kohteeseen **{locationName}** palvelulla **{authProviderName}**.",
                 "logging_in_with": "Kirjaudutaan sisään **{authProviderName}**.",
                 "pick_auth_provider": "Tai kirjaudu sisään joillakin seuraavista"
             },
@@ -3118,7 +3532,7 @@
                     "header": "Vaihda salasana",
                     "new_password": "Uusi salasana",
                     "submit": "Lähetä",
-                    "success": "Salasanan vaihtaminen onnistui"
+                    "success": "Salasana vaihdettu onnistuneesti"
                 },
                 "current_user": "Olet tällä hetkellä kirjautuneena tunnuksella {fullName}.",
                 "customize_sidebar": {

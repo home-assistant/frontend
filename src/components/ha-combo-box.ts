@@ -86,6 +86,10 @@ export class HaComboBox extends LitElement {
     });
   }
 
+  public get selectedItem() {
+    return (this._comboBox as any).selectedItem;
+  }
+
   protected render(): TemplateResult {
     return html`
       <vaadin-combo-box-light
@@ -149,9 +153,9 @@ export class HaComboBox extends LitElement {
     fireEvent(this, ev.type, ev.detail);
   }
 
-  private _filterChanged(ev: PolymerChangedEvent<boolean>) {
+  private _filterChanged(ev: PolymerChangedEvent<string>) {
     // @ts-ignore
-    fireEvent(this, ev.type, ev.detail);
+    fireEvent(this, ev.type, ev.detail, { composed: false });
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {

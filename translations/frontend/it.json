@@ -218,8 +218,8 @@
                         "title": "Aggiornamento automatico"
                     },
                     "boot": {
-                        "description": "Avvia il componente aggiuntivo durante l'avvio del sistema",
-                        "title": "Inizia dall'avvio"
+                        "description": "Il componente aggiuntivo sarà eseguito durante l'avvio del sistema",
+                        "title": "Esegui dall'avvio"
                     },
                     "ingress_panel": {
                         "description": "Aggiungi questo componente aggiuntivo alla barra laterale",
@@ -230,7 +230,7 @@
                         "title": "Modalità di protezione"
                     },
                     "watchdog": {
-                        "description": "Questo avvierà il componente aggiuntivo se si arresta in modo anomalo",
+                        "description": "Questo riavvierà automaticamente il componente aggiuntivo in caso di arresti anomali",
                         "title": "Watchdog"
                     }
                 },
@@ -245,7 +245,7 @@
                 "start": "avvia",
                 "stop": "arresta",
                 "uninstall": "disinstalla",
-                "visit_addon_page": "Visita la pagina di {name} per maggiori dettagli"
+                "visit_addon_page": "Visita la pagina con {name} per maggiori dettagli"
             },
             "documentation": {
                 "get_documentation": "Impossibile ottenere la documentazione del componente aggiuntivo, {error}"
@@ -373,7 +373,7 @@
         "panel": {
             "dashboard": "Pannello di controllo",
             "snapshots": "Istantanee",
-            "store": "Negozio dei componenti aggiuntivi",
+            "store": "Raccolta di Componenti Aggiuntivi",
             "system": "Sistema"
         },
         "snapshot": {
@@ -467,12 +467,14 @@
                     "docker": "L'ambiente Docker non funziona correttamente",
                     "privileged": "Il Supervisor non è privilegiato",
                     "setup": "Configurazione del Supervisor non riuscita",
-                    "supervisor": "Il Supervisor non è stato in grado di aggiornare"
+                    "supervisor": "Il Supervisor non è stato in grado di aggiornare",
+                    "untrusted": "Rilevato contenuto non attendibile"
                 },
                 "unhealthy_title": "L'installazione non è integra",
                 "unsupported_description": "Di seguito è riportato un elenco dei problemi riscontrati con l'installazione, fare clic sui collegamenti per scoprire come risolvere i problemi.",
                 "unsupported_reason": {
                     "container": "Container noti per causare problemi",
+                    "content-trust": "La convalida dell'attendibilità del contenuto è disabilitata",
                     "dbus": "DBUS",
                     "docker_configuration": "Configurazione Docker",
                     "docker_version": "Versione Docker",
@@ -691,8 +693,8 @@
                         "title": "Errore durante il recupero dei componenti aggiuntivi"
                     },
                     "no_supervisor": {
-                        "description": "Nessun Supervisore trovato, quindi non è stato possibile caricare i componenti aggiuntivi.",
-                        "title": "Nessun Supervisore"
+                        "description": "Nessun Supervisor trovato, quindi i componenti aggiuntivi non possono essere caricati.",
+                        "title": "Nessun Supervisor"
                     }
                 }
             },
@@ -785,7 +787,8 @@
                     "was_unlocked": "è stato sbloccato",
                     "was_unplugged": "è stato scollegato",
                     "was_unsafe": "non era sicuro"
-                }
+                },
+                "show_trace": "Mostra la traccia"
             },
             "media-browser": {
                 "audio_not_supported": "Il tuo browser non supporta l'elemento audio.",
@@ -1093,42 +1096,47 @@
                         "zone": "Zone"
                     },
                     "reload": {
-                        "automation": "Ricarica le Automazioni",
-                        "command_line": "Ricarica le entità di riga di comando",
-                        "core": "Ricarica la Posizione e le Personalizzazioni",
-                        "filesize": "Ricarica le entità di dimensione file",
-                        "filter": "Ricarica le entità filtro",
-                        "generic": "Ricarica le entità della telecamera IP generica",
-                        "generic_thermostat": "Ricarica le entità del termostato generico",
-                        "group": "Ricarica gruppi, entità di gruppo e servizi di notifica",
-                        "history_stats": "Ricarica le entità delle statistiche storiche",
-                        "homekit": "Ricarica HomeKit",
-                        "input_boolean": "Ricarica input booleani",
-                        "input_datetime": "Ricarica input data e/o orari",
-                        "input_number": "Ricarica input numerici",
-                        "input_select": "Ricarica input a discesa",
-                        "input_text": "Ricarica input testuali",
-                        "min_max": "Ricarica le entità min/max",
-                        "mqtt": "Ricarica le entità MQTT configurate manualmente",
-                        "person": "Ricarica le persone",
-                        "ping": "Ricarica le entità del sensore binario Ping",
-                        "reload": "Ricarica {domain}",
-                        "rest": "Ricarica le entità REST e i servizi di notifica REST",
-                        "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi",
-                        "scene": "Ricarica le Scene",
-                        "script": "Ricarica gli Script",
-                        "smtp": "Ricarica i servizi di notifica SMTP",
-                        "statistics": "Ricarica le entità statistiche",
-                        "telegram": "Ricarica i servizi di notifica Telegram",
-                        "template": "Ricarica le entità modello",
-                        "trend": "Ricarica le entità di tendenza",
-                        "universal": "Ricarica le entità del lettore multimediale universale",
-                        "zone": "Ricarica le Zone"
+                        "automation": "Automazioni",
+                        "command_line": "Entità di riga di comando",
+                        "core": "Posizione e personalizzazioni",
+                        "filesize": "Entità di dimensione del file",
+                        "filter": "Entità filtro",
+                        "generic": "Entità delle telecamere IP generiche",
+                        "generic_thermostat": "Entità dei termostati generici",
+                        "group": "Gruppi, entità di gruppo e servizi di notifica",
+                        "history_stats": "Entità delle statistiche storiche",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Input booleani",
+                        "input_datetime": "Input data e/o orari",
+                        "input_number": "Input numerici",
+                        "input_select": "Input di selezione",
+                        "input_text": "Input testuali",
+                        "min_max": "Entità min/max",
+                        "mqtt": "Entità MQTT configurate manualmente",
+                        "person": "Persone",
+                        "ping": "Entità del sensore binario Ping",
+                        "reload": "{domain}",
+                        "rest": "Entità REST e servizi di notifica REST",
+                        "rpi_gpio": "Entità GPIO di Raspberry Pi",
+                        "scene": "Scene",
+                        "script": "Script",
+                        "smtp": "Servizi di notifica SMTP",
+                        "statistics": "Entità statistiche",
+                        "telegram": "Servizi di notifica di Telegram",
+                        "template": "Entità modello",
+                        "trend": "Entità di tendenza",
+                        "universal": "Entità del lettore multimediale universale",
+                        "zone": "Zone"
                     },
                     "server_control": {
-                        "perform_action": "{action} Server",
+                        "perform_action": "{action} server",
                         "restart": "Riavvia",
                         "stop": "Ferma"
+                    },
+                    "types": {
+                        "navigation": "Vai a",
+                        "reload": "Ricarica",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Filtro Entità"
@@ -1145,6 +1153,7 @@
                 "buttons": {
                     "add": "Aggiungi dispositivi tramite questo dispositivo",
                     "clusters": "Gestisci i cluster",
+                    "device_children": "Visualizza dispositivo figlio",
                     "reconfigure": "Riconfigura dispositivo",
                     "remove": "Rimuovi dispositivo",
                     "view_in_visualization": "Visualizza in visualizzazione",
@@ -1153,6 +1162,7 @@
                 "confirmations": {
                     "remove": "Sei sicuro di voler rimuovere il dispositivo?"
                 },
+                "device_children": "Dispositivo figlio Zigbee",
                 "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Ultima visualizzazione",
                 "manuf": "da {manufacturer}",
@@ -1187,6 +1197,7 @@
                 "key_missing": "Chiave obbligatoria \"{key}\" mancante.",
                 "key_not_expected": "La chiave \"{key}\" non è prevista o non è supportata dall'editor visivo.",
                 "key_wrong_type": "Il valore fornito per \"{key}\" non è supportato dall'editor visivo. Supportiamo ({type_correct}) ma ricevuto ({type_wrong}).",
+                "no_template_editor_support": "Modelli non supportati nell'editor visivo",
                 "no_type_provided": "Nessun tipo fornito."
             }
         },
@@ -1294,10 +1305,15 @@
                                 "device_id": {
                                     "action": "Azione",
                                     "extra_fields": {
+                                        "brightness_pct": "Luminosità",
                                         "code": "Codice",
+                                        "flash": "Flash",
+                                        "humidity": "Umidità",
                                         "message": "Messaggio",
+                                        "mode": "Modalità",
                                         "position": "Apertura",
-                                        "title": "Titolo"
+                                        "title": "Titolo",
+                                        "value": "Valore"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1370,7 +1386,9 @@
                                     "extra_fields": {
                                         "above": "Maggiore di",
                                         "below": "Minore di",
-                                        "for": "Durata"
+                                        "for": "Durata",
+                                        "hvac_mode": "Modalità HVAC",
+                                        "preset_mode": "Modalità Predefinita"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1434,7 +1452,7 @@
                             "placeholder": "Descrizione facoltativa"
                         },
                         "edit_ui": "Modifica con l'Interfaccia Utente",
-                        "edit_yaml": "Modifica come YAML",
+                        "edit_yaml": "Modifica in YAML",
                         "enable_disable": "Abilitare/Disabilitare l'automazione",
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
@@ -1563,6 +1581,8 @@
                         "add_automation": "Aggiungi Automazione",
                         "delete_automation": "Cancellare l'automazione",
                         "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
+                        "dev_automation": "Debug dell'automazione",
+                        "dev_only_editable": "È possibile eseguire il debug solo delle automazioni definite in automations.yaml.",
                         "duplicate": "Duplica",
                         "duplicate_automation": "Duplica automazione",
                         "edit_automation": "Modifica automazione",
@@ -1626,6 +1646,8 @@
                         },
                         "introduction": "La configurazione del progetto ti consente di importare e gestire i tuoi progetti.",
                         "learn_more": "Ulteriori informazioni sull'utilizzo dei progetti",
+                        "share_blueprint": "Condividi progetto",
+                        "share_blueprint_no_url": "Impossibile condividere il progetto: url di origine assente",
                         "use_blueprint": "Crea automazione"
                     }
                 },
@@ -2153,7 +2175,7 @@
                     "integration": "Integrazione",
                     "integration_not_found": "Integrazione non trovata.",
                     "new": "Configura una nuova integrazione",
-                    "no_integrations": "Sembra che tu non abbia ancora alcuna integrazione configurata. Fai clic sul pulsante in basso per aggiungere la tua prima integrazione!",
+                    "no_integrations": "Sembra che tu non abbia ancora nessuna integrazione configurata. Fai clic sul pulsante in basso per aggiungere la tua prima integrazione!",
                     "none": "Non hai ancora configurato niente",
                     "none_found": "Non sono state trovate integrazioni",
                     "none_found_detail": "Modifica i criteri di ricerca.",
@@ -2514,39 +2536,39 @@
                     "description": "Riavviare e arrestare il Server Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Ricarica le Automazioni",
-                            "command_line": "Ricarica le entità di riga di comando",
-                            "core": "Ricarica la Posizione e le Personalizzazioni",
-                            "filesize": "Ricarica le entità di dimensione file",
-                            "filter": "Ricarica le entità filtro",
-                            "generic": "Ricarica le entità della telecamera IP generica",
-                            "generic_thermostat": "Ricarica le entità del termostato generico",
-                            "group": "Ricarica gruppi, entità di gruppo e servizi di notifica",
+                            "automation": "Automazioni",
+                            "command_line": "Entità di riga di comando",
+                            "core": "Posizione e personalizzazioni",
+                            "filesize": "Entità di dimensione del file",
+                            "filter": "Entità filtro",
+                            "generic": "Entità delle telecamere IP generiche",
+                            "generic_thermostat": "Entità dei termostati generici",
+                            "group": "Gruppi, entità di gruppo e servizi di notifica",
                             "heading": "Ricarica Configurazione YAML",
-                            "history_stats": "Ricarica le entità delle statistiche storiche",
-                            "homekit": "Ricarica HomeKit",
-                            "input_boolean": "Ricarica input booleani",
-                            "input_datetime": "Ricarica input data e/o orari",
-                            "input_number": "Ricarica input numerici",
-                            "input_select": "Ricarica input a discesa",
-                            "input_text": "Ricarica input testuali",
+                            "history_stats": "Entità delle statistiche storiche",
+                            "homekit": "HomeKit",
+                            "input_boolean": "Input booleani",
+                            "input_datetime": "Input data e/o orari",
+                            "input_number": "Input numerici",
+                            "input_select": "Input di selezione",
+                            "input_text": "Input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML attuale e si caricherà la versione aggiornata.",
-                            "min_max": "Ricarica le entità min/max",
-                            "mqtt": "Ricarica le entità MQTT configurate manualmente",
-                            "person": "Ricarica le persone",
-                            "ping": "Ricarica le entità del sensore binario Ping",
-                            "reload": "Ricarica {domain}",
-                            "rest": "Ricarica le entità REST e i servizi di notifica REST",
-                            "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi",
-                            "scene": "Ricarica le Scene",
-                            "script": "Ricarica gli Script",
-                            "smtp": "Ricarica i servizi di notifica SMTP",
-                            "statistics": "Ricarica le entità statistiche",
-                            "telegram": "Ricarica i servizi di notifica Telegram",
-                            "template": "Ricarica le entità modello",
-                            "trend": "Ricarica le entità di tendenza",
-                            "universal": "Ricarica le entità del lettore multimediale universale",
-                            "zone": "Ricarica le Zone"
+                            "min_max": "Entità min/max",
+                            "mqtt": "Entità MQTT configurate manualmente",
+                            "person": "Persone",
+                            "ping": "Entità del sensore binario Ping",
+                            "reload": "{domain}",
+                            "rest": "Entità REST e servizi di notifica REST",
+                            "rpi_gpio": "Entità GPIO di Raspberry Pi",
+                            "scene": "Scene",
+                            "script": "Script",
+                            "smtp": "Servizi di notifica SMTP",
+                            "statistics": "Entità statistiche",
+                            "telegram": "Servizi di notifica di Telegram",
+                            "template": "Entità modello",
+                            "trend": "Entità di tendenza",
+                            "universal": "Entità del lettore multimediale universale",
+                            "zone": "Zone"
                         },
                         "server_management": {
                             "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
@@ -2722,6 +2744,7 @@
                         "caption": "Rete"
                     },
                     "visualization": {
+                        "auto_zoom": "Zoom automatico",
                         "caption": "Visualizzazione",
                         "header": "Visualizzazione di rete",
                         "highlight_label": "Evidenzia dispositivi",
@@ -2797,6 +2820,7 @@
                         "server_version": "Versione del server"
                     },
                     "device_info": {
+                        "device_config": "Configura il dispositivo",
                         "node_ready": "Nodo pronto",
                         "node_status": "Stato del Nodo",
                         "zwave_info": "Informazioni Z-Wave"
@@ -2808,6 +2832,15 @@
                         "connected": "Connesso",
                         "connecting": "In collegamento",
                         "unknown": "Sconosciuto"
+                    },
+                    "node_config": {
+                        "attribution": "I parametri e le descrizioni di configurazione del dispositivo sono forniti da {device_database}",
+                        "battery_device_notice": "I dispositivi batteria devono essere attivi per aggiornare la loro configurazione. Fare riferimento al manuale del dispositivo per istruzioni su come riattivare il dispositivo.",
+                        "error_device_not_found": "Dispositivo non trovato",
+                        "header": "Configurazione del dispositivo Z-Wave",
+                        "introduction": "Gestire e regolare i parametri di configurazione specifici del dispositivo (nodo) per il dispositivo selezionato",
+                        "parameter_is_read_only": "Questo parametro è di sola lettura.",
+                        "zwave_js_device_database": "Database dei dispositivi Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Attivo",
@@ -2955,6 +2988,7 @@
                         "column_parameter": "Parametro",
                         "description": "Lo strumento di sviluppo del servizio consente di chiamare qualsiasi servizio disponibile in Home Assistant.",
                         "fill_example_data": "Inserisci dati di esempio",
+                        "no_template_ui_support": "L'Interfaccia Utente non supporta i modelli, puoi comunque utilizzare l'editor YAML.",
                         "title": "Servizi",
                         "ui_mode": "Vai in modalità Interfaccia Utente",
                         "yaml_mode": "Vai in modalità YAML",
@@ -2996,6 +3030,17 @@
                         "title": "Modelli",
                         "unknown_error_template": "Errore sconosciuto nel rendering del modello"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Torna indietro",
+                "supervisor": {
+                    "ask": "Chiedere aiuto",
+                    "observer": "Controlla l'Observer",
+                    "reboot": "Prova a riavviare l'host",
+                    "system_health": "Controlla l'integrità del sistema",
+                    "title": "Impossibile caricare il pannello Supervisor!",
+                    "wait": "Se hai appena avviato, assicurati di aver dato al Supervisor abbastanza tempo per iniziare."
                 }
             },
             "history": {
@@ -3391,7 +3436,7 @@
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
                     },
                     "move_card": {
-                        "header": "Scegli una visualizzazione in cui spostare la scheda"
+                        "header": "Scegli una vista in cui spostare la scheda"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia utente di Lovelace con le tue aree e dispositivi se rimuovi la tua configurazione dell'interfaccia utente di Lovelace.",
@@ -3424,7 +3469,7 @@
                     },
                     "select_view": {
                         "dashboard_label": "Plancia",
-                        "header": "Scegliere una visualizzazione"
+                        "header": "Scegli una vista"
                     },
                     "sub-element-editor": {
                         "types": {
@@ -3467,7 +3512,7 @@
                     "last_changed": "Ultima modifica",
                     "no_data": "Trovate entità non utilizzate",
                     "search": "Cerca entità",
-                    "select_to_add": "Selezionare le entità che si desidera aggiungere a una scheda, quindi fare clic sul pulsante Aggiungi scheda.",
+                    "select_to_add": "Selezionare le entità che si desidera aggiungere a una vista, quindi fare clic sul pulsante Aggiungi scheda.",
                     "title": "Entità non utilizzate"
                 },
                 "views": {

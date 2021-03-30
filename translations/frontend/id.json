@@ -467,12 +467,14 @@
                     "docker": "Lingkungan Docker tidak berfungsi dengan benar",
                     "privileged": "Supervisor tidak memiliki hak istimewa",
                     "setup": "Penyiapan Supervisor gagal",
-                    "supervisor": "Supervisor tidak dapat memperbarui"
+                    "supervisor": "Supervisor tidak dapat memperbarui",
+                    "untrusted": "Konten tidak tepercaya telah terdeteksi"
                 },
                 "unhealthy_title": "Instalasi Anda tidak sehat",
                 "unsupported_description": "Di bawah ini adalah daftar masalah yang ditemukan pada instalasi Anda, klik pada tautan untuk mempelajari cara menyelesaikan masalah tersebut.",
                 "unsupported_reason": {
                     "container": "Kontainer diketahui menyebabkan masalah",
+                    "content-trust": "Validasi kepercayaan konten dinonaktifkan",
                     "dbus": "DBUS",
                     "docker_configuration": "Konfigurasi Docker",
                     "docker_version": "Versi Docker",
@@ -756,8 +758,8 @@
                 "no_history_found": "Tidak ada riwayat status ditemukan."
             },
             "logbook": {
-                "by": "berdasarkan",
-                "by_service": "berdasarkan layanan",
+                "by": "oleh",
+                "by_service": "oleh layanan",
                 "entries_not_found": "Tidak ada entri buku log yang ditemukan.",
                 "messages": {
                     "became_unavailable": "menjadi tidak tersedia",
@@ -771,7 +773,7 @@
                     "turned_off": "dimatikan",
                     "turned_on": "dinyalakan",
                     "was_at_home": "terdeteksi di rumah",
-                    "was_at_state": "terdeteksi pada {state}",
+                    "was_at_state": "terdeteksi di {state}",
                     "was_away": "terdeteksi keluar",
                     "was_closed": "telah ditutup",
                     "was_connected": "telah terhubung",
@@ -785,7 +787,8 @@
                     "was_unlocked": "tidak terkunci",
                     "was_unplugged": "telah dicabut",
                     "was_unsafe": "tidak aman"
-                }
+                },
+                "show_trace": "Tampilkan jejak"
             },
             "media-browser": {
                 "audio_not_supported": "Browser Anda tidak mendukung elemen audio.",
@@ -1129,6 +1132,11 @@
                         "perform_action": "Server {action}",
                         "restart": "Mulai ulang",
                         "stop": "Hentikan"
+                    },
+                    "types": {
+                        "navigation": "Buka",
+                        "reload": "Muat ulang",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Filter Entitas"
@@ -1145,6 +1153,7 @@
                 "buttons": {
                     "add": "Tambahkan Perangkat melalui perangkat ini",
                     "clusters": "Kelola Cluster",
+                    "device_children": "Lihat Anakan",
                     "reconfigure": "Konfigurasi Ulang Perangkat",
                     "remove": "Hapus Perangkat",
                     "view_in_visualization": "Tampilkan dalam Visualisasi",
@@ -1153,6 +1162,7 @@
                 "confirmations": {
                     "remove": "Yakin ingin menghapus perangkat?"
                 },
+                "device_children": "Anakan perangkat Zigbee",
                 "device_signature": "Tanda tangan perangkat Zigbee",
                 "last_seen": "Terakhir Terlihat",
                 "manuf": "oleh {manufacturer}",
@@ -1187,6 +1197,7 @@
                 "key_missing": "Kunci yang diperlukan \"{key}\" tidak ada.",
                 "key_not_expected": "Kunci \"{key}\" tidak diharapkan atau tidak didukung oleh editor visual.",
                 "key_wrong_type": "Nilai yang disediakan untuk \"{key}\" tidak didukung oleh editor visual. Kami mendukung ({type_correct}) tetapi diterima ({type_wrong}).",
+                "no_template_editor_support": "Templat tidak didukung di editor visual",
                 "no_type_provided": "Tidak ada tipe yang tersedia."
             }
         },
@@ -1294,10 +1305,14 @@
                                 "device_id": {
                                     "action": "Aksi",
                                     "extra_fields": {
+                                        "brightness_pct": "Kecerahan",
                                         "code": "Kode",
+                                        "humidity": "Kelembaban",
                                         "message": "Pesan",
+                                        "mode": "Mode",
                                         "position": "Posisi",
-                                        "title": "Judul"
+                                        "title": "Judul",
+                                        "value": "Nilai"
                                     },
                                     "label": "Perangkat"
                                 },
@@ -1370,7 +1385,9 @@
                                     "extra_fields": {
                                         "above": "Lebih dari",
                                         "below": "Kurang dari",
-                                        "for": "Durasi"
+                                        "for": "Durasi",
+                                        "hvac_mode": "Mode HVAC",
+                                        "preset_mode": "Mode Prasetel"
                                     },
                                     "label": "Perangkat"
                                 },
@@ -1626,6 +1643,8 @@
                         },
                         "introduction": "Konfigurasi blueprint memungkinkan Anda untuk mengimpor dan mengelola blueprint.",
                         "learn_more": "Pelajari lebih lanjut tentang blueprint",
+                        "share_blueprint": "Bagikan blueprint",
+                        "share_blueprint_no_url": "Gagal membagikan blueprint: tidak ada sumber URL",
                         "use_blueprint": "Buat otomasi"
                     }
                 },
@@ -2522,7 +2541,7 @@
                             "generic": "Muat ulang entitas kamera IP generik",
                             "generic_thermostat": "Muat ulang entitas termostat generik",
                             "group": "Muat ulang grup, entitas grup, dan layanan notifikasi grup",
-                            "heading": "Konfigurasi YAML dimuat ulang",
+                            "heading": "Pemuatan ulang konfigurasi YAML",
                             "history_stats": "Muat ulang entitas statistik riwayat",
                             "homekit": "Muat ulang HomeKit",
                             "input_boolean": "Muat ulang input boolean",
@@ -2530,7 +2549,7 @@
                             "input_number": "Muat ulang input bilangan",
                             "input_select": "Muat ulang input pilihan",
                             "input_text": "Muat ulang input teks",
-                            "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan memulai ulang. Penekanan tombol muat ulang akan membatalkan konfigurasi YAML saat ini dan memuat konfigurasi yang baru.",
+                            "introduction": "Beberapa bagian Home Assistant dapat dimuat ulang tanpa memerlukan memulai ulang. Penekanan tombol muat ulang akan membatalkan konfigurasi YAML yang sedang dijalankan dan memuat konfigurasi yang baru.",
                             "min_max": "Muat ulang entitas min/maks",
                             "mqtt": "Muat ulang entitas MQTT yang dikonfigurasi secara manual",
                             "person": "Muat ulang orang",
@@ -2722,6 +2741,7 @@
                         "caption": "Jaringan"
                     },
                     "visualization": {
+                        "auto_zoom": "Perbesaran Otomatis",
                         "caption": "Visualisasi",
                         "header": "Visualisasi Jaringan",
                         "highlight_label": "Sorot Perangkat",
@@ -2797,6 +2817,7 @@
                         "server_version": "Versi Server"
                     },
                     "device_info": {
+                        "device_config": "Konfigurasikan Perangkat",
                         "node_ready": "Node Siap",
                         "node_status": "Status Node",
                         "zwave_info": "Info Z-Wave"
@@ -2808,6 +2829,15 @@
                         "connected": "Terhubung",
                         "connecting": "Menghubungkan",
                         "unknown": "Tidak diketahui"
+                    },
+                    "node_config": {
+                        "attribution": "Parameter konfigurasi dan deskripsi perangkat disediakan oleh proyek {device_database}.",
+                        "battery_device_notice": "Perangkat dengan baterai harus dalam keadaan aktif untuk memperbarui konfigurasinya. Rujuk manual perangkat Anda untuk mendapatkan instruksi tentang cara membangunkan perangkat.",
+                        "error_device_not_found": "Perangkat tidak ditemukan",
+                        "header": "Konfigurasi Perangkat Z-Wave",
+                        "introduction": "Kelola dan seseuaikan parameter konfigurasi tertentu untuk perangkat (node) yang dipilih.",
+                        "parameter_is_read_only": "Parameter ini bersifat hanya baca",
+                        "zwave_js_device_database": "Basis Data Perangkat Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Hidup",
@@ -2947,6 +2977,7 @@
                         "column_parameter": "Parameter",
                         "description": "Alat pengembang untuk layanan memungkinkan Anda memanggil layanan apa pun yang tersedia di Home Assistant.",
                         "fill_example_data": "Isi dengan Data Contoh",
+                        "no_template_ui_support": "Antarmuka tidak mendukung templat, Anda masih dapat menggunakan editor YAML.",
                         "title": "Layanan",
                         "ui_mode": "Masuk ke mode antarmuka",
                         "yaml_mode": "Masuk ke mode YAML",
@@ -2985,6 +3016,17 @@
                         "title": "Templat",
                         "unknown_error_template": "Kesalahan tidak diketahui saat merender templat"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Kembali",
+                "supervisor": {
+                    "ask": "Dapatkan bantuan",
+                    "observer": "Periksa Observer",
+                    "reboot": "Coba me-reboot host",
+                    "system_health": "Periksa Kesehatan Sistem",
+                    "title": "Tidak dapat memuat panel Supervisor!",
+                    "wait": "Jika Anda baru saja memulai, pastikan Anda telah memberikan cukup waktu kepada supervisor untuk memulai."
                 }
             },
             "history": {

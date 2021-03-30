@@ -467,12 +467,14 @@
                     "docker": "Docker 環境未正常工作",
                     "privileged": "未獲得 Supervisor 特權",
                     "setup": "設定 Supervisor 失敗",
-                    "supervisor": "Supervisor 無法進行更新"
+                    "supervisor": "Supervisor 無法進行更新",
+                    "untrusted": "偵測到未認證內容"
                 },
                 "unhealthy_title": "安裝版本不健康",
                 "unsupported_description": "執行不健康的安裝版本可能會導致問題。下方列表為安裝問題清單，點選連結以了解如何解決問題。",
                 "unsupported_reason": {
                     "container": "已知造成問題的 Container",
+                    "content-trust": "內容認證已關閉",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker 設定",
                     "docker_version": "Docker 版本",
@@ -785,7 +787,8 @@
                     "was_unlocked": "狀態為解鎖",
                     "was_unplugged": "狀態為拔下",
                     "was_unsafe": "狀態為不安全"
-                }
+                },
+                "show_trace": "顯示紀錄"
             },
             "media-browser": {
                 "audio_not_supported": "瀏覽器不支援音效元件。",
@@ -1093,42 +1096,47 @@
                         "zone": "區域"
                     },
                     "reload": {
-                        "automation": "重新載入自動化",
-                        "command_line": "重新載入命令列實體",
-                        "core": "重新載入座標與自訂化",
-                        "filesize": "重新載入檔案大小實體",
-                        "filter": "重新載入過濾器實體",
-                        "generic": "重新載入通用 IP 攝影機實體",
-                        "generic_thermostat": "重新載入通用溫控器實體",
-                        "group": "重新載入群組、群組實體及通知服務",
-                        "history_stats": "重新載入歷史狀態實體",
-                        "homekit": "重新載入 Homekit",
-                        "input_boolean": "重新載入輸入 boolean",
-                        "input_datetime": "重新載入輸入日期時間",
-                        "input_number": "重新載入輸入數字",
-                        "input_select": "重新載入輸入選擇",
-                        "input_text": "重新載入輸入文字",
-                        "min_max": "重新載入最低/最高實體",
-                        "mqtt": "重新載入手動設定 MQTT 實體",
-                        "person": "重新載入人員",
-                        "ping": "重新載入 Ping 二進位傳感器實體",
-                        "reload": "重新載入{domain}",
-                        "rest": "重新載入剩餘實體及通知服務",
-                        "rpi_gpio": "重新載入 Raspberry Pi GPIO 實體",
-                        "scene": "重新載入場景",
-                        "script": "重新載入腳本",
-                        "smtp": "重新載入 SMTP 通知服務",
-                        "statistics": "重新載入統計資訊實體",
-                        "telegram": "重新載入 Telegram 通知服務",
-                        "template": "重新載入模板實體",
-                        "trend": "重新載入趨勢實體",
-                        "universal": "重新載入通用媒體播放器實體",
-                        "zone": "重新載入區域"
+                        "automation": "自動化",
+                        "command_line": "命令列實體",
+                        "core": "座標與自訂化",
+                        "filesize": "檔案大小實體",
+                        "filter": "過濾器實體",
+                        "generic": "通用 IP 攝影機實體",
+                        "generic_thermostat": "通用溫控器實體",
+                        "group": "群組、群組實體及通知服務",
+                        "history_stats": "歷史狀態實體",
+                        "homekit": "Homekit",
+                        "input_boolean": "輸入 boolean",
+                        "input_datetime": "輸入日期時間",
+                        "input_number": "輸入數字",
+                        "input_select": "輸入選擇",
+                        "input_text": "輸入文字",
+                        "min_max": "最低/最高實體",
+                        "mqtt": "手動設定 MQTT 實體",
+                        "person": "人員",
+                        "ping": "Ping 二進位傳感器實體",
+                        "reload": "{domain}",
+                        "rest": "剩餘實體及通知服務",
+                        "rpi_gpio": "Raspberry Pi GPIO 實體",
+                        "scene": "場景",
+                        "script": "腳本",
+                        "smtp": "SMTP 通知服務",
+                        "statistics": "統計資訊實體",
+                        "telegram": "Telegram 通知服務",
+                        "template": "模板實體",
+                        "trend": "趨勢實體",
+                        "universal": "通用媒體播放器實體",
+                        "zone": "區域"
                     },
                     "server_control": {
                         "perform_action": "{action} 伺服器",
                         "restart": "重啟",
                         "stop": "停止"
+                    },
+                    "types": {
+                        "navigation": "導航",
+                        "reload": "重新載入",
+                        "server_control": "伺服器"
                     }
                 },
                 "filter_placeholder": "實體過濾"
@@ -1145,6 +1153,7 @@
                 "buttons": {
                     "add": "透過這個裝置來新增裝置",
                     "clusters": "管理叢集",
+                    "device_children": "檢視子設備",
                     "reconfigure": "重新設定裝置",
                     "remove": "移除裝置",
                     "view_in_visualization": "網路形象化",
@@ -1153,6 +1162,7 @@
                 "confirmations": {
                     "remove": "確定要移除此裝置？"
                 },
+                "device_children": "Zigbee 裝置子設備",
                 "device_signature": "Zigbee 裝置簽章",
                 "last_seen": "上次出現",
                 "manuf": "由 {manufacturer}",
@@ -1187,6 +1197,7 @@
                 "key_missing": "缺少所需的權杖 \"{key}\"。",
                 "key_not_expected": "視覺化編輯器不支援權杖 \"{key}\"。",
                 "key_wrong_type": "視覺化編輯器不支援所提供的 \"{key}\" 數值。支援 ({type_correct}) 但卻收到 ({type_wrong})。",
+                "no_template_editor_support": "視覺化編輯器不支援模版",
                 "no_type_provided": "未提供類型。"
             }
         },
@@ -1294,10 +1305,15 @@
                                 "device_id": {
                                     "action": "動作",
                                     "extra_fields": {
+                                        "brightness_pct": "亮度",
                                         "code": "碼",
+                                        "flash": "閃光",
+                                        "humidity": "濕度",
                                         "message": "訊息",
+                                        "mode": "模式",
                                         "position": "位置",
-                                        "title": "標題"
+                                        "title": "標題",
+                                        "value": "數值"
                                     },
                                     "label": "裝置"
                                 },
@@ -1342,7 +1358,7 @@
                                     "wait_template": "等待模板"
                                 }
                             },
-                            "unsupported_action": "UI 介面不支援觸發動作：{action}"
+                            "unsupported_action": "視覺化編輯器不支援觸發動作：{action}"
                         },
                         "alias": "名稱",
                         "blueprint": {
@@ -1370,7 +1386,9 @@
                                     "extra_fields": {
                                         "above": "在...之上",
                                         "below": "在...之下",
-                                        "for": "持續時間"
+                                        "for": "持續時間",
+                                        "hvac_mode": "暖通空調模式",
+                                        "preset_mode": "預置模式"
                                     },
                                     "label": "裝置"
                                 },
@@ -1425,7 +1443,7 @@
                                     "zone": "區域"
                                 }
                             },
-                            "unsupported_condition": "UI 介面不支援觸發判斷：{condition}"
+                            "unsupported_condition": "視覺化編輯器不支援觸發判斷：{condition}"
                         },
                         "copy_to_clipboard": "複製至剪貼簿",
                         "default_name": "建立新的自動化",
@@ -1433,7 +1451,7 @@
                             "label": "說明",
                             "placeholder": "選項說明"
                         },
-                        "edit_ui": "以 UI 編輯",
+                        "edit_ui": "以視覺化編輯器編輯",
                         "edit_yaml": "以 YAML 編輯",
                         "enable_disable": "開啟/關閉自動化",
                         "introduction": "運用自動化、讓智能家居更具魅力吧。",
@@ -1555,7 +1573,7 @@
                                     "zone": "區域"
                                 }
                             },
-                            "unsupported_platform": "UI 介面不支援平台：{platform}"
+                            "unsupported_platform": "視覺化編輯器不支援平台：{platform}"
                         },
                         "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？"
                     },
@@ -1563,6 +1581,8 @@
                         "add_automation": "新增一個自動化",
                         "delete_automation": "刪除自動化",
                         "delete_confirm": "確定要刪除此自動化？",
+                        "dev_automation": "自動化除錯",
+                        "dev_only_editable": "僅有於 automations.yaml 內定義的自動化、方能進行除錯。",
                         "duplicate": "複製",
                         "duplicate_automation": "複製自動化",
                         "edit_automation": "編輯自動化",
@@ -1626,6 +1646,8 @@
                         },
                         "introduction": "Blueprint 編輯器可允許匯入與管理 Blueprint。",
                         "learn_more": "詳細了解如何使用 Blueprint",
+                        "share_blueprint": "分享 Blueprint",
+                        "share_blueprint_no_url": "無法分享 Blueprint：沒有來源 URL",
                         "use_blueprint": "新增自動化"
                     }
                 },
@@ -1650,12 +1672,12 @@
                         "fetching_subscription": "取得訂閱狀態中...",
                         "google": {
                             "config_documentation": "設定文件",
-                            "devices_pin": "安全裝置密碼",
+                            "devices_pin": "安全裝置 PIN 碼",
                             "enable_ha_skill": "啟用 Home Assistant skill for Google Assistant",
                             "enable_state_reporting": "開啟狀態回報",
-                            "enter_pin_error": "無法儲存 Pin：",
+                            "enter_pin_error": "無法儲存 PIN：",
                             "enter_pin_hint": "請輸入安全碼以使用加密裝置",
-                            "enter_pin_info": "請輸入加密裝置 Pin 碼、加密裝置為如門、車庫與門鎖。當透過 Google Assistant 與此類裝置進行互動時，將需要語音說出/輸入密碼。",
+                            "enter_pin_info": "請輸入安全裝置 PIN 碼、安全裝置為如門、車庫與門鎖。當透過 Google Assistant 與此類裝置進行互動時，將需要語音說出/輸入此 PIN 碼。",
                             "info": "藉由 Home Assistant Cloud 雲服務  Google Assistant 整合，將能透過 Google Assistant 支援裝置以控制所有 Home Assistant 裝置。",
                             "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Google。以確保於 Google app 中裝置永遠保持最新狀態、並藉以創建例行自動化。",
                             "manage_entities": "管理實體",
@@ -1755,7 +1777,7 @@
                     },
                     "google": {
                         "banner": "由於您已經透過 configuration.yaml 設定實體過濾器、 因此編輯連結實體的介面將無法使用。",
-                        "disable_2FA": "關閉雙重驗證",
+                        "disable_2FA": "關閉雙重認證",
                         "dont_expose_entity": "不公開實體",
                         "expose": "與 Google Assistant 連結",
                         "expose_entity": "公開實體",
@@ -2514,39 +2536,39 @@
                     "description": "重啟與停止 Home Assistant 伺服器",
                     "section": {
                         "reloading": {
-                            "automation": "重新載入自動化",
-                            "command_line": "重新載入命令列實體",
-                            "core": "重新載入座標與自訂化",
-                            "filesize": "重新載入檔案大小實體",
-                            "filter": "重新載入過濾器實體",
-                            "generic": "重新載入通用 IP 攝影機實體",
-                            "generic_thermostat": "重新載入通用溫控器實體",
-                            "group": "重新載入群組、群組實體及通知服務",
+                            "automation": "自動化",
+                            "command_line": "命令列實體",
+                            "core": "座標與自訂化",
+                            "filesize": "檔案大小實體",
+                            "filter": "過濾器實體",
+                            "generic": "通用 IP 攝影機實體",
+                            "generic_thermostat": "通用溫控器實體",
+                            "group": "群組、群組實體及通知服務",
                             "heading": "YAML 設定新載入中",
-                            "history_stats": "重新載入歷史狀態實體",
-                            "homekit": "重新載入 Homekit",
-                            "input_boolean": "重新載入輸入 boolean",
-                            "input_datetime": "重新載入輸入日期時間",
-                            "input_number": "重新載入輸入數字",
-                            "input_select": "重新載入輸入選擇",
-                            "input_text": "重新載入輸入文字",
+                            "history_stats": "歷史狀態實體",
+                            "homekit": "Homekit",
+                            "input_boolean": "輸入 boolean",
+                            "input_datetime": "輸入日期時間",
+                            "input_number": "輸入數字",
+                            "input_select": "輸入選擇",
+                            "input_text": "輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
-                            "min_max": "重新載入最低/最高實體",
-                            "mqtt": "重新載入手動設定 MQTT 實體",
-                            "person": "重新載入人員",
-                            "ping": "重新載入 Ping 二進位傳感器實體",
-                            "reload": "重新載入{domain}",
-                            "rest": "重新載入剩餘實體及通知服務",
-                            "rpi_gpio": "重新載入 Raspberry Pi GPIO 實體",
-                            "scene": "重新載入場景",
-                            "script": "重新載入腳本",
-                            "smtp": "重新載入 SMTP 通知服務",
-                            "statistics": "重新載入統計資訊實體",
-                            "telegram": "重新載入 Telegram 通知服務",
-                            "template": "重新載入模板實體",
-                            "trend": "重新載入趨勢實體",
-                            "universal": "重新載入通用媒體播放器實體",
-                            "zone": "重新載入區域"
+                            "min_max": "最低/最高實體",
+                            "mqtt": "手動設定 MQTT 實體",
+                            "person": "人員",
+                            "ping": "Ping 二進位傳感器實體",
+                            "reload": "{domain}",
+                            "rest": "剩餘實體及通知服務",
+                            "rpi_gpio": "Raspberry Pi GPIO 實體",
+                            "scene": "場景",
+                            "script": "腳本",
+                            "smtp": "SMTP 通知服務",
+                            "statistics": "統計資訊實體",
+                            "telegram": "Telegram 通知服務",
+                            "template": "模板實體",
+                            "trend": "趨勢實體",
+                            "universal": "通用媒體播放器實體",
+                            "zone": "區域"
                         },
                         "server_management": {
                             "confirm_restart": "確定要重啟 Home Assistant 嗎？",
@@ -2722,6 +2744,7 @@
                         "caption": "網路"
                     },
                     "visualization": {
+                        "auto_zoom": "自動縮放",
                         "caption": "形象化",
                         "header": "網路形象化",
                         "highlight_label": "高亮顯示裝置",
@@ -2797,6 +2820,7 @@
                         "server_version": "伺服器版本"
                     },
                     "device_info": {
+                        "device_config": "設定裝置",
                         "node_ready": "就緒節點",
                         "node_status": "節點狀態",
                         "zwave_info": "Z-Wave 資訊"
@@ -2808,6 +2832,15 @@
                         "connected": "已連線",
                         "connecting": "連線中",
                         "unknown": "未知"
+                    },
+                    "node_config": {
+                        "attribution": "由 {device_database} 所提供之裝置設定參數與說明",
+                        "battery_device_notice": "電池供電裝置必須喚醒以更新其設定。請參考您的裝置手冊以了解如何喚醒裝置。",
+                        "error_device_not_found": "找不到裝置",
+                        "header": "Z-Wave 裝置設定",
+                        "introduction": "管理與調整所選擇裝置 (節點) 之特定設定參數",
+                        "parameter_is_read_only": "此參數為唯讀。",
+                        "zwave_js_device_database": "Z-Wave JS 裝置資料庫"
                     },
                     "node_status": {
                         "alive": "線上",
@@ -2955,6 +2988,7 @@
                         "column_parameter": "參數",
                         "description": "服務開發工具允許呼叫任何 Home Assistant 中可用服務。",
                         "fill_example_data": "填寫範例資料",
+                        "no_template_ui_support": "UI 不支援模版，但仍可使用 YAML 編輯器。",
                         "title": "服務",
                         "ui_mode": "進入 UI 模式",
                         "yaml_mode": "進入 YAML 模式",
@@ -2996,6 +3030,17 @@
                         "title": "模板",
                         "unknown_error_template": "未知渲染模版錯誤"
                     }
+                }
+            },
+            "error": {
+                "go_back": "上一步",
+                "supervisor": {
+                    "ask": "尋求協助",
+                    "observer": "檢查 Observer",
+                    "reboot": "嘗試重啟主機",
+                    "system_health": "檢查系統健康狀態",
+                    "title": "無法載入 Supervisor 面板！",
+                    "wait": "假如為剛剛啟動，請確認已經給予 Supervisor 足夠時間進行啟動。"
                 }
             },
             "history": {
@@ -3522,9 +3567,9 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "雙重驗證碼"
+                                        "code": "雙重認證碼"
                                     },
-                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
+                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重認證碼，並進行驗證："
                                 }
                             }
                         },
@@ -3545,9 +3590,9 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "雙重驗證碼"
+                                        "code": "雙重認證碼"
                                     },
-                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
+                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重認證碼，並進行驗證："
                                 }
                             }
                         },
@@ -3569,9 +3614,9 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "雙重驗證碼"
+                                        "code": "雙重認證碼"
                                     },
-                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
+                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得雙重認證碼，並進行驗證："
                                 }
                             }
                         },

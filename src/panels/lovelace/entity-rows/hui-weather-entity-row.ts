@@ -16,6 +16,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
+import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/entity/state-badge";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -111,10 +112,13 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
             ? computeStateDisplay(
                 this.hass.localize,
                 stateObj,
-                this.hass.language
+                this.hass.locale
               )
             : html`
-                ${stateObj.attributes.temperature}
+                ${formatNumber(
+                  stateObj.attributes.temperature,
+                  this.hass.locale
+                )}
                 ${getWeatherUnit(this.hass, "temperature")}
               `}
         </div>

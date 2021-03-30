@@ -81,4 +81,8 @@ class DemoMoreInfoLight extends LitElement {
   }
 }
 
-customElements.define("demo-more-info-light", DemoMoreInfoLight);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-more-info-light": DemoMoreInfoLight;
+  }
+}

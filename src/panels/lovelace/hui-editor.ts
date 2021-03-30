@@ -248,7 +248,7 @@ class LovelaceFullConfigEditor extends LitElement {
       return;
     }
 
-    if (/^#|\s#/gm.test(value)) {
+    if (this.yamlEditor.hasComments) {
       if (
         !confirm(
           this.hass.localize(

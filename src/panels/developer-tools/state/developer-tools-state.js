@@ -171,7 +171,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               [[localize('ui.panel.developer-tools.tabs.states.attributes')]]
               <paper-checkbox
                 checked="{{_showAttributes}}"
-                on-change="{{saveAttributeCheckboxState}}"
+                on-change="saveAttributeCheckboxState"
               ></paper-checkbox>
             </th>
           </tr>
@@ -379,7 +379,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           return false;
         }
 
-        if (!value.state.includes(_stateFilter.toLowerCase())) {
+        if (!value.state.toLowerCase().includes(_stateFilter.toLowerCase())) {
           return false;
         }
 
@@ -462,14 +462,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
-      this.hass.language
+      this.hass.locale
     );
   }
 
   lastUpdatedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_updated),
-      this.hass.language
+      this.hass.locale
     );
   }
 

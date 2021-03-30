@@ -68,7 +68,7 @@ export class SystemLogCard extends LitElement {
                             <div secondary>
                               ${formatSystemLogTime(
                                 item.timestamp,
-                                this.hass!.language
+                                this.hass!.locale
                               )}
                               –
                               ${html`(<span class="${item.level.toLowerCase()}"
@@ -88,7 +88,7 @@ export class SystemLogCard extends LitElement {
                                       "time",
                                       formatSystemLogTime(
                                         item.first_occurred,
-                                        this.hass!.language
+                                        this.hass!.locale
                                       ),
                                       "counter",
                                       item.count

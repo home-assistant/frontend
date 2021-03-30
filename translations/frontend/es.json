@@ -205,7 +205,7 @@
                     }
                 },
                 "changelog": "Registro de cambios",
-                "cpu_usage": "Complemento de uso de CPU",
+                "cpu_usage": "Uso de CPU del complemento",
                 "hostname": "Nombre de host",
                 "install": "instalar",
                 "new_update_available": "{name} {version} está disponible",
@@ -230,7 +230,7 @@
                         "title": "Modo de protección"
                     },
                     "watchdog": {
-                        "description": "Esto iniciará el complemento si falla",
+                        "description": "Esto reiniciará el complemento si se cae",
                         "title": "Vigilancia"
                     }
                 },
@@ -239,7 +239,7 @@
                     "enable": "Habilitar el modo de protección",
                     "title": "Advertencia: ¡El modo de protección está desactivado!"
                 },
-                "ram_usage": "Complemento de uso de RAM",
+                "ram_usage": "Uso de RAM del complemento",
                 "rebuild": "reconstruir",
                 "restart": "reiniciar",
                 "start": "iniciar",
@@ -467,12 +467,14 @@
                     "docker": "El entorno de Docker no funciona correctamente",
                     "privileged": "El supervisor no es privilegiado",
                     "setup": "La configuración del supervisor falló",
-                    "supervisor": "El supervisor no se pudo actualizar"
+                    "supervisor": "El supervisor no se pudo actualizar",
+                    "untrusted": "Contenido no confiable detectado"
                 },
                 "unhealthy_title": "Tu instalación está en mal estado",
                 "unsupported_description": "A continuación se muestra una lista de problemas encontrados con tu instalación, haz clic en los enlaces para saber cómo puedes resolver los problemas.",
                 "unsupported_reason": {
                     "container": "Contenedores conocidos por causar problemas",
+                    "content-trust": "La validación de contenido de confianza está deshabilitada",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuración de Docker",
                     "docker_version": "Versión de Docker",
@@ -721,6 +723,9 @@
                 "today": "Hoy"
             },
             "data-table": {
+                "clear": "Limpiar",
+                "filtering_by": "Filtrando por",
+                "hidden": "{number} oculto",
                 "no-data": "Sin datos",
                 "search": "Buscar"
             },
@@ -785,7 +790,8 @@
                     "was_unlocked": "se desbloqueó",
                     "was_unplugged": "se desenchufó",
                     "was_unsafe": "era inseguro"
-                }
+                },
+                "show_trace": "Mostrar traza"
             },
             "media-browser": {
                 "audio_not_supported": "Tu navegador no es compatible con el elemento de audio.",
@@ -1093,42 +1099,47 @@
                         "zone": "Zonas"
                     },
                     "reload": {
-                        "automation": "Recargar automatizaciones",
-                        "command_line": "Recargar entidades de línea de comandos",
-                        "core": "Recargar ubicación y personalizaciones",
-                        "filesize": "Recargar entidades de tamaño de archivo",
-                        "filter": "Recargar entidades de filtro",
-                        "generic": "Recargar entidades de cámara IP genéricas",
-                        "generic_thermostat": "Recargar entidades de termostato genéricas",
-                        "group": "Recargar grupos, entidades de grupo, y notificar servicios",
-                        "history_stats": "Recargar entidades de estadísticas del historial",
-                        "homekit": "Recargar HomeKit",
-                        "input_boolean": "Recargar los campos booleanos",
-                        "input_datetime": "Recargar los campos de fecha y hora",
-                        "input_number": "Recargar los campos numéricos",
-                        "input_select": "Recargar los campos desplegables",
-                        "input_text": "Recargar los campos de texto",
-                        "min_max": "Recargar entidades min/max",
-                        "mqtt": "Recargar entidades MQTT configuradas manualmente",
-                        "person": "Recargar personas",
-                        "ping": "Recargar entidades de sensor binario de ping",
-                        "reload": "Recargar {domain}",
-                        "rest": "Recargar entidades rest y notificar servicios",
-                        "rpi_gpio": "Recargar entidades GPIO de Raspberry Pi",
+                        "automation": "Automatizaciones",
+                        "command_line": "Entidades de línea de comandos",
+                        "core": "Ubicación y personalizaciones",
+                        "filesize": "Entidades de tamaño de archivo",
+                        "filter": "Entidades de filtro",
+                        "generic": "Entidades de cámara IP genéricas",
+                        "generic_thermostat": "Entidades de termostato genéricas",
+                        "group": "Grupos, entidades de grupo, y notificar servicios",
+                        "history_stats": "Entidades de estadísticas del historial",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Campos booleanos",
+                        "input_datetime": "Campos de fecha y hora",
+                        "input_number": "Campos numéricos",
+                        "input_select": "Campos desplegables",
+                        "input_text": "Campos de texto",
+                        "min_max": "Entidades mín/máx",
+                        "mqtt": "Entidades MQTT configuradas manualmente",
+                        "person": "Personas",
+                        "ping": "Entidades de sensor binario de ping",
+                        "reload": "{domain}",
+                        "rest": "Entidades rest y notificar servicios",
+                        "rpi_gpio": "Entidades GPIO de Raspberry Pi",
                         "scene": "Recargar escenas",
-                        "script": "Recargar scripts",
-                        "smtp": "Recargar servicios de notificación SMTP",
-                        "statistics": "Recargar entidades de estadísticas",
-                        "telegram": "Recargar servicios de notificación de telegram",
-                        "template": "Recargar entidades de plantilla",
-                        "trend": "Recargar entidades de tendencia",
-                        "universal": "Recargar entidades de reproductor multimedia universal",
-                        "zone": "Recargar zonas"
+                        "script": "Scripts",
+                        "smtp": "Servicios de notificación SMTP",
+                        "statistics": "Entidades de estadísticas",
+                        "telegram": "Servicios de notificación de Telegram",
+                        "template": "Entidades de plantilla",
+                        "trend": "Entidades de tendencia",
+                        "universal": "Entidades de reproductor multimedia universal",
+                        "zone": "Zonas"
                     },
                     "server_control": {
-                        "perform_action": "{action} Servidor",
+                        "perform_action": "{action} servidor",
                         "restart": "Reiniciar",
                         "stop": "Detener"
+                    },
+                    "types": {
+                        "navigation": "Navegar",
+                        "reload": "Recargar",
+                        "server_control": "Servidor"
                     }
                 },
                 "filter_placeholder": "Filtro de entidad"
@@ -1145,6 +1156,7 @@
                 "buttons": {
                     "add": "Añadir dispositivos a través de este dispositivo",
                     "clusters": "Administrar clústeres",
+                    "device_children": "Ver hijos",
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivos",
                     "view_in_visualization": "Ver en Visualización",
@@ -1153,6 +1165,7 @@
                 "confirmations": {
                     "remove": "¿Estás seguro de que quieres eliminar este dispositivo?"
                 },
+                "device_children": "Dispositivos Zigbee hijos",
                 "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Visto por última vez",
                 "manuf": "por {manufacturer}",
@@ -1187,6 +1200,7 @@
                 "key_missing": "Falta la clave obligatoria \"{key}\".",
                 "key_not_expected": "El editor visual no espera o no admite la clave \"{key}\".",
                 "key_wrong_type": "El valor proporcionado para \"{key}\" no es compatible con el editor visual. Aceptamos ({type_correct}) pero recibimos ({type_wrong}).",
+                "no_template_editor_support": "Las plantillas no son compatibles con el editor visual",
                 "no_type_provided": "No se proporciona ningún tipo."
             }
         },
@@ -1294,10 +1308,15 @@
                                 "device_id": {
                                     "action": "Acción",
                                     "extra_fields": {
+                                        "brightness_pct": "Brillo",
                                         "code": "Código",
+                                        "flash": "Destello",
+                                        "humidity": "Humedad",
                                         "message": "Mensaje",
+                                        "mode": "Modo",
                                         "position": "Posición",
-                                        "title": "Título"
+                                        "title": "Título",
+                                        "value": "Valor"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1342,7 +1361,7 @@
                                     "wait_template": "Plantilla de espera"
                                 }
                             },
-                            "unsupported_action": "No hay soporte en la IU para la acción: {action}"
+                            "unsupported_action": "No hay soporte del editor visual para la acción: {action}"
                         },
                         "alias": "Nombre",
                         "blueprint": {
@@ -1370,7 +1389,9 @@
                                     "extra_fields": {
                                         "above": "Por encima de",
                                         "below": "Por debajo de",
-                                        "for": "Duración"
+                                        "for": "Duración",
+                                        "hvac_mode": "Modo del sistema de climatización",
+                                        "preset_mode": "Modo preestablecido"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1425,7 +1446,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "No hay soporte en la IU para la condición: {condition}"
+                            "unsupported_condition": "No hay soporte del editor visual para la condición: {condition}"
                         },
                         "copy_to_clipboard": "Copiar al portapapeles",
                         "default_name": "Nueva automatización",
@@ -1433,8 +1454,8 @@
                             "label": "Descripción",
                             "placeholder": "Descripción opcional"
                         },
-                        "edit_ui": "Editar con la interfaz de usuario",
-                        "edit_yaml": "Editar como YAML",
+                        "edit_ui": "Editar en el editor visual",
+                        "edit_yaml": "Editar en YAML",
                         "enable_disable": "Activar/Desactivar automatización",
                         "introduction": "Usa automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
@@ -1555,7 +1576,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "No hay soporte en la IU para la plataforma: {platform}"
+                            "unsupported_platform": "No hay soporte del editor visual para la plataforma: {platform}"
                         },
                         "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?"
                     },
@@ -1563,6 +1584,8 @@
                         "add_automation": "Añadir automatización",
                         "delete_automation": "Eliminar la automatización",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta automatización?",
+                        "dev_automation": "Depurar automatización",
+                        "dev_only_editable": "Solo las automatizaciones definidas en automations.yaml se pueden depurar",
                         "duplicate": "Duplicar",
                         "duplicate_automation": "Duplicar la automatización",
                         "edit_automation": "Editar automatización",
@@ -1626,6 +1649,8 @@
                         },
                         "introduction": "La configuración de planos te permite importar y administrar tus planos.",
                         "learn_more": "Aprende más sobre el uso de planos",
+                        "share_blueprint": "Compartir plano",
+                        "share_blueprint_no_url": "No se puede compartir el plano: no hay URL de origen",
                         "use_blueprint": "Crear automatización"
                     }
                 },
@@ -1650,12 +1675,12 @@
                         "fetching_subscription": "Obteniendo suscripción ...",
                         "google": {
                             "config_documentation": "Documentación de configuración",
-                            "devices_pin": "Pin de dispositivos de seguridad",
+                            "devices_pin": "PIN de dispositivos de seguridad",
                             "enable_ha_skill": "Activa la skill de Home Assistant para el Asistente de Google",
                             "enable_state_reporting": "Activar informes de estado",
-                            "enter_pin_error": "No se puede almacenar el pin:",
+                            "enter_pin_error": "No se puede almacenar el PIN:",
                             "enter_pin_hint": "Introduce un PIN para utilizar dispositivos de seguridad",
-                            "enter_pin_info": "Por favor, introduce un pin para interactuar con los dispositivos de seguridad. Los dispositivos de seguridad son puertas, puertas de garaje y cerraduras. Se te pedirá que digas/introduzcas este pin cuando interactúes con dichos dispositivos a través del Asistente de Google.",
+                            "enter_pin_info": "Por favor, introduce un PIN para interactuar con los dispositivos de seguridad. Los dispositivos de seguridad son puertas, puertas de garaje y cerraduras. Se te pedirá que digas/introduzcas este PIN cuando interactúes con dichos dispositivos a través de Google Assistant.",
                             "info": "Con la integración del Asistente de Google para Home Assistant Cloud, podrás controlar todos tus dispositivos Home Assistant a través de cualquier dispositivo habilitado para Asistente de Google.",
                             "info_state_reporting": "Si activas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Google. Esto te permite ver siempre los últimos estados en la aplicación de Google.",
                             "manage_entities": "Administrar entidades",
@@ -2135,6 +2160,7 @@
                     "disable": {
                         "disabled_integrations": "{number} deshabilitadas",
                         "hide_disabled": "Ocultar integraciones deshabilitadas",
+                        "show": "Mostrar",
                         "show_disabled": "Mostrar integraciones deshabilitadas"
                     },
                     "discovered": "Descubierto",
@@ -2345,7 +2371,7 @@
                         "session": "Obteniendo valores que cambian con poca frecuencia del nodo",
                         "static": "Obteniendo valores estáticos del dispositivo",
                         "versions": "Obteniendo información sobre versiones de firmware y clases de órdenes",
-                        "wakeup": "Configurando soporte para colas de despertador y mensajes"
+                        "wakeup": "Configurar soporte para mensajes y colas de activación"
                     },
                     "node": {
                         "button": "Detalles del nodo",
@@ -2369,8 +2395,8 @@
                         "start_refresh_button": "Iniciar Refresco",
                         "step": "Paso",
                         "title": "Refrescar Información del Nodo",
-                        "wakeup_header": "Instrucciones para despertar a",
-                        "wakeup_instructions_source": "Las instrucciones para despertarlo se obtienen de la base de datos de dispositivos de la comunidad OpenZWave."
+                        "wakeup_header": "Instrucciones de activación para",
+                        "wakeup_instructions_source": "Las instrucciones de activación se obtienen de la base de datos de dispositivos de la comunidad OpenZWave."
                     },
                     "select_instance": {
                         "header": "Selecciona una instancia de OpenZWave",
@@ -2514,39 +2540,39 @@
                     "description": "Reinicia y detiene el servidor de Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Recargar automatizaciones",
-                            "command_line": "Recargar entidades de línea de comandos",
-                            "core": "Recargar ubicación y personalizaciones",
-                            "filesize": "Recargar entidades de tamaño de archivo",
-                            "filter": "Recargar entidades de filtro",
-                            "generic": "Recargar entidades de cámara IP genéricas",
-                            "generic_thermostat": "Recargar entidades de termostato genéricas",
-                            "group": "Recargar grupos, entidades de grupo, y notificar servicios",
+                            "automation": "Automatizaciones",
+                            "command_line": "Entidades de línea de comandos",
+                            "core": "Ubicación y personalizaciones",
+                            "filesize": "Entidades de tamaño de archivo",
+                            "filter": "Entidades de filtro",
+                            "generic": "Entidades de cámara IP genéricas",
+                            "generic_thermostat": "Entidades de termostato genéricas",
+                            "group": "Grupos, entidades de grupo, y notificar servicios",
                             "heading": "Recargando la configuración YAML",
-                            "history_stats": "Recargar entidades de estadísticas del historial",
-                            "homekit": "Recargar HomeKit",
-                            "input_boolean": "Recargar los campos booleanos",
-                            "input_datetime": "Recargar los campos de fecha y hora",
-                            "input_number": "Recargar los campos numéricos",
-                            "input_select": "Recargar los campos desplegables",
-                            "input_text": "Recargar los campos de texto",
+                            "history_stats": "Entidades de estadísticas del historial",
+                            "homekit": "HomeKit",
+                            "input_boolean": "Campos booleanos",
+                            "input_datetime": "Campos de fecha y hora",
+                            "input_number": "Campos numéricos",
+                            "input_select": "Campos desplegables",
+                            "input_text": "Campos de texto",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
-                            "min_max": "Recargar entidades min/max",
-                            "mqtt": "Recargar entidades MQTT configuradas manualmente",
-                            "person": "Recargar personas",
-                            "ping": "Recargar entidades de sensor binario de ping",
-                            "reload": "Recargar {domain}",
-                            "rest": "Recargar entidades rest y notificar servicios",
-                            "rpi_gpio": "Recargar entidades GPIO de Raspberry Pi",
+                            "min_max": "Entidades mín/máx",
+                            "mqtt": "Entidades MQTT configuradas manualmente",
+                            "person": "Personas",
+                            "ping": "Entidades de sensor binario de ping",
+                            "reload": "{domain}",
+                            "rest": "Entidades rest y notificar servicios",
+                            "rpi_gpio": "Entidades GPIO de Raspberry Pi",
                             "scene": "Recargar escenas",
-                            "script": "Recargar scripts",
-                            "smtp": "Recargar servicios de notificación SMTP",
-                            "statistics": "Recargar entidades de estadísticas",
-                            "telegram": "Recargar servicios de notificación de telegram",
-                            "template": "Recargar entidades de plantilla",
-                            "trend": "Recargar entidades de tendencia",
-                            "universal": "Recargar entidades de reproductor multimedia universal",
-                            "zone": "Recargar zonas"
+                            "script": "Scripts",
+                            "smtp": "Servicios de notificación SMTP",
+                            "statistics": "Entidades de estadísticas",
+                            "telegram": "Servicios de notificación de Telegram",
+                            "template": "Entidades de plantilla",
+                            "trend": "Entidades de tendencia",
+                            "universal": "Entidades de reproductor multimedia universal",
+                            "zone": "Zonas"
                         },
                         "server_management": {
                             "confirm_restart": "¿Seguro que quieres reiniciar Home Assistant?",
@@ -2646,7 +2672,7 @@
                     "add_device": "Añadir dispositivo",
                     "add_device_page": {
                         "discovered_text": "Los dispositivos aparecerán aquí una vez descubiertos.",
-                        "no_devices_found": "No se encontraron dispositivos, asegúrate de que están en modo de emparejamiento y mantenlos despiertos mientras el descubrimiento se está ejecutando.",
+                        "no_devices_found": "No se encontraron dispositivos, asegúrate de que estén en modo de emparejamiento y mantenlos despiertos mientras se ejecuta el descubrimiento.",
                         "pairing_mode": "Asegúrate de que tus dispositivos están en modo de emparejamiento. Consulta las instrucciones de tu dispositivo sobre cómo hacerlo.",
                         "search_again": "Buscar de nuevo",
                         "spinner": "Buscando dispositivos ZHA Zigbee...."
@@ -2722,6 +2748,7 @@
                         "caption": "Red"
                     },
                     "visualization": {
+                        "auto_zoom": "Zoom automático",
                         "caption": "Visualización",
                         "header": "Visualización de la red",
                         "highlight_label": "Resaltar dispositivos",
@@ -2797,6 +2824,7 @@
                         "server_version": "Versión del servidor"
                     },
                     "device_info": {
+                        "device_config": "Configurar dispositivo",
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del Nodo",
                         "zwave_info": "Información de Z-Wave"
@@ -2808,6 +2836,15 @@
                         "connected": "Conectado",
                         "connecting": "Conectando",
                         "unknown": "Desconocido"
+                    },
+                    "node_config": {
+                        "attribution": "{device_database} proporciona los parámetros de configuración del dispositivo y las descripciones.",
+                        "battery_device_notice": "Los dispositivos de batería deben estar activos para actualizar su configuración. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo reactivar el dispositivo.",
+                        "error_device_not_found": "Dispositivo no encontrado",
+                        "header": "Configuración del dispositivo Z-Wave",
+                        "introduction": "Administra y ajusta los parámetros de configuración específicos del dispositivo (nodo) para el dispositivo seleccionado",
+                        "parameter_is_read_only": "Este parámetro es de solo lectura.",
+                        "zwave_js_device_database": "Base de datos de dispositivos Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Vivo",
@@ -2863,7 +2900,7 @@
                         "header": "Opciones de configuración de nodo",
                         "seconds": "segundos",
                         "set_config_parameter": "Establecer parámetro de configuración",
-                        "set_wakeup": "Configurar el intervalo de activación",
+                        "set_wakeup": "Establecer intervalo de activación",
                         "true": "Verdadero"
                     },
                     "node_management": {
@@ -2955,6 +2992,7 @@
                         "column_parameter": "Parámetro",
                         "description": "La herramienta de desarrollo de servicios te permite llamar a cualquier servicio disponible en Home Assistant.",
                         "fill_example_data": "Rellenar datos de ejemplo",
+                        "no_template_ui_support": "La interfaz de usuario no admite plantillas, pero puedes utilizar el editor YAML.",
                         "title": "Servicios",
                         "ui_mode": "Ir al modo IU",
                         "yaml_mode": "Ir al modo YAML",
@@ -2996,6 +3034,17 @@
                         "title": "Plantillas",
                         "unknown_error_template": "Error desconocido al mostrar la plantilla"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Volver",
+                "supervisor": {
+                    "ask": "Pide ayuda",
+                    "observer": "Comprueba el observador",
+                    "reboot": "Intenta reiniciar el host",
+                    "system_health": "Comprueba la salud del sistema",
+                    "title": "¡No se pudo cargar el panel del supervisor!",
+                    "wait": "Si acabas de empezar, asegúrate de haber dado al supervisor suficiente tiempo para comenzar."
                 }
             },
             "history": {
@@ -3751,6 +3800,19 @@
                     "disable": "Deshabilitar",
                     "enable": "Activar",
                     "header": "Módulos de autenticación multifactor"
+                },
+                "number_format": {
+                    "description": "Elije cómo se formatean los números.",
+                    "dropdown_label": "Formato numérico",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automático (utilizar la configuración del idioma)",
+                        "none": "Ninguno",
+                        "space_comma": "1 234 567,89",
+                        "system": "Utilizar la configuración regional del sistema"
+                    },
+                    "header": "Formato numérico"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

@@ -80,10 +80,14 @@ describe("fuzzySequentialMatch", () => {
 
 describe("fuzzyFilterSort", () => {
   const filter = "ticker";
-  const item1 = { text: "automation.ticker", altText: "Stocks", score: 0 };
-  const item2 = { text: "sensor.ticker", altText: "Stocks up", score: 0 };
+  const item1 = {
+    filterText: "automation.ticker",
+    altText: "Stocks",
+    score: 0,
+  };
+  const item2 = { filterText: "sensor.ticker", altText: "Stocks up", score: 0 };
   const item3 = {
-    text: "automation.check_router",
+    filterText: "automation.check_router",
     altText: "Timer Check Router",
     score: 0,
   };

@@ -467,12 +467,14 @@
                     "docker": "Środowisko dockera nie działa poprawnie",
                     "privileged": "Supervisor nie jest uprzywilejowany",
                     "setup": "Konfiguracja Supervisora nie powiodła się",
-                    "supervisor": "Supervisor nie mógł się zaktualizować"
+                    "supervisor": "Supervisor nie mógł się zaktualizować",
+                    "untrusted": "Wykryto niezaufaną zawartość"
                 },
                 "unhealthy_title": "Twoja instalacja jest \"niezdrowa\"",
                 "unsupported_description": "Poniżej znajduje się lista problemów z Twoją instalacją. Kliknij łącza, aby dowiedzieć się, jak możesz je rozwiązać.",
                 "unsupported_reason": {
                     "container": "Kontenery, o których wiadomo, że powodują problemy",
+                    "content-trust": "Weryfikacja zaufania zawartości jest wyłączona",
                     "dbus": "DBUS",
                     "docker_configuration": "Konfiguracja dockera",
                     "docker_version": "Wersja dockera",
@@ -1145,6 +1147,7 @@
                 "buttons": {
                     "add": "Dodaj urządzenia za pomocą tego urządzenia",
                     "clusters": "Zarządzaj klastrami",
+                    "device_children": "Wyświetl urządzenia-dzieci",
                     "reconfigure": "Rekonfiguracja urządzenia",
                     "remove": "Usuń urządzenie",
                     "view_in_visualization": "Wyświetl w wizualizacji",
@@ -1153,6 +1156,7 @@
                 "confirmations": {
                     "remove": "Czy na pewno chcesz usunąć urządzenie?"
                 },
+                "device_children": "Urządzenia-dzieci Zigbee",
                 "device_signature": "Sygnatura urządzenia Zigbee",
                 "last_seen": "Ostatnio widziane",
                 "manuf": "Producent: {manufacturer}",
@@ -1187,6 +1191,7 @@
                 "key_missing": "Brak wymaganego klucza \"{key}\".",
                 "key_not_expected": "Klucz \"{key}\" nie jest oczekiwany lub nie jest obsługiwany przez edytor wizualny.",
                 "key_wrong_type": "Wprowadzona wartość dla \"{key}\" nie jest obsługiwana przez edytor wizualny. Obsługujemy ({type_correct}), a otrzymaliśmy ({type_wrong}).",
+                "no_template_editor_support": "Szablony nie są obsługiwane w edytorze wizualnym",
                 "no_type_provided": "Nie wprowadzono typu."
             }
         },
@@ -1294,10 +1299,15 @@
                                 "device_id": {
                                     "action": "Akcja",
                                     "extra_fields": {
+                                        "brightness_pct": "Jasność",
                                         "code": "Kod",
+                                        "flash": "Flash",
+                                        "humidity": "Wilgotność",
                                         "message": "Wiadomość",
+                                        "mode": "Tryb",
                                         "position": "Pozycja",
-                                        "title": "Tytuł"
+                                        "title": "Tytuł",
+                                        "value": "Wartość"
                                     },
                                     "label": "Urządzenie"
                                 },
@@ -1342,7 +1352,7 @@
                                     "wait_template": "Szablon czekania"
                                 }
                             },
-                            "unsupported_action": "Brak w interfejsie użytkownika wsparcia dla akcji: {action}"
+                            "unsupported_action": "Brak wsparcia edytora wizualnego dla akcji: {action}"
                         },
                         "alias": "Nazwa",
                         "blueprint": {
@@ -1370,7 +1380,9 @@
                                     "extra_fields": {
                                         "above": "Powyżej",
                                         "below": "Poniżej",
-                                        "for": "Czas trwania"
+                                        "for": "Czas trwania",
+                                        "hvac_mode": "Tryb pracy HVAC",
+                                        "preset_mode": "Ustawienie predefiniowane"
                                     },
                                     "label": "Urządzenie"
                                 },
@@ -1425,7 +1437,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_condition": "Brak w interfejsie użytkownika wsparcia dla warunku: {condition}"
+                            "unsupported_condition": "Brak wsparcia edytora wizualnego dla warunku: {condition}"
                         },
                         "copy_to_clipboard": "Skopiuj do schowka",
                         "default_name": "Nowa automatyzacja",
@@ -1433,8 +1445,8 @@
                             "label": "Opis",
                             "placeholder": "Opcjonalny opis"
                         },
-                        "edit_ui": "Edytuj za pomocą interfejsu użytkownika",
-                        "edit_yaml": "Edycja jako YAML",
+                        "edit_ui": "Edytuj w edytorze wizualnym",
+                        "edit_yaml": "Edycja w YAML",
                         "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne",
@@ -1555,7 +1567,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_platform": "Brak w interfejsie użytkownika wsparcia dla platformy: {platform}"
+                            "unsupported_platform": "Brak wsparcia edytora wizualnego dla platformy: {platform}"
                         },
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
                     },
@@ -1563,6 +1575,8 @@
                         "add_automation": "Dodaj automatyzację",
                         "delete_automation": "Usuń automatyzację",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę automatyzację?",
+                        "dev_automation": "Debuguj automatyzację",
+                        "dev_only_editable": "Można debugować tylko automatyzacje zdefiniowane w pliku automations.yaml.",
                         "duplicate": "Duplikuj",
                         "duplicate_automation": "Duplikuj automatyzację",
                         "edit_automation": "Edytuj automatyzację",
@@ -1626,6 +1640,8 @@
                         },
                         "introduction": "Konfiguracja schematów umożliwia ich importowanie i zarządzanie nimi.",
                         "learn_more": "Dowiedz się więcej o używaniu schematów",
+                        "share_blueprint": "Udostępnij schemat",
+                        "share_blueprint_no_url": "Nie można udostępnić schematu: brak źródłowego adresu URL",
                         "use_blueprint": "Utwórz automatyzację"
                     }
                 },
@@ -2079,7 +2095,7 @@
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
                         "disable": {
-                            "disable_confirm": "Czy na pewno chcesz wyłączyć ten wpis? Jego urządzenia i instancje zostaną wyłączone.",
+                            "disable_confirm": "Czy na pewno chcesz wyłączyć ten wpis w konfiguracji? Jego urządzenia i instancje zostaną wyłączone.",
                             "disabled": "Wyłączone",
                             "disabled_by": {
                                 "device": "Urządzenie",
@@ -2722,6 +2738,7 @@
                         "caption": "Sieć"
                     },
                     "visualization": {
+                        "auto_zoom": "Auto Zoom",
                         "caption": "Wizualizacja",
                         "header": "Wizualizacja sieci",
                         "highlight_label": "Zaznacz urządzenia",
@@ -2797,6 +2814,7 @@
                         "server_version": "Wersja serwera"
                     },
                     "device_info": {
+                        "device_config": "Konfiguruj urządzenie",
                         "node_ready": "gotowy",
                         "node_status": "Stan węzła",
                         "zwave_info": "Informacje Z-Wave"
@@ -2808,6 +2826,15 @@
                         "connected": "połączono",
                         "connecting": "łączenie",
                         "unknown": "nieznany"
+                    },
+                    "node_config": {
+                        "attribution": "Parametry konfiguracyjne urządzenia oraz opisy są dostarczane przez {device_database}",
+                        "battery_device_notice": "Urządzenia zasilane bateriami muszą być aktywne, aby zaktualizować ich konfigurację. Zapoznaj się z instrukcją obsługi urządzenia, aby uzyskać instrukcje dotyczące wybudzania urządzenia.",
+                        "error_device_not_found": "Nie znaleziono urządzenia",
+                        "header": "Konfiguracja urządzenia Z-Wave",
+                        "introduction": "Zarządzaj i dostosuj specyficznymi parametrami konfiguracyjnymi dla wybranego urządzenia (nody)",
+                        "parameter_is_read_only": "Ten parametr jest tylko do odczytu.",
+                        "zwave_js_device_database": "Baza danych urządzeń Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "żywy",
@@ -2996,6 +3023,17 @@
                         "title": "Szablon",
                         "unknown_error_template": "Nieznany błąd podczas renderowania szablonu"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Wróć",
+                "supervisor": {
+                    "ask": "Poproś o pomoc",
+                    "observer": "Sprawdź obserwatora",
+                    "reboot": "Spróbuj ponownie uruchomić hosta",
+                    "system_health": "Sprawdź kondycję systemu",
+                    "title": "Nie można załadować panelu Supervisora!",
+                    "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
                 }
             },
             "history": {

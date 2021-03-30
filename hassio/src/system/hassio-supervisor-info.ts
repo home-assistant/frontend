@@ -8,6 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
@@ -48,6 +49,7 @@ const UNSUPPORTED_REASON_URL = {
   os: "/more-info/unsupported/os",
   privileged: "/more-info/unsupported/privileged",
   systemd: "/more-info/unsupported/systemd",
+  content_trust: "/more-info/unsupported/content_trust",
 };
 
 const UNHEALTHY_REASON_URL = {
@@ -55,6 +57,7 @@ const UNHEALTHY_REASON_URL = {
   supervisor: "/more-info/unhealthy/supervisor",
   setup: "/more-info/unhealthy/setup",
   docker: "/more-info/unhealthy/docker",
+  untrusted: "/more-info/unhealthy/untrusted",
 };
 
 @customElement("hassio-supervisor-info")
@@ -148,30 +151,32 @@ class HassioSupervisorInfo extends LitElement {
             </ha-settings-row>
 
             ${this.supervisor.supervisor.supported
-              ? html` <ha-settings-row three-line>
-                  <span slot="heading">
-                    ${this.supervisor.localize(
-                      "system.supervisor.share_diagnostics"
-                    )}
-                  </span>
-                  <div slot="description" class="diagnostics-description">
-                    ${this.supervisor.localize(
-                      "system.supervisor.share_diagnostics_description"
-                    )}
-                    <button
-                      class="link"
-                      .title=${this.supervisor.localize("common.show_more")}
-                      @click=${this._diagnosticsInformationDialog}
-                    >
-                      ${this.supervisor.localize("common.learn_more")}
-                    </button>
-                  </div>
-                  <ha-switch
-                    haptic
-                    .checked=${this.supervisor.supervisor.diagnostics}
-                    @change=${this._toggleDiagnostics}
-                  ></ha-switch>
-                </ha-settings-row>`
+              ? !atLeastVersion(this.hass.config.version, 2021, 4)
+                ? html` <ha-settings-row three-line>
+                    <span slot="heading">
+                      ${this.supervisor.localize(
+                        "system.supervisor.share_diagnostics"
+                      )}
+                    </span>
+                    <div slot="description" class="diagnostics-description">
+                      ${this.supervisor.localize(
+                        "system.supervisor.share_diagnostics_description"
+                      )}
+                      <button
+                        class="link"
+                        .title=${this.supervisor.localize("common.show_more")}
+                        @click=${this._diagnosticsInformationDialog}
+                      >
+                        ${this.supervisor.localize("common.learn_more")}
+                      </button>
+                    </div>
+                    <ha-switch
+                      haptic
+                      .checked=${this.supervisor.supervisor.diagnostics}
+                      @change=${this._toggleDiagnostics}
+                    ></ha-switch>
+                  </ha-settings-row>`
+                : ""
               : html`<div class="error">
                   ${this.supervisor.localize(
                     "system.supervisor.unsupported_title"

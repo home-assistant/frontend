@@ -16,6 +16,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { EntityIdOrAll } from "../../../../../common/structs/is-entity-id";
 import { ActionElement } from "../ha-automation-action-row";
 import "../../../../../components/ha-service-control";
+import { hasTemplate } from "../../../../../common/string/has-template";
 
 const actionStruct = object({
   service: optional(string()),
@@ -46,6 +47,15 @@ export class HaServiceAction extends LitElement implements ActionElement {
       assert(this.action, actionStruct);
     } catch (error) {
       fireEvent(this, "ui-mode-not-available", error);
+      return;
+    }
+    if (this.action && hasTemplate(this.action)) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
+      );
+      return;
     }
     if (this.action.entity_id) {
       this._action = {

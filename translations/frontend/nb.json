@@ -210,7 +210,7 @@
                 "install": "Installer",
                 "new_update_available": "{name} {version} er tilgjengelig",
                 "not_available_arch": "Dette tillegget er ikke kompatibelt med prosessoren på enheten din eller operativsystemet du har installert på enheten",
-                "not_available_version": "Du kjører Home Assistant {core_version_installed} , for å oppdatere til denne versjonen av tillegget trenger du minst versjon {core_version_needed} av Home Assistant",
+                "not_available_version": "Du kjører Home Assistant {core_version_installed}, for å oppdatere til denne versjonen av tillegget trenger du minst versjon {core_version_needed} av Home Assistant",
                 "open_web_ui": "Åpne nettgrensesnitt",
                 "option": {
                     "auto_update": {
@@ -275,7 +275,7 @@
                 "unknown": "Ukjent feil",
                 "update_failed": "Oppdatering mislyktes"
             },
-            "failed_to_restart_name": "Kan ikke starte {name} på nytt",
+            "failed_to_restart_name": "Kunne ikke starte {name} på nytt",
             "failed_to_update_name": "Kunne ikke oppdatere {name}",
             "learn_more": "Lær mer",
             "new_version_available": "Ny versjon tilgjengelig",
@@ -327,7 +327,7 @@
                 "gateway": "Gateway-adresse",
                 "ip_netmask": "IP-adresse / nettmaske",
                 "open": "Åpen",
-                "scan_ap": "Søk etter tilgangspunkter",
+                "scan_ap": "Skann etter tilgangspunkter",
                 "static": "Statisk",
                 "title": "Nettverksinnstillinger",
                 "unsaved": "Du har ikke lagrede endringer, disse vil gå tapt hvis du bytter fane, vil du fortsette?",
@@ -365,7 +365,7 @@
             }
         },
         "my": {
-            "error": "Det oppstod en ukjent feil",
+            "error": "En ukjent feil har oppstått",
             "error_addon_not_found": "Tillegget ble ikke funnet",
             "faq_link": "Vanlige spørsmål om Min Home Assistant",
             "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
@@ -435,7 +435,7 @@
                 "new_hostname": "Vennligst skriv inn et nytt vertsnavn:",
                 "operating_system": "Operativsystem",
                 "reboot_host": "Start verten på nytt",
-                "shutdown_host": "Slå av verten",
+                "shutdown_host": "Slå av vert",
                 "used_space": "Brukt lagringsplass"
             },
             "log": {
@@ -467,12 +467,14 @@
                     "docker": "Docker-miljøet fungerer ikke som det skal",
                     "privileged": "Supervisor er ikke privilegert",
                     "setup": "Installasjonen av Supervisor mislyktes",
-                    "supervisor": "Supervisor kunne ikke oppdatere"
+                    "supervisor": "Supervisor kunne ikke oppdatere",
+                    "untrusted": "Oppdaget ikke-klarert innhold"
                 },
                 "unhealthy_title": "Installasjonen din er usunn",
                 "unsupported_description": "Nedenfor er en liste over problemer som er funnet med installasjonen din. Klikk på lenkene for å lære hvordan du kan løse problemene.",
                 "unsupported_reason": {
                     "container": "Containere som er kjent for å forårsake problemer",
+                    "content-trust": "Validering av innholds klarering er deaktivert",
                     "dbus": "",
                     "docker_configuration": "Docker-konfigurasjon",
                     "docker_version": "Docker-versjon",
@@ -785,7 +787,8 @@
                     "was_unlocked": "ble låst opp",
                     "was_unplugged": "ble frakoblet",
                     "was_unsafe": "var utrygt"
-                }
+                },
+                "show_trace": "Vis spor"
             },
             "media-browser": {
                 "audio_not_supported": "Nettleseren din støtter ikke lydelementet.",
@@ -1145,6 +1148,7 @@
                 "buttons": {
                     "add": "Legg til enheter via denne enheten",
                     "clusters": "Behandle Clusters",
+                    "device_children": "Vis barn",
                     "reconfigure": "Rekonfigurer enhet",
                     "remove": "Fjern enhet",
                     "view_in_visualization": "Visning i visualisering",
@@ -1153,6 +1157,7 @@
                 "confirmations": {
                     "remove": "Er du sikker på at du vil fjerne enheten?"
                 },
+                "device_children": "Zigbee-enhet barn",
                 "device_signature": "ZigBee-enhetssignatur",
                 "last_seen": "Sist sett",
                 "manuf": "av {manufacturer}",
@@ -1187,6 +1192,7 @@
                 "key_missing": "Nødvendig nøkkel \"{key}\" mangler.",
                 "key_not_expected": "Nøkkelen \"{key}\" forventes ikke eller støttes ikke av det visuelle redigeringsprogrammet.",
                 "key_wrong_type": "Den angitte verdien for \"{key}\" støttes ikke av det visuelle redigeringsprogrammet. Vi støtter ({type_correct}), men mottatt ({type_wrong}).",
+                "no_template_editor_support": "Maler støttes ikke i visual editor",
                 "no_type_provided": "Ingen type oppgitt."
             }
         },
@@ -1294,10 +1300,15 @@
                                 "device_id": {
                                     "action": "Handling",
                                     "extra_fields": {
+                                        "brightness_pct": "Lysstyrke",
                                         "code": "Kode",
+                                        "flash": "Blits",
+                                        "humidity": "Fuktighet",
                                         "message": "Melding",
+                                        "mode": "Modus",
                                         "position": "Posisjon",
-                                        "title": "Tittel"
+                                        "title": "Tittel",
+                                        "value": "Verdi"
                                     },
                                     "label": "Enhet"
                                 },
@@ -1342,7 +1353,7 @@
                                     "wait_template": "Ventemal"
                                 }
                             },
-                            "unsupported_action": "Ingen brukergrensesnitt for handling: {action}"
+                            "unsupported_action": "Ingen støtte for visuell redigering for handling: {action}"
                         },
                         "alias": "Navn",
                         "blueprint": {
@@ -1370,7 +1381,9 @@
                                     "extra_fields": {
                                         "above": "Over",
                                         "below": "Under",
-                                        "for": "Varighet"
+                                        "for": "Varighet",
+                                        "hvac_mode": "HVAC-modus",
+                                        "preset_mode": "Forhåndsinnstilt modus"
                                     },
                                     "label": "Enhet"
                                 },
@@ -1425,7 +1438,7 @@
                                     "zone": "Sone"
                                 }
                             },
-                            "unsupported_condition": "Ingen brukergrensesnitt for bruk: {condition}"
+                            "unsupported_condition": "Ingen støtte for visuell redigering for betingelse: {condition}"
                         },
                         "copy_to_clipboard": "Kopier til utklippstavle",
                         "default_name": "Ny automasjon",
@@ -1433,8 +1446,8 @@
                             "label": "Beskrivelse",
                             "placeholder": "Valgfri beskrivelse"
                         },
-                        "edit_ui": "Rediger med brukergrensesnittet",
-                        "edit_yaml": "Rediger som YAML",
+                        "edit_ui": "Rediger i visuell editor",
+                        "edit_yaml": "Rediger i YAML",
                         "enable_disable": "Aktivere/deaktivere automasjon",
                         "introduction": "Bruk automatisering for å bringe hjemmet ditt til live.",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres",
@@ -1555,7 +1568,7 @@
                                     "zone": "Sone"
                                 }
                             },
-                            "unsupported_platform": "Ingen UI-støtte for plattform: {platform}"
+                            "unsupported_platform": "Ingen støtte for visuell redigering for plattform: {platform}"
                         },
                         "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil lukke?"
                     },
@@ -1563,6 +1576,8 @@
                         "add_automation": "Legg til automasjon",
                         "delete_automation": "Slett automasjon",
                         "delete_confirm": "Er du sikker på at du vil slette denne automasjonen?",
+                        "dev_automation": "Feilsøk automatisering",
+                        "dev_only_editable": "Bare automatiseringer definert i automations.yaml kan feilsøkes.",
                         "duplicate": "Dupliser",
                         "duplicate_automation": "Dupliser automasjon",
                         "edit_automation": "Rediger automasjon",
@@ -1626,6 +1641,8 @@
                         },
                         "introduction": "Med Blueprint-konfigurasjonen kan du importere og behandle dine Blueprinter",
                         "learn_more": "Finn ut mer om hvordan du bruker Blueprinter",
+                        "share_blueprint": "Del blueprint",
+                        "share_blueprint_no_url": "Kan ikke dele blueprint: ingen kilde-url",
                         "use_blueprint": "Opprett automasjon"
                     }
                 },
@@ -1650,12 +1667,12 @@
                         "fetching_subscription": "Henter abonnement...",
                         "google": {
                             "config_documentation": "Konfigurasjonsdokumentasjon",
-                            "devices_pin": "PIN-kode for sikkerhetsenheter",
+                            "devices_pin": "PIN for sikkerhetsenheter",
                             "enable_ha_skill": "Aktivere Home Assistant-ferdigheten for Google Assistant",
                             "enable_state_reporting": "Aktiver tilstandsrapportering",
-                            "enter_pin_error": "Kunne ikke lagre PIN-kode:",
+                            "enter_pin_error": "Kan ikke lagre PIN:",
                             "enter_pin_hint": "Angi en PIN-kode for å bruke sikkerhetsenheter",
-                            "enter_pin_info": "Angi en PIN-kode for å samhandle med sikkerhetsenheter. Sikkerhetsanordninger er dører, garasjeporter og låser. Du vil bli bedt om å si/angi denne PIN-koden når du samhandler med slike enheter via Google Assistant.",
+                            "enter_pin_info": "Angi en PIN-kode for å samhandle med sikkerhetsenheter. Sikkerhetsinnretninger er dører, garasjeporter og låser. Du blir bedt om å si / angi denne PIN-koden når du kommuniserer med slike enheter via Google Assistant.",
                             "info": "Med Google Assistant-integrasjonen for Home Assistant Cloud vil du kunne kontrollere alle dine Home Assistant-enheter via hvilken som helst Google Assistant-aktivert enhet.",
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av eksponerte entiteter til Google. Dette lar deg alltid se de siste tilstandene i Google-appen.",
                             "manage_entities": "Håndtér entiteter",
@@ -2079,7 +2096,7 @@
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringen av denne integreringen",
                         "disable": {
-                            "disable_confirm": "Er du sikker på at du vil deaktivere denne konfigurasjonsoppføringen? Enhetene og enhetene blir deaktivert.",
+                            "disable_confirm": "Er du sikker på at du vil deaktivere denne config-oppføringen? Enhetene og enhetene deaktiveres.",
                             "disabled": "Deaktivert",
                             "disabled_by": {
                                 "device": "enhet",
@@ -2153,7 +2170,7 @@
                     "integration": "integrasjon",
                     "integration_not_found": "Integrasjon ikke funnet.",
                     "new": "Sett opp en ny integrasjon",
-                    "no_integrations": "Det ser ut som om du ikke har konfigurert noen integrasjoner ennå. Klikk på knappen nedenfor for å legge til din første integrasjon!",
+                    "no_integrations": "Virker som du ikke har noen integrasjoner konfigurert ennå. Klikk på knappen nedenfor for å legge til din første integrasjon!",
                     "none": "Ingenting er konfigurert enda",
                     "none_found": "Ingen integrasjoner funnet",
                     "none_found_detail": "Juster dine søkekriterier",
@@ -2345,7 +2362,7 @@
                         "session": "Henter verdier fra noden som sjeldent oppdateres",
                         "static": "Henter statiske verdier fra enheten",
                         "versions": "Henter informasjon om fastvare- og kommandoklasseversjoner",
-                        "wakeup": "Setter opp støtte for vekkingskøer og meldinger"
+                        "wakeup": "Konfigurere støtte for vekkekøer og meldinger"
                     },
                     "node": {
                         "button": "Node detaljer",
@@ -2369,8 +2386,8 @@
                         "start_refresh_button": "Start oppdatering",
                         "step": "Steg",
                         "title": "Oppdater nodeinformasjon",
-                        "wakeup_header": "Wakeup Instruksjoner for",
-                        "wakeup_instructions_source": "Wakeup-instruksjoner hentes fra OpenZWave-fellesskapets enhetsdatabase."
+                        "wakeup_header": "Instruksjoner for oppvåking for",
+                        "wakeup_instructions_source": "Våkningsinstruksjoner kommer fra OpenZWave fellesskapsenhetsdatabase."
                     },
                     "select_instance": {
                         "header": "Velg en OpenZWave-forekomst",
@@ -2722,6 +2739,7 @@
                         "caption": "Nettverk"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatisk zoom",
                         "caption": "Visualisering",
                         "header": "Nettverksvisualisering",
                         "highlight_label": "Fremhev enheter",
@@ -2797,6 +2815,7 @@
                         "server_version": "Serverversjon"
                     },
                     "device_info": {
+                        "device_config": "Konfigurer enhet",
                         "node_ready": "Node klar",
                         "node_status": "Node status",
                         "zwave_info": "Z-Wave Informasjon"
@@ -2808,6 +2827,15 @@
                         "connected": "Tilkoblet",
                         "connecting": "Kobler til",
                         "unknown": "Ukjent"
+                    },
+                    "node_config": {
+                        "attribution": "Enhetskonfigurasjonsparametere og beskrivelser er gitt av {device_database}",
+                        "battery_device_notice": "Batterienheter må være våken for å oppdatere konfigurasjonen. Se enhetshåndboken for instruksjoner om hvordan du vekker enheten.",
+                        "error_device_not_found": "Enhet ikke funnet",
+                        "header": "Z-Wave enhetskonfigurasjon",
+                        "introduction": "Administrer og juster enhets (node) spesifikke konfigurasjonsparametere for den valgte enheten",
+                        "parameter_is_read_only": "Denne parameteren er skrivebeskyttet.",
+                        "zwave_js_device_database": "Z-Wave JS Device Database"
                     },
                     "node_status": {
                         "alive": "Levende",
@@ -2834,7 +2862,7 @@
                         "instance": "Forekomst",
                         "unknown": "Ukjent",
                         "value": "Verdi",
-                        "wakeup_interval": "Våkningsintervall"
+                        "wakeup_interval": "Intervall for oppvåking"
                     },
                     "description": "Administrer ditt Z-Wave-nettverk",
                     "learn_more": "Lær mer om Z-Wave",
@@ -2863,7 +2891,7 @@
                         "header": "Alternativer for nodekonfigurasjon",
                         "seconds": "sekunder",
                         "set_config_parameter": "Angi konfigurasjonsparameter",
-                        "set_wakeup": "Angi vekkeintervall",
+                        "set_wakeup": "Angi oppvåkingsintervall",
                         "true": "Sant"
                     },
                     "node_management": {
@@ -2996,6 +3024,17 @@
                         "title": "Mal",
                         "unknown_error_template": "Ukjent feil ved rendring av mal"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Gå tilbake",
+                "supervisor": {
+                    "ask": "Be om hjelp",
+                    "observer": "Sjekk observatøren",
+                    "reboot": "Prøv en omstart av verten",
+                    "system_health": "Sjekk systemtilstand",
+                    "title": "Kunne ikke laste Supervisor-panelet!",
+                    "wait": "Hvis du nettopp startet, må du sørge for at du har gitt veilederen nok tid til å starte."
                 }
             },
             "history": {
@@ -3219,11 +3258,11 @@
                             "name": "Historikkgraf"
                         },
                         "horizontal-stack": {
-                            "description": "Horisontal Stabel kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
-                            "name": "Horisontal Stabel"
+                            "description": "Horisontal stabel-kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i en kolonne.",
+                            "name": "Horisontal stabel"
                         },
                         "humidifier": {
-                            "description": "Luftfukter kortet gir kontroll over luftfukter entiteten din. Lar deg endre fuktigheten og modusen til entiteten.",
+                            "description": "Luftfukterkortet gir kontroll over luftfukterentiteten din. Lar deg endre fuktigheten og modusen til entiteten.",
                             "name": "Luftfukter"
                         },
                         "iframe": {
@@ -3274,8 +3313,8 @@
                             "name": "Bilde"
                         },
                         "plant-status": {
-                            "description": "Plante Status kortet er for alle de flotte botanikerne der ute.",
-                            "name": "Plante status"
+                            "description": "Plantestatus-kortet er for alle de flotte botanikerne der ute.",
+                            "name": "Plantestatus"
                         },
                         "sensor": {
                             "description": "Sensorkortet gir deg en rask oversikt over sensortilstanden din med en valgfri graf for å visualisere endring over tid.",
@@ -3293,7 +3332,7 @@
                             "name": "Termostat"
                         },
                         "vertical-stack": {
-                            "description": "Vertical Stabel kortet lar deg gruppere flere kort slik at de alltid sitter i samme kolonne.",
+                            "description": "Vertical stabel-kortet lar deg gruppere flere kort slik at de alltid sitter i samme kolonne.",
                             "name": "Vertikal stabel"
                         },
                         "weather-forecast": {
@@ -3493,7 +3532,7 @@
             "my": {
                 "component_not_loaded": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Du trenger integrasjonen {integration} å bruke denne viderekoblingen.",
                 "documentation": "dokumentasjon",
-                "error": "Det oppstod en ukjent feil",
+                "error": "En ukjent feil har oppstått",
                 "faq_link": "Vanlige spørsmål om Min Home Assistant",
                 "no_supervisor": "Denne viderekoblingen støttes ikke av Home Assistant-installasjonen. Det trenger enten installasjonsmetoden Home Assistant OS eller Home Assistant Supervised. For mer informasjon, se {docs_link}.",
                 "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."

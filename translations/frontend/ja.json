@@ -263,6 +263,7 @@
         },
         "common": {
             "cancel": "キャンセル",
+            "close": "閉じる",
             "description": "説明",
             "error": {
                 "unknown": "不明なエラー",
@@ -359,6 +360,7 @@
         },
         "my": {
             "error": "不明なエラーが発生しました",
+            "error_addon_not_found": "アドオンが見つかりません",
             "faq_link": "マイホームアシスタントFAQ",
             "not_supported": "このリダイレクトは、HomeAssistantインスタンスではサポートされていません。 サポートされているリダイレクトとそれらが導入されたバージョンについては、{link}を確認してください。"
         },
@@ -390,7 +392,7 @@
             "no_snapshots": "スナップショットはまだありません。",
             "partial_snapshot": "部分的なスナップショット",
             "password": "パスワード",
-            "password_protected": "パスワードで保護された",
+            "password_protected": "パスワードで保護されています",
             "password_protection": "パスワード保護",
             "security": "セキュリティ",
             "type": "タイプ",
@@ -459,12 +461,14 @@
                     "docker": "Docker 環境が正常に動作していません",
                     "privileged": "Supervisorには特権がありません",
                     "setup": "Supervisorのセットアップに失敗しました",
-                    "supervisor": "Supervisorを更新できませんでした"
+                    "supervisor": "Supervisorを更新できませんでした",
+                    "untrusted": "信頼できないコンテンツが検出されました"
                 },
                 "unhealthy_title": "インストールが正常でない",
                 "unsupported_description": "以下は、インストールに関する問題の一覧です。",
                 "unsupported_reason": {
                     "container": "問題が発生することが知られているコンテナ",
+                    "content-trust": "コンテンツ信頼の検証が無効になっています",
                     "dbus": "DBUS",
                     "docker_configuration": "Dockerの設定",
                     "docker_version": "Dockerのバージョン",
@@ -775,7 +779,8 @@
                     "was_unlocked": "解錠しました",
                     "was_unplugged": "プラグが抜かれました",
                     "was_unsafe": "安全ではなかった"
-                }
+                },
+                "show_trace": "トレースの表示"
             },
             "media-browser": {
                 "audio_not_supported": "お使いのブラウザはオーディオをサポートしていません。",
@@ -1003,6 +1008,9 @@
                 "person": {
                     "create_zone": "現在地からゾーンを作成"
                 },
+                "remote": {
+                    "activity": "現在のアクティビティ"
+                },
                 "restored": {
                     "confirm_remove_text": "このエンティティを削除しますか?",
                     "confirm_remove_title": "エンティティを削除しますか?",
@@ -1132,6 +1140,7 @@
                 "buttons": {
                     "add": "このデバイス経由でデバイスを追加",
                     "clusters": "クラスタの管理",
+                    "device_children": "子を見る",
                     "reconfigure": "デバイスを再設定",
                     "remove": "デバイスを削除",
                     "view_in_visualization": "ビジュアライゼーションで表示",
@@ -1140,6 +1149,7 @@
                 "confirmations": {
                     "remove": "デバイスを削除してもよろしいですか？"
                 },
+                "device_children": "Zigbeeデバイスの子",
                 "device_signature": "Zigbee デバイス署名",
                 "last_seen": "最後に見た",
                 "manuf": "{manufacturer}",
@@ -1174,6 +1184,7 @@
                 "key_missing": "必要なキー \"{key}\" がありません。",
                 "key_not_expected": "キー \" {key} \"は予期されていないか、ビジュアルエディターでサポートされていません。",
                 "key_wrong_type": "\"{key}\" に指定された値は、ビジュアル エディターではサポートされていません。({type_correct}) をサポートしていますが、受信しました ({type_wrong})。",
+                "no_template_editor_support": "ビジュアルエディタでサポートされていないテンプレート",
                 "no_type_provided": "タイプは提供されていません。"
             }
         },
@@ -1281,10 +1292,15 @@
                                 "device_id": {
                                     "action": "アクション",
                                     "extra_fields": {
+                                        "brightness_pct": "明るさ",
                                         "code": "コード",
+                                        "flash": "フラッシュ",
+                                        "humidity": "湿度",
                                         "message": "メッセージ",
+                                        "mode": "モード",
                                         "position": "ポジション",
-                                        "title": "タイトル"
+                                        "title": "タイトル",
+                                        "value": "値"
                                     },
                                     "label": "デバイス"
                                 },
@@ -1357,7 +1373,9 @@
                                     "extra_fields": {
                                         "above": "上",
                                         "below": "以下に",
-                                        "for": "期間"
+                                        "for": "期間",
+                                        "hvac_mode": "HVACモード",
+                                        "preset_mode": "プリセットモード"
                                     },
                                     "label": "デバイス"
                                 },
@@ -1550,6 +1568,8 @@
                         "add_automation": "オートメーションの追加",
                         "delete_automation": "オートメーションを削除",
                         "delete_confirm": "このオートメーションを削除してもよろしいですか？",
+                        "dev_automation": "デバッグの自動化",
+                        "dev_only_editable": "automations.yaml で定義されたオートメーションのみがデバッグ可能です。",
                         "duplicate": "複製",
                         "duplicate_automation": "オートメーションを複製",
                         "edit_automation": "オートメーションを編集",
@@ -1613,6 +1633,8 @@
                         },
                         "introduction": "設計図エディターを使用すると、設計図を作成および編集できます。",
                         "learn_more": "設計図の詳細",
+                        "share_blueprint": "設計図を共有する",
+                        "share_blueprint_no_url": "設計図を共有できません: ソース URL がありません",
                         "use_blueprint": "オートメーションを作成"
                     }
                 },
@@ -2066,6 +2088,7 @@
                         "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
                         "disable_restart_confirm": "Homeassistantを再起動して、このintegrationを無効にします。",
                         "disable": {
+                            "disable_confirm": "この設定項目を無効にしてよろしいですか？そのデバイスやエンティティは無効になります。",
                             "disabled": "無効",
                             "disabled_by": {
                                 "device": "デバイス",
@@ -2708,6 +2731,7 @@
                         "caption": "ネットワーク"
                     },
                     "visualization": {
+                        "auto_zoom": "自動ズーム",
                         "caption": "可視化",
                         "header": "ネットワークの視覚化",
                         "highlight_label": "デバイスを強調表示",
@@ -2783,6 +2807,7 @@
                         "server_version": "サーバーバージョン"
                     },
                     "device_info": {
+                        "device_config": "デバイスの設定",
                         "node_ready": "ノードの準備完了",
                         "node_status": "ノードの状態",
                         "zwave_info": "Z-Wave情報"
@@ -2794,6 +2819,15 @@
                         "connected": "接続済み",
                         "connecting": "接続",
                         "unknown": "不明"
+                    },
+                    "node_config": {
+                        "attribution": "デバイスの構成パラメータと説明は、{device_database}で提供されます。",
+                        "battery_device_notice": "バッテリ デバイスは、設定を更新するためにスリープ状態にする必要があります。デバイスのスリープ解除方法については、デバイスのマニュアルを参照してください。",
+                        "error_device_not_found": "デバイスが見つかりません",
+                        "header": "Z-Waveデバイスの設定",
+                        "introduction": "選択したデバイスのデバイス(ノード)固有の設定パラメータを管理および調整する",
+                        "parameter_is_read_only": "このパラメータは読み取り専用です。",
+                        "zwave_js_device_database": "Z-Wave JSデバイスデータベース"
                     },
                     "node_status": {
                         "alive": "作動中",
@@ -2949,6 +2983,7 @@
                     "states": {
                         "alert_entity_field": "エンティティは必須フィールドです",
                         "attributes": "属性",
+                        "copy_id": "ID をクリップボードにコピー",
                         "current_entities": "現在のエンティティ",
                         "description1": "Home Assistant内でデバイスの表現を設定します。",
                         "description2": "実際のデバイスと通信しません。",
@@ -2981,6 +3016,17 @@
                         "title": "テンプレート",
                         "unknown_error_template": "不明なテンプレートレンダリングエラー"
                     }
+                }
+            },
+            "error": {
+                "go_back": "戻る",
+                "supervisor": {
+                    "ask": "助けを求める",
+                    "observer": "オブザーバーの確認",
+                    "reboot": "ホストの再起動を試みる",
+                    "system_health": "システムの状態の確認",
+                    "title": "Supervisorパネルを読み込めませんでした。",
+                    "wait": "開始したばかりの場合は、開始するのに十分な時間をsupervisorに与えていることを確認してください。"
                 }
             },
             "history": {

@@ -5,6 +5,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -20,6 +21,7 @@ import { DataTableColumnContainer } from "../../../components/data-table/ha-data
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-button-related-filter-menu";
 import {
   AutomationEntity,
   triggerAutomationActions,
@@ -45,17 +47,36 @@ class HaAutomationPicker extends LitElement {
 
   @property() public automations!: AutomationEntity[];
 
-  private _automations = memoizeOne((automations: AutomationEntity[]) => {
-    return automations.map((automation) => {
-      return {
-        ...automation,
-        name: computeStateName(automation),
-      };
-    });
-  });
+  @property() private _activeFilters?: string[];
+
+  @internalProperty() private _filteredAutomations?: string[] | null;
+
+  @internalProperty() private _filterValue?;
+
+  private _automations = memoizeOne(
+    (
+      automations: AutomationEntity[],
+      filteredAutomations?: string[] | null
+    ) => {
+      if (filteredAutomations === null) {
+        return [];
+      }
+      return (filteredAutomations
+        ? automations.filter((automation) =>
+            filteredAutomations!.includes(automation.entity_id)
+          )
+        : automations
+      ).map((automation) => {
+        return {
+          ...automation,
+          name: computeStateName(automation),
+        };
+      });
+    }
+  );
 
   private _columns = memoizeOne(
-    (narrow: boolean, _language): DataTableColumnContainer => {
+    (narrow: boolean, _locale): DataTableColumnContainer => {
       const columns: DataTableColumnContainer = {
         toggle: {
           title: "",
@@ -83,7 +104,7 @@ class HaAutomationPicker extends LitElement {
               ${automation.attributes.last_triggered
                 ? formatDateTime(
                     new Date(automation.attributes.last_triggered),
-                    this.hass.language
+                    this.hass.locale
                   )
                 : this.hass.localize("ui.components.relative_time.never")}
             </div>
@@ -116,6 +137,36 @@ class HaAutomationPicker extends LitElement {
               "ui.panel.config.automation.picker.show_info_automation"
             )}"
           ></ha-icon-button>
+        `,
+      };
+      columns.trace = {
+        title: "",
+        type: "icon-button",
+        template: (_info, automation: any) => html`
+          <a
+            href=${ifDefined(
+              automation.attributes.id
+                ? `/config/automation/trace/${automation.attributes.id}`
+                : undefined
+            )}
+          >
+            <ha-icon-button
+              icon="hass:graph-outline"
+              .disabled=${!automation.attributes.id}
+              title="${this.hass.localize(
+                "ui.panel.config.automation.picker.dev_automation"
+              )}"
+            ></ha-icon-button>
+          </a>
+          ${!automation.attributes.id
+            ? html`
+                <paper-tooltip animation-delay="0" position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.dev_only_editable"
+                  )}
+                </paper-tooltip>
+              `
+            : ""}
         `,
       };
       columns.edit = {
@@ -160,19 +211,30 @@ class HaAutomationPicker extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
+        id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automation}
-        .columns=${this._columns(this.narrow, this.hass.language)}
-        .data=${this._automations(this.automations)}
-        id="entity_id"
+        .activeFilters=${this._activeFilters}
+        .columns=${this._columns(this.narrow, this.hass.locale)}
+        .data=${this._automations(this.automations, this._filteredAutomations)}
         .noDataText=${this.hass.localize(
           "ui.panel.config.automation.picker.no_automations"
         )}
+        @clear-filter=${this._clearFilter}
         hasFab
       >
         <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
         </mwc-icon-button>
+        <ha-button-related-filter-menu
+          slot="filter-menu"
+          corner="BOTTOM_START"
+          .narrow=${this.narrow}
+          .hass=${this.hass}
+          .value=${this._filterValue}
+          @related-changed=${this._relatedFilterChanged}
+        >
+        </ha-button-related-filter-menu>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -185,6 +247,22 @@ class HaAutomationPicker extends LitElement {
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _relatedFilterChanged(ev: CustomEvent) {
+    this._filterValue = ev.detail.value;
+    if (!this._filterValue) {
+      this._clearFilter();
+      return;
+    }
+    this._activeFilters = [ev.detail.filter];
+    this._filteredAutomations = ev.detail.items.automation || null;
+  }
+
+  private _clearFilter() {
+    this._filteredAutomations = undefined;
+    this._activeFilters = undefined;
+    this._filterValue = undefined;
   }
 
   private _showInfo(ev) {

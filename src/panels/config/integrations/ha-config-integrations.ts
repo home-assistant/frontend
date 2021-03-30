@@ -1,7 +1,7 @@
 import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical, mdiPlus } from "@mdi/js";
+import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import "@polymer/app-route/app-route";
 import Fuse from "fuse.js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -17,6 +17,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -28,6 +29,7 @@ import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
+import "../../../components/ha-checkbox";
 import "../../../components/ha-svg-icon";
 import {
   ConfigEntry,
@@ -275,6 +277,36 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       this._filter
     );
 
+    const filterMenu = html`<ha-button-menu
+      corner="BOTTOM_START"
+      multi
+      slot=${ifDefined(this.narrow ? "toolbar-icon" : undefined)}
+      @action=${this._handleMenuAction}
+    >
+      <mwc-icon-button
+        .title=${this.hass.localize("ui.common.menu")}
+        .label=${this.hass.localize("ui.common.overflow_menu")}
+        slot="trigger"
+      >
+        <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
+      </mwc-icon-button>
+      <mwc-list-item graphic="control" .selected=${this._showIgnored}>
+        <ha-checkbox slot="graphic" .checked=${this._showIgnored}></ha-checkbox>
+        ${this.hass.localize(
+          "ui.panel.config.integrations.ignore.show_ignored"
+        )}
+      </mwc-list-item>
+      <mwc-list-item graphic="control" .selected=${this._showDisabled}>
+        <ha-checkbox
+          slot="graphic"
+          .checked=${this._showDisabled}
+        ></ha-checkbox>
+        ${this.hass.localize(
+          "ui.panel.config.integrations.disable.show_disabled"
+        )}
+      </mwc-list-item>
+    </ha-button-menu>`;
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -286,51 +318,20 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         ${this.narrow
           ? html`
               <div slot="header">
-                <slot name="header">
-                  <search-input
-                    .filter=${this._filter}
-                    class="header"
-                    no-label-float
-                    no-underline
-                    @value-changed=${this._handleSearchChange}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.integrations.search"
-                    )}
-                  ></search-input>
-                </slot>
+                <search-input
+                  .filter=${this._filter}
+                  class="header"
+                  no-label-float
+                  no-underline
+                  @value-changed=${this._handleSearchChange}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.integrations.search"
+                  )}
+                ></search-input>
               </div>
+              ${filterMenu}
             `
-          : ""}
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleMenuAction}
-        >
-          <mwc-icon-button
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            slot="trigger"
-          >
-            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
-          <mwc-list-item>
-            ${this.hass.localize(
-              this._showIgnored
-                ? "ui.panel.config.integrations.ignore.hide_ignored"
-                : "ui.panel.config.integrations.ignore.show_ignored"
-            )}
-          </mwc-list-item>
-          <mwc-list-item>
-            ${this.hass.localize(
-              this._showDisabled
-                ? "ui.panel.config.integrations.disable.hide_disabled"
-                : "ui.panel.config.integrations.disable.show_disabled"
-            )}
-          </mwc-list-item>
-        </ha-button-menu>
-
-        ${!this.narrow
-          ? html`
+          : html`
               <div class="search">
                 <search-input
                   no-label-float
@@ -348,16 +349,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         "number",
                         disabledConfigEntries.size
                       )}
-                      <mwc-button @click=${this._toggleShowDisabled}
-                        >${this.hass.localize(
-                          "ui.panel.config.filtering.show"
-                        )}</mwc-button
-                      >
+                      <mwc-button @click=${this._toggleShowDisabled}>
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.disable.show"
+                        )}
+                      </mwc-button>
                     </div>`
                   : ""}
+                ${filterMenu}
               </div>
-            `
-          : ""}
+            `}
 
         <div
           class="container"
@@ -758,6 +759,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
+        ha-button-menu {
+          margin: 0 -8px 0 8px;
+        }
         .container {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

@@ -105,6 +105,10 @@
     "supervisor": {
         "addon": {
             "configuration": {
+                "audio": {
+                    "default": "Standard",
+                    "header": "Ljud"
+                },
                 "network": {
                     "container": "Behållare",
                     "disabled": "Inaktiverad",
@@ -2568,6 +2572,7 @@
                         "caption": "Nätverk"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatisk zoomning",
                         "caption": "Visualisering",
                         "header": "Visualisering av nätverk",
                         "highlight_label": "Markera enheter",
@@ -2836,6 +2841,12 @@
                         "title": "Mallar",
                         "unknown_error_template": "Okänt fel vid rendering av mall"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Gå tillbaka",
+                "supervisor": {
+                    "ask": "Be om hjälp"
                 }
             },
             "history": {

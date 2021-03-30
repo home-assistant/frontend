@@ -315,7 +315,7 @@
             "addon_running": "Add-on wird ausgeführt",
             "addon_stopped": "Add-on ist gestoppt",
             "addons": "Add-ons",
-            "no_addons": "Du hast noch keine Add-ons installiert. Gehe zum Add-on-Shop, um loszulegen!"
+            "no_addons": "Du hast noch keine Add-ons installiert. Gehe zum Add-on Store, um loszulegen!"
         },
         "dialog": {
             "network": {
@@ -373,17 +373,17 @@
         "panel": {
             "dashboard": "Dashboard",
             "snapshots": "Datensicherungen",
-            "store": "Add-on Shop",
+            "store": "Add-on Store",
             "system": "System"
         },
         "snapshot": {
             "addons": "Add-ons",
-            "available_snapshots": "Verfügbare Sicherungen",
+            "available_snapshots": "Verfügbare Datensicherungen",
             "could_not_create": "Datensicherung konnte nicht erstellt werden",
             "create": "Erstellen",
             "create_blocked_not_running": "Das Erstellen eines Snapshots ist derzeit nicht möglich, da sich das System im Zustand {state} befindet.",
             "create_snapshot": "Datensicherung erstellen",
-            "description": "Sicherungen ermöglichen dir das leichte Speichern und Wiederherstellen von allen Daten aus Home Assistant.",
+            "description": "Datensicherungen ermöglichen dir das leichte Speichern und Wiederherstellen von allen Daten aus Home Assistant.",
             "enter_password": "Bitte Passwort eingeben.",
             "folder": {
                 "addons/local": "Lokale Add-ons",
@@ -395,7 +395,7 @@
             "folders": "Ordner",
             "full_snapshot": "Vollständige Datensicherung",
             "name": "Name",
-            "no_snapshots": "Du hast bisher keine Sicherungen erstellt.",
+            "no_snapshots": "Du hast bisher keine Datensicherungen erstellt.",
             "partial_snapshot": "Selektive Datensicherung",
             "password": "Passwort",
             "password_protected": "Passwort geschützt",
@@ -413,20 +413,20 @@
         "system": {
             "core": {
                 "cpu_usage": "Core-CPU Auslastung",
-                "ram_usage": "Core-RAM Nutzung"
+                "ram_usage": "Core Arbeitsspeicherbedarf"
             },
             "host": {
                 "change": "Ändern",
                 "change_hostname": "Hostname ändern",
                 "confirm_reboot": "Bist du sicher, dass du den Host neu starten willst?",
                 "confirm_shutdown": "Bist du sicher, dass du den Host herunterfahren willst?",
-                "deployment": "Deployment",
+                "deployment": "Einsatz",
                 "docker_version": "Docker-Version",
                 "emmc_lifetime_used": "eMMC verschlissen",
                 "failed_to_get_hardware_list": "Fehler beim Abrufen der Hardwareliste",
                 "failed_to_import_from_usb": "Fehler beim Importieren von USB",
                 "failed_to_reboot": "Fehler beim Neustart des Hosts",
-                "failed_to_set_hostname": "Das Setzen des Hostnamens ist fehlgeschlagen",
+                "failed_to_set_hostname": "Das Setzen des Hostnamen ist fehlgeschlagen",
                 "failed_to_shutdown": "Fehler beim Herunterfahren des Hosts",
                 "hardware": "Hardware",
                 "hostname": "Hostname",
@@ -434,7 +434,7 @@
                 "ip_address": "IP-Adresse",
                 "new_hostname": "Bitte einen neuen Hostnamen eingeben:",
                 "operating_system": "Betriebssystem",
-                "reboot_host": "Host neustarten",
+                "reboot_host": "Host Neustarten",
                 "shutdown_host": "Host herunterfahren",
                 "used_space": "Belegter Speicherplatz"
             },
@@ -785,7 +785,8 @@
                     "was_unlocked": "wurde entsperrt",
                     "was_unplugged": "wurde ausgesteckt",
                     "was_unsafe": "war unsicher"
-                }
+                },
+                "show_trace": "Trace anzeigen"
             },
             "media-browser": {
                 "audio_not_supported": "Ihr Browser unterstützt das Audioelement nicht.",
@@ -1120,7 +1121,7 @@
                         "smtp": "SMTP-Benachrichtigungsdienst neu laden",
                         "statistics": "Statistikentitäten neu laden",
                         "telegram": "Telegram-Benachrichtigungsdienst neu laden",
-                        "template": "Templates neu laden",
+                        "template": "Template-Entitäten neu laden",
                         "trend": "Trend-Entitäten neu laden",
                         "universal": "Universelle Medien-Player-Entitäten neu laden",
                         "zone": "Zonen neu laden"
@@ -1145,6 +1146,7 @@
                 "buttons": {
                     "add": "Geräte über dieses Gerät hinzufügen",
                     "clusters": "Cluster verwalten",
+                    "device_children": "Endgeräte anzeigen",
                     "reconfigure": "Gerät neu konfigurieren",
                     "remove": "Gerät entfernen",
                     "view_in_visualization": "Visualisierung in einer Map",
@@ -1153,6 +1155,7 @@
                 "confirmations": {
                     "remove": "Möchtest du das Gerät wirklich entfernen?"
                 },
+                "device_children": "Zigbee-Endgeräte",
                 "device_signature": "ZigBee-Gerätesignatur",
                 "last_seen": "Zuletzt gesehen",
                 "manuf": "von {manufacturer}",
@@ -1187,6 +1190,7 @@
                 "key_missing": "Erforderlicher Schlüssel \"{key}\" fehlt.",
                 "key_not_expected": "Der Schlüssel \"{key}\" wird vom visuellen Editor nicht erwartet oder nicht unterstützt.",
                 "key_wrong_type": "Der angegebene Wert für \"{key}\" wird vom visuellen Editor nicht unterstützt. Wir unterstützen ({type_correct}), haben aber ({type_wrong}) erhalten.",
+                "no_template_editor_support": "Templates werden im visuellen Editor nicht unterstützt",
                 "no_type_provided": "Kein Typ angegeben."
             }
         },
@@ -1294,10 +1298,14 @@
                                 "device_id": {
                                     "action": "Aktion",
                                     "extra_fields": {
+                                        "brightness_pct": "Helligkeit",
                                         "code": "Code",
+                                        "humidity": "Luftfeuchtigkeit",
                                         "message": "Nachricht",
+                                        "mode": "Modus",
                                         "position": "Position",
-                                        "title": "Titel"
+                                        "title": "Titel",
+                                        "value": "Wert"
                                     },
                                     "label": "Gerät"
                                 },
@@ -1370,7 +1378,9 @@
                                     "extra_fields": {
                                         "above": "Über",
                                         "below": "Unter",
-                                        "for": "Dauer"
+                                        "for": "Dauer",
+                                        "hvac_mode": "HLK-Modus",
+                                        "preset_mode": "Voreinstellung"
                                     },
                                     "label": "Gerät"
                                 },
@@ -1425,7 +1435,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_condition": "Nicht unterstützte Bedingung: {condition}"
+                            "unsupported_condition": "Keine Unterstützung für visuellen Editor für Bedingung: {condition} verfügbar"
                         },
                         "copy_to_clipboard": "In die Zwischenablage kopieren",
                         "default_name": "Neue Automatisierung",
@@ -1563,6 +1573,8 @@
                         "add_automation": "Automatisierung hinzufügen",
                         "delete_automation": "Automatisierung löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
+                        "dev_automation": "Automatisierung debuggen",
+                        "dev_only_editable": "Nur Automatisierungen in automations.yaml können debuggt werden.",
                         "duplicate": "Duplizieren",
                         "duplicate_automation": "Automatisierung duplizieren",
                         "edit_automation": "Automatisierung bearbeiten",
@@ -1602,7 +1614,7 @@
                         "header": "Vorlage importieren",
                         "import_btn": "Vorschau Vorlage",
                         "import_header": "Vorlage \"{name}\"",
-                        "import_introduction_link": "Du kannst Vorlagen anderer Benutzer aus GitHub und den {community_link} importieren. Gib unten die URL der Vorlage ein.",
+                        "import_introduction_link": "Du kannst Blaupausen anderer Benutzer aus GitHub und den {community_link} importieren. Gib unten die URL der Blaupause ein.",
                         "importing": "Vorlage wird geladen...",
                         "raw_blueprint": "Inhalt der Vorlage",
                         "save_btn": "Vorlage importieren",
@@ -1626,6 +1638,8 @@
                         },
                         "introduction": "Mit der Vorlagenkonfiguration kannst du deine Vorlagen importieren und verwalten.",
                         "learn_more": "Erfahre mehr über die Benutzung von Vorlagen",
+                        "share_blueprint": "Vorlage teilen",
+                        "share_blueprint_no_url": "Vorlage kann nicht geteilt werden: Keine Quell-URL",
                         "use_blueprint": "Automatisierung erstellen"
                     }
                 },
@@ -2110,7 +2124,7 @@
                         "aborted": "Abgebrochen",
                         "close": "Schließen",
                         "could_not_load": "Der Konfigurationsfluss konnte nicht geladen werden",
-                        "created_config": "Erstellte Konfiguration für {name}.",
+                        "created_config": "Konfiguration für {name} erstellt.",
                         "dismiss": "Dialog schließen",
                         "error": "Fehler",
                         "error_saving_area": "Fehler beim Speichern des Bereichs: {error}",
@@ -2169,7 +2183,7 @@
                     "caption": "Logs",
                     "clear": "Leeren",
                     "description": "Home Assistant Logs einsehen",
-                    "details": "Protokolldetails ( {level} )",
+                    "details": "Protokolldetails ({level})",
                     "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
                     "loading_log": "Fehlerprotokoll wird geladen...",
                     "multiple_messages": "Die Nachricht ist zum ersten Mal um {time} aufgetreten und erscheint {counter} mal",
@@ -2543,7 +2557,7 @@
                             "smtp": "SMTP-Benachrichtigungsdienste neu laden",
                             "statistics": "Statistik-Entitäten neu laden",
                             "telegram": "Telegram-Benachrichtigungsdienste neu laden",
-                            "template": "Vorlagenentitäten neu laden",
+                            "template": "Template-Entitäten neu laden",
                             "trend": "Trend-Entitäten neu laden",
                             "universal": "Universelle Media Player-Entitäten neu laden",
                             "zone": "Zonen neu laden"
@@ -2722,6 +2736,7 @@
                         "caption": "Netzwerk"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatischer Zoom",
                         "caption": "Visualisierung",
                         "header": "Netzwerkvisualisierung",
                         "highlight_label": "Geräte hervorheben",
@@ -2797,6 +2812,7 @@
                         "server_version": "Serverversion"
                     },
                     "device_info": {
+                        "device_config": "Gerät konfigurieren",
                         "node_ready": "Node Bereit",
                         "node_status": "Node Status",
                         "zwave_info": "Z-Wave Info"
@@ -2808,6 +2824,15 @@
                         "connected": "Verbunden",
                         "connecting": "Verbinden",
                         "unknown": "Unbekannt"
+                    },
+                    "node_config": {
+                        "attribution": "Gerätekonfigurationsparameter und -beschreibungen werden von der {device_database} bereitgestellt",
+                        "battery_device_notice": "Batteriebetriebene Geräte müssen wach sein, um ihre Konfiguration zu aktualisieren. Anweisungen zum Aufwecken des Geräts findest du im Handbuch deines Geräts.",
+                        "error_device_not_found": "Gerät nicht gefunden",
+                        "header": "Z-Wave Gerätekonfiguration",
+                        "introduction": "Verwalten und Anpassen von gerätespezifischen Konfigurationsparametern (Knoten) für das ausgewählte Gerät",
+                        "parameter_is_read_only": "Dieser Parameter ist schreibgeschützt.",
+                        "zwave_js_device_database": "Z-Wave JS Gerätedatenbank"
                     },
                     "node_status": {
                         "alive": "Lebendig",
@@ -2981,21 +3006,32 @@
                         "title": "Zustände"
                     },
                     "templates": {
-                        "all_listeners": "Diese Vorlage überwacht alle Zustandsänderungsereignisse.",
+                        "all_listeners": "Dieses Template überwacht alle Zustandsänderungsereignisse.",
                         "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
                         "domain": "Domain",
-                        "editor": "Vorlageneditor",
+                        "editor": "Template-Editor",
                         "entity": "Entität",
                         "jinja_documentation": "Jinja2 Template Dokumentation",
-                        "listeners": "Diese Vorlage überwacht die folgenden Statusänderungsereignisse:",
-                        "no_listeners": "Diese Vorlage überwacht keine Ereignisse und wird nicht automatisch aktualisiert.",
-                        "reset": "Zurücksetzen auf Demo-Vorlage",
+                        "listeners": "Dieses Template überwacht die folgenden Statusänderungsereignisse:",
+                        "no_listeners": "Dieses Template überwacht keine Ereignisse und wird nicht automatisch aktualisiert.",
+                        "reset": "Zurücksetzen auf Demo-Template",
                         "result_type": "Ergebnistyp",
-                        "template_extensions": "Home Assistant-Vorlagenerweiterungen",
-                        "time": "Diese Vorlage wird zu Beginn jeder Minute aktualisiert.",
-                        "title": "Vorlage",
-                        "unknown_error_template": "Unbekannter Fehler beim Rendern der Vorlage"
+                        "template_extensions": "Home Assistant-Template Erweiterungen",
+                        "time": "Dieses Template wird zu Beginn jeder Minute aktualisiert.",
+                        "title": "Template",
+                        "unknown_error_template": "Unbekannter Fehler beim Rendern des Templates"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Zurück",
+                "supervisor": {
+                    "ask": "Um Hilfe bitten",
+                    "observer": "Überprüfe den Observer",
+                    "reboot": "Versuche den Host neuzustarten",
+                    "system_health": "Überprüfe Systemzustand",
+                    "title": "Supervisor-Bedienfeld konnte nicht geladen werden!",
+                    "wait": "Wenn du gerade erst hochgefahren hast, dann stelle sicher dass du den Supervisor genug Zeit zum Starten gegeben hast."
                 }
             },
             "history": {

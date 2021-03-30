@@ -21,6 +21,7 @@ import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import { showZHAClusterDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-cluster";
 import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
+import { showZHADeviceChildrenDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-children";
 
 @customElement("ha-device-actions-zha")
 export class HaDeviceActionsZha extends LitElement {
@@ -64,6 +65,11 @@ export class HaDeviceActionsZha extends LitElement {
         ? html`
             <mwc-button @click=${this._onAddDevicesClick}>
               ${this.hass!.localize("ui.dialogs.zha_device_info.buttons.add")}
+            </mwc-button>
+            <mwc-button @click=${this._handleDeviceChildrenClicked}>
+              ${this.hass!.localize(
+                "ui.dialogs.zha_device_info.buttons.device_children"
+              )}
             </mwc-button>
           `
         : ""}
@@ -118,6 +124,10 @@ export class HaDeviceActionsZha extends LitElement {
 
   private async _handleZigbeeInfoClicked() {
     showZHADeviceZigbeeInfoDialog(this, { device: this._zhaDevice! });
+  }
+
+  private async _handleDeviceChildrenClicked() {
+    showZHADeviceChildrenDialog(this, { device: this._zhaDevice! });
   }
 
   private async _removeDevice() {

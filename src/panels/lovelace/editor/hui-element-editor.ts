@@ -234,9 +234,13 @@ export abstract class HuiElementEditor<T> extends LitElement {
               <div class="warning">
                 ${this.hass.localize("ui.errors.config.editor_not_supported")}:
                 <br />
-                <ul>
-                  ${this._warnings!.map((warning) => html`<li>${warning}</li>`)}
-                </ul>
+                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
+                  ? html` <ul>
+                      ${this._warnings!.map(
+                        (warning) => html`<li>${warning}</li>`
+                      )}
+                    </ul>`
+                  : ""}
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </div>
             `
