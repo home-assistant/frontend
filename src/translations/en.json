@@ -2105,7 +2105,7 @@
           "rename_input_label": "Entry name",
           "search": "Search integrations",
           "disable": {
-            "hide_disabled": "Hide disabled integrations",
+            "show_disabled": "Show disabled integrations",
             "disabled_integrations": "{number} disabled",
             "show": "Show"
           },
