@@ -72,7 +72,15 @@ class DialogSystemLogDetail extends LitElement {
             <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
           </mwc-icon-button>
           <span slot="title">
-            ${this.hass.localize("ui.panel.config.logs.details", "level", html`<span class="${item.level.toLowerCase()}">${item.level}</span>`)}
+            ${this.hass.localize(
+              "ui.panel.config.logs.details",
+              "level",
+              html`<span class="${item.level.toLowerCase()}"
+                >${this.hass.localize(
+                  "ui.panel.config.logs.level." + item.level.toLowerCase()
+                )}</span
+              >`
+            )}
           </span>
           <mwc-icon-button id="copy" @click=${this._copyLog} slot="actionItems">
             <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
