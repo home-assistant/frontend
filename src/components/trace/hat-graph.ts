@@ -32,7 +32,7 @@ interface BranchConfig {
 
 @customElement("hat-graph")
 export class HatGraph extends LitElement {
-  @property() _num_items = 0;
+  @property({ type: Number }) _num_items = 0;
 
   @property({ reflect: true, type: Boolean }) branching?: boolean;
 

@@ -12,7 +12,7 @@ export class HatGraphNode extends LitElement {
 
   @property({ reflect: true, type: Boolean }) nofocus?: boolean;
 
-  @property() number?: number;
+  @property({ reflect: true, type: Number }) number?: number;
 
   connectedCallback() {
     super.connectedCallback();
