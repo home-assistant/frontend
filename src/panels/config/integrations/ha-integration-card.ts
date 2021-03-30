@@ -55,6 +55,10 @@ declare global {
 }
 
 const integrationsWithPanel = {
+  hassio: {
+    buttonLocalizeKey: "ui.panel.config.hassio.button",
+    path: "/hassio/dashboard",
+  },
   mqtt: {
     buttonLocalizeKey: "ui.panel.config.mqtt.button",
     path: "/config/mqtt",
@@ -176,6 +180,8 @@ export class HaIntegrationCard extends LitElement {
     const devices = this._getDevices(item);
     const services = this._getServices(item);
     const entities = this._getEntities(item);
+
+    console.log(item);
 
     return html`
       <ha-card
@@ -344,7 +350,8 @@ export class HaIntegrationCard extends LitElement {
                 `}
             ${!item.disabled_by &&
             item.state === "loaded" &&
-            item.supports_unload
+            item.supports_unload &&
+            item.source !== "system"
               ? html`<mwc-list-item @request-selected="${this._handleReload}">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.reload"
@@ -355,20 +362,24 @@ export class HaIntegrationCard extends LitElement {
               ? html`<mwc-list-item @request-selected="${this._handleEnable}">
                   ${this.hass.localize("ui.common.enable")}
                 </mwc-list-item>`
-              : html`<mwc-list-item
+              : item.source !== "system"
+              ? html`<mwc-list-item
                   class="warning"
                   @request-selected="${this._handleDisable}"
                 >
                   ${this.hass.localize("ui.common.disable")}
-                </mwc-list-item>`}
-            <mwc-list-item
-              class="warning"
-              @request-selected="${this._handleDelete}"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.delete"
-              )}
-            </mwc-list-item>
+                </mwc-list-item>`
+              : ""}
+            ${item.source !== "system"
+              ? html`<mwc-list-item
+                  class="warning"
+                  @request-selected="${this._handleDelete}"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.delete"
+                  )}
+                </mwc-list-item>`
+              : ""}
           </ha-button-menu>
         </div>
       </ha-card>
