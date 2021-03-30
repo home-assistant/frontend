@@ -19,3 +19,9 @@ export const createSearchParam = (params: Record<string, string>): string => {
   });
   return urlParams.toString();
 };
+
+export const removeSearchParam = (param: string): string => {
+  const urlParams = new URLSearchParams();
+  urlParams.delete(param);
+  return urlParams.toString();
+};

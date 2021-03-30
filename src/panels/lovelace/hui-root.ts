@@ -40,6 +40,12 @@ import { fireEvent } from "../../common/dom/fire_event";
 import scrollToTarget from "../../common/dom/scroll-to-target";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import {
+  createSearchParam,
+  extractSearchParam,
+  removeSearchParam,
+} from "../../common/url/search-params";
+import { constructUrlCurrentHref } from "../../common/url/construct-url";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
@@ -575,8 +581,7 @@ class HUIRoot extends LitElement {
       }
 
       // Check for requested edit mode
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get("edit") === "1") {
+      if (extractSearchParam("edit") === "1") {
         this._enableEditMode();
       }
     }
@@ -720,10 +725,20 @@ class HUIRoot extends LitElement {
 
   private _enableEditMode(): void {
     this.lovelace!.setEditMode(true);
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentHref(createSearchParam({ edit: "1" }))
+    );
   }
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentHref(removeSearchParam("edit"))
+    );
   }
 
   private _editLovelace() {
