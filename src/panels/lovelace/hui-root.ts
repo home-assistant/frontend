@@ -45,7 +45,10 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../common/url/search-params";
-import { constructUrlCurrentHref } from "../../common/url/construct-url";
+import {
+  constructUrl,
+  constructUrlCurrentHref,
+} from "../../common/url/construct-url";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
@@ -569,7 +572,12 @@ class HUIRoot extends LitElement {
         newSelectView = views.findIndex(this._isVisible);
         navigate(
           this,
-          `${this.route!.prefix}/${views[newSelectView].path || newSelectView}`,
+          constructUrl(
+            `${this.route!.prefix}/${
+              views[newSelectView].path || newSelectView
+            }`,
+            addSearchParam({ ...(this.lovelace!.editMode && { edit: "1" }) })
+          ),
           true
         );
       } else if (viewPath === "hass-unused-entities") {
@@ -611,9 +619,12 @@ class HUIRoot extends LitElement {
           newSelectView = views.findIndex(this._isVisible);
           navigate(
             this,
-            `${this.route!.prefix}/${
-              views[newSelectView].path || newSelectView
-            }`,
+            constructUrl(
+              `${this.route!.prefix}/${
+                views[newSelectView].path || newSelectView
+              }`,
+              addSearchParam({ ...(this.lovelace!.editMode && { edit: "1" }) })
+            ),
             true
           );
         }
@@ -781,7 +792,13 @@ class HUIRoot extends LitElement {
       lovelace: this.lovelace!,
       saveCallback: (viewIndex: number, viewConfig: LovelaceViewConfig) => {
         const path = viewConfig.path || viewIndex;
-        navigate(this, `${this.route?.prefix}/${path}`);
+        navigate(
+          this,
+          constructUrl(
+            `${this.route?.prefix}/${path}`,
+            addSearchParam({ ...(this.lovelace!.editMode && { edit: "1" }) })
+          )
+        );
       },
     });
   }
@@ -791,7 +808,13 @@ class HUIRoot extends LitElement {
 
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
-      navigate(this, `${this.route?.prefix}/${path}`);
+      navigate(
+        this,
+        constructUrl(
+          `${this.route?.prefix}/${path}`,
+          addSearchParam({ ...(this.lovelace!.editMode && { edit: "1" }) })
+        )
+      );
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
   }

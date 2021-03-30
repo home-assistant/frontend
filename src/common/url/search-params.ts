@@ -23,7 +23,7 @@ export const createSearchParam = (params: Record<string, string>): string => {
 export const addSearchParam = (params: Record<string, string>): string => {
   const urlParams = new URLSearchParams(window.location.search);
   Object.entries(params).forEach(([key, value]) => {
-    urlParams.append(key, value);
+    urlParams.set(key, value);
   });
   return urlParams.toString();
 };
