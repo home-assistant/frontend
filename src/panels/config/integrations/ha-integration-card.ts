@@ -181,8 +181,6 @@ export class HaIntegrationCard extends LitElement {
     const services = this._getServices(item);
     const entities = this._getEntities(item);
 
-    console.log(item);
-
     return html`
       <ha-card
         outlined
