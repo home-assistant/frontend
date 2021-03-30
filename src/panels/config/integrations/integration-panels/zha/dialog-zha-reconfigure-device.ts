@@ -117,7 +117,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._subscribed = reconfigureNode(
       this.hass,
       params.device.ieee,
-      this._handleMessage
+      this._handleMessage.bind(this)
     );
     this._reconfigureDeviceTimeoutHandle = setTimeout(
       () => this._unsubscribe(),
