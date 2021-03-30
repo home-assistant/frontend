@@ -132,7 +132,7 @@ export class HaDataTable extends LitElement {
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
 
-  private _items: DataTableRowData[] = [];
+  @internalProperty() private _items: DataTableRowData[] = [];
 
   private _checkableRowsCount?: number;
 
@@ -160,9 +160,9 @@ export class HaDataTable extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this._filteredData.length) {
+    if (this._items.length) {
       // Force update of location of rows
-      this._filteredData = [...this._filteredData];
+      this._items = [...this._items];
     }
   }
 
@@ -550,7 +550,9 @@ export class HaDataTable extends LitElement {
 
   private _checkedRowsChanged() {
     // force scroller to update, change it's items
-    this._filteredData = [...this._filteredData];
+    if (this._items.length) {
+      this._items = [...this._items];
+    }
     fireEvent(this, "selection-changed", {
       value: this._checkedRows,
     });
