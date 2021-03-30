@@ -1047,11 +1047,18 @@
           "details": "Log Details ({level})",
           "load_full_log": "Load Full Home Assistant Log",
           "loading_log": "Loading error log…",
-          "no_errors": "No errors have been reported.",
+          "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
           "refresh": "Refresh",
-          "multiple_messages": "message first occurred at {time} and shows up {counter} times"
+          "multiple_messages": "message first occurred at {time} and shows up {counter} times",
+          "level": {
+            "critical": "CRITICAL",
+            "error": "ERROR",
+            "warning": "WARNING",
+            "info": "INFO",
+            "debug": "DEBUG"
+          }
         },
         "lovelace": {
           "caption": "Lovelace Dashboards",

@@ -72,7 +72,10 @@ export class SystemLogCard extends LitElement {
                               )}
                               –
                               ${html`(<span class="${item.level.toLowerCase()}"
-                                  >${item.level}</span
+                                  >${this.hass.localize(
+                                    "ui.panel.config.logs.level." +
+                                      item.level.toLowerCase()
+                                  )}</span
                                 >) `}
                               ${integrations[idx]
                                 ? domainToName(
