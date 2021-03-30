@@ -21,7 +21,7 @@ export const createSearchParam = (params: Record<string, string>): string => {
 };
 
 export const removeSearchParam = (param: string): string => {
-  const urlParams = new URLSearchParams();
+  const urlParams = new URLSearchParams(window.location.search);
   urlParams.delete(param);
   return urlParams.toString();
 };
