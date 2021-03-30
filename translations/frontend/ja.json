@@ -715,6 +715,9 @@
                 "today": "今日"
             },
             "data-table": {
+                "clear": "クリア",
+                "filtering_by": "フィルタ処理の方法",
+                "hidden": "{number}非表示",
                 "no-data": "データなし",
                 "search": "検索"
             },
@@ -1124,6 +1127,10 @@
                         "perform_action": "{action}サーバー",
                         "restart": "再起動",
                         "stop": "停止"
+                    },
+                    "types": {
+                        "navigation": "ナビゲート",
+                        "reload": "リロード"
                     }
                 },
                 "filter_placeholder": "エンティティフィルター"
@@ -1460,6 +1467,7 @@
                         "move_down": "下に移動",
                         "move_up": "上に移動",
                         "save": "保存",
+                        "show_trace": "トレースの表示",
                         "triggers": {
                             "add": "トリガーを追加",
                             "delete": "削除",
@@ -1830,6 +1838,35 @@
                     "description": "ホームの場所、タイムゾーン、単位など一般的な設定",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "この機能を有効にする前に、アナリティクスのドキュメントページ{link}をご覧になり、何を送信するのか、どのように保存されるのかをご確認ください。",
+                                "header": "アナリティクス",
+                                "instance_id": "インスタンス ID: {huuid}",
+                                "introduction": "インスタンスからの分析を共有します。 {link}で公開されます",
+                                "needs_base": "このオプションを有効にするには、ベースアナリティクスを有効にする必要があります。",
+                                "preference": {
+                                    "base": {
+                                        "description": "これには、インスタンスID、バージョン、インストールタイプが含まれます。",
+                                        "title": "ベーシック・アナリティクス"
+                                    },
+                                    "diagnostics": {
+                                        "description": "クラッシュ レポートと診断情報を共有する",
+                                        "title": "診断"
+                                    },
+                                    "statistics": {
+                                        "description": "これには、インストールされている要素の数が含まれます。完全なリストは、ドキュメントを参照してください。",
+                                        "title": "使用統計"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "これには、インテグレーション\nやアドオンの名前と機能が含まれます。",
+                                        "title": "使用したインテグレーションやアドオン"
+                                    },
+                                    "usage": {
+                                        "description": "これには、インテグレーションの名前が含まれます",
+                                        "title": "使用されるインテグレーション"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "設定がconfiguration.yamlに保存されているため、エディターが無効になっています。",
                                 "elevation": "高度",
@@ -2144,6 +2181,7 @@
                     "disable": {
                         "disabled_integrations": "{number}は無効",
                         "hide_disabled": "無視されたインテグレーションを表示",
+                        "show": "表示",
                         "show_disabled": "無効なintegrationを表示"
                     },
                     "discovered": "発見",
@@ -3689,6 +3727,7 @@
                     "more_integrations": "もっと見る"
                 },
                 "intro": "あなたはあなたの家を目覚めさせ、あなたのプライバシーを取り戻し、ティンカーの世界的なコミュニティに参加する準備ができていますか?",
+                "next": "次",
                 "restore": {
                     "description": "以前のスナップショットから復元することもできます。",
                     "hide_log": "ログ全体を非表示",
@@ -3782,6 +3821,19 @@
                     "disable": "無効",
                     "enable": "有効",
                     "header": "多要素認証モジュール"
+                },
+                "number_format": {
+                    "description": "数値の書式を選択します。",
+                    "dropdown_label": "数値の書式",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "自動 (言語設定を使用)",
+                        "none": "なし",
+                        "space_comma": "1 234 567,89",
+                        "system": "システムロケールを使用する"
+                    },
+                    "header": "数値の書式"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

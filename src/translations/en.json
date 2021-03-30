@@ -1011,7 +1011,7 @@
                     "description": "This includes a count of elements in your installation, for a full list look at the documentation"
                   }
                 },
-                "documentation": "Before you enable this make sure you visit the analytics documentation page {link} to understand what you are sending and how it's stored."
+                "learn_more": "Learn more about how your data will be processed."
               }
             }
           }
@@ -1047,11 +1047,18 @@
           "details": "Log Details ({level})",
           "load_full_log": "Load Full Home Assistant Log",
           "loading_log": "Loading error log…",
-          "no_errors": "No errors have been reported.",
+          "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
           "refresh": "Refresh",
-          "multiple_messages": "message first occurred at {time} and shows up {counter} times"
+          "multiple_messages": "message first occurred at {time} and shows up {counter} times",
+          "level": {
+            "critical": "CRITICAL",
+            "error": "ERROR",
+            "warning": "WARNING",
+            "info": "INFO",
+            "debug": "DEBUG"
+          }
         },
         "lovelace": {
           "caption": "Lovelace Dashboards",
@@ -1215,7 +1222,7 @@
             "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about automations",
             "pick_automation": "Pick automation to edit",
-            "no_automations": "We couldn’t find any editable automations",
+            "no_automations": "We couldn’t find any automations",
             "add_automation": "Add automation",
             "only_editable": "Only automations defined in automations.yaml are editable.",
             "dev_only_editable": "Only automations defined in automations.yaml are debuggable.",
@@ -1609,7 +1616,7 @@
             "header": "Script Editor",
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
-            "no_scripts": "We couldn’t find any editable scripts",
+            "no_scripts": "We couldn’t find any scripts",
             "add_script": "Add script",
             "show_info": "Show info about script",
             "run_script": "Run script",
@@ -1660,7 +1667,7 @@
             "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scenes",
             "pick_scene": "Pick scene to edit",
-            "no_scenes": "We couldn’t find any editable scenes",
+            "no_scenes": "We couldn’t find any scenes",
             "add_scene": "Add scene",
             "only_editable": "Only scenes defined in scenes.yaml are editable.",
             "edit_scene": "Edit scene",
@@ -2106,7 +2113,6 @@
           "search": "Search integrations",
           "disable": {
             "show_disabled": "Show disabled integrations",
-            "hide_disabled": "Hide disabled integrations",
             "disabled_integrations": "{number} disabled",
             "show": "Show"
           },
@@ -2115,7 +2121,6 @@
             "confirm_ignore_title": "Ignore discovery of {name}?",
             "confirm_ignore": "Are you sure you don't want to set up this integration? You can undo this by clicking the 'Show ignored integrations' in the overflow menu on the top right.",
             "show_ignored": "Show ignored integrations",
-            "hide_ignored": "Hide ignored integrations",
             "ignored": "Ignored",
             "confirm_delete_ignore_title": "Stop ignoring {name}?",
             "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
@@ -2226,6 +2231,9 @@
             "password_not_match": "Passwords don't match",
             "create": "Create"
           }
+        },
+        "hassio": {
+          "button": "Configure"
         },
         "mqtt": {
           "button": "Configure",

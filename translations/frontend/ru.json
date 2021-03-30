@@ -840,6 +840,12 @@
                 "label": "Изображение",
                 "unsupported_format": "Неподдерживаемый формат. Выберите изображение в формате JPEG, PNG или GIF."
             },
+            "related-filter-menu": {
+                "filter_by_area": "Фильтр по помещениям",
+                "filter_by_device": "Фильтр по устройствам",
+                "filtered_by_area": "помещение: {area_name}",
+                "filtered_by_device": "устройство: {device_name}"
+            },
             "related-items": {
                 "area": "Помещение",
                 "automation": "Используется в автоматизациях",
@@ -1677,7 +1683,7 @@
                         "google": {
                             "config_documentation": "Инструкция по настройке",
                             "devices_pin": "PIN-код устройств безопасности",
-                            "enable_ha_skill": "Активировать навык Home Assistant для Google Assistant",
+                            "enable_ha_skill": "Активировать навык Home Assistant Cloud для Google Assistant",
                             "enable_state_reporting": "Отправлять изменения состояний объектов",
                             "enter_pin_error": "Не удалось сохранить PIN-код:",
                             "enter_pin_hint": "PIN-код",
@@ -1685,6 +1691,8 @@
                             "info": "Интеграция Google Assistant позволяет управлять устройствами, добавленными в Home Assistant, через любое устройство с поддержкой Google Assistant.",
                             "info_state_reporting": "Если Вы включите этот параметр, Home Assistant будет отправлять все изменения состояний объектов, доступных Google. Это позволит Вам всегда видеть актуальные состояния в приложениях Google.",
                             "manage_entities": "Управление объектами",
+                            "not_configured_text": "Перед использованием Google Assistant необходимо активировать навык Home Assistant Cloud в приложении \"Google Home\".",
+                            "not_configured_title": "Google Assistant не активирован",
                             "security_devices": "Устройства безопасности",
                             "sync_entities": "Синхронизировать объекты",
                             "sync_entities_404_message": "Не удалось синхронизировать Ваши объекты с Google. Попробуйте запустить синхронизацию путём голосового запроса: «Эй, Google, синхронизируй мои устройства».",
@@ -1847,6 +1855,35 @@
                     "description": "Настройки общего назначения",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Прежде всего, посетите страницу документации по аналитике {link}, чтобы понять, что Вы будете отправлять и как это будет храниться.",
+                                "header": "Аналитика",
+                                "instance_id": "Идентификатор экземпляра Home Assistant: {huuid}",
+                                "introduction": "Поделитесь аналитикой из Вашего Home Assistant. Эти данные будут доступны для всех по адресу {ссылка}.",
+                                "needs_base": "Включите базовую аналитику, чтобы эта опция была доступна",
+                                "preference": {
+                                    "base": {
+                                        "description": "Включает в себя идентификатор экземпляра, версия и тип установки.",
+                                        "title": "Базовая аналитика"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Отправлять отчеты о сбоях и диагностическую информацию",
+                                        "title": "Диагностика"
+                                    },
+                                    "statistics": {
+                                        "description": "Включает в себя подсчёт элементов для Вашего Home Assistant. О том, как получить полный список, смотрите в документации.",
+                                        "title": "Статистика использования"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Включает в себя названия и возможности используемых Вами интеграций и дополнений.",
+                                        "title": "Используемые интеграции и дополнения"
+                                    },
+                                    "usage": {
+                                        "description": "Включает в себя названия используемых Вами интеграций",
+                                        "title": "Используемые интеграции"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Редактор отключен, поскольку конфигурация уже хранится в файле configuration.yaml.",
                                 "elevation": "Высота",
@@ -2120,8 +2157,10 @@
                         "entity_unavailable": "Объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
+                        "logs": "журналы",
                         "manuf": "{manufacturer}",
                         "no_area": "Не указано",
+                        "not_loaded": "Не загружено, проверьте {logs_link}",
                         "options": "Настройки",
                         "reload": "Перезагрузить",
                         "reload_confirm": "Перезагрузка интеграции выполнена",
@@ -2147,6 +2186,7 @@
                         "finish": "Готово",
                         "loading_first_time": "Идет установка интеграции, пожалуйста, подождите",
                         "not_all_required_fields": "Не все обязательные поля заполнены.",
+                        "not_loaded": "Не удалось загрузить интеграцию, попробуйте перезапустить Home Assistant.",
                         "pick_flow_step": {
                             "new_flow": "Нет, настроить другой экземпляр {integration}",
                             "title": "Это обнаружено автоматически, начать настройку?"
@@ -3693,6 +3733,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Далее",
+                    "intro": "Поделитесь аналитикой из Вашего Home Assistant. Эти данные будут доступны для всех по адресу {ссылка}."
+                },
                 "core-config": {
                     "button_detect": "Заполнить",
                     "finish": "Далее",
@@ -3702,12 +3746,14 @@
                     "location_name": "Название для Вашего Home Assistant",
                     "location_name_default": "Home Assistant"
                 },
+                "finish": "Готово",
                 "integration": {
                     "finish": "Готово",
                     "intro": "Устройства и службы представлены в Home Assistant как интеграции. Вы можете добавить их сейчас или сделать это позже в разделе настроек.",
                     "more_integrations": "Ещё"
                 },
                 "intro": "Готовы ли Вы разбудить свой дом, вернуть свою конфиденциальность и присоединиться к всемирному сообществу?",
+                "next": "Далее",
                 "restore": {
                     "description": "Восстановить предыдущее состояние из снимка файловой системы (snapshot)",
                     "hide_log": "Скрыть журнал",

@@ -723,6 +723,9 @@
                 "today": "Täna"
             },
             "data-table": {
+                "clear": "Puhasta",
+                "filtering_by": "Filtreerimisalus",
+                "hidden": "{number} peidetut",
                 "no-data": "Andmeid pole",
                 "search": "Otsing"
             },
@@ -836,6 +839,12 @@
             "picture-upload": {
                 "label": "Pilt",
                 "unsupported_format": "Toetamata vorming, valige JPEG-, PNG- või GIF-pilt."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filtreeri ala järgi",
+                "filter_by_device": "Filtreeri seadmete järgi",
+                "filtered_by_area": "ala: {area_name}",
+                "filtered_by_device": "seade: {device_name}"
             },
             "related-items": {
                 "area": "Ala",
@@ -1473,6 +1482,7 @@
                         "move_down": "Liiguta alla",
                         "move_up": "Liiguta üles",
                         "save": "Salvesta",
+                        "show_trace": "Kuva täitmise samme",
                         "triggers": {
                             "add": "Lisa päästik",
                             "delete": "Kustuta",
@@ -1673,7 +1683,7 @@
                         "google": {
                             "config_documentation": "Konfiguratsiooni dokumentatsioon",
                             "devices_pin": "Turvaseadmete PIN kood",
-                            "enable_ha_skill": "Aktiveerige Home Assistanti oskused  Google Assistantis",
+                            "enable_ha_skill": "Aktiveeri Home Assistanti oskused Google Assistantis",
                             "enable_state_reporting": "Lubada olekuteavitused",
                             "enter_pin_error": "PIN koodi ei saa salvestada:",
                             "enter_pin_hint": "Turvaseadmete kasutamiseks sisesta PIN",
@@ -1681,6 +1691,8 @@
                             "info": "Google Assistanti integreerimisel läbi Home Assistant Cloudi  saate juhtida kõiki oma Home Assistanti seadmeid mis tahes Google Assistanti toega seadme kaudu.",
                             "info_state_reporting": "Kui lubate olekute avaldamise, saadab Home Assistant Google'ile kõik avaldatud olemite olekumuutused. See võimaldab Teil alati näha Google'i rakenduses uusimaid olekuid.",
                             "manage_entities": "Halda olemeid",
+                            "not_configured_text": "Enne Google Assistanti kasutamist pead Google Home rakenduses aktiveerima Google Assistanti Home Assistant Cloud sidumise.",
+                            "not_configured_title": "Google Assistant'i sidumine pole aktiveeritud",
                             "security_devices": "Turvaseadmed",
                             "sync_entities": "Sünkrooni olemid Google'iga",
                             "sync_entities_404_message": "Teie olemite Google'iga sünkroonimine ebaõnnestus, paluge Google'il teie olemite sünkroonimist \"Hey Google, sync my devices\".",
@@ -1843,6 +1855,35 @@
                     "description": "Ühikud, asukoht, ajavöönd ja muud üldised parameetrid",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Enne selle lubamist külasta kindlasti olekuteabe dokumentatsiooni lehte {link} et aru saada, mida saadetakse ja kuidas see talletatakse.",
+                                "header": "Olekuteave",
+                                "instance_id": "Eksemplari ID: {huuid}",
+                                "introduction": "Jaga oma Home Assistanti oleku teavet. Need andmed on avalikult saadaval aadressil {link}",
+                                "needs_base": "Selle suvandi kasutamiseks pead lubama põhilise olekuteabe",
+                                "preference": {
+                                    "base": {
+                                        "description": "See hõlmab eksemplari ID-d, versiooni ja paigalduse tüüpi",
+                                        "title": "Põhiline olekuteave"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Jaga krahhiaruandeid ja diagnostikateavet",
+                                        "title": "Diagnostika"
+                                    },
+                                    "statistics": {
+                                        "description": "See hõlmab paigalduse elementide arvu, täieliku loendi saamiseks vaata dokumentatsiooni",
+                                        "title": "Kasutusstatistika"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "See hõlmab sidumiste ja lisandmoodulite nimesid ja võimalusi",
+                                        "title": "Kasutusel olevad sidumised ja lisandmoodulid"
+                                    },
+                                    "usage": {
+                                        "description": "See hõlmab kasutusel olevate sidumiste nimesid",
+                                        "title": "Kasutusel olevad sidumised"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Redaktor on keelatud, kuna seaded asuvad configuration.yaml failis.",
                                 "elevation": "Kõrgus",
@@ -2116,8 +2157,10 @@
                         "entity_unavailable": "Olem pole saadaval",
                         "firmware": "Püsivara: {version}",
                         "hub": "Ühendatud",
+                        "logs": "Logid",
                         "manuf": "{manufacturer}",
                         "no_area": "Ala puudub",
+                        "not_loaded": "Laadimine nurjus, lisateavet vaata siit {logs_link}",
                         "options": "Valikud",
                         "reload": "Taaslae",
                         "reload_confirm": "Sidumine on taaslaetud",
@@ -2143,6 +2186,7 @@
                         "finish": "Lõpeta",
                         "loading_first_time": "Palun oodake kuni sidumist paigaldatakse",
                         "not_all_required_fields": "Kõik nõutavad väljad pole täidetud.",
+                        "not_loaded": "Sidumist ei õnnestunud laadida. Proovi taaskäivitada Home Assistant.",
                         "pick_flow_step": {
                             "new_flow": "Ei, seadista teine {integration} eksemplar",
                             "title": "Avastasime need, kas soovid neid seadistada?"
@@ -2157,6 +2201,7 @@
                     "disable": {
                         "disabled_integrations": "{number} keelatut",
                         "hide_disabled": "Peida keelatud sidumised",
+                        "show": "Kuva",
                         "show_disabled": "Kuva keelatud sidumised"
                     },
                     "discovered": "Leitud",
@@ -3688,6 +3733,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Järgmine",
+                    "intro": "Jaga oma Home Assistanti oleku teavet. Need andmed on avalikult saadaval aadressil {link}"
+                },
                 "core-config": {
                     "button_detect": "Tuvasta",
                     "finish": "Edasi",
@@ -3697,12 +3746,14 @@
                     "location_name": "Sinu Home Assistant paigalduse nimi",
                     "location_name_default": "Kodu"
                 },
+                "finish": "Lõpeta",
                 "integration": {
                     "finish": "Lõpeta",
                     "intro": "Seadmed ja teenused on Home Assistant'is esitatud sidumistena. Võid neid seadistada kohe või teha seda hiljem konfiguratsioonilehelt.",
                     "more_integrations": "Rohkem"
                 },
                 "intro": "Kas oled valmis oma kodu ellu äratama, oma privaatsust tagasi võitma ja ühinema ülemaailmse nokitsejate kogukonnaga?",
+                "next": "Järgmine",
                 "restore": {
                     "description": "Teise võimalusena saad taastada eelmise hetktõmmise.",
                     "hide_log": "Peida täielik logi",
@@ -3796,6 +3847,19 @@
                     "disable": "Keela",
                     "enable": "Luba",
                     "header": "Mitmeastmelise autentimise moodulid"
+                },
+                "number_format": {
+                    "description": "Vali arvude vormindamise.",
+                    "dropdown_label": "Numbrivorming",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automaatne (kasuta keeleseadet)",
+                        "none": "Puudub",
+                        "space_comma": "1234 567,89",
+                        "system": "Kasuta süsteemi poolt määratut"
+                    },
+                    "header": "Numbrivorming"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

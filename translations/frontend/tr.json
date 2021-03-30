@@ -723,6 +723,7 @@
                 "today": "Bugün"
             },
             "data-table": {
+                "clear": "Temizle",
                 "no-data": "Veri yok",
                 "search": "Ara"
             },
@@ -858,7 +859,7 @@
                 },
                 "future_duration": {
                     "day": "In {count} {count, plural,\n  one {gün}\n  other {günler}\n}",
-                    "hour": "In {count} {count, plural,\n  one {saat}\n  other {saatler}\n}",
+                    "hour": "In {count} {count, plural,\n  one {saat}\n  other {saat}\n}",
                     "minute": "In {count} {count, plural,\n  one {dakika}\n  other {dakikalar}\n}",
                     "second": "In {count} {count, plural,\n  one {saniye}\n  other {saniyeler}\n}",
                     "week": "In {count} {count, plural,\n  one {hafta}\n  other {hatfalar}\n}"
@@ -867,7 +868,7 @@
                 "never": "Asla",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {gün}\n  other {günler}\n} önce",
-                    "hour": "{count} {count, plural,\n  one {saat}\n  other {saatler}\n} önce",
+                    "hour": "{count} {count, plural,\n  one {saat}\n  other {saat}\n} önce",
                     "minute": "{count} {count, plural,\n  one {dakika}\n  other {dakikalar}\n} önce",
                     "second": "{count} {count, plural,\n  one {saniye}\n  other {saniyeler}\n} önce",
                     "week": "{count} {count, plural,\n  one {hafta}\n  other {haftalar}\n} önce"
@@ -1843,6 +1844,14 @@
                     "description": "Birim sistemi, konum, saat dilimi ve diğer genel parametreler",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "header": "İstatistikler",
+                                "preference": {
+                                    "statistics": {
+                                        "title": "Kullanım istatistikleri"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Konfigürasyon configuration.yaml'de depolandığı için düzenleyici devre dışı bırakıldı.",
                                 "elevation": "Yükseklik",
@@ -2157,6 +2166,7 @@
                     "disable": {
                         "disabled_integrations": "{number} devre dışı bırakıldı",
                         "hide_disabled": "Devre dışı bırakılan entegrasyonları gizle",
+                        "show": "Göster",
                         "show_disabled": "Devre dışı bırakılan entegrasyonları göster"
                     },
                     "discovered": "Bulundu",
