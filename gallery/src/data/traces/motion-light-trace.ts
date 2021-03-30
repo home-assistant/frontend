@@ -13,7 +13,7 @@ export const motionLightTrace: DemoTrace = {
     trigger: "state of binary_sensor.pauluss_macbook_pro_camera_in_use",
     domain: "automation",
     item_id: "1614732497392",
-    action_trace: {
+    trace: {
       "action/0": [
         {
           path: "action/0",
@@ -124,7 +124,6 @@ export const motionLightTrace: DemoTrace = {
         },
       ],
     },
-    condition_trace: {},
     config: {
       mode: "restart",
       max_exceeded: "silent",

@@ -14,16 +14,16 @@ import {
   mdiCheckboxBlankOutline,
   mdiAsterisk,
   mdiDevices,
+  mdiFlare,
 } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { Condition } from "../../data/automation";
 import { Action, ChooseAction, RepeatAction } from "../../data/script";
 import {
-  ActionTrace,
   AutomationTraceExtended,
-  ChooseActionTrace,
-  ChooseChoiceActionTrace,
-  ConditionTrace,
+  ChooseActionTraceStep,
+  ChooseChoiceActionTraceStep,
+  ConditionTraceStep,
 } from "../../data/trace";
 
 import { NodeInfo, TreeNode } from "./hat-graph";
@@ -106,7 +106,7 @@ export class ActionHandler {
   }
 
   _createGraph = memoizeOne((_actions, _selected, _trace) =>
-    this._renderConditions().concat(
+    this._renderTraceHead().concat(
       this.actions.map((action, idx) =>
         this._createTreeNode(
           idx,
@@ -118,23 +118,44 @@ export class ActionHandler {
     )
   );
 
-  _renderConditions(): TreeNode[] {
-    // action/ = default pathPrefix for trace-based actions
-    if (
-      this.pathPrefix !== TRACE_ACTION_PREFIX ||
-      !this.trace?.config.condition
-    ) {
+  _renderTraceHead(): TreeNode[] {
+    if (this.pathPrefix !== TRACE_ACTION_PREFIX) {
       return [];
     }
-    return this.trace.config.condition.map((condition, idx) =>
-      this._createConditionNode(
-        "condition/",
-        this.trace?.condition_trace,
-        idx,
-        condition,
-        !this.actions.length && this.trace!.config.condition!.length === idx + 1
-      )
-    );
+
+    const triggerNodeInfo = {
+      path: "trigger",
+      // Just all triggers for now.
+      config: this.trace!.config.trigger,
+    };
+
+    const nodes: TreeNode[] = [
+      {
+        icon: mdiFlare,
+        nodeInfo: triggerNodeInfo,
+        clickCallback: () => {
+          this._selectNode(triggerNodeInfo);
+        },
+        isActive: this.selected === "trigger",
+        isTracked: true,
+      },
+    ];
+
+    if (this.trace!.config.condition) {
+      this.trace!.config.condition.forEach((condition, idx) =>
+        nodes.push(
+          this._createConditionNode(
+            "condition/",
+            idx,
+            condition,
+            !this.actions.length &&
+              this.trace!.config.condition!.length === idx + 1
+          )
+        )
+      );
+    }
+
+    return nodes;
   }
 
   _updateAction(idx: number, action) {
@@ -192,7 +213,7 @@ export class ActionHandler {
           this._selectNode(nodeInfo);
         },
         isActive: path === this.selected,
-        isTracked: this.trace && path in this.trace.action_trace,
+        isTracked: this.trace && path in this.trace.trace,
         end,
       };
     }
@@ -212,13 +233,7 @@ export class ActionHandler {
     (idx: number, action: any, end: boolean) => TreeNode
   > = {
     condition: (idx, action: Condition, end: boolean): TreeNode =>
-      this._createConditionNode(
-        this.pathPrefix,
-        this.trace?.action_trace,
-        idx,
-        action,
-        end
-      ),
+      this._createConditionNode(this.pathPrefix, idx, action, end),
 
     repeat: (idx, action: RepeatAction, end: boolean): TreeNode => {
       let seq: Array<Action | NoAction> = action.repeat.sequence;
@@ -227,11 +242,10 @@ export class ActionHandler {
       }
 
       const path = `${this.pathPrefix}${idx}`;
-      const isTracked = this.trace && path in this.trace.action_trace;
+      const isTracked = this.trace && path in this.trace.trace;
 
       const repeats =
-        this.trace &&
-        this.trace.action_trace[`${path}/repeat/sequence/0`]?.length;
+        this.trace && this.trace.trace[`${path}/repeat/sequence/0`]?.length;
 
       const nodeInfo: NodeInfo = {
         path,
@@ -268,10 +282,10 @@ export class ActionHandler {
       const choosePath = `${this.pathPrefix}${idx}`;
       let choice: number | "default" | undefined;
 
-      if (this.trace?.action_trace && choosePath in this.trace.action_trace) {
-        const chooseResult = this.trace.action_trace[
+      if (this.trace?.trace && choosePath in this.trace.trace) {
+        const chooseResult = this.trace.trace[
           choosePath
-        ] as ChooseActionTrace[];
+        ] as ChooseActionTraceStep[];
         choice = chooseResult[0].result.choice;
       }
 
@@ -280,10 +294,10 @@ export class ActionHandler {
           // If we have a trace, highlight the chosen track here.
           const choicePath = `${this.pathPrefix}${idx}/choose/${choiceIdx}`;
           let chosen = false;
-          if (this.trace && choicePath in this.trace.action_trace) {
-            const choiceResult = this.trace.action_trace[
+          if (this.trace && choicePath in this.trace.trace) {
+            const choiceResult = this.trace.trace[
               choicePath
-            ] as ChooseChoiceActionTrace[];
+            ] as ChooseChoiceActionTraceStep[];
             chosen = choiceResult[0].result.result;
           }
           const choiceNodeInfo: NodeInfo = {
@@ -380,7 +394,6 @@ export class ActionHandler {
 
   private _createConditionNode(
     pathPrefix: string,
-    tracePaths: Record<string, ActionTrace[]> | undefined,
     idx: number,
     action: Condition,
     end: boolean
@@ -389,8 +402,8 @@ export class ActionHandler {
     let result: boolean | undefined;
     let isTracked = false;
 
-    if (tracePaths && path in tracePaths) {
-      const conditionResult = tracePaths[path] as ConditionTrace[];
+    if (this.trace && path in this.trace.trace) {
+      const conditionResult = this.trace.trace[path] as ConditionTraceStep[];
       result = conditionResult[0].result.result;
       isTracked = true;
     }
