@@ -64,21 +64,25 @@ class HatScriptGraph extends LitElement {
 
   private render_condition(condition, i) {
     const path = `condition/${i}`;
+    const trace: any = this.trace.condition_trace[path];
+    const track_path = trace === undefined ? 0 : trace[0].result.result ? 1 : 2;
     return html`
       <hat-graph
         branching
         @focus=${this.selectNode(condition, path)}
         class=${classMap({
-          track: path in this.trace.condition_trace,
+          track: track_path,
           active: this.selected === path,
         })}
+        .track_start=${[track_path]}
+        .track_end=${[track_path]}
         tabindex="0"
         short
       >
         <hat-graph-node
           slot="head"
           class=${classMap({
-            track: path in this.trace.condition_trace,
+            track: trace,
           })}
           .iconPath=${mdiAbTesting}
           nofocus
@@ -95,7 +99,7 @@ class HatScriptGraph extends LitElement {
           graphEnd
           nofocus
           class=${classMap({
-            track: path in this.trace.condition_trace,
+            track: track_path === 2,
           })}
         ></hat-graph-node>
       </hat-graph>
@@ -176,7 +180,6 @@ class HatScriptGraph extends LitElement {
         })}
         .track_start=${[track_path]}
         .track_end=${[track_path]}
-        this.trace.action_trace[path]?.}
         tabindex="0"
         short
       >
