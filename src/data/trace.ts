@@ -1,3 +1,4 @@
+import { strStartsWith } from "../common/string/starts-with";
 import { HomeAssistant, Context } from "../types";
 import { AutomationConfig } from "./automation";
 
@@ -146,3 +147,11 @@ export const getDataFromPath = (
 
   return result;
 };
+
+// It is 'trigger' if manually triggered by the user via UI
+export const isTriggerPath = (path: string): boolean =>
+  path === "trigger" || strStartsWith(path, "trigger/");
+
+export const getTriggerPathFromTrace = (
+  steps: Record<string, BaseTraceStep[]>
+): string | undefined => Object.keys(steps).find((path) => isTriggerPath(path));

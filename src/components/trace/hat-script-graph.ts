@@ -9,7 +9,11 @@ import {
 import "@material/mwc-icon-button/mwc-icon-button";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
-import { AutomationTraceExtended } from "../../data/trace";
+import {
+  AutomationTraceExtended,
+  ChooseActionTraceStep,
+  ConditionTraceStep,
+} from "../../data/trace";
 import {
   mdiAbTesting,
   mdiArrowUp,
@@ -53,11 +57,19 @@ class HatScriptGraph extends LitElement {
 
   private render_trigger(trigger, i) {
     const path = `trigger/${i}`;
+    this.renderedNodes[path] = { config: trigger, path };
+    const track_path = path in this.trace.trace ? [0] : undefined;
     return html`
       <hat-graph-node
         graphStart
         @focus=${this.selectNode(trigger, path)}
+        class=${classMap({
+          track: this.trace && path in this.trace.trace,
+          active: this.selected === path,
+        })}
         .iconPath=${mdiAsterisk}
+        .track_start=${track_path}
+        .track_end=${track_path}
       ></hat-graph-node>
     `;
   }
@@ -65,8 +77,8 @@ class HatScriptGraph extends LitElement {
   private render_condition(condition, i) {
     const path = `condition/${i}`;
     this.renderedNodes[path] = { config: condition, path };
-    const trace: any = this.trace.condition_trace[path];
-    const track_path = trace === undefined ? 0 : trace[0].result.result ? 1 : 2;
+    const steps = this.trace.trace[path] as ConditionTraceStep[] | undefined;
+    const track_path = steps === undefined ? 0 : steps[0].result.result ? 1 : 2;
     return html`
       <hat-graph
         branching
@@ -83,7 +95,7 @@ class HatScriptGraph extends LitElement {
         <hat-graph-node
           slot="head"
           class=${classMap({
-            track: trace,
+            track: steps !== undefined,
           })}
           .iconPath=${mdiAbTesting}
           nofocus
@@ -108,7 +120,7 @@ class HatScriptGraph extends LitElement {
   }
 
   private render_choose_node(node, path) {
-    const trace: any = this.trace.action_trace[path];
+    const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
     const trace_path = trace
       ? trace[0].result.choice === "default"
         ? [node.choose.length]
@@ -122,14 +134,14 @@ class HatScriptGraph extends LitElement {
         .track_end=${trace_path}
         @focus=${this.selectNode(node, path)}
         class=${classMap({
-          track: path in this.trace.condition_trace,
+          track: path in this.trace.trace,
           active: this.selected === path,
         })}
       >
         <hat-graph-node
           .iconPath=${mdiCallSplit}
           class=${classMap({
-            track: trace,
+            track: trace !== undefined,
           })}
           slot="head"
           nofocus
@@ -143,7 +155,7 @@ class HatScriptGraph extends LitElement {
                 .iconPath=${mdiCheckBoxOutline}
                 nofocus
                 class=${classMap({
-                  track: trace && trace[0].result.choice === i,
+                  track: trace !== undefined && trace[0].result.choice === i,
                 })}
               ></hat-graph-node>
               ${branch.sequence.map((action, j) =>
@@ -157,7 +169,8 @@ class HatScriptGraph extends LitElement {
             .iconPath=${mdiCheckboxBlankOutline}
             nofocus
             class=${classMap({
-              track: trace && trace[0].result.choice === "default",
+              track:
+                trace !== undefined && trace[0].result.choice === "default",
             })}
           ></hat-graph-node>
           ${node.default.map((action, i) =>
@@ -169,7 +182,7 @@ class HatScriptGraph extends LitElement {
   }
 
   private render_condition_node(node, path) {
-    const trace: any = this.trace.action_trace[path];
+    const trace: any = this.trace.trace[path];
     const track_path = trace === undefined ? 0 : trace[0].result.result ? 1 : 2;
     return html`
       <hat-graph
@@ -217,7 +230,7 @@ class HatScriptGraph extends LitElement {
         .iconPath=${mdiTimerOutline}
         @focus=${this.selectNode(node, path)}
         class=${classMap({
-          track: path in this.trace.action_trace,
+          track: path in this.trace.trace,
           active: this.selected === path,
         })}
       ></hat-graph-node>
@@ -230,7 +243,7 @@ class HatScriptGraph extends LitElement {
         .iconPath=${mdiDevices}
         @focus=${this.selectNode(node, path)}
         class=${classMap({
-          track: path in this.trace.action_trace,
+          track: path in this.trace.trace,
           active: this.selected === path,
         })}
       ></hat-graph-node>
@@ -243,7 +256,7 @@ class HatScriptGraph extends LitElement {
         .iconPath=${mdiExclamation}
         @focus=${this.selectNode(node, path)}
         class=${classMap({
-          track: path in this.trace.action_trace,
+          track: path in this.trace.trace,
           active: this.selected === path,
         })}
       ></hat-graph-node>
@@ -251,10 +264,9 @@ class HatScriptGraph extends LitElement {
   }
 
   private render_repeat_node(node, path) {
-    const trace: any = this.trace.action_trace[path];
+    const trace: any = this.trace.trace[path];
     const track_path = trace ? [0, 1] : [];
-    const repeats = this.trace?.action_trace[`${path}/repeat/sequence/0`]
-      ?.length;
+    const repeats = this.trace?.trace[`${path}/repeat/sequence/0`]?.length;
     return html`
       <hat-graph
         .track_start=${track_path}
@@ -263,7 +275,7 @@ class HatScriptGraph extends LitElement {
         branching
         @focus=${this.selectNode(node, path)}
         class=${classMap({
-          track: path in this.trace.condition_trace,
+          track: path in this.trace.trace,
           active: this.selected === path,
         })}
       >
@@ -298,7 +310,7 @@ class HatScriptGraph extends LitElement {
         .iconPath=${mdiExclamation}
         @focus=${this.selectNode(node, path)}
         class=${classMap({
-          track: path in this.trace.action_trace,
+          track: path in this.trace.trace,
           active: this.selected === path,
         })}
       ></hat-graph-node>
@@ -311,7 +323,7 @@ class HatScriptGraph extends LitElement {
         .iconPath=${mdiChevronRight}
         @focus=${this.selectNode(node, path)}
         class=${classMap({
-          track: path in this.trace.action_trace,
+          track: path in this.trace.trace,
           active: this.selected === path,
         })}
       ></hat-graph-node>
@@ -324,7 +336,7 @@ class HatScriptGraph extends LitElement {
         .iconPath=${mdiTrafficLight}
         @focus=${this.selectNode(node, path)}
         class=${classMap({
-          track: path in this.trace.action_trace,
+          track: path in this.trace.trace,
           active: this.selected === path,
         })}
       ></hat-graph-node>
