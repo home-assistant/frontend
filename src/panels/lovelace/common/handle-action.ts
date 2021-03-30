@@ -1,6 +1,7 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
+import { domainToName } from "../../../data/integration";
 import { ActionConfig } from "../../../data/lovelace";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
@@ -55,7 +56,9 @@ export const handleAction = async (
       const [domain, service] = actionConfig.service.split(".", 2);
       const serviceDomains = hass.services;
       if (domain in serviceDomains && service in serviceDomains[domain]) {
-        serviceName = serviceDomains[domain][service].name;
+        serviceName = `${domainToName(hass.localize, domain)}: ${
+          serviceDomains[domain][service].name || service
+        }`;
       }
     }
 
