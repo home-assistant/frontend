@@ -7,12 +7,9 @@ import {
   css,
 } from "lit-element";
 import "@material/mwc-icon-button/mwc-icon-button";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
 import { AutomationTraceExtended } from "../../data/trace";
-//import { bfsIterateTreeNodes, NodeInfo, TreeNode } from "./hat-graph";
-import { ActionHandler } from "./script-to-graph";
 import {
   mdiAbTesting,
   mdiArrowUp,
@@ -32,7 +29,7 @@ import {
 } from "@mdi/js";
 import "./hat-graph-node";
 import { classMap } from "lit-html/directives/class-map";
-import { NODE_SIZE, SPACING } from "./hat-graph";
+import { NODE_SIZE, SPACING, NodeInfo } from "./hat-graph";
 
 declare global {
   interface HASSDomEvents {
@@ -46,25 +43,11 @@ class HatScriptGraph extends LitElement {
 
   @property({ attribute: false }) public selected;
 
-  private getActionHandler = memoizeOne((trace: AutomationTraceExtended) => {
-    return new ActionHandler(
-      trace.config.action,
-      false,
-      undefined,
-      (nodeInfo) => {
-        // eslint-disable-next-line no-console
-        console.log(nodeInfo);
-        fireEvent(this, "graph-node-selected", nodeInfo);
-        this.requestUpdate();
-      },
-      this.selected,
-      this.trace
-    );
-  });
+  renderedNodes: Record<string, any> = {};
 
-  private selectNode(node) {
+  private selectNode(config, path) {
     return () => {
-      fireEvent(this, "graph-node-selected", node);
+      fireEvent(this, "graph-node-selected", { config, path });
     };
   }
 
@@ -73,7 +56,7 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         graphStart
-        @focus=${this.selectNode({ path })}
+        @focus=${this.selectNode(trigger, path)}
         .iconPath=${mdiAsterisk}
       ></hat-graph-node>
     `;
@@ -84,9 +67,10 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph
         branching
-        @focus=${this.selectNode({ path })}
+        @focus=${this.selectNode(condition, path)}
         class=${classMap({
           track: path in this.trace.condition_trace,
+          active: this.selected === path,
         })}
         tabindex="0"
         short
@@ -131,6 +115,11 @@ class HatScriptGraph extends LitElement {
         branching
         .track_start=${trace_path}
         .track_end=${trace_path}
+        @focus=${this.selectNode(node, path)}
+        class=${classMap({
+          track: path in this.trace.condition_trace,
+          active: this.selected === path,
+        })}
       >
         <hat-graph-node
           .iconPath=${mdiCallSplit}
@@ -152,8 +141,8 @@ class HatScriptGraph extends LitElement {
                   track: trace && trace[0].result.choice === i,
                 })}
               ></hat-graph-node>
-              ${branch.sequence.map((action, i) =>
-                this.render_node(action, `${branch_path}/sequence/${i}`)
+              ${branch.sequence.map((action, j) =>
+                this.render_node(action, `${branch_path}/sequence/${j}`)
               )}
             </hat-graph>
           `;
@@ -180,9 +169,10 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph
         branching
-        @focus=${this.selectNode({ path })}
+        @focus=${this.selectNode(node, path)}
         class=${classMap({
           track: track_path,
+          active: this.selected === path,
         })}
         .track_start=${[track_path]}
         .track_end=${[track_path]}
@@ -221,8 +211,10 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .iconPath=${mdiTimerOutline}
+        @focus=${this.selectNode(node, path)}
         class=${classMap({
           track: path in this.trace.action_trace,
+          active: this.selected === path,
         })}
       ></hat-graph-node>
     `;
@@ -232,8 +224,10 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .iconPath=${mdiDevices}
+        @focus=${this.selectNode(node, path)}
         class=${classMap({
           track: path in this.trace.action_trace,
+          active: this.selected === path,
         })}
       ></hat-graph-node>
     `;
@@ -243,8 +237,10 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .iconPath=${mdiExclamation}
+        @focus=${this.selectNode(node, path)}
         class=${classMap({
           track: path in this.trace.action_trace,
+          active: this.selected === path,
         })}
       ></hat-graph-node>
     `;
@@ -261,6 +257,11 @@ class HatScriptGraph extends LitElement {
         .track_end=${track_path}
         tabindex="0"
         branching
+        @focus=${this.selectNode(node, path)}
+        class=${classMap({
+          track: path in this.trace.condition_trace,
+          active: this.selected === path,
+        })}
       >
         <hat-graph-node
           .iconPath=${mdiRefresh}
@@ -291,8 +292,10 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .iconPath=${mdiExclamation}
+        @focus=${this.selectNode(node, path)}
         class=${classMap({
           track: path in this.trace.action_trace,
+          active: this.selected === path,
         })}
       ></hat-graph-node>
     `;
@@ -302,8 +305,10 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .iconPath=${mdiChevronRight}
+        @focus=${this.selectNode(node, path)}
         class=${classMap({
           track: path in this.trace.action_trace,
+          active: this.selected === path,
         })}
       ></hat-graph-node>
     `;
@@ -313,8 +318,10 @@ class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .iconPath=${mdiTrafficLight}
+        @focus=${this.selectNode(node, path)}
         class=${classMap({
           track: path in this.trace.action_trace,
+          active: this.selected === path,
         })}
       ></hat-graph-node>
     `;
@@ -335,13 +342,10 @@ class HatScriptGraph extends LitElement {
     };
 
     const type = Object.keys(NODE_TYPES).find((key) => key in node) || "yaml";
-    return NODE_TYPES[type].bind(this)(node, path);
-  }
-
-  firstUpdated() {
-    // prettier-ignore
-    // eslint-disable-next-line no-console
-    console.log(this.trace);
+    const nodeEl = NODE_TYPES[type].bind(this)(node, path);
+    (nodeEl as any).nodeInfo = { config: node, path };
+    this.renderedNodes[path] = nodeEl;
+    return nodeEl;
   }
 
   protected render() {
@@ -371,54 +375,38 @@ class HatScriptGraph extends LitElement {
         </mwc-icon-button>
       </div>
     `;
-    const actionHandler = this.getActionHandler(this.trace);
-    const paths = Object.keys(this.getTrackedNodes());
-    return html` <hat-graph .tree=${actionHandler.createGraph()}></hat-graph> `;
   }
 
-  // public selectPath(path: string) {
-  //   const actionHandler = this.getActionHandler(this.trace!);
-  //   let selected: NodeInfo | undefined;
-
-  //   for (const node of actionHandler.createGraph()) {
-  //     if (node.nodeInfo?.path === path) {
-  //       selected = node.nodeInfo;
-  //       break;
-  //     }
-  //   }
-
-  //   actionHandler.selected = selected?.path || "";
-  //   this.requestUpdate();
-  // }
+  protected update(changedProps: PropertyValues<this>) {
+    if (changedProps.has("trace")) {
+      this.renderedNodes = {};
+    }
+    super.update(changedProps);
+  }
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     // Select first node if new trace loaded but no selection given.
-    // if (changedProps.has("trace")) {
-    //   const tracked = this.getTrackedNodes();
-    //   const paths = Object.keys(tracked);
+    if (changedProps.has("trace")) {
+      const tracked = this.getTrackedNodes();
+      const paths = Object.keys(tracked);
 
-    //   // If trace changed and we have no or an invalid selection, select first option.
-    //   if (this.selected === "" || !(this.selected in paths)) {
-    //     // Find first tracked node with node info
-    //     for (const path of paths) {
-    //       if (tracked[path].nodeInfo) {
-    //         fireEvent(this, "graph-node-selected", tracked[path].nodeInfo);
-    //         break;
-    //       }
-    //     }
-    //   }
-    // }
-
-    // if (changedProps.has("selected")) {
-    //   this.getActionHandler(this.trace).selected = this.selected;
-    //   this.requestUpdate();
-    // }
+      // If trace changed and we have no or an invalid selection, select first option.
+      if (this.selected === "" || !(this.selected in paths)) {
+        // Find first tracked node with node info
+        for (const path of paths) {
+          if (tracked[path].nodeInfo) {
+            fireEvent(this, "graph-node-selected", tracked[path].nodeInfo);
+            break;
+          }
+        }
+      }
+    }
   }
 
   public getTrackedNodes() {
-    return this._getTrackedNodes(this.trace);
+    return this.renderedNodes;
   }
 
   public previousTrackedNode() {
@@ -443,18 +431,6 @@ class HatScriptGraph extends LitElement {
       }
     }
   }
-
-  private _getTrackedNodes = memoizeOne((trace) => {
-    // const tracked: Record<string, TreeNode> = {};
-    // for (const node of bfsIterateTreeNodes(
-    //   this.getActionHandler(trace).createGraph()
-    // )) {
-    //   if (node.isTracked && node.nodeInfo) {
-    //     tracked[node.nodeInfo.path] = node;
-    //   }
-    // }
-    // return tracked;
-  });
 
   static get styles() {
     return css`

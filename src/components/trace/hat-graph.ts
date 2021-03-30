@@ -18,6 +18,11 @@ const track_converter = {
     value instanceof Array ? value.join(",") : `${value}`,
 };
 
+export interface NodeInfo {
+  path: string;
+  config: any;
+}
+
 interface BranchConfig {
   x: number;
   height: number;
