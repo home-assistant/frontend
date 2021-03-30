@@ -56,7 +56,8 @@ export const handleAction = async (
       const [domain, service] = actionConfig.service.split(".", 2);
       const serviceDomains = hass.services;
       if (domain in serviceDomains && service in serviceDomains[domain]) {
-        serviceName = `${domainToName(hass.localize, domain)}: ${
+        const localize = await hass.loadBackendTranslation("title");
+        serviceName = `${domainToName(localize, domain)}: ${
           serviceDomains[domain][service].name || service
         }`;
       }
