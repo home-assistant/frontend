@@ -135,15 +135,15 @@ export class HaAnalytics extends LitElement {
         </span>
       </ha-settings-row>
       <p>
-        ${this.hass.localize(
-          "ui.panel.config.core.section.core.analytics.documentation",
-          "link",
-          html`<a
-            .href=${documentationUrl(this.hass, "/integrations/analytics/")}
-          >
-            ${documentationUrl(this.hass, "/integrations/analytics/")}
-          </a>`
-        )}
+        <a
+          .href=${documentationUrl(this.hass, "/integrations/analytics/")}
+          target="_blank"
+          rel="noreferrer"
+        >
+          ${this.hass.localize(
+            "ui.panel.config.core.section.core.analytics.learn_more"
+          )}
+        </a>
       </p>
     `;
   }

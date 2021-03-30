@@ -1011,7 +1011,7 @@
                     "description": "This includes a count of elements in your installation, for a full list look at the documentation"
                   }
                 },
-                "documentation": "Before you enable this make sure you visit the analytics documentation page {link} to understand what you are sending and how it's stored."
+                "learn_more": "Learn more about how your data will be processed."
               }
             }
           }
