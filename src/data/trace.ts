@@ -5,6 +5,7 @@ import { AutomationConfig } from "./automation";
 interface BaseTraceStep {
   path: string;
   timestamp: string;
+  error?: string;
   changed_variables?: Record<string, unknown>;
 }
 
@@ -19,11 +20,11 @@ export interface TriggerTraceStep extends BaseTraceStep {
 }
 
 export interface ConditionTraceStep extends BaseTraceStep {
-  result: { result: boolean };
+  result?: { result: boolean };
 }
 
 export interface CallServiceActionTraceStep extends BaseTraceStep {
-  result: {
+  result?: {
     limit: number;
     running_script: boolean;
     params: Record<string, unknown>;
@@ -36,11 +37,11 @@ export interface CallServiceActionTraceStep extends BaseTraceStep {
 }
 
 export interface ChooseActionTraceStep extends BaseTraceStep {
-  result: { choice: number | "default" };
+  result?: { choice: number | "default" };
 }
 
 export interface ChooseChoiceActionTraceStep extends BaseTraceStep {
-  result: { result: boolean };
+  result?: { result: boolean };
 }
 
 export type ActionTraceStep =
