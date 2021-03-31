@@ -61,7 +61,7 @@ class HatScriptGraph extends LitElement {
 
   @property({ attribute: false }) public selected;
 
-  renderedNodes: Record<string, any> = {};
+  @property() trackedNodes: Record<string, any> = {};
 
   private selectNode(config, path) {
     return () => {
@@ -69,47 +69,54 @@ class HatScriptGraph extends LitElement {
     };
   }
 
-  private render_trigger(trigger: Trigger, i: number) {
+  private render_trigger(config: Trigger, i: number) {
     const path = `trigger/${i}`;
-    this.renderedNodes[path] = { config: trigger, path };
-    const track_path = path in this.trace.trace ? [0] : undefined;
+    const tracked = true || (this.trace && path in this.trace.trace);
+    if (tracked) {
+      this.trackedNodes[path] = { config, path };
+    }
+    const track_path = tracked ? [0] : undefined;
     return html`
       <hat-graph-node
         graphStart
-        @focus=${this.selectNode(trigger, path)}
+        @focus=${this.selectNode(config, path)}
         class=${classMap({
-          track: this.trace && path in this.trace.trace,
+          track: tracked,
           active: this.selected === path,
         })}
         .iconPath=${mdiAsterisk}
         .track_start=${track_path}
         .track_end=${track_path}
+        tabindex=${tracked ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
 
-  private render_condition(condition: Condition, i: number) {
+  private render_condition(config: Condition, i: number) {
     const path = `condition/${i}`;
-    this.renderedNodes[path] = { config: condition, path };
-    const steps = this.trace.trace[path] as ConditionTraceStep[] | undefined;
-    const track_path = steps === undefined ? 0 : steps[0].result.result ? 1 : 2;
+    const trace = this.trace.trace[path] as ConditionTraceStep[] | undefined;
+    const track_path =
+      trace === undefined ? 0 : trace![0].result.result ? 1 : 2;
+    if (trace) {
+      this.trackedNodes[path] = { config, path };
+    }
     return html`
       <hat-graph
         branching
-        @focus=${this.selectNode(condition, path)}
+        @focus=${this.selectNode(config, path)}
         class=${classMap({
           track: track_path,
           active: this.selected === path,
         })}
         .track_start=${[track_path]}
         .track_end=${[track_path]}
-        tabindex="0"
+        tabindex=${trace === undefined ? "-1" : "0"}
         short
       >
         <hat-graph-node
           slot="head"
           class=${classMap({
-            track: steps !== undefined,
+            track: trace !== undefined,
           })}
           .iconPath=${mdiAbTesting}
           nofocus
@@ -133,22 +140,22 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_choose_node(node: ChooseAction, path: string) {
+  private render_choose_node(config: ChooseAction, path: string) {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
     const trace_path = trace
       ? trace[0].result.choice === "default"
-        ? [node.choose.length]
+        ? [config.choose.length]
         : [trace[0].result.choice]
       : [];
     return html`
       <hat-graph
-        tabindex="0"
+        tabindex=${trace === undefined ? "-1" : "0"}
         branching
         .track_start=${trace_path}
         .track_end=${trace_path}
-        @focus=${this.selectNode(node, path)}
+        @focus=${this.selectNode(config, path)}
         class=${classMap({
-          track: path in this.trace.trace,
+          track: trace !== undefined,
           active: this.selected === path,
         })}
       >
@@ -161,7 +168,7 @@ class HatScriptGraph extends LitElement {
           nofocus
         ></hat-graph-node>
 
-        ${node.choose.map((branch, i) => {
+        ${config.choose.map((branch, i) => {
           const branch_path = `${path}/choose/${i}`;
           return html`
             <hat-graph>
@@ -187,7 +194,7 @@ class HatScriptGraph extends LitElement {
                 trace !== undefined && trace[0].result.choice === "default",
             })}
           ></hat-graph-node>
-          ${node.default?.map((action, i) =>
+          ${config.default?.map((action, i) =>
             this.render_node(action, `${path}/default/${i}`)
           )}
         </hat-graph>
@@ -208,7 +215,7 @@ class HatScriptGraph extends LitElement {
         })}
         .track_start=${[track_path]}
         .track_end=${[track_path]}
-        tabindex="0"
+        tabindex=${trace === undefined ? "-1" : "0"}
         short
       >
         <hat-graph-node
@@ -247,6 +254,7 @@ class HatScriptGraph extends LitElement {
           track: path in this.trace.trace,
           active: this.selected === path,
         })}
+        tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
@@ -260,6 +268,7 @@ class HatScriptGraph extends LitElement {
           track: path in this.trace.trace,
           active: this.selected === path,
         })}
+        tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
@@ -273,6 +282,7 @@ class HatScriptGraph extends LitElement {
           track: path in this.trace.trace,
           active: this.selected === path,
         })}
+        tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
@@ -285,7 +295,7 @@ class HatScriptGraph extends LitElement {
       <hat-graph
         .track_start=${track_path}
         .track_end=${track_path}
-        tabindex="0"
+        tabindex=${trace === undefined ? "-1" : "0"}
         branching
         @focus=${this.selectNode(node, path)}
         class=${classMap({
@@ -327,6 +337,7 @@ class HatScriptGraph extends LitElement {
           track: path in this.trace.trace,
           active: this.selected === path,
         })}
+        tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
@@ -340,6 +351,7 @@ class HatScriptGraph extends LitElement {
           track: path in this.trace.trace,
           active: this.selected === path,
         })}
+        tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
@@ -356,6 +368,7 @@ class HatScriptGraph extends LitElement {
           track: path in this.trace.trace,
           active: this.selected === path,
         })}
+        tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
@@ -390,11 +403,14 @@ class HatScriptGraph extends LitElement {
 
     const type = Object.keys(NODE_TYPES).find((key) => key in node) || "other";
     const nodeEl = NODE_TYPES[type].bind(this)(node, path);
-    this.renderedNodes[path] = { config: node, path };
+    if (this.trace && path in this.trace.trace) {
+      this.trackedNodes[path] = { config: node, path };
+    }
     return nodeEl;
   }
 
   protected render() {
+    const paths = Object.keys(this.trackedNodes);
     return html`
       <hat-graph class="parent">
         <div></div>
@@ -417,10 +433,17 @@ class HatScriptGraph extends LitElement {
         ).map((action, i) => this.render_node(action, `action/${i}`))}
       </hat-graph>
       <div class="actions">
-        <mwc-icon-button @click=${this.previousTrackedNode}>
+        <mwc-icon-button
+          .disabled=${paths.length === 0 || paths[0] === this.selected}
+          @click=${this.previousTrackedNode}
+        >
           <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
         </mwc-icon-button>
-        <mwc-icon-button @click=${this.nextTrackedNode}>
+        <mwc-icon-button
+          .disabled=${paths.length === 0 ||
+          paths[paths.length - 1] === this.selected}
+          @click=${this.nextTrackedNode}
+        >
           <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
         </mwc-icon-button>
       </div>
@@ -429,7 +452,7 @@ class HatScriptGraph extends LitElement {
 
   protected update(changedProps: PropertyValues<this>) {
     if (changedProps.has("trace")) {
-      this.renderedNodes = {};
+      this.trackedNodes = {};
     }
     super.update(changedProps);
   }
@@ -452,17 +475,23 @@ class HatScriptGraph extends LitElement {
           }
         }
       }
+
+      if (this.trace) {
+        const sortKeys = Object.keys(this.trace.trace);
+        const keys = Object.keys(this.trackedNodes).sort(
+          (a, b) => sortKeys.indexOf(a) - sortKeys.indexOf(b)
+        );
+        const sortedTrackedNodes = keys.reduce((obj, key) => {
+          obj[key] = this.trackedNodes[key];
+          return obj;
+        }, {});
+        this.trackedNodes = sortedTrackedNodes;
+      }
     }
   }
 
   public getTrackedNodes() {
-    const tracked = {};
-    for (const path in this.renderedNodes) {
-      if (path in this.trace.trace) {
-        tracked[path] = this.renderedNodes[path];
-      }
-    }
-    return tracked;
+    return this.trackedNodes;
   }
 
   public previousTrackedNode() {
