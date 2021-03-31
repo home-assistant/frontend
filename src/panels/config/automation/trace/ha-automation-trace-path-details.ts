@@ -23,6 +23,7 @@ import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_da
 import { LogbookEntry } from "../../../../data/logbook";
 import { traceTabStyles } from "./styles";
 import { classMap } from "lit-html/directives/class-map";
+import "../../../logbook/ha-logbook";
 
 @customElement("ha-automation-trace-path-details")
 export class HaAutomationTracePathDetails extends LitElement {
@@ -200,13 +201,16 @@ ${safeDump(trace.changed_variables).trimRight()}</pre
       }
     }
 
-    return html`<div class="padded-box">
-      ${entries.map(
-        (entry) =>
-          html`${entry.name} (${entry.entity_id})
-            ${entry.message || `turned ${entry.state}`}<br />`
-      )}
-    </div>`;
+    return entries.length
+      ? html`<ha-logbook
+          relative-time
+          .hass=${this.hass}
+          .entries=${entries}
+          .narrow=${this.narrow}
+        ></ha-logbook>`
+      : html`<div class="padded-box">
+          No Logbook entries found for this step.
+        </div>`;
   }
 
   private _showTab(ev) {
