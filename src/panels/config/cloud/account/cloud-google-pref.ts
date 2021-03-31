@@ -137,8 +137,7 @@ export class CloudGooglePref extends LitElement {
         <div class="card-actions">
           <ha-call-api-button
             .hass=${this.hass}
-            .disabled="${!this.cloudStatus.google_registered ||
-            !google_enabled}"
+            .disabled=${!google_enabled}
             @hass-api-called=${this._syncEntitiesCalled}
             path="cloud/google_actions/sync"
           >
