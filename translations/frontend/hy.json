@@ -622,6 +622,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Անհայտ"
+                    }
+                },
                 "person": {
                     "caption": "Անձինք",
                     "description": "Կառավարել  այն անձանց, որոնք հետապնդում են Home Assistant-ին:",

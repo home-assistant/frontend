@@ -80,6 +80,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Непознат"
+                    }
+                },
                 "zwave": {
                     "node_config": {
                         "set_config_parameter": "Подесите параметар Цонфиг"

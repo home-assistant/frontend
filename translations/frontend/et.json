@@ -1602,7 +1602,7 @@
                         },
                         "introduction": "Automaatika redaktor võimaldab teil luua ja muuta automatiseeringuid. Palun järgige allolevat linki, veendumaks, et oled Home Assistant'i õigesti seadistanud.",
                         "learn_more": "Lisateave automatiseeringute kohta",
-                        "no_automations": "Me ei leidnud ühtegi muudetavat automatiseeringut",
+                        "no_automations": "Ei leitud ühtegi automatiseeringut",
                         "only_editable": "Ainult automations.yaml failis defineeritud automatiseeringud on muudetavad.",
                         "pick_automation": "Vali muudetav automatiseering",
                         "show_info_automation": "Kuva automatiseeringu teave"
@@ -1860,6 +1860,7 @@
                                 "header": "Olekuteave",
                                 "instance_id": "Eksemplari ID: {huuid}",
                                 "introduction": "Jaga oma Home Assistanti oleku teavet. Need andmed on avalikult saadaval aadressil {link}",
+                                "learn_more": "Uuri lisateavet andmete töötlemise kohta.",
                                 "needs_base": "Selle suvandi kasutamiseks pead lubama põhilise olekuteabe",
                                 "preference": {
                                     "base": {
@@ -2237,10 +2238,17 @@
                     "clear": "Puhasta",
                     "description": "Home Assistanti logid",
                     "details": "Logi üksikasjad ({level})",
+                    "level": {
+                        "critical": "OLULINE",
+                        "debug": "SILUMINE",
+                        "error": "VIGA",
+                        "info": "TEAVE",
+                        "warning": "HOIATUS"
+                    },
                     "load_full_log": "Lae kogu Home Assistant'i logi",
                     "loading_log": "Laadin vigade logi...",
                     "multiple_messages": "teavitus esines esmakordselt kell {time} ja on ilmnenud {counter} korda",
-                    "no_errors": "Vigadest pole teatatud.",
+                    "no_errors": "Vigu ei leitud.",
                     "no_issues": "Uusi probleeme pole!",
                     "refresh": "Värskenda"
                 },
@@ -2521,7 +2529,7 @@
                         },
                         "introduction": "Stseeniredaktor võimaldab teil stseene luua ja redigeerida. Juhiste lugemiseks järgige allolevat linki ja veenduge, et olete Home Assistanti õigesti konfigureerinud.",
                         "learn_more": "Lisateave stseenide kohta",
-                        "no_scenes": "Me ei leidnud ühtegi muudetavat stseeni",
+                        "no_scenes": "Ei leitud ühtegi stseeni",
                         "only_editable": "Ainult scenes.yaml failis defineeritud stseenid on muudetavad.",
                         "pick_scene": "Vali stseen mida muuta",
                         "show_info_scene": "Kuva stseeni teave"
@@ -2571,7 +2579,7 @@
                         },
                         "introduction": "Skriptiredaktor võimaldab Teil skripte luua ja redigeerida. Juhiste lugemiseks järgige allolevat linki ja veenduge, et olete Home Assistanti õigesti konfigureerinud.",
                         "learn_more": "Lisateave skriptide kohta",
-                        "no_scripts": "Me ei leidnud ühtegi redigeeritavat skripti",
+                        "no_scripts": "Ei leitud ühtegi skripti",
                         "run_script": "Käivita skript",
                         "show_info": "Kuva stseeni teave"
                     }

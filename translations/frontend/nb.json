@@ -1602,7 +1602,7 @@
                         },
                         "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Følg lenken under for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om automasjoner",
-                        "no_automations": "Vi kunne ikke finne noen redigerbare automasjoner",
+                        "no_automations": "Vi fant ingen automatiseringer",
                         "only_editable": "Bare automasjoner definert i automations.yaml kan redigeres.",
                         "pick_automation": "Velg automasjon for å redigere",
                         "show_info_automation": "Vis informasjon om automasjon"
@@ -1683,7 +1683,7 @@
                         "google": {
                             "config_documentation": "Konfigurasjonsdokumentasjon",
                             "devices_pin": "PIN for sikkerhetsenheter",
-                            "enable_ha_skill": "Aktivere Home Assistant-ferdigheten for Google Assistant",
+                            "enable_ha_skill": "Aktiver Home Assistant Cloud-ferdigheten for Google Assistant",
                             "enable_state_reporting": "Aktiver tilstandsrapportering",
                             "enter_pin_error": "Kan ikke lagre PIN:",
                             "enter_pin_hint": "Angi en PIN-kode for å bruke sikkerhetsenheter",
@@ -1691,6 +1691,8 @@
                             "info": "Med Google Assistant-integrasjonen for Home Assistant Cloud vil du kunne kontrollere alle dine Home Assistant-enheter via hvilken som helst Google Assistant-aktivert enhet.",
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av eksponerte entiteter til Google. Dette lar deg alltid se de siste tilstandene i Google-appen.",
                             "manage_entities": "Håndtér entiteter",
+                            "not_configured_text": "Før du kan bruke Google Assistant, må du aktivere Home Assistant Cloud-ferdigheten for Google Assistant i Google Home-appen.",
+                            "not_configured_title": "Google Assistant er ikke aktivert",
                             "security_devices": "Sikkerhetsenheter",
                             "sync_entities": "Synkronisér entiteter til Google",
                             "sync_entities_404_message": "Kunne ikke synkronisere entitetene dine med Google, be Google 'Hei Google, synkroniser enhetene mine' for å synkronisere entitetene dine.",
@@ -2519,7 +2521,7 @@
                         },
                         "introduction": "Sceneditoren lar deg lage og redigere scener. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om scener",
-                        "no_scenes": "Vi fant ingen redigerbare scener",
+                        "no_scenes": "Vi fant ingen scener",
                         "only_editable": "Bare scener som er definert i scenes.yaml kan redigeres.",
                         "pick_scene": "Velg scene du vil redigere",
                         "show_info_scene": "Vis info om scene"
@@ -2569,7 +2571,7 @@
                         },
                         "introduction": "Skripteditoren lar deg lage og redigere skript. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om skript",
-                        "no_scripts": "Vi kunne ikke finne noen redigerbare skript",
+                        "no_scripts": "Vi fant ingen skript",
                         "run_script": "Kjør skript",
                         "show_info": "Vis informasjon om skript"
                     }

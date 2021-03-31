@@ -805,6 +805,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Nepoznato"
+                    }
+                },
                 "person": {
                     "caption": "Osobe",
                     "description": "Upravljajte osobama koje Home Assistant prati.",

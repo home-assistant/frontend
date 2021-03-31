@@ -945,6 +945,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Ukjent"
+                    }
+                },
                 "person": {
                     "caption": "Personar",
                     "description": "Administrer personane Home Assistant sporer.",

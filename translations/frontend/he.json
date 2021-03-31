@@ -412,6 +412,12 @@
                 "label": "תמונה",
                 "unsupported_format": "פורמט לא נתמך, בחר תמונת JPEG, PNG או GIF."
             },
+            "related-filter-menu": {
+                "filter_by_area": "סנן לפי אזור",
+                "filter_by_device": "סנן לפי מכשיר",
+                "filtered_by_area": "אזור: {area_name}",
+                "filtered_by_device": "מכשיר: {device_name}"
+            },
             "related-items": {
                 "area": "אֵזוֹר",
                 "automation": "חלק מהאוטומציות הבאות",
@@ -1089,6 +1095,8 @@
                             "info": "עם שילוב מסייע Google עבור ענן Home Assistant תוכל לשלוט בכל מכשירי Home Assistant שלך באמצעות כל מכשיר המקושר למסייע של Google.",
                             "info_state_reporting": "אם תפעיל דיווח מצב, Home Assistant ישלח את כל שינויי המצבים של ישויות חשופות ל-Google. זה מאפשר לך תמיד לראות את המצבים האחרונים באפליקציה של גוגל.",
                             "manage_entities": "נהל ישויות",
+                            "not_configured_text": "לפני שתוכל להשתמש ב- Google Assistant, עליך להפעיל את Home Assistant Cloud skill עבור Google Assistant באפליקציית Google Home.",
+                            "not_configured_title": "Google Assistant אינו מופעל",
                             "security_devices": "התקני אבטחה",
                             "sync_entities": "סנכרן ישויות לגוגל",
                             "sync_entities_404_message": "כישלון בסינכרון היישויות שלך ל-Google, בקש מ Google 'Hey Google, sync my devices' כדי לסנכרן את הישויות שלך.",
@@ -1235,6 +1243,9 @@
                     "description": "שנה את התצורה הכללית של Home Assistant",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "learn_more": "למד עוד על אופן עיבוד הנתונים שלך."
+                            },
                             "core_config": {
                                 "edit_requires_storage": "העורך מושבת משום שהתצורה מאוחסנת ב- configuration.yaml.",
                                 "elevation": "גובה",
@@ -1299,7 +1310,7 @@
                     "caption": "התקנים",
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק התקן זה?",
                     "confirm_rename_entity_ids": "האם אתה רוצה גם לשנות את המזהים של הישויות שלך?",
-                    "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי Script, סצנות, Lovelace) המשתמשת כעת בישויות אלה, יהיה עליך לעדכן אותן בעצמך.",
+                    "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי Script, סצנות, Lovelace) המשתמשת כעת בישויות אלה! יהיה עליך לעדכן אותן בעצמך כדי להשתמש במזהים של הישויות החדשות.",
                     "data_table": {
                         "area": "אזור",
                         "battery": "סוללה",
@@ -1412,6 +1423,9 @@
                     "clear": "נקה",
                     "filtering_by": "סינון לפי"
                 },
+                "hassio": {
+                    "button": "הגדר"
+                },
                 "header": "הגדר את Home Assistant",
                 "helpers": {
                     "caption": "עוזרים",
@@ -1477,8 +1491,10 @@
                         "entity_unavailable": "ישות לא זמינה",
                         "firmware": "קושחה: {version}",
                         "hub": "מחובר באמצעות",
+                        "logs": "יומן אירועים",
                         "manuf": "על ידי {manufacturer}",
                         "no_area": "ללא אזור",
+                        "not_loaded": "לא נטען, בדוק את {logs_link}",
                         "options": "אפשרויות",
                         "rename": "שנה שם",
                         "restart_confirm": "הפעל מחדש את Home Assistant כדי להשלים את הסרת האינטגרציה",
@@ -1498,6 +1514,7 @@
                         "finish": "סיום",
                         "loading_first_time": "אנא המתן בזמן שהאינטגרציה מותקנת",
                         "not_all_required_fields": "לא כל שדות החובה מולאו.",
+                        "not_loaded": "לא ניתן היה לטעון את האינטגרציה, נסה להפעיל מחדש את Home Assistant.",
                         "submit": "המשך"
                     },
                     "configure": "הגדר",
@@ -1536,6 +1553,13 @@
                     "clear": "נקה",
                     "description": "צפה ביומני Home Assistant",
                     "details": "פרטי יומן האירועים ({level})",
+                    "level": {
+                        "critical": "CRITICAL",
+                        "debug": "DEBUG",
+                        "error": "ERROR",
+                        "info": "INFO",
+                        "warning": "WARNING"
+                    },
                     "load_full_log": "טען את הלוג המלא של Home Assistant",
                     "loading_log": "טוען יומן שגיאות ...",
                     "multiple_messages": "ההודעה התרחשה לראשונה בשעה {time} והיא מופיעה {counter} פעמים",
@@ -1644,6 +1668,9 @@
                         "node_failed": "הרכיב נכשל",
                         "stage": "שלב",
                         "zwave_info": "מידע Z-Wave"
+                    },
+                    "network_status": {
+                        "unknown": "לא ידוע"
                     },
                     "node_query_stages": {
                         "associations": "מרענן קבוצות וחברויות",
@@ -2765,6 +2792,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "הבא",
+                    "intro": "שתף ניתוחים אנליטים מהמקרה שלך. נתונים אלו יהיו זמינים באופן ציבורי בכתובת {link}"
+                },
                 "core-config": {
                     "button_detect": "לזהות",
                     "finish": "הבא",
@@ -2773,12 +2804,14 @@
                     "intro_location_detect": "אנו יכולים לעזור לך למלא מידע זה על ידי ביצוע בקשה חד פעמית לשירות חיצוני.",
                     "location_name_default": "בית"
                 },
+                "finish": "סיום",
                 "integration": {
                     "finish": "סיום",
                     "intro": "התקנים ושירותים מיוצגים ב- Home Assistant כאינטגרציות. באפשרותך להגדיר אותם כעת, או לעשות זאת מאוחר יותר ממסך התצורה.",
                     "more_integrations": "עוד"
                 },
                 "intro": "האם אתה רוצה לקחת שליטה על הבית שלך ולהצטרף לקהילה הגדולה שלנו?",
+                "next": "הבא",
                 "restore": {
                     "description": "לחלופין, באפשרותך לשחזר מגיבוי קודם.",
                     "hide_log": "הסתר יומן מלא",

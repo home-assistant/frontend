@@ -1602,7 +1602,7 @@
                         },
                         "introduction": "L'Editor di Automazione consente di creare e modificare Automazioni. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Per saperne di più sulle Automazioni",
-                        "no_automations": "Nessuna Automazione modificabile trovata",
+                        "no_automations": "Non abbiamo trovato nessuna automazione",
                         "only_editable": "Solo le automazioni definite in automations.yaml sono modificabili.",
                         "pick_automation": "Scegli l'Automazione da modificare",
                         "show_info_automation": "Mostra informazioni sull'automazione"
@@ -1860,6 +1860,7 @@
                                 "header": "Analisi",
                                 "instance_id": "ID istanza: {huuid}",
                                 "introduction": "Condividi l'analisi dalla tua istanza. Questi dati saranno disponibili pubblicamente all'indirizzo {link}",
+                                "learn_more": "Scopri di più su come verranno elaborati i tuoi dati.",
                                 "needs_base": "È necessario abilitare l'analisi di base affinché questa opzione sia disponibile",
                                 "preference": {
                                     "base": {
@@ -2071,6 +2072,9 @@
                     "filtering_by": "Filtraggio per",
                     "show": "Mostra"
                 },
+                "hassio": {
+                    "button": "Configura"
+                },
                 "header": "Configura Home Assistant",
                 "helpers": {
                     "caption": "Aiutanti",
@@ -2237,6 +2241,13 @@
                     "clear": "Pulisci",
                     "description": "Vedi i registri di Home Assistant",
                     "details": "Dettagli registro ({level})",
+                    "level": {
+                        "critical": "CRITICO",
+                        "debug": "DEBUG",
+                        "error": "ERRORE",
+                        "info": "INFORMAZIONE",
+                        "warning": "AVVERTIMENTO"
+                    },
                     "load_full_log": "Carica il registro completo di Home Assistant",
                     "loading_log": "Caricamento del registro errori...",
                     "multiple_messages": "il messaggio si è verificato per la prima volta alle {time} e compare {counter} volte",
@@ -2521,7 +2532,7 @@
                         },
                         "introduction": "L'Editor di Scene ti consente di creare e modificare Scene. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sulle scene",
-                        "no_scenes": "Impossibile trovare scene modificabili",
+                        "no_scenes": "Non abbiamo trovato nessuna scena",
                         "only_editable": "Solo le scene definite in scenes.yaml sono modificabili.",
                         "pick_scene": "Scegli la scena da modificare",
                         "show_info_scene": "Mostra informazioni sulla scena"
@@ -2571,7 +2582,7 @@
                         },
                         "introduction": "L'Editor di Script consente di creare e modificare Script. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sugli script",
-                        "no_scripts": "Non è stato possibile trovare alcuno script modificabile",
+                        "no_scripts": "Non abbiamo trovato nessuno script",
                         "run_script": "Esegui script",
                         "show_info": "Mostra informazioni sullo script"
                     }

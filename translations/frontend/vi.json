@@ -1286,6 +1286,9 @@
                     "navigation": {
                         "nodes": "Các nút"
                     },
+                    "network_status": {
+                        "unknown": "không xác định"
+                    },
                     "network": {
                         "header": "Quản lý Mạng lưới",
                         "node_count": "{count} nút"

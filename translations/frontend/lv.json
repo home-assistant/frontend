@@ -1144,6 +1144,11 @@
                     "title": "MQTT",
                     "topic": "temats"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Nezināms"
+                    }
+                },
                 "person": {
                     "add_person": "Pievienot personu",
                     "caption": "Personas",

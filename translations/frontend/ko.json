@@ -1602,7 +1602,7 @@
                         },
                         "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "자동화에 대해 더 알아보기",
-                        "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
+                        "no_automations": "자동화를 찾을 수 없습니다",
                         "only_editable": "automations.yaml에 정의된 자동화 만 편집할 수 있습니다.",
                         "pick_automation": "편집할 자동화 선택",
                         "show_info_automation": "자동화에 대한 정보 표시하기"
@@ -1683,18 +1683,20 @@
                         "google": {
                             "config_documentation": "구성 문서",
                             "devices_pin": "보안 기기 PIN",
-                            "enable_ha_skill": "Google 어시스턴트에 Home Assistant 스킬 사용하기",
+                            "enable_ha_skill": "Google Assistant에 Home Assistant 스킬 사용하기",
                             "enable_state_reporting": "상태 보고 활성화",
                             "enter_pin_error": "PIN을 저장할 수 없습니다:",
                             "enter_pin_hint": "보안 기기 사용 PIN 입력",
-                            "enter_pin_info": "보안 기기를 제어하기 위한 PIN을 설정해주세요. 보안 기기는 현관문, 차고 문, 도어록과 같은 기기입니다. Google 어시스턴트를 통해 이러한 기기를 제어할 때 PIN을 입력하거나 말씀해주셔야 합니다.",
-                            "info": "Home Assistant Cloud의 Google 어시스턴트 연동 기능으로 Google 어시스턴트가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
+                            "enter_pin_info": "보안 기기를 제어하기 위한 PIN을 설정해주세요. 보안 기기는 현관문, 차고 문, 도어록과 같은 기기입니다. Google Assistant를 통해 이러한 기기를 제어할 때 PIN을 입력하거나 말씀해주셔야 합니다.",
+                            "info": "Home Assistant Cloud의 Google Assistant 연동 기능으로 Google Assistant가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
                             "info_state_reporting": "상태 보고를 활성화하면 Home Assistant는 노출된 구성요소의 모든 상태 변경 사항을 Google에 보냅니다. 이를 통해 Google 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있습니다.",
                             "manage_entities": "구성요소 관리",
+                            "not_configured_text": "Google Assistant를 사용하려면 먼저 Google Assistant에 대한 Home Assistant Cloud 서비스를 Google Home 앱에서 연결해야 합니다.",
+                            "not_configured_title": "Google Assistant가 연결되지 않았습니다",
                             "security_devices": "보안 기기",
                             "sync_entities": "구성요소를 Google에 동기화",
                             "sync_entities_404_message": "구성요소를 Google과 동기화하지 못했습니다. Google에 'Hey Google, 기기 동기화해줘' 라고 말씀하셔서 구성요소를 동기화해주세요.",
-                            "title": "Google 어시스턴트"
+                            "title": "Google Assistant"
                         },
                         "integrations": "서비스 연동",
                         "integrations_introduction": "Home Assistant Cloud에 연동하면 Home Assistant 인스턴스를 인터넷에 공개적으로 노출하지 않고도 클라우드를 통해 서비스에 연결할 수 있습니다.",
@@ -1755,7 +1757,7 @@
                         "not_exposed_entities": "노출되지 않은 구성요소",
                         "title": "Alexa"
                     },
-                    "description_features": "집 밖에서도 집을 관리하고 Alexa 및 Google 어시스턴트와 연동시킵니다",
+                    "description_features": "집 밖에서도 집을 관리하고 Alexa 및 Google Assistant와 연동시킵니다",
                     "description_login": "{email}(으)로 로그인 되어있습니다",
                     "description_not_login": "로그인이 되어있지 않습니다",
                     "dialog_certificate": {
@@ -1789,7 +1791,7 @@
                         "banner": "configuration.yaml에서 구성요소 필터를 구성했으므로 이 UI를 통해 노출되는 구성요소는 편집할 수 없습니다.",
                         "disable_2FA": "2단계 인증 비활성화",
                         "dont_expose_entity": "구성 요소 노출하지 않기",
-                        "expose": "Google 어시스턴트에 노출",
+                        "expose": "Google Assistant에 노출",
                         "expose_entity": "구성 요소 노출하기",
                         "exposed": "{selected}개의 구성요소가 노출됨",
                         "exposed_entities": "노출된 구성요소",
@@ -1798,7 +1800,7 @@
                         "not_exposed": "{selected}개의 구성요소가 노출되지 않음",
                         "not_exposed_entities": "노출되지 않은 구성요소",
                         "sync_to_google": "변경 사항을 Google에 동기화하는 중.",
-                        "title": "Google 어시스턴트"
+                        "title": "Google Assistant"
                     },
                     "login": {
                         "alert_email_confirm_necessary": "로그인하기 전에 검증 이메일을 확인해야 합니다.",
@@ -1807,7 +1809,7 @@
                         "email": "이메일",
                         "email_error_msg": "이메일 형식이 잘못되었습니다",
                         "forgot_password": "비밀번호가 기억나지 않으세요?",
-                        "introduction": "Home Assistant Cloud는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다. 또한 Amazon Alexa 및 Google 어시스턴트와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
+                        "introduction": "Home Assistant Cloud는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다. 또한 Amazon Alexa 및 Google Assistant와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
                         "introduction2": "이 서비스는 Home Assistant와 Hass.io의 창립자가 설립한 회사인 ",
                         "introduction2a": "에 의해 운영되고 있습니다.",
                         "introduction3": "Home Assistant Cloud는 1개월 무료 평가판이 포함된 구독 서비스입니다. 결제 정보는 필요하지 않습니다.",
@@ -1825,7 +1827,7 @@
                         "email_address": "이메일 주소",
                         "email_error_msg": "이메일 형식이 잘못되었습니다",
                         "feature_amazon_alexa": "Amazon Alexa 연동",
-                        "feature_google_home": "Google 어시스턴트 연동",
+                        "feature_google_home": "Google Assistant 연동",
                         "feature_remote_control": "집 밖에서 Home Assistant를 제어",
                         "feature_webhook_apps": "OwnTracks 와 같은 웹 훅 기반 앱과 쉬운 연동",
                         "headline": "1개월 무료 평가판 사용해 보기",
@@ -2519,7 +2521,7 @@
                         },
                         "introduction": "씬 편집기를 사용하여 씬을 작성하고 편집 할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "씬에 대해 더 알아보기",
-                        "no_scenes": "편집 가능한 씬을 찾을 수 없습니다",
+                        "no_scenes": "씬을 찾을 수 없습니다",
                         "only_editable": "scenes.yaml에 정의된 씬 만 편집할 수 있습니다.",
                         "pick_scene": "편집할 씬 선택하기",
                         "show_info_scene": "씬에 대한 정보 표시하기"
@@ -2569,7 +2571,7 @@
                         },
                         "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "스크립트에 대해 더 알아보기",
-                        "no_scripts": "편집 가능한 스크립트를 찾을 수 없습니다",
+                        "no_scripts": "스크립트를 찾을 수 없습니다",
                         "run_script": "스크립트 실행",
                         "show_info": "스크립트에 대한 정보 표시하기"
                     }

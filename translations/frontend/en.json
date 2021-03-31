@@ -1860,6 +1860,7 @@
                                 "header": "Analytics",
                                 "instance_id": "Instance ID: {huuid}",
                                 "introduction": "Share analytics from your instance. This data will be publiclly available at {link}",
+                                "learn_more": "Learn more about how your data will be processed.",
                                 "needs_base": "You need to enable base analytics for this option to be available",
                                 "preference": {
                                     "base": {
@@ -2071,6 +2072,9 @@
                     "filtering_by": "Filtering by",
                     "show": "Show"
                 },
+                "hassio": {
+                    "button": "Configure"
+                },
                 "header": "Configure Home Assistant",
                 "helpers": {
                     "caption": "Helpers",
@@ -2237,10 +2241,17 @@
                     "clear": "Clear",
                     "description": "View the Home Assistant logs",
                     "details": "Log Details ({level})",
+                    "level": {
+                        "critical": "CRITICAL",
+                        "debug": "DEBUG",
+                        "error": "ERROR",
+                        "info": "INFO",
+                        "warning": "WARNING"
+                    },
                     "load_full_log": "Load Full Home Assistant Log",
                     "loading_log": "Loading error log…",
                     "multiple_messages": "message first occurred at {time} and shows up {counter} times",
-                    "no_errors": "No errors have been reported.",
+                    "no_errors": "No errors have been reported",
                     "no_issues": "There are no new issues!",
                     "refresh": "Refresh"
                 },

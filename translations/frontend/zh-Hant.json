@@ -1683,7 +1683,7 @@
                         "google": {
                             "config_documentation": "設定文件",
                             "devices_pin": "安全裝置 PIN 碼",
-                            "enable_ha_skill": "啟用 Home Assistant skill for Google Assistant",
+                            "enable_ha_skill": "啟用 Google Assistant 內的 Home Assistant 技能",
                             "enable_state_reporting": "開啟狀態回報",
                             "enter_pin_error": "無法儲存 PIN：",
                             "enter_pin_hint": "請輸入安全碼以使用加密裝置",
@@ -1691,6 +1691,8 @@
                             "info": "藉由 Home Assistant Cloud 雲服務  Google Assistant 整合，將能透過 Google Assistant 支援裝置以控制所有 Home Assistant 裝置。",
                             "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Google。以確保於 Google app 中裝置永遠保持最新狀態、並藉以創建例行自動化。",
                             "manage_entities": "管理實體",
+                            "not_configured_text": "於開始使用 Google Assistant 之前、必須先於 Google Home App 中的 Google Assistant 啟用 Home Assistant Cloud 技能。",
+                            "not_configured_title": "Google Assistant 未啟用",
                             "security_devices": "安全裝置",
                             "sync_entities": "與 Google 同步實體",
                             "sync_entities_404_message": "與 Google 同步實體失敗，使用「Hey Google, sync my devices」以要求 Google 同步實體。",
@@ -2519,7 +2521,7 @@
                         },
                         "introduction": "場景編輯器允許新增或編輯場景。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "learn_more": "詳細了解場景",
-                        "no_scenes": "找不到任何可編輯場景",
+                        "no_scenes": "沒有任何可編輯的場景",
                         "only_editable": "僅有於 scenes.yaml 檔案內定義的場景、方能進行編輯。",
                         "pick_scene": "選擇欲編輯的場景",
                         "show_info_scene": "顯示關於場景資訊"
@@ -2569,7 +2571,7 @@
                         },
                         "introduction": "腳本編輯器允許新增或編輯腳本。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "learn_more": "詳細了解腳本",
-                        "no_scripts": "無法找到任何可編輯的腳本",
+                        "no_scripts": "沒有任何可編輯的腳本",
                         "run_script": "執行腳本",
                         "show_info": "顯示關於腳本資訊"
                     }
