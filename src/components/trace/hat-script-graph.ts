@@ -25,6 +25,7 @@ import {
   mdiChevronRight,
   mdiChevronUp,
   mdiClose,
+  mdiCodeBrackets,
   mdiDevices,
   mdiExclamation,
   mdiRefresh,
@@ -34,6 +35,19 @@ import {
 import "./hat-graph-node";
 import { classMap } from "lit-html/directives/class-map";
 import { NODE_SIZE, SPACING, NodeInfo } from "./hat-graph";
+import { Condition, Trigger } from "../../data/automation";
+import {
+  Action,
+  ChooseAction,
+  DelayAction,
+  DeviceAction,
+  EventAction,
+  RepeatAction,
+  SceneAction,
+  ServiceAction,
+  WaitAction,
+  WaitForTriggerAction,
+} from "../../data/script";
 
 declare global {
   interface HASSDomEvents {
@@ -55,7 +69,7 @@ class HatScriptGraph extends LitElement {
     };
   }
 
-  private render_trigger(trigger, i) {
+  private render_trigger(trigger: Trigger, i: number) {
     const path = `trigger/${i}`;
     this.renderedNodes[path] = { config: trigger, path };
     const track_path = path in this.trace.trace ? [0] : undefined;
@@ -74,7 +88,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_condition(condition, i) {
+  private render_condition(condition: Condition, i: number) {
     const path = `condition/${i}`;
     this.renderedNodes[path] = { config: condition, path };
     const steps = this.trace.trace[path] as ConditionTraceStep[] | undefined;
@@ -119,7 +133,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_choose_node(node, path) {
+  private render_choose_node(node: ChooseAction, path: string) {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
     const trace_path = trace
       ? trace[0].result.choice === "default"
@@ -173,7 +187,7 @@ class HatScriptGraph extends LitElement {
                 trace !== undefined && trace[0].result.choice === "default",
             })}
           ></hat-graph-node>
-          ${node.default.map((action, i) =>
+          ${node.default?.map((action, i) =>
             this.render_node(action, `${path}/default/${i}`)
           )}
         </hat-graph>
@@ -181,7 +195,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_condition_node(node, path) {
+  private render_condition_node(node: Condition, path: string) {
     const trace: any = this.trace.trace[path];
     const track_path = trace === undefined ? 0 : trace[0].result.result ? 1 : 2;
     return html`
@@ -224,7 +238,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_delay_node(node, path) {
+  private render_delay_node(node: DelayAction, path: string) {
     return html`
       <hat-graph-node
         .iconPath=${mdiTimerOutline}
@@ -237,7 +251,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_device_node(node, path) {
+  private render_device_node(node: DeviceAction, path: string) {
     return html`
       <hat-graph-node
         .iconPath=${mdiDevices}
@@ -250,7 +264,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_event_node(node, path) {
+  private render_event_node(node: EventAction, path: string) {
     return html`
       <hat-graph-node
         .iconPath=${mdiExclamation}
@@ -263,7 +277,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_repeat_node(node, path) {
+  private render_repeat_node(node: RepeatAction, path: string) {
     const trace: any = this.trace.trace[path];
     const track_path = trace ? [0, 1] : [];
     const repeats = this.trace?.trace[`${path}/repeat/sequence/0`]?.length;
@@ -293,7 +307,7 @@ class HatScriptGraph extends LitElement {
           class=${classMap({
             track: track_path.includes(1),
           })}
-          .number=${repeats}
+          .badge=${repeats}
         ></hat-graph-node>
         <hat-graph>
           ${node.repeat.sequence.map((action, i) =>
@@ -304,7 +318,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_scene_node(node, path) {
+  private render_scene_node(node: SceneAction, path: string) {
     return html`
       <hat-graph-node
         .iconPath=${mdiExclamation}
@@ -317,7 +331,7 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_service_node(node, path) {
+  private render_service_node(node: ServiceAction, path: string) {
     return html`
       <hat-graph-node
         .iconPath=${mdiChevronRight}
@@ -330,7 +344,10 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_wait_template_node(node, path) {
+  private render_wait_node(
+    node: WaitAction | WaitForTriggerAction,
+    path: string
+  ) {
     return html`
       <hat-graph-node
         .iconPath=${mdiTrafficLight}
@@ -343,7 +360,20 @@ class HatScriptGraph extends LitElement {
     `;
   }
 
-  private render_node(node, path) {
+  private render_other_node(node: Action, path: string) {
+    return html`
+      <hat-graph-node
+        .iconPath=${mdiCodeBrackets}
+        @focus=${this.selectNode(node, path)}
+        class=${classMap({
+          track: path in this.trace.trace,
+          active: this.selected === path,
+        })}
+      ></hat-graph-node>
+    `;
+  }
+
+  private render_node(node: Action, path: string) {
     const NODE_TYPES = {
       choose: this.render_choose_node,
       condition: this.render_condition_node,
@@ -353,11 +383,12 @@ class HatScriptGraph extends LitElement {
       repeat: this.render_repeat_node,
       scene: this.render_scene_node,
       service: this.render_service_node,
-      wait_template: this.render_wait_template_node,
-      yaml: this.render_device_node,
+      wait_template: this.render_wait_node,
+      wait_for_trigger: this.render_wait_node,
+      other: this.render_other_node,
     };
 
-    const type = Object.keys(NODE_TYPES).find((key) => key in node) || "yaml";
+    const type = Object.keys(NODE_TYPES).find((key) => key in node) || "other";
     const nodeEl = NODE_TYPES[type].bind(this)(node, path);
     this.renderedNodes[path] = { config: node, path };
     return nodeEl;
@@ -365,21 +396,25 @@ class HatScriptGraph extends LitElement {
 
   protected render() {
     return html`
-      <hat-graph>
+      <hat-graph class="parent">
         <div></div>
         <hat-graph branching id="trigger">
-          ${this.trace.config.trigger.map((trigger, i) =>
-            this.render_trigger(trigger, i)
-          )}
+          ${(Array.isArray(this.trace.config.trigger)
+            ? this.trace.config.trigger
+            : [this.trace.config.trigger]
+          ).map((trigger, i) => this.render_trigger(trigger, i))}
         </hat-graph>
         <hat-graph id="condition">
-          ${this.trace.config.condition?.map((condition, i) =>
-            this.render_condition(condition, i)
-          )}
+          ${(!this.trace.config.condition ||
+          Array.isArray(this.trace.config.condition)
+            ? this.trace.config.condition
+            : [this.trace.config.condition]
+          )?.map((condition, i) => this.render_condition(condition, i))}
         </hat-graph>
-        ${this.trace.config.action.map((action, i) =>
-          this.render_node(action, `action/${i}`)
-        )}
+        ${(Array.isArray(this.trace.config.action)
+          ? this.trace.config.action
+          : [this.trace.config.action]
+        ).map((action, i) => this.render_node(action, `action/${i}`))}
       </hat-graph>
       <div class="actions">
         <mwc-icon-button @click=${this.previousTrackedNode}>
@@ -421,7 +456,13 @@ class HatScriptGraph extends LitElement {
   }
 
   public getTrackedNodes() {
-    return this.renderedNodes;
+    const tracked = {};
+    for (const path in this.renderedNodes) {
+      if (path in this.trace.trace) {
+        tracked[path] = this.renderedNodes[path];
+      }
+    }
+    return tracked;
   }
 
   public previousTrackedNode() {
@@ -455,6 +496,9 @@ class HatScriptGraph extends LitElement {
       .actions {
         display: flex;
         flex-direction: column;
+      }
+      .parent {
+        margin-left: 8px;
       }
     `;
   }

@@ -12,7 +12,7 @@ export class HatGraphNode extends LitElement {
 
   @property({ reflect: true, type: Boolean }) nofocus?: boolean;
 
-  @property({ reflect: true, type: Number }) number?: number;
+  @property({ reflect: true, type: Number }) badge?: number;
 
   connectedCallback() {
     super.connectedCallback();
@@ -64,7 +64,7 @@ export class HatGraphNode extends LitElement {
         r="${NODE_SIZE / 2}"
       />
       ${
-        this.number
+        this.badge
           ? svg`
         <g class="number">
           <circle
@@ -77,7 +77,7 @@ export class HatGraphNode extends LitElement {
             y="${-NODE_SIZE / 2}"
             text-anchor="middle"
             alignment-baseline="middle"
-          >${this.number > 9 ? "9+" : this.number}</text>
+          >${this.badge > 9 ? "9+" : this.badge}</text>
         </g>
       `
           : ""
@@ -113,10 +113,11 @@ export class HatGraphNode extends LitElement {
         --stroke-clr: var(--track-clr);
         --icon-clr: var(--default-icon-clr);
       }
-      :host(.active),
-      :host(:focus) {
+      :host(.active) circle {
         --stroke-clr: var(--active-clr);
         --icon-clr: var(--default-icon-clr);
+      }
+      :host(:focus) {
         outline: none;
       }
       :host(:hover) circle {
