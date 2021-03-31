@@ -71,11 +71,10 @@ class HatScriptGraph extends LitElement {
 
   private render_trigger(config: Trigger, i: number) {
     const path = `trigger/${i}`;
-    const tracked = true || (this.trace && path in this.trace.trace);
+    const tracked = this.trace && path in this.trace.trace;
     if (tracked) {
       this.trackedNodes[path] = { config, path };
     }
-    const track_path = tracked ? [0] : undefined;
     return html`
       <hat-graph-node
         graphStart
@@ -85,8 +84,6 @@ class HatScriptGraph extends LitElement {
           active: this.selected === path,
         })}
         .iconPath=${mdiAsterisk}
-        .track_start=${track_path}
-        .track_end=${track_path}
         tabindex=${tracked ? "0" : "-1"}
       ></hat-graph-node>
     `;
@@ -411,14 +408,30 @@ class HatScriptGraph extends LitElement {
 
   protected render() {
     const paths = Object.keys(this.trackedNodes);
+
+    const manual_triggered = this.trace && "trigger" in this.trace.trace;
+    let track_path = manual_triggered ? undefined : [0];
+    const trigger_nodes = (Array.isArray(this.trace.config.trigger)
+      ? this.trace.config.trigger
+      : [this.trace.config.trigger]
+    ).map((trigger, i) => {
+      if (this.trace && `trigger/${i}` in this.trace.trace) {
+        track_path = [i];
+      }
+      return this.render_trigger(trigger, i);
+    });
+
     return html`
       <hat-graph class="parent">
         <div></div>
-        <hat-graph branching id="trigger">
-          ${(Array.isArray(this.trace.config.trigger)
-            ? this.trace.config.trigger
-            : [this.trace.config.trigger]
-          ).map((trigger, i) => this.render_trigger(trigger, i))}
+        <hat-graph
+          branching
+          id="trigger"
+          .short=${trigger_nodes.length < 2}
+          .track_start=${track_path}
+          .track_end=${track_path}
+        >
+          ${trigger_nodes}
         </hat-graph>
         <hat-graph id="condition">
           ${(!this.trace.config.condition ||
