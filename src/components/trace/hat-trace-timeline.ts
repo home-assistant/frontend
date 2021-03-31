@@ -334,7 +334,10 @@ class ActionRenderer {
       }
 
       // We're going to skip all conditions
-      if (parts[startLevel + 3] === "sequence") {
+      if (
+        (defaultExecuted && parts[startLevel + 1] === "default") ||
+        (!defaultExecuted && parts[startLevel + 3] === "sequence")
+      ) {
         break;
       }
     }
