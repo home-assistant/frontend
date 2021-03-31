@@ -66,8 +66,11 @@ export class HaAutomationTrace extends LitElement {
 
   @internalProperty() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _view: "details" | "config" | "timeline" =
-    "details";
+  @internalProperty() private _view:
+    | "details"
+    | "config"
+    | "timeline"
+    | "logbook" = "details";
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -181,6 +184,7 @@ export class HaAutomationTrace extends LitElement {
                     ${[
                       ["details", "Step Details"],
                       ["timeline", "Trace Timeline"],
+                      ["logbook", "Related logbook entries"],
                       ["config", "Automation Config"],
                     ].map(
                       ([view, label]) => html`
@@ -215,6 +219,13 @@ export class HaAutomationTrace extends LitElement {
                           .hass=${this.hass}
                           .trace=${this._trace}
                         ></ha-automation-trace-config>
+                      `
+                    : this._view === "logbook"
+                    ? html`
+                        <ha-logbook
+                          .hass=${this.hass}
+                          .entries=${this._logbookEntries}
+                        ></ha-logbook>
                       `
                     : html`
                         <ha-automation-trace-timeline
