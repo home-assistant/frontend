@@ -279,12 +279,17 @@ export class HaManualAutomationEditor extends LitElement {
     if (mode === this.config!.mode) {
       return;
     }
+    const value = {
+      ...this.config!,
+      mode,
+    };
+
+    if (!MODES_MAX.includes(mode)) {
+      delete value.max;
+    }
+
     fireEvent(this, "value-changed", {
-      value: {
-        ...this.config!,
-        mode,
-        max: !MODES_MAX.includes(mode) ? undefined : this.config.max,
-      },
+      value,
     });
   }
 
