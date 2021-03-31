@@ -753,6 +753,9 @@
         "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant.",
         "update": "Update"
       },
+      "zha_reconfigure_device": {
+        "heading": "Reconfiguring device"
+      },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
