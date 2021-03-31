@@ -1962,7 +1962,8 @@
                             "ready": "Готов за свързване",
                             "started": "Свързан към MQTT",
                             "starting": "Свързване към MQTT"
-                        }
+                        },
+                        "unknown": "Неизвестно"
                     },
                     "node_metadata": {
                         "product_manual": "Ръководство за продукта"

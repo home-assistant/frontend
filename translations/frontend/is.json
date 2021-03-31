@@ -1386,6 +1386,9 @@
                     "common": {
                         "zwave": "Z-Wave"
                     },
+                    "network_status": {
+                        "unknown": "Óþekktur"
+                    },
                     "nodes_table": {
                         "manufacturer": "Framleiðandi",
                         "model": "Gerð",

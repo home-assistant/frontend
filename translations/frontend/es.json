@@ -841,8 +841,10 @@
                 "unsupported_format": "Formato no soportado, por favor, selecciona una imagen JPEG, PNG o GIF."
             },
             "related-filter-menu": {
-                "filter_by_area": "Filtrar por area",
-                "filter_by_device": "Filtrar por dispositivo"
+                "filter_by_area": "Filtrar por área",
+                "filter_by_device": "Filtrar por dispositivo",
+                "filtered_by_area": "área: {area_name}",
+                "filtered_by_device": "dispositivo: {device_name}"
             },
             "related-items": {
                 "area": "Área",
@@ -1599,7 +1601,7 @@
                         },
                         "introduction": "El editor de automatización te permite crear y editar automatizaciones. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado correctamente Home Assistant.",
                         "learn_more": "Aprende más sobre las automatizaciones",
-                        "no_automations": "No pudimos encontrar ninguna automatización editable",
+                        "no_automations": "No pudimos encontrar ninguna automatización",
                         "only_editable": "Solo las automatizaciones definidas en automations.yaml son editables.",
                         "pick_automation": "Elije la automatización para editar",
                         "show_info_automation": "Mostrar información sobre la automatización"
@@ -1680,7 +1682,7 @@
                         "google": {
                             "config_documentation": "Documentación de configuración",
                             "devices_pin": "PIN de dispositivos de seguridad",
-                            "enable_ha_skill": "Activa la skill de Home Assistant para el Asistente de Google",
+                            "enable_ha_skill": "Activar la skill Home Assistant Cloud para Google Assistant",
                             "enable_state_reporting": "Activar informes de estado",
                             "enter_pin_error": "No se puede almacenar el PIN:",
                             "enter_pin_hint": "Introduce un PIN para utilizar dispositivos de seguridad",
@@ -1688,7 +1690,7 @@
                             "info": "Con la integración del Asistente de Google para Home Assistant Cloud, podrás controlar todos tus dispositivos Home Assistant a través de cualquier dispositivo habilitado para Asistente de Google.",
                             "info_state_reporting": "Si activas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Google. Esto te permite ver siempre los últimos estados en la aplicación de Google.",
                             "manage_entities": "Administrar entidades",
-                            "not_configured_text": "Antes de poder usar Google Assistant, necesitas activar el Home Assistant Cloud skill para Google Assistant en la aplicación Google Home.",
+                            "not_configured_text": "Antes de poder usar Google Assistant, debes activar la skill de Home Assistant Cloud para Google Assistant en la aplicación Google Home.",
                             "not_configured_title": "Google Assistant no está activado",
                             "security_devices": "Dispositivos de seguridad",
                             "sync_entities": "Sincronizar entidades con Google",
@@ -2518,7 +2520,7 @@
                         },
                         "introduction": "El editor de escenas te permite crear y editar escenas. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Aprende más sobre las escenas",
-                        "no_scenes": "No pudimos encontrar ninguna escena editable",
+                        "no_scenes": "No pudimos encontrar ninguna escena",
                         "only_editable": "Solo las escenas definidas en scenes.yaml son editables.",
                         "pick_scene": "Elige una escena para editar",
                         "show_info_scene": "Mostrar información sobre la escena"
@@ -2568,7 +2570,7 @@
                         },
                         "introduction": "El editor de scripts te permite crear y editar scripts. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Aprende más sobre los scripts",
-                        "no_scripts": "No hemos encontrado ningún script editable",
+                        "no_scripts": "No pudimos encontrar ningún script",
                         "run_script": "Ejecutar script",
                         "show_info": "Mostrar información sobre el script"
                     }

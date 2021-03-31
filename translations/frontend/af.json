@@ -920,6 +920,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Onbekend"
+                    }
+                },
                 "person": {
                     "caption": "Persone",
                     "description": "Bestuur die persone wat Home Assistant op spoor.",

@@ -507,7 +507,7 @@
             },
             "automation": {
                 "last_triggered": "Zuletzt ausgelöst",
-                "trigger": "Auslösen"
+                "trigger": "Aktionen ausführen"
             },
             "camera": {
                 "not_available": "Bild nicht verfügbar"

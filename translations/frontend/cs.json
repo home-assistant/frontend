@@ -723,6 +723,9 @@
                 "today": "Dnes"
             },
             "data-table": {
+                "clear": "Vymazat",
+                "filtering_by": "Filtrované dle",
+                "hidden": "{number} skryté",
                 "no-data": "Žádná data",
                 "search": "Hledat"
             },
@@ -836,6 +839,12 @@
             "picture-upload": {
                 "label": "Obrázek",
                 "unsupported_format": "Nepodporovaný formát, prosím vyberte obrázek typu JPEG, PNG nebo GIF."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filtrovat dle oblasti",
+                "filter_by_device": "Filtrovat dle zařízení",
+                "filtered_by_area": "oblasti: {area_name}",
+                "filtered_by_device": "zařízení: {device_name}"
             },
             "related-items": {
                 "area": "Oblast",
@@ -1473,6 +1482,7 @@
                         "move_down": "Posunout dolů",
                         "move_up": "Posunout nahoru",
                         "save": "Uložit",
+                        "show_trace": "Zobrazit trasování",
                         "triggers": {
                             "add": "Přidat spouštěč",
                             "delete": "Smazat",
@@ -1592,7 +1602,7 @@
                         },
                         "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím pokyny na odkazu níže, abyste se ujistili, že jste Home Assistant nastavili správně.",
                         "learn_more": "Další informace o automatizacích",
-                        "no_automations": "Nemohli jsme najít žádné upravitelné automatizace",
+                        "no_automations": "Nenašli jsme žádné automatizace",
                         "only_editable": "Upravitelné mohou být pouze automatizace definované v automations.yaml.",
                         "pick_automation": "Vyberte automatizaci, kterou chcete upravit",
                         "show_info_automation": "Zobrazit informace o automatizaci"
@@ -1673,7 +1683,7 @@
                         "google": {
                             "config_documentation": "Dokumentace pro nastavení",
                             "devices_pin": "PIN pro zabezpečovací zařízení",
-                            "enable_ha_skill": "Povolte Home Assistant skill pro Google Assistant",
+                            "enable_ha_skill": "Povolte Home Assistant Cloud pro Google Assistant",
                             "enable_state_reporting": "Povolit hlášení stavu",
                             "enter_pin_error": "Nelze uložit PIN:",
                             "enter_pin_hint": "Chcete-li používat zabezpečovací zařízení, zadejte kód PIN",
@@ -1681,6 +1691,7 @@
                             "info": "Díky integraci Google Assistant pro Home Assistant Cloud budete moci ovládat všechna zařízení v Home Assistant pomocí jakéhokoli zařízení podporujícího Google Assistant.",
                             "info_state_reporting": "Pokud povolíte hlášení stavu, Home Assistant bude posílat veškeré změny stavů všech exponovaných entit do Google. Toto vám umožní sledovat vždy aktuální stavy entit v aplikaci Google.",
                             "manage_entities": "Správa entit",
+                            "not_configured_title": "Google Asistent není aktivován",
                             "security_devices": "Zabezpečovací zařízení",
                             "sync_entities": "Synchronizovat entity s Google",
                             "sync_entities_404_message": "Nepodařilo se synchronizovat vaše entity s Googlem, řekněte Googlu 'Hey Google, sync my devices', aby vaše entity synchronizovala.",
@@ -1843,6 +1854,35 @@
                     "description": "Jednotkový systém, umístění, časové pásmo a další obecné parametry",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Před povolením této možnosti se ujistěte, že jste navštívili stránku dokumentace analytiky {link}, abyste pochopili, co odesíláte za data a jak budou uložena.",
+                                "header": "Analytika",
+                                "instance_id": "ID instance: {huuid}",
+                                "introduction": "Sdílejte analytiku ze své instance. Tato data budou veřejně dostupná na {link}",
+                                "needs_base": "Aby byla tato možnost k dispozici, musíte povolit základní analytiku",
+                                "preference": {
+                                    "base": {
+                                        "description": "To zahrnuje ID instance, verzi a typ instalace",
+                                        "title": "Základní analytika"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Sdílet zprávy o selhání a diagnostické informace",
+                                        "title": "Diagnostika"
+                                    },
+                                    "statistics": {
+                                        "description": "To zahrnuje počet prvků v instalaci, úplný seznam najdete v dokumentaci",
+                                        "title": "Statistiky používání"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "To zahrnuje názvy a možnosti vašich integrací a doplňků",
+                                        "title": "Použité integrace a doplňky"
+                                    },
+                                    "usage": {
+                                        "description": "To zahrnuje názvy vašich integrací",
+                                        "title": "Použité integrace"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor je zakázán, protože nastavení je uloženo v configuration.yaml.",
                                 "elevation": "Nadmořská výška",
@@ -2116,8 +2156,10 @@
                         "entity_unavailable": "Entita není dostupná",
                         "firmware": "Firmware: {version}",
                         "hub": "Připojeno přes",
+                        "logs": "logy",
                         "manuf": "od {manufacturer}",
                         "no_area": "Žádná oblast",
+                        "not_loaded": "Není načtena, zkontrolujte {logs_link}",
                         "options": "Možnosti",
                         "reload": "Nově načíst",
                         "reload_confirm": "Integrace byla nově načtena",
@@ -2143,6 +2185,7 @@
                         "finish": "Dokončit",
                         "loading_first_time": "Počkejte prosím, než bude integrace nainstalována.",
                         "not_all_required_fields": "Nejsou vyplněna všechna povinná pole.",
+                        "not_loaded": "Integraci se nepodařilo načíst, zkuste restartovat Home Assistant.",
                         "pick_flow_step": {
                             "new_flow": "Ne, nastavit další instanci integrace {integration}",
                             "title": "Objevili jsme tyto integrace, chcete je nastavit?"
@@ -2157,6 +2200,7 @@
                     "disable": {
                         "disabled_integrations": "{number} zakázáno",
                         "hide_disabled": "Skrýt zakázané integrace",
+                        "show": "Zobrazit",
                         "show_disabled": "Zobrazit zakázané integrace"
                     },
                     "discovered": "Objeveno",
@@ -2476,7 +2520,7 @@
                         },
                         "introduction": "Editor scén vám umožňuje vytvářet a upravovat scény. Přečtěte si pokyny na odkazy níže, abyste se ujistili, že jste Home Assistant nastavili správně.",
                         "learn_more": "Další informace o scénách",
-                        "no_scenes": "Nemohli jsme najít žádné upravitelné scény",
+                        "no_scenes": "Nenašli jsme žádné scény",
                         "only_editable": "Lze upravovat pouze scény definované v souboru scenes.yaml.",
                         "pick_scene": "Vyberte scénu, kterou chcete upravit",
                         "show_info_scene": "Zobrazit informace o scéně"
@@ -2526,7 +2570,7 @@
                         },
                         "introduction": "Editor skriptů umožňuje vytvářet a upravovat skripty. Přečtěte si pokyny na odkazy níže, abyste se ujistili, že jste Home Assistant nastavili správně.",
                         "learn_more": "Další informace o skriptech",
-                        "no_scripts": "Nemohli jsme najít žádné upravitelné skripty",
+                        "no_scripts": "Nenašli jsme žádné skripty",
                         "run_script": "Spustit skript",
                         "show_info": "Zobrazit informace o skriptu"
                     }
@@ -3688,6 +3732,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Další",
+                    "intro": "Sdílejte analytiku ze své instance. Tato data budou veřejně dostupná na {link}"
+                },
                 "core-config": {
                     "button_detect": "Rozpoznat",
                     "finish": "Další",
@@ -3697,12 +3745,14 @@
                     "location_name": "Název vaší instalace Home Assistant",
                     "location_name_default": "Domov"
                 },
+                "finish": "Dokončit",
                 "integration": {
                     "finish": "Dokončit",
                     "intro": "Zařízení a služby jsou v Home Assistant reprezentovány jako integrace. Ty můžete nastavit nyní nebo později v nastavení.",
                     "more_integrations": "Více"
                 },
                 "intro": "Jste připraveni oživit svůj domov, zachovat si své soukromí a připojit se k celosvětové komunitě tvůrců?",
+                "next": "Další",
                 "restore": {
                     "description": "Případně můžete Home Assistant obnovit z poslední zálohy.",
                     "hide_log": "Skrýt celý log",
@@ -3796,6 +3846,19 @@
                     "disable": "Zakázat",
                     "enable": "Povolit",
                     "header": "Multifaktorové autentizační moduly"
+                },
+                "number_format": {
+                    "description": "Zvolte způsob formátování čísel.",
+                    "dropdown_label": "Formát čísel",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automaticky (dle nastaveného jazyka)",
+                        "none": "Žádný",
+                        "space_comma": "1 234 567,89",
+                        "system": "Dle systému"
+                    },
+                    "header": "Formát čísel"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

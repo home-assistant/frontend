@@ -891,6 +891,11 @@
                     "button": "كوِن",
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "مجهول"
+                    }
+                },
                 "person": {
                     "caption": "الأشخاص",
                     "description": "إدارة الأشخاص الذين يتتبعهم Home Assistant.",

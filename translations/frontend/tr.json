@@ -724,6 +724,8 @@
             },
             "data-table": {
                 "clear": "Temizle",
+                "filtering_by": "Filtreleme ölçütü",
+                "hidden": "{number} gizlendi",
                 "no-data": "Veri yok",
                 "search": "Ara"
             },
@@ -837,6 +839,12 @@
             "picture-upload": {
                 "label": "Resim",
                 "unsupported_format": "Desteklenmeyen format, lütfen bir JPEG, PNG veya GIF resmi seçin."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Alana göre filtrele",
+                "filter_by_device": "Cihaza göre filtrele",
+                "filtered_by_area": "Alan: {area_name}",
+                "filtered_by_device": "Cihaz: {device_name}"
             },
             "related-items": {
                 "area": "Alan",
@@ -1474,6 +1482,7 @@
                         "move_down": "Aşağı taşı",
                         "move_up": "Yukarı Taşı",
                         "save": "Kaydet",
+                        "show_trace": "İzi göster",
                         "triggers": {
                             "add": "Tetikleyici ekle",
                             "delete": "Sil",
@@ -1593,7 +1602,7 @@
                         },
                         "introduction": "Otomasyon editörü, otomasyonlar oluşturmanıza ve düzenlemenize izin verir. Home Assistant'ı doğru yapılandırdığınızdan emin olmak için lütfen aşağıdaki bağlantıyı takip edin.",
                         "learn_more": "Otomasyonlar hakkında daha fazla bilgi edinin",
-                        "no_automations": "Düzenlenebilir otomasyon bulamadık",
+                        "no_automations": "Herhangi bir otomasyon bulamadık",
                         "only_editable": "Yalnızca automations.yaml dosyasında tanımlanan otomasyonlar düzenlenebilir.",
                         "pick_automation": "Düzenlemek için otomasyon seçin",
                         "show_info_automation": "Otomasyon hakkında bilgi göster"
@@ -1674,7 +1683,7 @@
                         "google": {
                             "config_documentation": "Yapılandırma belgeleri",
                             "devices_pin": "Güvenlik Cihazları PIN'i",
-                            "enable_ha_skill": "Home Assistant Google Assistant skillini etkinleştir",
+                            "enable_ha_skill": "Google Assistant'ta Home Assistant özelliğini etkinleştir",
                             "enable_state_reporting": "Durum Raporlamasını Etkinleştir",
                             "enter_pin_error": "PIN kaydedilemiyor:",
                             "enter_pin_hint": "Güvenlik cihazlarını kullanmak için bir PIN girin",
@@ -1682,6 +1691,8 @@
                             "info": "Home Assistant Cloud için Google Assistant entegrasyonu ile, tüm Home Assistant cihazlarınızı herhangi bir Google Asistan özellikli cihaz üzerinden kontrol edebilirsiniz.",
                             "info_state_reporting": "Durum raporlamayı etkinleştirirseniz, Home Assistant sergilenmis varlıkların tüm durum değişikliklerini Google'e gönderir. Bu, Google Home uygulamasında her zaman en son durumları görmenizi ve rutin oluşturmak için durum değişikliklerini kullanmanızı sağlar.",
                             "manage_entities": "Varlıkları Yönetin",
+                            "not_configured_text": "Google Assistant'ı kullanmadan önce, Google Home uygulamasından Home Assistant Cloud özelliğini etkinleştirmeniz gerekir.",
+                            "not_configured_title": "Google Assistant aktive edilmedi",
                             "security_devices": "Güvenlik Cihazları",
                             "sync_entities": "Varlıkları Google ile Senkronize Et",
                             "sync_entities_404_message": "Varlıklarınız Google ile senkronize edilemedi, varlıklarınızı senkronize etmesi için Google'dan 'Hey Google, cihazlarımı senkronize et' isteyin.",
@@ -1845,10 +1856,31 @@
                     "section": {
                         "core": {
                             "analytics": {
+                                "documentation": "Bunu etkinleştirmeden önce, ne gönderdiğinizi ve nasıl depolandığını anlamak için {link} analiz belgeleri sayfasını ziyaret ettiğinizden emin olun.",
                                 "header": "İstatistikler",
+                                "instance_id": "Örnek Kimliği: {huuid}",
+                                "introduction": "Örneğinizden analizleri paylaşın. {link} adresinde herkese açık olacak",
+                                "needs_base": "Bu seçeneğin kullanılabilir olması için temel analizleri etkinleştirmeniz gerekir",
                                 "preference": {
+                                    "base": {
+                                        "description": "Bu, örnek kimliği, sürüm ve yükleme türünü içerir",
+                                        "title": "Temel analiz"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Kilitlenme raporlarını ve teşhis bilgilerini paylaşın",
+                                        "title": "Tanılama"
+                                    },
                                     "statistics": {
+                                        "description": "Bu, belgelere tam listeyle bakmak için yüklemenizdeki öğelerin sayısını içerir",
                                         "title": "Kullanım istatistikleri"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Bu, entegrasyonlarınızın ve eklentilerinizin adlarını ve yeteneklerini içerir",
+                                        "title": "Kullanılan entegrasyonlar ve eklentiler"
+                                    },
+                                    "usage": {
+                                        "description": "Bu, entegrasyonlarınızın adlarını içerir",
+                                        "title": "Kullanılan entegrasyonlar"
                                     }
                                 }
                             },
@@ -2125,8 +2157,10 @@
                         "entity_unavailable": "Varlık kullanılamıyor",
                         "firmware": "Aygıt yazılımı: {version}",
                         "hub": "Şununla bağlı:",
+                        "logs": "Günlükler",
                         "manuf": "üretici: {manufacturer}",
                         "no_area": "Alan Yok",
+                        "not_loaded": "Yüklenmedi, {logs_link} öğesini denetleyin",
                         "options": "Seçenekler",
                         "reload": "Tekrar yükle",
                         "reload_confirm": "Entegrasyon yeniden yüklendi",
@@ -2152,6 +2186,7 @@
                         "finish": "Bitir",
                         "loading_first_time": "Lütfen entegrasyonun yüklenmesini bekleyin",
                         "not_all_required_fields": "Gerekli alanların tümü doldurulmamış.",
+                        "not_loaded": "Bu entegrasyon yüklenemedi, Home Assistant'ı yeniden başlatmayı deneyin.",
                         "pick_flow_step": {
                             "new_flow": "Hayır, {integration} öğesinin başka bir örneğini ayarlama",
                             "title": "Bunları keşfettik, kurmak ister misin?"
@@ -2486,7 +2521,7 @@
                         },
                         "introduction": "Sahne düzenleyici, sahneler oluşturmanıza ve düzenlemenize olanak sağlar. Home Assistant'ı doğru yapılandırdığınızdan emin olmak ve talimatları okumak için lütfen aşağıdaki bağlantıyı izleyin.",
                         "learn_more": "Sahneler hakkında daha fazla bilgi edinin",
-                        "no_scenes": "Düzenlenebilir sahne bulamadık",
+                        "no_scenes": "Herhangi bir sahne bulamadık",
                         "only_editable": "Sadece scenes.yaml içinde belirlenmiş sahneler düzenlenebilinir.",
                         "pick_scene": "Düzenlenecek sahneyi seç",
                         "show_info_scene": "Sahne hakkında bilgi göster"
@@ -2536,7 +2571,7 @@
                         },
                         "introduction": "Senaryo düzenleyici, senaryo oluşturmanıza ve düzenlemenize olanak tanır. Home Assistant'ı doğru şekilde yapılandırdığınızdan emin olmak için talimatları okumak için lütfen aşağıdaki bağlantıyı izleyin.",
                         "learn_more": "Senaryolar hakkında daha fazla bilgi edinin",
-                        "no_scripts": "Düzenlenebilir herhangi bir senaryo bulamadık",
+                        "no_scripts": "Herhangi bir senaryo bulamadık.",
                         "run_script": "Senaryoyu çalıştır",
                         "show_info": "Komut dosyası hakkında bilgi göster"
                     }
@@ -2553,22 +2588,22 @@
                             "filter": "Filtre varlıkları",
                             "generic": "Genel IP kamera varlıkları",
                             "generic_thermostat": "Genel termostat varlıkları",
-                            "group": "Grupları, grup varlıklarını ve grup bildirim hizmetlerini yeniden yükleyin",
+                            "group": "Grupları, grup varlıklarını ve grup bildirim hizmetleri",
                             "heading": "YAML yapılandırması yeniden yükleniyor",
                             "history_stats": "Geçmiş istatistikleri varlıkları",
                             "homekit": "HomeKit",
-                            "input_boolean": "Mantıksal veri tiplerini yeniden yükle",
-                            "input_datetime": "Giriş tarih ve zamanı yeniden yükle",
-                            "input_number": "Giriş numaralarını yeniden yükle",
+                            "input_boolean": "Mantıksal veri tipleri",
+                            "input_datetime": "Giriş tarih ve zaman",
+                            "input_number": "Giriş numaraları",
                             "input_select": "Giriş seçenekleri",
-                            "input_text": "Giriş metinlerini yeniden yükle",
+                            "input_text": "Giriş metinleri",
                             "introduction": "Home Assistant'ın bazı bölümleri, yeniden başlatma gerektirmeden yeniden yüklenebilir. Yeniden yüklemeye basmak, mevcut YAML yapılandırmasını kaldıracak ve yenisini yükleyecektir.",
                             "min_max": "Min/max varlıkları",
                             "mqtt": "Manuel olarak yapılandırılmış MQTT varlıkları",
-                            "person": "Kişileri yeniden yükleme",
+                            "person": "Kişiler",
                             "ping": "Ping ikili sensör varlıkları",
                             "reload": "{domain}",
-                            "rest": "Rest varlıklarını yeniden yükleyin ve hizmetleri bilgilendirin",
+                            "rest": "Rest varlıkları ve hizmetleri bilgilendirin",
                             "rpi_gpio": "Raspberry Pi GPIO varlıkları",
                             "scene": "Sahneler",
                             "script": "Senaryolar",
@@ -2577,7 +2612,7 @@
                             "telegram": "Telgraf bilgilendirme hizmetleri",
                             "template": "Şablon varlıkları",
                             "trend": "Trend varlıkları",
-                            "universal": "Evrensel medya oynatıcı varlıklarını yeniden yükleyin",
+                            "universal": "Evrensel medya oynatıcı varlıkları",
                             "zone": "Bölgeler"
                         },
                         "server_management": {
@@ -3698,6 +3733,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Sonraki",
+                    "intro": "Örneğinizden analizleri paylaşın. {link} adresinde herkese açık olacak"
+                },
                 "core-config": {
                     "button_detect": "Algıla",
                     "finish": "Sonraki",
@@ -3707,12 +3746,14 @@
                     "location_name": "Home Assistant kurulumunuzun adı",
                     "location_name_default": "Evim"
                 },
+                "finish": "Bitir",
                 "integration": {
                     "finish": "Bitir",
                     "intro": "Cihazlar ve hizmetler, Home Asistant'ta entegrasyonlar olarak temsil edilir. Bunları şimdi kurabilir veya daha sonra yapılandırma ekranından yapabilirsiniz.",
                     "more_integrations": "Daha fazla"
                 },
                 "intro": "Evinizi uyandırmaya, gizliliğinizi geri almaya ve dünya çapında bir tamirci topluluğuna katılmaya hazır mısınız?",
+                "next": "Sonraki",
                 "restore": {
                     "description": "Alternatif olarak, önceki anlık görüntüden geri yükleyebilirsiniz.",
                     "hide_log": "Tam günlüğü gizle",
@@ -3806,6 +3847,19 @@
                     "disable": "Devre dışı bırak",
                     "enable": "Etkinleştir",
                     "header": "Çok Faktörlü Kimlik Doğrulama Modülleri"
+                },
+                "number_format": {
+                    "description": "Sayıların nasıl biçimlendirileceğini seçin.",
+                    "dropdown_label": "Sayı biçimi",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Otomatik (dil ayarını kullan)",
+                        "none": "Hiçbiri",
+                        "space_comma": "1 234 567,89",
+                        "system": "Sistem yerel ayarını kullan"
+                    },
+                    "header": "Sayı Biçimi"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

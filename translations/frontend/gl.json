@@ -606,6 +606,11 @@
                     },
                     "description": "Crea conxuntos de tarxetas personalizados para controlar a túa casa"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Descoñecido"
+                    }
+                },
                 "scene": {
                     "picker": {
                         "show_info_scene": "Amosar información sobre a escena"

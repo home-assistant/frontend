@@ -840,6 +840,12 @@
                 "label": "Imatge",
                 "unsupported_format": "Format no compatible, tria una imatge JPEG, PNG o GIF."
             },
+            "related-filter-menu": {
+                "filter_by_area": "Filtra per àrea",
+                "filter_by_device": "Filtra per dispositiu",
+                "filtered_by_area": "àrea: {area_name}",
+                "filtered_by_device": "dispositiu: {device_name}"
+            },
             "related-items": {
                 "area": "Àrea",
                 "automation": "Part de les següents automatitzacions",
@@ -1596,7 +1602,7 @@
                         },
                         "introduction": "L'editor d'automatitzacions et permet crear i editar automatitzacions. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre les automatitzacions",
-                        "no_automations": "No s'ha pogut trobar cap automatització editable",
+                        "no_automations": "No s'ha pogut trobar cap automatització",
                         "only_editable": "Només es poden editar les automatitzacions definides al fitxer automations.yaml.",
                         "pick_automation": "Selecciona l'automatització a editar",
                         "show_info_automation": "Mostra informació sobre l'automatització"
@@ -1677,7 +1683,7 @@
                         "google": {
                             "config_documentation": "Documentació de configuració",
                             "devices_pin": "PIN dels dispositius de seguretat",
-                            "enable_ha_skill": "Activa l'auxiliar de Home Assistant per Google Assistant",
+                            "enable_ha_skill": "Activa Home Assistant Cloud per Google Assistant",
                             "enable_state_reporting": "Activa els informes d'estat",
                             "enter_pin_error": "No s'ha pogut desar el PIN:",
                             "enter_pin_hint": "Introdueix un PIN per utilitzar dispositius de seguretat",
@@ -1685,6 +1691,8 @@
                             "info": "Amb la integració de Google Assistant per Home Assistant Cloud podràs controlar tots els dispositius de Home Assistant a través dels dispositius compatibles amb Google Assistant.",
                             "info_state_reporting": "Si actives els informes d'estat, Home Assistant enviarà a Google tots els canvis d'estat de les entitats exposades. Això et permetrà veure els últims estats a l'aplicació de Google.",
                             "manage_entities": "Gestió d'entitats",
+                            "not_configured_text": "Abans de poder fer servir Google Assistant, has d'activar Home Assistant Cloud per a Google Assistant a l'aplicació de Google Home.",
+                            "not_configured_title": "Google Assistant no està activat",
                             "security_devices": "Dispositius de seguretat",
                             "sync_entities": "Sincronitza les entitats amb Google",
                             "sync_entities_404_message": "No s'han pogut sincronitzar les entitats amb Google, digues \"Hey Google, sincronitza els meus dispositius\" per sincronitzar-les.",
@@ -1847,6 +1855,36 @@
                     "description": "Sistema d'unitats, ubicació, zona horària i altres paràmetres generals",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Abans d'activar això, revisa't la documentació d'anàlisi a {link}, per entendre el què s'enviarà i com s'emmagatzemarà.",
+                                "header": "Dades analítiques",
+                                "instance_id": "ID de la instància: {huuid}",
+                                "introduction": "Comparteix dades analítiques de la teva instància. Aquestes dades estaran disponibles públicament a {link}",
+                                "learn_more": "Més informació sobre com les teves dades es processaran.",
+                                "needs_base": "Has d'habilitar l'anàlisi bàsica perquè aquesta opció estigui disponible",
+                                "preference": {
+                                    "base": {
+                                        "description": "Inclou l'ID de la instància, la versió i el tipus d'instal·lació",
+                                        "title": "Anàlisi bàsica"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Comparteix informes d'errors i informació de diagnòstic",
+                                        "title": "Diagnòstics"
+                                    },
+                                    "statistics": {
+                                        "description": "Això inclou un seguit d'elements de la teva instal·lació. Per obtenir-ne una llista completa, consulta la documentació",
+                                        "title": "Estadístiques d’ús"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Inclou els noms i funcionalitats de les teves integracions i complements",
+                                        "title": "Integracions i complements utilitzats"
+                                    },
+                                    "usage": {
+                                        "description": "Inclou els noms de les teves integracions",
+                                        "title": "Integracions utilitzades"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
                                 "elevation": "Altitud",
@@ -2120,8 +2158,10 @@
                         "entity_unavailable": "Entitat no disponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connectat a través de",
+                        "logs": "registres",
                         "manuf": "de {manufacturer}",
                         "no_area": "Sense àrea",
+                        "not_loaded": "No carregat, comprova {logs_link}",
                         "options": "Opcions",
                         "reload": "Torna a carregar",
                         "reload_confirm": "La integració s'ha tornat a carregar",
@@ -2147,6 +2187,7 @@
                         "finish": "Finalitza",
                         "loading_first_time": "Espera mentre s'instal·la la integració",
                         "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
+                        "not_loaded": "No s'ha pogut carregar la integració, prova de reiniciar Home Assistant.",
                         "pick_flow_step": {
                             "new_flow": "No, configura una altra instància de {integration}",
                             "title": "N'hem descobert aquests, vols configurar-los?"
@@ -2197,10 +2238,17 @@
                     "clear": "Esborra",
                     "description": "Consulta els registres de Home Assistant",
                     "details": "Detalls del registre ({level})",
+                    "level": {
+                        "critical": "CRÍTIC",
+                        "debug": "DEPURACIÓ",
+                        "error": "ERROR",
+                        "info": "INFO",
+                        "warning": "ADVERTÈNCIA"
+                    },
                     "load_full_log": "Carrega el registre complet de Home Assistant",
                     "loading_log": "Carregant el registre d'errors...",
                     "multiple_messages": "missatge produit per primera vegada a les {time}, apareix {counter} vegades",
-                    "no_errors": "No s'ha informat de cap error.",
+                    "no_errors": "No s'ha informat de cap error",
                     "no_issues": "No hi ha registres nous!",
                     "refresh": "Actualitza"
                 },
@@ -2481,7 +2529,7 @@
                         },
                         "introduction": "L'editor d'escenes et permet crear i editar escenes. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre les escenes",
-                        "no_scenes": "No s'ha pogut trobar cap escena editable",
+                        "no_scenes": "No s'ha pogut trobar cap escena",
                         "only_editable": "Només es poden editar les escenes definides al fitxer scenes.yaml.",
                         "pick_scene": "Selecciona l'escena a editar",
                         "show_info_scene": "Mostra informació sobre l'escena"
@@ -2531,7 +2579,7 @@
                         },
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
-                        "no_scripts": "No s'ha pogut trobar cap script editable",
+                        "no_scripts": "No s'ha pogut trobar cap script",
                         "run_script": "Executa l'script",
                         "show_info": "Mostra informació sobre l'script"
                     }
@@ -3693,6 +3741,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Següent",
+                    "intro": "Comparteix dades analítiques de la teva instància. Aquestes dades estaran disponibles públicament a {link}"
+                },
                 "core-config": {
                     "button_detect": "Detecta",
                     "finish": "Següent",
@@ -3702,12 +3754,14 @@
                     "location_name": "Nom de la instal·lació de Home Assistant",
                     "location_name_default": "Casa"
                 },
+                "finish": "Acaba",
                 "integration": {
                     "finish": "Finalitza",
                     "intro": "Els dispositius i serveis es representen a Home Assistant com a integracions. Pots configurar-los ara o més tard des de la pàgina de configuració.",
                     "more_integrations": "Més"
                 },
                 "intro": "Estàs preparat donar vida pròpia a la teva llar, recuperar la teva privacitat i unir-te a una comunitat mundial de \"tinkerers\"?",
+                "next": "Següent",
                 "restore": {
                     "description": "També pots restaurar des d'una instantània anterior.",
                     "hide_log": "Amaga el registre complet",

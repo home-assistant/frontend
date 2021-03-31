@@ -790,7 +790,8 @@
                     "was_unlocked": "nastąpiło otwarcie",
                     "was_unplugged": "nastąpiło odłączenie",
                     "was_unsafe": "wykryto zagrożenie"
-                }
+                },
+                "show_trace": "Pokaż ślad"
             },
             "media-browser": {
                 "audio_not_supported": "Twoja przeglądarka nie obsługuje elementu audio.",
@@ -1481,6 +1482,7 @@
                         "move_down": "Przesuń w dół",
                         "move_up": "Przesuń w górę",
                         "save": "Zapisz",
+                        "show_trace": "Pokaż ślad",
                         "triggers": {
                             "add": "Dodaj wyzwalacz",
                             "delete": "Usuń",

@@ -683,6 +683,9 @@
                             "dashboard": "Valdymo skydas"
                         }
                     },
+                    "network_status": {
+                        "unknown": "Nežinoma"
+                    },
                     "node_config": {
                         "header": "Mazgo konfigūracija",
                         "help_source": "Konfigūracijos parametrų aprašymai ir žinyno tekstas pateikiami OpenZWave projekto.",

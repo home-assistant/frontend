@@ -385,6 +385,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Ezezaguna"
+                    }
+                },
                 "person": {
                     "caption": "Pertsonak",
                     "description": "Kudeatu Home Assistantek jarraituko dituen pertsonak.",

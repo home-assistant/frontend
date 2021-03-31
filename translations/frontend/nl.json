@@ -2157,7 +2157,7 @@
                         "entity_unavailable": "Entiteit niet beschikbaar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonden via",
-                        "logs": "Logs",
+                        "logs": "logs",
                         "manuf": "door {manufacturer}",
                         "no_area": "Geen Gebied",
                         "not_loaded": "Niet geladen, controleer de {logs_link}",
