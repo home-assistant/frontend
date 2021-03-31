@@ -35,14 +35,17 @@ export const getLogbookDataForContext = async (
   hass: HomeAssistant,
   startDate: string,
   contextId?: string
-) =>
-  getLogbookDataFromServer(
+): Promise<LogbookEntry[]> =>
+  addLogbookMessage(
     hass,
-    startDate,
-    undefined,
-    undefined,
-    undefined,
-    contextId
+    await getLogbookDataFromServer(
+      hass,
+      startDate,
+      undefined,
+      undefined,
+      undefined,
+      contextId
+    )
   );
 
 export const getLogbookData = async (
@@ -51,15 +54,22 @@ export const getLogbookData = async (
   endDate: string,
   entityId?: string,
   entity_matches_only?: boolean
-) => {
-  const logbookData = await getLogbookDataCache(
+): Promise<LogbookEntry[]> =>
+  addLogbookMessage(
     hass,
-    startDate,
-    endDate,
-    entityId,
-    entity_matches_only
+    await getLogbookDataCache(
+      hass,
+      startDate,
+      endDate,
+      entityId,
+      entity_matches_only
+    )
   );
 
+export const addLogbookMessage = (
+  hass: HomeAssistant,
+  logbookData: LogbookEntry[]
+): LogbookEntry[] => {
   for (const entry of logbookData) {
     const stateObj = hass!.states[entry.entity_id!];
     if (entry.state && stateObj) {
@@ -71,7 +81,6 @@ export const getLogbookData = async (
       );
     }
   }
-
   return logbookData;
 };
 
