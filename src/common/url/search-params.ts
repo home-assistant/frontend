@@ -19,3 +19,17 @@ export const createSearchParam = (params: Record<string, string>): string => {
   });
   return urlParams.toString();
 };
+
+export const addSearchParam = (params: Record<string, string>): string => {
+  const urlParams = new URLSearchParams(window.location.search);
+  Object.entries(params).forEach(([key, value]) => {
+    urlParams.set(key, value);
+  });
+  return urlParams.toString();
+};
+
+export const removeSearchParam = (param: string): string => {
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.delete(param);
+  return urlParams.toString();
+};
