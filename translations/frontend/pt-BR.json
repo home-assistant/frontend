@@ -102,6 +102,29 @@
             "unknown": "Desconhecido"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "visit_addon_page": "Visite a página {name} para mais detalhes"
+            }
+        },
+        "common": {
+            "save": "Salvar"
+        },
+        "dialog": {
+            "network": {
+                "scan_ap": "Procurar pontos de acesso"
+            },
+            "update": {
+                "updating": "Atualizando {name} para a versão {version}"
+            }
+        },
+        "snapshot": {
+            "folder": {
+                "homeassistant": "Configuração do Home Assistant"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Você deseja continuar logado?",
@@ -354,6 +377,7 @@
                     "changed_to_state": "alterado para {state}",
                     "cleared_device_class": "liberado ({device_class} não detectado(a))",
                     "detected_device_class": "{device_class} detectado",
+                    "rose": "nasceu",
                     "set": "Pôr do sol",
                     "turned_off": "desligou",
                     "turned_on": "ligou",
@@ -539,6 +563,9 @@
                 "last_updated": "Última atualização",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
+                },
+                "remote": {
+                    "activity": "Atividade atual"
                 },
                 "restored": {
                     "confirm_remove_text": "Tem certeza de que deseja remover esta entidade?",
@@ -2205,6 +2232,11 @@
                         "title": "Modelo",
                         "unknown_error_template": "Erro desconhecido ao renderizar template"
                     }
+                }
+            },
+            "error": {
+                "supervisor": {
+                    "system_health": "Verificar integridade do sistema"
                 }
             },
             "history": {

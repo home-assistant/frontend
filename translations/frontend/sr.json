@@ -67,6 +67,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Непознат"
+                    }
+                },
                 "users": {
                     "add_user": {
                         "caption": "Додај корисника",

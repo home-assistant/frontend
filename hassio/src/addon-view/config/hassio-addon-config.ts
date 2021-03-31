@@ -165,7 +165,7 @@ class HassioAddonConfig extends LitElement {
             @click=${this._saveTapped}
             .disabled=${!this._configHasChanged || !this._valid}
           >
-            Save ${this.supervisor.localize("common.save")}
+            ${this.supervisor.localize("common.save")}
           </ha-progress-button>
         </div>
       </ha-card>

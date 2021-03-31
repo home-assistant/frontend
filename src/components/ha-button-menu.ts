@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import "@material/mwc-menu";
 import type { Corner, Menu } from "@material/mwc-menu";
 import {
@@ -11,8 +10,6 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import "./ha-icon-button";
-
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
   @property() public corner: Corner = "TOP_START";

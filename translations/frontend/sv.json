@@ -102,6 +102,274 @@
             "unknown": "Okänd"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Standard",
+                    "header": "Ljud"
+                },
+                "network": {
+                    "container": "Behållare",
+                    "disabled": "Inaktiverad",
+                    "header": "Nätverk",
+                    "host": "Värd"
+                },
+                "options": {
+                    "edit_in_ui": "Redigera i användargränssnittet",
+                    "edit_in_yaml": "Redigera i YAML",
+                    "invalid_yaml": "Ogiltig YAML"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "install": "Kunde inte installera tillägg",
+                    "restart": "Kunde inte starta om tillägg",
+                    "start": "Kunde inte starta tillägg",
+                    "start_invalid_config": "Gå till inställningar",
+                    "stop": "Kunde inte stoppa tillägg",
+                    "uninstall": "Kunde inte avinstallera tillägg"
+                },
+                "capability": {
+                    "rating": {
+                        "title": "Tilläggets säkerhetsrating"
+                    },
+                    "role": {
+                        "admin": "administratör",
+                        "backup": "säkerhetskopia",
+                        "default": "standard",
+                        "homeassistant": "homeassistant",
+                        "manager": "föreståndare"
+                    }
+                },
+                "cpu_usage": "Tillägg CPU-användning",
+                "hostname": "Värdnamn",
+                "install": "installera",
+                "new_update_available": "{name} {version} är tillgänglig",
+                "not_available_arch": "Detta tillägg är inte kompatibelt med processorn eller operativsystemet som du har installerat i din enhet.",
+                "open_web_ui": "Öppna webbgränssnitt",
+                "option": {
+                    "auto_update": {
+                        "description": "Uppdatera tillägget automatiskt när en ny version finns tillgänglig",
+                        "title": "Uppdatera automatiskt"
+                    },
+                    "boot": {
+                        "description": "Starta tillägget under en systemstart",
+                        "title": "Starta vid systemstart"
+                    },
+                    "ingress_panel": {
+                        "description": "Lägg till detta tillägg till ditt sidofält",
+                        "title": "Visa i sidofältet"
+                    },
+                    "protected": {
+                        "title": "Skyddsläge"
+                    },
+                    "watchdog": {
+                        "description": "Detta kommer att starta tillägget om det kraschar",
+                        "title": "Vakthund"
+                    }
+                },
+                "protection_mode": {
+                    "enable": "Aktivera skyddsläge",
+                    "title": "Varning: Skyddsläge är inaktiverat!"
+                },
+                "ram_usage": "Tillägg RAM-användning",
+                "restart": "omstart",
+                "start": "starta",
+                "stop": "stoppa",
+                "uninstall": "avinstallera",
+                "visit_addon_page": "Besök sidan {name} för fler detaljer"
+            },
+            "logs": {
+                "get_logs": "Kunde inte hämta loggar för tillägg {error}"
+            },
+            "panel": {
+                "configuration": "Inställningar",
+                "documentation": "Dokumentation",
+                "info": "Info",
+                "log": "Logg"
+            }
+        },
+        "common": {
+            "cancel": "Avbryt",
+            "close": "Stäng",
+            "error": {
+                "unknown": "Okänt fel",
+                "update_failed": "Uppdatering misslyckades"
+            },
+            "failed_to_restart_name": "Kunde inte starta om {name}",
+            "failed_to_update_name": "Kunde inte uppdatera {name}",
+            "learn_more": "Läs mer",
+            "new_version_available": "Ny version tillgänglig",
+            "newest_version": "Nyaste version",
+            "refresh": "Uppdatera",
+            "reload": "Ladda om",
+            "reset_defaults": "Nollställ till standard",
+            "reset_options": "Nollställ alternativ",
+            "restart": "Starta om",
+            "restart_name": "Starta om {name}",
+            "running_version": "Du kör för närvarande version {version}",
+            "save": "Spara",
+            "show_more": "Visa mer information om detta",
+            "update": "Uppdatera",
+            "version": "Version"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Är du säker på att du vill nollställa alla alternativ?",
+                "title": "Nollställ alternativ"
+            },
+            "restart": {
+                "text": "Är du säker på att du vill starta om {name}",
+                "title": "Starta om {name}"
+            },
+            "update": {
+                "text": "Är du säker på att du vill uppdatera {name} till version {version}?",
+                "title": "Uppdatera {name}"
+            }
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Ansluten till {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Inaktiverad",
+                "dns_servers": "DNS-servrar",
+                "failed_to_change": "Kunde inte ändra nätverksinställningar",
+                "gateway": "Gateway-adress",
+                "ip_netmask": "IP-adress/Nätmask",
+                "open": "Öppet",
+                "scan_ap": "Sök efter åtkomstpunkter",
+                "static": "Statisk",
+                "title": "Nätverksinställningar",
+                "unsaved": "Du har ändringar som inte sparats, dessa kommer gå förlorade om du byter tabbar, vill du fortsätta?",
+                "warning": "Om du ändrar Wi-Fi-, IP- eller gateway-adresserna kan du förlora anslutningen!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Lägg till nytt register",
+                "add_registry": "Lägg till register",
+                "failed_to_add": "Kunde inte lägga till register",
+                "failed_to_remove": "Kunde inte ta bort register",
+                "no_registries": "Inga register konfigurerade",
+                "password": "Lösenord",
+                "registry": "Register",
+                "remove": "Ta bort",
+                "username": "Användarnamn"
+            },
+            "repositories": {
+                "add": "Lägg till",
+                "remove": "Ta bort",
+                "title": "Hantera resurser för tillägg"
+            },
+            "restart_addon": {
+                "confirm_text": "Starta om tillägget",
+                "text": "Vill du starta om tillägget med dina ändringar?"
+            },
+            "update": {
+                "create_snapshot": "Skapa en avbild av {name} innan uppdatering",
+                "snapshot": "Avbild",
+                "snapshotting": "Skapar avbild av {name}",
+                "updating": "Uppdaterar {name} till version {version}"
+            }
+        },
+        "my": {
+            "error": "Ett okänt fel inträffade",
+            "error_addon_not_found": "Tillägget hittades inte",
+            "faq_link": "Min Home Assistant FAQ",
+            "not_supported": "Denna omdirigering stöds inte av din Home Assistant-instans. Kontroller {link} för vilka omdirigeringar som stöds och i vilken version de introducerades."
+        },
+        "snapshot": {
+            "addons": "Tillägg",
+            "available_snapshots": "Tillgängliga Avbilder",
+            "could_not_create": "Kunde inte skapa avbild",
+            "create": "Skapa",
+            "create_blocked_not_running": "Det är inte möjligt att skapa en avbild just nu när systemet är i {state} läge.",
+            "create_snapshot": "Skapa avbild",
+            "description": "Avbilder gör det enkelt för dig att ta backup och återställa all data i din Home Assistant instans.",
+            "enter_password": "Vänligen ange ett lösenord.",
+            "folder": {
+                "addons/local": "Lokala tillägg",
+                "homeassistant": "Home Assistant inställningar",
+                "media": "Media",
+                "ssl": "SSL"
+            },
+            "folders": "Mappar",
+            "full_snapshot": "Full avbild",
+            "name": "Namn",
+            "no_snapshots": "Du har inga avbilder ännu.",
+            "partial_snapshot": "Del av avbild",
+            "password": "Lösenord",
+            "password_protected": "lösenordskyddad",
+            "password_protection": "Lösenordsskydd",
+            "security": "Säkerhet",
+            "type": "Typ",
+            "upload_snapshot": "Ladda upp avbild"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Grundläggande CPU-användning",
+                "ram_usage": "Grundläggande RAM-användning"
+            },
+            "host": {
+                "change": "Ändra",
+                "change_hostname": "Ändra värdnamn",
+                "confirm_reboot": "Är du säker på att du vill starta om värden?",
+                "confirm_shutdown": "Är du säker på att du vill stänga ner värden?",
+                "docker_version": "Dockerversion",
+                "failed_to_get_hardware_list": "Kunde inte hämta hårdvarulistan",
+                "failed_to_import_from_usb": "Kunde inte importera från USB",
+                "failed_to_reboot": "Kunde inte starta om värden",
+                "failed_to_set_hostname": "Kunde inte sätta värdnamn",
+                "failed_to_shutdown": "Kunde inte stänga ner värden",
+                "hardware": "Hårdvara",
+                "hostname": "Värdnamn",
+                "import_from_usb": "Importera från USB",
+                "ip_address": "IP-adress",
+                "new_hostname": "Vänligen skriv in ett nytt värdnamn",
+                "operating_system": "Operativsystem",
+                "reboot_host": "Starta om värd",
+                "shutdown_host": "Stäng ner värd",
+                "used_space": "Använt utrymme"
+            },
+            "log": {
+                "get_logs": "Kunde inte hämta {provider} loggar, {error}",
+                "log_provider": "Loggleverantör"
+            },
+            "supervisor": {
+                "beta_backup": "Se till att du har säkerhetskopior av dina data innan du aktiverar den här funktionen.",
+                "beta_join_confirm": "Vill du gå med i betakanalen?",
+                "beta_release_items": "Detta inkluderar betaversioner för:",
+                "beta_warning": "Betaversioner är för testare och de som vill vara först med nya funktioner men kan innehålla instabila kodändringar",
+                "channel": "Kanal",
+                "cpu_usage": "Supervisor CPU-användning",
+                "failed_to_reload": "Kunde inte ladda om Supervisor",
+                "failed_to_update": "Kunde inte uppdatera Supervisor",
+                "join_beta_action": "Gå med i betakanalen",
+                "join_beta_description": "Få betauppdateringar för Home Assistant (RCs), Supervisor och värd",
+                "leave_beta_action": "Lämna betakanalen",
+                "leave_beta_description": "Få stabila uppdateringar för Home Assistant, Supervisor och värd",
+                "ram_usage": "Supervisor RAM-användning",
+                "reload_supervisor": "Ladda om Supervisor",
+                "share_diagnostics": "Dela diagnostik",
+                "share_diagnostics_description": "Dela kraschrapporter och diagnostisk information.",
+                "share_diagonstics_title": "Hjälp till att förbättra Home Assistant",
+                "unhealthy_description": "Att köra en ohälsosam installation kan orsaka problem. Nedan är en lista med problem som hittats med din installation, klicka på länkarna för att lära dig hur du kan lösa problemen.",
+                "unhealthy_reason": {
+                    "docker": "Docker-miljön fungerar inte korrekt"
+                },
+                "unhealthy_title": "Din installation är ohälsosam",
+                "unsupported_description": "Nedan är en lista med problem som hittats med din installation, klicka på länkarna för att lära dig hur du kan lösa problemen.",
+                "unsupported_reason": {
+                    "container": "Behållare känd för att orsaka problem",
+                    "dbus": "DBUS"
+                },
+                "unsupported_title": "Du kör en installation som inte stöds",
+                "update_supervisor": "Uppdatera Supervisor",
+                "warning": "VARNING"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Vill du fortsätta vara inloggad?",
@@ -200,7 +468,8 @@
             },
             "script": {
                 "cancel": "Avbryt",
-                "cancel_multiple": "Avbryt {number}"
+                "cancel_multiple": "Avbryt {number}",
+                "run": "Kör"
             },
             "service": {
                 "run": "Kör"
@@ -363,6 +632,8 @@
                     "changed_to_state": "ändrades till {state}",
                     "cleared_device_class": "rensat (ingen {device_class} upptäckt)",
                     "detected_device_class": "upptäckt {device_class}",
+                    "is_closing": "stänger",
+                    "is_opening": "öppnar",
                     "rose": "gick upp",
                     "set": "gick ned",
                     "turned_off": "slogs av",
@@ -604,6 +875,9 @@
                 "person": {
                     "create_zone": "Skapa zon från aktuell plats"
                 },
+                "remote": {
+                    "activity": "Nuvarande aktivitet"
+                },
                 "restored": {
                     "confirm_remove_text": "Är du säker på att du vill ta bort den här entiteten?",
                     "confirm_remove_title": "Ta bort entitet?",
@@ -676,7 +950,7 @@
                         "scene": "Scener",
                         "script": "Skript",
                         "server_control": "Serverhantering",
-                        "tags": "Taggar",
+                        "tag": "Taggar",
                         "users": "Användare",
                         "zone": "Zoner"
                     },
@@ -1662,7 +1936,18 @@
                         "delete_confirm": "Är du säker på att du vill radera denna integration?",
                         "device_unavailable": "Enhet otillgänglig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
+                        "disable_restart_confirm": "Starta om Home Assistant för att slutföra inaktiveringen av denna integration",
+                        "disable": {
+                            "disabled": "Inaktiverad",
+                            "disabled_by": {
+                                "device": "enhet",
+                                "integration": "integration",
+                                "user": "användare"
+                            },
+                            "disabled_cause": "Inaktiverad på grund av {cause}"
+                        },
                         "documentation": "Dokumentation",
+                        "enable_restart_confirm": "Starta om Home Assistant för att slutföra aktiveringen av denna integration",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "Entitet otillgänglig",
                         "firmware": "Firmware: {version}",
@@ -1698,6 +1983,10 @@
                     "configured": "Konfigurerad",
                     "description": "Hantera integrationer med tjänster, enheter, ...",
                     "details": "Integrationsdetaljer",
+                    "disable": {
+                        "disabled_integrations": "{number} inaktiverad(e)",
+                        "hide_disabled": "Dölj inaktiverade integrationer"
+                    },
                     "discovered": "Upptäckt",
                     "home_assistant_website": "Home Assistants hemsida",
                     "ignore": {
@@ -2283,6 +2572,7 @@
                         "caption": "Nätverk"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatisk zoomning",
                         "caption": "Visualisering",
                         "header": "Visualisering av nätverk",
                         "highlight_label": "Markera enheter",
@@ -2518,6 +2808,7 @@
                     "states": {
                         "alert_entity_field": "Enhet är ett obligatoriskt fält",
                         "attributes": "Attribut",
+                        "copy_id": "Kopiera ID till klippbordet",
                         "current_entities": "Nuvarande enheter",
                         "description1": "Ställ in representationen av en enhet i Home Assistant.",
                         "description2": "Detta kommer inte att kommunicera med den faktiska enheten.",
@@ -2550,6 +2841,12 @@
                         "title": "Mallar",
                         "unknown_error_template": "Okänt fel vid rendering av mall"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Gå tillbaka",
+                "supervisor": {
+                    "ask": "Be om hjälp"
                 }
             },
             "history": {
@@ -2957,6 +3254,8 @@
                         "error_remove": "Det går inte att ta bort konfigurationen: {error}",
                         "error_save_yaml": "Det gick inte att spara YAML: {error}",
                         "header": "Redigera konfiguration",
+                        "lovelace_changed": "Lovelace-konfigurationen uppdaterades, vill du ladda den uppdaterade konfigurationen i redigeraren och förlora dina nuvarande ändringar?",
+                        "reload": "Ladda om",
                         "resources_moved": "Resurser ska inte längre läggas till i Lovelace konfiguration, utan ska läggas till i Lovelace konfigurationspanel.",
                         "save": "Spara",
                         "saved": "Sparad",
@@ -3041,6 +3340,9 @@
                 "delete_prompt": "Vill du ta bort det här meddelandet?",
                 "empty": "Du har inga meddelanden",
                 "playback_title": "Meddelandeuppspelning"
+            },
+            "my": {
+                "not_supported": "Denna omdirigering stöds inte av din Home Assistant-instans. Kolla {link} för vilka omdirigeringar som stöds och i vilken version de introducerades."
             },
             "page-authorize": {
                 "abort_intro": "Inloggning avbruten",

@@ -54,7 +54,7 @@ export const getRecent = (
   }
 
   const prom = fetchRecent(hass, entityId, startTime, endTime).then(
-    (stateHistory) => computeHistory(hass, stateHistory, localize, language),
+    (stateHistory) => computeHistory(hass, stateHistory, localize),
     (err) => {
       delete RECENT_CACHE[entityId];
       throw err;
@@ -140,12 +140,7 @@ export const getRecentWithCache = (
       delete stateHistoryCache[cacheKey];
       throw err;
     }
-    const stateHistory = computeHistory(
-      hass,
-      fetchedHistory,
-      localize,
-      language
-    );
+    const stateHistory = computeHistory(hass, fetchedHistory, localize);
     if (appendingToCache) {
       mergeLine(stateHistory.line, cache.data.line);
       mergeTimeline(stateHistory.timeline, cache.data.timeline);

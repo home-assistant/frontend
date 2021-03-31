@@ -113,7 +113,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _opened?: boolean;
 
-  @query("ha-combo-box", true) private _comboBox!: HaComboBox;
+  @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
   private _init = false;
 
@@ -242,11 +242,11 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   );
 
   public open() {
-    this._comboBox?.open();
+    this.comboBox?.open();
   }
 
   public focus() {
-    this._comboBox?.focus();
+    this.comboBox?.focus();
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -269,7 +269,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       (changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this._comboBox as any).items = this._getDevices(
+      (this.comboBox as any).items = this._getDevices(
         this.devices!,
         this.areas!,
         this.entities!,

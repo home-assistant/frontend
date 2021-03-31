@@ -23,19 +23,19 @@ import {
 import { fetchSupervisorStore } from "../../src/data/supervisor/store";
 import {
   getSupervisorEventCollection,
-  subscribeSupervisorEvents,
   Supervisor,
   SupervisorObject,
   supervisorCollection,
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
+import { HomeAssistant } from "../../src/types";
 import { getTranslation } from "../../src/util/common-translation";
 
 declare global {
   interface HASSDomEvents {
     "supervisor-update": Partial<Supervisor>;
-    "supervisor-colllection-refresh": { colllection: SupervisorObject };
+    "supervisor-collection-refresh": { collection: SupervisorObject };
   }
 }
 
@@ -53,8 +53,6 @@ export class SupervisorBaseElement extends urlSyncMixin(
     Collection<unknown>
   > = {};
 
-  @internalProperty() private _resources?: Record<string, any>;
-
   @internalProperty() private _language = "en";
 
   public connectedCallback(): void {
@@ -71,10 +69,37 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as
+        | HomeAssistant
+        | undefined;
+      if (
+        oldHass !== undefined &&
+        oldHass.language !== undefined &&
+        oldHass.language !== this.hass.language
+      ) {
+        this._language = this.hass.language;
+      }
+    }
 
     if (changedProperties.has("_language")) {
       if (changedProperties.get("_language") !== this._language) {
         this._initializeLocalize();
+      }
+    }
+
+    if (changedProperties.has("_collections")) {
+      if (this._collections) {
+        const unsubs = Object.keys(this._unsubs);
+        for (const collection of Object.keys(this._collections)) {
+          if (!unsubs.includes(collection)) {
+            this._unsubs[collection] = this._collections[
+              collection
+            ].subscribe((data) =>
+              this._updateSupervisor({ [collection]: data })
+            );
+          }
+        }
       }
     }
   }
@@ -85,7 +110,10 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    if (this._language !== this.hass.language) {
+    if (
+      this._language !== this.hass.language &&
+      this.hass.language !== undefined
+    ) {
       this._language = this.hass.language;
     }
     this._initializeLocalize();
@@ -99,55 +127,43 @@ export class SupervisorBaseElement extends urlSyncMixin(
       "/api/hassio/app/static/translations"
     );
 
-    this._resources = {
-      [language]: data,
-    };
-
     this.supervisor = {
       ...this.supervisor,
-      localize: await computeLocalize(
-        this.constructor.prototype,
-        this._language,
-        this._resources
-      ),
+      localize: await computeLocalize(this.constructor.prototype, language, {
+        [language]: data,
+      }),
     };
   }
 
   private async _handleSupervisorStoreRefreshEvent(ev) {
-    const colllection = ev.detail.colllection;
+    const collection = ev.detail.collection;
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      this._collections[colllection].refresh();
+      this._collections[collection].refresh();
       return;
     }
 
     const response = await this.hass.callApi<HassioResponse<any>>(
       "GET",
-      `hassio${supervisorCollection[colllection]}`
+      `hassio${supervisorCollection[collection]}`
     );
-    this._updateSupervisor({ [colllection]: response.data });
+    this._updateSupervisor({ [collection]: response.data });
   }
 
   private async _initSupervisor(): Promise<void> {
     this.addEventListener(
-      "supervisor-colllection-refresh",
+      "supervisor-collection-refresh",
       this._handleSupervisorStoreRefreshEvent
     );
 
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      Object.keys(supervisorCollection).forEach((colllection) => {
-        this._unsubs[colllection] = subscribeSupervisorEvents(
-          this.hass,
-          (data) => this._updateSupervisor({ [colllection]: data }),
-          colllection,
-          supervisorCollection[colllection]
-        );
-        if (this._collections[colllection]) {
-          this._collections[colllection].refresh();
+      Object.keys(supervisorCollection).forEach((collection) => {
+        if (collection in this._collections) {
+          this._collections[collection].refresh();
         } else {
-          this._collections[colllection] = getSupervisorEventCollection(
+          this._collections[collection] = getSupervisorEventCollection(
             this.hass.connection,
-            colllection,
-            supervisorCollection[colllection]
+            collection,
+            supervisorCollection[collection]
           );
         }
       });
@@ -185,7 +201,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
         fetchSupervisorStore(this.hass),
       ]);
 
-      this.supervisor = {
+      this._updateSupervisor({
         addon,
         supervisor,
         host,
@@ -195,7 +211,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
         network,
         resolution,
         store,
-      };
+      });
 
       this.addEventListener("supervisor-update", (ev) =>
         this._updateSupervisor(ev.detail)

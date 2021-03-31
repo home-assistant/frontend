@@ -21,7 +21,7 @@ import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
-  ignoredStatusCodes,
+  ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
@@ -154,8 +154,8 @@ class HassioHostInfo extends LitElement {
                     )}
                   </span>
                   <span slot="description">
-                    ${this.supervisor.host.disk_life_time - 10}% -
-                    ${this.supervisor.host.disk_life_time}%
+                    ${this.supervisor.host.disk_life_time - 10} % -
+                    ${this.supervisor.host.disk_life_time} %
                   </span>
                 </ha-settings-row>`
               : ""}
@@ -274,7 +274,7 @@ class HassioHostInfo extends LitElement {
       await rebootHost(this.hass);
     } catch (err) {
       // Ignore connection errors, these are all expected
-      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
           title: this.supervisor.localize("system.host.failed_to_reboot"),
           text: extractApiErrorMessage(err),
@@ -304,7 +304,7 @@ class HassioHostInfo extends LitElement {
       await shutdownHost(this.hass);
     } catch (err) {
       // Ignore connection errors, these are all expected
-      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
           title: this.supervisor.localize("system.host.failed_to_shutdown"),
           text: extractApiErrorMessage(err),
@@ -342,7 +342,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await updateOS(this.hass);
-      fireEvent(this, "supervisor-colllection-refresh", { colllection: "os" });
+      fireEvent(this, "supervisor-collection-refresh", { collection: "os" });
     } catch (err) {
       if (this.hass.connection.connected) {
         showAlertDialog(this, {
@@ -378,8 +378,8 @@ class HassioHostInfo extends LitElement {
     if (hostname && hostname !== curHostname) {
       try {
         await changeHostOptions(this.hass, { hostname });
-        fireEvent(this, "supervisor-colllection-refresh", {
-          colllection: "host",
+        fireEvent(this, "supervisor-collection-refresh", {
+          collection: "host",
         });
       } catch (err) {
         showAlertDialog(this, {
@@ -393,8 +393,8 @@ class HassioHostInfo extends LitElement {
   private async _importFromUSB(): Promise<void> {
     try {
       await configSyncOS(this.hass);
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "host",
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "host",
       });
     } catch (err) {
       showAlertDialog(this, {
@@ -408,8 +408,8 @@ class HassioHostInfo extends LitElement {
 
   private async _loadData(): Promise<void> {
     if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "network",
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "network",
       });
     } else {
       const network = await fetchNetworkInfo(this.hass);

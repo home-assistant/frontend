@@ -50,6 +50,7 @@ class AdvancedModeRow extends LitElement {
 
   private async _advancedToggled(ev) {
     getOptimisticFrontendUserDataCollection(this.hass.connection, "core").save({
+      ...this.coreUserData,
       showAdvanced: ev.currentTarget.checked,
     });
   }

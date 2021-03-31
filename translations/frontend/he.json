@@ -101,6 +101,48 @@
             "unknown": "לא ידוע"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "not_available_version": "אתה מפעיל את Home Assistant {core_version_installed} , כדי לעדכן לגרסה זו של התוסף אתה זקוק לפחות לגרסה {core_version_needed} של Home Assistant",
+                "visit_addon_page": "בקר בדף {name} לפרטים נוספים"
+            }
+        },
+        "common": {
+            "cancel": "בטל",
+            "close": "סגור",
+            "save": "שמור"
+        },
+        "confirm": {
+            "update": {
+                "title": "עדכן את {name}"
+            }
+        },
+        "dialog": {
+            "registries": {
+                "password": "סיסמה",
+                "username": "שם משתמש"
+            },
+            "repositories": {
+                "add": "הוסף",
+                "remove": "הסר",
+                "title": "נהל את מאגרי ההרחבות"
+            },
+            "restart_addon": {
+                "confirm_text": "אתחל את התוסף",
+                "text": "האם ברצונך לאתחל את התוסף עם השינויים שלך?"
+            },
+            "update": {
+                "create_snapshot": "צור נקודת גיבוי עבור {name}",
+                "snapshot": "נקודת גיבוי",
+                "snapshotting": "יוצר נקודת גיבוי עבור {name}",
+                "updating": "מעדכן את {name} לגרסה {version}"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "התוסף לא נמצא"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "האם ברצונך לשמור את ההתחברות הזו?",
@@ -360,6 +402,7 @@
             },
             "media-browser": {
                 "class": {
+                    "url": "נתיב כתובת URL",
                     "video": "וידאו"
                 },
                 "documentation": "תיעוד",
@@ -368,6 +411,12 @@
             "picture-upload": {
                 "label": "תמונה",
                 "unsupported_format": "פורמט לא נתמך, בחר תמונת JPEG, PNG או GIF."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "סנן לפי אזור",
+                "filter_by_device": "סנן לפי מכשיר",
+                "filtered_by_area": "אזור: {area_name}",
+                "filtered_by_device": "מכשיר: {device_name}"
             },
             "related-items": {
                 "area": "אֵזוֹר",
@@ -388,14 +437,24 @@
                     "second": "{count} {count, plural,\n  one {שנייה}\n  other {שניות}\n}",
                     "week": "{count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
                 },
+                "future_duration": {
+                    "day": "בעוד {count} {count, plural,\n  one {יום}\n  other {ימים}\n}",
+                    "hour": "בעוד {count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
+                    "minute": "בעוד {count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
+                    "second": "בעוד {count} {count, plural,\n  one {שניה}\n  other {שניות}\n}",
+                    "week": "בעוד {count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
+                },
                 "never": "אף פעם לא",
                 "past_duration": {
                     "day": "לפני {count} {count, plural,\n  one {day}\n  other {days}\n}",
-                    "hour": "לפני {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "hour": "לפני {count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
                     "minute": "לפני {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
                     "second": "לפני {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
                     "week": "לפני {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 }
+            },
+            "service-control": {
+                "target_description": "אלה האיזורים, התקנים וישויות בהם ישתמש שירות זה"
             },
             "service-picker": {
                 "service": "שירות"
@@ -502,6 +561,9 @@
                 "last_changed": "שונה לאחרונה",
                 "person": {
                     "create_zone": "צור אזור מהמיקום הנוכחי"
+                },
+                "remote": {
+                    "activity": "פעילות נוכחית"
                 },
                 "restored": {
                     "confirm_remove_text": "האם אתה בטוח שברצונך להסיר ישות זו?",
@@ -611,6 +673,11 @@
             "minute": "{count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
             "second": "שניה שניות",
             "week": "שבוע שבועות"
+        },
+        "errors": {
+            "config": {
+                "key_wrong_type": "הערך שסופק עבור \"{key}\" אינו נתמך על-ידי העורך החזותי. אנו תומכים ({type_correct}) אך קיבלנו ({type_wrong})."
+            }
         },
         "login-form": {
             "log_in": "התחבר",
@@ -972,7 +1039,9 @@
                 "blueprint": {
                     "add": {
                         "community_forums": "פורומים קהילתיים",
+                        "error_no_url": "אנא הזן כתובת URL של השרטוט",
                         "file_name": "נתיב שרטוט",
+                        "header": "יבוא שרטוט",
                         "import_btn": "תצוגה מקדימה של שרטוט",
                         "import_header": "שרטוט \" {name} \"",
                         "import_introduction_link": "באפשרותך לייבא שרטוטים של משתמשים אחרים מ- Github ומ {community_link}. הזן את כתובת ה- URL של השרטוט.",
@@ -985,12 +1054,14 @@
                     },
                     "overview": {
                         "add_blueprint": "יבוא שרטוט",
+                        "confirm_delete_text": "האם אתה בטוח שברצונך למחוק שרטוט זה?",
                         "delete_blueprint": "מחק שרטוט",
                         "discover_more": "גלה שרטוטים נוספים",
                         "headers": {
                             "domain": "דומיין",
                             "file_name": "שם קובץ"
                         },
+                        "learn_more": "למד עוד אודות שימוש בשרטוטים",
                         "use_blueprint": "צור אוטומציה"
                     }
                 },
@@ -1002,7 +1073,7 @@
                             "enable": "אפשור",
                             "enable_ha_skill": "הפעל את מיומנות Home Assistant עבור אלקסה",
                             "enable_state_reporting": "הפוך דיווח מצב לזמין",
-                            "info": "עם שילוב אלקסה עבור ענן Home Assistant תוכל לשלוט בכל המכשירים של Home Assistant באמצעות כל מכשיר המקושר לאלקסה.",
+                            "info": "עם האינטגרציה של Alexa עבור Home Assistant Cloud, תוכל לשלוט בכל מכשירי Home Assistant שלך באמצעות כל מכשיר המותאם לשימוש ב-Alexa.",
                             "info_state_reporting": "אם תאפשר דיווח על מצב, Home Assistant ישלח כל שינוי מצב של ישויות חשופות לאמזון. זה יאפשר לך לראות תמיד את המצב העדכני באפליקציית Alexa ולהשתמש בשינויי המצב ליצירת שגרות.",
                             "manage_entities": "נהל ישויות",
                             "state_reporting_error": "אין אפשרות לעשות {enable_disable} לדיווח מצב.",
@@ -1024,6 +1095,8 @@
                             "info": "עם שילוב מסייע Google עבור ענן Home Assistant תוכל לשלוט בכל מכשירי Home Assistant שלך באמצעות כל מכשיר המקושר למסייע של Google.",
                             "info_state_reporting": "אם תפעיל דיווח מצב, Home Assistant ישלח את כל שינויי המצבים של ישויות חשופות ל-Google. זה מאפשר לך תמיד לראות את המצבים האחרונים באפליקציה של גוגל.",
                             "manage_entities": "נהל ישויות",
+                            "not_configured_text": "לפני שתוכל להשתמש ב- Google Assistant, עליך להפעיל את Home Assistant Cloud skill עבור Google Assistant באפליקציית Google Home.",
+                            "not_configured_title": "Google Assistant אינו מופעל",
                             "security_devices": "התקני אבטחה",
                             "sync_entities": "סנכרן ישויות לגוגל",
                             "sync_entities_404_message": "כישלון בסינכרון היישויות שלך ל-Google, בקש מ Google 'Hey Google, sync my devices' כדי לסנכרן את הישויות שלך.",
@@ -1047,6 +1120,14 @@
                         },
                         "sign_out": "התנתק",
                         "thank_you_note": "תודה לך על היותך חלק בענן Home Assistant. בזכות אנשים כמוך אנחנו מסוגלים לייצר חווית בית חכם עבור כולם. תודה!",
+                        "tts": {
+                            "default_language": "שפת ברירת מחדל לשימוש",
+                            "female": "נקבה",
+                            "info": "הבא אישיות לביתך על-ידי כך שהוא ידבר אליך באמצעות שירותי המרת הטקסט לדיבור שלנו. באפשרותך להשתמש באפשרות זו באוטומציות ובקבצי Script באמצעות שירות {service}.",
+                            "male": "זכר",
+                            "title": "טקסט לדיבור",
+                            "try": "נסה"
+                        },
                         "webhooks": {
                             "disable_hook_error_msg": "השבתת הwebhook נכשלה:",
                             "info": "לכל דבר שתצורתו נקבעה כמופעלת על-ידי webhook יכולה להינתן כתובת URL ציבורית כדי לאפשר לך לשלוח נתונים בחזרה ל Home Assistant מכל מקום, מבלי לחשוף את המערכת שלך לאינטרנט.",
@@ -1068,7 +1149,7 @@
                         "not_exposed_entities": "ישויות לא חשופות",
                         "title": "Alexa"
                     },
-                    "description_features": "שליטה הרחק מהבית, משתלב עם Alexa ו Google Assistant.",
+                    "description_features": "שליטה על הבית מרחוק, ואינטגרציה עם Alexa ו-Google Assistant.",
                     "description_login": "מחובר בתור {email} מה",
                     "description_not_login": "לא מחובר",
                     "dialog_certificate": {
@@ -1116,7 +1197,7 @@
                         "email": "דוא\"ל",
                         "email_error_msg": "דואר אלקטרוני לא חוקי",
                         "forgot_password": "שכחת סיסמא?",
-                        "introduction": "ענן Home Assistant מספק לך חיבור מרוחק מאובטח למערכת שלך כשאתה מחוץ לבית. זה גם מאפשר לך להתחבר לשירותים הזמינים בענן בלבד: Alexa ו- Google Assistant.",
+                        "introduction": "שירות Home Assistant Cloud מספק לך חיבור מרוחק מאובטח למערכת שלך כשאתה מחוץ לבית. הוא גם מאפשר לך להתחבר לשירותים הזמינים בענן בלבד: Alexa ו-Google Assistant.",
                         "introduction2": "שירות זה מנוהל על ידי השותף שלנו ",
                         "introduction2a": ", חברה שהוקמה על ידי מייסדי Home Assistant ו Hass.io.",
                         "introduction3": "ענן Home Assistant הוא שירות מנוי עם ניסיון חינם למשך חודש. אין צורך באמצעי תשלום.",
@@ -1162,6 +1243,9 @@
                     "description": "שנה את התצורה הכללית של Home Assistant",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "learn_more": "למד עוד על אופן עיבוד הנתונים שלך."
+                            },
                             "core_config": {
                                 "edit_requires_storage": "העורך מושבת משום שהתצורה מאוחסנת ב- configuration.yaml.",
                                 "elevation": "גובה",
@@ -1226,7 +1310,7 @@
                     "caption": "התקנים",
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק התקן זה?",
                     "confirm_rename_entity_ids": "האם אתה רוצה גם לשנות את המזהים של הישויות שלך?",
-                    "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי Script, סצנות, Lovelace) המשתמשת כעת בישויות אלה, יהיה עליך לעדכן אותן בעצמך.",
+                    "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי Script, סצנות, Lovelace) המשתמשת כעת בישויות אלה! יהיה עליך לעדכן אותן בעצמך כדי להשתמש במזהים של הישויות החדשות.",
                     "data_table": {
                         "area": "אזור",
                         "battery": "סוללה",
@@ -1339,6 +1423,9 @@
                     "clear": "נקה",
                     "filtering_by": "סינון לפי"
                 },
+                "hassio": {
+                    "button": "הגדר"
+                },
                 "header": "הגדר את Home Assistant",
                 "helpers": {
                     "caption": "עוזרים",
@@ -1394,7 +1481,7 @@
                     "add_integration": "הוסף אינטגרציה",
                     "caption": "אינטגרציות",
                     "config_entry": {
-                        "area": "ב {area}",
+                        "area": "ב-{area}",
                         "delete": "מחק",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
                         "device_unavailable": "מכשיר אינו זמין",
@@ -1404,8 +1491,10 @@
                         "entity_unavailable": "ישות לא זמינה",
                         "firmware": "קושחה: {version}",
                         "hub": "מחובר באמצעות",
+                        "logs": "יומן אירועים",
                         "manuf": "על ידי {manufacturer}",
                         "no_area": "ללא אזור",
+                        "not_loaded": "לא נטען, בדוק את {logs_link}",
                         "options": "אפשרויות",
                         "rename": "שנה שם",
                         "restart_confirm": "הפעל מחדש את Home Assistant כדי להשלים את הסרת האינטגרציה",
@@ -1425,6 +1514,7 @@
                         "finish": "סיום",
                         "loading_first_time": "אנא המתן בזמן שהאינטגרציה מותקנת",
                         "not_all_required_fields": "לא כל שדות החובה מולאו.",
+                        "not_loaded": "לא ניתן היה לטעון את האינטגרציה, נסה להפעיל מחדש את Home Assistant.",
                         "submit": "המשך"
                     },
                     "configure": "הגדר",
@@ -1463,6 +1553,13 @@
                     "clear": "נקה",
                     "description": "צפה ביומני Home Assistant",
                     "details": "פרטי יומן האירועים ({level})",
+                    "level": {
+                        "critical": "CRITICAL",
+                        "debug": "DEBUG",
+                        "error": "ERROR",
+                        "info": "INFO",
+                        "warning": "WARNING"
+                    },
                     "load_full_log": "טען את הלוג המלא של Home Assistant",
                     "loading_log": "טוען יומן שגיאות ...",
                     "multiple_messages": "ההודעה התרחשה לראשונה בשעה {time} והיא מופיעה {counter} פעמים",
@@ -1571,6 +1668,9 @@
                         "node_failed": "הרכיב נכשל",
                         "stage": "שלב",
                         "zwave_info": "מידע Z-Wave"
+                    },
+                    "network_status": {
+                        "unknown": "לא ידוע"
                     },
                     "node_query_stages": {
                         "associations": "מרענן קבוצות וחברויות",
@@ -2138,7 +2238,8 @@
                 },
                 "cards": {
                     "actions": {
-                        "no_service": "לא צוין שום שירות לביצוע",
+                        "action_confirmation": "האם אתה בטוח שברצונך לבצע פעולה \" {action} \"?",
+                        "no_service": "לא צוין שירות להפעלה",
                         "no_url": "לא צוין כתובת אתר לפתיחה"
                     },
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק את הכרטיס הזה?",
@@ -2193,7 +2294,8 @@
                             "none": "אין פעולה",
                             "toggle": "החלף מצב",
                             "url": "Url"
-                        }
+                        },
+                        "url_path": "נתיב כתובת URL"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2690,6 +2792,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "הבא",
+                    "intro": "שתף ניתוחים אנליטים מהמקרה שלך. נתונים אלו יהיו זמינים באופן ציבורי בכתובת {link}"
+                },
                 "core-config": {
                     "button_detect": "לזהות",
                     "finish": "הבא",
@@ -2698,12 +2804,14 @@
                     "intro_location_detect": "אנו יכולים לעזור לך למלא מידע זה על ידי ביצוע בקשה חד פעמית לשירות חיצוני.",
                     "location_name_default": "בית"
                 },
+                "finish": "סיום",
                 "integration": {
                     "finish": "סיום",
                     "intro": "התקנים ושירותים מיוצגים ב- Home Assistant כאינטגרציות. באפשרותך להגדיר אותם כעת, או לעשות זאת מאוחר יותר ממסך התצורה.",
                     "more_integrations": "עוד"
                 },
                 "intro": "האם אתה רוצה לקחת שליטה על הבית שלך ולהצטרף לקהילה הגדולה שלנו?",
+                "next": "הבא",
                 "restore": {
                     "description": "לחלופין, באפשרותך לשחזר מגיבוי קודם.",
                     "hide_log": "הסתר יומן מלא",
@@ -2828,7 +2936,7 @@
                     "error_no_theme": "אין ערכות נושא זמינות.",
                     "header": "ערכת נושא",
                     "link_promo": "למד אודות ערכות נושא",
-                    "primary_color": "בצע ראשי",
+                    "primary_color": "צבע ראשי",
                     "reset": "איפוס"
                 },
                 "vibrate": {

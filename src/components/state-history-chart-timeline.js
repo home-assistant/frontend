@@ -201,8 +201,8 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
     const formatTooltipLabel = (item, data) => {
       const values = data.datasets[item.datasetIndex].data[item.index];
 
-      const start = formatDateTimeWithSeconds(values[0], this.hass.language);
-      const end = formatDateTimeWithSeconds(values[1], this.hass.language);
+      const start = formatDateTimeWithSeconds(values[0], this.hass.locale);
+      const end = formatDateTimeWithSeconds(values[1], this.hass.locale);
       const state = values[2];
 
       return [state, start, end];

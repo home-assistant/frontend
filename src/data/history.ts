@@ -4,6 +4,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
+import { FrontendTranslationData } from "./translation";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const LINE_ATTRIBUTES_TO_KEEP = [
@@ -109,7 +110,7 @@ const equalState = (obj1: LineChartState, obj2: LineChartState) =>
 
 const processTimelineEntity = (
   localize: LocalizeFunc,
-  language: string,
+  language: FrontendTranslationData,
   states: HassEntity[]
 ): TimelineEntity => {
   const data: TimelineState[] = [];
@@ -203,8 +204,7 @@ const processLineChartEntities = (
 export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HassEntity[][],
-  localize: LocalizeFunc,
-  language: string
+  localize: LocalizeFunc
 ): HistoryResult => {
   const lineChartDevices: { [unit: string]: HassEntity[][] } = {};
   const timelineDevices: TimelineEntity[] = [];
@@ -235,7 +235,7 @@ export const computeHistory = (
 
     if (!unit) {
       timelineDevices.push(
-        processTimelineEntity(localize, language, stateInfo)
+        processTimelineEntity(localize, hass.locale, stateInfo)
       );
     } else if (unit in lineChartDevices) {
       lineChartDevices[unit].push(stateInfo);

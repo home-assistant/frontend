@@ -14,7 +14,9 @@ import { html, TemplateResult } from "lit-html";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import { navigate } from "../../../src/common/navigate";
 import "../../../src/common/search/search-input";
+import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-svg-icon";
 import {
@@ -137,6 +139,12 @@ class HassioAddonStore extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    const repositoryUrl = extractSearchParam("repository_url");
+    navigate(this, "/hassio/store", true);
+    if (repositoryUrl) {
+      this._manageRepositories(repositoryUrl);
+    }
+
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
     this._loadData();
   }
@@ -170,7 +178,7 @@ class HassioAddonStore extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._manageRepositories();
+        this._manageRepositoriesClicked();
         break;
       case 1:
         this.refreshData();
@@ -187,10 +195,14 @@ class HassioAddonStore extends LitElement {
     }
   }
 
-  private async _manageRepositories() {
+  private _manageRepositoriesClicked() {
+    this._manageRepositories();
+  }
+
+  private async _manageRepositories(url?: string) {
     showRepositoriesDialog(this, {
       supervisor: this.supervisor,
-      loadData: () => this._loadData(),
+      url,
     });
   }
 
@@ -199,9 +211,9 @@ class HassioAddonStore extends LitElement {
   }
 
   private async _loadData() {
-    fireEvent(this, "supervisor-colllection-refresh", { colllection: "addon" });
-    fireEvent(this, "supervisor-colllection-refresh", {
-      colllection: "supervisor",
+    fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
+    fireEvent(this, "supervisor-collection-refresh", {
+      collection: "supervisor",
     });
   }
 

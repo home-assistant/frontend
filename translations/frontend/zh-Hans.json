@@ -102,6 +102,395 @@
             "unknown": "未知"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "默认",
+                    "header": "音频",
+                    "input": "输入",
+                    "output": "输出"
+                },
+                "network": {
+                    "container": "容器",
+                    "disabled": "已禁用",
+                    "header": "网络",
+                    "host": "主机"
+                },
+                "no_configuration": "此加载项没有可供您“乱搞”的配置……",
+                "options": {
+                    "edit_in_ui": "以图形界面编辑",
+                    "edit_in_yaml": "以 YAML 编辑",
+                    "header": "选项",
+                    "invalid_yaml": "YAML 无效",
+                    "show_unused_optional": "显示未使用的可选配置选项"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "获取加载项更新日志失败",
+                    "go_to_config": "无法启动加载项，因为配置检查失败。",
+                    "install": "安装加载项失败",
+                    "restart": "重启加载项失败",
+                    "start": "启动加载项失败",
+                    "start_invalid_config": "前往配置",
+                    "stop": "停止加载项失败",
+                    "uninstall": "卸载加载项失败",
+                    "validate_config": "加载项配置校验失败"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "Application Armor，简称 AppArmor，是一个 Linux 内核安全模块，其限制加载项的部分功能，如网络访问、原始套接字访问、读写或执行特定文件的权限。\n\n加载项可以提供针对其自身进行了优化的安全配置文件，或者要求禁用 AppArmor。一旦禁用，将增加安全风险，也会相应地降低加载项的安全评分。",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "加载项可以通过 Home Assistant 验证用户身份，从而允许其用户通过 Home Assistant 的用户名和密码登录加载项内部的应用程序。此标识代表加载项是否请求此项功能。",
+                        "title": "Home Assistant 身份认证"
+                    },
+                    "docker_api": {
+                        "description": "加载项要求其有权访问并管理系统上运行的 Docker 实例。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用加载项的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                        "title": "完全 Docker 访问"
+                    },
+                    "full_access": {
+                        "description": "加载项要求其对系统的硬件有完全的访问权限，相当于 Docker 中的特权模式。这增加了安全风险，因此会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用加载项的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                        "title": "完全硬件访问"
+                    },
+                    "hassio_api": {
+                        "description": "加载项要求其有权访问 Supervisor API。默认情况下，加载项只能访问系统的常规版本信息。如果加载项要求了“管理”或“超级管理”级别的 API 访问权限，就有权控制 Home Assistant 系统的多个部分。此标识代表加载项是否请求此项权限，此权限会降低加载项的安全评分。",
+                        "title": "Supervisor API 访问"
+                    },
+                    "homeassistant_api": {
+                        "description": "此加载项可以直接通过 Home Assistant API 访问正在运行的 Home Assistant 实例。此模式还处理加载项的身份验证，使加载项无需再经过其他验证即可与 Home Assistant 进行交互。",
+                        "title": "Home Assistant API 访问"
+                    },
+                    "host_network": {
+                        "description": "加载项通常在各自隔离的网络层中运行，以阻止其访问宿主操作系统的网络。某些情况下，这种网络隔离会限制加载项的正常工作，因此加载项可以要求解除隔离，给予加载项完全的宿主网络访问权限。这为加载项提供了更多的网络功能，也增加了安全风险。因此，此功能会降低加载项的安全评分。",
+                        "title": "宿主网络"
+                    },
+                    "host_pid": {
+                        "description": "通常情况下，加载项进程与其他系统进程是隔离的。加载项要求其有权访问在宿主系统上运行的系统进程，并且在宿主系统上生成进程。此模式为加载项提供了对整个 Home Assistant 系统的完全访问和控制权，这增加了安全风险，并且在使用不当时可能会损坏系统。因此，此功能会降低加载项的安全评分。 \n\n这种级别的访问权限不会自动授予，必须由您确认。为此，您需要手动禁用加载项的保护模式。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                        "title": "宿主进程命名空间"
+                    },
+                    "ingress": {
+                        "description": "此加载项使用 Ingress 将其界面安全地嵌入 Home Assistant 中。",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "身份认证",
+                        "docker": "docker",
+                        "hardware": "硬件访问",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "宿主网络",
+                        "host_pid": "宿主进程",
+                        "ingress": "ingress",
+                        "rating": "评分",
+                        "stage": "状态"
+                    },
+                    "rating": {
+                        "description": "Home Assistant 对每个加载项都进行了安全评分，以代表使用该加载项可能带来的风险。加载项请求的系统访问权限越高，安全风险就越高，安全评分就会越低。\n\n评分的范围从 1 到 6。1 为最低分（最不安全、最高风险），6 为最高分（最安全、最低风险）。",
+                        "title": "加载项安全评分"
+                    },
+                    "role": {
+                        "admin": "超级管理",
+                        "backup": "备份",
+                        "default": "默认",
+                        "homeassistant": "homeassistant",
+                        "manager": "管理"
+                    },
+                    "stage": {
+                        "description": "加载项有三种状态：\n\n{icon_stable} **稳定**: 这些加载项可用于生产环境。\n\n{icon_experimental} **实验**: 这些加载项可能存在 Bug，或者尚未开发完成。\n\n{icon_deprecated} **废弃**: 这些加载项不会再更新。",
+                        "title": "加载项状态"
+                    }
+                },
+                "changelog": "更新日志",
+                "cpu_usage": "加载项 CPU 使用率",
+                "hostname": "主机名",
+                "install": "安装",
+                "new_update_available": "{name} 有新版本 {version}",
+                "not_available_arch": "此加载项与设备的处理器或安装的操作系统不兼容。",
+                "not_available_version": "您正在运行 Home Assistant 版本 {core_version_installed}，要将加载项更新到此版本，至少需要 Home Assistant 版本 {core_version_needed}",
+                "open_web_ui": "打开 Web UI",
+                "option": {
+                    "auto_update": {
+                        "description": "有新版本时，自动更新加载项",
+                        "title": "自动更新"
+                    },
+                    "boot": {
+                        "description": "系统启动时，自动启动加载项",
+                        "title": "自启动"
+                    },
+                    "ingress_panel": {
+                        "description": "将此加载项添加到侧边栏",
+                        "title": "在侧边栏显示"
+                    },
+                    "protected": {
+                        "description": "阻止加载项的高权限系统访问",
+                        "title": "保护模式"
+                    },
+                    "watchdog": {
+                        "description": "加载项崩溃时，自动重新启动",
+                        "title": "守护"
+                    }
+                },
+                "protection_mode": {
+                    "content": "此加载项的保护模式已禁用！这将使加载项具有对整个系统的完全访问权限，这增加了安全风险，并且在使用不当时可能会损坏系统。请务必在了解、信任加载项来源并且确有需要时，才禁用保护模式。",
+                    "enable": "启用保护模式",
+                    "title": "警告：保护模式已禁用！"
+                },
+                "ram_usage": "加载项内存使用率",
+                "rebuild": "重新编译",
+                "restart": "重启",
+                "start": "启动",
+                "stop": "停止",
+                "uninstall": "卸载",
+                "visit_addon_page": "有关更多信息，请访问{name}页面"
+            },
+            "documentation": {
+                "get_documentation": "获取加载项文档失败: {error}"
+            },
+            "failed_to_reset": "重置加载项配置失败: {error}",
+            "failed_to_save": "保存加载项配置失败: {error}",
+            "logs": {
+                "get_logs": "获取加载项日志失败: {error}"
+            },
+            "panel": {
+                "configuration": "配置",
+                "documentation": "文档",
+                "info": "信息",
+                "log": "日志"
+            },
+            "state": {
+                "installed": "加载项已安装",
+                "not_available": "加载项在此系统上不可用",
+                "not_installed": "加载项未安装"
+            }
+        },
+        "common": {
+            "cancel": "取消",
+            "close": "关闭",
+            "description": "描述",
+            "error": {
+                "unknown": "未知错误",
+                "update_failed": "更新失败"
+            },
+            "failed_to_restart_name": "重启 {name} 失败",
+            "failed_to_update_name": "更新 {name} 失败",
+            "learn_more": "详细了解",
+            "new_version_available": "发现新版本",
+            "newest_version": "最新版本",
+            "no": "否",
+            "refresh": "刷新",
+            "release_notes": "发行说明",
+            "reload": "重新加载",
+            "reset_defaults": "重置为默认值",
+            "reset_options": "重置选项",
+            "restart": "重新启动",
+            "restart_name": "重启 {name}",
+            "running_version": "您正在运行版本 {version}",
+            "save": "保存",
+            "show_more": "显示与此相关的更多信息",
+            "update": "更新",
+            "update_available": "正在等待{count, plural,\n  one {更新}\n  other { {count} 项更新}\n}",
+            "version": "版本",
+            "yes": "是"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "您确定要重置所有选项吗？",
+                "title": "重置选项"
+            },
+            "restart": {
+                "text": "您确定要重启 {name} 吗？",
+                "title": "重启 {name}"
+            },
+            "update": {
+                "text": "您确定要更新 {name} 至版本 {version} 吗？",
+                "title": "更新 {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "发现新版本",
+            "addon_running": "加载项正在运行",
+            "addon_stopped": "加载项已停止",
+            "addons": "加载项",
+            "no_addons": "您尚未安装任何加载项。去加载项商店看看吧！"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "已连接到 {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "已禁用",
+                "dns_servers": "DNS 服务器",
+                "failed_to_change": "更改网络设置失败",
+                "gateway": "网关地址",
+                "ip_netmask": "IP 地址/子网掩码",
+                "open": "开放式",
+                "scan_ap": "扫描接入点",
+                "static": "静态地址",
+                "title": "网络设置",
+                "unsaved": "有更改尚未保存，如果切换标签页，这些更改将会丢失。确认继续吗？",
+                "warning": "如果您更改了 Wi-Fi、IP 或网关地址，可能会断开当前连接！",
+                "wep": "WEP",
+                "wpa": "WPA-PSK"
+            },
+            "registries": {
+                "add_new_registry": "添加新注册信息",
+                "add_registry": "添加注册信息",
+                "failed_to_add": "添加注册信息失败",
+                "failed_to_remove": "删除注册信息失败",
+                "no_registries": "未配置注册表项",
+                "password": "密码",
+                "registry": "注册表",
+                "remove": "删除",
+                "title_add": "新增容器注册表",
+                "title_manage": "管理容器注册表",
+                "username": "用户名"
+            },
+            "repositories": {
+                "add": "添加",
+                "remove": "删除",
+                "title": "管理加载项 Repo"
+            },
+            "restart_addon": {
+                "confirm_text": "重启加载项",
+                "text": "您确定要重启已更改的加载项吗？"
+            },
+            "update": {
+                "create_snapshot": "在更新前为 {name} 创建快照",
+                "snapshot": "快照",
+                "snapshotting": "正在为 {name} 创建快照",
+                "updating": "正在更新 {name} 至版本 {version}"
+            }
+        },
+        "my": {
+            "error": "发生未知错误",
+            "error_addon_not_found": "未找到加载项",
+            "faq_link": "我的 Home Assistant 常见问题",
+            "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
+        },
+        "panel": {
+            "dashboard": "仪表盘",
+            "snapshots": "快照",
+            "store": "加载项商店",
+            "system": "系统"
+        },
+        "snapshot": {
+            "addons": "加载项",
+            "available_snapshots": "可用快照",
+            "could_not_create": "未能创建快照",
+            "create": "创建",
+            "create_blocked_not_running": "现在无法创建快照，因为系统处于{state}状态。",
+            "create_snapshot": "创建快照",
+            "description": "“快照”使您可以轻松地备份和还原 Home Assistant 实例的所有数据。",
+            "enter_password": "请输入密码。",
+            "folder": {
+                "addons/local": "本地加载项",
+                "homeassistant": "Home Assistant 配置",
+                "media": "媒体",
+                "share": "分享",
+                "ssl": "SSL"
+            },
+            "folders": "文件夹",
+            "full_snapshot": "完整快照",
+            "name": "名称",
+            "no_snapshots": "您还没有快照。",
+            "partial_snapshot": "部分快照",
+            "password": "密码",
+            "password_protected": "密码保护",
+            "password_protection": "密码保护",
+            "security": "安全性",
+            "type": "类型",
+            "upload_snapshot": "上传快照"
+        },
+        "store": {
+            "missing_addons": "找不到加载项设置？请在个人资料页面中启用高级模式",
+            "no_results_found": "在 {repository} 中未找到结果。",
+            "registries": "注册项",
+            "repositories": "仓库(Repo)"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "核心 CPU 使用率",
+                "ram_usage": "核心内存使用率"
+            },
+            "host": {
+                "change": "变更",
+                "change_hostname": "更改主机名",
+                "confirm_reboot": "您确定要重启主机吗？",
+                "confirm_shutdown": "您确定要关闭主机吗？",
+                "deployment": "部署方式",
+                "docker_version": "Docker 版本",
+                "emmc_lifetime_used": "eMMC 已用寿命",
+                "failed_to_get_hardware_list": "获取硬件列表失败",
+                "failed_to_import_from_usb": "从 USB 导入失败",
+                "failed_to_reboot": "重启主机失败",
+                "failed_to_set_hostname": "设置主机名失败",
+                "failed_to_shutdown": "关闭主机失败",
+                "hardware": "硬件",
+                "hostname": "主机名",
+                "import_from_usb": "从 USB 导入",
+                "ip_address": "IP 地址",
+                "new_hostname": "请输入新的主机名：",
+                "operating_system": "操作系统",
+                "reboot_host": "重启主机",
+                "shutdown_host": "关闭主机",
+                "used_space": "已用空间"
+            },
+            "log": {
+                "get_logs": "获取 {provider} 日志失败: {error}",
+                "log_provider": "日志提供方"
+            },
+            "supervisor": {
+                "beta_backup": "激活此功能前，请确保数据已经备份。",
+                "beta_join_confirm": "您想要加入 Beta 频道吗？",
+                "beta_release_items": "其中包括以下测试版本：",
+                "beta_warning": "Beta 版本面向测试人员和尝鲜用户，可能包含不稳定的代码",
+                "channel": "频道",
+                "cpu_usage": "Supervisor CPU 使用率",
+                "failed_to_reload": "重载 Supervisor 失败",
+                "failed_to_set_option": "设定 Supervisor 选项失败",
+                "failed_to_update": "更新 Supervisor 失败",
+                "join_beta_action": "加入测试频道",
+                "join_beta_description": "获取 Home Assistant(及其预览版)、Supervisor 和主机的测试版更新",
+                "leave_beta_action": "退出测试频道",
+                "leave_beta_description": "获取 Home Assistant、Supervisor 和主机的稳定版更新",
+                "ram_usage": "Supervisor 内存使用率",
+                "reload_supervisor": "重载 Supervisor",
+                "share_diagnostics": "共享诊断信息",
+                "share_diagnostics_description": "共享崩溃报告和诊断信息。",
+                "share_diagonstics_description": "您想要在 Supervisor 遇到异常错误时，共享崩溃报告和诊断信息吗？{line_break}这将帮助我们解决问题，此信息仅限 Home Assistant Core 团队访问，不会共享给他人。{line_break}此信息不包含私密、敏感信息，您可以随时在设置中将其禁用。",
+                "share_diagonstics_title": "帮助改进 Home Assistant",
+                "unhealthy_description": "运行状态不良的系统可能导致问题。以下是已发现的系统问题的列表，请点击链接以了解如何解决问题。",
+                "unhealthy_reason": {
+                    "docker": "Docker 环境无法正常工作",
+                    "privileged": "Supervisor 权限不够",
+                    "setup": "Supervisor 设置失败",
+                    "supervisor": "Supervisor 未能更新",
+                    "untrusted": "检测到不受信任的内容"
+                },
+                "unhealthy_title": "系统状态不佳",
+                "unsupported_description": "以下是系统存在的问题的列表，请点击链接以了解如何解决问题。",
+                "unsupported_reason": {
+                    "container": "已知会导致问题的容器",
+                    "content-trust": "内容信任验证已禁用",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker 配置",
+                    "docker_version": "Docker 版本",
+                    "job_conditions": "已忽略的工作条件",
+                    "lxc": "LXC",
+                    "network_manager": "网络管理器",
+                    "os": "操作系统",
+                    "privileged": "Supervisor 权限不够",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "您当前运行的系统不受支持",
+                "update_supervisor": "更新 Supervisor",
+                "warning": "警告"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "保持登录状态吗？",
@@ -120,7 +509,7 @@
             },
             "automation": {
                 "last_triggered": "上次触发",
-                "trigger": "触发"
+                "trigger": "执行"
             },
             "camera": {
                 "not_available": "无图像"
@@ -334,6 +723,9 @@
                 "today": "今天"
             },
             "data-table": {
+                "clear": "清除",
+                "filtering_by": "筛选方式:",
+                "hidden": "{number} 个已隐藏",
                 "no-data": "没有数据",
                 "search": "搜索"
             },
@@ -377,6 +769,8 @@
                     "changed_to_state": "变为 {state}",
                     "cleared_device_class": "未检测到 {device_class}",
                     "detected_device_class": "检测到 {device_class}",
+                    "is_closing": "正在关闭",
+                    "is_opening": "正在打开",
                     "rose": "升起",
                     "set": "落下",
                     "turned_off": "已关闭",
@@ -396,7 +790,8 @@
                     "was_unlocked": "已解锁",
                     "was_unplugged": "已拔出",
                     "was_unsafe": "[%key_id:6884523%]"
-                }
+                },
+                "show_trace": "显示轨迹"
             },
             "media-browser": {
                 "audio_not_supported": "您的浏览器不支持音频元素。",
@@ -624,6 +1019,9 @@
                 "person": {
                     "create_zone": "从当前位置创建地点"
                 },
+                "remote": {
+                    "activity": "当前活动"
+                },
                 "restored": {
                     "confirm_remove_text": "您确定要删除此实体吗？",
                     "confirm_remove_title": "是否删除实体？",
@@ -697,47 +1095,51 @@
                         "script": "脚本",
                         "server_control": "服务控制",
                         "tag": "标签",
-                        "tags": "标签",
                         "users": "用户",
                         "zone": "地点"
                     },
                     "reload": {
-                        "automation": "重载自动化",
-                        "command_line": "重载命令行实体",
-                        "core": "重载位置和自定义",
-                        "filesize": "重载文件大小实体",
-                        "filter": "重载 filter 实体",
-                        "generic": "重载通用 IP 摄像机实体",
-                        "generic_thermostat": "重载通用恒温器实体",
-                        "group": "重载分组、分组实体及其通知服务",
-                        "history_stats": "重载历史记录统计实体",
-                        "homekit": "重载 HomeKit",
+                        "automation": "自动化",
+                        "command_line": "命令行实体",
+                        "core": "位置和自定义",
+                        "filesize": "文件大小实体",
+                        "filter": "filter 实体",
+                        "generic": "通用 IP 摄像机实体",
+                        "generic_thermostat": "通用恒温器实体",
+                        "group": "分组、分组实体及其通知服务",
+                        "history_stats": "历史记录统计实体",
+                        "homekit": "HomeKit",
                         "input_boolean": "重载二元选择器",
                         "input_datetime": "重载日期选择器",
                         "input_number": "重载数值选择器",
                         "input_select": "重载多项选择器",
                         "input_text": "重载文字输入",
-                        "min_max": "重载最小值/最大值实体",
-                        "mqtt": "重载手动配置的 MQTT 实体",
-                        "person": "重载人员",
-                        "ping": "重载 ping 二元传感器实体",
-                        "reload": "重载{domain}",
-                        "rest": "重载 REST 实体及其通知服务",
-                        "rpi_gpio": "重载树莓派 GPIO 实体",
-                        "scene": "重载场景",
-                        "script": "重载脚本",
-                        "smtp": "重载 SMTP 通知服务",
-                        "statistics": "重载 statistics 实体",
-                        "telegram": "重载 telegram 通知服务",
-                        "template": "重载模板实体",
-                        "trend": "重载 trend 实体",
-                        "universal": "重载通用媒体播放器实体",
-                        "zone": "重载地点"
+                        "min_max": "最小值/最大值实体",
+                        "mqtt": "手动配置的 MQTT 实体",
+                        "person": "人员",
+                        "ping": "ping 二元传感器实体",
+                        "reload": "{domain}",
+                        "rest": "REST 实体及其通知服务",
+                        "rpi_gpio": "树莓派 GPIO 实体",
+                        "scene": "场景",
+                        "script": "脚本",
+                        "smtp": "SMTP 通知服务",
+                        "statistics": "statistics 实体",
+                        "telegram": "Telegram 通知服务",
+                        "template": "模板实体",
+                        "trend": "trend 实体",
+                        "universal": "通用媒体播放器实体",
+                        "zone": "地点"
                     },
                     "server_control": {
                         "perform_action": "{action}服务",
                         "restart": "重启",
                         "stop": "停止"
+                    },
+                    "types": {
+                        "navigation": "前往",
+                        "reload": "重载",
+                        "server_control": "服务"
                     }
                 },
                 "filter_placeholder": "实体筛选"
@@ -754,13 +1156,16 @@
                 "buttons": {
                     "add": "通过此设备添加设备",
                     "clusters": "管理簇",
+                    "device_children": "查看子设备",
                     "reconfigure": "重新配置设备",
                     "remove": "删除设备",
+                    "view_in_visualization": "可视化查看",
                     "zigbee_information": "Zigbee 设备签名"
                 },
                 "confirmations": {
                     "remove": "您确定要删除此设备吗？"
                 },
+                "device_children": "Zigbee 子设备",
                 "device_signature": "Zigbee 设备签名",
                 "last_seen": "上次发现",
                 "manuf": "制造商：{manufacturer}",
@@ -795,6 +1200,7 @@
                 "key_missing": "缺少必需的键“{key}”。",
                 "key_not_expected": "“{key}”选项不可用，或不被可视化编辑器支持。",
                 "key_wrong_type": "“{key}”的值不受可视化编辑器支持。支持 ({type_correct}) 但得到 ({type_wrong})。",
+                "no_template_editor_support": "可视化编辑器不支持模板",
                 "no_type_provided": "未提供类型。"
             }
         },
@@ -902,10 +1308,15 @@
                                 "device_id": {
                                     "action": "动作",
                                     "extra_fields": {
+                                        "brightness_pct": "亮度",
                                         "code": "代码",
+                                        "flash": "闪烁",
+                                        "humidity": "湿度",
                                         "message": "消息",
+                                        "mode": "模式",
                                         "position": "位置",
-                                        "title": "标题"
+                                        "title": "标题",
+                                        "value": "值"
                                     },
                                     "label": "设备"
                                 },
@@ -978,7 +1389,9 @@
                                     "extra_fields": {
                                         "above": "大于",
                                         "below": "小于",
-                                        "for": "持续时间"
+                                        "for": "持续时间",
+                                        "hvac_mode": "空调模式",
+                                        "preset_mode": "预设模式"
                                     },
                                     "label": "设备"
                                 },
@@ -1063,6 +1476,7 @@
                         "move_down": "下移",
                         "move_up": "上移",
                         "save": "保存",
+                        "show_trace": "显示轨迹",
                         "triggers": {
                             "add": "添加触发条件",
                             "delete": "删除",
@@ -1171,6 +1585,8 @@
                         "add_automation": "添加自动化",
                         "delete_automation": "删除自动化",
                         "delete_confirm": "您确定要删除此自动化吗？",
+                        "dev_automation": "调试自动化",
+                        "dev_only_editable": "只能调试 automations.yaml 中的自动化。",
                         "duplicate": "制作副本",
                         "duplicate_automation": "复制自动化",
                         "edit_automation": "编辑自动化",
@@ -1234,6 +1650,8 @@
                         },
                         "introduction": "Blueprint 编辑器方便您导入和管理 Blueprint。",
                         "learn_more": "详细了解如何使用 Blueprint",
+                        "share_blueprint": "共享 Blueprint",
+                        "share_blueprint_no_url": "无法共享 Blueprint，因为没有源码 URL",
                         "use_blueprint": "创建自动化"
                     }
                 },
@@ -1259,15 +1677,16 @@
                         "google": {
                             "config_documentation": "配置文档",
                             "devices_pin": "安全设备 PIN 码",
-                            "enable_ha_skill": "激活 Google 助理的 Home Assistant 技能",
+                            "enable_ha_skill": "为 Google Assistant 激活 Home Assistant 技能",
                             "enable_state_reporting": "启用状态报告",
                             "enter_pin_error": "无法存储pin：",
                             "enter_pin_hint": "输入 PIN 码以使用安全设备",
-                            "enter_pin_info": "请输入一个 PIN 码以和安全装置交互。安全装置就是门、车库门和锁之类的物品。通过 Google Assistant 与此类装置互动时，会要求您说出或输入此 PIN 码。",
+                            "enter_pin_info": "请输入一个 PIN 码以和安全设备交互。安全设备就是门、车库开门器和锁之类的物品。通过 Google Assistant 与此类设备互动时，会要求您说出或输入此 PIN 码。",
                             "info": "通过 Home Assistant Cloud 的 Google Assistant 集成，您将可以通过任何启用了 Google Assistant 的设备来控制所有 Home Assistant 设备。",
                             "info_state_reporting": "如果启用状态报告，则 Home Assistant 会将公开实体的所有状态变化发送给 Google。这样您就可以始终在 Google 应用中看到最新状态。",
                             "manage_entities": "管理实体",
-                            "security_devices": "安全装置",
+                            "not_configured_title": "Google Assistant 未激活",
+                            "security_devices": "安全设备",
                             "sync_entities": "同步实体到 Google",
                             "sync_entities_404_message": "无法将实体同步到 Google，请对 Google 说 “Hey Google, sync my devices”来同步实体。",
                             "title": "Google Assistant"
@@ -1429,6 +1848,33 @@
                     "description": "单位制、位置、时区及其他通用参数",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "header": "分析",
+                                "instance_id": "实例ID: {huuid}",
+                                "introduction": "共享实例的分析。此数据将在 {link} 公开。",
+                                "needs_base": "需要启用基础分析才能启用此选项",
+                                "preference": {
+                                    "base": {
+                                        "description": "包括实例 ID，版本号和安装类型",
+                                        "title": "基础分析"
+                                    },
+                                    "diagnostics": {
+                                        "description": "共享崩溃报告和诊断信息",
+                                        "title": "诊断"
+                                    },
+                                    "statistics": {
+                                        "title": "使用情况统计"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "包括集成和加载项的名称和能力",
+                                        "title": "使用的集成和加载项"
+                                    },
+                                    "usage": {
+                                        "description": "包括集成的名称",
+                                        "title": "使用的集成"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "编辑器已禁用，因为配置存储于 configuration.yaml。",
                                 "elevation": "海拔",
@@ -1743,6 +2189,7 @@
                     "disable": {
                         "disabled_integrations": "{number} 个已禁用",
                         "hide_disabled": "隐藏禁用的集成",
+                        "show": "显示",
                         "show_disabled": "显示禁用的集成"
                     },
                     "discovered": "已发现",
@@ -2122,39 +2569,39 @@
                     "description": "重新启动或停止 Home Assistant 服务",
                     "section": {
                         "reloading": {
-                            "automation": "重载自动化",
-                            "command_line": "重载命令行实体",
-                            "core": "重载位置和自定义",
-                            "filesize": "重载文件大小实体",
-                            "filter": "重载 filter 实体",
-                            "generic": "重载通用 IP 摄像机实体",
-                            "generic_thermostat": "重载通用恒温器实体",
-                            "group": "重载分组、分组实体及其通知服务",
+                            "automation": "自动化",
+                            "command_line": "命令行实体",
+                            "core": "位置和自定义",
+                            "filesize": "文件大小实体",
+                            "filter": "filter 实体",
+                            "generic": "通用 IP 摄像机实体",
+                            "generic_thermostat": "通用恒温器实体",
+                            "group": "分组、分组实体及其通知服务",
                             "heading": "配置重载",
-                            "history_stats": "重载历史记录统计实体",
-                            "homekit": "重载 HomeKit",
-                            "input_boolean": "重载二元选择器",
-                            "input_datetime": "重载日期选择器",
-                            "input_number": "重载数值选择器",
-                            "input_select": "重载多项选择器",
-                            "input_text": "重载文字输入",
+                            "history_stats": "历史记录统计实体",
+                            "homekit": "HomeKit",
+                            "input_boolean": "二元选择器",
+                            "input_datetime": "日期选择器",
+                            "input_number": "数值选择器",
+                            "input_select": "多项选择器",
+                            "input_text": "文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
-                            "min_max": "重载最小值/最大值实体",
-                            "mqtt": "重载手动配置的 MQTT 实体",
-                            "person": "重载人员",
-                            "ping": "重载 ping 二元传感器实体",
-                            "reload": "重载{domain}",
-                            "rest": "重载 REST 实体及其通知服务",
-                            "rpi_gpio": "重载树莓派 GPIO 实体",
-                            "scene": "重载场景",
-                            "script": "重载脚本",
-                            "smtp": "重载 SMTP 通知服务",
-                            "statistics": "重载 statistics 实体",
-                            "telegram": "重载 telegram 通知服务",
-                            "template": "重载模板实体",
-                            "trend": "重载 trend 实体",
-                            "universal": "重载通用媒体播放器实体",
-                            "zone": "重载地点"
+                            "min_max": "最小值/最大值实体",
+                            "mqtt": "手动配置的 MQTT 实体",
+                            "person": "人员",
+                            "ping": "ping 二元传感器实体",
+                            "reload": "{domain}",
+                            "rest": "REST 实体及其通知服务",
+                            "rpi_gpio": "树莓派 GPIO 实体",
+                            "scene": "场景",
+                            "script": "脚本",
+                            "smtp": "SMTP 通知服务",
+                            "statistics": "statistics 实体",
+                            "telegram": "Telegram 通知服务",
+                            "template": "模板实体",
+                            "trend": "trend 实体",
+                            "universal": "通用媒体播放器实体",
+                            "zone": "地点"
                         },
                         "server_management": {
                             "confirm_restart": "您确定要重新启动 Home Assistant 吗？",
@@ -2330,9 +2777,11 @@
                         "caption": "网络"
                     },
                     "visualization": {
+                        "auto_zoom": "自动缩放",
                         "caption": "可视化",
                         "header": "网络可视化",
                         "highlight_label": "高亮显示设备",
+                        "refresh_topology": "刷新拓扑结构",
                         "zoom_label": "缩放到设备"
                     }
                 },
@@ -2404,6 +2853,7 @@
                         "server_version": "服务器版本"
                     },
                     "device_info": {
+                        "device_config": "配置设备",
                         "node_ready": "节点就绪",
                         "node_status": "节点状态",
                         "zwave_info": "Z-Wave 信息"
@@ -2415,6 +2865,15 @@
                         "connected": "已连接",
                         "connecting": "正在连接",
                         "unknown": "未知"
+                    },
+                    "node_config": {
+                        "attribution": "设备配置参数和描述由 {device_database} 提供。",
+                        "battery_device_notice": "电池供电的设备必须处于唤醒状态才能更新配置。请参阅设备说明书，了解如何唤醒设备。",
+                        "error_device_not_found": "未找到设备",
+                        "header": "Z-Wave 设备配置",
+                        "introduction": "管理并调整所选设备（节点）的具体配置参数。",
+                        "parameter_is_read_only": "此参数为只读。",
+                        "zwave_js_device_database": "Z-Wave JS 设备数据库"
                     },
                     "node_status": {
                         "alive": "在线",
@@ -2562,6 +3021,7 @@
                         "column_parameter": "参数",
                         "description": "服务开发工具可让您调用 Home Assistant 中任何可用的服务。",
                         "fill_example_data": "填写示例数据",
+                        "no_template_ui_support": "UI 不支持模板，请使用 YAML 编辑器。",
                         "title": "服务",
                         "ui_mode": "进入 UI 模式",
                         "yaml_mode": "进入 YAML 模式",
@@ -2603,6 +3063,17 @@
                         "title": "模板",
                         "unknown_error_template": "渲染模板时发生了未知错误"
                     }
+                }
+            },
+            "error": {
+                "go_back": "返回",
+                "supervisor": {
+                    "ask": "寻求帮助",
+                    "observer": "检查 Observer",
+                    "reboot": "请尝试重启主机",
+                    "system_health": "检查系统状态",
+                    "title": "无法加载 Supervisor 面板！",
+                    "wait": "如果系统刚刚启动，请确保已等候足够的时间以便 Supervisor 启动完成。"
                 }
             },
             "history": {
@@ -3010,6 +3481,8 @@
                         "error_remove": "无法删除配置：{error}",
                         "error_save_yaml": "无法保存 YAML：{error}",
                         "header": "编辑配置",
+                        "lovelace_changed": "Lovelace 配置已更新，是否要放弃当前更改并载入更新后的配置？",
+                        "reload": "重新加载",
                         "resources_moved": "资源(resources)不应再添加到 Lovelace 配置中，而是在 Lovelace 配置面板中添加。",
                         "save": "保存",
                         "saved": "已保存",
@@ -3356,6 +3829,19 @@
                     "disable": "禁用",
                     "enable": "启用",
                     "header": "多因素身份验证模块"
+                },
+                "number_format": {
+                    "description": "选择数字的格式。",
+                    "dropdown_label": "数字格式",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "自动（使用语言设置）",
+                        "none": "无",
+                        "space_comma": "1 234 567,89",
+                        "system": "使用系统区域设置"
+                    },
+                    "header": "数字格式"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

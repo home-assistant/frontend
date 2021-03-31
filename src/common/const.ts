@@ -56,6 +56,8 @@ export const FIXED_DOMAIN_ICONS = {
 
 export const FIXED_DEVICE_CLASS_ICONS = {
   current: "hass:current-ac",
+  carbon_dioxide: "mdi:molecule-co2",
+  carbon_monoxide: "mdi:molecule-co",
   energy: "hass:flash",
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
@@ -103,6 +105,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "lock",
   "media_player",
   "person",
+  "remote",
   "script",
   "sun",
   "timer",

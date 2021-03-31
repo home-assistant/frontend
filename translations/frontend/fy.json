@@ -37,6 +37,29 @@
             "unknown": "Ûnbekend"
         }
     },
+    "supervisor": {
+        "common": {
+            "close": "Slute"
+        },
+        "dialog": {
+            "repositories": {
+                "add": "Tafoegje"
+            },
+            "restart_addon": {
+                "confirm_text": "Start add-on opnij op",
+                "text": "Wolle jo de add-on opnij starte mei jo feroaringen?"
+            },
+            "update": {
+                "create_snapshot": "Meitsje in momintopname fan {name} foardat jo bywurkje",
+                "snapshot": "Momintopname",
+                "snapshotting": "Momintopname oanmeitsjen fan {name}",
+                "updating": "{name} bywurkje nei ferzje {version}"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "Add-on net fûn"
+        }
+    },
     "ui": {
         "card": {
             "climate": {
@@ -170,6 +193,11 @@
                         }
                     }
                 },
+                "blueprint": {
+                    "overview": {
+                        "share_blueprint": "Diel blaudruk"
+                    }
+                },
                 "cloud": {
                     "alexa": {
                         "title": "Alexa"
@@ -252,6 +280,13 @@
                     "services": {
                         "cancel_command": "Opdracht annulearje"
                     }
+                }
+            },
+            "error": {
+                "supervisor": {
+                    "ask": "Om help freegje",
+                    "system_health": "Kontrolearje systeem sûnens",
+                    "title": "Koe it paniel Supervisor net lade!"
                 }
             },
             "lovelace": {

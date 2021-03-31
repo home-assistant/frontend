@@ -86,6 +86,54 @@
             "unknown": "Ukjent"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "configuration": "Konfigurasjon ",
+                "documentation": "Dokumentasjon ",
+                "info": "Info",
+                "log": "Logg"
+            }
+        },
+        "common": {
+            "cancel": "Avbryt",
+            "close": "Lukk",
+            "newest_version": "Nyaste versjon",
+            "release_notes": "Utgjevingsnotat",
+            "update": "Oppdater ",
+            "version": "Versjon"
+        },
+        "confirm": {
+            "update": {
+                "text": "Er du sikker på at du vil oppdatere {name} til versjon {version}",
+                "title": "Oppdater {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Ny versjon tilgjengeleg",
+            "addon_running": "Tillegg køyrer",
+            "addon_stopped": "Tillegg stoppa",
+            "addons": "Tillegg",
+            "no_addons": "Du har ikkje installert nokon tillegg endå. Gå til tilleggsbutikken for å kome i gang!"
+        },
+        "dialog": {
+            "repositories": {
+                "remove": "Fjern"
+            },
+            "restart_addon": {
+                "confirm_text": "Start tillegget på nytt"
+            },
+            "update": {
+                "snapshot": "Øyeblikksbilde"
+            }
+        },
+        "panel": {
+            "dashboard": "Skrivebord",
+            "snapshots": "Snapshots",
+            "store": "Tillegsbutikk",
+            "system": "System"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Vil du lagre denne pålogginga?",
@@ -129,6 +177,7 @@
                 "direction": "Retning",
                 "forward": "Framover",
                 "oscillate": "Sving",
+                "preset_mode": "Malmodus",
                 "reverse": "Bakover",
                 "speed": "Fart"
             },
@@ -156,7 +205,8 @@
             },
             "script": {
                 "cancel": "Avbryt",
-                "cancel_multiple": "Avbryt {number}"
+                "cancel_multiple": "Avbryt {number}",
+                "run": "Køyr"
             },
             "service": {
                 "run": "Køyr"
@@ -233,6 +283,19 @@
             "successfully_saved": "Vellukka lagring"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Tillegg",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Henter tillegget som gav feilen.",
+                        "title": "Feil ved henting av tillegg."
+                    },
+                    "no_supervisor": {
+                        "description": "Fann ikkje Supervisor, så tillegget kunne ikkje lastast.",
+                        "title": "Inga Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Legg til",
@@ -264,6 +327,12 @@
                 "loading_history": "Lastar tilstandshistoria...",
                 "no_history_found": "Inga tilstandshistorie funne"
             },
+            "logbook": {
+                "messages": {
+                    "is_closing": "stenger",
+                    "is_opening": "opnar"
+                }
+            },
             "related-items": {
                 "area": "Område",
                 "device": "Eining",
@@ -278,6 +347,12 @@
                     "week": "{count} {count, plural,\none {veke}\nother {veker}\n}"
                 },
                 "never": "Aldri"
+            },
+            "service-control": {
+                "required": "Dette feltet obligatorisk",
+                "service_data": "Tenestedata",
+                "target": "Mål",
+                "target_description": "Kva skal denne tenesta bruke som målretta område, einingar og oppføringar."
             },
             "service-picker": {
                 "service": "Teneste"
@@ -355,7 +430,17 @@
                     "description": "Vala vart lagra vellukka."
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "tag": "Merknader"
+                    }
+                }
+            },
             "zha_device_info": {
+                "buttons": {
+                    "view_in_visualization": "Visning i visualisering"
+                },
                 "confirmations": {
                     "remove": "Er du sikker på at du vil fjerne eininga?"
                 },
@@ -378,6 +463,12 @@
             "minute": "{count} {count, plural,\none {minutt}\nother {minutt}\n}",
             "second": "{count} {count, plural,\none {sekund}\nother {sekundar}\n}",
             "week": "{count} {count, plural,\none {veke}\nother {veker}\n}"
+        },
+        "errors": {
+            "config": {
+                "key_not_expected": "Nøkkelen \"{key}\" er ikkje forventa eller støtta av den visuelle redigeraren.",
+                "key_wrong_type": "Den gitte verdien for \"{key}\" er ikkje støtta av den visuelle redigeraren. Vi støttar ({type_correct}), men mottok ({type_wrong})."
+            }
         },
         "login-form": {
             "log_in": "Logg inn",
@@ -444,6 +535,9 @@
                                 },
                                 "device_id": {
                                     "action": "Handling ",
+                                    "extra_fields": {
+                                        "position": "Posisjon"
+                                    },
                                     "label": "Eining"
                                 },
                                 "event": {
@@ -644,6 +738,18 @@
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "tts": {
+                            "dialog": {
+                                "example_message": "Hei {name}! Du kan spele kva som heilst tekst på kva som heilst støtta mediaspelar\"",
+                                "header": "Prøv tekst til tale",
+                                "play": "Spel",
+                                "target": "Mål",
+                                "target_browser": "Nettlesar"
+                            },
+                            "try": "Prøv "
+                        }
+                    },
                     "alexa": {
                         "title": "Alexa"
                     },
@@ -707,6 +813,7 @@
                     },
                     "cant_edit": "Du kan berre redigere element som er laga i brukargrensesnittet.",
                     "caption": "Einingar",
+                    "confirm_disable_config_entry": "Det er ikkje fleire einingar for konfigurasjonsoppføringa {entry_name}. Vil du heller deaktivere konfigurasjonsoppføringa?",
                     "confirm_rename_entity_ids": "Vil du også endre ID-ane til oppføringane dine?",
                     "data_table": {
                         "area": "Område",
@@ -754,7 +861,8 @@
                 },
                 "filtering": {
                     "clear": "Klarer",
-                    "filtering_by": "Filtrerer etter"
+                    "filtering_by": "Filtrerer etter",
+                    "show": "Vis "
                 },
                 "header": "Konfigurer Home Assistant",
                 "info": {
@@ -771,6 +879,18 @@
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "Eininga utilgjengeleg",
                         "devices": "{count} {count, plural,\n  one {eining}\n  other {einingar}\n}",
+                        "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringa av denne integrasjonen",
+                        "disable": {
+                            "disable_confirm": "Er du sikker på at du vil deaktivere denne konfigurasjonsoppføringa? Einingane og oppføringane vil verte deaktivert.",
+                            "disabled": "Deaktivert ",
+                            "disabled_by": {
+                                "device": "eining ",
+                                "integration": "integrasjon ",
+                                "user": "brukar "
+                            },
+                            "disabled_cause": "Deaktivert av {cause}"
+                        },
+                        "enable_restart_confirm": "Start Home Assistant på nytt for å fullføre aktiveringa av denne integrasjonen",
                         "entities": "{count} {count, plural,\n  one {oppføring}\n  other {oppføringar}\n}",
                         "entity_unavailable": "Oppføringa utilgjengeleg",
                         "firmware": "Firmware: {version}",
@@ -785,18 +905,29 @@
                     },
                     "config_flow": {
                         "close": "Lukk",
+                        "could_not_load": "Konfigurasjonsflyt kunne ikkje lastast inn",
                         "dismiss": "Avvis dialogboksa",
+                        "error": "Feil",
                         "external_step": {
                             "description": "Ei ekstern nettside må besøkast for å fullføre dette steget.",
                             "open_site": "Opne nettside"
                         },
                         "finish": "Fullfør",
+                        "pick_flow_step": {
+                            "new_flow": "Nei, sett opp ein anna førekomst av {integration}",
+                            "title": "Vi oppdaga desse. Vil du sette dei opp?"
+                        },
                         "submit": "Send inn"
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigurer",
-                    "confirm_new": "Vil du setje opp {integration}?",
+                    "confirm_new": "Vil du sette opp {integration}?",
                     "description": "Administrer tilkopla einingar og tenester",
+                    "disable": {
+                        "disabled_integrations": "{number} deaktivert ",
+                        "hide_disabled": "Skjul deaktivert integrasjonar",
+                        "show_disabled": "Vis deaktiverte integrasjonar"
+                    },
                     "discovered": "Oppdaga",
                     "integration": "integrasjon ",
                     "new": "Sett opp ein ny integrasjon",
@@ -813,6 +944,11 @@
                 },
                 "mqtt": {
                     "title": "MQTT"
+                },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Ukjent"
+                    }
                 },
                 "person": {
                     "caption": "Personar",
@@ -935,6 +1071,9 @@
                     },
                     "groups": {
                         "caption": "Grupper"
+                    },
+                    "visualization": {
+                        "refresh_topology": "Oppdater topologi"
                     }
                 },
                 "zone": {
@@ -956,6 +1095,12 @@
                         "wakeup_interval": "Vekkarintervall"
                     },
                     "description": "Administrer Z-Wave-nettverket ditt",
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrer til OpenZWave",
+                            "introduction": "Denne vegvisaren vil hjelpe deg å migrere frå den eldre Z-Wave-integrasjonen til OpenZWave-integrasjonen som for augneblinken er i beta."
+                        }
+                    },
                     "network_management": {
                         "header": "Z-Wave-nettverksadministrering",
                         "introduction": "Køyr kommandoar som påverkar Z-wave-nettverket. Du kjem ikkje til å få tilbakemelding om kommandoande lukkast, men du kan sjekke i OZW-loggen, og prøve å finne ut av det."
@@ -1035,9 +1180,15 @@
                         "title": "Hendingar"
                     },
                     "services": {
-                        "title": "Tenester"
+                        "accepts_target": "Denne tenesta godtek eit mål, for eksempel: `entity_id: light.bed_light`",
+                        "all_parameters": "Alle tilgjengelege parameter ",
+                        "title": "Tenester",
+                        "ui_mode": "Gå til UI-modus",
+                        "yaml_mode": "Gå til YAML-modus",
+                        "yaml_parameters": "Parameter berre tilgjengeleg i YAML-modus"
                     },
                     "states": {
+                        "copy_id": "Kopier ID til utklippstavla",
                         "no_entities": "Ingen oppføringar",
                         "title": "Statusar"
                     },
@@ -1178,6 +1329,8 @@
                     },
                     "header": "Rediger brukargrensesnitt",
                     "menu": {
+                        "manage_dashboards": "Administrer skriveborda",
+                        "manage_resources": "Adminstrer ressursar",
                         "raw_editor": "Rå konfigurasjonsredigerar"
                     },
                     "migrate": {
@@ -1188,6 +1341,8 @@
                     },
                     "raw_editor": {
                         "header": "Rediger konfigurasjon",
+                        "lovelace_changed": "Lovelace-konfigurasjonen vart oppdatert. Vil du laste den oppdaterte konfigurasjonen i redigeringsprogrammet og miste gjeldende endringar?",
+                        "reload": "Last inn på nytt",
                         "save": "Lagre",
                         "saved": "Lagra",
                         "unsaved_changes": "Ikkje lagra endringar"
@@ -1233,6 +1388,14 @@
                 "delete_prompt": "Vil du slette denne meldinga?",
                 "empty": "Du har ingen meldingar",
                 "playback_title": "Meldingsavspeling"
+            },
+            "my": {
+                "component_not_loaded": "Denne viderekoplinga er ikkje støtta av Home Assistant-førekomsten. Du treng {integration}-integrasjonen å bruke denne viderekoplinga.",
+                "documentation": "dokumentasjon",
+                "error": "Det hende ein ukjent feil ",
+                "faq_link": "Mine Home Assitant-FAQ",
+                "no_supervisor": "Denne viderekoplinga er ikkje støtta av Home Assistant-installasjonen. Det trengs anten installasjonsmetoden Home Assistant eller Home Assistant Supervised. For meir informasjon, sjå {docs_link} .",
+                "not_supported": "Denne viderekoplinga er ikkje støtta av Home Assistant-førekomsten. Sjå {link} for dei støtta vidarekoplingane og ved kva versjon dei vart introdusert."
             },
             "page-authorize": {
                 "abort_intro": "Innlogging avbrote",

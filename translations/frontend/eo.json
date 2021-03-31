@@ -188,6 +188,11 @@
                     "subscribe_to": "Temo por aboni",
                     "topic": "temo"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "Nekonata"
+                    }
+                },
                 "scene": {
                     "activated": "Aktivigita sceno {name}.",
                     "caption": "Scenoj",

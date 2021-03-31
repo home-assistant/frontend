@@ -100,7 +100,7 @@ class HcLayout extends LitElement {
         display: block;
         margin: 0;
       }
-	
+
       .hero {
         border-radius: 4px 4px 0 0;
       }

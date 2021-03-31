@@ -75,7 +75,11 @@ class DialogSystemLogDetail extends LitElement {
             ${this.hass.localize(
               "ui.panel.config.logs.details",
               "level",
-              item.level
+              html`<span class="${item.level.toLowerCase()}"
+                >${this.hass.localize(
+                  "ui.panel.config.logs.level." + item.level.toLowerCase()
+                )}</span
+              >`
             )}
           </span>
           <mwc-icon-button id="copy" @click=${this._copyLog} slot="actionItems">
@@ -120,15 +124,12 @@ class DialogSystemLogDetail extends LitElement {
             ${item.count > 0
               ? html`
                   First occurred:
-                  ${formatSystemLogTime(
-                    item.first_occurred,
-                    this.hass!.language
-                  )}
+                  ${formatSystemLogTime(item.first_occurred, this.hass!.locale)}
                   (${item.count} occurrences) <br />
                 `
               : ""}
             Last logged:
-            ${formatSystemLogTime(item.timestamp, this.hass!.language)}
+            ${formatSystemLogTime(item.timestamp, this.hass!.locale)}
           </p>
           ${item.message.length > 1
             ? html`
@@ -175,6 +176,12 @@ class DialogSystemLogDetail extends LitElement {
         pre {
           margin-bottom: 0;
           font-family: var(--code-font-family, monospace);
+        }
+        .error {
+          color: var(--error-color);
+        }
+        .warning {
+          color: var(--warning-color);
         }
 
         ha-header-bar {
