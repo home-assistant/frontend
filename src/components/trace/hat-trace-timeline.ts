@@ -14,6 +14,7 @@ import {
   ChooseActionTraceStep,
   getDataFromPath,
   TriggerTraceStep,
+  isTriggerPath,
 } from "../../data/trace";
 import { HomeAssistant } from "../../types";
 import "./ha-timeline";
@@ -218,7 +219,7 @@ class ActionRenderer {
   ): number {
     const value = this._getItem(index);
 
-    if (value[0].path === "trigger") {
+    if (isTriggerPath(value[0].path)) {
       return this._handleTrigger(index, value[0] as TriggerTraceStep);
     }
 
@@ -267,9 +268,12 @@ class ActionRenderer {
 
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
     this._renderEntry(
-      "trigger",
-      `Triggered by the
-    ${triggerStep.changed_variables.trigger.description} at
+      triggerStep.path,
+      `Triggered ${
+        triggerStep.path === "trigger"
+          ? "manually"
+          : `by the ${triggerStep.changed_variables.trigger.description}`
+      } at
     ${formatDateTimeWithSeconds(
       new Date(triggerStep.timestamp),
       this.hass.locale
