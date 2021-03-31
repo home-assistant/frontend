@@ -1,4 +1,5 @@
 import { HaFormSchema } from "../components/ha-form/ha-form";
+import { ConfigEntry } from "./config_entries";
 
 export interface DataEntryFlowProgressedEvent {
   type: "data_entry_flow_progressed";
@@ -44,8 +45,7 @@ export interface DataEntryFlowStepCreateEntry {
   flow_id: string;
   handler: string;
   title: string;
-  // Config entry ID
-  result: string;
+  result: ConfigEntry;
   description: string;
   description_placeholders: Record<string, string>;
 }

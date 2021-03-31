@@ -379,7 +379,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           return false;
         }
 
-        if (!value.state.includes(_stateFilter.toLowerCase())) {
+        if (!value.state.toLowerCase().includes(_stateFilter.toLowerCase())) {
           return false;
         }
 
@@ -462,14 +462,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
-      this.hass.language
+      this.hass.locale
     );
   }
 
   lastUpdatedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_updated),
-      this.hass.language
+      this.hass.locale
     );
   }
 

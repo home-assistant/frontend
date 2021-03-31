@@ -1,5 +1,6 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
+import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -13,6 +14,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
 import {
   ConfigEntry,
   deleteConfigEntry,
@@ -53,6 +55,10 @@ declare global {
 }
 
 const integrationsWithPanel = {
+  hassio: {
+    buttonLocalizeKey: "ui.panel.config.hassio.button",
+    path: "/hassio/dashboard",
+  },
   mqtt: {
     buttonLocalizeKey: "ui.panel.config.mqtt.button",
     path: "/config/mqtt",
@@ -144,8 +150,26 @@ export class HaIntegrationCard extends LitElement {
                   this.hass.localize(
                     "ui.panel.config.integrations.config_entry.unnamed_entry"
                   )}</paper-item-body
-                ><ha-icon-next></ha-icon-next
-              ></paper-item>`
+                >
+                ${item.state === "not_loaded"
+                  ? html`<span>
+                      <ha-svg-icon
+                        class="error"
+                        .path=${mdiAlertCircle}
+                      ></ha-svg-icon
+                      ><paper-tooltip animation-delay="0" position="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.not_loaded",
+                          "logs_link",
+                          this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.logs"
+                          )
+                        )}
+                      </paper-tooltip>
+                    </span>`
+                  : ""}
+                <ha-icon-next></ha-icon-next>
+              </paper-item>`
           )}
         </paper-listbox>
       </ha-card>
@@ -162,6 +186,7 @@ export class HaIntegrationCard extends LitElement {
         outlined
         class="single integration ${classMap({
           disabled: Boolean(item.disabled_by),
+          "not-loaded": !item.disabled_by && item.state === "not_loaded",
         })}"
         .configEntry=${item}
         .id=${item.entry_id}
@@ -181,6 +206,18 @@ export class HaIntegrationCard extends LitElement {
                 this.hass.localize(
                   `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
                 ) || item.disabled_by
+              )}
+            </div>`
+          : item.state === "not_loaded"
+          ? html`<div class="header">
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.not_loaded",
+                "logs_link",
+                html`<a href="/config/logs"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.logs"
+                  )}</a
+                >`
               )}
             </div>`
           : ""}
@@ -311,7 +348,8 @@ export class HaIntegrationCard extends LitElement {
                 `}
             ${!item.disabled_by &&
             item.state === "loaded" &&
-            item.supports_unload
+            item.supports_unload &&
+            item.source !== "system"
               ? html`<mwc-list-item @request-selected="${this._handleReload}">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.reload"
@@ -322,20 +360,24 @@ export class HaIntegrationCard extends LitElement {
               ? html`<mwc-list-item @request-selected="${this._handleEnable}">
                   ${this.hass.localize("ui.common.enable")}
                 </mwc-list-item>`
-              : html`<mwc-list-item
+              : item.source !== "system"
+              ? html`<mwc-list-item
                   class="warning"
                   @request-selected="${this._handleDisable}"
                 >
                   ${this.hass.localize("ui.common.disable")}
-                </mwc-list-item>`}
-            <mwc-list-item
-              class="warning"
-              @request-selected="${this._handleDelete}"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.delete"
-              )}
-            </mwc-list-item>
+                </mwc-list-item>`
+              : ""}
+            ${item.source !== "system"
+              ? html`<mwc-list-item
+                  class="warning"
+                  @request-selected="${this._handleDelete}"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.delete"
+                  )}
+                </mwc-list-item>`
+              : ""}
           </ha-button-menu>
         </div>
       </ha-card>
@@ -564,11 +606,23 @@ export class HaIntegrationCard extends LitElement {
         .disabled {
           --ha-card-border-color: var(--warning-color);
         }
+        .not-loaded {
+          --ha-card-border-color: var(--error-color);
+        }
+        .header {
+          padding: 8px;
+          text-align: center;
+        }
         .disabled .header {
           background: var(--warning-color);
           color: var(--text-primary-color);
-          padding: 8px;
-          text-align: center;
+        }
+        .not-loaded .header {
+          background: var(--error-color);
+          color: var(--text-primary-color);
+        }
+        .not-loaded .header a {
+          color: var(--text-primary-color);
         }
         .card-content {
           padding: 16px;

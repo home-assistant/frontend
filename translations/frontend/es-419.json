@@ -102,6 +102,395 @@
             "unknown": "Desconocido"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Predeterminado",
+                    "header": "Audio",
+                    "input": "Entrada",
+                    "output": "Salida"
+                },
+                "network": {
+                    "container": "Contenedor",
+                    "disabled": "Deshabilitada",
+                    "header": "Red",
+                    "host": "Host"
+                },
+                "no_configuration": "Este complemento no expone ninguna configuración que pueda alterar...",
+                "options": {
+                    "edit_in_ui": "Editar en la interfaz de usuario",
+                    "edit_in_yaml": "Editar en YAML",
+                    "header": "Opciones",
+                    "invalid_yaml": "YAML no válido",
+                    "show_unused_optional": "Mostrar opciones de configuración opcionales no utilizadas"
+                }
+            },
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "Fallo al obtener el registro de cambios del complemento",
+                    "go_to_config": "Fallo al iniciar complemento - Validación de configuración errónea.",
+                    "install": "Fallo al instalar el complemento",
+                    "restart": "Fallo al reiniciar el complemento",
+                    "start": "Fallo al iniciar el complemento",
+                    "start_invalid_config": "Ir a la configuración",
+                    "stop": "Fallo al detener el complemento",
+                    "uninstall": "Fallo al desinstalar el complemento",
+                    "validate_config": "Fallo al validar la configuración del complemento"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') es un módulo de seguridad del kernel de Linux que restringe las capacidades de los complementos como el acceso a la red, el acceso al socket sin procesar y el permiso para leer, escribir o ejecutar archivos específicos. \n\n Los autores de complementos pueden proporcionar sus perfiles de seguridad, optimizados para el complemento, o solicitar su desactivación. Si AppArmor está deshabilitado, aumentará los riesgos de seguridad y, por lo tanto, tendrá un impacto negativo en la puntuación de seguridad del complemento.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Un complemento puede autenticar a los usuarios contra Home Assistant, lo que permite que los complementos brinden a los usuarios la posibilidad de iniciar sesión en aplicaciones que se ejecutan dentro de complementos, utilizando su nombre de usuario / contraseña de Home Assistant. Esta insignia indica si el autor del complemento solicita esta capacidad.",
+                        "title": "Autenticación de Home Assistant"
+                    },
+                    "docker_api": {
+                        "description": "El autor del complemento ha solicitado que éste tenga acceso de administración a la instancia de Docker que se ejecuta en su sistema. Este modo le da al complemento acceso y control total a todo su sistema Home Assistant, lo que agrega riesgos de seguridad y podría dañar su sistema si se usa incorrectamente. Por lo tanto, esta característica tiene un impacto negativo en la puntuación de seguridad del complemento. \n\nEste nivel de acceso no se otorga automáticamente y debe ser confirmado por usted. Para hacerlo, debe deshabilitar manualmente el modo de protección en el complemento. Desactive el modo de protección SOLAMENTE si conoce, necesita y confía en la fuente de este complemento.",
+                        "title": "Acceso total a Docker"
+                    },
+                    "full_access": {
+                        "description": "A pedido del autor del complemento, éste tiene acceso total al hardware de su sistema. El acceso es comparable al modo privilegiado en Docker. Dado que esto abre posibles riesgos de seguridad, ésta característica impacta negativamente en la puntuación de seguridad del complemento. \n\nEste nivel de acceso no se otorga automáticamente y debe ser confirmado por usted. Para hacerlo, debe deshabilitar manualmente el modo de protección en el complemento. Desactive el modo de protección SOLAMENTE si conoce, necesita y confía en la fuente de este complemento.",
+                        "title": "Acceso total al hardware"
+                    },
+                    "hassio_api": {
+                        "description": "Al complemento se le dio acceso a la API Supervisor, a solicitud del autor del complemento. De forma predeterminada, el complemento puede acceder a la información general de la versión de su sistema. Cuando el complemento solicita acceso de nivel de 'administrador' a la API, obtendrá acceso para controlar varias partes de su sistema Home Assistant. Este permiso está indicado por esta insignia y afectará negativamente la puntuación de seguridad del complemento.",
+                        "title": "Acceso a la API Supervisor"
+                    },
+                    "homeassistant_api": {
+                        "description": "Este complemento puede acceder a su instancia de Home Assistant en ejecución directamente a través de la API de Home Assistant. Este modo también maneja la autenticación para el complemento, lo que permite que un complemento interactúe con Home Assistant sin la necesidad de tokens de autenticación adicionales.",
+                        "title": "Acceso a la API de Home Assistant"
+                    },
+                    "host_network": {
+                        "description": "Los complementos generalmente se ejecutan en su propia capa de red aislada, lo que les impide acceder a la red del sistema operativo host. En algunos casos, este aislamiento de red puede limitar los complementos en la prestación de sus servicios y, por lo tanto, el autor del complemento puede eliminar el aislamiento, lo que le da al complemento acceso completo a las capacidades de red de la máquina host. Esto le da al complemento más capacidades de red pero reduce la seguridad, por lo tanto, la clasificación de seguridad del complemento se reducirá cuando el complemento utilice esta opción.",
+                        "title": "Red del host"
+                    },
+                    "host_pid": {
+                        "description": "Por lo general, los procesos que ejecuta el complemento están aislados de todos los demás procesos del sistema. El autor del complemento ha solicitado que el complemento tenga acceso a los procesos del sistema que se ejecutan en la instancia del sistema host y que permita que el complemento genere procesos en el sistema host también. Este modo le da al complemento acceso y control total a todo su sistema Home Assistant, lo que agrega riesgos de seguridad y podría dañar su sistema si se usa incorrectamente. Por lo tanto, esta característica tiene un impacto negativo en la puntuación de seguridad del complemento. \n\nEste nivel de acceso no se otorga automáticamente y debe ser confirmado por usted. Para hacerlo, debe deshabilitar manualmente el modo de protección en el complemento. Desactive el modo de protección SOLAMENTE si conoce, necesita y confía en la fuente de este complemento.",
+                        "title": "Espacio de nombres de procesos de host"
+                    },
+                    "ingress": {
+                        "description": "Este complemento utiliza Ingress para integrar su interfaz de forma segura en Home Assistant.",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "Apparmor",
+                        "auth": "autenticación",
+                        "docker": "Docker",
+                        "hardware": "Hardware",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "Host",
+                        "host_pid": "pid de host",
+                        "ingress": "Ingreso",
+                        "rating": "clasificación",
+                        "stage": "Etapa"
+                    },
+                    "rating": {
+                        "description": "Home Assistant proporciona una clasificación de seguridad para cada uno de los complementos, que indica los riesgos involucrados al usar tal complemento. Cuanto más acceso requiera un complemento en su sistema, menor será la puntuación, dado que aumentará los posibles riesgos de seguridad. \n\nEl puntaje está en una escala de 1 a 6. Donde 1 es el puntaje más bajo (considerado el menos seguro y de mayor riesgo) y un puntaje de 6 es el puntaje más alto (considerado el más seguro y de menor riesgo).",
+                        "title": "Calificación de seguridad del complemento"
+                    },
+                    "role": {
+                        "admin": "administrador",
+                        "backup": "copia de seguridad",
+                        "default": "Predeterminado",
+                        "homeassistant": "homeassistant",
+                        "manager": "Administrador"
+                    },
+                    "stage": {
+                        "description": "Los complementos pueden tener una de tres etapas: \n\n {icon_stable} ** Estable **: estos son complementos listos para usarse en producción. \n\n {icon_experimental} ** Experimental **: estos pueden contener errores y pueden no estar terminados. \n\n {icon_deprecated} ** Obsoleto **: estos complementos ya no recibirán actualizaciones.",
+                        "title": "Etapa del complemento"
+                    }
+                },
+                "changelog": "Registro de cambios",
+                "cpu_usage": "Uso de CPU del complemento",
+                "hostname": "Nombre de host",
+                "install": "instalar",
+                "new_update_available": "{name} {version} está disponible",
+                "not_available_arch": "Este complemento no es compatible con el procesador de su dispositivo o el sistema operativo que ha instalado en su dispositivo.",
+                "not_available_version": "Está ejecutando Home Assistant {core_version_installed}, para actualizar a esta versión del complemento necesita al menos la versión {core_version_needed} de Home Assistant",
+                "open_web_ui": "Abrir la interfaz de usuario web",
+                "option": {
+                    "auto_update": {
+                        "description": "Actualice automáticamente el complemento cuando haya una nueva versión disponible",
+                        "title": "Actualización automática"
+                    },
+                    "boot": {
+                        "description": "Hacer que el complemento se inicie durante el arranque del sistema",
+                        "title": "Iniciar en el arranque"
+                    },
+                    "ingress_panel": {
+                        "description": "Agregar este complemento a la barra lateral",
+                        "title": "Mostrar en la barra lateral"
+                    },
+                    "protected": {
+                        "description": "Bloquea el acceso elevado al sistema desde el complemento",
+                        "title": "Modo de protección"
+                    },
+                    "watchdog": {
+                        "description": "Esto iniciará el complemento si se bloquea",
+                        "title": "Watchdog"
+                    }
+                },
+                "protection_mode": {
+                    "content": "¡El modo de protección en este complemento está deshabilitado! Esto le da al complemento acceso completo a todo el sistema, lo que agrega riesgos de seguridad y podría dañar su sistema si se usa incorrectamente. Desactive el modo de protección SOLAMENTE si conoce, necesita y confía en la fuente de este complemento.",
+                    "enable": "Activar el modo de protección",
+                    "title": "Advertencia: ¡El modo de protección está desactivado!"
+                },
+                "ram_usage": "Uso de RAM del complemento",
+                "rebuild": "reconstruir",
+                "restart": "reiniciar",
+                "start": "Iniciar",
+                "stop": "detener",
+                "uninstall": "desinstalar",
+                "visit_addon_page": "Visite la página {name} para obtener más detalles"
+            },
+            "documentation": {
+                "get_documentation": "Fallo al obtener documentación del complemento, {error}"
+            },
+            "failed_to_reset": "Fallo al restablecer la configuración del complemento, {error}",
+            "failed_to_save": "Fallo al guardar la configuración del complemento, {error}",
+            "logs": {
+                "get_logs": "Fallo al obtener los registros del complemento, {error}"
+            },
+            "panel": {
+                "configuration": "Configuración",
+                "documentation": "Documentación",
+                "info": "Información",
+                "log": "Registro"
+            },
+            "state": {
+                "installed": "El complemento está instalado",
+                "not_available": "El complemento no está disponible en su sistema",
+                "not_installed": "El complemento no está instalado"
+            }
+        },
+        "common": {
+            "cancel": "Cancelar",
+            "close": "Cerrar",
+            "description": "Descripción",
+            "error": {
+                "unknown": "Error desconocido",
+                "update_failed": "Actualización fallida"
+            },
+            "failed_to_restart_name": "Fallo al reiniciar {name}",
+            "failed_to_update_name": "Fallo al actualizar {name}",
+            "learn_more": "Aprender más",
+            "new_version_available": "Nueva versión disponible",
+            "newest_version": "Versión más reciente",
+            "no": "No",
+            "refresh": "Actualizar",
+            "release_notes": "Notas de lanzamiento",
+            "reload": "Recargar",
+            "reset_defaults": "Restablecer a los valores predeterminados",
+            "reset_options": "Restablecer opciones",
+            "restart": "Reiniciar",
+            "restart_name": "Reiniciar {name}",
+            "running_version": "Actualmente está ejecutando la versión {version}",
+            "save": "Guardar",
+            "show_more": "Mostrar más información sobre esto",
+            "update": "Actualizar",
+            "update_available": "{count} {count, plural,\n  one {actualización}\n  other {actualizaciones}\n} pendiente/s",
+            "version": "Versión",
+            "yes": "Si"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "¿Está seguro de que desea restablecer todas sus opciones?",
+                "title": "Restablecer opciones"
+            },
+            "restart": {
+                "text": "¿Está seguro de que desea reiniciar {name} ?",
+                "title": "Reiniciar {name}"
+            },
+            "update": {
+                "text": "¿Estás seguro de actualizar {name} a la versión {version}?",
+                "title": "Actualizar {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Nueva versión disponible",
+            "addon_running": "El complemento se está ejecutando",
+            "addon_stopped": "El complemento está detenido",
+            "addons": "Complementos",
+            "no_addons": "No hay ningún complemento instalado. ¡Diríjase a la tienda de complementos para comenzar!"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Conectado a {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Deshabilitado",
+                "dns_servers": "Servidores DNS",
+                "failed_to_change": "Fallo al modificar la configuración de la red",
+                "gateway": "Dirección de la puerta de enlace",
+                "ip_netmask": "Dirección IP / Máscara de red",
+                "open": "Abierta",
+                "scan_ap": "Buscar puntos de acceso",
+                "static": "Estática",
+                "title": "Configuración de red",
+                "unsaved": "Tiene cambios sin guardar, estos se perderán si cambia de pestaña, ¿desea continuar?",
+                "warning": "Si está cambiando las direcciones de Wi-Fi, IP o puerta de enlace, ¡podría perder la conexión!",
+                "wep": "WEP",
+                "wpa": "WPA-PSK"
+            },
+            "registries": {
+                "add_new_registry": "Agregar nuevo registro",
+                "add_registry": "Agregar registro",
+                "failed_to_add": "Fallo al añadir el registro",
+                "failed_to_remove": "Fallo al eliminar el registro",
+                "no_registries": "No hay registros configurados",
+                "password": "Contraseña",
+                "registry": "Registro",
+                "remove": "Eliminar",
+                "title_add": "Agregar nuevo registro de contenedores",
+                "title_manage": "Gestionar registros de contenedores",
+                "username": "Nombre de usuario"
+            },
+            "repositories": {
+                "add": "Agregar",
+                "remove": "Eliminar",
+                "title": "Administrar repositorios de complementos"
+            },
+            "restart_addon": {
+                "confirm_text": "Reiniciar complemento",
+                "text": "¿Desea reiniciar el complemento con sus cambios?"
+            },
+            "update": {
+                "create_snapshot": "Crear una instantánea de {name} antes de actualizar",
+                "snapshot": "Instantánea",
+                "snapshotting": "Creando instantánea de {name}",
+                "updating": "Actualizando {name} a la versión {version}"
+            }
+        },
+        "my": {
+            "error": "Ha ocurrido un error desconocido",
+            "error_addon_not_found": "Complemento no encontrado",
+            "faq_link": "Mis preguntas frecuentes de Home Assistant",
+            "not_supported": "Esta redirección no está soportada por su instancia de Home Assistant. Consulte las redirecciones soportadas y la versión en la que fueron introducidas en {link}."
+        },
+        "panel": {
+            "dashboard": "Tablero",
+            "snapshots": "Instantáneas",
+            "store": "Tienda de complementos",
+            "system": "Sistema"
+        },
+        "snapshot": {
+            "addons": "Complementos",
+            "available_snapshots": "Instantáneas disponibles",
+            "could_not_create": "No se pudo crear la instantánea",
+            "create": "Crear",
+            "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está {state}.",
+            "create_snapshot": "Crear instantánea",
+            "description": "Las instantáneas le permiten realizar copias de seguridad y restaurar fácilmente todos los datos de su instancia de Home Assistant.",
+            "enter_password": "Por favor ingrese una contraseña.",
+            "folder": {
+                "addons/local": "Complementos locales",
+                "homeassistant": "Configuración de Home Assistant",
+                "media": "Medios",
+                "share": "Compartir",
+                "ssl": "SSL"
+            },
+            "folders": "Carpetas",
+            "full_snapshot": "Instantánea completa",
+            "name": "Nombre",
+            "no_snapshots": "Aún no tiene instantáneas.",
+            "partial_snapshot": "Instantánea parcial",
+            "password": "Contraseña",
+            "password_protected": "protegido por contraseña",
+            "password_protection": "Protección con contraseña",
+            "security": "Seguridad",
+            "type": "Tipo",
+            "upload_snapshot": "Subir instantánea"
+        },
+        "store": {
+            "missing_addons": "¿Faltan complementos? Habilite el modo avanzado en su página de perfil de usuario",
+            "no_results_found": "No se encontraron resultados en {repository} .",
+            "registries": "Registros",
+            "repositories": "Repositorios"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Uso de CPU del núcleo",
+                "ram_usage": "Uso de RAM del núcleo"
+            },
+            "host": {
+                "change": "Cambiar",
+                "change_hostname": "Cambiar nombre de host",
+                "confirm_reboot": "¿Está seguro de que desea reiniciar el host?",
+                "confirm_shutdown": "¿Está seguro de que desea apagar el host?",
+                "deployment": "Despliegue",
+                "docker_version": "Versión de Docker",
+                "emmc_lifetime_used": "Vida útil de la eMMC utilizada",
+                "failed_to_get_hardware_list": "Fallo al obtener la lista de hardware",
+                "failed_to_import_from_usb": "No se pudo importar desde USB",
+                "failed_to_reboot": "Fallo al reiniciar el host",
+                "failed_to_set_hostname": "Error al establecer el nombre de host",
+                "failed_to_shutdown": "Fallo al apagar el host",
+                "hardware": "Hardware",
+                "hostname": "Nombre de host",
+                "import_from_usb": "Importar desde USB",
+                "ip_address": "Dirección IP",
+                "new_hostname": "Ingrese un nuevo nombre de host:",
+                "operating_system": "Sistema operativo",
+                "reboot_host": "Reiniciar host",
+                "shutdown_host": "Apagar host",
+                "used_space": "Espacio utilizado"
+            },
+            "log": {
+                "get_logs": "No se pudieron obtener los registros de {provider}, {error}",
+                "log_provider": "Registro del proveedor"
+            },
+            "supervisor": {
+                "beta_backup": "Asegúrese de tener copias de seguridad de sus datos antes de activar esta función.",
+                "beta_join_confirm": "¿Quiere unirse al canal beta?",
+                "beta_release_items": "Esto incluye versiones beta para:",
+                "beta_warning": "Las versiones beta son para testers y usuarios pioneros. Pueden contener cambios de código inestables.",
+                "channel": "Canal",
+                "cpu_usage": "Uso de CPU de Supervisor",
+                "failed_to_reload": "Fallo al recargar Supervisor",
+                "failed_to_set_option": "Fallo al configurar la opción de Supervisor",
+                "failed_to_update": "Fallo al actualizar Supervisor",
+                "join_beta_action": "Unirse al canal beta",
+                "join_beta_description": "Obtener actualizaciones beta para Home Assistant (RCs), supervisor y anfitrión",
+                "leave_beta_action": "Salir del canal beta",
+                "leave_beta_description": "Obtenga actualizaciones estables para Home Assistant, Supervisor y host",
+                "ram_usage": "Uso de RAM de Supervisor",
+                "reload_supervisor": "Recargar Supervisor",
+                "share_diagnostics": "Compartir diagnósticos",
+                "share_diagnostics_description": "Compartir informes de fallos e información de diagnóstico.",
+                "share_diagonstics_description": "¿Le gustaría compartir automáticamente informes de fallos e información de diagnóstico cuando Supervisor encuentra errores inesperados?; Esto nos permitirá solucionar los problemas.{line_break}La información solo es accesible para el equipo de Home Assistant Core y no se compartirá con otros. {line_break} Los datos no incluyen ninguna información privada o confidencial. Puede desactivar esto en la configuración cuando lo desee.",
+                "share_diagonstics_title": "Ayude a mejorar Home Assistant",
+                "unhealthy_description": "Ejecutar una instalación en mal estado causará problemas. A continuación se muestra una lista de problemas encontrados con su instalación, haga clic en los enlaces para saber cómo puede resolverlos.",
+                "unhealthy_reason": {
+                    "docker": "El entorno Docker no funciona correctamente",
+                    "privileged": "Supervisor no tiene privilegios",
+                    "setup": "Falló la configuración de Supervisor",
+                    "supervisor": "No se pudo actualizar Supervisor",
+                    "untrusted": "Se ha detectado contenido no confiable"
+                },
+                "unhealthy_title": "La instalación tiene problemas",
+                "unsupported_description": "A continuación se muestra una lista de problemas encontrados con su instalación, haga clic en los enlaces para saber cómo puede resolverlos.",
+                "unsupported_reason": {
+                    "container": "Contenedores conocidos por causar problemas",
+                    "content-trust": "La validación de contenido de confianza está desactivada",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Configuración de Docker",
+                    "docker_version": "Versión de Docker",
+                    "job_conditions": "Condiciones de trabajo ignoradas",
+                    "lxc": "LXC",
+                    "network_manager": "Administrador de red",
+                    "os": "Sistema operativo",
+                    "privileged": "Supervisor no tiene privilegios",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "Está ejecutando una instalación no soportada",
+                "update_supervisor": "Actualizar Supervisor",
+                "warning": "ADVERTENCIA"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "¿Desea permanecer conectado?",
@@ -334,6 +723,9 @@
                 "today": "Hoy"
             },
             "data-table": {
+                "clear": "Limpiar",
+                "filtering_by": "Filtrado por",
+                "hidden": "{number} oculto",
                 "no-data": "Sin datos",
                 "search": "Buscar"
             },
@@ -377,6 +769,8 @@
                     "changed_to_state": "cambiado a {state}",
                     "cleared_device_class": "despejado (no se detecta {device_class})",
                     "detected_device_class": "detectado {device_class}",
+                    "is_closing": "se está cerrando",
+                    "is_opening": "se está abriendo",
                     "rose": "salió",
                     "set": "se ocultó",
                     "turned_off": "apagado",
@@ -396,7 +790,8 @@
                     "was_unlocked": "fue desbloqueado",
                     "was_unplugged": "fue desenchufado",
                     "was_unsafe": "estaba inseguro"
-                }
+                },
+                "show_trace": "Mostrar registro"
             },
             "media-browser": {
                 "audio_not_supported": "Su navegador no soporta el elemento de audio.",
@@ -624,6 +1019,9 @@
                 "person": {
                     "create_zone": "Crear zona desde ubicación actual"
                 },
+                "remote": {
+                    "activity": "Actividad actual"
+                },
                 "restored": {
                     "confirm_remove_text": "¿Está seguro de que desea eliminar esta entidad?",
                     "confirm_remove_title": "¿Eliminar entidad?",
@@ -696,7 +1094,7 @@
                         "scene": "Escenas",
                         "script": "",
                         "server_control": "Controles del servidor",
-                        "tags": "Etiquetas",
+                        "tag": "Etiquetas",
                         "users": "Usuarios",
                         "zone": "Zonas"
                     },
@@ -734,9 +1132,14 @@
                         "zone": "Recargar zonas"
                     },
                     "server_control": {
-                        "perform_action": "{action} Servidor",
+                        "perform_action": "{action} servidor",
                         "restart": "Reiniciar",
                         "stop": "Detener"
+                    },
+                    "types": {
+                        "navigation": "Navegar",
+                        "reload": "Recargar",
+                        "server_control": "Servidor"
                     }
                 },
                 "filter_placeholder": "Filtro de entidad"
@@ -753,13 +1156,16 @@
                 "buttons": {
                     "add": "Agregar dispositivos usando este dispositivo",
                     "clusters": "Administrar clústeres",
+                    "device_children": "Ver dispositivos administrados",
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivo",
+                    "view_in_visualization": "Ver en Visualización",
                     "zigbee_information": "Firma del dispositivo Zigbee"
                 },
                 "confirmations": {
                     "remove": "¿Está seguro de que desea eliminar el dispositivo?"
                 },
+                "device_children": "Dispositivos administrados por Zigbee",
                 "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Visto por última vez",
                 "manuf": "por {manufacturer}",
@@ -794,6 +1200,7 @@
                 "key_missing": "Falta la clave obligatoria \" {key} \".",
                 "key_not_expected": "La clave \" {key} \" no se esperaba o no es compatible con el editor visual.",
                 "key_wrong_type": "El valor provisto para \" {key} \" no es compatible con el editor visual. Aceptamos ( {type_correct} ) pero recibimos ( {type_wrong} ).",
+                "no_template_editor_support": "Plantillas no soportadas en el editor visual",
                 "no_type_provided": "No se ha provisto ningún tipo."
             }
         },
@@ -901,10 +1308,15 @@
                                 "device_id": {
                                     "action": "Acción",
                                     "extra_fields": {
+                                        "brightness_pct": "Brillo",
                                         "code": "Código",
+                                        "flash": "Flash",
+                                        "humidity": "Humedad",
                                         "message": "Mensaje",
+                                        "mode": "Modo",
                                         "position": "Posición",
-                                        "title": "Título"
+                                        "title": "Título",
+                                        "value": "Valor"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -961,7 +1373,7 @@
                         "conditions": {
                             "add": "Agregar condición",
                             "delete": "Eliminar",
-                            "delete_confirm": "¿Está seguro que quiere eliminar?",
+                            "delete_confirm": "¿Está seguro de eliminar ésto?",
                             "duplicate": "Duplicar",
                             "header": "Condiciones",
                             "introduction": "Las condiciones son opcionales y evitarán una mayor ejecución a menos que se cumplan todas las condiciones.",
@@ -977,7 +1389,9 @@
                                     "extra_fields": {
                                         "above": "Por encima de",
                                         "below": "Por debajo de",
-                                        "for": "Duración"
+                                        "for": "Duración",
+                                        "hvac_mode": "Modo HVAC",
+                                        "preset_mode": "Modo preestablecido"
                                     },
                                     "label": "Dispositivo"
                                 },
@@ -1062,6 +1476,7 @@
                         "move_down": "Mover hacia abajo",
                         "move_up": "Mover hacia arriba",
                         "save": "Guardar",
+                        "show_trace": "Mostrar rastro",
                         "triggers": {
                             "add": "Agregar desencadenador",
                             "delete": "Eliminar",
@@ -1170,6 +1585,8 @@
                         "add_automation": "Agregar automatización",
                         "delete_automation": "Eliminar automatización",
                         "delete_confirm": "¿Está seguro de que desea eliminar esta automatización?",
+                        "dev_automation": "Depurar automatización",
+                        "dev_only_editable": "Solo las automatizaciones definidas en automations.yaml son depurables.",
                         "duplicate": "Duplicar",
                         "duplicate_automation": "Duplicar automatización",
                         "edit_automation": "Editar automatización",
@@ -1233,6 +1650,8 @@
                         },
                         "introduction": "La configuración de planos le permite importar y administrar sus planos.",
                         "learn_more": "Obtenga más información sobre el uso de planos",
+                        "share_blueprint": "Compartir plano",
+                        "share_blueprint_no_url": "No se puede compartir el plano: no hay URL de origen",
                         "use_blueprint": "Crear automatización"
                     }
                 },
@@ -1257,12 +1676,12 @@
                         "fetching_subscription": "Obteniendo suscripción ...",
                         "google": {
                             "config_documentation": "Documentación de configuración",
-                            "devices_pin": "Pin de dispositivos de seguridad",
+                            "devices_pin": "PIN de dispositivos de seguridad",
                             "enable_ha_skill": "Activar la habilidad Home Assistant para Google Assistant",
                             "enable_state_reporting": "Habilitar informes de estado",
-                            "enter_pin_error": "No se puede guardar el pin:",
+                            "enter_pin_error": "No se puede guardar el PIN:",
                             "enter_pin_hint": "Ingrese un PIN para usar dispositivos de seguridad",
-                            "enter_pin_info": "Ingrese un pin para interactuar con los dispositivos de seguridad. Los dispositivos de seguridad son puertas, puertas de garaje y cerraduras. Se le pedirá que diga/ingrese este pin cuando interactúe con dichos dispositivos a través del Asistente de Google.",
+                            "enter_pin_info": "Ingrese un PIN para interactuar con los dispositivos de seguridad. Los dispositivos de seguridad son puertas, puertas de garaje y cerraduras. Se le pedirá que diga/ingrese este PIN cuando interactúe con dichos dispositivos a través del Asistente de Google.",
                             "info": "Con la integración de Google Assistant para Home Assistant Cloud, podrá controlar todos sus dispositivos Home Assistant a través de cualquier dispositivo habilitado para Google Assistant.",
                             "info_state_reporting": "Si habilita los informes estatales, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Google. Esto le permite ver siempre los últimos estados en la aplicación Google.",
                             "manage_entities": "Administrar entidades",
@@ -1742,6 +2161,7 @@
                     "disable": {
                         "disabled_integrations": "{number} inhabilitado",
                         "hide_disabled": "Ocultar integraciones deshabilitadas",
+                        "show": "Mostrar",
                         "show_disabled": "Mostrar integraciones deshabilitadas"
                     },
                     "discovered": "Descubierto",
@@ -1760,7 +2180,7 @@
                     "integration": "Integración",
                     "integration_not_found": "Integración no encontrada.",
                     "new": "Configurar una nueva integración.",
-                    "no_integrations": "Al parecer no tienes ninguna integración configurada todavía. Haga click en el botón de abajo para agregar su primera integración",
+                    "no_integrations": "Aún no tiene ninguna integración configurada. Haga click en el botón de abajo para agregar su primera integración",
                     "none": "No hay nada configurado",
                     "none_found": "No se encontraron integraciones",
                     "none_found_detail": "Ajuste sus criterios de búsqueda",
@@ -2144,13 +2564,13 @@
                             "ping": "Recargar entidades de sensor binario PING",
                             "reload": "Recargar {domain}",
                             "rest": "Recargar entidades y servicios de notificación REST.",
-                            "rpi_gpio": "Recargue las entidades GPIO de la Raspberry Pi",
+                            "rpi_gpio": "Recargar las entidades GPIO de la Raspberry Pi",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",
                             "smtp": "Recargar servicios de notificación SMTP",
                             "statistics": "Recargar entidades de estadísticas",
                             "telegram": "Recargar servicios de notificación de telegram",
-                            "template": "Recargar las entidades de la plantilla",
+                            "template": "Recargar las entidades de plantilla",
                             "trend": "Recargar entidades de tendencia",
                             "universal": "Recargar entidades de reproductor multimedia universal",
                             "zone": "Recargar zonas"
@@ -2329,9 +2749,11 @@
                         "caption": "Red"
                     },
                     "visualization": {
+                        "auto_zoom": "Zoom automático",
                         "caption": "Visualización",
                         "header": "Visualización de red",
                         "highlight_label": "Resaltar dispositivos",
+                        "refresh_topology": "Actualizar topología",
                         "zoom_label": "Zoom al dispositivo"
                     }
                 },
@@ -2403,6 +2825,7 @@
                         "server_version": "Versión del servidor"
                     },
                     "device_info": {
+                        "device_config": "Configurar dispositivo",
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del nodo",
                         "zwave_info": "Información de Z-Wave"
@@ -2414,6 +2837,15 @@
                         "connected": "Conectado",
                         "connecting": "Conectando",
                         "unknown": "Desconocido"
+                    },
+                    "node_config": {
+                        "attribution": "Los parámetros de configuración de los dispositivos y sus descripciones son provistos por la {device_database}",
+                        "battery_device_notice": "Los dispositivos de batería deben estar activos para actualizar su configuración. Consulte el manual de su dispositivo para obtener instrucciones sobre cómo reactivarlo.",
+                        "error_device_not_found": "Dispositivo no encontrado",
+                        "header": "Configuración del dispositivo Z-Wave",
+                        "introduction": "Gestionar y ajustar los parámetros de configuración específicos del dispositivo (nodo) para el dispositivo seleccionado",
+                        "parameter_is_read_only": "Este parámetro es de solo lectura.",
+                        "zwave_js_device_database": "Base de datos de dispositivos Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "Vivo",
@@ -2561,6 +2993,7 @@
                         "column_parameter": "Parámetro",
                         "description": "La herramienta de desarrollo de servicios le permite llamar a cualquier servicio disponible en Home Assistant.",
                         "fill_example_data": "Rellenar datos de ejemplo",
+                        "no_template_ui_support": "La interfaz de usuario no admite plantillas, sin embargo puede usar el editor YAML.",
                         "title": "Servicios",
                         "ui_mode": "Ir al modo IU",
                         "yaml_mode": "Ir al modo YAML",
@@ -2602,6 +3035,17 @@
                         "title": "Plantilla",
                         "unknown_error_template": "Error desconocido al mostrar la plantilla"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Volver",
+                "supervisor": {
+                    "ask": "Solicitar ayuda",
+                    "observer": "Verificar Observer",
+                    "reboot": "Intentar reiniciar el host",
+                    "system_health": "Verificar estado del sistema",
+                    "title": "No se pudo cargar el panel de Supervisor",
+                    "wait": "Si recién inicia, asegúrese de darle tiempo suficiente a Supervisor para que se inicie."
                 }
             },
             "history": {
@@ -3009,6 +3453,8 @@
                         "error_remove": "No se puede eliminar la configuración: {error}",
                         "error_save_yaml": "No se puede guardar YAML: {error}",
                         "header": "Editar configuración",
+                        "lovelace_changed": "La configuración de Lovelace se actualizó, ¿desea cargar la configuración actualizada en el editor y perder los cambios actuales?",
+                        "reload": "Recargar",
                         "resources_moved": "Los recursos ya no se deben agregar a la configuración de Lovelace, sino que se pueden agregar en el panel de configuración de Lovelace.",
                         "save": "Guardar",
                         "saved": "Guardado",
@@ -3356,6 +3802,19 @@
                     "enable": "Habilitar",
                     "header": "Módulos de autenticación multifactor"
                 },
+                "number_format": {
+                    "description": "Elija el formato de los números.",
+                    "dropdown_label": "Formato de los números",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automático (use la configuración de idioma)",
+                        "none": "Ninguno",
+                        "space_comma": "1 234 567,89",
+                        "system": "Usar la configuración regional del sistema"
+                    },
+                    "header": "Formato de los números"
+                },
                 "push_notifications": {
                     "add_device_prompt": {
                         "input_label": "Nombre del dispositivo",
@@ -3380,7 +3839,7 @@
                     "token_title": "Actualizar token para {clientId}"
                 },
                 "suspend": {
-                    "description": "¿Deberíamos cerrar la conexión al servidor después de estar oculto durante 5 minutos?",
+                    "description": "¿Deberíamos cerrar la conexión al servidor después de estar ausente por 5 minutos?",
                     "header": "Conexión cerrada automáticamente"
                 },
                 "themes": {

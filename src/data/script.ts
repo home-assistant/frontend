@@ -29,12 +29,14 @@ export interface ScriptConfig {
 }
 
 export interface EventAction {
+  alias?: string;
   event: string;
   event_data?: Record<string, any>;
   event_data_template?: Record<string, any>;
 }
 
 export interface ServiceAction {
+  alias?: string;
   service: string;
   entity_id?: string;
   target?: HassServiceTarget;
@@ -42,6 +44,7 @@ export interface ServiceAction {
 }
 
 export interface DeviceAction {
+  alias?: string;
   device_id: string;
   domain: string;
   entity_id: string;
@@ -55,30 +58,36 @@ export interface DelayActionParts {
   days?: number;
 }
 export interface DelayAction {
+  alias?: string;
   delay: number | Partial<DelayActionParts> | string;
 }
 
 export interface SceneAction {
+  alias?: string;
   scene: string;
 }
 
 export interface WaitAction {
+  alias?: string;
   wait_template: string;
   timeout?: number;
   continue_on_timeout?: boolean;
 }
 
 export interface WaitForTriggerAction {
+  alias?: string;
   wait_for_trigger: Trigger[];
   timeout?: number;
   continue_on_timeout?: boolean;
 }
 
 export interface RepeatAction {
+  alias?: string;
   repeat: CountRepeat | WhileRepeat | UntilRepeat;
 }
 
 interface BaseRepeat {
+  alias?: string;
   sequence: Action[];
 }
 
@@ -94,8 +103,15 @@ export interface UntilRepeat extends BaseRepeat {
   until: Condition[];
 }
 
+export interface ChooseActionChoice {
+  alias?: string;
+  conditions: string | Condition[];
+  sequence: Action[];
+}
+
 export interface ChooseAction {
-  choose: [{ conditions: Condition[]; sequence: Action[] }];
+  alias?: string;
+  choose: ChooseActionChoice[];
   default?: Action[];
 }
 
@@ -148,4 +164,42 @@ export const getScriptEditorInitData = () => {
   const data = inititialScriptEditorData;
   inititialScriptEditorData = undefined;
   return data;
+};
+
+export const getActionType = (action: Action) => {
+  // Check based on config_validation.py#determine_script_action
+  if ("delay" in action) {
+    return "delay";
+  }
+  if ("wait_template" in action) {
+    return "wait_template";
+  }
+  if ("condition" in action) {
+    return "check_condition";
+  }
+  if ("event" in action) {
+    return "fire_event";
+  }
+  if ("device_id" in action) {
+    return "device_action";
+  }
+  if ("scene" in action) {
+    return "activate_scene";
+  }
+  if ("repeat" in action) {
+    return "repeat";
+  }
+  if ("choose" in action) {
+    return "choose";
+  }
+  if ("wait_for_trigger" in action) {
+    return "wait_for_trigger";
+  }
+  if ("variables" in action) {
+    return "variables";
+  }
+  if ("service" in action) {
+    return "service";
+  }
+  return "unknown";
 };

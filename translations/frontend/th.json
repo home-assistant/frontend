@@ -680,6 +680,9 @@
                     },
                     "device_info": {
                         "zwave_info": "ข้อมูล Z-Wave"
+                    },
+                    "network_status": {
+                        "unknown": "ไม่ทราบ"
                     }
                 },
                 "person": {

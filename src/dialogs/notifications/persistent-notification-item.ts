@@ -9,6 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-markdown";
 import "../../components/ha-relative-time";
 import { PersistentNotification } from "../../data/persistent_notification";
@@ -92,13 +93,7 @@ export class HuiPersistentNotificationItem extends LitElement {
     }
 
     const d = new Date(notification.created_at!);
-    return d.toLocaleDateString(hass.language, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      minute: "numeric",
-      hour: "numeric",
-    });
+    return formatDateTime(d, hass.locale);
   }
 }
 

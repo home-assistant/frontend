@@ -17,6 +17,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
@@ -26,7 +27,6 @@ import {
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
@@ -35,14 +35,11 @@ import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 class HassioRepositoriesDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public supervisor!: Supervisor;
-
-  @property({ attribute: false }) private _repos: HassioAddonRepository[] = [];
-
-  @property({ attribute: false })
-  private _dialogParams?: HassioRepositoryDialogParams;
-
   @query("#repository_input", true) private _optionInput?: PaperInputElement;
+
+  @internalProperty() private _repositories?: HassioAddonRepository[];
+
+  @internalProperty() private _dialogParams?: HassioRepositoryDialogParams;
 
   @internalProperty() private _opened = false;
 
@@ -54,12 +51,13 @@ class HassioRepositoriesDialog extends LitElement {
     dialogParams: HassioRepositoryDialogParams
   ): Promise<void> {
     this._dialogParams = dialogParams;
-    this.supervisor = dialogParams.supervisor;
     this._opened = true;
+    await this._loadData();
     await this.updateComplete;
   }
 
   public closeDialog(): void {
+    this._dialogParams = undefined;
     this._opened = false;
     this._error = "";
   }
@@ -71,9 +69,10 @@ class HassioRepositoriesDialog extends LitElement {
   );
 
   protected render(): TemplateResult {
-    const repositories = this._filteredRepositories(
-      this.supervisor.addon.repositories
-    );
+    if (!this._dialogParams?.supervisor || this._repositories === undefined) {
+      return html``;
+    }
+    const repositories = this._filteredRepositories(this._repositories);
     return html`
       <ha-dialog
         .open=${this._opened}
@@ -82,7 +81,7 @@ class HassioRepositoriesDialog extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this.supervisor.localize("dialog.repositories.title")
+          this._dialogParams!.supervisor.localize("dialog.repositories.title")
         )}
       >
         ${this._error ? html`<div class="error">${this._error}</div>` : ""}
@@ -98,7 +97,7 @@ class HassioRepositoriesDialog extends LitElement {
                     </paper-item-body>
                     <mwc-icon-button
                       .slug=${repo.slug}
-                      .title=${this.supervisor.localize(
+                      .title=${this._dialogParams!.supervisor.localize(
                         "dialog.repositories.remove"
                       )}
                       @click=${this._removeRepository}
@@ -117,18 +116,23 @@ class HassioRepositoriesDialog extends LitElement {
             <paper-input
               class="flex-auto"
               id="repository_input"
-              .label=${this.supervisor.localize("dialog.repositories.add")}
+              .value=${this._dialogParams!.url || ""}
+              .label=${this._dialogParams!.supervisor.localize(
+                "dialog.repositories.add"
+              )}
               @keydown=${this._handleKeyAdd}
             ></paper-input>
             <mwc-button @click=${this._addRepository}>
               ${this._prosessing
                 ? html`<ha-circular-progress active></ha-circular-progress>`
-                : this.supervisor.localize("dialog.repositories.add")}
+                : this._dialogParams!.supervisor.localize(
+                    "dialog.repositories.add"
+                  )}
             </mwc-button>
           </div>
         </div>
-        <mwc-button slot="primaryAction" @click="${this.closeDialog}">
-          Close
+        <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+          ${this._dialogParams?.supervisor.localize("common.close")}
         </mwc-button>
       </ha-dialog>
     `;
@@ -159,6 +163,11 @@ class HassioRepositoriesDialog extends LitElement {
         ha-paper-dropdown-menu {
           display: block;
         }
+        ha-circular-progress {
+          display: block;
+          margin: 32px;
+          text-align: center;
+        }
       `,
     ];
   }
@@ -179,13 +188,25 @@ class HassioRepositoriesDialog extends LitElement {
     this._addRepository();
   }
 
+  private async _loadData(): Promise<void> {
+    try {
+      const addonsinfo = await fetchHassioAddonsInfo(this.hass);
+
+      this._repositories = addonsinfo.repositories;
+
+      fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
+    } catch (err) {
+      this._error = extractApiErrorMessage(err);
+    }
+  }
+
   private async _addRepository() {
     const input = this._optionInput;
     if (!input || !input.value) {
       return;
     }
     this._prosessing = true;
-    const repositories = this._filteredRepositories(this._repos);
+    const repositories = this._filteredRepositories(this._repositories!);
     const newRepositories = repositories.map((repo) => {
       return repo.source;
     });
@@ -195,11 +216,7 @@ class HassioRepositoriesDialog extends LitElement {
       await setSupervisorOption(this.hass, {
         addons_repositories: newRepositories,
       });
-
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._repos = addonsInfo.repositories;
-
-      await this._dialogParams!.loadData();
+      await this._loadData();
 
       input.value = "";
     } catch (err) {
@@ -210,7 +227,7 @@ class HassioRepositoriesDialog extends LitElement {
 
   private async _removeRepository(ev: Event) {
     const slug = (ev.currentTarget as any).slug;
-    const repositories = this._filteredRepositories(this._repos);
+    const repositories = this._filteredRepositories(this._repositories!);
     const repository = repositories.find((repo) => {
       return repo.slug === slug;
     });
@@ -229,11 +246,7 @@ class HassioRepositoriesDialog extends LitElement {
       await setSupervisorOption(this.hass, {
         addons_repositories: newRepositories,
       });
-
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._repos = addonsInfo.repositories;
-
-      await this._dialogParams!.loadData();
+      await this._loadData();
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }

@@ -127,7 +127,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _opened?: boolean;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) public comboBox!: HTMLElement;
 
   private _init = false;
 
@@ -140,7 +140,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         this._devices = devices;
       }),
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities.filter((entity) => entity.area_id);
+        this._entities = entities;
       }),
     ];
   }
@@ -193,13 +193,13 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           deviceEntityLookup[entity.device_id].push(entity);
         }
         inputDevices = devices;
-        inputEntities = entities;
+        inputEntities = entities.filter((entity) => entity.area_id);
       } else {
         if (deviceFilter) {
           inputDevices = devices;
         }
         if (entityFilter) {
-          inputEntities = entities;
+          inputEntities = entities.filter((entity) => entity.area_id);
         }
       }
 
@@ -319,7 +319,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       (changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this._comboBox as any).items = this._getAreas(
+      (this.comboBox as any).items = this._getAreas(
         this._areas!,
         this._devices!,
         this._entities!,

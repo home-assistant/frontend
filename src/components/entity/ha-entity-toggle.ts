@@ -17,6 +17,7 @@ import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-switch";
+import "../ha-formfield";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
@@ -28,6 +29,8 @@ export class HaEntityToggle extends LitElement {
   public hass?: HomeAssistant;
 
   @property() public stateObj?: HassEntity;
+
+  @property() public label?: string;
 
   @internalProperty() private _isOn = false;
 
@@ -55,15 +58,21 @@ export class HaEntityToggle extends LitElement {
       `;
     }
 
+    const switchTemplate = html`<ha-switch
+      aria-label=${`Toggle ${computeStateName(this.stateObj)} ${
+        this._isOn ? "off" : "on"
+      }`}
+      .checked=${this._isOn}
+      .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
+      @change=${this._toggleChanged}
+    ></ha-switch>`;
+
+    if (!this.label) {
+      return switchTemplate;
+    }
+
     return html`
-      <ha-switch
-        aria-label=${`Toggle ${computeStateName(this.stateObj)} ${
-          this._isOn ? "off" : "on"
-        }`}
-        .checked=${this._isOn}
-        .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
-        @change=${this._toggleChanged}
-      ></ha-switch>
+      <ha-formfield .label=${this.label}>${switchTemplate}</ha-formfield>
     `;
   }
 

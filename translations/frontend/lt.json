@@ -65,6 +65,79 @@
             "unknown": "Nežinoma"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "visit_addon_page": "Apsilankykite puslapyje {name}, jei reikia daugiau detalių"
+            }
+        },
+        "common": {
+            "cancel": "Atšaukti",
+            "close": "Užverti",
+            "save": "Išsaugoti"
+        },
+        "confirm": {
+            "update": {
+                "title": "Atnaujinti {name}"
+            }
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Prisijungta prie {ssid}",
+                "disabled": "Išjungta",
+                "dns_servers": "DNS serveriai",
+                "failed_to_change": "Nepavyko pakeisti tinklo nustatymų",
+                "open": "Atidaryti",
+                "scan_ap": "Ieškoti prieigos taškų",
+                "unsaved": "Turite neišsaugotų pakeitimų, ar tikrai norite išeiti?"
+            },
+            "registries": {
+                "add_new_registry": "Pridėti naują registrą",
+                "add_registry": "Pridėti registrą",
+                "no_registries": "Nėra sukonfigūruotų registrų",
+                "password": "Slaptažodis",
+                "registry": "Registras",
+                "remove": "Pašalinti",
+                "username": "Vartotojo vardas"
+            },
+            "repositories": {
+                "add": "Pridėti",
+                "remove": "Pašalinti"
+            },
+            "restart_addon": {
+                "confirm_text": "Paleiskite priedą iš naujo ",
+                "text": "Ar norite iš naujo paleisti priedą su pakeitimais?"
+            },
+            "update": {
+                "create_snapshot": "Prieš naujinant sukurti {name} momentinę kopiją",
+                "updating": "{name} naujinama į versiją {version}"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "Priedas nerastas"
+        },
+        "snapshot": {
+            "addons": "Priedai",
+            "could_not_create": "Nepavyko sukurti momentinės kopijos",
+            "create": "Sukurti",
+            "enter_password": "Įveskite slaptažodį.",
+            "folder": {
+                "homeassistant": "„Home Assistant“ konfigūracija"
+            },
+            "folders": "Aplankai",
+            "name": "Pavadinimas",
+            "no_snapshots": "Dar neturite momentinių kopijų.",
+            "password": "Slaptažodis",
+            "security": "Saugumas",
+            "type": "Tipas"
+        },
+        "system": {
+            "host": {
+                "hardware": "Įranga",
+                "import_from_usb": "Importuoti iš USB"
+            }
+        }
+    },
     "ui": {
         "card": {
             "alarm_control_panel": {
@@ -197,6 +270,9 @@
             },
             "more_info_control": {
                 "dismiss": "Atsisakyti dialogo",
+                "remote": {
+                    "activity": "Dabartinė veikla"
+                },
                 "script": {
                     "last_action": "Paskutinis veiksmas"
                 },
@@ -230,7 +306,6 @@
                         "scene": "Scenos",
                         "script": "Skriptai",
                         "server_control": "Serverio valdikliai",
-                        "tags": "Žymės",
                         "users": "Vartotojai",
                         "zone": "Zonos"
                     }
@@ -607,6 +682,9 @@
                             "config": "Konfigūracija",
                             "dashboard": "Valdymo skydas"
                         }
+                    },
+                    "network_status": {
+                        "unknown": "Nežinoma"
                     },
                     "node_config": {
                         "header": "Mazgo konfigūracija",

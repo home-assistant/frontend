@@ -21,6 +21,7 @@ import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
 import {
   fetchHassioAddonInfo,
+  fetchHassioAddonsInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -173,9 +174,16 @@ class HassioAddonDashboard extends LitElement {
 
   protected async firstUpdated(): Promise<void> {
     if (this.route.path === "") {
-      const addon = extractSearchParam("addon");
-      if (addon) {
-        navigate(this, `/hassio/addon/${addon}`, true);
+      const requestedAddon = extractSearchParam("addon");
+      if (requestedAddon) {
+        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+        const validAddon = addonsInfo.addons
+          .some((addon) => addon.slug === requestedAddon);
+        if (!validAddon) {
+          this._error = this.supervisor.localize("my.error_addon_not_found");
+        } else {
+          navigate(this, `/hassio/addon/${requestedAddon}`, true);
+        }
       }
     }
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
@@ -191,8 +199,8 @@ class HassioAddonDashboard extends LitElement {
     const path: string = pathSplit[pathSplit.length - 1];
 
     if (["uninstall", "install", "update", "start", "stop"].includes(path)) {
-      fireEvent(this, "supervisor-colllection-refresh", {
-        colllection: "supervisor",
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "supervisor",
       });
     }
 

@@ -148,7 +148,7 @@ export class CloudRemotePref extends LitElement {
       .switch {
         position: absolute;
         right: 24px;
-        top: 32px;
+        top: 24px;
       }
       :host([dir="rtl"]) .switch {
         right: auto;

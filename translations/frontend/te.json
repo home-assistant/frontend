@@ -256,6 +256,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "తెలియదు"
+                    }
+                },
                 "script": {
                     "caption": "స్క్రిప్ట్",
                     "description": "స్క్రిప్ట్లను సృష్టించండి మరియు సవరించండి"

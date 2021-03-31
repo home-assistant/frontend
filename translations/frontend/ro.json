@@ -101,6 +101,99 @@
             "unknown": "Necunoscut"
         }
     },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "header": "Audio"
+                },
+                "network": {
+                    "disabled": "Dezactivat",
+                    "header": "Rețea"
+                },
+                "options": {
+                    "edit_in_ui": "Modificați în interfața de utilizator",
+                    "edit_in_yaml": "Editați în YAML",
+                    "header": "Opțiuni",
+                    "invalid_yaml": "YAML nevalid"
+                }
+            },
+            "dashboard": {
+                "changelog": "Jurnal de schimbări",
+                "option": {
+                    "auto_update": {
+                        "title": "Actualizare automată"
+                    }
+                }
+            },
+            "panel": {
+                "configuration": "Configurare",
+                "documentation": "Documentație"
+            }
+        },
+        "common": {
+            "description": "Descriere",
+            "error": {
+                "unknown": "Eroare necunoscută",
+                "update_failed": "Actualizare eșuată"
+            },
+            "learn_more": "Aflați mai multe",
+            "new_version_available": "Versiune nouă disponibilă",
+            "newest_version": "Cea mai nouă versiune",
+            "show_more": "Afișați mai multe informații despre acest lucru",
+            "update": "Actualizați",
+            "version": "Versiune"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Sigur doriți să resetați toate opțiunile?",
+                "title": "Resetați opțiunile"
+            },
+            "update": {
+                "title": "Actualizați {name}"
+            }
+        },
+        "dialog": {
+            "network": {
+                "disabled": "Dezactivat",
+                "dns_servers": "Servere DNS"
+            },
+            "registries": {
+                "password": "Parolă",
+                "username": "Nume de utilizator"
+            },
+            "update": {
+                "updating": "Se actualizează {name} la versiunea {version}"
+            }
+        },
+        "panel": {
+            "dashboard": "Tablou de bord"
+        },
+        "snapshot": {
+            "enter_password": "Vă rugăm să introduceți o parolă.",
+            "folders": "Dosare",
+            "name": "Nume",
+            "password": "Parolă",
+            "type": "Tip"
+        },
+        "system": {
+            "host": {
+                "docker_version": "Versiune Docker",
+                "ip_address": "Adresa IP",
+                "operating_system": "Sistem de operare",
+                "used_space": "Spațiu utilizat"
+            },
+            "supervisor": {
+                "beta_join_confirm": "Doriți să vă alăturați canalului beta?",
+                "channel": "Canal",
+                "leave_beta_action": "Părăsiți canalul beta",
+                "unsupported_reason": {
+                    "docker_version": "Versiunea Docker",
+                    "os": "Sistem de operare"
+                }
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Doriți să rămâneți autentificat?",
@@ -215,7 +308,7 @@
                 "actions": {
                     "resume_cleaning": "Reluați curățarea",
                     "return_to_base": "Întoarcere la doc",
-                    "start_cleaning": "Începeți curățarea",
+                    "start_cleaning": "Începe curățarea",
                     "turn_off": "Opriți",
                     "turn_on": "Porniți"
                 }
@@ -292,6 +385,13 @@
             "yes": "Da"
         },
         "components": {
+            "addon-picker": {
+                "error": {
+                    "no_supervisor": {
+                        "title": "Fără Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Adăugați",
@@ -311,6 +411,10 @@
                 "add_user": "Adăugați utilizator",
                 "remove_user": "Eliminați utilizatorul",
                 "select_blueprint": "Selectați un plan"
+            },
+            "calendar": {
+                "my_calendars": "Calendarele mele",
+                "today": "Astăzi"
             },
             "data-table": {
                 "no-data": "Fără date",
@@ -484,7 +588,7 @@
                 "customize_link": "personalizarea entității",
                 "dismiss": "Renunțați",
                 "editor": {
-                    "advanced": "Setari avansate",
+                    "advanced": "Setări avansate",
                     "area": "Setați numai zona entității",
                     "area_note": "În mod implicit, entitățile unui dispozitiv se află în aceeași zonă cu dispozitivul. Dacă modificați zona acestei entități, aceasta nu va mai urma zona dispozitivului.",
                     "change_device_area": "Schimbați zona dispozitivului",
@@ -507,7 +611,7 @@
                     "update": "Actualizați"
                 },
                 "faq": "documentație",
-                "info_customize": "Puteți suprascrie unele atribute în secțiunea {customize_link} .",
+                "info_customize": "Puteți suprascrie unele atribute în secțiunea {customize_link}.",
                 "no_unique_id": "Această entitate („ {entity_id} ”) nu are un ID unic, prin urmare setările sale nu pot fi gestionate din interfața de utilizator. Consultați {faq_link} pentru mai multe detalii.",
                 "related": "În legătură cu",
                 "settings": "Setări"
@@ -602,7 +706,7 @@
                 "vacuum": {
                     "clean_spot": "Loc curat",
                     "commands": "Comenzi aspirator:",
-                    "fan_speed": "Viteza ventilatorului",
+                    "fan_speed": "Mod aspirare",
                     "locate": "Localizați",
                     "pause": "Pauză",
                     "return_home": "Întoarce-te acasă",
@@ -648,7 +752,6 @@
                         "person": "Persoane",
                         "scene": "Scene",
                         "script": "Scripturi",
-                        "tags": "Etichete",
                         "users": "Utilizatori",
                         "zone": "Zone"
                     },
@@ -725,7 +828,7 @@
                 "error_detected": "Au fost detectate erori de configurare",
                 "key_missing": "Cheia necesară \"{key}\" lipsește.",
                 "key_not_expected": "Cheia \"{key}\" nu este așteptată sau nu este acceptată de editorul vizual.",
-                "key_wrong_type": "Valoarea furnizată pentru \"{key}\" nu este acceptată de editorul de editare vizuală. Acceptăm ({type_correct}), dar am primit ({type_wrong}).",
+                "key_wrong_type": "Valoarea furnizată pentru \"{key}\" nu este acceptată de editorul vizual. Acceptăm ({type_correct}), dar am primit ({type_wrong}).",
                 "no_type_provided": "Niciun tip furnizat."
             }
         },
@@ -835,7 +938,7 @@
                                     "extra_fields": {
                                         "code": "Cod",
                                         "message": "Mesaj",
-                                        "position": "Pozitie",
+                                        "position": "Poziţie",
                                         "title": "Titlu"
                                     },
                                     "label": "Dispozitiv"
@@ -918,8 +1021,8 @@
                                 "numeric_state": {
                                     "above": "Peste",
                                     "below": "Sub",
-                                    "label": "Status numeric",
-                                    "value_template": "Valoare șablon (opțional)"
+                                    "label": "Stare numerică",
+                                    "value_template": "Valoarea şablon (opţional)"
                                 },
                                 "or": {
                                     "label": "Sau"
@@ -1212,7 +1315,7 @@
                         "sign_out": "Deconectare",
                         "thank_you_note": "Vă mulțumim că faceți parte din Home Assistant Cloud. Datorită oamenilor ca dvs. suntem capabili să facem o experiență excelentă de automatizare a locuinței pentru toată lumea. Mulțumim!",
                         "tts": {
-                            "default_language": "Limba implicită de utilizat",
+                            "default_language": "Limba implicită folosită",
                             "dialog": {
                                 "example_message": "Bună ziua {name}, puteți reda orice text pe orice player media acceptat!",
                                 "header": "Încercați text în vorbire",
@@ -1224,7 +1327,7 @@
                             "info": "Aduceți personalitate acasă, făcându-i să vă vorbească folosind serviciile noastre Text-to-Speech. Puteți utiliza acest lucru în automatizări și scripturi utilizând serviciul {service} .",
                             "male": "Bărbat",
                             "title": "Text în vorbire",
-                            "try": "Încercaţi"
+                            "try": "Încercați"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Nu putut fi dezactivat webhook-ul:",
@@ -1596,7 +1699,17 @@
                         "delete_confirm": "Sigur doriți să ștergeți această integrare?",
                         "device_unavailable": "Dispozitiv indisponibil",
                         "devices": "{count} {count, plural,\n  one {dispozitiv}\n  other {dispozitive}\n}",
+                        "disable": {
+                            "disabled": "Dezactivat",
+                            "disabled_by": {
+                                "device": "dispozitiv",
+                                "integration": "integrare",
+                                "user": "utilizator"
+                            },
+                            "disabled_cause": "Dezactivat de {cause}"
+                        },
                         "documentation": "Documentație",
+                        "enable_restart_confirm": "Reporniți Home Assistant pentru a finaliza activarea acestei integrări",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "Entitate indisponibilă",
                         "firmware": "Firmware: {version}",
@@ -1618,6 +1731,7 @@
                         "close": "Închide",
                         "created_config": "Configurare creată pentru {name}.",
                         "dismiss": "Ascunde dialogul",
+                        "error": "Eroare",
                         "error_saving_area": "Imposibil de salvat zona: {error}",
                         "external_step": {
                             "description": "Acest pas necesită să vizitați un site web extern pentru a fi finalizat.",
@@ -1633,6 +1747,11 @@
                     "confirm_new": "Doriți să configurați {integration} ?",
                     "description": "Gestionați integrările cu servicii, dispozitive, ...",
                     "details": "Detalii integrare",
+                    "disable": {
+                        "disabled_integrations": "{number} dezactivat",
+                        "hide_disabled": "Ascundeți integrările dezactivate",
+                        "show_disabled": "Afișați integrări dezactivate"
+                    },
                     "discovered": "Descoperit",
                     "home_assistant_website": "Site-ul Home Assistant",
                     "ignore": {
@@ -2171,7 +2290,7 @@
                         "group_details": "Iată toate detaliile pentru grupul Zigbee selectat.",
                         "group_id": "ID grup",
                         "group_info": "Informații despre grup",
-                        "group_name_placeholder": "Numele Grupului",
+                        "group_name_placeholder": "Numele grupului",
                         "group_not_found": "Grupul nu a fost găsit!",
                         "groups": "Grupuri",
                         "members": "Membri",
@@ -2239,8 +2358,8 @@
                         "remove_node": "Eliminați nodul"
                     },
                     "dashboard": {
-                        "driver_version": "Versiunea driverului",
-                        "dump_not_ready_confirm": "Descarca",
+                        "driver_version": "Versiune driver",
+                        "dump_not_ready_confirm": "Descarcă",
                         "header": "Gestionați-vă rețeaua Z-Wave",
                         "home_id": "ID domiciliu",
                         "introduction": "Gestionați rețeaua Z-Wave și nodurile Z-Wave",
@@ -2260,11 +2379,14 @@
                         "unknown": "Necunoscut"
                     },
                     "node_status": {
-                        "alive": "În viaţă",
+                        "alive": "Activ",
                         "asleep": "Adormit",
                         "awake": "Treaz",
                         "dead": "Inactiv",
                         "unknown": "Necunoscut"
+                    },
+                    "remove_node": {
+                        "title": "Eliminați un nod Z-Wave"
                     }
                 },
                 "zwave": {
@@ -2392,6 +2514,7 @@
                     "states": {
                         "alert_entity_field": "Entitatea este un câmp obligatoriu",
                         "attributes": "Atribute",
+                        "copy_id": "Copiați ID-ul în clipboard",
                         "current_entities": "Entități actuale",
                         "description1": "Setați reprezentarea unui dispozitiv în cadrul Home Assistant.",
                         "description2": "Acesta nu va comunica cu dispozitivul actual.",
@@ -2617,6 +2740,10 @@
                             "columns": "Coloane",
                             "description": "Cardul Glance este util pentru a grupa mai mulți senzori într-o imagine de ansamblu compactă.",
                             "name": "Privire rapida"
+                        },
+                        "grid": {
+                            "columns": "Coloane",
+                            "square": "Randați cardurile sub formă de pătrate"
                         },
                         "history-graph": {
                             "description": "Cardul History Graph vă permite să afișați un grafic pentru fiecare dintre entitățile listate.",
@@ -2884,6 +3011,7 @@
                 "playback_title": "Redarea mesajelor"
             },
             "my": {
+                "documentation": "documentație",
                 "error": "A apărut o eroare necunoscută",
                 "faq_link": "Întrebări frecvente despre Home Assistant",
                 "not_supported": "Această redirecționare nu este acceptată de instanța Home Assistant. Verificați {link} pentru redirecționările acceptate și versiunea pe care au fost introduse."

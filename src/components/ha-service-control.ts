@@ -36,6 +36,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
     example?: any;
     selector?: Selector;
   }[];
+  hasSelector: string[];
 }
 
 @customElement("ha-service-control")
@@ -51,8 +52,6 @@ export class HaServiceControl extends LitElement {
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
-
-  @internalProperty() private _serviceData?: ExtHassService;
 
   @internalProperty() private _checkedKeys = new Set();
 
@@ -70,13 +69,11 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys = new Set();
     }
 
-    this._serviceData = this.value?.service
-      ? this._getServiceInfo(this.value.service)
-      : undefined;
+    const serviceData = this._getServiceInfo(this.value?.service);
 
     if (
-      this._serviceData &&
-      "target" in this._serviceData &&
+      serviceData &&
+      "target" in serviceData &&
       (this.value?.data?.entity_id ||
         this.value?.data?.area_id ||
         this.value?.data?.device_id)
@@ -119,7 +116,7 @@ export class HaServiceControl extends LitElement {
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   });
 
-  private _getServiceInfo = memoizeOne((service: string):
+  private _getServiceInfo = memoizeOne((service?: string):
     | ExtHassService
     | undefined => {
     if (!service) {
@@ -147,23 +144,29 @@ export class HaServiceControl extends LitElement {
     return {
       ...serviceDomains[domain][serviceName],
       fields,
+      hasSelector: fields.length
+        ? fields.filter((field) => field.selector).map((field) => field.key)
+        : [],
     };
   });
 
   protected render() {
-    const legacy =
-      this._serviceData?.fields.length &&
-      !this._serviceData.fields.some((field) => field.selector);
+    const serviceData = this._getServiceInfo(this.value?.service);
+
+    const shouldRenderServiceDataYaml =
+      (serviceData?.fields.length && !serviceData.hasSelector.length) ||
+      (serviceData &&
+        Object.keys(this.value?.data || {}).some(
+          (key) => !serviceData!.hasSelector.includes(key)
+        ));
 
     const entityId =
-      legacy &&
-      this._serviceData?.fields.find((field) => field.key === "entity_id");
+      shouldRenderServiceDataYaml &&
+      serviceData?.fields.find((field) => field.key === "entity_id");
 
     const hasOptional = Boolean(
-      !legacy &&
-        this._serviceData?.fields.some(
-          (field) => field.selector && !field.required
-        )
+      !shouldRenderServiceDataYaml &&
+        serviceData?.fields.some((field) => field.selector && !field.required)
     );
 
     return html`<ha-service-picker
@@ -171,8 +174,8 @@ export class HaServiceControl extends LitElement {
         .value=${this.value?.service}
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
-      <p>${this._serviceData?.description}</p>
-      ${this._serviceData && "target" in this._serviceData
+      <p>${serviceData?.description}</p>
+      ${serviceData && "target" in serviceData
         ? html`<ha-settings-row .narrow=${this.narrow}>
             ${hasOptional
               ? html`<div slot="prefix" class="checkbox-spacer"></div>`
@@ -188,8 +191,8 @@ export class HaServiceControl extends LitElement {
               )}</span
             ><ha-selector
               .hass=${this.hass}
-              .selector=${this._serviceData.target
-                ? { target: this._serviceData.target }
+              .selector=${serviceData.target
+                ? { target: serviceData.target }
                 : {
                     target: {
                       entity: { domain: computeDomain(this.value!.service) },
@@ -209,7 +212,7 @@ export class HaServiceControl extends LitElement {
             allow-custom-entity
           ></ha-entity-picker>`
         : ""}
-      ${legacy
+      ${shouldRenderServiceDataYaml
         ? html`<ha-yaml-editor
             .label=${this.hass.localize(
               "ui.components.service-control.service_data"
@@ -218,8 +221,12 @@ export class HaServiceControl extends LitElement {
             .defaultValue=${this.value?.data}
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
-        : this._serviceData?.fields.map((dataField) =>
-            dataField.selector && (!dataField.advanced || this.showAdvanced)
+        : serviceData?.fields.map((dataField) =>
+            dataField.selector &&
+            (!dataField.advanced ||
+              this.showAdvanced ||
+              (this.value?.data &&
+                this.value.data[dataField.key] !== undefined))
               ? html`<ha-settings-row .narrow=${this.narrow}>
                   ${dataField.required
                     ? hasOptional
@@ -328,7 +335,10 @@ export class HaServiceControl extends LitElement {
     ev.stopPropagation();
     const key = (ev.currentTarget as any).key;
     const value = ev.detail.value;
-    if (this.value?.data && this.value.data[key] === value) {
+    if (
+      this.value?.data?.[key] === value ||
+      (!this.value?.data?.[key] && (value === "" || value === undefined))
+    ) {
       return;
     }
 

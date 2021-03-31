@@ -93,6 +93,125 @@
             "unknown": "Óþekkt"
         }
     },
+    "supervisor": {
+        "dialog": {
+            "network": {
+                "connected_to": "Tengt við {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Óvirkt",
+                "dns_servers": "DNS þjónar",
+                "failed_to_change": "Ekki tókst að breyta netstillingum",
+                "gateway": "Vistfang gáttar",
+                "ip_netmask": "IP vistfang/Netmöskvi",
+                "open": "Opið",
+                "scan_ap": "Leita að aðgangsstöðum",
+                "static": "Föst",
+                "title": "Netstillingar",
+                "unsaved": "Þú ert með óvistaðar breytingar, þær týnast ef þú skiptir um flipa, viltu halda áfram?",
+                "warning": "Ef þú ert að breyta Wi-Fi, IP eða gáttarvistföngum gætirðu misst tenginguna!",
+                "wep": "WEP",
+                "wpa": "WPA-PSK"
+            },
+            "registries": {
+                "password": "Lykilorð",
+                "remove": "Fjarlægja",
+                "username": "Username"
+            },
+            "repositories": {
+                "add": "Bæta við",
+                "remove": "Fjarlægja",
+                "title": "Stjórna viðbótargeymslum"
+            },
+            "restart_addon": {
+                "confirm_text": "Endurræsa viðbót",
+                "text": "Á að endurræsa viðbótina með breytingum þínum?"
+            },
+            "update": {
+                "create_snapshot": "Stofna skyndimynd af {name} áður en uppfært er",
+                "snapshot": "Skyndimynd",
+                "snapshotting": "Bý til skyndimynd af {name}",
+                "updating": "Uppfæri {name} í útgáfu {version}"
+            }
+        },
+        "my": {
+            "error_addon_not_found": "Viðbót fannst ekki"
+        },
+        "snapshot": {
+            "addons": "Viðbætur",
+            "available_snapshots": "Tiltækar skyndimyndir",
+            "could_not_create": "Ekki tókst að búa til skyndimynd",
+            "create": "Búa til",
+            "create_blocked_not_running": "Ekki er hægt að búa til skyndimynd núna þar sem kerfið er í {state} stöðu.",
+            "create_snapshot": "Búa til skyndimynd",
+            "description": "Skyndimyndir gera þér kleift að vinna með öryggisafrit af gögnum þessa tilviks af Home Assistant.",
+            "enter_password": "Færðu inn lykilorð.",
+            "folder": {
+                "addons/local": "Staðbundnar viðbætur",
+                "homeassistant": "Home Assistant stillingar",
+                "media": "Efni",
+                "share": "Deila",
+                "ssl": "SSL"
+            },
+            "folders": "Möppur",
+            "full_snapshot": "Full skyndimynd",
+            "name": "Heiti",
+            "partial_snapshot": "Skyndimynd að hluta",
+            "password": "Lykilorð",
+            "password_protected": "varið með lykilorði",
+            "password_protection": "Vörn með lykilorði",
+            "security": "Öryggi",
+            "type": "Gerð",
+            "upload_snapshot": "Hlaða upp skyndimynd"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Kjarni: Notkun örgjörva",
+                "ram_usage": "Kjarni: Notkun vinnsluminnis"
+            },
+            "host": {
+                "change": "Breyta",
+                "change_hostname": "Breyta vélarheiti",
+                "confirm_reboot": "Á örugglega að endurræsa vélina?",
+                "confirm_shutdown": "Ertu viss um að þú viljir ganga frá vélinni?",
+                "deployment": "Dreifing",
+                "docker_version": "Docker útgáfa",
+                "emmc_lifetime_used": "eMMC líftími notaður",
+                "failed_to_get_hardware_list": "Ekki tókst að sækja vélbúnaðarlista",
+                "failed_to_import_from_usb": "Ekki tókst að flytja inn úr USB",
+                "failed_to_reboot": "Ekki tókst að endurræsa vélina",
+                "failed_to_set_hostname": "Ekki tókst að breyta vélarheiti",
+                "failed_to_shutdown": "Ekki tókst að ganga frá vélinni",
+                "hardware": "Vélbúnaður",
+                "hostname": "Vélarheiti",
+                "import_from_usb": "Flytja inn frá USB",
+                "ip_address": "IP vistfang",
+                "new_hostname": "Vinsamlega sláðu inn nýtt vélarheiti:",
+                "operating_system": "Stýrikerfi",
+                "reboot_host": "Endurræsa vél",
+                "shutdown_host": "Ganga frá vél",
+                "used_space": "Notað pláss"
+            },
+            "supervisor": {
+                "unhealthy_reason": {
+                    "docker": "Docker umhverfið virkar ekki rétt",
+                    "privileged": "Umsjónarkerfi hefur ekki áskilin réttindi",
+                    "setup": "Uppsetning umsjónarkerfis mistókst",
+                    "supervisor": "Umsjónarkerfi tókst ekki að uppfæra"
+                },
+                "unsupported_reason": {
+                    "dbus": "DBUS",
+                    "docker_configuration": "Stillingar Docker",
+                    "docker_version": "Docker útgáfa",
+                    "job_conditions": "Hunsuð skilyrði verka",
+                    "lxc": "LXC",
+                    "network_manager": "Netstjóri",
+                    "os": "Stýrikerfis",
+                    "privileged": "Umsjónarkerfi hefur ekki áskilin réttindi",
+                    "systemd": "Systemd"
+                }
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Viltu vista þessa innskráningu?",
@@ -413,6 +532,9 @@
                 "edit": "Breyta einingu",
                 "history": "Saga",
                 "last_changed": "Síðast breytt",
+                "remote": {
+                    "activity": "Núverandi verkþáttur"
+                },
                 "restored": {
                     "confirm_remove_title": "Fjarlægja einingu?",
                     "remove_action": "Fjarlægja einingu"
@@ -466,7 +588,6 @@
                         "person": "Persónur",
                         "scene": "Senur",
                         "script": "Skriftur",
-                        "tags": "Strikamerki",
                         "users": "Notendur",
                         "zone": "Svæði"
                     },
@@ -1264,6 +1385,9 @@
                 "ozw": {
                     "common": {
                         "zwave": "Z-Wave"
+                    },
+                    "network_status": {
+                        "unknown": "Óþekktur"
                     },
                     "nodes_table": {
                         "manufacturer": "Framleiðandi",

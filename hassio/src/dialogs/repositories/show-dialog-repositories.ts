@@ -4,7 +4,7 @@ import "./dialog-hassio-repositories";
 
 export interface HassioRepositoryDialogParams {
   supervisor: Supervisor;
-  loadData: () => Promise<void>;
+  url?: string;
 }
 
 export const showRepositoriesDialog = (

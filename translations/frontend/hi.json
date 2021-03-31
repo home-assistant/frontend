@@ -183,6 +183,11 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "network_status": {
+                        "unknown": "अनजान"
+                    }
+                },
                 "script": {
                     "picker": {
                         "headers": {

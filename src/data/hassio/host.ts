@@ -104,7 +104,7 @@ export const configSyncOS = async (hass: HomeAssistant) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     return await hass.callWS({
       type: "supervisor/api",
-      endpoint: "os/config/sync",
+      endpoint: "/os/config/sync",
       method: "post",
       timeout: null,
     });

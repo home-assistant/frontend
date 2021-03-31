@@ -5,6 +5,7 @@ import { debounce } from "../common/util/debounce";
 import {
   getHassTranslations,
   getHassTranslationsPre109,
+  NumberFormat,
   saveTranslationPreferences,
   TranslationCategory,
 } from "../data/translation";
@@ -14,9 +15,21 @@ import { storeState } from "../util/ha-pref-storage";
 import {
   getTranslation,
   getLocalLanguage,
-  getUserLanguage,
+  getUserLocale,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "hass-language-select": {
+      language: string;
+    };
+    "hass-number-format-select": {
+      number_format: NumberFormat;
+    };
+  }
+}
 
 interface LoadedTranslationCategory {
   // individual integrations loaded for this category
@@ -45,9 +58,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
-      this.addEventListener("hass-language-select", (e) =>
-        this._selectLanguage((e as CustomEvent).detail.language, true)
-      );
+      this.addEventListener("hass-language-select", (e) => {
+        this._selectLanguage((e as CustomEvent).detail, true);
+      });
+      this.addEventListener("hass-number-format-select", (e) => {
+        this._selectNumberFormat((e as CustomEvent).detail, true);
+      });
       this._loadCoreTranslations(getLocalLanguage());
     }
 
@@ -56,20 +72,31 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!changedProps.has("hass")) {
         return;
       }
-      const oldHass = changedProps.get("hass");
-      if (this.hass?.panels && oldHass.panels !== this.hass.panels) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        this.hass?.panels &&
+        (!oldHass || oldHass.panels !== this.hass.panels)
+      ) {
         this._loadFragmentTranslations(this.hass.language, this.hass.panelUrl);
       }
     }
 
     protected hassConnected() {
       super.hassConnected();
-      getUserLanguage(this.hass!).then((language) => {
-        if (language && this.hass!.language !== language) {
-          // We just get language from backend, no need to save back
-          this._selectLanguage(language, false);
+      getUserLocale(this.hass!).then((locale) => {
+        if (locale?.language && this.hass!.language !== locale.language) {
+          // We just got language from backend, no need to save back
+          this._selectLanguage(locale.language, false);
+        }
+        if (
+          locale?.number_format &&
+          this.hass!.locale.number_format !== locale.number_format
+        ) {
+          // We just got number_format from backend, no need to save back
+          this._selectNumberFormat(locale.number_format, false);
         }
       });
+
       this.hass!.connection.subscribeEvents(
         debounce(() => {
           this._refetchCachedHassTranslations(false, false);
@@ -94,6 +121,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
     }
 
+    private _selectNumberFormat(
+      number_format: NumberFormat,
+      saveToBackend: boolean
+    ) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, number_format: number_format },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
     private _selectLanguage(language: string, saveToBackend: boolean) {
       if (!this.hass) {
         // should not happen, do it to avoid use this.hass!
@@ -101,10 +140,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       // update selectedLanguage so that it can be saved to local storage
-      this._updateHass({ language, selectedLanguage: language });
+      this._updateHass({
+        locale: { ...this.hass!.locale, language: language },
+        language: language,
+        selectedLanguage: language,
+      });
       storeState(this.hass);
       if (saveToBackend) {
-        saveTranslationPreferences(this.hass, { language });
+        saveTranslationPreferences(this.hass, this.hass.locale);
       }
       this._applyTranslations(this.hass);
       this._refetchCachedHassTranslations(true, true);

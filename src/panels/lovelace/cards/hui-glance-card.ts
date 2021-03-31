@@ -134,7 +134,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       !this._configEntities ||
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
@@ -301,7 +301,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,
-                      this.hass!.language
+                      this.hass!.locale
                     )}
               </div>
             `
