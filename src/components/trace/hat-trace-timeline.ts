@@ -302,7 +302,7 @@ class ActionRenderer {
     const startLevel = choosePath.split("/").length - 1;
 
     const chooseTrace = this._getItem(index)[0] as ChooseActionTraceStep;
-    const defaultExecuted = chooseTrace.result.choice === "default";
+    const defaultExecuted = chooseTrace.result?.choice === "default";
     const chooseConfig = this._getDataFromPath(
       this.keys[index]
     ) as ChooseAction;
@@ -312,11 +312,14 @@ class ActionRenderer {
       this._renderEntry(choosePath, `${name}: Default action executed`);
     } else {
       const choiceConfig = this._getDataFromPath(
-        `${this.keys[index]}/choose/${chooseTrace.result.choice}`
-      ) as ChooseActionChoice;
-      const choiceName =
-        choiceConfig.alias || `Choice ${chooseTrace.result.choice}`;
-      this._renderEntry(choosePath, `${name}: ${choiceName} executed`);
+        `${this.keys[index]}/choose/${chooseTrace.result?.choice}`
+      ) as ChooseActionChoice | undefined;
+      const choiceName = choiceConfig
+        ? `${
+            choiceConfig.alias || `Choice ${chooseTrace.result?.choice}`
+          } executed`
+        : `Error: ${chooseTrace.error}`;
+      this._renderEntry(choosePath, `${name}: ${choiceName}`);
     }
 
     let i;

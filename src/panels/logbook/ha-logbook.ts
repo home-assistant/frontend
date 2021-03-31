@@ -259,7 +259,7 @@ class HaLogbook extends LitElement {
       haStyle,
       haStyleScrollbar,
       css`
-        :host {
+        :host([virtualize]) {
           display: block;
           height: 100%;
         }
