@@ -70,6 +70,7 @@ class HaAutomationPicker extends LitElement {
         return {
           ...automation,
           name: computeStateName(automation),
+          last_triggered: automation.attributes.last_triggered || undefined,
         };
       });
     }
@@ -97,23 +98,41 @@ class HaAutomationPicker extends LitElement {
           filterable: true,
           direction: "asc",
           grows: true,
-          template: (name, automation: any) => html`
-            ${name}
-            <div class="secondary">
-              ${this.hass.localize("ui.card.automation.last_triggered")}:
-              ${automation.attributes.last_triggered
-                ? formatDateTime(
-                    new Date(automation.attributes.last_triggered),
-                    this.hass.locale
-                  )
-                : this.hass.localize("ui.components.relative_time.never")}
-            </div>
-          `,
+          template: narrow
+            ? (name, automation: any) =>
+                html`
+                  ${name}
+                  <div class="secondary">
+                    ${this.hass.localize("ui.card.automation.last_triggered")}:
+                    ${automation.attributes.last_triggered
+                      ? formatDateTime(
+                          new Date(automation.attributes.last_triggered),
+                          this.hass.locale
+                        )
+                      : this.hass.localize("ui.components.relative_time.never")}
+                  </div>
+                `
+            : undefined,
         },
       };
       if (!narrow) {
+        columns.last_triggered = {
+          sortable: true,
+          width: "20%",
+          title: this.hass.localize("ui.card.automation.last_triggered"),
+          template: (last_triggered) => html`
+            ${last_triggered
+              ? formatDateTime(new Date(last_triggered), this.hass.locale)
+              : this.hass.localize("ui.components.relative_time.never")}
+          `,
+        };
         columns.trigger = {
-          title: "",
+          title: html`
+            <mwc-button style="visibility: hidden">
+              ${this.hass.localize("ui.card.automation.trigger")}
+            </mwc-button>
+          `,
+          width: "20%",
           template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
