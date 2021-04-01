@@ -29,11 +29,11 @@ import { LogbookEntry } from "../../data/logbook";
 import {
   ChooseAction,
   ChooseActionChoice,
-  describeAction,
   getActionType,
 } from "../../data/script";
 import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import { describeAction } from "../../data/script_i18n";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
@@ -263,7 +263,7 @@ class ActionRenderer {
       return this._handleChoose(index);
     }
 
-    this._renderEntry(path, describeAction(data, actionType));
+    this._renderEntry(path, describeAction(this.hass, data, actionType));
     return index + 1;
   }
 

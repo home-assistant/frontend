@@ -4,9 +4,11 @@ import {
   css,
   LitElement,
   TemplateResult,
+  internalProperty,
   property,
 } from "lit-element";
 import "../../../src/components/ha-card";
+import "../../../src/components/trace/hat-script-graph";
 import "../../../src/components/trace/hat-trace-timeline";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../src/types";
@@ -20,20 +22,38 @@ const traces: DemoTrace[] = [basicTrace, motionLightTrace];
 export class DemoAutomationTrace extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
+  @internalProperty() private _selected = {};
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
     return html`
       ${traces.map(
-        (trace) => html`
-          <ha-card .heading=${trace.trace.config.alias}>
+        (trace, idx) => html`
+          <ha-card .header=${trace.trace.config.alias}>
             <div class="card-content">
+              <hat-script-graph
+                .trace=${trace.trace}
+                .selected=${this._selected[idx]}
+                @graph-node-selected=${(ev) => {
+                  this._selected = { ...this._selected, [idx]: ev.detail.path };
+                }}
+              ></hat-script-graph>
               <hat-trace-timeline
+                allowPick
                 .hass=${this.hass}
                 .trace=${trace.trace}
                 .logbookEntries=${trace.logbookEntries}
+                .selectedPath=${this._selected[idx]}
+                @value-changed=${(ev) => {
+                  this._selected = {
+                    ...this._selected,
+                    [idx]: ev.detail.value,
+                  };
+                }}
               ></hat-trace-timeline>
+              <button @click=${() => console.log(trace)}>Log trace</button>
             </div>
           </ha-card>
         `
@@ -52,6 +72,20 @@ export class DemoAutomationTrace extends LitElement {
       ha-card {
         max-width: 600px;
         margin: 24px;
+      }
+      .card-content {
+        display: flex;
+      }
+      .card-content > * {
+        margin-right: 16px;
+      }
+      .card-content > *:last-child {
+        margin-right: 0;
+      }
+      button {
+        position: absolute;
+        top: 0;
+        right: 0;
       }
     `;
   }

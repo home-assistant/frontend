@@ -140,7 +140,7 @@ export type Action =
   | VariablesAction
   | UnknownAction;
 
-interface ActionTypes {
+export interface ActionTypes {
   delay: DelayAction;
   wait_template: WaitAction;
   check_condition: Condition;
@@ -232,74 +232,4 @@ export const getActionType = (action: Action): ActionType => {
     return "service";
   }
   return "unknown";
-};
-
-export const describeAction = <T extends ActionType>(
-  action: ActionTypes[T],
-  actionType?: T
-): string => {
-  if (action.alias) {
-    return action.alias;
-  }
-  if (!actionType) {
-    actionType = getActionType(action) as T;
-  }
-
-  if (actionType === "service") {
-    const config = action as ActionTypes["service"];
-
-    let base: string | undefined;
-
-    if (
-      config.service_template ||
-      (config.service && config.service.includes("{{"))
-    ) {
-      base = "Call a service based on a template";
-    } else if (config.service) {
-      base = `Call service ${config.service}`;
-    } else {
-      return actionType;
-    }
-    if (config.target) {
-      const targets: string[] = [];
-
-      for (const [key, label] of Object.entries({
-        area_id: "areas",
-        device_id: "devices",
-        entity_id: "entities",
-      })) {
-        if (!(key in config.target)) {
-          continue;
-        }
-        const keyConf: string[] = Array.isArray(config.target[key])
-          ? config.target[key]
-          : [config.target[key]];
-
-        const values: string[] = [];
-
-        let renderValues = true;
-
-        for (const targetThing of keyConf) {
-          if (targetThing.includes("{{")) {
-            targets.push(`templated ${label}`);
-            renderValues = false;
-            break;
-          } else {
-            values.push(targetThing);
-          }
-        }
-
-        if (renderValues) {
-          targets.push(`${label} ${values.join(", ")}`);
-        }
-      }
-      if (targets.length > 0) {
-        base += ` on ${targets.join(", ")}`;
-      }
-    }
-
-    return base;
-  }
-
-  return actionType;
 };
