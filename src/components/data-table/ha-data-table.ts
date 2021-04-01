@@ -63,7 +63,7 @@ export interface DataTableSortColumnData {
 }
 
 export interface DataTableColumnData extends DataTableSortColumnData {
-  title: string;
+  title: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button";
   template?: <T>(data: any, row: T) => TemplateResult | string;
   width?: string;
