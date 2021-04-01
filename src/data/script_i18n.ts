@@ -1,4 +1,5 @@
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { ensureArray } from "../common/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
@@ -111,7 +112,7 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "wait_for_trigger") {
     const config = action as WaitForTriggerAction;
-    return `Wait for ${config.wait_for_trigger
+    return `Wait for ${ensureArray(config.wait_for_trigger)
       .map((trigger) => describeTrigger(trigger))
       .join(", ")}`;
   }

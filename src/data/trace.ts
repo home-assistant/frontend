@@ -1,6 +1,6 @@
 import { strStartsWith } from "../common/string/starts-with";
 import { HomeAssistant, Context } from "../types";
-import { AutomationConfig } from "./automation";
+import { ManualAutomationConfig } from "./automation";
 
 interface BaseTraceStep {
   path: string;
@@ -86,7 +86,7 @@ export interface AutomationTrace {
 export interface AutomationTraceExtended extends AutomationTrace {
   trace: Record<string, ActionTraceStep[]>;
   context: Context;
-  config: AutomationConfig;
+  config: ManualAutomationConfig;
   error?: string;
 }
 
@@ -138,7 +138,7 @@ export const loadTraceContexts = (
   });
 
 export const getDataFromPath = (
-  config: AutomationConfig,
+  config: ManualAutomationConfig,
   path: string
 ): any => {
   const parts = path.split("/").reverse();
