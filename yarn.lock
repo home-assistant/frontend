@@ -1926,7 +1926,7 @@
     "@codemirror/state" "^0.18.0"
     "@codemirror/view" "^0.18.0"
 
-"@codemirror/highlight@^0.18.0":
+"@codemirror/highlight@^0.18.0", "@codemirror/highlight@^0.18.1":
   version "0.18.3"
   resolved "https://registry.yarnpkg.com/@codemirror/highlight/-/highlight-0.18.3.tgz#50e268630f113c322a2dc97c9f68d71934fffcb0"
   integrity sha512-NmRmkmWl8ht6Y6Y39ghov84AMPCqhUPIH9fmILs2NaWxZFZf4jGCTzrULnmREGsTie+26+LbKUncIU+PBu1Qng==

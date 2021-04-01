@@ -54,22 +54,40 @@ export type ActionTraceStep =
 export interface AutomationTrace {
   domain: string;
   item_id: string;
-  last_action: string | null;
-  last_condition: string | null;
+  last_step: string | null;
   run_id: string;
   state: "running" | "stopped" | "debugged";
   timestamp: {
     start: string;
     finish: string | null;
   };
-  trigger: unknown;
+  script_execution:
+    | // The script was not executed because the automation's condition failed
+    "failed_condition"
+    // The script was not executed because the run mode is single
+    | "failed_single"
+    // The script was not executed because max parallel runs would be exceeded
+    | "failed_max_runs"
+    // All script steps finished:
+    | "finished"
+    // Script execution stopped by the script itself because a condition fails, wait_for_trigger timeouts etc:
+    | "aborted"
+    // Details about failing condition, timeout etc. is in the last element of the trace
+    // Script execution stops because of an unexpected exception:
+    | "error"
+    // The exception is in the trace itself or in the last element of the trace
+    // Script execution stopped by async_stop called on the script run because home assistant is shutting down, script mode is SCRIPT_MODE_RESTART etc:
+    | "cancelled"
+    | string;
+  // Automation only, should become it's own type when we support script in frontend
+  trigger: string;
 }
 
 export interface AutomationTraceExtended extends AutomationTrace {
   trace: Record<string, ActionTraceStep[]>;
   context: Context;
-  variables: Record<string, unknown>;
   config: AutomationConfig;
+  error?: string;
 }
 
 interface TraceTypes {

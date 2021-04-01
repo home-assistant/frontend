@@ -2,8 +2,7 @@ import { DemoTrace } from "./types";
 
 export const motionLightTrace: DemoTrace = {
   trace: {
-    last_action: "action/3",
-    last_condition: null,
+    last_step: "action/3",
     run_id: "1",
     state: "stopped",
     timestamp: {
@@ -171,45 +170,7 @@ export const motionLightTrace: DemoTrace = {
       parent_id: "e22ddfd5f11dc4aad9a52fc10dab613b",
       user_id: null,
     },
-    variables: {
-      trigger: {
-        platform: "state",
-        entity_id: "binary_sensor.pauluss_macbook_pro_camera_in_use",
-        from_state: {
-          entity_id: "binary_sensor.pauluss_macbook_pro_camera_in_use",
-          state: "off",
-          attributes: {
-            friendly_name: "Paulus’s MacBook Pro Camera In Use",
-            icon: "mdi:camera-off",
-          },
-          last_changed: "2021-03-14T06:06:29.235325+00:00",
-          last_updated: "2021-03-14T06:06:29.235325+00:00",
-          context: {
-            id: "ad4864c5ce957c38a07b50378eeb245d",
-            parent_id: null,
-            user_id: null,
-          },
-        },
-        to_state: {
-          entity_id: "binary_sensor.pauluss_macbook_pro_camera_in_use",
-          state: "on",
-          attributes: {
-            friendly_name: "Paulus’s MacBook Pro Camera In Use",
-            icon: "mdi:camera",
-          },
-          last_changed: "2021-03-14T06:07:01.762009+00:00",
-          last_updated: "2021-03-14T06:07:01.762009+00:00",
-          context: {
-            id: "e22ddfd5f11dc4aad9a52fc10dab613b",
-            parent_id: null,
-            user_id: null,
-          },
-        },
-        for: null,
-        attribute: null,
-        description: "state of binary_sensor.pauluss_macbook_pro_camera_in_use",
-      },
-    },
+    script_execution: "finished",
   },
   logbookEntries: [
     {
