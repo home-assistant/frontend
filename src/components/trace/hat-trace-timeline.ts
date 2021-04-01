@@ -541,17 +541,20 @@ export class HaAutomationTracer extends LitElement {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
-        el.style.setProperty(
-          "--timeline-ball-color",
-          this.selectedPath === el.dataset.path ? "var(--primary-color)" : null
-        );
-        if (!this.allowPick || el.dataset.upgraded) {
+        el.toggleAttribute("selected", this.selectedPath === el.dataset.path);
+        if (!this.allowPick || el.tabIndex === 0) {
           return;
         }
-        el.dataset.upgraded = "1";
-        el.addEventListener("click", () => {
+        el.tabIndex = 0;
+        const selectEl = () => {
           this.selectedPath = el.dataset.path;
           fireEvent(this, "value-changed", { value: el.dataset.path });
+        };
+        el.addEventListener("click", selectEl);
+        el.addEventListener("keydown", (ev: KeyboardEvent) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            selectEl();
+          }
         });
         el.addEventListener("mouseover", () => {
           el.raised = true;
@@ -571,6 +574,13 @@ export class HaAutomationTracer extends LitElement {
         }
         ha-timeline[data-path] {
           cursor: pointer;
+        }
+        ha-timeline[selected] {
+          --timeline-ball-color: var(--primary-color);
+        }
+        ha-timeline:focus {
+          outline: none;
+          --timeline-ball-color: var(--accent-color);
         }
         .error {
           --timeline-ball-color: var(--error-color);

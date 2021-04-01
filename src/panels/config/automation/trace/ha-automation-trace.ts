@@ -122,7 +122,7 @@ export class HaAutomationTrace extends LitElement {
                   class="linkButton"
                   href="/config/automation/edit/${this.automationId}"
                 >
-                  <mwc-icon-button label="Edit Automation">
+                  <mwc-icon-button label="Edit Automation" tabindex="-1">
                     <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                   </mwc-icon-button>
                 </a>
@@ -190,18 +190,20 @@ export class HaAutomationTrace extends LitElement {
                       ["config", "Automation Config"],
                     ].map(
                       ([view, label]) => html`
-                        <div
+                        <button
+                          tabindex="0"
                           .view=${view}
                           class=${classMap({ active: this._view === view })}
                           @click=${this._showTab}
                         >
                           ${label}
-                        </div>
+                        </button>
                       `
                     )}
                     ${this._trace.blueprint_inputs
                       ? html`
-                          <div
+                          <button
+                            tabindex="0"
                             .view=${"blueprint"}
                             class=${classMap({
                               active: this._view === "blueprint",
