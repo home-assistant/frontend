@@ -1,6 +1,5 @@
 import { safeDump } from "js-yaml";
 import {
-  css,
   customElement,
   html,
   LitElement,
