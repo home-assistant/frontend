@@ -13,6 +13,12 @@ export const basicTrace: DemoTrace = {
     domain: "automation",
     item_id: "1615419646544",
     trace: {
+      "trigger/0": [
+        {
+          path: "trigger/0",
+          timestamp: "2021-03-25T04:36:51.223693+00:00",
+        },
+      ],
       "condition/0": [
         {
           path: "condition/0",
