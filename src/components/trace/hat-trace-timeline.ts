@@ -33,6 +33,7 @@ import {
 } from "../../data/script";
 import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import { describeAction } from "../../data/script_i18n";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
@@ -262,7 +263,7 @@ class ActionRenderer {
       return this._handleChoose(index);
     }
 
-    this._renderEntry(path, data.alias || actionType);
+    this._renderEntry(path, describeAction(this.hass, data, actionType));
     return index + 1;
   }
 
@@ -334,7 +335,10 @@ class ActionRenderer {
       }
 
       // We're going to skip all conditions
-      if (parts[startLevel + 3] === "sequence") {
+      if (
+        (defaultExecuted && parts[startLevel + 1] === "default") ||
+        (!defaultExecuted && parts[startLevel + 3] === "sequence")
+      ) {
         break;
       }
     }
