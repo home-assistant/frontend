@@ -39,6 +39,7 @@ import {
   mdiRefresh,
   mdiDownload,
 } from "@mdi/js";
+import "./ha-automation-trace-blueprint-config";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -66,8 +67,12 @@ export class HaAutomationTrace extends LitElement {
 
   @internalProperty() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _view: "details" | "config" | "timeline" =
-    "details";
+  @internalProperty() private _view:
+    | "details"
+    | "config"
+    | "timeline"
+    | "logbook"
+    | "blueprint" = "details";
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -117,7 +122,7 @@ export class HaAutomationTrace extends LitElement {
                   class="linkButton"
                   href="/config/automation/edit/${this.automationId}"
                 >
-                  <mwc-icon-button label="Edit Automation">
+                  <mwc-icon-button label="Edit Automation" tabindex="-1">
                     <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                   </mwc-icon-button>
                 </a>
@@ -181,18 +186,34 @@ export class HaAutomationTrace extends LitElement {
                     ${[
                       ["details", "Step Details"],
                       ["timeline", "Trace Timeline"],
+                      ["logbook", "Related logbook entries"],
                       ["config", "Automation Config"],
                     ].map(
                       ([view, label]) => html`
-                        <div
+                        <button
+                          tabindex="0"
                           .view=${view}
                           class=${classMap({ active: this._view === view })}
                           @click=${this._showTab}
                         >
                           ${label}
-                        </div>
+                        </button>
                       `
                     )}
+                    ${this._trace.blueprint_inputs
+                      ? html`
+                          <button
+                            tabindex="0"
+                            .view=${"blueprint"}
+                            class=${classMap({
+                              active: this._view === "blueprint",
+                            })}
+                            @click=${this._showTab}
+                          >
+                            Blueprint Config
+                          </div>
+                        `
+                      : ""}
                   </div>
                   ${this._selected === undefined ||
                   this._logbookEntries === undefined ||
@@ -215,6 +236,20 @@ export class HaAutomationTrace extends LitElement {
                           .hass=${this.hass}
                           .trace=${this._trace}
                         ></ha-automation-trace-config>
+                      `
+                    : this._view === "logbook"
+                    ? html`
+                        <ha-logbook
+                          .hass=${this.hass}
+                          .entries=${this._logbookEntries}
+                        ></ha-logbook>
+                      `
+                    : this._view === "blueprint"
+                    ? html`
+                        <ha-automation-trace-blueprint-config
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                        ></ha-automation-trace-blueprint-config>
                       `
                     : html`
                         <ha-automation-trace-timeline

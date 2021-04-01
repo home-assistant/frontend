@@ -37,7 +37,8 @@ export interface EventAction {
 
 export interface ServiceAction {
   alias?: string;
-  service: string;
+  service?: string;
+  service_template?: string;
   entity_id?: string;
   target?: HassServiceTarget;
   data?: Record<string, any>;
@@ -76,7 +77,7 @@ export interface WaitAction {
 
 export interface WaitForTriggerAction {
   alias?: string;
-  wait_for_trigger: Trigger[];
+  wait_for_trigger: Trigger | Trigger[];
   timeout?: number;
   continue_on_timeout?: boolean;
 }
@@ -115,6 +116,16 @@ export interface ChooseAction {
   default?: Action[];
 }
 
+export interface VariablesAction {
+  alias?: string;
+  variables: Record<string, unknown>;
+}
+
+interface UnknownAction {
+  alias?: string;
+  [key: string]: unknown;
+}
+
 export type Action =
   | EventAction
   | DeviceAction
@@ -125,7 +136,26 @@ export type Action =
   | WaitAction
   | WaitForTriggerAction
   | RepeatAction
-  | ChooseAction;
+  | ChooseAction
+  | VariablesAction
+  | UnknownAction;
+
+export interface ActionTypes {
+  delay: DelayAction;
+  wait_template: WaitAction;
+  check_condition: Condition;
+  fire_event: EventAction;
+  device_action: DeviceAction;
+  activate_scene: SceneAction;
+  repeat: RepeatAction;
+  choose: ChooseAction;
+  wait_for_trigger: WaitForTriggerAction;
+  variables: VariablesAction;
+  service: ServiceAction;
+  unknown: UnknownAction;
+}
+
+export type ActionType = keyof ActionTypes;
 
 export const triggerScript = (
   hass: HomeAssistant,
@@ -166,7 +196,7 @@ export const getScriptEditorInitData = () => {
   return data;
 };
 
-export const getActionType = (action: Action) => {
+export const getActionType = (action: Action): ActionType => {
   // Check based on config_validation.py#determine_script_action
   if ("delay" in action) {
     return "delay";

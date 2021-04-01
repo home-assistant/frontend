@@ -2,8 +2,7 @@ import { DemoTrace } from "./types";
 
 export const basicTrace: DemoTrace = {
   trace: {
-    last_action: "action/2",
-    last_condition: "condition/0",
+    last_step: "action/2",
     run_id: "0",
     state: "stopped",
     timestamp: {
@@ -14,6 +13,12 @@ export const basicTrace: DemoTrace = {
     domain: "automation",
     item_id: "1615419646544",
     trace: {
+      "trigger/0": [
+        {
+          path: "trigger/0",
+          timestamp: "2021-03-25T04:36:51.223693+00:00",
+        },
+      ],
       "condition/0": [
         {
           path: "condition/0",
@@ -284,45 +289,7 @@ export const basicTrace: DemoTrace = {
       parent_id: "664d6d261450a9ecea6738e97269a149",
       user_id: null,
     },
-    variables: {
-      trigger: {
-        platform: "state",
-        entity_id: "input_boolean.toggle_1",
-        from_state: {
-          entity_id: "input_boolean.toggle_1",
-          state: "on",
-          attributes: {
-            editable: true,
-            friendly_name: "Toggle 1",
-          },
-          last_changed: "2021-03-24T19:03:59.141440+00:00",
-          last_updated: "2021-03-24T19:03:59.141440+00:00",
-          context: {
-            id: "5d0918eb379214d07554bdab6a08bcff",
-            parent_id: null,
-            user_id: null,
-          },
-        },
-        to_state: {
-          entity_id: "input_boolean.toggle_1",
-          state: "off",
-          attributes: {
-            editable: true,
-            friendly_name: "Toggle 1",
-          },
-          last_changed: "2021-03-25T04:36:51.220696+00:00",
-          last_updated: "2021-03-25T04:36:51.220696+00:00",
-          context: {
-            id: "664d6d261450a9ecea6738e97269a149",
-            parent_id: null,
-            user_id: "d1b4e89da01445fa8bc98e39fac477ca",
-          },
-        },
-        for: null,
-        attribute: null,
-        description: "state of input_boolean.toggle_1",
-      },
-    },
+    script_execution: "finished",
   },
   logbookEntries: [
     {

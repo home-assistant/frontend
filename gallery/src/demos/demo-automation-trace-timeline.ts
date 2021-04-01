@@ -4,7 +4,6 @@ import {
   css,
   LitElement,
   TemplateResult,
-  internalProperty,
   property,
 } from "lit-element";
 import "../../../src/components/ha-card";
@@ -12,17 +11,28 @@ import "../../../src/components/trace/hat-script-graph";
 import "../../../src/components/trace/hat-trace-timeline";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../src/types";
+import { mockDemoTrace } from "../data/traces/mock-demo-trace";
 import { DemoTrace } from "../data/traces/types";
-import { basicTrace } from "../data/traces/basic_trace";
-import { motionLightTrace } from "../data/traces/motion-light-trace";
 
-const traces: DemoTrace[] = [basicTrace, motionLightTrace];
+const traces: DemoTrace[] = [
+  mockDemoTrace({ state: "running" }),
+  mockDemoTrace({ state: "debugged" }),
+  mockDemoTrace({ state: "stopped", script_execution: "failed_condition" }),
+  mockDemoTrace({ state: "stopped", script_execution: "failed_single" }),
+  mockDemoTrace({ state: "stopped", script_execution: "failed_max_runs" }),
+  mockDemoTrace({ state: "stopped", script_execution: "finished" }),
+  mockDemoTrace({ state: "stopped", script_execution: "aborted" }),
+  mockDemoTrace({
+    state: "stopped",
+    script_execution: "error",
+    error: 'Variable "beer" cannot be None',
+  }),
+  mockDemoTrace({ state: "stopped", script_execution: "cancelled" }),
+];
 
-@customElement("demo-automation-trace")
-export class DemoAutomationTrace extends LitElement {
+@customElement("demo-automation-trace-timeline")
+export class DemoAutomationTraceTimeline extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
-
-  @internalProperty() private _selected = {};
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -30,28 +40,13 @@ export class DemoAutomationTrace extends LitElement {
     }
     return html`
       ${traces.map(
-        (trace, idx) => html`
+        (trace) => html`
           <ha-card .header=${trace.trace.config.alias}>
             <div class="card-content">
-              <hat-script-graph
-                .trace=${trace.trace}
-                .selected=${this._selected[idx]}
-                @graph-node-selected=${(ev) => {
-                  this._selected = { ...this._selected, [idx]: ev.detail.path };
-                }}
-              ></hat-script-graph>
               <hat-trace-timeline
-                allowPick
                 .hass=${this.hass}
                 .trace=${trace.trace}
                 .logbookEntries=${trace.logbookEntries}
-                .selectedPath=${this._selected[idx]}
-                @value-changed=${(ev) => {
-                  this._selected = {
-                    ...this._selected,
-                    [idx]: ev.detail.value,
-                  };
-                }}
               ></hat-trace-timeline>
               <button @click=${() => console.log(trace)}>Log trace</button>
             </div>
@@ -76,12 +71,6 @@ export class DemoAutomationTrace extends LitElement {
       .card-content {
         display: flex;
       }
-      .card-content > * {
-        margin-right: 16px;
-      }
-      .card-content > *:last-child {
-        margin-right: 0;
-      }
       button {
         position: absolute;
         top: 0;
@@ -93,6 +82,6 @@ export class DemoAutomationTrace extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-automation-trace": DemoAutomationTrace;
+    "demo-automation-trace-timeline": DemoAutomationTraceTimeline;
   }
 }

@@ -314,7 +314,7 @@ class DataEntryFlowDialog extends LitElement {
       this._step &&
       this._step.type === "create_entry"
     ) {
-      if (this._params!.flowConfig.loadDevicesAndAreas) {
+      if (this._step.result && this._params!.flowConfig.loadDevicesAndAreas) {
         this._fetchDevices(this._step.result.entry_id);
         this._fetchAreas();
       } else {

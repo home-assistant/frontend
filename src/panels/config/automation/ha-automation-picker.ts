@@ -1,5 +1,12 @@
 import "@material/mwc-icon-button";
-import { mdiHelpCircle, mdiPlus } from "@mdi/js";
+import {
+  mdiHelpCircle,
+  mdiHistory,
+  mdiInformationOutline,
+  mdiPencil,
+  mdiPencilOff,
+  mdiPlus,
+} from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -70,6 +77,7 @@ class HaAutomationPicker extends LitElement {
         return {
           ...automation,
           name: computeStateName(automation),
+          last_triggered: automation.attributes.last_triggered || undefined,
         };
       });
     }
@@ -97,23 +105,41 @@ class HaAutomationPicker extends LitElement {
           filterable: true,
           direction: "asc",
           grows: true,
-          template: (name, automation: any) => html`
-            ${name}
-            <div class="secondary">
-              ${this.hass.localize("ui.card.automation.last_triggered")}:
-              ${automation.attributes.last_triggered
-                ? formatDateTime(
-                    new Date(automation.attributes.last_triggered),
-                    this.hass.locale
-                  )
-                : this.hass.localize("ui.components.relative_time.never")}
-            </div>
-          `,
+          template: narrow
+            ? (name, automation: any) =>
+                html`
+                  ${name}
+                  <div class="secondary">
+                    ${this.hass.localize("ui.card.automation.last_triggered")}:
+                    ${automation.attributes.last_triggered
+                      ? formatDateTime(
+                          new Date(automation.attributes.last_triggered),
+                          this.hass.locale
+                        )
+                      : this.hass.localize("ui.components.relative_time.never")}
+                  </div>
+                `
+            : undefined,
         },
       };
       if (!narrow) {
+        columns.last_triggered = {
+          sortable: true,
+          width: "20%",
+          title: this.hass.localize("ui.card.automation.last_triggered"),
+          template: (last_triggered) => html`
+            ${last_triggered
+              ? formatDateTime(new Date(last_triggered), this.hass.locale)
+              : this.hass.localize("ui.components.relative_time.never")}
+          `,
+        };
         columns.trigger = {
-          title: "",
+          title: html`
+            <mwc-button style="visibility: hidden">
+              ${this.hass.localize("ui.card.automation.trigger")}
+            </mwc-button>
+          `,
+          width: "20%",
           template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
@@ -129,14 +155,15 @@ class HaAutomationPicker extends LitElement {
         title: "",
         type: "icon-button",
         template: (_info, automation) => html`
-          <ha-icon-button
+          <mwc-icon-button
             .automation=${automation}
             @click=${this._showInfo}
-            icon="hass:information-outline"
-            title="${this.hass.localize(
+            .label="${this.hass.localize(
               "ui.panel.config.automation.picker.show_info_automation"
             )}"
-          ></ha-icon-button>
+          >
+            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
+          </mwc-icon-button>
         `,
       };
       columns.trace = {
@@ -150,13 +177,14 @@ class HaAutomationPicker extends LitElement {
                 : undefined
             )}
           >
-            <ha-icon-button
-              icon="hass:graph-outline"
-              .disabled=${!automation.attributes.id}
-              title="${this.hass.localize(
+            <mwc-icon-button
+              .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.dev_automation"
-              )}"
-            ></ha-icon-button>
+              )}
+              .disabled=${!automation.attributes.id}
+            >
+              <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
+            </mwc-icon-button>
           </a>
           ${!automation.attributes.id
             ? html`
@@ -180,25 +208,26 @@ class HaAutomationPicker extends LitElement {
                 : undefined
             )}
           >
-            <ha-icon-button
-              .icon=${automation.attributes.id
-                ? "hass:pencil"
-                : "hass:pencil-off"}
+            <mwc-icon-button
               .disabled=${!automation.attributes.id}
-              title="${this.hass.localize(
+              .label="${this.hass.localize(
                 "ui.panel.config.automation.picker.edit_automation"
               )}"
-            ></ha-icon-button>
+            ><ha-svg-icon .path=${
+              automation.attributes.id ? mdiPencil : mdiPencilOff
+            }></ha-svg-icon>
           </a>
-          ${!automation.attributes.id
-            ? html`
-                <paper-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.only_editable"
-                  )}
-                </paper-tooltip>
-              `
-            : ""}
+          ${
+            !automation.attributes.id
+              ? html`
+                  <paper-tooltip animation-delay="0" position="left">
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.picker.only_editable"
+                    )}
+                  </paper-tooltip>
+                `
+              : ""
+          }
         `,
       };
       return columns;

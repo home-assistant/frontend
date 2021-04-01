@@ -238,6 +238,9 @@ export const deleteAutomation = (hass: HomeAssistant, id: string) =>
 
 let inititialAutomationEditorData: Partial<AutomationConfig> | undefined;
 
+export const getAutomationConfig = (hass: HomeAssistant, id: string) =>
+  hass.callApi<AutomationConfig>("GET", `config/automation/config/${id}`);
+
 export const showAutomationEditor = (
   el: HTMLElement,
   data?: Partial<AutomationConfig>

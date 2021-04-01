@@ -286,7 +286,7 @@ class HaPanelDevService extends LitElement {
   }
 
   private _checkUiSupported() {
-    if (hasTemplate(this._serviceData)) {
+    if (this._serviceData && hasTemplate(this._serviceData)) {
       this._yamlMode = true;
       this._uiAvailable = false;
     } else {

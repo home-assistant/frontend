@@ -440,6 +440,9 @@
             "area-picker": {
                 "show_areas": "Amosar áreas"
             },
+            "data-table": {
+                "clear": "Elim"
+            },
             "device-picker": {
                 "show_devices": "Amosar dispositivos"
             },
@@ -457,6 +460,12 @@
                     "is_opening": "estase abrindo"
                 },
                 "show_trace": "Amosar rastro"
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filtrar por área",
+                "filter_by_device": "Filtrar por dispositivo",
+                "filtered_by_area": "área: {area_name}",
+                "filtered_by_device": "dispositivo: {device_name}"
             }
         },
         "dialogs": {
@@ -531,6 +540,7 @@
                                 }
                             }
                         },
+                        "show_trace": "Mostrar rastro",
                         "triggers": {
                             "type": {
                                 "mqtt": {
@@ -555,11 +565,52 @@
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "google": {
+                            "not_configured_text": "Antes de usar o Asistente de Google, debes activar a skill Home Assistant Cloud para Google Assistant na aplicación Google Home.",
+                            "not_configured_title": "Google Assistant non está activado"
+                        }
+                    },
                     "forgot_password": {
                         "instructions": "Introduce o teu enderezo de correo electrónico e enviarémosche unha ligazón para restablecer o teu contrasinal."
                     },
                     "register": {
                         "email_address": "Enderezo electrónico"
+                    }
+                },
+                "core": {
+                    "section": {
+                        "core": {
+                            "analytics": {
+                                "documentation": "Antes de habilitalo, asegúrese de visitar a páxina de documentación de análise {link} para comprender o que está a enviar e como se almacena.",
+                                "header": "Analítica",
+                                "instance_id": "ID de instancia: {huuid}",
+                                "introduction": "Comparte analítica desde a túa instancia. Estes datos estarán dispoñibles publicamente en {link}",
+                                "learn_more": "Máis información sobre como se procesarán os teus datos.",
+                                "needs_base": "Debe habilitar a analítica base para que esta opción estea dispoñible",
+                                "preference": {
+                                    "base": {
+                                        "description": "Isto inclúe o ID de instancia, a versión e o tipo de instalación",
+                                        "title": "Analítica básica"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Comparte informes de fallos e información de diagnóstico",
+                                        "title": "Diagnóstico"
+                                    },
+                                    "statistics": {
+                                        "description": "Isto inclúe un reconto de elementos na súa instalación, para ver unha lista completa consulta a documentación",
+                                        "title": "Estatísticas de uso"
+                                    },
+                                    "usage_supervisor": {
+                                        "title": "Integracións e complementos usados"
+                                    },
+                                    "usage": {
+                                        "description": "Isto inclúe os nomes das túas integracións",
+                                        "title": "Integracións usadas"
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "devices": {
@@ -585,12 +636,29 @@
                     "show": "Amosar"
                 },
                 "integrations": {
+                    "config_entry": {
+                        "logs": "rexistros",
+                        "not_loaded": "Non cargado, comproba o {logs_link}"
+                    },
+                    "config_flow": {
+                        "not_loaded": "Non se puido cargar a integración. Tenta reiniciar Home Assistant."
+                    },
                     "disable": {
+                        "show": "Amosar",
                         "show_disabled": "Amosar as integracións desactivadas"
                     },
                     "ignore": {
                         "confirm_ignore": "Está seguro de que non quere configurar esta integración? Podes desfacer isto premendo en \"Amosar integracións ignoradas\" no menú de desbordamento da parte superior dereita.",
                         "show_ignored": "Amosar integracións ignoradas"
+                    }
+                },
+                "logs": {
+                    "level": {
+                        "critical": "CRÍTICO",
+                        "debug": "DEPURAR",
+                        "error": "ERRO",
+                        "info": "INFORMACIÓN",
+                        "warning": "AVISO"
                     }
                 },
                 "lovelace": {
@@ -853,9 +921,14 @@
                 "not_supported": "Esta redirección non é compatible coa túa instancia de Home Assistant. Comprobe a {link} para coñecer as redireccións compatibles e a versión na que se introduciron."
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Seguinte"
+                },
                 "core-config": {
                     "intro_location": "Gustaríanos saber onde vives. Esta información axudará a amosar información e configurar automatismos baseados no sol. Estes datos nunca se comparten fóra da túa rede."
                 },
+                "finish": "Rematar",
+                "next": "Seguinte",
                 "restore": {
                     "show_log": "Amosar rexistro completo"
                 }
@@ -863,6 +936,19 @@
             "profile": {
                 "long_lived_access_tokens": {
                     "prompt_copy_token": "Copia o teu token de acceso. Non aparecerá de novo."
+                },
+                "number_format": {
+                    "description": "Escolle como se formatean os números.",
+                    "dropdown_label": "Formato de número",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automático (usar a configuración do idioma)",
+                        "none": "Ningunha",
+                        "space_comma": "1 234 567,89",
+                        "system": "Usa a configuración rexional do sistema"
+                    },
+                    "header": "Formato de número"
                 }
             }
         }

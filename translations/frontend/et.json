@@ -1188,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Muuda seadme nime"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Seadme sätete muutmine"
             }
         },
         "duration": {
@@ -2071,6 +2074,9 @@
                     "clear": "Puhasta",
                     "filtering_by": "Filtreeri",
                     "show": "Kuva"
+                },
+                "hassio": {
+                    "button": "Seadista"
                 },
                 "header": "Home Assistant'i seadistamine",
                 "helpers": {

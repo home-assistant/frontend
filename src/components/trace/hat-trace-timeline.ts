@@ -20,9 +20,11 @@ import { HomeAssistant } from "../../types";
 import "./ha-timeline";
 import type { HaTimeline } from "./ha-timeline";
 import {
+  mdiAlertCircle,
   mdiCircle,
   mdiCircleOutline,
-  mdiPauseCircleOutline,
+  mdiProgressClock,
+  mdiProgressWrench,
   mdiRecordCircleOutline,
 } from "@mdi/js";
 import { LogbookEntry } from "../../data/logbook";
@@ -33,6 +35,8 @@ import {
 } from "../../data/script";
 import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import { describeAction } from "../../data/script_i18n";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
@@ -262,7 +266,7 @@ class ActionRenderer {
       return this._handleChoose(index);
     }
 
-    this._renderEntry(path, data.alias || actionType);
+    this._renderEntry(path, describeAction(this.hass, data, actionType));
     return index + 1;
   }
 
@@ -272,7 +276,7 @@ class ActionRenderer {
       `Triggered ${
         triggerStep.path === "trigger"
           ? "manually"
-          : `by the ${triggerStep.changed_variables.trigger.description}`
+          : `by the ${this.trace.trigger}`
       } at
     ${formatDateTimeWithSeconds(
       new Date(triggerStep.timestamp),
@@ -302,7 +306,7 @@ class ActionRenderer {
     const startLevel = choosePath.split("/").length - 1;
 
     const chooseTrace = this._getItem(index)[0] as ChooseActionTraceStep;
-    const defaultExecuted = chooseTrace.result.choice === "default";
+    const defaultExecuted = chooseTrace.result?.choice === "default";
     const chooseConfig = this._getDataFromPath(
       this.keys[index]
     ) as ChooseAction;
@@ -312,11 +316,14 @@ class ActionRenderer {
       this._renderEntry(choosePath, `${name}: Default action executed`);
     } else {
       const choiceConfig = this._getDataFromPath(
-        `${this.keys[index]}/choose/${chooseTrace.result.choice}`
-      ) as ChooseActionChoice;
-      const choiceName =
-        choiceConfig.alias || `Choice ${chooseTrace.result.choice}`;
-      this._renderEntry(choosePath, `${name}: ${choiceName} executed`);
+        `${this.keys[index]}/choose/${chooseTrace.result?.choice}`
+      ) as ChooseActionChoice | undefined;
+      const choiceName = choiceConfig
+        ? `${
+            choiceConfig.alias || `Choice ${chooseTrace.result?.choice}`
+          } executed`
+        : `Error: ${chooseTrace.error}`;
+      this._renderEntry(choosePath, `${name}: ${choiceName}`);
     }
 
     let i;
@@ -331,7 +338,10 @@ class ActionRenderer {
       }
 
       // We're going to skip all conditions
-      if (parts[startLevel + 3] === "sequence") {
+      if (
+        (defaultExecuted && parts[startLevel + 1] === "default") ||
+        (!defaultExecuted && parts[startLevel + 3] === "sequence")
+      ) {
         break;
       }
     }
@@ -414,29 +424,92 @@ export class HaAutomationTracer extends LitElement {
 
     logbookRenderer.flush();
 
+    // Render footer
+    const renderFinishedAt = () =>
+      formatDateTimeWithSeconds(
+        new Date(this.trace!.timestamp.finish!),
+        this.hass.locale
+      );
+    const renderRuntime = () => `(runtime:
+      ${(
+        (new Date(this.trace!.timestamp.finish!).getTime() -
+          new Date(this.trace!.timestamp.start).getTime()) /
+        1000
+      ).toFixed(2)}
+      seconds)`;
+
+    let entry: {
+      description: TemplateResult | string;
+      icon: string;
+      className?: string;
+    };
+
+    if (this.trace.state === "running") {
+      entry = {
+        description: "Still running",
+        icon: mdiProgressClock,
+      };
+    } else if (this.trace.state === "debugged") {
+      entry = {
+        description: "Debugged",
+        icon: mdiProgressWrench,
+      };
+    } else if (this.trace.script_execution === "finished") {
+      entry = {
+        description: `Finished at ${renderFinishedAt()} ${renderRuntime()}`,
+        icon: mdiCircle,
+      };
+    } else if (this.trace.script_execution === "aborted") {
+      entry = {
+        description: `Aborted at ${renderFinishedAt()} ${renderRuntime()}`,
+        icon: mdiAlertCircle,
+      };
+    } else if (this.trace.script_execution === "cancelled") {
+      entry = {
+        description: `Cancelled at ${renderFinishedAt()} ${renderRuntime()}`,
+        icon: mdiAlertCircle,
+      };
+    } else {
+      let reason: string;
+      let isError = false;
+      let extra: TemplateResult | undefined;
+
+      switch (this.trace.script_execution) {
+        case "failed_condition":
+          reason = "a condition failed";
+          break;
+        case "failed_single":
+          reason = "only a single execution is allowed";
+          break;
+        case "failed_max_runs":
+          reason = "maximum number of parallel runs reached";
+          break;
+        case "error":
+          reason = "an error was encountered";
+          isError = true;
+          extra = html`<br /><br />${this.trace.error!}`;
+          break;
+        default:
+          reason = `of unknown reason "${this.trace.script_execution}"`;
+          isError = true;
+      }
+
+      entry = {
+        description: html`Stopped because ${reason} at ${renderFinishedAt()}
+        ${renderRuntime()}${extra || ""}`,
+        icon: mdiAlertCircle,
+        className: isError ? "error" : undefined,
+      };
+    }
     // null means it was stopped by a condition
-    if (this.trace.last_action !== null) {
+    if (entry) {
       entries.push(html`
         <ha-timeline
           lastItem
-          .icon=${this.trace.timestamp.finish
-            ? mdiCircle
-            : mdiPauseCircleOutline}
+          .icon=${entry.icon}
+          class=${ifDefined(entry.className)}
         >
-          ${this.trace.timestamp.finish
-            ? html`Finished at
-              ${formatDateTimeWithSeconds(
-                new Date(this.trace.timestamp.finish),
-                this.hass.locale
-              )}
-              (runtime:
-              ${(
-                (new Date(this.trace.timestamp.finish!).getTime() -
-                  new Date(this.trace.timestamp.start).getTime()) /
-                1000
-              ).toFixed(2)}
-              seconds)`
-            : "Still running"}
+          ${entry.description}
         </ha-timeline>
       `);
     }
@@ -468,17 +541,20 @@ export class HaAutomationTracer extends LitElement {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
-        el.style.setProperty(
-          "--timeline-ball-color",
-          this.selectedPath === el.dataset.path ? "var(--primary-color)" : null
-        );
-        if (!this.allowPick || el.dataset.upgraded) {
+        el.toggleAttribute("selected", this.selectedPath === el.dataset.path);
+        if (!this.allowPick || el.tabIndex === 0) {
           return;
         }
-        el.dataset.upgraded = "1";
-        el.addEventListener("click", () => {
+        el.tabIndex = 0;
+        const selectEl = () => {
           this.selectedPath = el.dataset.path;
           fireEvent(this, "value-changed", { value: el.dataset.path });
+        };
+        el.addEventListener("click", selectEl);
+        el.addEventListener("keydown", (ev: KeyboardEvent) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            selectEl();
+          }
         });
         el.addEventListener("mouseover", () => {
           el.raised = true;
@@ -498,6 +574,17 @@ export class HaAutomationTracer extends LitElement {
         }
         ha-timeline[data-path] {
           cursor: pointer;
+        }
+        ha-timeline[selected] {
+          --timeline-ball-color: var(--primary-color);
+        }
+        ha-timeline:focus {
+          outline: none;
+          --timeline-ball-color: var(--accent-color);
+        }
+        .error {
+          --timeline-ball-color: var(--error-color);
+          color: var(--error-color);
         }
       `,
     ];
