@@ -1188,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Změnit název zařízení"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Znovunastavení zařízení"
             }
         },
         "duration": {
@@ -1691,6 +1694,7 @@
                             "info": "Díky integraci Google Assistant pro Home Assistant Cloud budete moci ovládat všechna zařízení v Home Assistant pomocí jakéhokoli zařízení podporujícího Google Assistant.",
                             "info_state_reporting": "Pokud povolíte hlášení stavu, Home Assistant bude posílat veškeré změny stavů všech exponovaných entit do Google. Toto vám umožní sledovat vždy aktuální stavy entit v aplikaci Google.",
                             "manage_entities": "Správa entit",
+                            "not_configured_text": "Než budete moci používat Google Assistant, musíte v aplikaci Google Home aktivovat dovednost Home Assistant Cloud pro Google Assistant.",
                             "not_configured_title": "Google Asistent není aktivován",
                             "security_devices": "Zabezpečovací zařízení",
                             "sync_entities": "Synchronizovat entity s Google",
@@ -1859,6 +1863,7 @@
                                 "header": "Analytika",
                                 "instance_id": "ID instance: {huuid}",
                                 "introduction": "Sdílejte analytiku ze své instance. Tato data budou veřejně dostupná na {link}",
+                                "learn_more": "Zjistěte více, jak budou vaše údaje zpracovány.",
                                 "needs_base": "Aby byla tato možnost k dispozici, musíte povolit základní analytiku",
                                 "preference": {
                                     "base": {
@@ -2070,6 +2075,9 @@
                     "filtering_by": "Filtrování podle",
                     "show": "Zobrazit"
                 },
+                "hassio": {
+                    "button": "Nastavit"
+                },
                 "header": "Nastavení Home Assistant",
                 "helpers": {
                     "caption": "Pomocníci",
@@ -2236,10 +2244,17 @@
                     "clear": "Zrušit",
                     "description": "Zobrazení logů Home Assistant",
                     "details": "Detaily protokolu ({level})",
+                    "level": {
+                        "critical": "KRITICKÉ",
+                        "debug": "LADĚNÍ",
+                        "error": "CHYBA",
+                        "info": "INFO",
+                        "warning": "VAROVÁNÍ"
+                    },
                     "load_full_log": "Načíst úplný protokol Home Assistanta",
                     "loading_log": "Načítání protokolu chyb...",
                     "multiple_messages": "zpráva se poprvé objevila v {time} a zobrazuje se {counter} krát",
-                    "no_errors": "Nebyly hlášeny žádné chyby.",
+                    "no_errors": "Nebyly hlášeny žádné chyby",
                     "no_issues": "Nejsou žádné nové problémy!",
                     "refresh": "Obnovit"
                 },

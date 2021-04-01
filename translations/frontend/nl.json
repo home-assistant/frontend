@@ -1188,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Wijzig apparaatnaam"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Apparaat opnieuw configureren"
             }
         },
         "duration": {
@@ -1656,8 +1659,8 @@
                         },
                         "introduction": "Met de Blueprinteditor kunt je Blueprints maken en bewerken.",
                         "learn_more": "Meer informatie over Blueprints",
-                        "share_blueprint": "Deel blauwdruk",
-                        "share_blueprint_no_url": "Kan blauwdruk niet delen: geen bron-URL",
+                        "share_blueprint": "Deel Blueprint",
+                        "share_blueprint_no_url": "Kan Blueprint niet delen: geen bron-URL",
                         "use_blueprint": "Automatisering maken"
                     }
                 },
@@ -1860,6 +1863,7 @@
                                 "header": "Analytics",
                                 "instance_id": "Instantie-ID: {huuid}",
                                 "introduction": "Deel analyses vanuit uw instantie. Deze gegevens zijn openbaar beschikbaar op {link}",
+                                "learn_more": "Lees meer over hoe uw gegevens worden verwerkt.",
                                 "needs_base": "U moet basisanalyses inschakelen om deze optie beschikbaar te maken",
                                 "preference": {
                                     "base": {
@@ -2071,6 +2075,9 @@
                     "filtering_by": "Filteren op",
                     "show": "Toon"
                 },
+                "hassio": {
+                    "button": "Configureer"
+                },
                 "header": "Configureer Home Assistant",
                 "helpers": {
                     "caption": "Helpers",
@@ -2237,6 +2244,13 @@
                     "clear": "Wis",
                     "description": "Home Assistant logboek bekijken",
                     "details": "Logboekdetails ({level})",
+                    "level": {
+                        "critical": "KRITISCH",
+                        "debug": "DEBUG",
+                        "error": "FOUT",
+                        "info": "INFO",
+                        "warning": "WAARSCHUWING"
+                    },
                     "load_full_log": "Laad volledige Home Assistant logboek",
                     "loading_log": "Foutenlogboek laden ...",
                     "multiple_messages": "bericht kwam voor het eerst om {time} en verschijnt {counter} keer",

@@ -1860,6 +1860,7 @@
                                 "header": "Analytics",
                                 "instance_id": "Forekomst-ID: {huuid}",
                                 "introduction": "Del analyse fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}",
+                                "learn_more": "Lær mer om hvordan dataene dine blir behandlet.",
                                 "needs_base": "Du må aktivere basisanalyse for at dette alternativet skal være tilgjengelig",
                                 "preference": {
                                     "base": {
@@ -2071,6 +2072,9 @@
                     "filtering_by": "Filtrering etter",
                     "show": "Vis"
                 },
+                "hassio": {
+                    "button": "Konfigurer"
+                },
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjelpere",
@@ -2237,10 +2241,17 @@
                     "clear": "Tøm",
                     "description": "Vis Home Assistant loggene",
                     "details": "Loggdetaljer ({level})",
+                    "level": {
+                        "critical": "KRITISK",
+                        "debug": "DEBUG",
+                        "error": "FEIL",
+                        "info": "INFO",
+                        "warning": "ADVARSEL"
+                    },
                     "load_full_log": "Last inn fullstendig Home Assistant logg",
                     "loading_log": "Laster inn feillogg ...",
                     "multiple_messages": "meldingen oppstod først ved {time} og vist {counter} ganger",
-                    "no_errors": "Ingen feil er rapportert.",
+                    "no_errors": "Ingen feil er rapportert",
                     "no_issues": "Det er ingen nye problemer!",
                     "refresh": "Oppdater"
                 },

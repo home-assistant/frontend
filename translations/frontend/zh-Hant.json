@@ -1188,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "變更裝置名稱"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "重新設定裝置"
             }
         },
         "duration": {
@@ -1860,6 +1863,7 @@
                                 "header": "分析資料",
                                 "instance_id": "實例 ID：{huuid}",
                                 "introduction": "分享實例分析資料，資料將可透過 {link} 連結公開取得",
+                                "learn_more": "詳細了解資料會如何處理。",
                                 "needs_base": "需要開啟基本分析、方能使用此選項",
                                 "preference": {
                                     "base": {
@@ -2071,6 +2075,9 @@
                     "filtering_by": "篩選",
                     "show": "顯示"
                 },
+                "hassio": {
+                    "button": "設定"
+                },
                 "header": "設定 Home Assistant",
                 "helpers": {
                     "caption": "助手",
@@ -2237,10 +2244,17 @@
                     "clear": "清除",
                     "description": "檢視 Home Assistant 日誌",
                     "details": "記錄詳細資料（{level}）",
+                    "level": {
+                        "critical": "緊急",
+                        "debug": "除錯",
+                        "error": "錯誤",
+                        "info": "資訊",
+                        "warning": "警告"
+                    },
                     "load_full_log": "載入完整 Home Assistant 記錄",
                     "loading_log": "載入錯誤記錄中...",
                     "multiple_messages": "訊息首次出現於 {time}、共顯示 {counter} 次",
-                    "no_errors": "未回報任何錯誤。",
+                    "no_errors": "未回報任何錯誤",
                     "no_issues": "沒有新問題！",
                     "refresh": "更新"
                 },

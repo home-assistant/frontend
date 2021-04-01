@@ -1860,6 +1860,7 @@
                                 "header": "분석",
                                 "instance_id": "인스턴스 ID: {huuid}",
                                 "introduction": "인스턴스의 분석 내용을 공유합니다. 이 데이터는 {link}에서 공개적으로 사용할 수 있습니다",
+                                "learn_more": "통계자료가 어떻게 처리되는지 알아보기.",
                                 "needs_base": "이 옵션을 사용하려면 기본 분석을 활성화해야 합니다",
                                 "preference": {
                                     "base": {
@@ -2237,6 +2238,13 @@
                     "clear": "지우기",
                     "description": "Home Assistant 로그 내역을 봅니다",
                     "details": "로그 상세정보 ({level})",
+                    "level": {
+                        "critical": "치명적오류",
+                        "debug": "디버그",
+                        "error": "오류",
+                        "info": "정보",
+                        "warning": "경고"
+                    },
                     "load_full_log": "Home Assistant 로그 전부 불러오기",
                     "loading_log": "오류 로그를 읽는 중...",
                     "multiple_messages": "{time}에 처음 발생했으며, {counter}번 발생했습니다.",
