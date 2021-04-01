@@ -39,6 +39,7 @@ import {
   mdiRefresh,
   mdiDownload,
 } from "@mdi/js";
+import "./ha-automation-trace-blueprint-config";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -70,7 +71,8 @@ export class HaAutomationTrace extends LitElement {
     | "details"
     | "config"
     | "timeline"
-    | "logbook" = "details";
+    | "logbook"
+    | "blueprint" = "details";
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -197,6 +199,19 @@ export class HaAutomationTrace extends LitElement {
                         </div>
                       `
                     )}
+                    ${this._trace.blueprint_inputs
+                      ? html`
+                          <div
+                            .view=${"blueprint"}
+                            class=${classMap({
+                              active: this._view === "blueprint",
+                            })}
+                            @click=${this._showTab}
+                          >
+                            Blueprint Config
+                          </div>
+                        `
+                      : ""}
                   </div>
                   ${this._selected === undefined ||
                   this._logbookEntries === undefined ||
@@ -226,6 +241,13 @@ export class HaAutomationTrace extends LitElement {
                           .hass=${this.hass}
                           .entries=${this._logbookEntries}
                         ></ha-logbook>
+                      `
+                    : this._view === "blueprint"
+                    ? html`
+                        <ha-automation-trace-blueprint-config
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                        ></ha-automation-trace-blueprint-config>
                       `
                     : html`
                         <ha-automation-trace-timeline
