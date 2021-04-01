@@ -13,7 +13,7 @@ import {
   VariablesAction,
   EventAction,
 } from "./script";
-import { isDynamicTemplate } from "./template";
+import { isTemplate } from "./template";
 
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
@@ -34,7 +34,7 @@ export const describeAction = <T extends ActionType>(
 
     if (
       config.service_template ||
-      (config.service && isDynamicTemplate(config.service))
+      (config.service && isTemplate(config.service))
     ) {
       base = "Call a service based on a template";
     } else if (config.service) {
@@ -62,7 +62,7 @@ export const describeAction = <T extends ActionType>(
         let renderValues = true;
 
         for (const targetThing of keyConf) {
-          if (isDynamicTemplate(targetThing)) {
+          if (isTemplate(targetThing)) {
             targets.push(`templated ${label}`);
             renderValues = false;
             break;
@@ -91,7 +91,7 @@ export const describeAction = <T extends ActionType>(
     if (typeof config.delay === "number") {
       duration = `for ${secondsToDuration(config.delay)!}`;
     } else if (typeof config.delay === "string") {
-      duration = isDynamicTemplate(config.delay)
+      duration = isTemplate(config.delay)
         ? "based on a template"
         : `for ${config.delay}`;
     } else {
@@ -123,7 +123,7 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "fire_event") {
     const config = action as EventAction;
-    if (isDynamicTemplate(config.event)) {
+    if (isTemplate(config.event)) {
       return "Fire event based on a template";
     }
     return `Fire event ${config.event}`;
