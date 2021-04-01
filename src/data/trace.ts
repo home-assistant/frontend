@@ -1,6 +1,9 @@
 import { strStartsWith } from "../common/string/starts-with";
 import { HomeAssistant, Context } from "../types";
-import { ManualAutomationConfig } from "./automation";
+import {
+  BlueprintAutomationConfig,
+  ManualAutomationConfig,
+} from "./automation";
 
 interface BaseTraceStep {
   path: string;
@@ -87,6 +90,7 @@ export interface AutomationTraceExtended extends AutomationTrace {
   trace: Record<string, ActionTraceStep[]>;
   context: Context;
   config: ManualAutomationConfig;
+  blueprint_inputs?: BlueprintAutomationConfig;
   error?: string;
 }
 
