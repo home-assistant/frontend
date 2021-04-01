@@ -37,7 +37,8 @@ export interface EventAction {
 
 export interface ServiceAction {
   alias?: string;
-  service: string;
+  service?: string;
+  service_template?: string;
   entity_id?: string;
   target?: HassServiceTarget;
   data?: Record<string, any>;
@@ -115,6 +116,16 @@ export interface ChooseAction {
   default?: Action[];
 }
 
+export interface VariablesAction {
+  alias?: string;
+  variables: Record<string, unknown>;
+}
+
+interface UnknownAction {
+  alias?: string;
+  [key: string]: unknown;
+}
+
 export type Action =
   | EventAction
   | DeviceAction
@@ -125,7 +136,26 @@ export type Action =
   | WaitAction
   | WaitForTriggerAction
   | RepeatAction
-  | ChooseAction;
+  | ChooseAction
+  | VariablesAction
+  | UnknownAction;
+
+interface ActionTypes {
+  delay: DelayAction;
+  wait_template: WaitAction;
+  check_condition: Condition;
+  fire_event: EventAction;
+  device_action: DeviceAction;
+  activate_scene: SceneAction;
+  repeat: RepeatAction;
+  choose: ChooseAction;
+  wait_for_trigger: WaitForTriggerAction;
+  variables: VariablesAction;
+  service: ServiceAction;
+  unknown: UnknownAction;
+}
+
+export type ActionType = keyof ActionTypes;
 
 export const triggerScript = (
   hass: HomeAssistant,
@@ -166,7 +196,7 @@ export const getScriptEditorInitData = () => {
   return data;
 };
 
-export const getActionType = (action: Action) => {
+export const getActionType = (action: Action): ActionType => {
   // Check based on config_validation.py#determine_script_action
   if ("delay" in action) {
     return "delay";
@@ -202,4 +232,74 @@ export const getActionType = (action: Action) => {
     return "service";
   }
   return "unknown";
+};
+
+export const describeAction = <T extends ActionType>(
+  action: ActionTypes[T],
+  actionType?: T
+): string => {
+  if (action.alias) {
+    return action.alias;
+  }
+  if (!actionType) {
+    actionType = getActionType(action) as T;
+  }
+
+  if (actionType === "service") {
+    const config = action as ActionTypes["service"];
+
+    let base: string | undefined;
+
+    if (
+      config.service_template ||
+      (config.service && config.service.includes("{{"))
+    ) {
+      base = "Call a service based on a template";
+    } else if (config.service) {
+      base = `Call service ${config.service}`;
+    } else {
+      return actionType;
+    }
+    if (config.target) {
+      const targets: string[] = [];
+
+      for (const [key, label] of Object.entries({
+        area_id: "areas",
+        device_id: "devices",
+        entity_id: "entities",
+      })) {
+        if (!(key in config.target)) {
+          continue;
+        }
+        const keyConf: string[] = Array.isArray(config.target[key])
+          ? config.target[key]
+          : [config.target[key]];
+
+        const values: string[] = [];
+
+        let renderValues = true;
+
+        for (const targetThing of keyConf) {
+          if (targetThing.includes("{{")) {
+            targets.push(`templated ${label}`);
+            renderValues = false;
+            break;
+          } else {
+            values.push(targetThing);
+          }
+        }
+
+        if (renderValues) {
+          targets.push(`${label} ${values.join(", ")}`);
+        }
+      }
+      if (targets.length > 0) {
+        base += ` on ${targets.join(", ")}`;
+      }
+    }
+
+    return base;
+  }
+
+  return actionType;
 };

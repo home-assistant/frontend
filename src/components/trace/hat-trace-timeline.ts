@@ -29,6 +29,7 @@ import { LogbookEntry } from "../../data/logbook";
 import {
   ChooseAction,
   ChooseActionChoice,
+  describeAction,
   getActionType,
 } from "../../data/script";
 import relativeTime from "../../common/datetime/relative_time";
@@ -262,7 +263,7 @@ class ActionRenderer {
       return this._handleChoose(index);
     }
 
-    this._renderEntry(path, data.alias || actionType);
+    this._renderEntry(path, describeAction(data, actionType));
     return index + 1;
   }
 
