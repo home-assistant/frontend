@@ -43,7 +43,7 @@ class StepFlowCreateEntry extends LitElement {
       <h2>Success!</h2>
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
-        ${this.step.result.state === "not_loaded"
+        ${this.step.result?.state === "not_loaded"
           ? html`<span class="error"
               >${localize(
                 "ui.panel.config.integrations.config_flow.not_loaded"
