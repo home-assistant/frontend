@@ -11,7 +11,7 @@ import "../../../../../components/entity/ha-entity-picker";
 import { HaFormTimeData } from "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-service-picker";
 import { DelayAction } from "../../../../../data/script";
-import { hasTemplate } from "../../../../../data/template";
+import { hasTemplate } from "../../../../../common/string/has-template";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 

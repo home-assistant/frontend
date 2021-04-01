@@ -1,5 +1,6 @@
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { isTemplate } from "../common/string/has-template";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
 import { describeCondition, describeTrigger } from "./automation_i18n";
@@ -13,7 +14,6 @@ import {
   VariablesAction,
   EventAction,
 } from "./script";
-import { isTemplate } from "./template";
 
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,

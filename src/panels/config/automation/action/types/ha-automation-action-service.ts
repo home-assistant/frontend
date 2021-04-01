@@ -16,7 +16,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { EntityIdOrAll } from "../../../../../common/structs/is-entity-id";
 import { ActionElement } from "../ha-automation-action-row";
 import "../../../../../components/ha-service-control";
-import { hasTemplate } from "../../../../../data/template";
+import { hasTemplate } from "../../../../../common/string/has-template";
 
 const actionStruct = object({
   service: optional(string()),

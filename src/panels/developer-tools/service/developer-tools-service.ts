@@ -23,7 +23,7 @@ import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../data/script";
 import { callExecuteScript } from "../../../data/service";
-import { hasTemplate } from "../../../data/template";
+import { hasTemplate } from "../../../common/string/has-template";
 import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
@@ -286,7 +286,7 @@ class HaPanelDevService extends LitElement {
   }
 
   private _checkUiSupported() {
-    if (hasTemplate(this._serviceData)) {
+    if (this._serviceData && hasTemplate(this._serviceData)) {
       this._yamlMode = true;
       this._uiAvailable = false;
     } else {
