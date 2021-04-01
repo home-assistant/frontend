@@ -23,6 +23,7 @@ import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../data/script";
 import { callExecuteScript } from "../../../data/service";
+import { hasTemplate } from "../../../data/template";
 import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
