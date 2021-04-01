@@ -1,6 +1,6 @@
-export const ensureArray = (value?: any) => {
+export const ensureArray = <T>(value: T | T[]): T[] => {
   if (!value || Array.isArray(value)) {
-    return value;
+    return value as T[];
   }
   return [value];
 };

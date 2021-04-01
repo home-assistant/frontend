@@ -48,6 +48,7 @@ import {
   WaitAction,
   WaitForTriggerAction,
 } from "../../data/script";
+import { ensureArray } from "../../common/ensure-array";
 
 declare global {
   interface HASSDomEvents {
@@ -412,16 +413,14 @@ class HatScriptGraph extends LitElement {
 
     const manual_triggered = this.trace && "trigger" in this.trace.trace;
     let track_path = manual_triggered ? undefined : [0];
-    const trigger_nodes = (Array.isArray(this.trace.config.trigger)
-      ? this.trace.config.trigger
-      : [this.trace.config.trigger]
-    ).map((trigger, i) => {
-      if (this.trace && `trigger/${i}` in this.trace.trace) {
-        track_path = [i];
+    const trigger_nodes = ensureArray(this.trace.config.trigger).map(
+      (trigger, i) => {
+        if (this.trace && `trigger/${i}` in this.trace.trace) {
+          track_path = [i];
+        }
+        return this.render_trigger(trigger, i);
       }
-      return this.render_trigger(trigger, i);
-    });
-
+    );
     return html`
       <hat-graph class="parent">
         <div></div>
@@ -435,16 +434,13 @@ class HatScriptGraph extends LitElement {
           ${trigger_nodes}
         </hat-graph>
         <hat-graph id="condition">
-          ${(!this.trace.config.condition ||
-          Array.isArray(this.trace.config.condition)
-            ? this.trace.config.condition
-            : [this.trace.config.condition]
-          )?.map((condition, i) => this.render_condition(condition, i))}
+          ${ensureArray(this.trace.config.condition)?.map((condition, i) =>
+            this.render_condition(condition!, i)
+          )}
         </hat-graph>
-        ${(Array.isArray(this.trace.config.action)
-          ? this.trace.config.action
-          : [this.trace.config.action]
-        ).map((action, i) => this.render_node(action, `action/${i}`))}
+        ${ensureArray(this.trace.config.action).map((action, i) =>
+          this.render_node(action, `action/${i}`)
+        )}
       </hat-graph>
       <div class="actions">
         <mwc-icon-button

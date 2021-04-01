@@ -77,7 +77,7 @@ export interface WaitAction {
 
 export interface WaitForTriggerAction {
   alias?: string;
-  wait_for_trigger: Trigger[];
+  wait_for_trigger: Trigger | Trigger[];
   timeout?: number;
   continue_on_timeout?: boolean;
 }
