@@ -45,7 +45,7 @@ export interface DataEntryFlowStepCreateEntry {
   flow_id: string;
   handler: string;
   title: string;
-  result: ConfigEntry;
+  result?: ConfigEntry;
   description: string;
   description_placeholders: Record<string, string>;
 }
