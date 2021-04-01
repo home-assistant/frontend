@@ -74,7 +74,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
 }
 
 type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
-  title?: string;
+  title?: TemplateResult | string;
 };
 
 export interface DataTableRowData {
