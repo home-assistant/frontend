@@ -8,11 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import {
-  AutomationConfig,
-  AutomationEntity,
-  getAutomationConfig,
-} from "../../../../data/automation";
+import { AutomationEntity } from "../../../../data/automation";
 import {
   AutomationTrace,
   AutomationTraceExtended,
@@ -77,8 +73,6 @@ export class HaAutomationTrace extends LitElement {
     | "timeline"
     | "logbook"
     | "blueprint" = "details";
-
-  @internalProperty() private _automationConfig?: AutomationConfig;
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -205,17 +199,18 @@ export class HaAutomationTrace extends LitElement {
                         </div>
                       `
                     )}
-                    ${this._automationConfig &&
-                    "use_blueprint" in this._automationConfig
-                      ? html` <div
-                          .view=${"blueprint"}
-                          class=${classMap({
-                            active: this._view === "blueprint",
-                          })}
-                          @click=${this._showTab}
-                        >
-                          Blueprint Config
-                        </div>`
+                    ${this._trace.blueprint_inputs
+                      ? html`
+                          <div
+                            .view=${"blueprint"}
+                            class=${classMap({
+                              active: this._view === "blueprint",
+                            })}
+                            @click=${this._showTab}
+                          >
+                            Blueprint Config
+                          </div>
+                        `
                       : ""}
                   </div>
                   ${this._selected === undefined ||
@@ -251,7 +246,7 @@ export class HaAutomationTrace extends LitElement {
                     ? html`
                         <ha-automation-trace-blueprint-config
                           .hass=${this.hass}
-                          .config=${this._automationConfig}
+                          .trace=${this._trace}
                         ></ha-automation-trace-blueprint-config>
                       `
                     : html`
@@ -279,7 +274,6 @@ export class HaAutomationTrace extends LitElement {
 
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
-    this._loadConfig();
   }
 
   protected updated(changedProps) {
@@ -294,7 +288,6 @@ export class HaAutomationTrace extends LitElement {
       this._logbookEntries = undefined;
       if (this.automationId) {
         this._loadTraces();
-        this._loadConfig();
       }
     }
 
@@ -375,13 +368,6 @@ export class HaAutomationTrace extends LitElement {
     if (!this._runId && this._traces.length > 0) {
       this._runId = this._traces[0].run_id;
     }
-  }
-
-  private async _loadConfig() {
-    this._automationConfig = await getAutomationConfig(
-      this.hass,
-      this.automationId
-    );
   }
 
   private async _loadTrace() {

@@ -1,5 +1,6 @@
 import { safeDump } from "js-yaml";
 import {
+  css,
   customElement,
   html,
   LitElement,
@@ -9,18 +10,18 @@ import {
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-code-editor";
 import { HomeAssistant } from "../../../../types";
-import { BlueprintAutomationConfig } from "../../../../data/automation";
+import { AutomationTraceExtended } from "../../../../data/trace";
 
 @customElement("ha-automation-trace-blueprint-config")
 export class HaAutomationTraceBlueprintConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public config!: BlueprintAutomationConfig;
+  @property() public trace!: AutomationTraceExtended;
 
   protected render(): TemplateResult {
     return html`
       <ha-code-editor
-        .value=${safeDump(this.config).trimRight()}
+        .value=${safeDump(this.trace.blueprint_inputs || "").trimRight()}
         readOnly
       ></ha-code-editor>
     `;
