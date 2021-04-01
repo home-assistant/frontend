@@ -1188,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Change device name"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Reconfiguring device"
             }
         },
         "duration": {
@@ -1859,7 +1862,7 @@
                                 "documentation": "Before you enable this make sure you visit the analytics documentation page {link} to understand what you are sending and how it's stored.",
                                 "header": "Analytics",
                                 "instance_id": "Instance ID: {huuid}",
-                                "introduction": "Share analytics from your instance. This data will be publiclly available at {link}",
+                                "introduction": "Share analytics from your instance. This data will be publicly available at {link}",
                                 "learn_more": "Learn more about how your data will be processed.",
                                 "needs_base": "You need to enable base analytics for this option to be available",
                                 "preference": {
@@ -3746,7 +3749,7 @@
             "page-onboarding": {
                 "analytics": {
                     "finish": "Next",
-                    "intro": "Share analytics from your instance. This data will be publiclly available at {link}"
+                    "intro": "Share analytics from your instance. This data will be publicly available at {link}"
                 },
                 "core-config": {
                     "button_detect": "Detect",

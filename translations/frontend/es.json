@@ -1187,6 +1187,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Cambiar el nombre del dispositivo"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Reconfigurando el dispositivo"
             }
         },
         "duration": {
@@ -1859,6 +1862,7 @@
                                 "header": "Analítica",
                                 "instance_id": "ID de instancia: {huuid}",
                                 "introduction": "Comparte análisis de tu instancia. Estos datos estarán disponibles públicamente en {link}",
+                                "learn_more": "Aprende más sobre cómo se procesarán tus datos.",
                                 "needs_base": "Debes habilitar el análisis base para que esta opción esté disponible",
                                 "preference": {
                                     "base": {
@@ -2070,6 +2074,9 @@
                     "filtering_by": "Filtrando por",
                     "show": "Mostrar"
                 },
+                "hassio": {
+                    "button": "Configurar"
+                },
                 "header": "Configurar Home Assistant",
                 "helpers": {
                     "caption": "Ayudantes",
@@ -2236,10 +2243,17 @@
                     "clear": "Limpiar",
                     "description": "Ve los registros de Home Assistant",
                     "details": "Detalles de registro ({level})",
+                    "level": {
+                        "critical": "CRÍTICO",
+                        "debug": "DEPURACIÓN",
+                        "error": "ERROR",
+                        "info": "INFO",
+                        "warning": "ADVERTENCIA"
+                    },
                     "load_full_log": "Cargar registro completo de Home Assistant",
                     "loading_log": "Cargando registro de errores...",
                     "multiple_messages": "el mensaje se produjo por primera vez a las {time} y aparece {counter} veces",
-                    "no_errors": "No se han reportado errores.",
+                    "no_errors": "No se han reportado errores",
                     "no_issues": "¡No hay nuevos problemas!",
                     "refresh": "Actualizar"
                 },

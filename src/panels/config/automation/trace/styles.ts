@@ -18,8 +18,10 @@ export const traceTabStyles = css`
     cursor: pointer;
     position: relative;
     bottom: -1px;
+    border: none;
     border-bottom: 2px solid transparent;
     user-select: none;
+    background: none;
   }
 
   .tabs > *.active {

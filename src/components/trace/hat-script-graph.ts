@@ -48,6 +48,7 @@ import {
   WaitAction,
   WaitForTriggerAction,
 } from "../../data/script";
+import { ensureArray } from "../../common/ensure-array";
 
 declare global {
   interface HASSDomEvents {
@@ -93,7 +94,7 @@ class HatScriptGraph extends LitElement {
     const path = `condition/${i}`;
     const trace = this.trace.trace[path] as ConditionTraceStep[] | undefined;
     const track_path =
-      trace === undefined ? 0 : trace![0].result.result ? 1 : 2;
+      trace?.[0].result === undefined ? 0 : trace[0].result.result ? 1 : 2;
     if (trace) {
       this.trackedNodes[path] = { config, path };
     }
@@ -139,7 +140,7 @@ class HatScriptGraph extends LitElement {
 
   private render_choose_node(config: ChooseAction, path: string) {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
-    const trace_path = trace
+    const trace_path = trace?.[0].result
       ? trace[0].result.choice === "default"
         ? [config.choose.length]
         : [trace[0].result.choice]
@@ -173,7 +174,7 @@ class HatScriptGraph extends LitElement {
                 .iconPath=${mdiCheckBoxOutline}
                 nofocus
                 class=${classMap({
-                  track: trace !== undefined && trace[0].result.choice === i,
+                  track: trace !== undefined && trace[0].result?.choice === i,
                 })}
               ></hat-graph-node>
               ${branch.sequence.map((action, j) =>
@@ -188,7 +189,7 @@ class HatScriptGraph extends LitElement {
             nofocus
             class=${classMap({
               track:
-                trace !== undefined && trace[0].result.choice === "default",
+                trace !== undefined && trace[0].result?.choice === "default",
             })}
           ></hat-graph-node>
           ${config.default?.map((action, i) =>
@@ -200,8 +201,9 @@ class HatScriptGraph extends LitElement {
   }
 
   private render_condition_node(node: Condition, path: string) {
-    const trace: any = this.trace.trace[path];
-    const track_path = trace === undefined ? 0 : trace[0].result.result ? 1 : 2;
+    const trace = (this.trace.trace[path] as ConditionTraceStep[]) || undefined;
+    const track_path =
+      trace?.[0].result === undefined ? 0 : trace[0].result.result ? 1 : 2;
     return html`
       <hat-graph
         branching
@@ -218,7 +220,7 @@ class HatScriptGraph extends LitElement {
         <hat-graph-node
           slot="head"
           class=${classMap({
-            track: trace,
+            track: Boolean(trace),
           })}
           .iconPath=${mdiAbTesting}
           nofocus
@@ -411,16 +413,14 @@ class HatScriptGraph extends LitElement {
 
     const manual_triggered = this.trace && "trigger" in this.trace.trace;
     let track_path = manual_triggered ? undefined : [0];
-    const trigger_nodes = (Array.isArray(this.trace.config.trigger)
-      ? this.trace.config.trigger
-      : [this.trace.config.trigger]
-    ).map((trigger, i) => {
-      if (this.trace && `trigger/${i}` in this.trace.trace) {
-        track_path = [i];
+    const trigger_nodes = ensureArray(this.trace.config.trigger).map(
+      (trigger, i) => {
+        if (this.trace && `trigger/${i}` in this.trace.trace) {
+          track_path = [i];
+        }
+        return this.render_trigger(trigger, i);
       }
-      return this.render_trigger(trigger, i);
-    });
-
+    );
     return html`
       <hat-graph class="parent">
         <div></div>
@@ -434,16 +434,13 @@ class HatScriptGraph extends LitElement {
           ${trigger_nodes}
         </hat-graph>
         <hat-graph id="condition">
-          ${(!this.trace.config.condition ||
-          Array.isArray(this.trace.config.condition)
-            ? this.trace.config.condition
-            : [this.trace.config.condition]
-          )?.map((condition, i) => this.render_condition(condition, i))}
+          ${ensureArray(this.trace.config.condition)?.map((condition, i) =>
+            this.render_condition(condition!, i)
+          )}
         </hat-graph>
-        ${(Array.isArray(this.trace.config.action)
-          ? this.trace.config.action
-          : [this.trace.config.action]
-        ).map((action, i) => this.render_node(action, `action/${i}`))}
+        ${ensureArray(this.trace.config.action).map((action, i) =>
+          this.render_node(action, `action/${i}`)
+        )}
       </hat-graph>
       <div class="actions">
         <mwc-icon-button

@@ -1,10 +1,14 @@
 import { strStartsWith } from "../common/string/starts-with";
 import { HomeAssistant, Context } from "../types";
-import { AutomationConfig } from "./automation";
+import {
+  BlueprintAutomationConfig,
+  ManualAutomationConfig,
+} from "./automation";
 
 interface BaseTraceStep {
   path: string;
   timestamp: string;
+  error?: string;
   changed_variables?: Record<string, unknown>;
 }
 
@@ -19,11 +23,11 @@ export interface TriggerTraceStep extends BaseTraceStep {
 }
 
 export interface ConditionTraceStep extends BaseTraceStep {
-  result: { result: boolean };
+  result?: { result: boolean };
 }
 
 export interface CallServiceActionTraceStep extends BaseTraceStep {
-  result: {
+  result?: {
     limit: number;
     running_script: boolean;
     params: Record<string, unknown>;
@@ -36,11 +40,11 @@ export interface CallServiceActionTraceStep extends BaseTraceStep {
 }
 
 export interface ChooseActionTraceStep extends BaseTraceStep {
-  result: { choice: number | "default" };
+  result?: { choice: number | "default" };
 }
 
 export interface ChooseChoiceActionTraceStep extends BaseTraceStep {
-  result: { result: boolean };
+  result?: { result: boolean };
 }
 
 export type ActionTraceStep =
@@ -53,22 +57,41 @@ export type ActionTraceStep =
 export interface AutomationTrace {
   domain: string;
   item_id: string;
-  last_action: string | null;
-  last_condition: string | null;
+  last_step: string | null;
   run_id: string;
   state: "running" | "stopped" | "debugged";
   timestamp: {
     start: string;
     finish: string | null;
   };
-  trigger: unknown;
+  script_execution:
+    | // The script was not executed because the automation's condition failed
+    "failed_condition"
+    // The script was not executed because the run mode is single
+    | "failed_single"
+    // The script was not executed because max parallel runs would be exceeded
+    | "failed_max_runs"
+    // All script steps finished:
+    | "finished"
+    // Script execution stopped by the script itself because a condition fails, wait_for_trigger timeouts etc:
+    | "aborted"
+    // Details about failing condition, timeout etc. is in the last element of the trace
+    // Script execution stops because of an unexpected exception:
+    | "error"
+    // The exception is in the trace itself or in the last element of the trace
+    // Script execution stopped by async_stop called on the script run because home assistant is shutting down, script mode is SCRIPT_MODE_RESTART etc:
+    | "cancelled"
+    | string;
+  // Automation only, should become it's own type when we support script in frontend
+  trigger: string;
 }
 
 export interface AutomationTraceExtended extends AutomationTrace {
   trace: Record<string, ActionTraceStep[]>;
   context: Context;
-  variables: Record<string, unknown>;
-  config: AutomationConfig;
+  config: ManualAutomationConfig;
+  blueprint_inputs?: BlueprintAutomationConfig;
+  error?: string;
 }
 
 interface TraceTypes {
@@ -119,7 +142,7 @@ export const loadTraceContexts = (
   });
 
 export const getDataFromPath = (
-  config: AutomationConfig,
+  config: ManualAutomationConfig,
   path: string
 ): any => {
   const parts = path.split("/").reverse();
