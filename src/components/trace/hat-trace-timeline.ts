@@ -459,6 +459,16 @@ export class HaAutomationTracer extends LitElement {
         description: `Finished at ${renderFinishedAt()} ${renderRuntime()}`,
         icon: mdiCircle,
       };
+    } else if (this.trace.script_execution === "aborted") {
+      entry = {
+        description: `Aborted at ${renderFinishedAt()} ${renderRuntime()}`,
+        icon: mdiAlertCircle,
+      };
+    } else if (this.trace.script_execution === "cancelled") {
+      entry = {
+        description: `Cancelled at ${renderFinishedAt()} ${renderRuntime()}`,
+        icon: mdiAlertCircle,
+      };
     } else {
       let reason: string;
       let isError = false;
@@ -469,30 +479,23 @@ export class HaAutomationTracer extends LitElement {
           reason = "a condition failed";
           break;
         case "failed_single":
-          reason = "only single execution allowed";
+          reason = "only a single execution is allowed";
           break;
         case "failed_max_runs":
           reason = "maximum number of parallel runs reached";
           break;
-        case "aborted":
-          reason = "got aborted";
-          break;
         case "error":
-          reason = "error encountered";
+          reason = "an error was encountered";
           isError = true;
           extra = html`<br /><br />${this.trace.error!}`;
           break;
-        case "cancelled":
-          reason = "got cancelled";
-          break;
-
         default:
           reason = `of unknown reason "${this.trace.script_execution}"`;
           isError = true;
       }
 
       entry = {
-        description: html`Finished because ${reason} in ${renderFinishedAt()}
+        description: html`Stopped because ${reason} at ${renderFinishedAt()}
         ${renderRuntime()}${extra || ""}`,
         icon: mdiAlertCircle,
         className: isError ? "error" : undefined,
