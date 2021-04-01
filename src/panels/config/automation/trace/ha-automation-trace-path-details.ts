@@ -57,13 +57,13 @@ export class HaAutomationTracePathDetails extends LitElement {
           ["logbook", "Related logbook entries"],
         ].map(
           ([view, label]) => html`
-            <div
+            <button
               .view=${view}
               class=${classMap({ active: this._view === view })}
               @click=${this._showTab}
             >
               ${label}
-            </div>
+            </button>
           `
         )}
       </div>
