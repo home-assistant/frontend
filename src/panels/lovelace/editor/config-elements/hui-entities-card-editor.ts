@@ -122,9 +122,11 @@ export class HuiEntitiesCardEditor
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.icon"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
         ></ha-icon-input>
         <div class="side-by-side">
           <ha-formfield
