@@ -20,6 +20,7 @@ import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-icon-input";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
@@ -78,6 +79,10 @@ export class HuiEntitiesCardEditor
     return this._config!.theme || "";
   }
 
+  get _icon(): string {
+    return this._config!.icon || "";
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -113,6 +118,14 @@ export class HuiEntitiesCardEditor
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
+        <ha-icon-input
+          .value=${this._config!.icon}
+          .configValue=${"icon"}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.icon"
+          )}
+        ></ha-icon-input>
         <div class="side-by-side">
           <ha-formfield
             .label=${this.hass.localize(
@@ -179,7 +192,8 @@ export class HuiEntitiesCardEditor
 
     if (
       (configValue! === "title" && target.value === this._title) ||
-      (configValue! === "theme" && target.value === this._theme)
+      (configValue! === "theme" && target.value === this._theme) ||
+      (configValue! === "icon" && target.value === this._icon)
     ) {
       return;
     }
