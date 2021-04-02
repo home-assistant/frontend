@@ -1130,6 +1130,11 @@
                         "perform_action": "Server {action}",
                         "restart": "Neustarten",
                         "stop": "Stoppen"
+                    },
+                    "types": {
+                        "navigation": "Navigieren",
+                        "reload": "Neu laden",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Entitätsfilter"
