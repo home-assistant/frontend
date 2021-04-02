@@ -58,6 +58,9 @@ class HaSceneDashboard extends LitElement {
 
   private _scenes = memoizeOne(
     (scenes: SceneEntity[], filteredScenes?: string[] | null) => {
+      if (filteredScenes === null) {
+        return [];
+      }
       return (filteredScenes
         ? scenes.filter((scene) => filteredScenes!.includes(scene.entity_id))
         : scenes
@@ -183,6 +186,7 @@ class HaSceneDashboard extends LitElement {
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}
+          exclude-domains='["scene"]'
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>
