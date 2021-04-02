@@ -119,7 +119,7 @@ export class HuiEntitiesCardEditor
           @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
         <ha-icon-input
-          .value=${this._config!.icon}
+          .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
