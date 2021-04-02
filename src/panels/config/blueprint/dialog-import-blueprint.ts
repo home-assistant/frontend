@@ -24,6 +24,7 @@ import {
 } from "../../../data/blueprint";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { createCloseHeading } from "../../../components/ha-dialog";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -65,7 +66,10 @@ class DialogImportBlueprint extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${this.hass.localize("ui.panel.config.blueprint.add.header")}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.blueprint.add.header")
+        )}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
