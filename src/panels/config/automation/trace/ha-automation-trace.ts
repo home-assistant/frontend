@@ -469,6 +469,11 @@ export class HaAutomationTrace extends LitElement {
 
         .graph {
           border-right: 1px solid var(--divider-color);
+          overflow-x: auto;
+          max-width: 50%;
+        }
+        :host([narrow]) .graph {
+          max-width: 100%;
         }
 
         .info {
