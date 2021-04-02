@@ -1188,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Canvia el nom del dispositiu"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "S'està reconfigurant el dispositiu"
             }
         },
         "duration": {
@@ -2071,6 +2074,9 @@
                     "clear": "Esborra",
                     "filtering_by": "Filtratge per",
                     "show": "Mostra"
+                },
+                "hassio": {
+                    "button": "Configura"
                 },
                 "header": "Configuració de Home Assistant",
                 "helpers": {
