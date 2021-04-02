@@ -105,6 +105,7 @@ export class HaAutomationTracePathDetails extends LitElement {
         path,
         timestamp,
         result,
+        error,
         changed_variables,
         ...rest
       } = trace as any;
@@ -116,6 +117,8 @@ export class HaAutomationTracePathDetails extends LitElement {
         ${result
           ? html`Result:
               <pre>${safeDump(result)}</pre>`
+          : error
+          ? html`<div class="error">Error: ${error}</div>`
           : ""}
         ${Object.keys(rest).length === 0
           ? ""
@@ -231,6 +234,10 @@ ${safeDump(trace.changed_variables).trimRight()}</pre
 
         pre {
           margin: 0;
+        }
+
+        .error {
+          color: var(--error-color);
         }
       `,
     ];

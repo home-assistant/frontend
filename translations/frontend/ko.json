@@ -1188,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "기기 이름 변경"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "기기 재구성 중"
             }
         },
         "duration": {
@@ -1859,7 +1862,7 @@
                                 "documentation": "이 옵션을 활성화하기 전에 분석 관련 문서 페이지 {link}을(를) 방문하여 사용자 통계를 보내는 내용과 저장 방법에 대해 알아보세요.",
                                 "header": "분석",
                                 "instance_id": "인스턴스 ID: {huuid}",
-                                "introduction": "인스턴스의 분석 내용을 공유합니다. 이 데이터는 {link}에서 공개적으로 사용할 수 있습니다",
+                                "introduction": "인스턴스의 분석 내용을 공유합니다. 이 데이터는 {link}에서 공개적으로 사용될 수 있습니다",
                                 "learn_more": "통계자료가 어떻게 처리되는지 알아보기.",
                                 "needs_base": "이 옵션을 사용하려면 기본 분석을 활성화해야 합니다",
                                 "preference": {
@@ -2072,6 +2075,9 @@
                     "filtering_by": "필터링",
                     "show": "표시하기"
                 },
+                "hassio": {
+                    "button": "구성하기"
+                },
                 "header": "Home Assistant 구성하기",
                 "helpers": {
                     "caption": "도우미",
@@ -2210,7 +2216,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "이렇게 하면 발견된 통합 구성요소가 발견될 때, 발견된 통합 구성요소에 다시 나타나게 됩니다. 다시 시작해야 하거나 시간이 걸릴 수 있습니다.",
                         "confirm_delete_ignore_title": "{name} 무시를 중지하시겠습니까?",
-                        "confirm_ignore": "이 통합 구성요소의 설정을 하지 않으시겠습니까? 오른쪽 상단의 오버플로 메뉴에서 '무시된 통합 구성요소 표시하기'를 클릭하여 이 작업을 취소할 수 있습니다.",
+                        "confirm_ignore": "이 통합 구성요소를 설정하지 않으시겠습니까? 오른쪽 상단의 오버플로 메뉴에서 '무시된 통합 구성요소 표시하기'를 클릭하여 이 작업을 취소할 수 있습니다.",
                         "confirm_ignore_title": "발견된 {name} 기기를 무시하시겠습니까?",
                         "hide_ignored": "무시된 통합 구성요소 숨기기",
                         "ignore": "무시",
@@ -3743,7 +3749,7 @@
             "page-onboarding": {
                 "analytics": {
                     "finish": "다음",
-                    "intro": "인스턴스의 분석 내용을 공유합니다. 이 데이터는 {link}에서 공개적으로 사용할 수 있습니다"
+                    "intro": "인스턴스의 분석 내용을 공유합니다. 이 데이터는 {link}에서 공개적으로 사용될 수 있습니다"
                 },
                 "core-config": {
                     "button_detect": "탐색",

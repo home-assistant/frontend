@@ -75,6 +75,7 @@ export const derivedStyles = {
   "mdc-theme-on-primary": "var(--text-primary-color)",
   "mdc-theme-on-secondary": "var(--text-primary-color)",
   "mdc-theme-on-surface": "var(--primary-text-color)",
+  "mdc-theme-text-disabled-on-light": "var(--disabled-text-color)",
   "mdc-theme-text-primary-on-background": "var(--primary-text-color)",
   "mdc-theme-text-secondary-on-background": "var(--secondary-text-color)",
   "mdc-theme-text-icon-on-background": "var(--secondary-text-color)",

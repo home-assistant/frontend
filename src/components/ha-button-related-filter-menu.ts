@@ -18,6 +18,9 @@ import type { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 import "./ha-area-picker";
 import "./device/ha-device-picker";
+import "./entity/ha-entity-picker";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { computeDeviceName } from "../data/device_registry";
 
 declare global {
   // for fire event
@@ -33,6 +36,7 @@ declare global {
 interface FilterValue {
   area?: string;
   device?: string;
+  entity?: string;
 }
 
 @customElement("ha-button-related-filter-menu")
@@ -46,6 +50,14 @@ export class HaRelatedFilterButtonMenu extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public value?: FilterValue;
+
+  /**
+   * Show no entities of these domains.
+   * @type {Array}
+   * @attr exclude-domains
+   */
+  @property({ type: Array, attribute: "exclude-domains" })
+  public excludeDomains?: string[];
 
   @internalProperty() private _open = false;
 
@@ -78,6 +90,15 @@ export class HaRelatedFilterButtonMenu extends LitElement {
           .value=${this.value?.device}
           @value-changed=${this._devicePicked}
         ></ha-device-picker>
+        <ha-entity-picker
+          .label=${this.hass.localize(
+            "ui.components.related-filter-menu.filter_by_entity"
+          )}
+          .hass=${this.hass}
+          .value=${this.value?.entity}
+          .excludeDomains=${this.excludeDomains}
+          @value-changed=${this._entityPicked}
+        ></ha-entity-picker>
       </mwc-menu-surface>
     `;
   }
@@ -93,6 +114,25 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     this._open = false;
   }
 
+  private async _entityPicked(ev: CustomEvent) {
+    const entityId = ev.detail.value;
+    if (!entityId) {
+      fireEvent(this, "related-changed", { value: undefined });
+      return;
+    }
+    const filter = this.hass.localize(
+      "ui.components.related-filter-menu.filtered_by_entity",
+      "entity_name",
+      computeStateName((ev.currentTarget as any).comboBox.selectedItem)
+    );
+    const items = await findRelated(this.hass, "entity", entityId);
+    fireEvent(this, "related-changed", {
+      value: { entity: entityId },
+      filter,
+      items,
+    });
+  }
+
   private async _devicePicked(ev: CustomEvent) {
     const deviceId = ev.detail.value;
     if (!deviceId) {
@@ -102,7 +142,10 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     const filter = this.hass.localize(
       "ui.components.related-filter-menu.filtered_by_device",
       "device_name",
-      (ev.currentTarget as any).comboBox.selectedItem.name
+      computeDeviceName(
+        (ev.currentTarget as any).comboBox.selectedItem,
+        this.hass
+      )
     );
     const items = await findRelated(this.hass, "device", deviceId);
 
@@ -142,7 +185,8 @@ export class HaRelatedFilterButtonMenu extends LitElement {
         position: static;
       }
       ha-area-picker,
-      ha-device-picker {
+      ha-device-picker,
+      ha-entity-picker {
         display: block;
         width: 300px;
         padding: 4px 16px;

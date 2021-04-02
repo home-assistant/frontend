@@ -22,7 +22,7 @@ export interface ScriptEntity extends HassEntityBase {
 
 export interface ScriptConfig {
   alias: string;
-  sequence: Action[];
+  sequence: Action | Action[];
   icon?: string;
   mode?: typeof MODES[number];
   max?: number;
@@ -89,7 +89,7 @@ export interface RepeatAction {
 
 interface BaseRepeat {
   alias?: string;
-  sequence: Action[];
+  sequence: Action | Action[];
 }
 
 export interface CountRepeat extends BaseRepeat {
@@ -107,13 +107,13 @@ export interface UntilRepeat extends BaseRepeat {
 export interface ChooseActionChoice {
   alias?: string;
   conditions: string | Condition[];
-  sequence: Action[];
+  sequence: Action | Action[];
 }
 
 export interface ChooseAction {
   alias?: string;
   choose: ChooseActionChoice[];
-  default?: Action[];
+  default?: Action | Action[];
 }
 
 export interface VariablesAction {
