@@ -1188,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Cambia il nome del dispositivo"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Riconfigurazione del dispositivo"
             }
         },
         "duration": {

@@ -213,21 +213,21 @@ class HaAutomationPicker extends LitElement {
               .label="${this.hass.localize(
                 "ui.panel.config.automation.picker.edit_automation"
               )}"
-            ><ha-svg-icon .path=${
-              automation.attributes.id ? mdiPencil : mdiPencilOff
-            }></ha-svg-icon>
+            >
+              <ha-svg-icon
+                .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
+              ></ha-svg-icon>
+            </mwc-icon-button>
           </a>
-          ${
-            !automation.attributes.id
-              ? html`
-                  <paper-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.picker.only_editable"
-                    )}
-                  </paper-tooltip>
-                `
-              : ""
-          }
+          ${!automation.attributes.id
+            ? html`
+                <paper-tooltip animation-delay="0" position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.only_editable"
+                  )}
+                </paper-tooltip>
+              `
+            : ""}
         `,
       };
       return columns;
@@ -261,6 +261,7 @@ class HaAutomationPicker extends LitElement {
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}
+          exclude-domains='["automation"]'
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>

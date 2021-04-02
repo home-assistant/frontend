@@ -373,7 +373,7 @@
         "panel": {
             "dashboard": "Панель",
             "snapshots": "Снимки",
-            "store": "Магазин дополнений",
+            "store": "Магазин",
             "system": "Система"
         },
         "snapshot": {
@@ -843,8 +843,8 @@
             "related-filter-menu": {
                 "filter_by_area": "Фильтр по помещениям",
                 "filter_by_device": "Фильтр по устройствам",
-                "filtered_by_area": "помещение: {area_name}",
-                "filtered_by_device": "устройство: {device_name}"
+                "filtered_by_area": "помещению: {area_name}",
+                "filtered_by_device": "устройству: {device_name}"
             },
             "related-items": {
                 "area": "Помещение",
@@ -1084,7 +1084,7 @@
                 "commands": {
                     "navigation": {
                         "areas": "Помещения",
-                        "automation": "Автоматизация",
+                        "automation": "Автоматизации",
                         "blueprint": "Проекты",
                         "core": "Общие",
                         "customize": "Кастомизация",
@@ -1270,7 +1270,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Автоматизация",
+                    "caption": "Автоматизации",
                     "description": "Управление правилами автоматизации",
                     "dialog_new": {
                         "blueprint": {
@@ -1331,7 +1331,7 @@
                                 },
                                 "event": {
                                     "event": "Событие:",
-                                    "label": "Создание события",
+                                    "label": "Создать событие",
                                     "service_data": "Данные службы"
                                 },
                                 "repeat": {
@@ -1356,7 +1356,7 @@
                                     "label": "Активировать сцену"
                                 },
                                 "service": {
-                                    "label": "Вызов службы"
+                                    "label": "Вызвать службу"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Продолжить по истечении времени",
@@ -1861,13 +1861,13 @@
                             "analytics": {
                                 "documentation": "Прежде всего, посетите страницу документации по аналитике {link}, чтобы понять, что Вы будете отправлять и как это будет храниться.",
                                 "header": "Аналитика",
-                                "instance_id": "Идентификатор экземпляра Home Assistant: {huuid}",
+                                "instance_id": "ID экземпляра Home Assistant: {huuid}",
                                 "introduction": "Поделитесь аналитикой из Вашего Home Assistant. Эти данные будут доступны для всех по адресу {link}.",
                                 "learn_more": "Узнайте больше о том, как будут обрабатываться Ваши данные.",
                                 "needs_base": "Включите базовую аналитику, чтобы эта опция была доступна",
                                 "preference": {
                                     "base": {
-                                        "description": "Включает в себя идентификатор экземпляра, версия и тип установки.",
+                                        "description": "Включает в себя ID экземпляра, версию и тип установки.",
                                         "title": "Базовая аналитика"
                                     },
                                     "diagnostics": {
@@ -1996,7 +1996,7 @@
                     "picker": {
                         "filter": {
                             "filter": "Фильтр",
-                            "hidden_devices": "{number} {number, plural,\n  one {скрытое устройство}\n  other {скрытых устройств}\n}",
+                            "hidden_devices": "{number, plural,\n  one {скрытых устройств:}\n  other {скрытых устройств:}\n} {number}",
                             "show_all": "Показать все",
                             "show_disabled": "Скрытые устройства"
                         },
@@ -2036,7 +2036,7 @@
                         },
                         "filter": {
                             "filter": "Фильтр",
-                            "hidden_entities": "{number} {number, plural,\n  one {скрытый объект}\n  other {скрытых объектов}\n}",
+                            "hidden_entities": "{number, plural,\n  one {скрытых объектов:}\n  other {скрытых объектов:}\n} {number}",
                             "show_all": "Показать все",
                             "show_disabled": "Скрытые объекты",
                             "show_readonly": "Объекты, доступные только для чтения",
@@ -2146,7 +2146,7 @@
                         "delete": "Удалить",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
                         "device_unavailable": "Устройство недоступно",
-                        "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройств}\n}",
+                        "devices": "{count, plural,\n  one {устройств:}\n  other {устройств:}\n} {count}",
                         "disable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить отключение этой интеграции.",
                         "disable": {
                             "disable_confirm": "Вы уверены, что хотите отключить эту запись конфигурации? Её дочерние устройства и объекты будут также отключены.",
@@ -2160,7 +2160,7 @@
                         },
                         "documentation": "Документация",
                         "enable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить подключение этой интеграции.",
-                        "entities": "{count} {count, plural,\n  one {объект}\n  other {объектов}\n}",
+                        "entities": "{count, plural,\n  one {объектов:}\n  other {объектов:}\n} {count}",
                         "entity_unavailable": "Объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
@@ -2174,7 +2174,7 @@
                         "reload_restart_confirm": "Перезапустите Home Assistant, чтобы завершить перезагрузку этой интеграции",
                         "rename": "Переименовать",
                         "restart_confirm": "Перезапустите Home Assistant, чтобы завершить удаление этой интеграции",
-                        "services": "{count} {count, plural,\n  one {служба}\n  other {служб}\n}",
+                        "services": "{count, plural,\n  one {служб:}\n  other {служб:}\n} {count}",
                         "system_options": "Настройки интеграции",
                         "unnamed_entry": "Без названия"
                     },
@@ -3863,7 +3863,7 @@
                     "header": "Модули многофакторной аутентификации"
                 },
                 "number_format": {
-                    "description": "Варианты отображения чисел в пользовательском интерфейсе.",
+                    "description": "Отображение чисел в пользовательском интерфейсе",
                     "dropdown_label": "Формат чисел",
                     "formats": {
                         "comma_decimal": "1,234,567.89",

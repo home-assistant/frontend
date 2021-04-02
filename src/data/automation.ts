@@ -23,9 +23,9 @@ export interface ManualAutomationConfig {
   id?: string;
   alias?: string;
   description?: string;
-  trigger: Trigger[];
-  condition?: Condition[];
-  action: Action[];
+  trigger: Trigger | Trigger[];
+  condition?: Condition | Condition[];
+  action: Action | Action[];
   mode?: typeof MODES[number];
   max?: number;
   max_exceeded?:
@@ -161,7 +161,7 @@ export type Trigger =
 export interface LogicalCondition {
   condition: "and" | "not" | "or";
   alias?: string;
-  conditions: Condition[];
+  conditions: Condition | Condition[];
 }
 
 export interface StateCondition {
