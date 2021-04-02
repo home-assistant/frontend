@@ -56,6 +56,9 @@ class HaScriptPicker extends LitElement {
 
   private _scripts = memoizeOne(
     (scripts: HassEntity[], filteredScripts?: string[] | null) => {
+      if (filteredScripts === null) {
+        return [];
+      }
       return (filteredScripts
         ? scripts.filter((script) =>
             filteredScripts!.includes(script.entity_id)
@@ -193,6 +196,7 @@ class HaScriptPicker extends LitElement {
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}
+          exclude-domains='["script"]'
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>

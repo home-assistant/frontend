@@ -99,7 +99,7 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) private _opened = false;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
 
   public open() {
     this.updateComplete.then(() => {
@@ -208,7 +208,7 @@ export class HaEntityPicker extends LitElement {
         this.entityFilter,
         this.includeDeviceClasses
       );
-      (this._comboBox as any).filteredItems = this._states;
+      (this.comboBox as any).filteredItems = this._states;
       this._initedStates = true;
     }
   }
@@ -296,7 +296,7 @@ export class HaEntityPicker extends LitElement {
 
   private _filterChanged(ev: CustomEvent): void {
     const filterString = ev.detail.value.toLowerCase();
-    (this._comboBox as any).filteredItems = this._states.filter(
+    (this.comboBox as any).filteredItems = this._states.filter(
       (state) =>
         state.entity_id.toLowerCase().includes(filterString) ||
         computeStateName(state).toLowerCase().includes(filterString)

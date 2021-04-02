@@ -261,6 +261,7 @@ class HaAutomationPicker extends LitElement {
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}
+          exclude-domains='["automation"]'
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>
