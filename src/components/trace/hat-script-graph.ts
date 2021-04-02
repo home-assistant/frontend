@@ -177,7 +177,7 @@ class HatScriptGraph extends LitElement {
                   track: trace !== undefined && trace[0].result?.choice === i,
                 })}
               ></hat-graph-node>
-              ${branch.sequence.map((action, j) =>
+              ${ensureArray(branch.sequence).map((action, j) =>
                 this.render_node(action, `${branch_path}/sequence/${j}`)
               )}
             </hat-graph>
@@ -192,7 +192,7 @@ class HatScriptGraph extends LitElement {
                 trace !== undefined && trace[0].result?.choice === "default",
             })}
           ></hat-graph-node>
-          ${config.default?.map((action, i) =>
+          ${ensureArray(config.default)?.map((action, i) =>
             this.render_node(action, `${path}/default/${i}`)
           )}
         </hat-graph>
@@ -319,7 +319,7 @@ class HatScriptGraph extends LitElement {
           .badge=${repeats}
         ></hat-graph-node>
         <hat-graph>
-          ${node.repeat.sequence.map((action, i) =>
+          ${ensureArray(node.repeat.sequence).map((action, i) =>
             this.render_node(action, `${path}/repeat/sequence/${i}`)
           )}
         </hat-graph>
