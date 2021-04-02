@@ -421,43 +421,52 @@ class HatScriptGraph extends LitElement {
         return this.render_trigger(trigger, i);
       }
     );
-    return html`
-      <hat-graph class="parent">
-        <div></div>
-        <hat-graph
-          branching
-          id="trigger"
-          .short=${trigger_nodes.length < 2}
-          .track_start=${track_path}
-          .track_end=${track_path}
-        >
-          ${trigger_nodes}
-        </hat-graph>
-        <hat-graph id="condition">
-          ${ensureArray(this.trace.config.condition)?.map((condition, i) =>
-            this.render_condition(condition!, i)
+    try {
+      return html`
+        <hat-graph class="parent">
+          <div></div>
+          <hat-graph
+            branching
+            id="trigger"
+            .short=${trigger_nodes.length < 2}
+            .track_start=${track_path}
+            .track_end=${track_path}
+          >
+            ${trigger_nodes}
+          </hat-graph>
+          <hat-graph id="condition">
+            ${ensureArray(this.trace.config.condition)?.map((condition, i) =>
+              this.render_condition(condition!, i)
+            )}
+          </hat-graph>
+          ${ensureArray(this.trace.config.action).map((action, i) =>
+            this.render_node(action, `action/${i}`)
           )}
         </hat-graph>
-        ${ensureArray(this.trace.config.action).map((action, i) =>
-          this.render_node(action, `action/${i}`)
-        )}
-      </hat-graph>
-      <div class="actions">
-        <mwc-icon-button
-          .disabled=${paths.length === 0 || paths[0] === this.selected}
-          @click=${this.previousTrackedNode}
-        >
-          <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
-        </mwc-icon-button>
-        <mwc-icon-button
-          .disabled=${paths.length === 0 ||
-          paths[paths.length - 1] === this.selected}
-          @click=${this.nextTrackedNode}
-        >
-          <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
-        </mwc-icon-button>
-      </div>
-    `;
+        <div class="actions">
+          <mwc-icon-button
+            .disabled=${paths.length === 0 || paths[0] === this.selected}
+            @click=${this.previousTrackedNode}
+          >
+            <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-icon-button
+            .disabled=${paths.length === 0 ||
+            paths[paths.length - 1] === this.selected}
+            @click=${this.nextTrackedNode}
+          >
+            <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
+          </mwc-icon-button>
+        </div>
+      `;
+    } catch (err) {
+      return html`
+        <div class="error">
+          Error rendering graph. Please download trace and share with the
+          developers.
+        </div>
+      `;
+    }
   }
 
   protected update(changedProps: PropertyValues<this>) {
@@ -538,6 +547,10 @@ class HatScriptGraph extends LitElement {
       }
       .parent {
         margin-left: 8px;
+      }
+      .error {
+        padding: 16px;
+        max-width: 300px;
       }
     `;
   }
