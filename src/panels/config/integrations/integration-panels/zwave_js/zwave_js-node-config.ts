@@ -197,7 +197,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
     // Numeric entries with a min value of 0 and max of 1 are considered boolean
     if (
-      (item.configuration_value_type === "range" &&
+      (item.configuration_value_type === "manual_entry" &&
         item.metadata.min === 0 &&
         item.metadata.max === 1) ||
       this._isEnumeratedBool(item)
@@ -217,7 +217,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       `;
     }
 
-    if (item.configuration_value_type === "range") {
+    if (item.configuration_value_type === "manual_entry") {
       return html`${labelAndDescription}
         <paper-input
           type="number"
