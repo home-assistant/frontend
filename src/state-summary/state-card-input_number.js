@@ -5,6 +5,7 @@ import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 import "../components/entity/state-info";
 import "../components/ha-slider";
 
@@ -75,7 +76,7 @@ class StateCardInputNumber extends mixinBehaviors(
           class="state sliderstate"
           hidden="[[hiddenslider]]"
         >
-          [[value]] [[stateObj.attributes.unit_of_measurement]]
+          [[formattedState]]
         </div>
       </div>
     `;
@@ -138,6 +139,7 @@ class StateCardInputNumber extends mixinBehaviors(
       },
       step: Number,
       value: Number,
+      formattedState: String,
       mode: String,
     };
   }
@@ -159,6 +161,12 @@ class StateCardInputNumber extends mixinBehaviors(
       max: Number(newVal.attributes.max),
       step: Number(newVal.attributes.step),
       value: Number(newVal.state),
+      formattedState: computeStateDisplay(
+        this.hass.localize,
+        newVal,
+        this.hass.locale,
+        newVal.state
+      ),
       mode: String(newVal.attributes.mode),
       maxlength: String(newVal.attributes.max).length,
       hiddenbox: newVal.attributes.mode !== "box",
