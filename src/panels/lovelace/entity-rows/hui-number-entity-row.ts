@@ -19,6 +19,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { EntityConfig, LovelaceRow } from "./types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-number-entity-row")
 class HuiNumberEntityRow extends LitElement implements LovelaceRow {
@@ -88,8 +89,12 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                   id="input"
                 ></ha-slider>
                 <span class="state">
-                  ${Number(stateObj.state)}
-                  ${stateObj.attributes.unit_of_measurement}
+                  ${computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    stateObj.state
+                  )}
                 </span>
               </div>
             `
