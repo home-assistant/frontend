@@ -68,8 +68,12 @@ export const computeStateDisplay = (
     }
   }
 
-  // `counter` and `number` domains do not have a unit of measurement but should still use `formatNumber`
-  if (domain === "counter" || domain === "number") {
+  // `counter` `number` and `input_number` domains do not have a unit of measurement but should still use `formatNumber`
+  if (
+    domain === "counter" ||
+    domain === "number" ||
+    domain === "input_number"
+  ) {
     return formatNumber(compareState, locale);
   }
 
