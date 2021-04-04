@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Filtreeri ala järgi",
                 "filter_by_device": "Filtreeri seadmete järgi",
+                "filter_by_entity": "Filtreeri olemi järgi",
                 "filtered_by_area": "ala: {area_name}",
-                "filtered_by_device": "seade: {device_name}"
+                "filtered_by_device": "seade: {device_name}",
+                "filtered_by_entity": "olem: {entity_name}"
             },
             "related-items": {
                 "area": "Ala",
