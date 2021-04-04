@@ -19,7 +19,6 @@ import {
   mdiArrowUp,
   mdiAsterisk,
   mdiCallSplit,
-  mdiCheckboxBlankOutline,
   mdiCheckBoxOutline,
   mdiChevronDown,
   mdiChevronRight,
