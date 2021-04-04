@@ -168,13 +168,19 @@ class HatScriptGraph extends LitElement {
 
         ${config.choose.map((branch, i) => {
           const branch_path = `${path}/choose/${i}`;
+          const track_this =
+            trace !== undefined && trace[0].result?.choice === i;
+          if (track_this) {
+            this.trackedNodes[branch_path] = { config, path: branch_path };
+          }
           return html`
             <hat-graph>
               <hat-graph-node
                 .iconPath=${mdiCheckBoxOutline}
-                nofocus
+                @focus=${this.selectNode(config, branch_path)}
                 class=${classMap({
-                  track: trace !== undefined && trace[0].result?.choice === i,
+                  active: this.selected === branch_path,
+                  track: track_this,
                 })}
               ></hat-graph-node>
               ${ensureArray(branch.sequence).map((action, j) =>
@@ -186,8 +192,11 @@ class HatScriptGraph extends LitElement {
         <hat-graph>
           <hat-graph-node
             .iconPath=${mdiCheckboxBlankOutline}
-            nofocus
+            @focus=${this.selectNode(config, path)}
             class=${classMap({
+              active:
+                this.selected === path ||
+                this.selected.startsWith(`${path}/default/`),
               track:
                 trace !== undefined && trace[0].result?.choice === "default",
             })}
@@ -409,8 +418,6 @@ class HatScriptGraph extends LitElement {
   }
 
   protected render() {
-    const paths = Object.keys(this.trackedNodes);
-
     const manual_triggered = this.trace && "trigger" in this.trace.trace;
     let track_path = manual_triggered ? undefined : [0];
     const trigger_nodes = ensureArray(this.trace.config.trigger).map(
@@ -445,14 +452,17 @@ class HatScriptGraph extends LitElement {
         </hat-graph>
         <div class="actions">
           <mwc-icon-button
-            .disabled=${paths.length === 0 || paths[0] === this.selected}
+            .disabled=${Object.keys(this.getTrackedNodes()).length === 0 ||
+            Object.keys(this.getTrackedNodes())[0] === this.selected}
             @click=${this.previousTrackedNode}
           >
             <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-icon-button
-            .disabled=${paths.length === 0 ||
-            paths[paths.length - 1] === this.selected}
+            .disabled=${Object.keys(this.getTrackedNodes()).length === 0 ||
+            Object.keys(this.getTrackedNodes())[
+              Object.keys(this.getTrackedNodes()).length - 1
+            ] === this.selected}
             @click=${this.nextTrackedNode}
           >
             <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
@@ -494,23 +504,22 @@ class HatScriptGraph extends LitElement {
           }
         }
       }
-
-      if (this.trace) {
-        const sortKeys = Object.keys(this.trace.trace);
-        const keys = Object.keys(this.trackedNodes).sort(
-          (a, b) => sortKeys.indexOf(a) - sortKeys.indexOf(b)
-        );
-        const sortedTrackedNodes = keys.reduce((obj, key) => {
-          obj[key] = this.trackedNodes[key];
-          return obj;
-        }, {});
-        this.trackedNodes = sortedTrackedNodes;
-      }
     }
   }
 
   public getTrackedNodes() {
-    return this.trackedNodes;
+    if (this.trace) {
+      const sortKeys = Object.keys(this.trace.trace);
+      const keys = Object.keys(this.trackedNodes).sort(
+        (a, b) => sortKeys.indexOf(a) - sortKeys.indexOf(b)
+      );
+      const sortedTrackedNodes = keys.reduce((obj, key) => {
+        obj[key] = this.trackedNodes[key];
+        return obj;
+      }, {});
+      return sortedTrackedNodes;
+    }
+    return [];
   }
 
   public previousTrackedNode() {
