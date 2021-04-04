@@ -245,7 +245,7 @@
                 "start": "avvia",
                 "stop": "arresta",
                 "uninstall": "disinstalla",
-                "visit_addon_page": "Visita la pagina con {name} per maggiori dettagli"
+                "visit_addon_page": "Visita la pagina di {name} per maggiori dettagli"
             },
             "documentation": {
                 "get_documentation": "Impossibile ottenere la documentazione del componente aggiuntivo, {error}"
@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Filtra per area",
                 "filter_by_device": "Filtra per dispositivo",
+                "filter_by_entity": "Filtra per entità",
                 "filtered_by_area": "area: {area_name}",
-                "filtered_by_device": "dispositivo: {device_name}"
+                "filtered_by_device": "dispositivo: {device_name}",
+                "filtered_by_entity": "entità: {entity_name}"
             },
             "related-items": {
                 "area": "Area",
@@ -1293,7 +1295,7 @@
                             "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Azioni",
-                            "introduction": "Le Azioni sono ciò che Home Assistant eseguirà quando un'attivazione (o trigger) avvia un'automazione.",
+                            "introduction": "Le Azioni sono ciò che Home Assistant eseguirà quando un'Attivazione (o Trigger) avvia un'Automazione.",
                             "learn_more": "Per saperne di più sulle azioni",
                             "name": "Azione",
                             "type_select": "Tipo di azione",
@@ -1385,7 +1387,7 @@
                             "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
-                            "introduction": "Le Condizioni sono facoltative e impediranno l'esecuzione dell'automazione a meno che non siano soddisfatte tutte.",
+                            "introduction": "Le Condizioni sono facoltative e impediranno l'esecuzione dell'Automazione a meno che non siano soddisfatte tutte.",
                             "learn_more": "Per saperne di più sulle condizioni",
                             "name": "Condizione",
                             "type_select": "Tipo di condizione",
@@ -1475,7 +1477,7 @@
                         },
                         "modes": {
                             "description": "La Modalità controlla cosa succede quando l'automazione viene attivata mentre le azioni sono ancora in esecuzione da una attivazione precedente. Controllare la {documentation_link} per maggiori informazioni.",
-                            "documentation": "documentazione di automazione",
+                            "documentation": "documentazione sull'automazione",
                             "label": "Modalità",
                             "parallel": "Parallelo",
                             "queued": "In coda",
@@ -1563,12 +1565,12 @@
                                 },
                                 "time_pattern": {
                                     "hours": "Ore",
-                                    "label": "Pattern temporale",
+                                    "label": "Ricorrenza temporale",
                                     "minutes": "Minuti",
                                     "seconds": "Secondi"
                                 },
                                 "time": {
-                                    "at": "Al tempo",
+                                    "at": "Al momento",
                                     "label": "Ora",
                                     "type_input": "Valore di un aiutante data/ora",
                                     "type_value": "Tempo fisso"
@@ -1592,7 +1594,7 @@
                     },
                     "picker": {
                         "add_automation": "Aggiungi Automazione",
-                        "delete_automation": "Cancellare l'automazione",
+                        "delete_automation": "Elimina automazione",
                         "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
                         "dev_automation": "Debug dell'automazione",
                         "dev_only_editable": "È possibile eseguire il debug solo delle automazioni definite in automations.yaml.",
@@ -1622,7 +1624,7 @@
                             "error_unsupported": "Non siamo riusciti a creare un'automazione per questo (ancora?).",
                             "for_example": "Per esempio:",
                             "header": "Crea una nuova automazione",
-                            "introduction": "Digitare sotto ciò che questa automazione dovrebbe fare, e proveremo a convertirlo in un'automazione Home Assistant.",
+                            "introduction": "Scrivi qui sotto cosa dovrebbe fare questa automazione, e noi cercheremo di convertirla in un'automazione di Home Assistant.",
                             "language_note": "Nota: per il momento è supportato solo l'inglese."
                         }
                     }
@@ -1946,7 +1948,7 @@
                             "unknown_condition": "Condizione sconosciuta"
                         },
                         "create": "Crea l'automazione con il dispositivo",
-                        "create_disable": "Non è possibile creare automazione con un dispositivo disabilitato",
+                        "create_disable": "Non è possibile creare una automazione con un dispositivo disabilitato",
                         "no_automations": "Nessuna automazione",
                         "no_device_automations": "Non ci sono Automazioni disponibili per questo dispositivo.",
                         "triggers": {
@@ -2837,7 +2839,7 @@
                     "edit_home_zone_narrow": "Il raggio della zona Casa non può ancora essere modificato dal frontend. La posizione può essere modificata dalla configurazione generale.",
                     "go_to_core_config": "Passare alla configurazione generale?",
                     "home_zone_core_config": "La posizione della zona Casa è modificabile dalla pagina di configurazione generale. Il raggio della zona iniziale non può ancora essere modificato dal frontend. Vuoi andare alla configurazione generale?",
-                    "introduction": "Le Zone consentono di specificare determinate regioni sulla Terra. Quando una persona si trova all'interno di una Zona, nel suo Stato ci sarà il nome dalla Zona. Le Zone possono anche essere utilizzate come Attivazioni (o Trigger) o Condizioni all'interno delle impostazioni di Automazione.",
+                    "introduction": "Le Zone consentono di specificare determinate regioni sulla Terra. Quando una persona si trova all'interno di una Zona, nel suo stato apparirà il nome dalla Zona. Le Zone possono anche essere utilizzate come Attivazioni (o Trigger) o Condizioni all'interno delle impostazioni di una Automazione.",
                     "no_zones_created_yet": "Sembra che tu non abbia ancora creato nessuna zona."
                 },
                 "zwave_js": {

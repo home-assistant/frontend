@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Фильтр по помещениям",
                 "filter_by_device": "Фильтр по устройствам",
+                "filter_by_entity": "Фильтр по объектам",
                 "filtered_by_area": "помещению: {area_name}",
-                "filtered_by_device": "устройству: {device_name}"
+                "filtered_by_device": "устройству: {device_name}",
+                "filtered_by_entity": "объекту: {entity_name}"
             },
             "related-items": {
                 "area": "Помещение",
