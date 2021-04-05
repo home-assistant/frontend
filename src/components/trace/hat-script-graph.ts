@@ -406,6 +406,7 @@ class HatScriptGraph extends LitElement {
   }
 
   protected render() {
+    const paths = Object.keys(this.trackedNodes);
     const manual_triggered = this.trace && "trigger" in this.trace.trace;
     let track_path = manual_triggered ? undefined : [0];
     const trigger_nodes = ensureArray(this.trace.config.trigger).map(
@@ -440,17 +441,14 @@ class HatScriptGraph extends LitElement {
         </hat-graph>
         <div class="actions">
           <mwc-icon-button
-            .disabled=${Object.keys(this.getTrackedNodes()).length === 0 ||
-            Object.keys(this.getTrackedNodes())[0] === this.selected}
+            .disabled=${paths.length === 0 || paths[0] === this.selected}
             @click=${this.previousTrackedNode}
           >
             <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-icon-button
-            .disabled=${Object.keys(this.getTrackedNodes()).length === 0 ||
-            Object.keys(this.getTrackedNodes())[
-              Object.keys(this.getTrackedNodes()).length - 1
-            ] === this.selected}
+            .disabled=${paths.length === 0 ||
+            paths[paths.length - 1] === this.selected}
             @click=${this.nextTrackedNode}
           >
             <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
