@@ -99,6 +99,11 @@
             "unknown": "نامشخص"
         }
     },
+    "supervisor": {
+        "common": {
+            "close": "بستن"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "ميخواي وارد سیستم بموني؟",
@@ -312,6 +317,10 @@
                 "play": "پخش",
                 "play-media": "پخش رسانه ها"
             },
+            "related-filter-menu": {
+                "filtered_by_area": "ناحیه: {area_name}",
+                "filtered_by_device": "دستگاه : {device_name}"
+            },
             "related-items": {
                 "area": "Zona",
                 "device": "Dispozitiv",
@@ -450,6 +459,9 @@
                         "server_control": "کنترل های سرور",
                         "users": "کاربران",
                         "zone": "مناطق"
+                    },
+                    "types": {
+                        "server_control": "سرور"
                     }
                 }
             },
@@ -472,6 +484,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Prenume utilizator"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "پیکربندی مجدد دستگاه"
             }
         },
         "duration": {
@@ -891,6 +906,9 @@
                     "description": "سیستم واحد ، مکان ، منطقه زمانی و سایر پارامترهای کلی",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "learn_more": "درباره نحوه پردازش داده های خود بیشتر بیاموزید."
+                            },
                             "core_config": {
                                 "edit_requires_storage": "ویرایشگر غیرفعال شده است چون پیکربندی ذخیره شده در configuration.yaml.",
                                 "elevation": "ارتفاع",
@@ -1031,6 +1049,9 @@
                     "clear": "پاک کردن",
                     "filtering_by": "فیلتر کردن با"
                 },
+                "hassio": {
+                    "button": "پیکربندی"
+                },
                 "header": "پیکربندی HOME ASSistant",
                 "helpers": {
                     "caption": "Ajutoare",
@@ -1120,6 +1141,13 @@
                 },
                 "introduction": "در اینجا می توانید اجزای خود و صفحه اصلی دستیار را پیکربندی کنید.فعلا ویرایش همه چیز از طریق ویرایش بصری امکان پذیر نیست ، اما ما داریم روی اون کار می کنیم.",
                 "logs": {
+                    "level": {
+                        "critical": "بحرانی",
+                        "debug": "اشکال زدایی",
+                        "error": "خطا",
+                        "info": "اطلاعات",
+                        "warning": "هشدار"
+                    },
                     "refresh": "تازه کن"
                 },
                 "lovelace": {
