@@ -492,22 +492,23 @@ class HatScriptGraph extends LitElement {
           }
         }
       }
+
+      if (this.trace) {
+        const sortKeys = Object.keys(this.trace.trace);
+        const keys = Object.keys(this.trackedNodes).sort(
+          (a, b) => sortKeys.indexOf(a) - sortKeys.indexOf(b)
+        );
+        const sortedTrackedNodes = keys.reduce((obj, key) => {
+          obj[key] = this.trackedNodes[key];
+          return obj;
+        }, {});
+        this.trackedNodes = sortedTrackedNodes;
+      }
     }
   }
 
   public getTrackedNodes() {
-    if (this.trace) {
-      const sortKeys = Object.keys(this.trace.trace);
-      const keys = Object.keys(this.trackedNodes).sort(
-        (a, b) => sortKeys.indexOf(a) - sortKeys.indexOf(b)
-      );
-      const sortedTrackedNodes = keys.reduce((obj, key) => {
-        obj[key] = this.trackedNodes[key];
-        return obj;
-      }, {});
-      return sortedTrackedNodes;
-    }
-    return [];
+    return this.trackedNodes;
   }
 
   public previousTrackedNode() {
