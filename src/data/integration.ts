@@ -51,4 +51,4 @@ export const fetchIntegrationManifest = (
 ) => hass.callWS<IntegrationManifest>({ type: "manifest/get", integration });
 
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
-  hass.callWS<IntegrationSetup[]>({ type: "integration/setup" });
+  hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });
