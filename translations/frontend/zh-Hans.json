@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "按区域",
                 "filter_by_device": "按设备",
+                "filter_by_entity": "按实体",
                 "filtered_by_area": "区域: {area_name}",
-                "filtered_by_device": "设备: {device_name}"
+                "filtered_by_device": "设备: {device_name}",
+                "filtered_by_entity": "实体: {entity_name}"
             },
             "related-items": {
                 "area": "区域",

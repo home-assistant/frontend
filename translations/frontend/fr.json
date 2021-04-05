@@ -841,8 +841,10 @@
                 "unsupported_format": "Format non pris en charge, veuillez choisir une image JPEG, PNG ou GIF."
             },
             "related-filter-menu": {
+                "filter_by_area": "Filtrer par zone",
                 "filter_by_device": "Filtrer par appareil",
-                "filter_by_entity": "Filtrer pas entité",
+                "filter_by_entity": "Filtrer par entité",
+                "filtered_by_area": "zone: {area_name}",
                 "filtered_by_device": "appareil: {device_name}",
                 "filtered_by_entity": "entité: {entity_name}"
             },
@@ -1694,7 +1696,7 @@
                             "info": "Grâce à l'intégration de Google Assistant pour Home Assistant Cloud, vous pourrez contrôler tous vos appareils Home Assistant via n'importe quel appareil compatible avec Google Assistant.",
                             "info_state_reporting": "Si vous activez le rapport d'état, Home Assistant envoie tous les changements d'état des entités exposées à Google. Cela vous permet de toujours voir les derniers états de l'application Google.",
                             "manage_entities": "Gérer les entités",
-                            "not_configured_text": "Avant de pouvoir utiliser Google Assistant, vous devez activer la fonction Home Assistant Cloud pour Google Assistant dans l'application Google Home.",
+                            "not_configured_text": "Avant de pouvoir utiliser Google Assistant, vous devez activer l'action Home Assistant Cloud pour Google Assistant dans l'application Google Home.",
                             "not_configured_title": "Google Assistant n'est pas activé",
                             "security_devices": "Dispositif de sécurité",
                             "sync_entities": "Synchroniser les entités vers Google",
@@ -1859,9 +1861,19 @@
                     "section": {
                         "core": {
                             "analytics": {
+                                "documentation": "Avant d'activer cette fonction, prenez soin de visiter la page de documentation {link} afin de comprendre ce que vous envoyez et comment cela est conservé.",
+                                "instance_id": "ID de l'instance: {huuid}",
+                                "learn_more": "En appendre plus sur le traitement de vos données",
                                 "preference": {
                                     "diagnostics": {
+                                        "description": "Partager les rapports d'accident et les informations de diagnostic",
                                         "title": "Diagnostiques"
+                                    },
+                                    "statistics": {
+                                        "title": "Statistiques d'utilisation"
+                                    },
+                                    "usage": {
+                                        "title": "Intégrations utilisées"
                                     }
                                 }
                             },
@@ -2169,6 +2181,7 @@
                         "finish": "Terminer",
                         "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
+                        "not_loaded": "Cette intégration ne peut être chargée, essayez de redémarrer Home Assistant",
                         "pick_flow_step": {
                             "new_flow": "Non, configurez une autre instance de {integration}",
                             "title": "Nous les avons découverts, vous voulez les mettre en place?"
@@ -3835,6 +3848,7 @@
                     "header": "Modules d'authentification multi-facteurs"
                 },
                 "number_format": {
+                    "description": "Définir le formatage des nombres",
                     "formats": {
                         "none": "Aucun"
                     }
