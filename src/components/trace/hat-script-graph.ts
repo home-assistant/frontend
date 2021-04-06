@@ -19,7 +19,6 @@ import {
   mdiArrowUp,
   mdiAsterisk,
   mdiCallSplit,
-  mdiCheckboxBlankOutline,
   mdiCheckBoxOutline,
   mdiChevronDown,
   mdiChevronRight,
@@ -168,13 +167,19 @@ class HatScriptGraph extends LitElement {
 
         ${config.choose.map((branch, i) => {
           const branch_path = `${path}/choose/${i}`;
+          const track_this =
+            trace !== undefined && trace[0].result?.choice === i;
+          if (track_this) {
+            this.trackedNodes[branch_path] = { config, path: branch_path };
+          }
           return html`
             <hat-graph>
               <hat-graph-node
                 .iconPath=${mdiCheckBoxOutline}
-                nofocus
+                @focus=${this.selectNode(config, branch_path)}
                 class=${classMap({
-                  track: trace !== undefined && trace[0].result?.choice === i,
+                  active: this.selected === branch_path,
+                  track: track_this,
                 })}
               ></hat-graph-node>
               ${ensureArray(branch.sequence).map((action, j) =>
@@ -184,14 +189,6 @@ class HatScriptGraph extends LitElement {
           `;
         })}
         <hat-graph>
-          <hat-graph-node
-            .iconPath=${mdiCheckboxBlankOutline}
-            nofocus
-            class=${classMap({
-              track:
-                trace !== undefined && trace[0].result?.choice === "default",
-            })}
-          ></hat-graph-node>
           ${ensureArray(config.default)?.map((action, i) =>
             this.render_node(action, `${path}/default/${i}`)
           )}
@@ -410,7 +407,6 @@ class HatScriptGraph extends LitElement {
 
   protected render() {
     const paths = Object.keys(this.trackedNodes);
-
     const manual_triggered = this.trace && "trigger" in this.trace.trace;
     let track_path = manual_triggered ? undefined : [0];
     const trigger_nodes = ensureArray(this.trace.config.trigger).map(

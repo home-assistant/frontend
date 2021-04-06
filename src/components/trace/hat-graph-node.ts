@@ -133,7 +133,7 @@ export class HatGraphNode extends LitElement {
 
       :host([nofocus]):host-context(.active),
       :host([nofocus]):host-context(:focus) {
-        --stroke-clr: var(--active-clr);
+        --circle-clr: var(--active-clr);
         --icon-clr: var(--default-icon-clr);
       }
 
