@@ -168,7 +168,8 @@ class HatScriptGraph extends LitElement {
 
         ${config.choose.map((branch, i) => {
           const branch_path = `${path}/choose/${i}`;
-          const track_this = trace && trace[0].result?.choice === i;
+          const track_this =
+            trace !== undefined && trace[0].result?.choice === i;
           if (track_this) {
             this.trackedNodes[branch_path] = { config, path: branch_path };
           }
