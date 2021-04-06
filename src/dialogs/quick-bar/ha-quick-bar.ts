@@ -74,6 +74,10 @@ const isCommandItem = (item: QuickBarItem): item is CommandItem => {
   return (item as CommandItem).categoryKey !== undefined;
 };
 
+const isEntityItem = (item: QuickBarItem): item is EntityItem => {
+  return !isCommandItem(item);
+};
+
 interface QuickBarNavigationItem extends CommandItem {
   path: string;
 }
