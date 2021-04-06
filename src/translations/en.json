@@ -826,7 +826,7 @@
       },
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
-        "wait": "If you just started, make sure you have given the supervisor enough time to start.",
+        "wait": "If you just started, make sure you have given the Supervisor enough time to start.",
         "ask": "Ask for help",
         "reboot": "Try a reboot of the host",
         "observer": "Check the Observer",
