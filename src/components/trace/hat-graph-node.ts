@@ -1,4 +1,5 @@
 import { css, customElement, LitElement, property, svg } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import { NODE_SIZE, SPACING } from "./hat-graph";
 
@@ -24,13 +25,7 @@ export class HatGraphNode extends LitElement {
 
   updated() {
     const svgEl = this.shadowRoot?.querySelector("svg");
-    if (!svgEl) {
-      return;
-    }
-    if (this.spacer) {
-      svgEl.setAttribute("width", "10px");
-      svgEl.setAttribute("height", `${SPACING + NODE_SIZE + 1}px`);
-      svgEl.setAttribute("viewBox", `-5 0 10 ${SPACING + NODE_SIZE + 1}`);
+    if (!svgEl || this.spacer) {
       return;
     }
     const bbox = svgEl.getBBox();
@@ -50,6 +45,15 @@ export class HatGraphNode extends LitElement {
   render() {
     return svg`
     <svg
+    width=${ifDefined(this.spacer ? `${SPACING}px` : undefined)}
+    height=${ifDefined(
+      this.spacer ? `${SPACING + NODE_SIZE + 1}px` : undefined
+    )}
+    viewBox=${ifDefined(
+      this.spacer
+        ? `-${SPACING / 2} 0 10 ${SPACING + NODE_SIZE + 1}`
+        : undefined
+    )}
     >
       ${
         this.graphstart
