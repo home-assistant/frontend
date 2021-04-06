@@ -29,8 +29,8 @@ export class HatGraphNode extends LitElement {
     }
     if (this.spacer) {
       svgEl.setAttribute("width", "10px");
-      svgEl.setAttribute("height", "41px");
-      svgEl.setAttribute("viewBox", "-5 -40 10 26");
+      svgEl.setAttribute("height", `${SPACING + NODE_SIZE + 1}px`);
+      svgEl.setAttribute("viewBox", `-5 0 10 ${SPACING + NODE_SIZE + 1}`);
       return;
     }
     const bbox = svgEl.getBBox();
@@ -59,9 +59,7 @@ export class HatGraphNode extends LitElement {
             class="connector"
             d="
               M 0 ${
-                this.spacer
-                  ? -SPACING * 2 - NODE_SIZE
-                  : -SPACING - NODE_SIZE / 2
+                this.spacer ? SPACING + NODE_SIZE + 1 : -SPACING - NODE_SIZE / 2
               }
               L 0 0
             "
