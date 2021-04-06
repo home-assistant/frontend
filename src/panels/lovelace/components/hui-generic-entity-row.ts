@@ -165,7 +165,7 @@ class HuiGenericEntityRow extends LitElement {
       .info {
         margin-left: 16px;
         margin-right: 8px;
-        flex: 1 0 30%;
+        flex: 1 1 30%;
       }
       .info,
       .info > * {
