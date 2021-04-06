@@ -6,14 +6,6 @@ import { NODE_SIZE, SPACING } from "./hat-graph";
 export class HatGraphSpacer extends LitElement {
   @property({ reflect: true, type: Boolean }) disabled?: boolean;
 
-  @property({ reflect: true, type: Boolean }) nofocus?: boolean;
-
-  connectedCallback() {
-    super.connectedCallback();
-    if (!this.hasAttribute("tabindex") && !this.nofocus)
-      this.setAttribute("tabindex", "0");
-  }
-
   render() {
     return svg`
     <svg

@@ -194,7 +194,6 @@ class HatScriptGraph extends LitElement {
         })}
         <hat-graph>
           <hat-graph-spacer
-            nofocus
             class=${classMap({
               track:
                 trace !== undefined && trace[0].result?.choice === "default",
