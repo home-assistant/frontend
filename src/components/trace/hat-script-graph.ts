@@ -192,6 +192,14 @@ class HatScriptGraph extends LitElement {
           `;
         })}
         <hat-graph>
+          <hat-graph-node
+            nofocus
+            spacer
+            class=${classMap({
+              track:
+                trace !== undefined && trace[0].result?.choice === "default",
+            })}
+          ></hat-graph-node>
           ${ensureArray(config.default)?.map((action, i) =>
             this.render_node(action, `${path}/default/${i}`)
           )}

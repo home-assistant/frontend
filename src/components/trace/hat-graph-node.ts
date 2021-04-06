@@ -10,6 +10,8 @@ export class HatGraphNode extends LitElement {
 
   @property({ reflect: true, type: Boolean }) graphstart?: boolean;
 
+  @property({ reflect: true, type: Boolean }) spacer?: boolean;
+
   @property({ reflect: true, type: Boolean }) nofocus?: boolean;
 
   @property({ reflect: true, type: Number }) badge?: number;
@@ -23,6 +25,12 @@ export class HatGraphNode extends LitElement {
   updated() {
     const svgEl = this.shadowRoot?.querySelector("svg");
     if (!svgEl) {
+      return;
+    }
+    if (this.spacer) {
+      svgEl.setAttribute("width", "10px");
+      svgEl.setAttribute("height", "41px");
+      svgEl.setAttribute("viewBox", "-5 -40 10 26");
       return;
     }
     const bbox = svgEl.getBBox();
@@ -50,7 +58,11 @@ export class HatGraphNode extends LitElement {
           <path
             class="connector"
             d="
-              M 0 ${-SPACING - NODE_SIZE / 2}
+              M 0 ${
+                this.spacer
+                  ? -SPACING * 2 - NODE_SIZE
+                  : -SPACING - NODE_SIZE / 2
+              }
               L 0 0
             "
             line-caps="round"
@@ -58,11 +70,15 @@ export class HatGraphNode extends LitElement {
           `
       }
     <g class="node">
-      <circle
+      ${
+        !this.spacer
+          ? svg`<circle
         cx="0"
         cy="0"
         r="${NODE_SIZE / 2}"
-      />
+      />`
+          : ""
+      }
       ${
         this.badge
           ? svg`
