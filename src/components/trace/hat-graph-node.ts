@@ -28,7 +28,9 @@ export class HatGraphNode extends LitElement {
     width="${width}px"
     height="${height}px"
     viewBox="-${Math.ceil(width / 2)} -${
-      this.graphstart ? height / 2 : (NODE_SIZE + SPACING * 2) / 2
+      this.graphstart
+        ? Math.ceil(height / 2)
+        : Math.ceil((NODE_SIZE + SPACING * 2) / 2)
     } ${width} ${height}"
     >
       ${
