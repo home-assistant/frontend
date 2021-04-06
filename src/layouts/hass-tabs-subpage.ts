@@ -140,7 +140,7 @@ class HassTabsSubpage extends LitElement {
     const showTabs = tabs.length > 1 || !this.narrow;
     return html`
       <div class="toolbar">
-        ${this.mainPage
+        ${this.mainPage || history.state?.root
           ? html`
               <ha-menu-button
                 .hassio=${this.supervisor}

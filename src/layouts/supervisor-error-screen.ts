@@ -11,12 +11,11 @@ import {
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../types";
-import "./hass-subpage";
 import "../resources/ha-style";
-import "../resources/roboto";
 import { haStyle } from "../resources/styles";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { atLeastVersion } from "../common/config/version";
+import "./hass-subpage";
 
 @customElement("supervisor-error-screen")
 class SupervisorErrorScreen extends LitElement {
@@ -41,21 +40,15 @@ class SupervisorErrorScreen extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="toolbar">
-        <ha-icon-button-arrow-prev
-          .hass=${this.hass}
-          @click=${this._handleBack}
-        ></ha-icon-button-arrow-prev>
-      </div>
-      <div class="content">
-        <div class="title">
-          ${this.hass.localize("ui.panel.error.supervisor.title")}
-        </div>
+      <hass-subpage
+        .hass=${this.hass}
+        .header=${this.hass.localize("ui.errors.supervisor.title")}
+      >
         <ha-card header="Troubleshooting">
           <div class="card-content">
             <ol>
               <li>
-                ${this.hass.localize("ui.panel.error.supervisor.wait")}
+                ${this.hass.localize("ui.errors.supervisor.wait")}
               </li>
               <li>
                 <a
@@ -64,17 +57,15 @@ class SupervisorErrorScreen extends LitElement {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  ${this.hass.localize("ui.panel.error.supervisor.observer")}
+                  ${this.hass.localize("ui.errors.supervisor.observer")}
                 </a>
               </li>
               <li>
-                ${this.hass.localize("ui.panel.error.supervisor.reboot")}
+                ${this.hass.localize("ui.errors.supervisor.reboot")}
               </li>
               <li>
                 <a href="/config/info" target="_parent">
-                  ${this.hass.localize(
-                    "ui.panel.error.supervisor.system_health"
-                  )}
+                  ${this.hass.localize("ui.errors.supervisor.system_health")}
                 </a>
               </li>
               <li>
@@ -83,13 +74,13 @@ class SupervisorErrorScreen extends LitElement {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  ${this.hass.localize("ui.panel.error.supervisor.ask")}
+                  ${this.hass.localize("ui.errors.supervisor.ask")}
                 </a>
               </li>
             </ol>
           </div>
         </ha-card>
-      </div>
+      </hass-subpage>
     `;
   }
 
@@ -125,50 +116,17 @@ class SupervisorErrorScreen extends LitElement {
     );
   }
 
-  private _handleBack(): void {
-    history.back();
-  }
-
   static get styles(): CSSResultArray {
     return [
       haStyle,
       css`
-        .toolbar {
-          display: flex;
-          align-items: center;
-          font-size: 20px;
-          height: var(--header-height);
-          padding: 0 16px;
-          pointer-events: none;
-          background-color: var(--app-header-background-color);
-          font-weight: 400;
-          box-sizing: border-box;
-        }
-        ha-icon-button-arrow-prev {
-          pointer-events: auto;
-        }
-        .content {
-          color: var(--primary-text-color);
-          display: flex;
-          padding: 16px;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-        }
-        .title {
-          font-size: 24px;
-          font-weight: 400;
-          line-height: 32px;
-          padding-bottom: 16px;
-        }
-
         a {
           color: var(--mdc-theme-primary);
         }
 
         ha-card {
           width: 600px;
-          margin: 16px;
+          margin: auto;
           padding: 8px;
         }
         @media all and (max-width: 500px) {

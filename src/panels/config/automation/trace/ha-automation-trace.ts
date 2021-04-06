@@ -103,7 +103,6 @@ export class HaAutomationTrace extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
         ${this.narrow
@@ -386,10 +385,6 @@ export class HaAutomationTrace extends LitElement {
     );
 
     this._trace = trace;
-  }
-
-  private _backTapped(): void {
-    history.back();
   }
 
   private _downloadTrace() {
