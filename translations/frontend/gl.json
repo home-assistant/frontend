@@ -165,6 +165,7 @@
             }
         },
         "common": {
+            "cancel": "Cancelar",
             "close": "Pechar",
             "description": "Descrición",
             "error": {
@@ -175,8 +176,10 @@
             "failed_to_update_name": "Non se puido actualizar {name}",
             "learn_more": "Aprender máis",
             "new_version_available": "Nova versión dispoñible",
+            "newest_version": "Versión máis nova",
             "no": "Non",
             "refresh": "Actualizar",
+            "release_notes": "Notas de lanzamento",
             "reload": "Recargar",
             "reset_defaults": "Restablecer os valores predeterminados",
             "reset_options": "Restablecer as opcións",
@@ -185,6 +188,7 @@
             "running_version": "Actualmente estás executando a versión {version}",
             "save": "Gardar",
             "show_more": "Amosar máis información sobre isto",
+            "update": "Actualización",
             "update_available": "{count, plural,\n  one {actualización pendente}\n  other {{count} actualizacións pendentes}\n}",
             "version": "Versión",
             "yes": "Si"
@@ -387,7 +391,11 @@
     "ui": {
         "card": {
             "fan": {
-                "direction": "Enderezo"
+                "direction": "Enderezo",
+                "preset_mode": "Modo predefinido"
+            },
+            "script": {
+                "run": "Executar"
             },
             "weather": {
                 "attributes": {
@@ -441,7 +449,9 @@
                 "show_areas": "Amosar áreas"
             },
             "data-table": {
-                "clear": "Elim"
+                "clear": "Elim",
+                "filtering_by": "Filtrando por",
+                "hidden": "{number} oculto"
             },
             "device-picker": {
                 "show_devices": "Amosar dispositivos"
@@ -461,11 +471,23 @@
                 },
                 "show_trace": "Amosar rastro"
             },
+            "media-browser": {
+                "class": {
+                    "url": "URL"
+                }
+            },
             "related-filter-menu": {
                 "filter_by_area": "Filtrar por área",
                 "filter_by_device": "Filtrar por dispositivo",
+                "filter_by_entity": "Filtrar por entidade",
                 "filtered_by_area": "área: {area_name}",
-                "filtered_by_device": "dispositivo: {device_name}"
+                "filtered_by_device": "dispositivo: {device_name}",
+                "filtered_by_entity": "entidade: {entity_name}"
+            },
+            "service-control": {
+                "required": "Este campo é necesario",
+                "service_data": "Datos do servizo",
+                "target": "Obxectivos"
             }
         },
         "dialogs": {
@@ -496,10 +518,18 @@
                     "view_in_visualization": "Ver en Visualización"
                 },
                 "device_children": "Dispositivos Zigbee fillos"
+            },
+            "zha_reconfigure_device": {
+                "heading": "Reconfiguración do dispositivo"
             }
         },
         "errors": {
             "config": {
+                "edit_in_yaml_supported": "Aínda podes editar a túa configuración en YAML.",
+                "editor_not_available": "Non hai editor visual dispoñible para o tipo \" {type} \".",
+                "editor_not_supported": "O editor visual non é compatible con esta configuración",
+                "key_missing": "Falta a clave requirida \" {key} \".",
+                "key_wrong_type": "O editor visual non admite o valor proporcionado para \" {key} Admitimos ( {type_correct} ) pero recibimos ( {type_wrong} ).",
                 "no_template_editor_support": "Os modelos non son compatibles co editor visual"
             }
         },
@@ -569,6 +599,16 @@
                         "google": {
                             "not_configured_text": "Antes de usar o Asistente de Google, debes activar a skill Home Assistant Cloud para Google Assistant na aplicación Google Home.",
                             "not_configured_title": "Google Assistant non está activado"
+                        },
+                        "tts": {
+                            "dialog": {
+                                "example_message": "Ola {name} , podes reproducir calquera texto en calquera reprodutor multimedia compatible.",
+                                "header": "Proba Texto a voz",
+                                "play": "Reproducir",
+                                "target": "Obxectivo",
+                                "target_browser": "Navegador"
+                            },
+                            "try": "Probar"
                         }
                     },
                     "forgot_password": {
@@ -602,6 +642,7 @@
                                         "title": "Estatísticas de uso"
                                     },
                                     "usage_supervisor": {
+                                        "description": "Isto inclúe os nomes e as capacidades das súas integracións e complementos",
                                         "title": "Integracións e complementos usados"
                                     },
                                     "usage": {
@@ -614,6 +655,7 @@
                     }
                 },
                 "devices": {
+                    "confirm_disable_config_entry": "Non hai máis dispositivos para a entrada de configuración {entry_name} . Queres deshabilitar a entrada de configuración?",
                     "enabled_description": "Os dispositivos desactivados non se amosarán e as entidades que pertencen ao dispositivo desactivaranse e non se engadirán ao Asistente doméstico.",
                     "picker": {
                         "filter": {
@@ -635,15 +677,39 @@
                 "filtering": {
                     "show": "Amosar"
                 },
+                "hassio": {
+                    "button": "Configurar"
+                },
                 "integrations": {
                     "config_entry": {
+                        "disable_restart_confirm": "Reinicie o Home Assistant para rematar de desactivar esta integración",
+                        "disable": {
+                            "disable_confirm": "Seguro que queres desactivar esta entrada de configuración? Os seus dispositivos e entidades estarán desactivados.",
+                            "disabled": "Desactivado",
+                            "disabled_by": {
+                                "device": "dispositivo",
+                                "integration": "integración",
+                                "user": "usuario"
+                            },
+                            "disabled_cause": "Desactivado por {cause}"
+                        },
+                        "enable_restart_confirm": "Reinicie o Home Assistant para rematar de habilitar esta integración",
                         "logs": "rexistros",
                         "not_loaded": "Non cargado, comproba o {logs_link}"
                     },
                     "config_flow": {
-                        "not_loaded": "Non se puido cargar a integración. Tenta reiniciar Home Assistant."
+                        "could_not_load": "Non se puido cargar o fluxo de configuración",
+                        "error": "Erro",
+                        "not_loaded": "Non se puido cargar a integración. Tenta reiniciar Home Assistant.",
+                        "pick_flow_step": {
+                            "new_flow": "Non, configura outra instancia de {integration}",
+                            "title": "Descubrimos estes, queres montalos?"
+                        }
                     },
+                    "confirm_new": "¿Queres configurar {integration} ?",
                     "disable": {
+                        "disabled_integrations": "{number} desactivado",
+                        "hide_disabled": "Ocultar integracións desactivadas",
                         "show": "Amosar",
                         "show_disabled": "Amosar as integracións desactivadas"
                     },
@@ -689,9 +755,23 @@
                         "show_info": "Amosar información sobre o script"
                     }
                 },
+                "server_control": {
+                    "section": {
+                        "reloading": {
+                            "filesize": "Entidades de tamaño de ficheiro",
+                            "mqtt": "Entidades MQTT configuradas manualmente",
+                            "ping": "Ping a entidades binarias do sensor",
+                            "reload": "{domain}",
+                            "rpi_gpio": "Entidades GPIO de Raspberry Pi",
+                            "smtp": "Servizos de notificación SMTP",
+                            "trend": "Entidades de tendencia"
+                        }
+                    }
+                },
                 "users": {
                     "editor": {
-                        "name": "Nome de visualización"
+                        "name": "Nome de visualización",
+                        "password_changed": "O contrasinal cambiouse correctamente"
                     },
                     "picker": {
                         "headers": {
@@ -720,6 +800,12 @@
                     }
                 },
                 "zwave": {
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrar a OpenZWave",
+                            "introduction": "Este asistente axudarache a migrar da integración herdada de Z-Wave á integración OpenZWave que está actualmente en versión beta."
+                        }
+                    },
                     "ozw_log": {
                         "introduction": "Ver o rexistro. 0 é o mínimo (carga todo o rexistro) e 1000 é o máximo. Load amosará un rexistro estático e a cola actualizarase automaticamente co último número de liñas especificado no rexistro."
                     }
@@ -728,9 +814,18 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "no_template_ui_support": "A interface de usuario non admite modelos, máis podes usar o editor YAML."
+                        "accepts_target": "Este servizo acepta un destino, por exemplo: `entity_id: light.bed_light`",
+                        "all_parameters": "Todos os parámetros dispoñibles",
+                        "no_template_ui_support": "A interface de usuario non admite modelos, máis podes usar o editor YAML.",
+                        "ui_mode": "Ir ao modo de interface de usuario",
+                        "yaml_mode": "Ir ao modo YAML",
+                        "yaml_parameters": "Os parámetros só están dispoñibles no modo YAML"
+                    },
+                    "states": {
+                        "copy_id": "Copia a identificación ao portapapeis"
                     },
                     "templates": {
+                        "no_listeners": "Este modelo non escoita ningún evento e non se actualizará automaticamente.",
                         "unknown_error_template": "Erro descoñecido ao amosar o modelo"
                     }
                 }
@@ -886,6 +981,10 @@
                         "show_visual_editor": "Amosar editor visual",
                         "typed_header": "Configuración da tarxeta {type}"
                     },
+                    "menu": {
+                        "manage_dashboards": "Xestionar paneis",
+                        "manage_resources": "Xestionar recursos"
+                    },
                     "migrate": {
                         "para_migrate": "Home Assistant pode engadir identificacións a todas as súas tarxetas e vistas automaticamente premendo o botón \"Migrar configuración\"."
                     },
@@ -917,12 +1016,15 @@
             "my": {
                 "component_not_loaded": "Esta redirección non é compatible coa túa instancia de Home Assistant. Necesitas a integración {integration} para usar esta redirección.",
                 "documentation": "documentación",
+                "error": "Produciuse un erro descoñecido",
+                "faq_link": "Preguntas máis frecuentes sobre o meu Home Assistant",
                 "no_supervisor": "Esta redirección non é compatible coa instalación do teu Home Assistant. Precísase o sistema operativo Home Assistant ou o método de instalación do Home Assistant supervisado. Para obter máis información, consulte o {docs_link} .",
                 "not_supported": "Esta redirección non é compatible coa túa instancia de Home Assistant. Comprobe a {link} para coñecer as redireccións compatibles e a versión na que se introduciron."
             },
             "page-onboarding": {
                 "analytics": {
-                    "finish": "Seguinte"
+                    "finish": "Seguinte",
+                    "intro": "Comparte análises desde a túa instancia. Estes datos estarán dispoñibles publicamente en {link}"
                 },
                 "core-config": {
                     "intro_location": "Gustaríanos saber onde vives. Esta información axudará a amosar información e configurar automatismos baseados no sol. Estes datos nunca se comparten fóra da túa rede."

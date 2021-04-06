@@ -100,7 +100,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   public excludeDomains?: string[];
 
   /**
-   * Show only deviced with entities of these device classes.
+   * Show only devices with entities of these device classes.
    * @type {Array}
    * @attr include-device-classes
    */

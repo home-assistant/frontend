@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Filter by area",
                 "filter_by_device": "Filter by device",
+                "filter_by_entity": "Filter by entity",
                 "filtered_by_area": "area: {area_name}",
-                "filtered_by_device": "device: {device_name}"
+                "filtered_by_device": "device: {device_name}",
+                "filtered_by_entity": "entity: {entity_name}"
             },
             "related-items": {
                 "area": "Area",

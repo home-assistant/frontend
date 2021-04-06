@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Filtrovat dle oblasti",
                 "filter_by_device": "Filtrovat dle zařízení",
+                "filter_by_entity": "Filtrovat dle entity",
                 "filtered_by_area": "oblasti: {area_name}",
-                "filtered_by_device": "zařízení: {device_name}"
+                "filtered_by_device": "zařízení: {device_name}",
+                "filtered_by_entity": "entita: {entity_name}"
             },
             "related-items": {
                 "area": "Oblast",

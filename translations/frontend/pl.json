@@ -457,7 +457,7 @@
                 "leave_beta_action": "Opuść kanał beta",
                 "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
                 "ram_usage": "Zużycie pamięci przez Supervisora",
-                "reload_supervisor": "Wczytaj ponownie Supervisora",
+                "reload_supervisor": "Wczytaj ponownie Supervisor",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
                 "share_diagnostics_description": "Udostępniaj raporty o awariach i informacje diagnostyczne.",
                 "share_diagonstics_description": "Czy chcesz automatycznie udostępniać raporty o awariach i informacje diagnostyczne, gdy Supervisor napotka nieoczekiwane błędy? {line_break} Pozwoli nam to rozwiązać problemy, informacje są dostępne tylko dla głównego zespołu Home Assistant Core i nie będą udostępniane innym. {line_break} Dane nie zawierają żadnych prywatnych/wrażliwych informacji i możesz to wyłączyć w ustawieniach w dowolnym momencie.",
@@ -2070,6 +2070,9 @@
                     "clear": "Wyczyść",
                     "filtering_by": "Filtrowanie przez",
                     "show": "Pokaż"
+                },
+                "hassio": {
+                    "button": "Konfiguruj"
                 },
                 "header": "Konfiguruj Home Assistanta",
                 "helpers": {

@@ -28,7 +28,7 @@ class HassErrorScreen extends LitElement {
     return html`
       ${this.toolbar
         ? html`<div class="toolbar">
-            ${this.rootnav
+            ${this.rootnav || history.state?.root
               ? html`
                   <ha-menu-button
                     .hass=${this.hass}

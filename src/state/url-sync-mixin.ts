@@ -25,6 +25,9 @@ export const urlSyncMixin = <
 
         public connectedCallback(): void {
           super.connectedCallback();
+          if (history.length === 1) {
+            history.replaceState({ ...history.state, root: true }, "");
+          }
           window.addEventListener("popstate", this._popstateChangeListener);
           this.addEventListener("dialog-closed", this._dialogClosedListener);
         }

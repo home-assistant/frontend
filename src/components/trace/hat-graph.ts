@@ -208,12 +208,6 @@ export class HatGraph extends LitElement {
       :host([disabled]) path.line {
         stroke: var(--disabled-clr);
       }
-      :host(.active) #top path.line {
-        stroke: var(--active-clr);
-      }
-      :host(:focus) #top path.line {
-        stroke: var(--active-clr);
-      }
     `;
   }
 }

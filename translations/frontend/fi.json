@@ -3489,12 +3489,14 @@
                     "location_name": "Home Assistant -asennuksen nimi",
                     "location_name_default": "Koti"
                 },
+                "finish": "Valmis",
                 "integration": {
                     "finish": "Valmis",
                     "intro": "Laitteet ja palvelut on esitetty Home Assistantissa integraatioina. Voit määrittää ne nyt tai tehdä sen myöhemmin asetus valikosta.",
                     "more_integrations": "Lisää"
                 },
                 "intro": "Oletko valmis herättämään kotisi eloon, palauttamaan yksityisyytesi ja liittymään maailmanlaajuiseen nikkarien joukkoon?",
+                "next": "Seuraava",
                 "restore": {
                     "description": "Vaihtoehtoisesti voit palauttaa aiemmasta varmuuskopiosta.",
                     "hide_log": "Piilota koko loki",

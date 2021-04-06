@@ -721,6 +721,9 @@
                 "today": "Heute"
             },
             "data-table": {
+                "clear": "Leeren",
+                "filtering_by": "Filtern nach",
+                "hidden": "{number} ausgeblendet",
                 "no-data": "Keine Daten",
                 "search": "Suche"
             },
@@ -834,6 +837,14 @@
             "picture-upload": {
                 "label": "Bild",
                 "unsupported_format": "Nicht unterstütztes Format, bitte wähle ein JPEG-, PNG- oder GIF-Bild."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Nach Bereich filtern",
+                "filter_by_device": "Nach Gerät filtern",
+                "filter_by_entity": "Nach Entität filtern",
+                "filtered_by_area": "Bereich: {area_name}",
+                "filtered_by_device": "Gerät: {device_name}",
+                "filtered_by_entity": "Entität: {entity_name}"
             },
             "related-items": {
                 "area": "Bereich",
@@ -1094,37 +1105,37 @@
                         "zone": "Zonen"
                     },
                     "reload": {
-                        "automation": "Automatisierungen neu laden",
-                        "command_line": "Komandozeilenentätien neu laden",
-                        "core": "Positionsdaten und Anpassungen neu laden",
-                        "filesize": "Dateigröße-Entitäten neu laden",
-                        "filter": "Filterentitäten neu laden",
-                        "generic": "Allgemeine IP-Kamera-Entitäten neu laden",
-                        "generic_thermostat": "Allgemeine Thermostat-Entitäten neu laden",
-                        "group": "Gruppen, Gruppenentitäten und Benachrichtigungsservices neu laden",
-                        "history_stats": "Verlaufsstatistiken neu laden",
-                        "homekit": "HomeKit neu laden",
-                        "input_boolean": "Input-Booleans neu laden",
-                        "input_datetime": "Input-Datum/Zeit neu laden",
-                        "input_number": "Input-Numern neu laden",
-                        "input_select": "Input-Selektionen neu laden",
-                        "input_text": "Input-Texte neu laden",
-                        "min_max": "Min/Max-Entitäten neu laden",
-                        "mqtt": "MQTT-Entitäten neu laden",
-                        "person": "Personen neu laden",
-                        "ping": "Binäre-Ping-Entitäten neu laden",
-                        "reload": "{domain} neu laden",
-                        "rest": "REST-Entitäten und Benachrichtigunsdienste neu laden",
-                        "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
-                        "scene": "Szenen neu laden",
-                        "script": "Skripte neu laden",
-                        "smtp": "SMTP-Benachrichtigungsdienst neu laden",
-                        "statistics": "Statistikentitäten neu laden",
-                        "telegram": "Telegram-Benachrichtigungsdienst neu laden",
-                        "template": "Template-Entitäten neu laden",
-                        "trend": "Trend-Entitäten neu laden",
-                        "universal": "Universelle Medien-Player-Entitäten neu laden",
-                        "zone": "Zonen neu laden"
+                        "automation": "Automatisierungen",
+                        "command_line": "Kommandozeilen-Entitäten",
+                        "core": "Positionsdaten & Anpassungen",
+                        "filesize": "Dateigröße-Entitäten",
+                        "filter": "Filter-Entitäten",
+                        "generic": "Allgemeine IP-Kamera Entitäten",
+                        "generic_thermostat": "Generische Thermostatentitäten",
+                        "group": "Gruppen, Gruppenentitäten und Benachrichtigungsservices",
+                        "history_stats": "Verlaufsstatistik-Entitäten",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Eingabe-Booleans",
+                        "input_datetime": "Eingabe-Datums- und Zeitfelder",
+                        "input_number": "Eingabenummern",
+                        "input_select": "Eingabe-Auswahl",
+                        "input_text": "Eingabetexte",
+                        "min_max": "Min/Max-Entitäten",
+                        "mqtt": "Manuell konfigurierte MQTT-Entitäten",
+                        "person": "Personen",
+                        "ping": "Binäre Ping-Sensorentitäten",
+                        "reload": "{domain}",
+                        "rest": "Rest-Entitäten und Benachrichtigungsdienste",
+                        "rpi_gpio": "Raspberry Pi GPIO Entitäten",
+                        "scene": "Szenen",
+                        "script": "Skripte",
+                        "smtp": "SMTP-Benachrichtigungsdienste",
+                        "statistics": "Statistik-Entitäten",
+                        "telegram": "Telegram-Benachrichtigungsdienste",
+                        "template": "Template-Entitäten",
+                        "trend": "Trend-Entitäten",
+                        "universal": "Universelle Media Player-Entitäten",
+                        "zone": "Zonen"
                     },
                     "server_control": {
                         "perform_action": "Server {action}",
@@ -1177,6 +1188,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Gerätename ändern"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Gerät neu konfigurieren"
             }
         },
         "duration": {
@@ -1305,6 +1319,7 @@
                                     "extra_fields": {
                                         "brightness_pct": "Helligkeit",
                                         "code": "Code",
+                                        "flash": "Blinken",
                                         "humidity": "Luftfeuchtigkeit",
                                         "message": "Nachricht",
                                         "mode": "Modus",
@@ -1344,9 +1359,9 @@
                                     "label": "Dienst ausführen"
                                 },
                                 "wait_for_trigger": {
-                                    "continue_timeout": "Bei Zeitüberschreitung fortfahren",
+                                    "continue_timeout": "Bei Timeout fortsetzen",
                                     "label": "Auf Auslöser warten",
-                                    "timeout": "Zeitüberschreitung (optional)"
+                                    "timeout": "Timeout (optional)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Bei Timeout fortsetzen",
@@ -1470,6 +1485,7 @@
                         "move_down": "Runterschieben",
                         "move_up": "Hochschieben",
                         "save": "Speichern",
+                        "show_trace": "Trace anzeigen",
                         "triggers": {
                             "add": "Auslöser hinzufügen",
                             "delete": "Löschen",
@@ -1678,6 +1694,7 @@
                             "info": "Mit der Google Assistant-Integration für Home Assistant Cloud kannst du alle deine Home Assistant-Geräte über jedes Google Assistant-fähige Gerät steuern.",
                             "info_state_reporting": "Wenn die Statusberichterstellung aktiviert wird, sendet Home Assistant alle Statusänderungen exponierter Entitäten an Google. So wird in der Google-App immer der neueste Status angezeigt.",
                             "manage_entities": "Entitäten verwalten",
+                            "not_configured_title": "Google Assistant ist nicht aktiviert",
                             "security_devices": "Sicherheitsgeräte",
                             "sync_entities": "Entitäten mit Google synchronisieren",
                             "sync_entities_404_message": "Fehler beim Synchronisieren deiner Entitäten mit Google. Bitte Google, \"Hey Google, synchronisiere meine Geräte\", deine Entitäten zu synchronisieren.",
@@ -1840,6 +1857,36 @@
                     "description": "Mengeneinheiten, Standort, Zeitzone & andere allgemeine Parameter",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Bevor du dies aktivierst, stelle sicher, dass du die Statistikdokumentationsseite {link} besuchst, um zu verstehen, was gesendet und gespeichert wird.",
+                                "header": "Statistiken",
+                                "instance_id": "Instanz-ID: {huuid}",
+                                "introduction": "Teile Statistiken aus deiner Instanz. Diese Daten werden öffentlich verfügbar sein unter {link}",
+                                "learn_more": "Erfahre mehr darüber, wie deine Daten verarbeitet werden.",
+                                "needs_base": "Du musst die Basisstatistiken aktivieren, damit diese Option verfügbar ist",
+                                "preference": {
+                                    "base": {
+                                        "description": "Dies umfasst die Instanz-ID, die Version und den Installationstyp",
+                                        "title": "Grundlegende Statistiken"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Teile Absturzberichte und Diagnoseinformationen",
+                                        "title": "Diagnoseinformationen"
+                                    },
+                                    "statistics": {
+                                        "description": "Dies umfasst die Anzahl von Elementen in deiner Installation. Eine vollständige Liste findest du in der Dokumentation",
+                                        "title": "Nutzungsstatistiken"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Dies umfasst die Namen und Funktionen deiner Integrationen und Add-ons",
+                                        "title": "Verwendete Integrationen und Add-ons"
+                                    },
+                                    "usage": {
+                                        "description": "Dies umfasst die Namen deiner Integrationen",
+                                        "title": "Verwendete Integrationen"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
                                 "elevation": "Höhe",
@@ -2027,6 +2074,9 @@
                     "filtering_by": "Filtern nach",
                     "show": "Anzeigen"
                 },
+                "hassio": {
+                    "button": "Konfigurieren"
+                },
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
                     "caption": "Helfer",
@@ -2113,8 +2163,10 @@
                         "entity_unavailable": "Entität nicht verfügbar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbunden über",
+                        "logs": "Logs",
                         "manuf": "von {manufacturer}",
                         "no_area": "Kein Bereich",
+                        "not_loaded": "Nicht geladen, prüfe den {logs_link}",
                         "options": "Optionen",
                         "reload": "Neu laden",
                         "reload_confirm": "Die Integration wurde neu geladen",
@@ -2140,6 +2192,7 @@
                         "finish": "Fertig",
                         "loading_first_time": "Bitte warten, während die Integration installiert wird",
                         "not_all_required_fields": "Nicht alle Pflichtfelder sind ausgefüllt.",
+                        "not_loaded": "Die Integration konnte nicht geladen werden. Versuche Home Assistant neu zu starten.",
                         "pick_flow_step": {
                             "new_flow": "Nein, richte eine andere Instanz von {integration} ein",
                             "title": "Wir haben diese entdeckt, willst du sie einrichten?"
@@ -2154,6 +2207,7 @@
                     "disable": {
                         "disabled_integrations": "{number} deaktiviert",
                         "hide_disabled": "Deaktivierte Integrationen ausblenden",
+                        "show": "Anzeigen",
                         "show_disabled": "Deaktivierte Integrationen anzeigen"
                     },
                     "discovered": "Entdeckt",
@@ -2189,6 +2243,13 @@
                     "clear": "Leeren",
                     "description": "Home Assistant Logs einsehen",
                     "details": "Protokolldetails ({level})",
+                    "level": {
+                        "critical": "KRITISCH",
+                        "debug": "DEBUG",
+                        "error": "FEHLER",
+                        "info": "INFO",
+                        "warning": "WARNUNG"
+                    },
                     "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
                     "loading_log": "Fehlerprotokoll wird geladen...",
                     "multiple_messages": "Die Nachricht ist zum ersten Mal um {time} aufgetreten und erscheint {counter} mal",
@@ -2279,7 +2340,7 @@
                     "description_publish": "Ein Paket veröffentlichen",
                     "listening_to": "Anhören von",
                     "message_received": "Nachricht {id} empfangen auf {topic} um {time}:",
-                    "payload": "Payload (Vorlage erlaubt)",
+                    "payload": "Payload (Template erlaubt)",
                     "publish": "Veröffentlichen",
                     "start_listening": "Anfangen zuzuhören",
                     "stop_listening": "Aufhören zuzuhören",
@@ -2533,39 +2594,39 @@
                     "description": "Neustarten und Stoppen des Home Assistant Servers",
                     "section": {
                         "reloading": {
-                            "automation": "Automatisierungen neu laden",
-                            "command_line": "Kommandozeilen-Entitäten neu laden",
-                            "core": "Ort & Anpassungen neu laden",
-                            "filesize": "Dateigröße-Entitäten neu laden",
-                            "filter": "Filter-Entitäten neu laden",
-                            "generic": "Allgemeine IP-Kamera Entitäten neu laden",
-                            "generic_thermostat": "Generische Thermostatentitäten neu laden",
-                            "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste neu laden",
+                            "automation": "Automatisierungen",
+                            "command_line": "Kommandozeilen-Entitäten",
+                            "core": "Ort & Anpassungen",
+                            "filesize": "Dateigröße-Entitäten",
+                            "filter": "Filter-Entitäten",
+                            "generic": "Allgemeine IP-Kamera Entitäten",
+                            "generic_thermostat": "Generische Thermostatentitäten",
+                            "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste",
                             "heading": "Neuladen der YAML-Konfiguration",
-                            "history_stats": "Verlaufsstatistik-Entitäten neu laden",
-                            "homekit": "HomeKit neu laden",
-                            "input_boolean": "Eingabe-Booleans neu laden",
-                            "input_datetime": "Eingabe-Datums- und Zeitfelder neu laden",
-                            "input_number": "Eingabenummern neu laden",
-                            "input_select": "Eingabe-Auswahl neu laden",
-                            "input_text": "Eingabetexte neu laden",
+                            "history_stats": "Verlaufsstatistik-Entitäten",
+                            "homekit": "HomeKit",
+                            "input_boolean": "Eingabe-Booleans",
+                            "input_datetime": "Eingabe-Datums- und Zeitfelder",
+                            "input_number": "Eingabenummern",
+                            "input_select": "Eingabe-Auswahl",
+                            "input_text": "Eingabetexte",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
-                            "min_max": "Min/Max-Entitäten neu laden",
-                            "mqtt": "Lade manuell konfigurierte MQTT-Entitäten neu",
-                            "person": "Personen neu laden",
-                            "ping": "Binäre Ping-Sensorentitäten neu laden",
-                            "reload": "{domain} neu laden",
-                            "rest": "Rest-Entitäten und Benachrichtigungsdienste neu laden",
-                            "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
-                            "scene": "Szenen neu laden",
-                            "script": "Skripte neu laden",
-                            "smtp": "SMTP-Benachrichtigungsdienste neu laden",
-                            "statistics": "Statistik-Entitäten neu laden",
-                            "telegram": "Telegram-Benachrichtigungsdienste neu laden",
-                            "template": "Template-Entitäten neu laden",
-                            "trend": "Trend-Entitäten neu laden",
-                            "universal": "Universelle Media Player-Entitäten neu laden",
-                            "zone": "Zonen neu laden"
+                            "min_max": "Min/Max-Entitäten",
+                            "mqtt": "Manuell konfigurierte MQTT-Entitäten",
+                            "person": "Personen",
+                            "ping": "Binäre Ping-Sensorentitäten",
+                            "reload": "{domain}",
+                            "rest": "Rest-Entitäten und Benachrichtigungsdienste",
+                            "rpi_gpio": "Raspberry Pi GPIO Entitäten",
+                            "scene": "Szenen",
+                            "script": "Skripte",
+                            "smtp": "SMTP-Benachrichtigungsdienste",
+                            "statistics": "Statistik-Entitäten",
+                            "telegram": "Telegram-Benachrichtigungsdienste",
+                            "template": "Template-Entitäten",
+                            "trend": "Trend-Entitäten",
+                            "universal": "Universelle Media Player-Entitäten",
+                            "zone": "Zonen"
                         },
                         "server_management": {
                             "confirm_restart": "Möchtest du Home Assistant wirklich neu starten?",
@@ -2985,6 +3046,7 @@
                         "column_parameter": "Parameter",
                         "description": "Mit dem Dienstentwicklungstool kannst du jeden verfügbaren Dienst in Home Assistant aufrufen.",
                         "fill_example_data": "Mit Beispieldaten füllen",
+                        "no_template_ui_support": "Die Benutzeroberfläche unterstützt keine Templates. Du kannst aber weiterhin den YAML-Editor verwenden.",
                         "title": "Dienste",
                         "ui_mode": "Zum UI Modus",
                         "yaml_mode": "Zum YAML Modus",
@@ -3012,7 +3074,7 @@
                     },
                     "templates": {
                         "all_listeners": "Dieses Template überwacht alle Zustandsänderungsereignisse.",
-                        "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
+                        "description": "Templates werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
                         "domain": "Domain",
                         "editor": "Template-Editor",
                         "entity": "Entität",
@@ -3684,6 +3746,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Weiter",
+                    "intro": "Teile Statistiken aus deiner Instanz. Diese Daten werden unter {link}"
+                },
                 "core-config": {
                     "button_detect": "Erkennen",
                     "finish": "Weiter",
@@ -3693,12 +3759,14 @@
                     "location_name": "Name deiner Home Assistant Installation",
                     "location_name_default": "Home"
                 },
+                "finish": "Fertig",
                 "integration": {
                     "finish": "Fertig",
                     "intro": "Geräte und Dienste werden in Home Assistant als Integrationen dargestellt. Sie können jetzt oder später über die Konfigurationsseite eingerichtet werden.",
                     "more_integrations": "Mehr"
                 },
                 "intro": "Sind Sie bereit, dein Zuhause zu wecken, Ihre Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
+                "next": "Weiter",
                 "restore": {
                     "description": "Alternativ kannst du von einem vorherigen Snapshot wiederherstellen.",
                     "hide_log": "Vollständiges Protokoll ausblenden",
@@ -3792,6 +3860,15 @@
                     "disable": "Deaktivieren",
                     "enable": "Aktivieren",
                     "header": "Multi-Faktor-Authentifizierungsmodul"
+                },
+                "number_format": {
+                    "description": "Wähle aus, wie Zahlen formatiert werden sollen.",
+                    "dropdown_label": "Zahlenformat",
+                    "formats": {
+                        "language": "Auto (Spracheinstellung verwenden)",
+                        "none": "Keine"
+                    },
+                    "header": "Zahlenformat"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

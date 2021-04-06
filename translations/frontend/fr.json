@@ -723,6 +723,9 @@
                 "today": "Aujourd'hui"
             },
             "data-table": {
+                "clear": "Effacer",
+                "filtering_by": "Filtrer par",
+                "hidden": "{number} masqué",
                 "no-data": "Pas de données",
                 "search": "Chercher"
             },
@@ -836,6 +839,14 @@
             "picture-upload": {
                 "label": "Image",
                 "unsupported_format": "Format non pris en charge, veuillez choisir une image JPEG, PNG ou GIF."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filtrer par zone",
+                "filter_by_device": "Filtrer par appareil",
+                "filter_by_entity": "Filtrer par entité",
+                "filtered_by_area": "zone: {area_name}",
+                "filtered_by_device": "appareil: {device_name}",
+                "filtered_by_entity": "entité: {entity_name}"
             },
             "related-items": {
                 "area": "Pièce",
@@ -1132,6 +1143,11 @@
                         "perform_action": "{action} Serveur",
                         "restart": "Redémarrer",
                         "stop": "Arrêter"
+                    },
+                    "types": {
+                        "navigation": "Naviguer",
+                        "reload": "Recharger",
+                        "server_control": "Serveur"
                     }
                 },
                 "filter_placeholder": "Filtre d'entité"
@@ -1174,6 +1190,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Nom personnalisé"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Reconfigurer l'appareil"
             }
         },
         "duration": {
@@ -1468,6 +1487,7 @@
                         "move_down": "Déplacer vers le bas",
                         "move_up": "Déplacer vers le haut",
                         "save": "Sauvegarder",
+                        "show_trace": "Afficher la trace",
                         "triggers": {
                             "add": "Ajouter un déclencheur",
                             "delete": "Supprimer",
@@ -1676,6 +1696,8 @@
                             "info": "Grâce à l'intégration de Google Assistant pour Home Assistant Cloud, vous pourrez contrôler tous vos appareils Home Assistant via n'importe quel appareil compatible avec Google Assistant.",
                             "info_state_reporting": "Si vous activez le rapport d'état, Home Assistant envoie tous les changements d'état des entités exposées à Google. Cela vous permet de toujours voir les derniers états de l'application Google.",
                             "manage_entities": "Gérer les entités",
+                            "not_configured_text": "Avant de pouvoir utiliser Google Assistant, vous devez activer l'action Home Assistant Cloud pour Google Assistant dans l'application Google Home.",
+                            "not_configured_title": "Google Assistant n'est pas activé",
                             "security_devices": "Dispositif de sécurité",
                             "sync_entities": "Synchroniser les entités vers Google",
                             "sync_entities_404_message": "Échec de la synchronisation de vos entités avec Google, demandez à Google \"Hey Google, synchronise mes appareils\" de synchroniser vos entités.",
@@ -1838,6 +1860,23 @@
                     "description": "Unités de mesure, emplacement, fuseau horaire et autres paramètres généraux",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Avant d'activer cette fonction, prenez soin de visiter la page de documentation {link} afin de comprendre ce que vous envoyez et comment cela est conservé.",
+                                "instance_id": "ID de l'instance: {huuid}",
+                                "learn_more": "En appendre plus sur le traitement de vos données",
+                                "preference": {
+                                    "diagnostics": {
+                                        "description": "Partager les rapports d'accident et les informations de diagnostic",
+                                        "title": "Diagnostiques"
+                                    },
+                                    "statistics": {
+                                        "title": "Statistiques d'utilisation"
+                                    },
+                                    "usage": {
+                                        "title": "Intégrations utilisées"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
                                 "elevation": "Élévation",
@@ -2025,6 +2064,9 @@
                     "filtering_by": "Filtrage par",
                     "show": "Montrer"
                 },
+                "hassio": {
+                    "button": "Configurer"
+                },
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
@@ -2111,6 +2153,7 @@
                         "entity_unavailable": "Entité indisponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connecté via",
+                        "logs": "journaux",
                         "manuf": "par {manufacturer}",
                         "no_area": "Pas de zone",
                         "options": "Options",
@@ -2138,6 +2181,7 @@
                         "finish": "Terminer",
                         "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
+                        "not_loaded": "Cette intégration ne peut être chargée, essayez de redémarrer Home Assistant",
                         "pick_flow_step": {
                             "new_flow": "Non, configurez une autre instance de {integration}",
                             "title": "Nous les avons découverts, vous voulez les mettre en place?"
@@ -2152,6 +2196,7 @@
                     "disable": {
                         "disabled_integrations": "{number} désactivé",
                         "hide_disabled": "Masquer les intégrations désactivées",
+                        "show": "Montrer",
                         "show_disabled": "Afficher les intégrations désactivées"
                     },
                     "discovered": "Découvert",
@@ -2187,6 +2232,12 @@
                     "clear": "Nettoyer",
                     "description": "Afficher les journaux de Home Assistant",
                     "details": "Détails du journal ( {level} )",
+                    "level": {
+                        "critical": "CRITIQUE",
+                        "error": "ERREUR",
+                        "info": "INFO",
+                        "warning": "ATTENTION"
+                    },
                     "load_full_log": "Charger le journal complet de Home Assistant",
                     "loading_log": "Chargement du journal des erreurs…",
                     "multiple_messages": "message survenu pour la première fois à {time} et apparu {counter} fois.",
@@ -3682,6 +3733,9 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Suivant"
+                },
                 "core-config": {
                     "button_detect": "Détecter",
                     "finish": "Suivant",
@@ -3691,12 +3745,14 @@
                     "location_name": "Nom de votre installation Home Assistant",
                     "location_name_default": "Maison"
                 },
+                "finish": "Terminer",
                 "integration": {
                     "finish": "Terminer",
                     "intro": "Les appareils et les services sont représentés dans Home Assistant sous forme d’intégrations. Vous pouvez les configurer maintenant ou le faire plus tard à partir de l'écran de configuration.",
                     "more_integrations": "Plus"
                 },
                 "intro": "Êtes-vous prêt à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs?",
+                "next": "Suivant",
                 "restore": {
                     "description": "Vous pouvez également restaurer à partir d'un instantané précédent.",
                     "hide_log": "Masquer le journal",
@@ -3790,6 +3846,12 @@
                     "disable": "Désactiver",
                     "enable": "Activer",
                     "header": "Modules d'authentification multi-facteurs"
+                },
+                "number_format": {
+                    "description": "Définir le formatage des nombres",
+                    "formats": {
+                        "none": "Aucun"
+                    }
                 },
                 "push_notifications": {
                     "add_device_prompt": {
