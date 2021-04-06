@@ -239,7 +239,8 @@ class CloudGoogleAssistant extends LitElement {
     return html`
       <hass-subpage
         .hass=${this.hass}
-        .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}>
+        .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}
+        .narrow=${this.narrow}>
         ${
           emptyFilter
             ? html`

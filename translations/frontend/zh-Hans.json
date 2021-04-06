@@ -840,6 +840,14 @@
                 "label": "图片",
                 "unsupported_format": "格式不受支持，请选择 JPEG、PNG 或 GIF 图像。"
             },
+            "related-filter-menu": {
+                "filter_by_area": "按区域",
+                "filter_by_device": "按设备",
+                "filter_by_entity": "按实体",
+                "filtered_by_area": "区域: {area_name}",
+                "filtered_by_device": "设备: {device_name}",
+                "filtered_by_entity": "实体: {entity_name}"
+            },
             "related-items": {
                 "area": "区域",
                 "automation": "以下自动化的一部分",
@@ -1182,6 +1190,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "更改设备名称"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "重新配置设备"
             }
         },
         "duration": {
@@ -1685,6 +1696,7 @@
                             "info": "通过 Home Assistant Cloud 的 Google Assistant 集成，您将可以通过任何启用了 Google Assistant 的设备来控制所有 Home Assistant 设备。",
                             "info_state_reporting": "如果启用状态报告，则 Home Assistant 会将公开实体的所有状态变化发送给 Google。这样您就可以始终在 Google 应用中看到最新状态。",
                             "manage_entities": "管理实体",
+                            "not_configured_text": "在使用 Google Assistant 之前，需要在 Google Home 应用中激活 Google Assistant 的 Home Assistant Cloud 技能。",
                             "not_configured_title": "Google Assistant 未激活",
                             "security_devices": "安全设备",
                             "sync_entities": "同步实体到 Google",
@@ -1849,9 +1861,11 @@
                     "section": {
                         "core": {
                             "analytics": {
+                                "documentation": "在启用此功能之前，请确保您已阅读了分析文档页面 {link}，以了解将发送的内容及其存储方式。",
                                 "header": "分析",
                                 "instance_id": "实例ID: {huuid}",
                                 "introduction": "共享实例的分析。此数据将在 {link} 公开。",
+                                "learn_more": "详细了解您的数据将被如何处理。",
                                 "needs_base": "需要启用基础分析才能启用此选项",
                                 "preference": {
                                     "base": {
@@ -1863,6 +1877,7 @@
                                         "title": "诊断"
                                     },
                                     "statistics": {
+                                        "description": "包括安装的元素数量，完整列表请参阅文档",
                                         "title": "使用情况统计"
                                     },
                                     "usage_supervisor": {
@@ -2062,6 +2077,9 @@
                     "filtering_by": "正在筛选:",
                     "show": "显示"
                 },
+                "hassio": {
+                    "button": "配置"
+                },
                 "header": "配置 Home Assistant",
                 "helpers": {
                     "caption": "辅助元素",
@@ -2148,8 +2166,10 @@
                         "entity_unavailable": "实体不可用",
                         "firmware": "固件：{version}",
                         "hub": "连接于",
+                        "logs": "日志",
                         "manuf": "by {manufacturer}",
                         "no_area": "没有区域",
+                        "not_loaded": "未加载，请检查{logs_link}",
                         "options": "选项",
                         "reload": "重载",
                         "reload_confirm": "集成已重新加载",
@@ -2175,6 +2195,7 @@
                         "finish": "完成",
                         "loading_first_time": "正在安装集成，请稍候",
                         "not_all_required_fields": "请填写所有必填字段",
+                        "not_loaded": "集成未能加载，请尝试重启 Home Assistant。",
                         "pick_flow_step": {
                             "new_flow": "否，设置另一个 {integration} 实例",
                             "title": "已发现以下集成，要设置它们吗？"
@@ -2225,10 +2246,17 @@
                     "clear": "清除",
                     "description": "查看 Home Assistant 日志",
                     "details": "日志详细信息（ {level} ）",
+                    "level": {
+                        "critical": "CRITICAL",
+                        "debug": "DEBUG",
+                        "error": "ERROR",
+                        "info": "INFO",
+                        "warning": "WARNING"
+                    },
                     "load_full_log": "加载完整 Home Assistant 日志",
                     "loading_log": "正在加载错误日志...",
                     "multiple_messages": "消息首次出现在 {time}，显示了 {counter} 次",
-                    "no_errors": "未报告任何错误。",
+                    "no_errors": "未报告任何错误",
                     "no_issues": "没有新问题！",
                     "refresh": "刷新"
                 },
@@ -3721,6 +3749,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "下一步",
+                    "intro": "共享实例的分析。此数据将在 {link} 公开。"
+                },
                 "core-config": {
                     "button_detect": "自动检测",
                     "finish": "下一步",
@@ -3730,12 +3762,14 @@
                     "location_name": "Home Assistant 安装的名称",
                     "location_name_default": "我的家"
                 },
+                "finish": "完成",
                 "integration": {
                     "finish": "完成",
                     "intro": "设备和服务在 Home Assistant 中表示为集成。您可以立即设置它们，也可以稍后在配置屏幕进行设置。",
                     "more_integrations": "更多"
                 },
                 "intro": "准备好唤醒你的家、找回你的隐私，并加入世界级的极客社区了吗？",
+                "next": "下一步",
                 "restore": {
                     "description": "或者，您也可以从以前的快照还原。",
                     "hide_log": "隐藏完整日志",

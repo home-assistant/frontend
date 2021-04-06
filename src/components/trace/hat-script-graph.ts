@@ -108,7 +108,7 @@ class HatScriptGraph extends LitElement {
         })}
         .track_start=${[track_path]}
         .track_end=${[track_path]}
-        tabindex=${trace === undefined ? "-1" : "0"}
+        tabindex=${trace ? "-1" : "0"}
         short
       >
         <hat-graph-node
@@ -168,13 +168,21 @@ class HatScriptGraph extends LitElement {
 
         ${config.choose.map((branch, i) => {
           const branch_path = `${path}/choose/${i}`;
+          const track_this =
+            trace !== undefined && trace[0].result?.choice === i;
+          if (track_this) {
+            this.trackedNodes[branch_path] = { config, path: branch_path };
+          }
           return html`
             <hat-graph>
               <hat-graph-node
-                .iconPath=${mdiCheckBoxOutline}
-                nofocus
+                .iconPath=${!trace || track_this
+                  ? mdiCheckBoxOutline
+                  : mdiCheckboxBlankOutline}
+                @focus=${this.selectNode(config, branch_path)}
                 class=${classMap({
-                  track: trace !== undefined && trace[0].result?.choice === i,
+                  active: this.selected === branch_path,
+                  track: track_this,
                 })}
               ></hat-graph-node>
               ${ensureArray(branch.sequence).map((action, j) =>
@@ -185,8 +193,8 @@ class HatScriptGraph extends LitElement {
         })}
         <hat-graph>
           <hat-graph-node
-            .iconPath=${mdiCheckboxBlankOutline}
             nofocus
+            spacer
             class=${classMap({
               track:
                 trace !== undefined && trace[0].result?.choice === "default",
@@ -410,7 +418,6 @@ class HatScriptGraph extends LitElement {
 
   protected render() {
     const paths = Object.keys(this.trackedNodes);
-
     const manual_triggered = this.trace && "trigger" in this.trace.trace;
     let track_path = manual_triggered ? undefined : [0];
     const trigger_nodes = ensureArray(this.trace.config.trigger).map(

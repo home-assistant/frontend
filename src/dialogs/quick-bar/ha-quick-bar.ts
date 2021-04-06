@@ -3,7 +3,14 @@ import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
-import { mdiConsoleLine, mdiEarth, mdiReload, mdiServerNetwork } from "@mdi/js";
+import {
+  mdiClose,
+  mdiConsoleLine,
+  mdiEarth,
+  mdiMagnify,
+  mdiReload,
+  mdiServerNetwork,
+} from "@mdi/js";
 import {
   css,
   customElement,
@@ -11,7 +18,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  PropertyValues,
   query,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
@@ -85,8 +91,6 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _entityItems?: EntityItem[];
 
-  @internalProperty() private _items?: QuickBarItem[] = [];
-
   @internalProperty() private _filter = "";
 
   @internalProperty() private _search = "";
@@ -97,7 +101,7 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _done = false;
 
-  @query("search-input", false) private _filterInputField?: HTMLElement;
+  @query("paper-input", false) private _filterInputField?: HTMLElement;
 
   private _focusSet = false;
 
@@ -113,23 +117,20 @@ export class QuickBar extends LitElement {
     this._focusSet = false;
     this._filter = "";
     this._search = "";
-    this._items = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  protected updated(changedProperties: PropertyValues) {
-    if (
-      this._opened &&
-      (changedProperties.has("_filter") ||
-        changedProperties.has("_commandMode"))
-    ) {
-      this._setFilteredItems();
-    }
   }
 
   protected render() {
     if (!this._opened) {
       return html``;
+    }
+
+    let items: QuickBarItem[] | undefined = this._commandMode
+      ? this._commandItems
+      : this._entityItems;
+
+    if (items && this._filter && this._filter !== " ") {
+      items = this._filterItems(items || [], this._filter);
     }
 
     return html`
@@ -140,7 +141,7 @@ export class QuickBar extends LitElement {
         @closed=${this.closeDialog}
         hideActions
       >
-        <search-input
+        <paper-input
           dialogInitialFocus
           no-label-float
           slot="heading"
@@ -149,7 +150,7 @@ export class QuickBar extends LitElement {
           .label=${this.hass.localize(
             "ui.dialogs.quick-bar.filter_placeholder"
           )}
-          .filter=${this._commandMode ? `>${this._search}` : this._search}
+          .value=${this._commandMode ? `>${this._search}` : this._search}
           @keydown=${this._handleInputKeyDown}
           @focus=${this._setFocusFirstListItem}
         >
@@ -159,9 +160,23 @@ export class QuickBar extends LitElement {
                 class="prefix"
                 .path=${mdiConsoleLine}
               ></ha-svg-icon>`
-            : ""}
-        </search-input>
-        ${!this._items
+            : html`<ha-svg-icon
+                slot="prefix"
+                class="prefix"
+                .path=${mdiMagnify}
+              ></ha-svg-icon>`}
+          ${this._search &&
+          html`
+            <mwc-icon-button
+              slot="suffix"
+              @click=${this._clearSearch}
+              title="Clear"
+            >
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>
+          `}
+        </paper-input>
+        ${!items
           ? html`<ha-circular-progress
               size="small"
               active
@@ -172,13 +187,13 @@ export class QuickBar extends LitElement {
               @selected=${this._handleSelected}
               style=${styleMap({
                 height: `${Math.min(
-                  this._items.length * (this._commandMode ? 56 : 72) + 26,
+                  items.length * (this._commandMode ? 56 : 72) + 26,
                   this._done ? 500 : 0
                 )}px`,
               })}
             >
               ${scroll({
-                items: this._items,
+                items,
                 renderItem: (item: QuickBarItem, index?: number) =>
                   this._renderItem(item, index),
               })}
@@ -196,7 +211,6 @@ export class QuickBar extends LitElement {
   }
 
   private _handleOpened() {
-    this._setFilteredItems();
     this.updateComplete.then(() => {
       this._done = true;
     });
@@ -302,11 +316,11 @@ export class QuickBar extends LitElement {
 
   private _handleInputKeyDown(ev: KeyboardEvent) {
     if (ev.code === "Enter") {
-      if (!this._items?.length) {
+      const firstItem = this._getItemAtIndex(0);
+      if (!firstItem || firstItem.style.display === "none") {
         return;
       }
-
-      this.processItemAndCloseDialog(this._items[0], 0);
+      this.processItemAndCloseDialog((firstItem as any).item, 0);
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
       this._getItemAtIndex(0)?.focus();
@@ -338,14 +352,18 @@ export class QuickBar extends LitElement {
       this._search = newFilter;
     }
 
-    this._debouncedSetFilter(this._search);
-
     if (oldCommandMode !== this._commandMode) {
-      this._items = undefined;
       this._focusSet = false;
-
       this._initializeItemsIfNeeded();
+      this._filter = this._search;
+    } else {
+      this._debouncedSetFilter(this._search);
     }
+  }
+
+  private _clearSearch() {
+    this._search = "";
+    this._filter = "";
   }
 
   private _debouncedSetFilter = debounce((filter: string) => {
@@ -553,16 +571,10 @@ export class QuickBar extends LitElement {
     return this._opened ? !this._commandMode : false;
   }
 
-  private _setFilteredItems() {
-    const items = this._commandMode ? this._commandItems : this._entityItems;
-    this._items = this._filter
-      ? this._filterItems(items || [], this._filter)
-      : items;
-  }
-
   private _filterItems = memoizeOne(
-    (items: QuickBarItem[], filter: string): QuickBarItem[] =>
-      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
+    (items: QuickBarItem[], filter: string): QuickBarItem[] => {
+      return fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items);
+    }
   );
 
   static get styles() {
@@ -598,27 +610,26 @@ export class QuickBar extends LitElement {
           color: var(--primary-text-color);
         }
 
-        span.command-category {
-          font-weight: bold;
-          padding: 3px;
-          display: inline-flex;
-          border-radius: 6px;
-          color: black;
+        paper-input mwc-icon-button {
+          --mdc-icon-button-size: 24px;
+          color: var(--primary-text-color);
+        }
+
+        .command-category {
+          --ha-chip-icon-color: #585858;
+          --ha-chip-text-color: #212121;
         }
 
         .command-category.reload {
           --ha-chip-background-color: #cddc39;
-          --ha-chip-text-color: black;
         }
 
         .command-category.navigation {
           --ha-chip-background-color: var(--light-primary-color);
-          --ha-chip-text-color: black;
         }
 
         .command-category.server_control {
           --ha-chip-background-color: var(--warning-color);
-          --ha-chip-text-color: black;
         }
 
         span.command-text {

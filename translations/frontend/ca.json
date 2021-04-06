@@ -231,7 +231,7 @@
                     },
                     "watchdog": {
                         "description": "Això farà que s'iniciï el complement en cas de que falli",
-                        "title": "Gos vigilant"
+                        "title": "Gos guardià"
                     }
                 },
                 "protection_mode": {
@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Filtra per àrea",
                 "filter_by_device": "Filtra per dispositiu",
+                "filter_by_entity": "Filtra per entitat",
                 "filtered_by_area": "àrea: {area_name}",
-                "filtered_by_device": "dispositiu: {device_name}"
+                "filtered_by_device": "dispositiu: {device_name}",
+                "filtered_by_entity": "entitat: {entity_name}"
             },
             "related-items": {
                 "area": "Àrea",

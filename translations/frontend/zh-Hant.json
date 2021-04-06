@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "依區域篩選",
                 "filter_by_device": "依裝置篩選",
+                "filter_by_entity": "依實體篩選",
                 "filtered_by_area": "區域：{area_name}",
-                "filtered_by_device": "裝置：{device_name}"
+                "filtered_by_device": "裝置：{device_name}",
+                "filtered_by_entity": "實體：{entity_name}"
             },
             "related-items": {
                 "area": "分區",
