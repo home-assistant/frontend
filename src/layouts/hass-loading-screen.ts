@@ -30,7 +30,7 @@ class HassLoadingScreen extends LitElement {
       ${this.noToolbar
         ? ""
         : html`<div class="toolbar">
-            ${this.rootnav
+            ${this.rootnav || history.state?.root
               ? html`
                   <ha-menu-button
                     .hass=${this.hass}

@@ -23,6 +23,8 @@ import "./mqtt-subscribe-card";
 class HaPanelDevMqtt extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @internalProperty() private topic = "";
 
   @internalProperty() private payload = "";
@@ -41,7 +43,7 @@ class HaPanelDevMqtt extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage .hass=${this.hass}>
+      <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
         <div class="content">
           <ha-card header="MQTT settings">
             <div class="card-actions">
