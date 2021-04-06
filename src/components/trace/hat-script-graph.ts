@@ -19,6 +19,7 @@ import {
   mdiArrowUp,
   mdiAsterisk,
   mdiCallSplit,
+  mdiCheckboxBlankOutline,
   mdiCheckBoxOutline,
   mdiChevronDown,
   mdiChevronRight,
@@ -107,7 +108,7 @@ class HatScriptGraph extends LitElement {
         })}
         .track_start=${[track_path]}
         .track_end=${[track_path]}
-        tabindex=${trace === undefined ? "-1" : "0"}
+        tabindex=${trace ? "-1" : "0"}
         short
       >
         <hat-graph-node
@@ -175,7 +176,9 @@ class HatScriptGraph extends LitElement {
           return html`
             <hat-graph>
               <hat-graph-node
-                .iconPath=${mdiCheckBoxOutline}
+                .iconPath=${!trace || track_this
+                  ? mdiCheckBoxOutline
+                  : mdiCheckboxBlankOutline}
                 @focus=${this.selectNode(config, branch_path)}
                 class=${classMap({
                   active: this.selected === branch_path,
