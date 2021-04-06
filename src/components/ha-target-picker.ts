@@ -350,6 +350,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .includeDeviceClasses=${this.includeDeviceClasses}
           .includeDomains=${this.includeDomains}
           @value-changed=${this._targetPicked}
+          allow-custom-entity
         ></ha-entity-picker>`;
     }
     return html``;
