@@ -18,7 +18,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  PropertyValues,
   query,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
@@ -574,7 +573,6 @@ export class QuickBar extends LitElement {
 
   private _filterItems = memoizeOne(
     (items: QuickBarItem[], filter: string): QuickBarItem[] => {
-      console.log(filter);
       return fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items);
     }
   );
