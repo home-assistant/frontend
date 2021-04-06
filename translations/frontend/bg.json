@@ -751,8 +751,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Филтриране по област",
                 "filter_by_device": "Филтриране по устройство",
+                "filter_by_entity": "Филтриране по обект",
                 "filtered_by_area": "област: {area_name}",
-                "filtered_by_device": "устройство: {device_name}"
+                "filtered_by_device": "устройство: {device_name}",
+                "filtered_by_entity": "обект: {entity_name}"
             },
             "related-items": {
                 "area": "Област",
@@ -1495,6 +1497,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Свързан",
+                        "connection_status": "Състояние на връзката с облака",
                         "google": {
                             "config_documentation": "Документация за конфигурацията",
                             "devices_pin": "ПИН код за Устройства за защита",
@@ -1515,6 +1518,7 @@
                             "title": "Дистанционен контрол"
                         },
                         "sign_out": "Отписване",
+                        "thank_you_note": "Благодарим Ви, че сте част от Home Assistant Cloud. Именно заради хора като вас ние сме в състояние да направим страхотно изживяване при автоматизацията на дома за всички. Благодарим Ви!",
                         "tts": {
                             "default_language": "Език по подразбиране за използване",
                             "dialog": {
@@ -1740,7 +1744,7 @@
                             "filter": "Филтър",
                             "hidden_devices": "{number} скрити {number, plural,\n  one {устройство}\n  other {устройства}\n}",
                             "show_all": "Покажи всички",
-                            "show_disabled": "Показване на деактивирани устройства"
+                            "show_disabled": "Показване на деактивираните устройства"
                         },
                         "search": "Търсене на устройства"
                     },
@@ -1774,7 +1778,11 @@
                         },
                         "filter": {
                             "filter": "Филтър",
-                            "show_all": "Покажи всички"
+                            "hidden_entities": "{number} скрити {number, plural,\n  one {обект}\n  other {обекта}\n}",
+                            "show_all": "Покажи всички",
+                            "show_disabled": "Показване на деактивираните обекти",
+                            "show_readonly": "Показване на обектите само за четене",
+                            "show_unavailable": "Показване на недостъпните обекти"
                         },
                         "header": "Обекти",
                         "headers": {
@@ -2726,6 +2734,7 @@
                         "move_before": "Преместване на картата преди",
                         "options": "Още опции",
                         "pick_card": "Изберете картата, която искате да добавите.",
+                        "pick_card_view_title": "Коя карта бихте искали да добавите към изгледа си {name}?",
                         "search_cards": "Търсене на карти",
                         "show_code_editor": "Редактирайте кода",
                         "show_visual_editor": "Показване на визуален редактор",

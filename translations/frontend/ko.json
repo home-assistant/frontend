@@ -846,7 +846,7 @@
                 "filter_by_entity": "구성요소별 필터",
                 "filtered_by_area": "영역: {area_name}",
                 "filtered_by_device": "기기: {device_name}",
-                "filtered_by_entity": "구성요소:{entity_name}"
+                "filtered_by_entity": "구성요소: {entity_name}"
             },
             "related-items": {
                 "area": "영역",
