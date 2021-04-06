@@ -49,6 +49,7 @@ import {
   WaitForTriggerAction,
 } from "../../data/script";
 import { ensureArray } from "../../common/ensure-array";
+import "./hat-graph-spacer";
 
 declare global {
   interface HASSDomEvents {
@@ -192,14 +193,12 @@ class HatScriptGraph extends LitElement {
           `;
         })}
         <hat-graph>
-          <hat-graph-node
-            nofocus
-            spacer
+          <hat-graph-spacer
             class=${classMap({
               track:
                 trace !== undefined && trace[0].result?.choice === "default",
             })}
-          ></hat-graph-node>
+          ></hat-graph-spacer>
           ${ensureArray(config.default)?.map((action, i) =>
             this.render_node(action, `${path}/default/${i}`)
           )}

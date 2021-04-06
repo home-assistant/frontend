@@ -171,7 +171,13 @@ export class HatGraph extends LitElement {
         --stroke-clr: var(--stroke-color, var(--secondary-text-color));
         --active-clr: var(--active-color, var(--primary-color));
         --track-clr: var(--track-color, var(--accent-color));
-        --disabled-clr: var(--disabled-color, gray);
+        --hover-clr: var(--hover-color, var(--primary-color));
+        --disabled-clr: var(--disabled-color, var(--disabled-text-color));
+        --default-trigger-color: 3, 169, 244;
+        --rgb-trigger-color: var(--trigger-color, var(--default-trigger-color));
+        --background-clr: var(--background-color, white);
+        --default-icon-clr: var(--icon-color, black);
+        --icon-clr: var(--stroke-clr);
       }
       :host(:focus) {
         outline: none;
