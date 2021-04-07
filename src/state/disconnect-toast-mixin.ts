@@ -75,7 +75,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
     }
 
-    private _handleMessage(message: any): void {
+    private _handleMessage(message: { string: number }): void {
       if (this.hass!.config.state !== STATE_NOT_RUNNING) {
         return;
       }
