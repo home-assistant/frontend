@@ -7,7 +7,10 @@ import { Constructor } from "../types";
 import { showToast } from "../util/toast";
 import { HassBaseEl } from "./hass-base-mixin";
 import { domainToName } from "../data/integration";
-import { subscribeBootstrapIntegrations } from "../data/bootstrap_integrations";
+import {
+  subscribeBootstrapIntegrations,
+  BootstrapIntegrationsTiming,
+} from "../data/bootstrap_integrations";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
@@ -76,7 +79,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
     }
 
-    private _handleMessage(message: { [key: string]: number }): void {
+    private _handleMessage(message: BootstrapIntegrationsTiming): void {
       if (this.hass!.config.state !== STATE_NOT_RUNNING) {
         return;
       }
