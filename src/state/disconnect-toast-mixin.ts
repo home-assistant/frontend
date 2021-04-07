@@ -9,7 +9,7 @@ import { HassBaseEl } from "./hass-base-mixin";
 import { domainToName } from "../data/integration";
 import {
   subscribeBootstrapIntegrations,
-  BootstrapIntegrationsTiming,
+  BootstrapIntegrationsTimings,
 } from "../data/bootstrap_integrations";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
@@ -79,7 +79,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
     }
 
-    private _handleMessage(message: BootstrapIntegrationsTiming): void {
+    private _handleMessage(message: BootstrapIntegrationsTimings): void {
       if (this.hass!.config.state !== STATE_NOT_RUNNING) {
         return;
       }
