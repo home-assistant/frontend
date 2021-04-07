@@ -140,7 +140,7 @@ class HassTabsSubpage extends LitElement {
     const showTabs = tabs.length > 1 || !this.narrow;
     return html`
       <div class="toolbar">
-        ${this.mainPage || history.state?.root
+        ${this.mainPage || (!this.backPath && history.state?.root)
           ? html`
               <ha-menu-button
                 .hassio=${this.supervisor}
@@ -289,8 +289,10 @@ class HassTabsSubpage extends LitElement {
       }
 
       :host([narrow]) .content.tabs {
-        height: calc(100% - 128px);
-        height: calc(100% - 128px - env(safe-area-inset-bottom));
+        height: calc(100% - 2 * var(--header-height));
+        height: calc(
+          100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
+        );
       }
 
       #fab {
