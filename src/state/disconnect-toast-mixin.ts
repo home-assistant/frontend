@@ -6,6 +6,7 @@ import {
 import { Constructor } from "../types";
 import { showToast } from "../util/toast";
 import { HassBaseEl } from "./hass-base-mixin";
+import { domainToName } from "../data/integration";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
@@ -77,7 +78,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _handleMessage(message: any): void {
-      if (this._dismissed || this.hass!.config.state !== STATE_NOT_RUNNING) {
+      if (this.hass!.config.state !== STATE_NOT_RUNNING) {
         return;
       }
 
@@ -92,7 +93,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             text:
               this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
             action: () => {
-              this._dismissed = true;
+              this._unsubscribeBootstrapIntergrations();
             },
           },
         });
@@ -100,14 +101,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       // Show the integration that has been starting for the longest time
-	const [integration, max] = Object.entries(message).sort(([,a],[,b]) => b-a)[0];
+      const integration = Object.entries(message).sort(
+        ([, a], [, b]) => b - a
+      )[0][0];
 
       showToast(this, {
         message:
           this.hass!.localize(
             "ui.notification_toast.intergration_starting",
             "integration",
-            domainToName(this.hass.localize, integration)
+            domainToName(this.hass!.localize, integration)
           ) ||
           `Starting ${integration}, not everything will be available until it is finished.`,
         duration: 0,
@@ -116,7 +119,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           text:
             this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
           action: () => {
-            this._dismissed = true;
+            this._unsubscribeBootstrapIntergrations();
           },
         },
       });
