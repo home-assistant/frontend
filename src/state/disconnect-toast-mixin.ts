@@ -7,6 +7,7 @@ import { Constructor } from "../types";
 import { showToast } from "../util/toast";
 import { HassBaseEl } from "./hass-base-mixin";
 import { domainToName } from "../data/integration";
+import { subscribeBootstrapIntegrations } from "../data/bootstrap_integrations";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
@@ -132,10 +133,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!this.hass) {
         return;
       }
-      this._subscribedBootstrapIntegrations = this.hass.connection.subscribeMessage<{[key: string]: number}>(
-        (message) => this._handleMessage(message),
-        {
-          type: "subscribe_bootstrap_integrations",
+      this._subscribedBootstrapIntegrations = subscribeBootstrapIntegrations(
+        this.hass!,
+        (message) => {
+          this._handleMessage(message);
         }
       );
     }
