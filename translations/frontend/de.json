@@ -1211,6 +1211,14 @@
                 "key_wrong_type": "Der angegebene Wert für \"{key}\" wird vom visuellen Editor nicht unterstützt. Wir unterstützen ({type_correct}), haben aber ({type_wrong}) erhalten.",
                 "no_template_editor_support": "Templates werden im visuellen Editor nicht unterstützt",
                 "no_type_provided": "Kein Typ angegeben."
+            },
+            "supervisor": {
+                "ask": "Um Hilfe bitten",
+                "observer": "Überprüfe den Observer",
+                "reboot": "Versuche den Host neuzustarten",
+                "system_health": "Überprüfe Systemzustand",
+                "title": "Supervisor-Bedienfeld konnte nicht geladen werden!",
+                "wait": "Wenn du gerade erst hochgefahren hast, dann stelle sicher dass du den Supervisor genug Zeit zum Starten gegeben hast."
             }
         },
         "login-form": {
@@ -1370,7 +1378,7 @@
                                     "wait_template": "Warte-Template"
                                 }
                             },
-                            "unsupported_action": "Keine UI-Unterstützung für Aktion: {action}"
+                            "unsupported_action": "Visueller Editor nicht unterstützt für Aktion: {action}"
                         },
                         "alias": "Name",
                         "blueprint": {
@@ -1455,7 +1463,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_condition": "Keine Unterstützung für visuellen Editor für Bedingung: {condition} verfügbar"
+                            "unsupported_condition": "Visueller Editor nicht unterstützt für Bedingung: {condition}"
                         },
                         "copy_to_clipboard": "In die Zwischenablage kopieren",
                         "default_name": "Neue Automatisierung",
@@ -1463,7 +1471,7 @@
                             "label": "Beschreibung",
                             "placeholder": "Optionale Beschreibung"
                         },
-                        "edit_ui": "Mit der Benutzeroberfläche bearbeiten",
+                        "edit_ui": "Im visuellen Editor bearbeiten",
                         "edit_yaml": "Als YAML bearbeiten",
                         "enable_disable": "Automatisierung aktivieren / deaktivieren",
                         "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen.",
@@ -1694,6 +1702,7 @@
                             "info": "Mit der Google Assistant-Integration für Home Assistant Cloud kannst du alle deine Home Assistant-Geräte über jedes Google Assistant-fähige Gerät steuern.",
                             "info_state_reporting": "Wenn die Statusberichterstellung aktiviert wird, sendet Home Assistant alle Statusänderungen exponierter Entitäten an Google. So wird in der Google-App immer der neueste Status angezeigt.",
                             "manage_entities": "Entitäten verwalten",
+                            "not_configured_text": "Bevor du Google Assistant verwenden kannst, musst du in der Google Home-App den Home Assistant Cloud-Skill für Google Assistant aktivieren.",
                             "not_configured_title": "Google Assistant ist nicht aktiviert",
                             "security_devices": "Sicherheitsgeräte",
                             "sync_entities": "Entitäten mit Google synchronisieren",

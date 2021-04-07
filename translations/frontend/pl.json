@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Filtruj według obszaru",
                 "filter_by_device": "Filtruj według urządzenia",
+                "filter_by_entity": "Filtruj według encji",
                 "filtered_by_area": "obszar: {area_name}",
-                "filtered_by_device": "urządzenie: {device_name}"
+                "filtered_by_device": "urządzenie: {device_name}",
+                "filtered_by_entity": "encja: {entity_name}"
             },
             "related-items": {
                 "area": "Obszar",
@@ -1188,6 +1190,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Zmień nazwę urządzenia"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Ponowne konfigurowanie urządzenia"
             }
         },
         "duration": {
@@ -1208,6 +1213,14 @@
                 "key_wrong_type": "Wprowadzona wartość dla \"{key}\" nie jest obsługiwana przez edytor wizualny. Obsługujemy ({type_correct}), a otrzymaliśmy ({type_wrong}).",
                 "no_template_editor_support": "Szablony nie są obsługiwane w edytorze wizualnym",
                 "no_type_provided": "Nie wprowadzono typu."
+            },
+            "supervisor": {
+                "ask": "Poproś o pomoc",
+                "observer": "Sprawdź obserwatora",
+                "reboot": "Spróbuj ponownie uruchomić hosta",
+                "system_health": "Sprawdź kondycję systemu",
+                "title": "Nie można załadować panelu Supervisora!",
+                "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
             }
         },
         "login-form": {
@@ -1602,7 +1615,7 @@
                         },
                         "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzacje Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować automatyzacje w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o automatyzacjach",
-                        "no_automations": "Nie znaleziono żadnych edytowalnych automatyzacji",
+                        "no_automations": "Nie znaleziono żadnych automatyzacji",
                         "only_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "pick_automation": "Wybierz automatyzację do edycji",
                         "show_info_automation": "Pokaż informacje o automatyzacji"
@@ -1860,6 +1873,7 @@
                                 "header": "Analityka",
                                 "instance_id": "Identyfikator instancji: {huuid}",
                                 "introduction": "Udostępniaj dane analityczne ze swojej instancji. Te dane będą publicznie dostępne pod adresem {link}",
+                                "learn_more": "Dowiedz się więcej, jak Twoje dane będą przetwarzane.",
                                 "needs_base": "Aby ta opcja była dostępna, musisz włączyć podstawowe analityki",
                                 "preference": {
                                     "base": {
@@ -2240,6 +2254,13 @@
                     "clear": "Wyczyść",
                     "description": "Wyświetlanie logów Home Assistanta",
                     "details": "Szczegóły loga ({level})",
+                    "level": {
+                        "critical": "KRYTYCZNE",
+                        "debug": "DEBUG",
+                        "error": "BŁĄD",
+                        "info": "INFO",
+                        "warning": "OSTRZEŻENIE"
+                    },
                     "load_full_log": "Załaduj cały log Home Assistanta",
                     "loading_log": "Ładowanie loga błędów…",
                     "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
@@ -2524,7 +2545,7 @@
                         },
                         "introduction": "Edytor scen pozwala tworzyć i edytować sceny. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować sceny w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o scenach",
-                        "no_scenes": "Nie znaleziono żadnych edytowalnych scen",
+                        "no_scenes": "Nie znaleziono żadnych scen",
                         "only_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne.",
                         "pick_scene": "Wybierz scenę do edycji",
                         "show_info_scene": "Pokaż informacje o scenie"
@@ -2574,7 +2595,7 @@
                         },
                         "introduction": "Edytor skryptów pozwala tworzyć i edytować skrypty. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować skrypty w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o skryptach",
-                        "no_scripts": "Nie znaleziono żadnych edytowalnych skryptów",
+                        "no_scripts": "Nie znaleziono żadnych skryptów",
                         "run_script": "Uruchom skrypt",
                         "show_info": "Pokaż informacje o skrypcie"
                     }

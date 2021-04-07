@@ -1918,7 +1918,7 @@
                         "show_disabled": "Zobraziť vypnuté integrácie"
                     },
                     "discovered": "Objavené",
-                    "home_assistant_website": "Home Assistant webová stránka",
+                    "home_assistant_website": "webovej stránke Home Assistant",
                     "ignore": {
                         "confirm_delete_ignore": "Potom, ako bude integrácia automaticky objavená (discovered), sa opäť ukáže medzi objavenými (discovered) integráciami.  Môže to chvíľu trvať, alebo vyžadovať reštart.",
                         "confirm_delete_ignore_title": "Prestať ignorovať {name} ?",
@@ -1937,7 +1937,7 @@
                     "none_found": "Nenašli sa žiadne integrácie",
                     "none_found_detail": "Upravte kritériá vyhľadávania.",
                     "note_about_integrations": "Nie všetky integrácie je možné nakonfigurovať pomocou používateľského rozhrania.",
-                    "note_about_website_reference": "Viac informácií je k dispozícii na",
+                    "note_about_website_reference": "Viac informácií je k dispozícii na ",
                     "reconfigure": "Prekonfigurovať",
                     "search": "Vyhľadať integrácie"
                 },
