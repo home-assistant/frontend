@@ -85,7 +85,11 @@ class CloudLogin extends LocalizeMixin(
           align-self: flex-end;
         }
       </style>
-      <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
+      <hass-subpage
+        hass="[[hass]]"
+        narrow="[[narrow]]"
+        header="Home Assistant Cloud"
+      >
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
             <span slot="header">Home Assistant Cloud</span>
@@ -186,6 +190,7 @@ class CloudLogin extends LocalizeMixin(
     return {
       hass: Object,
       isWide: Boolean,
+      narrow: Boolean,
       email: {
         type: String,
         notify: true,

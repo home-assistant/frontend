@@ -89,13 +89,10 @@ class HassSubpage extends LitElement {
         box-sizing: border-box;
       }
 
+      ha-menu-button,
       ha-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
         pointer-events: auto;
-      }
-
-      ha-icon-button-arrow-prev.hidden {
-        visibility: hidden;
       }
 
       .main-title {
