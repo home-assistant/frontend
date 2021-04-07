@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
+import { analyticsLearnMore } from "../../../components/ha-analytics-learn-more";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-settings-row";
@@ -32,13 +33,15 @@ class ConfigAnalytics extends LitElement {
   @internalProperty() private _error?: string;
 
   protected render(): TemplateResult {
-    if (
-      !isComponentLoaded(this.hass, "analytics") ||
-      !this.hass.user?.is_owner ||
-      !this._analyticsDetails?.huuid
-    ) {
+    if (!this.hass.user?.is_owner) {
       return html``;
     }
+
+    const error = this._error
+      ? this._error
+      : !isComponentLoaded(this.hass, "analytics")
+      ? "Analytics integration not loaded"
+      : undefined;
 
     return html`
       <ha-card
@@ -47,13 +50,13 @@ class ConfigAnalytics extends LitElement {
         )}
       >
         <div class="card-content">
-          ${this._error ? html`<div class="error">${this._error}</div>` : ""}
+          ${error ? html`<div class="error">${error}</div>` : ""}
           <p>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.analytics.introduction",
               "link",
               html`<a href="https://analytics.home-assistant.io" target="_blank"
-                >https://analytics.home-assistant.io</a
+                >analytics.home-assistant.io</a
               >`
             )}
           </p>
@@ -69,6 +72,7 @@ class ConfigAnalytics extends LitElement {
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
           </mwc-button>
+          ${analyticsLearnMore(this.hass)}
         </div>
       </ha-card>
     `;
@@ -120,7 +124,14 @@ class ConfigAnalytics extends LitElement {
         ha-settings-row {
           padding: 0;
         }
-      `,
+
+        .card-actions {
+          display: flex;
+          flex-direction: row-reverse;
+          justify-content: space-between;
+          align-items: center;
+        }
+      `, // row-reverse so we tab first to "save"
     ];
   }
 }

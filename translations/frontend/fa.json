@@ -136,7 +136,7 @@
                 "fan_mode": "حالت فن",
                 "heating": "{name} حرارت دادن",
                 "high": "inalt",
-                "low": "jos",
+                "low": "کم",
                 "on_off": "روشن/ خاموش",
                 "operation": "عملیات",
                 "preset_mode": "از پیش تعیین شده",
@@ -318,6 +318,7 @@
                 "play-media": "پخش رسانه ها"
             },
             "related-filter-menu": {
+                "filter_by_entity": "فیلتر بر اساس مجموعه",
                 "filtered_by_area": "ناحیه: {area_name}",
                 "filtered_by_device": "دستگاه : {device_name}"
             },
@@ -775,7 +776,7 @@
                         },
                         "introduction": "ویرایشگر اتوماسیون اجازه می دهد تا شما را به ایجاد و ویرایش اتوماسیون بپردازید . لطفا پیوند زیر را دنبال کنید تا دستورالعمل ها را بخوانید که مطمئن شوید که Home Assistant را به درستی پیکربندی کرده اید.",
                         "learn_more": "درباره اتوماسیون بیشتر بدانید",
-                        "no_automations": "هیچ اتوماسیون قابل ویرایشی پیدا نشد",
+                        "no_automations": "ما نميتونستيم هيچ اتوماسيوني پيدا کنيم",
                         "only_editable": "Doar automatizarile definite in automations.yaml sunt editabile",
                         "pick_automation": "انتخاب اتوماسیون برای ویرایش",
                         "show_info_automation": "Afiseaza informatii despre automatizare"
@@ -1148,6 +1149,7 @@
                         "info": "اطلاعات",
                         "warning": "هشدار"
                     },
+                    "no_errors": "هیچ خطایی گزارش نشده است",
                     "refresh": "تازه کن"
                 },
                 "lovelace": {
@@ -1227,7 +1229,7 @@
                     "network_status": {
                         "offline": "آفلاین",
                         "online": "آنلاین",
-                        "unknown": "ناشناس"
+                        "unknown": "نامشخص"
                     }
                 },
                 "person": {
@@ -1270,7 +1272,8 @@
                             "name": "نام"
                         },
                         "introduction": "Editorul de scene permite crearea si editare de scene. Va rugam folositi link-ul de mai jos pentru a citi instructiunile si a va asigurat ca ati configurat corect Home Assistant",
-                        "learn_more": "Invata mai multe despre scene"
+                        "learn_more": "Invata mai multe despre scene",
+                        "no_scenes": "هیچ سناریویی پیدا نکردیم"
                     }
                 },
                 "script": {
@@ -1926,6 +1929,9 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "بعدی"
+                },
                 "core-config": {
                     "button_detect": "تشخیص",
                     "finish": "بعدی",

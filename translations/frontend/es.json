@@ -156,8 +156,8 @@
                         "title": "Acceso completo al hardware"
                     },
                     "hassio_api": {
-                        "description": "Al complemento se le dio acceso a la API del supervisor, a petición del autor del complemento. De forma predeterminada, el complemento puede acceder a la información general de la versión de tu sistema. Cuando el complemento solicita acceso de nivel de 'gerente' o 'administrador' a la API, obtendrá acceso para controlar varias partes de tu sistema Home Assistant. Este permiso está indicado por esta insignia y afectará negativamente la puntuación de seguridad del complemento.",
-                        "title": "Acceso a la API del supervisor"
+                        "description": "Al complemento se le dio acceso a la API del Supervisor, a petición del autor del complemento. De forma predeterminada, el complemento puede acceder a la información general de la versión de tu sistema. Cuando el complemento solicita acceso de nivel de 'gerente' o 'administrador' a la API, obtendrá acceso para controlar varias partes de tu sistema Home Assistant. Este permiso está indicado por esta insignia y afectará negativamente la puntuación de seguridad del complemento.",
+                        "title": "Acceso a la API del Supervisor"
                     },
                     "homeassistant_api": {
                         "description": "Este complemento puede acceder a tu instancia de Home Assistant en ejecución directamente a través de la API de Home Assistant. Este modo también maneja la autenticación para el complemento, lo que permite que un complemento interactúe con Home Assistant sin la necesidad de tokens de autenticación adicionales.",
@@ -448,26 +448,26 @@
                 "beta_release_items": "Esto incluye versiones beta para:",
                 "beta_warning": "Las versiones beta son para probadores y usuarios pioneros y pueden contener cambios de código inestables",
                 "channel": "Canal",
-                "cpu_usage": "Uso de CPU del supervisor",
-                "failed_to_reload": "No pudo recargar el supervisor",
-                "failed_to_set_option": "No se pudo configurar la opción del supervisor",
-                "failed_to_update": "No se pudo actualizar el supervisor",
+                "cpu_usage": "Uso de CPU del Supervisor",
+                "failed_to_reload": "No pudo recargar el Supervisor",
+                "failed_to_set_option": "No se pudo configurar la opción del Supervisor",
+                "failed_to_update": "No se pudo actualizar el Supervisor",
                 "join_beta_action": "Únete al canal beta",
                 "join_beta_description": "Obtén actualizaciones beta para Home Assistant (RC), Supervisor y el host",
                 "leave_beta_action": "Salir del canal beta",
                 "leave_beta_description": "Obtén actualizaciones estables para Home Assistant, Supervisor y el host",
-                "ram_usage": "Uso de RAM del supervisor",
-                "reload_supervisor": "Recargar el supervisor",
+                "ram_usage": "Uso de RAM del Supervisor",
+                "reload_supervisor": "Recargar el Supervisor",
                 "share_diagnostics": "Compartir diagnósticos",
                 "share_diagnostics_description": "Comparte informes de fallos e información de diagnóstico.",
-                "share_diagonstics_description": "¿Te gustaría compartir automáticamente informes de fallos e información de diagnóstico cuando el supervisor encuentra errores inesperados? {line_break} Esto nos permitirá solucionar los problemas, la información solo es accesible para el equipo principal de Home Assistant y no se compartirá con otros. {line_break} Los datos no incluyen ninguna información privada/confidencial y puedes desactivar esto en la configuración en cualquier momento que desees.",
+                "share_diagonstics_description": "¿Te gustaría compartir automáticamente informes de fallos e información de diagnóstico cuando el Supervisor encuentra errores inesperados? {line_break} Esto nos permitirá solucionar los problemas, la información solo es accesible para el equipo principal de Home Assistant y no se compartirá con otros. {line_break} Los datos no incluyen ninguna información privada/confidencial y puedes desactivar esto en la configuración en cualquier momento que desees.",
                 "share_diagonstics_title": "Ayuda a mejorar Home Assistant",
                 "unhealthy_description": "Ejecutar una instalación en mal estado causará problemas. A continuación se muestra una lista de problemas encontrados con tu instalación, haz clic en los enlaces para saber cómo puedes resolver los problemas.",
                 "unhealthy_reason": {
                     "docker": "El entorno de Docker no funciona correctamente",
-                    "privileged": "El supervisor no es privilegiado",
-                    "setup": "La configuración del supervisor falló",
-                    "supervisor": "El supervisor no se pudo actualizar",
+                    "privileged": "El Supervisor no es privilegiado",
+                    "setup": "La configuración del Supervisor falló",
+                    "supervisor": "El Supervisor no se pudo actualizar",
                     "untrusted": "Contenido no confiable detectado"
                 },
                 "unhealthy_title": "Tu instalación está en mal estado",
@@ -482,11 +482,11 @@
                     "lxc": "LXC",
                     "network_manager": "Administrador de red",
                     "os": "Sistema operativo",
-                    "privileged": "El supervisor no es privilegiado",
+                    "privileged": "El Supervisor no es privilegiado",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Estás ejecutando una instalación no soportada",
-                "update_supervisor": "Actualizar el supervisor",
+                "update_supervisor": "Actualizar el Supervisor",
                 "warning": "ADVERTENCIA"
             }
         }
@@ -693,8 +693,8 @@
                         "title": "Error al obtener complementos"
                     },
                     "no_supervisor": {
-                        "description": "No se encontró ningún supervisor, por lo que no se pudieron cargar los complementos.",
-                        "title": "Sin supervisor"
+                        "description": "No se encontró ningún Supervisor, por lo que no se pudieron cargar los complementos.",
+                        "title": "Sin Supervisor"
                     }
                 }
             },
@@ -1212,6 +1212,14 @@
                 "key_wrong_type": "El valor proporcionado para \"{key}\" no es compatible con el editor visual. Aceptamos ({type_correct}) pero recibimos ({type_wrong}).",
                 "no_template_editor_support": "Las plantillas no son compatibles con el editor visual",
                 "no_type_provided": "No se proporciona ningún tipo."
+            },
+            "supervisor": {
+                "ask": "Pide ayuda",
+                "observer": "Comprueba el Observador",
+                "reboot": "Intenta reiniciar el host",
+                "system_health": "Comprueba la salud del sistema",
+                "title": "¡No se pudo cargar el panel del Supervisor!",
+                "wait": "Si acabas de empezar, asegúrate de haber dado al Supervisor suficiente tiempo para comenzar."
             }
         },
         "login-form": {
@@ -3095,10 +3103,10 @@
                 "go_back": "Volver",
                 "supervisor": {
                     "ask": "Pide ayuda",
-                    "observer": "Comprueba el observador",
+                    "observer": "Comprueba el Observador",
                     "reboot": "Intenta reiniciar el host",
                     "system_health": "Comprueba la salud del sistema",
-                    "title": "¡No se pudo cargar el panel del supervisor!",
+                    "title": "¡No se pudo cargar el panel del Supervisor!",
                     "wait": "Si acabas de empezar, asegúrate de haber dado al supervisor suficiente tiempo para comenzar."
                 }
             },

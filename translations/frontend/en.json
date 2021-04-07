@@ -473,6 +473,7 @@
                 "unhealthy_title": "Your installation is unhealthy",
                 "unsupported_description": "Below is a list of issues found with your installation, click on the links to learn how you can resolve the issues.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor is not enabled on the host",
                     "container": "Containers known to cause issues",
                     "content-trust": "Content-trust validation is disabled",
                     "dbus": "DBUS",
@@ -1213,6 +1214,14 @@
                 "key_wrong_type": "The provided value for \"{key}\" is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
                 "no_template_editor_support": "Templates not supported in visual editor",
                 "no_type_provided": "No type provided."
+            },
+            "supervisor": {
+                "ask": "Ask for help",
+                "observer": "Check the Observer",
+                "reboot": "Try a reboot of the host",
+                "system_health": "Check System Health",
+                "title": "Could not load the Supervisor panel!",
+                "wait": "If you just started, make sure you have given the Supervisor enough time to start."
             }
         },
         "login-form": {

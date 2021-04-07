@@ -1213,6 +1213,14 @@
                 "key_wrong_type": "De opgegeven waarde voor \" {key} \" wordt niet ondersteund door de visuele editor. We ondersteunen ( {type_correct} ) maar hebben ( {type_wrong} ) ontvangen.",
                 "no_template_editor_support": "Sjablonen worden niet ondersteund in de visuele editor",
                 "no_type_provided": "Geen type opgegeven."
+            },
+            "supervisor": {
+                "ask": "Vraag om hulp",
+                "observer": "Controleer de Observer",
+                "reboot": "Probeer een herstart van de host",
+                "system_health": "Controleer de systeemstatus",
+                "title": "Kan het supervisorpaneel niet laden!",
+                "wait": "Als Home Assistant net is gestart, zorg ervoor dat de supervisor genoeg tijd heeft gehad om op te starten."
             }
         },
         "login-form": {
