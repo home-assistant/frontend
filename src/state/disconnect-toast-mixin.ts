@@ -39,7 +39,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             text:
               this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
             action: () => {
-              this._subscribeBootstrapIntergrations();
+              this._unsubscribeBootstrapIntergrations();
             },
           },
         });
@@ -90,9 +90,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           action: {
             text:
               this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
-            action: () => {
-              this._unsubscribeBootstrapIntergrations();
-            },
+            action: () => {},
           },
         });
         return;
