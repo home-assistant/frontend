@@ -14,7 +14,7 @@ import {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    private _subscribedBootstrapIntegrations?: Promise<() => Promise<void>>;
+    private _subscribedBootstrapIntegrations?: Promise<UnsubscribeFunc>;
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
