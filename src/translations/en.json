@@ -999,32 +999,31 @@
               },
               "analytics": {
                 "header": "Analytics",
-                "introduction": "Share analytics from your instance. This data will be publicly available at {link}",
-                "instance_id": "Instance ID: {huuid}",
+                "introduction": "Share your installation information to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
                 "needs_base": "You need to enable base analytics for this option to be available",
                 "preference": {
                   "base": {
                     "title": "Basic analytics",
-                    "description": "This includes the instance ID, the version and the installation type"
+                    "description": "Instance ID, version and installation type."
                   },
                   "diagnostics": {
                     "title": "Diagnostics",
-                    "description": "Share crash reports and diagnostic information"
+                    "description": "Share crash reports when unexpected errors occur."
                   },
                   "usage": {
-                    "title": "Used integrations",
-                    "description": "This includes the names of your integrations"
+                    "title": "Used Integrations",
+                    "description": "Names and version information."
                   },
                   "usage_supervisor": {
                     "title": "Used integrations and add-ons",
-                    "description": "This includes the names and capabilities of your integrations and add-ons"
+                    "description": "Names, versions and capabilities."
                   },
                   "statistics": {
                     "title": "Usage statistics",
-                    "description": "This includes a count of elements in your installation, for a full list look at the documentation"
+                    "description": "Total used entities, users and other elements."
                   }
                 },
-                "learn_more": "Learn more about how your data will be processed."
+                "learn_more": "How we process your data"
               }
             }
           }
@@ -3513,7 +3512,6 @@
           "finish": "Finish"
         },
         "analytics": {
-          "intro": "Share analytics from your instance. This data will be publicly available at {link}",
           "finish": "Next"
         },
         "restore": {
