@@ -100,13 +100,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       // Show the integration that has been starting for the longest time
-      const max = Object.keys(message).reduce(
-        (a, v) => Math.max(a, message[v]),
-        -Infinity
-      );
-      const integration = Object.keys(message).filter(
-        (v) => message[v] === max
-      );
+	const [integration, max] = Object.entries(message).sort(([,a],[,b]) => b-a)[0];
 
       showToast(this, {
         message:
