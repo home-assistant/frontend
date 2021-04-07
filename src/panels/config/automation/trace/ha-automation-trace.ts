@@ -30,6 +30,7 @@ import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "./ha-automation-trace-path-details";
 import "./ha-automation-trace-timeline";
 import "./ha-automation-trace-config";
+import "./ha-automation-trace-logbook";
 import { classMap } from "lit-html/directives/class-map";
 import { traceTabStyles } from "./styles";
 import {
@@ -238,10 +239,10 @@ export class HaAutomationTrace extends LitElement {
                       `
                     : this._view === "logbook"
                     ? html`
-                        <ha-logbook
+                        <ha-automation-trace-logbook
                           .hass=${this.hass}
-                          .entries=${this._logbookEntries}
-                        ></ha-logbook>
+                          .logbookEntries=${this._logbookEntries}
+                        ></ha-automation-trace-logbook>
                       `
                     : this._view === "blueprint"
                     ? html`

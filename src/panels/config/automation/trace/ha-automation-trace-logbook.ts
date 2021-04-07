@@ -7,33 +7,23 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import type { AutomationTraceExtended } from "../../../../data/trace";
 import type { HomeAssistant } from "../../../../types";
 import type { LogbookEntry } from "../../../../data/logbook";
-import "../../../../components/trace/hat-trace-timeline";
-import type { NodeInfo } from "../../../../components/trace/hat-graph";
 import "../../../../components/trace/hat-logbook-note";
+import "../../../logbook/ha-logbook";
 
-@customElement("ha-automation-trace-timeline")
-export class HaAutomationTraceTimeline extends LitElement {
+@customElement("ha-automation-trace-logbook")
+export class HaAutomationTraceLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ attribute: false }) public trace!: AutomationTraceExtended;
 
   @property({ attribute: false }) public logbookEntries!: LogbookEntry[];
 
-  @property() public selected!: NodeInfo;
-
   protected render(): TemplateResult {
     return html`
-      <hat-trace-timeline
+      <ha-logbook
         .hass=${this.hass}
-        .trace=${this.trace}
-        .logbookEntries=${this.logbookEntries}
-        .selectedPath=${this.selected.path}
-        allowPick
-      >
-      </hat-trace-timeline>
+        .entries=${this.logbookEntries}
+      ></ha-logbook>
       <hat-logbook-note></hat-logbook-note>
     `;
   }
@@ -52,6 +42,6 @@ export class HaAutomationTraceTimeline extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trace-timeline": HaAutomationTraceTimeline;
+    "ha-automation-trace-logbook": HaAutomationTraceLogbook;
   }
 }
