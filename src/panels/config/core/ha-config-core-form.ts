@@ -244,6 +244,10 @@ class ConfigCoreForm extends LitElement {
       .row > * {
         margin: 0 8px;
       }
+
+      .card-actions {
+        text-align: right;
+      }
     `;
   }
 }

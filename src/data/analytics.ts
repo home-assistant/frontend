@@ -9,7 +9,6 @@ export interface AnalyticsPreferences {
 
 export interface Analytics {
   preferences: AnalyticsPreferences;
-  huuid: string;
 }
 
 export const getAnalyticsDetails = (hass: HomeAssistant) =>
