@@ -128,6 +128,7 @@ class HaConfigCloud extends HassRouterPage {
         hass: this.hass,
         email: this._loginEmail,
         isWide: this.isWide,
+        narrow: this.narrow,
         cloudStatus: this.cloudStatus,
         flashMessage: this._flashMessage,
       });
