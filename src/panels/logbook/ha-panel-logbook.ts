@@ -29,6 +29,7 @@ import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -267,7 +268,7 @@ export class HaPanelLogbook extends LitElement {
         this._endDate.toISOString(),
         this._entityId
       ),
-      loadTraceContexts(this.hass),
+      isComponentLoaded(this.hass, "trace") ? loadTraceContexts(this.hass) : {},
       this._fetchUserDone,
     ]);
 
