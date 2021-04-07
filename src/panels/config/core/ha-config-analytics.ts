@@ -33,10 +33,6 @@ class ConfigAnalytics extends LitElement {
   @internalProperty() private _error?: string;
 
   protected render(): TemplateResult {
-    if (!this.hass.user?.is_owner) {
-      return html``;
-    }
-
     const error = this._error
       ? this._error
       : !isComponentLoaded(this.hass, "analytics")
