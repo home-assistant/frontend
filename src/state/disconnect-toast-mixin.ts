@@ -113,7 +113,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           this.hass!.localize(
             "ui.notification_toast.intergration_starting",
             "integration",
-            integration
+            domainToName(this.hass.localize, integration)
           ) ||
           `Starting ${integration}, not everything will be available until it is finished.`,
         duration: 0,
