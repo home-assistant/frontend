@@ -2,6 +2,7 @@ import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
   STATE_STARTING,
+  UnsubscribeFunc,
 } from "home-assistant-js-websocket";
 import { Constructor } from "../types";
 import { showToast } from "../util/toast";
@@ -72,6 +73,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassDisconnected() {
       super.hassDisconnected();
+
       showToast(this, {
         message: this.hass!.localize("ui.notification_toast.connection_lost"),
         duration: 0,
