@@ -10,9 +10,7 @@ import { domainToName } from "../data/integration";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    private _subscribed?: Promise<() => Promise<void>>;
-
-    private _dismissed = false;
+    private _subscribedBootstrapIntegrations?: Promise<() => Promise<void>>;
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
@@ -41,7 +39,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             text:
               this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
             action: () => {
-              this._dismissed = true;
+              this._subscribeBootstrapIntergrations();
             },
           },
         });
@@ -126,9 +124,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _unsubscribeBootstrapIntergrations() {
-      if (this._subscribed) {
-        this._subscribed.then((unsub) => unsub());
-        this._subscribed = undefined;
+      if (this._subscribedBootstrapIntegrations) {
+        this._subscribedBootstrapIntegrations.then((unsub) => unsub());
+        this._subscribedBootstrapIntegrations = undefined;
       }
     }
 
@@ -136,7 +134,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!this.hass) {
         return;
       }
-      this._subscribed = this.hass.connection.subscribeMessage(
+      this._subscribedBootstrapIntegrations = this.hass.connection.subscribeMessage(
         (message) => this._handleMessage(message),
         {
           type: "subscribe_bootstrap_integrations",
