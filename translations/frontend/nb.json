@@ -843,8 +843,10 @@
             "related-filter-menu": {
                 "filter_by_area": "Filtrer etter område",
                 "filter_by_device": "Filtrer etter enhet",
+                "filter_by_entity": "Filtrer etter enhet",
                 "filtered_by_area": "område: {area_name}",
-                "filtered_by_device": "enhet: {device_name}"
+                "filtered_by_device": "enhet: {device_name}",
+                "filtered_by_entity": "enhet: {entity_name}"
             },
             "related-items": {
                 "area": "Område",
@@ -1188,6 +1190,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Endre enhetsnavn"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Konfigurerer enheten på nytt"
             }
         },
         "duration": {
@@ -1859,7 +1864,7 @@
                                 "documentation": "Før du aktiverer dette, må du gå til analysedokumentasjonssiden {link} å forstå hva du sender og hvordan den er lagret.",
                                 "header": "Analytics",
                                 "instance_id": "Forekomst-ID: {huuid}",
-                                "introduction": "Del analyse fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}",
+                                "introduction": "Del analyser fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}",
                                 "learn_more": "Lær mer om hvordan dataene dine blir behandlet.",
                                 "needs_base": "Du må aktivere basisanalyse for at dette alternativet skal være tilgjengelig",
                                 "preference": {
@@ -3746,7 +3751,7 @@
             "page-onboarding": {
                 "analytics": {
                     "finish": "Neste",
-                    "intro": "Del analyse fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}"
+                    "intro": "Del analyser fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}"
                 },
                 "core-config": {
                     "button_detect": "Oppdag",

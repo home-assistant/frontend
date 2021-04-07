@@ -1213,6 +1213,14 @@
                 "key_wrong_type": "L'editor visual no admet el valor proporcionat de \"{key}\". ({type_correct}) és compatible, però s'ha rebut ({type_wrong}).",
                 "no_template_editor_support": "Les plantilles no són compatibles amb l'editor visual",
                 "no_type_provided": "No s'ha proporcionat cap tipus."
+            },
+            "supervisor": {
+                "ask": "Sol·licita ajuda",
+                "observer": "Comprova l'observador",
+                "reboot": "Intenta reiniciar l'amfitrió",
+                "system_health": "Comprova l'estat del sistema",
+                "title": "No s'ha pogut carregar el panell del Supervisor!",
+                "wait": "Si acabes de començar, assegura't que has deixat passar prou temps perquè el Supervisor s'iniciï."
             }
         },
         "login-form": {
