@@ -39,6 +39,7 @@ import "../components/supervisor-metric";
 import { hassioStyle } from "../resources/hassio-style";
 
 const UNSUPPORTED_REASON_URL = {
+  apparmor: "/more-info/unsupported/apparmor",
   container: "/more-info/unsupported/container",
   dbus: "/more-info/unsupported/dbus",
   docker_configuration: "/more-info/unsupported/docker_configuration",

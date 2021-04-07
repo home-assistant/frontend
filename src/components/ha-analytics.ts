@@ -13,7 +13,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
-import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-settings-row";
@@ -30,38 +29,30 @@ declare global {
 export class HaAnalytics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public analytics!: Analytics;
+  @property({ attribute: false }) public analytics?: Analytics;
 
   protected render(): TemplateResult {
-    if (!this.analytics.huuid) {
-      return html``;
-    }
-
-    const enabled = this.analytics.preferences.base;
+    const loading = this.analytics === undefined;
+    const baseEnabled = !loading && this.analytics!.preferences.base;
 
     return html`
-      <p>
-        ${this.hass.localize(
-          "ui.panel.config.core.section.core.analytics.instance_id",
-          "huuid",
-          this.analytics.huuid
-        )}
-      </p>
       <ha-settings-row>
         <span slot="prefix">
           <ha-checkbox
             @change=${this._handleRowCheckboxClick}
-            .checked=${enabled}
+            .checked=${baseEnabled}
             .preference=${"base"}
+            .disabled=${loading}
+            name="base"
           >
           </ha-checkbox>
         </span>
-        <span slot="heading">
+        <span slot="heading" data-for="base">
           ${this.hass.localize(
             `ui.panel.config.core.section.core.analytics.preference.base.title`
           )}
         </span>
-        <span slot="description">
+        <span slot="description" data-for="base">
           ${this.hass.localize(
             `ui.panel.config.core.section.core.analytics.preference.base.description`
           )}
@@ -73,12 +64,12 @@ export class HaAnalytics extends LitElement {
             <span slot="prefix">
               <ha-checkbox
                 @change=${this._handleRowCheckboxClick}
-                .checked=${this.analytics.preferences[preference]}
+                .checked=${this.analytics?.preferences[preference]}
                 .preference=${preference}
-                .disabled=${!enabled}
+                name=${preference}
               >
               </ha-checkbox>
-              ${!enabled
+              ${!baseEnabled
                 ? html`<paper-tooltip animation-delay="0" position="right"
                     >${this.hass.localize(
                       "ui.panel.config.core.section.core.analytics.needs_base"
@@ -86,7 +77,7 @@ export class HaAnalytics extends LitElement {
                   </paper-tooltip>`
                 : ""}
             </span>
-            <span slot="heading">
+            <span slot="heading" data-for=${preference}>
               ${preference === "usage"
                 ? isComponentLoaded(this.hass, "hassio")
                   ? this.hass.localize(
@@ -99,17 +90,17 @@ export class HaAnalytics extends LitElement {
                     `ui.panel.config.core.section.core.analytics.preference.${preference}.title`
                   )}
             </span>
-            <span slot="description">
-              ${preference === "usage"
-                ? isComponentLoaded(this.hass, "hassio")
-                  ? this.hass.localize(
-                      `ui.panel.config.core.section.core.analytics.preference.usage_supervisor.description`
-                    )
-                  : this.hass.localize(
-                      `ui.panel.config.core.section.core.analytics.preference.usage.description`
-                    )
-                : this.hass.localize(
+            <span slot="description" data-for=${preference}>
+              ${preference !== "usage"
+                ? this.hass.localize(
                     `ui.panel.config.core.section.core.analytics.preference.${preference}.description`
+                  )
+                : isComponentLoaded(this.hass, "hassio")
+                ? this.hass.localize(
+                    `ui.panel.config.core.section.core.analytics.preference.usage_supervisor.description`
+                  )
+                : this.hass.localize(
+                    `ui.panel.config.core.section.core.analytics.preference.usage.description`
                   )}
             </span>
           </ha-settings-row>`
@@ -118,48 +109,63 @@ export class HaAnalytics extends LitElement {
         <span slot="prefix">
           <ha-checkbox
             @change=${this._handleRowCheckboxClick}
-            .checked=${this.analytics.preferences.diagnostics}
+            .checked=${this.analytics?.preferences.diagnostics}
             .preference=${"diagnostics"}
+            .disabled=${loading}
+            name="diagnostics"
           >
           </ha-checkbox>
         </span>
-        <span slot="heading">
+        <span slot="heading" data-for="diagnostics">
           ${this.hass.localize(
             `ui.panel.config.core.section.core.analytics.preference.diagnostics.title`
           )}
         </span>
-        <span slot="description">
+        <span slot="description" data-for="diagnostics">
           ${this.hass.localize(
             `ui.panel.config.core.section.core.analytics.preference.diagnostics.description`
           )}
         </span>
       </ha-settings-row>
-      <p>
-        <a
-          .href=${documentationUrl(this.hass, "/integrations/analytics/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          ${this.hass.localize(
-            "ui.panel.config.core.section.core.analytics.learn_more"
-          )}
-        </a>
-      </p>
     `;
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+
+    this.shadowRoot!.querySelectorAll("*[data-for]").forEach((el) => {
+      const forEl = (el as HTMLElement).dataset.for;
+      delete (el as HTMLElement).dataset.for;
+
+      el.addEventListener("click", () => {
+        const toFocus = this.shadowRoot!.querySelector(
+          `*[name=${forEl}]`
+        ) as HTMLElement | null;
+
+        if (toFocus) {
+          toFocus.focus();
+          toFocus.click();
+        }
+      });
+    });
   }
 
   private _handleRowCheckboxClick(ev: Event) {
     const checkbox = ev.currentTarget as HaCheckbox;
     const preference = (checkbox as any).preference;
-    const preferences = { ...this.analytics.preferences };
+    const preferences = this.analytics ? { ...this.analytics.preferences } : {};
 
-    if (checkbox.checked) {
-      if (preferences[preference]) {
-        return;
-      }
-      preferences[preference] = true;
-    } else {
-      preferences[preference] = false;
+    if (preferences[preference] === checkbox.checked) {
+      return;
+    }
+
+    preferences[preference] = checkbox.checked;
+
+    if (ADDITIONAL_PREFERENCES.includes(preference) && checkbox.checked) {
+      preferences.base = true;
+    } else if (preference === "base" && !checkbox.checked) {
+      preferences.usage = false;
+      preferences.statistics = false;
     }
 
     fireEvent(this, "analytics-preferences-changed", { preferences });
@@ -175,6 +181,11 @@ export class HaAnalytics extends LitElement {
 
         ha-settings-row {
           padding: 0;
+        }
+
+        span[slot="heading"],
+        span[slot="description"] {
+          cursor: pointer;
         }
       `,
     ];

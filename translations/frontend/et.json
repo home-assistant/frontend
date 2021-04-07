@@ -1213,6 +1213,14 @@
                 "key_wrong_type": "Visuaalne redaktor ei toeta \"{key}\" jaoks sisestatud väärtust. Toetatud on ({type_correct}) kuid saadi ({type_wrong}).",
                 "no_template_editor_support": "Visuaalne redaktor ei toetata malle",
                 "no_type_provided": "Tüüpi pole esitatud."
+            },
+            "supervisor": {
+                "ask": "Küsi abi",
+                "observer": "Kontrolli Observerit",
+                "reboot": "Proovi host taaskäivitada",
+                "system_health": "Kontrolli süsteemi seisundit",
+                "title": "Supervisori paneeli laadimine nurjus!",
+                "wait": "Kui alles käivitasid seadme, veendu, et oled andnud Supervisorile piisavalt aega käivitumiseks."
             }
         },
         "login-form": {

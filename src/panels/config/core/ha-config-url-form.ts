@@ -158,6 +158,10 @@ class ConfigUrlForm extends LitElement {
       .error {
         color: var(--error-color);
       }
+
+      .card-actions {
+        text-align: right;
+      }
     `;
   }
 }
