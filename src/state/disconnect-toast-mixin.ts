@@ -132,7 +132,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!this.hass) {
         return;
       }
-      this._subscribedBootstrapIntegrations = this.hass.connection.subscribeMessage(
+      this._subscribedBootstrapIntegrations = this.hass.connection.subscribeMessage<{[key: string]: number}>(
         (message) => this._handleMessage(message),
         {
           type: "subscribe_bootstrap_integrations",
