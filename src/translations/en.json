@@ -3797,6 +3797,7 @@
         "share_diagonstics_title": "Help Improve Home Assistant",
         "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
         "unsupported_reason": {
+          "apparmor": "AppArmor is not enabled on the host",
           "container": "Containers known to cause issues",
           "content-trust": "Content-trust validation is disabled",
           "dbus": "DBUS",
