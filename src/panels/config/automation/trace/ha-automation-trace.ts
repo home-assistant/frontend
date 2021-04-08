@@ -90,7 +90,7 @@ export class HaAutomationTrace extends LitElement {
         <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
       </mwc-icon-button>
       <mwc-icon-button
-        .disabled=${!this._runId}
+        .disabled=${!this._trace}
         label="Download Trace"
         @click=${this._downloadTrace}
       >
