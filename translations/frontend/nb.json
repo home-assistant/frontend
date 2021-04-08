@@ -473,6 +473,7 @@
                 "unhealthy_title": "Installasjonen din er usunn",
                 "unsupported_description": "Nedenfor er en liste over problemer som er funnet med installasjonen din. Klikk på lenkene for å lære hvordan du kan løse problemene.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor er ikke aktivert på verten",
                     "container": "Containere som er kjent for å forårsake problemer",
                     "content-trust": "Validering av innholds klarering er deaktivert",
                     "dbus": "",
@@ -1213,6 +1214,14 @@
                 "key_wrong_type": "Den angitte verdien for \"{key}\" støttes ikke av det visuelle redigeringsprogrammet. Vi støtter ({type_correct}), men mottatt ({type_wrong}).",
                 "no_template_editor_support": "Maler støttes ikke i visual editor",
                 "no_type_provided": "Ingen type oppgitt."
+            },
+            "supervisor": {
+                "ask": "Be om hjelp",
+                "observer": "Sjekk observatøren",
+                "reboot": "Prøv en omstart av verten",
+                "system_health": "Sjekk systemtilstand",
+                "title": "Kunne ikke laste Supervisor-panelet!",
+                "wait": "Hvis du nettopp startet, må du sørge for at du har gitt veilederen nok tid til å starte."
             }
         },
         "login-form": {
@@ -1864,28 +1873,28 @@
                                 "documentation": "Før du aktiverer dette, må du gå til analysedokumentasjonssiden {link} å forstå hva du sender og hvordan den er lagret.",
                                 "header": "Analytics",
                                 "instance_id": "Forekomst-ID: {huuid}",
-                                "introduction": "Del analyser fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}",
-                                "learn_more": "Lær mer om hvordan dataene dine blir behandlet.",
+                                "introduction": "Del installasjonsinformasjonen din for å gjøre Home Assistant bedre og hjelpe oss med å overbevise produsenter om å legge til lokal kontroll og personvernfokuserte funksjoner.",
+                                "learn_more": "Hvordan vi behandler dataene dine",
                                 "needs_base": "Du må aktivere basisanalyse for at dette alternativet skal være tilgjengelig",
                                 "preference": {
                                     "base": {
-                                        "description": "Dette inkluderer forekomst-ID, versjon og installasjonstype",
+                                        "description": "Forekomst-ID, versjon og installasjonstype.",
                                         "title": "Grunnleggende analyse"
                                     },
                                     "diagnostics": {
-                                        "description": "Del krasjrapporter og diagnostisk informasjon",
+                                        "description": "Del krasjrapporter når uventede feil oppstår.",
                                         "title": "Diagnostikk"
                                     },
                                     "statistics": {
-                                        "description": "Dette inkluderer en rekke elementer i installasjonen din, for å se en fullstendig liste i dokumentasjonen",
+                                        "description": "Totalt brukte enheter, brukere og andre elementer.",
                                         "title": "Bruksstatistikk"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Dette inkluderer navnene og funksjonene til integrasjonene og tilleggene dine",
+                                        "description": "Navn, versjoner og evner.",
                                         "title": "Brukte integrasjoner og tillegg"
                                     },
                                     "usage": {
-                                        "description": "Dette inkluderer navnene på integrasjonene dine",
+                                        "description": "Navn og versjonsinformasjon.",
                                         "title": "Brukte integrasjoner"
                                     }
                                 }

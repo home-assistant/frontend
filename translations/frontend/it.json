@@ -473,6 +473,7 @@
                 "unhealthy_title": "L'installazione non è integra",
                 "unsupported_description": "Di seguito è riportato un elenco dei problemi riscontrati con l'installazione, fare clic sui collegamenti per scoprire come risolvere i problemi.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor non è abilitato sull'host",
                     "container": "Container noti per causare problemi",
                     "content-trust": "La convalida dell'attendibilità del contenuto è disabilitata",
                     "dbus": "DBUS",
@@ -1213,6 +1214,14 @@
                 "key_wrong_type": "Il valore fornito per \"{key}\" non è supportato dall'editor visivo. Supportiamo ({type_correct}) ma ricevuto ({type_wrong}).",
                 "no_template_editor_support": "Modelli non supportati nell'editor visivo",
                 "no_type_provided": "Nessun tipo fornito."
+            },
+            "supervisor": {
+                "ask": "Chiedere aiuto",
+                "observer": "Controlla l'Observer",
+                "reboot": "Prova a riavviare l'host",
+                "system_health": "Controlla l'integrità del sistema",
+                "title": "Impossibile caricare il pannello Supervisor!",
+                "wait": "Se hai appena avviato, assicurati di aver dato al Supervisor abbastanza tempo per partire."
             }
         },
         "login-form": {
@@ -1864,28 +1873,28 @@
                                 "documentation": "Prima di abilitarlo, assicurati di visitare la pagina della documentazione di analisi {link} per capire cosa stai inviando e come viene archiviato.",
                                 "header": "Analisi",
                                 "instance_id": "ID istanza: {huuid}",
-                                "introduction": "Condividi l'analisi dalla tua istanza. Questi dati saranno disponibili pubblicamente all'indirizzo {link}",
-                                "learn_more": "Scopri di più su come verranno elaborati i tuoi dati.",
+                                "introduction": "Condividi le informazioni di installazione per migliorare Home Assistant e aiutarci a convincere i produttori ad aggiungere funzionalità incentrate sul controllo locale e sulla privacy.",
+                                "learn_more": "Come elaboriamo i tuoi dati",
                                 "needs_base": "È necessario abilitare l'analisi di base affinché questa opzione sia disponibile",
                                 "preference": {
                                     "base": {
-                                        "description": "Questo include l'ID dell'istanza, la versione e il tipo di installazione",
+                                        "description": "ID dell'istanza, versione e tipo di installazione.",
                                         "title": "Analisi di base"
                                     },
                                     "diagnostics": {
-                                        "description": "Condividi i rapporti sugli arresti anomali e le informazioni diagnostiche",
+                                        "description": "Condividi i rapporti sugli arresti anomali quando si verificano errori imprevisti.",
                                         "title": "Diagnostica"
                                     },
                                     "statistics": {
-                                        "description": "Questo include un conteggio degli elementi nella tua installazione, per un elenco completo guarda la documentazione",
+                                        "description": "Totale entità, utenti e altri elementi utilizzati.",
                                         "title": "Statistiche d'uso"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Questo include i nomi e le funzionalità delle integrazioni e dei componenti aggiuntivi",
+                                        "description": "Nomi, versioni e funzionalità.",
                                         "title": "Integrazioni e componenti aggiuntivi utilizzati"
                                     },
                                     "usage": {
-                                        "description": "Questo include i nomi delle tue integrazioni",
+                                        "description": "Nomi e informazioni sulla versione.",
                                         "title": "Integrazioni usate"
                                     }
                                 }

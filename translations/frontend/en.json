@@ -1873,29 +1873,29 @@
                                 "documentation": "Before you enable this make sure you visit the analytics documentation page {link} to understand what you are sending and how it's stored.",
                                 "header": "Analytics",
                                 "instance_id": "Instance ID: {huuid}",
-                                "introduction": "Share analytics from your instance. This data will be publicly available at {link}",
-                                "learn_more": "Learn more about how your data will be processed.",
+                                "introduction": "Share your installation information to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
+                                "learn_more": "How we process your data",
                                 "needs_base": "You need to enable base analytics for this option to be available",
                                 "preference": {
                                     "base": {
-                                        "description": "This includes the instance ID, the version and the installation type",
+                                        "description": "Instance ID, version and installation type.",
                                         "title": "Basic analytics"
                                     },
                                     "diagnostics": {
-                                        "description": "Share crash reports and diagnostic information",
+                                        "description": "Share crash reports when unexpected errors occur.",
                                         "title": "Diagnostics"
                                     },
                                     "statistics": {
-                                        "description": "This includes a count of elements in your installation, for a full list look at the documentation",
+                                        "description": "Total used entities, users and other elements.",
                                         "title": "Usage statistics"
                                     },
                                     "usage_supervisor": {
-                                        "description": "This includes the names and capabilities of your integrations and add-ons",
+                                        "description": "Names, versions and capabilities.",
                                         "title": "Used integrations and add-ons"
                                     },
                                     "usage": {
-                                        "description": "This includes the names of your integrations",
-                                        "title": "Used integrations"
+                                        "description": "Names and version information.",
+                                        "title": "Used Integrations"
                                     }
                                 }
                             },

@@ -473,6 +473,7 @@
                 "unhealthy_title": "Twoja instalacja jest \"niezdrowa\"",
                 "unsupported_description": "Poniżej znajduje się lista problemów z Twoją instalacją. Kliknij łącza, aby dowiedzieć się, jak możesz je rozwiązać.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor nie jest włączony na hoście",
                     "container": "Kontenery, o których wiadomo, że powodują problemy",
                     "content-trust": "Weryfikacja zaufania zawartości jest wyłączona",
                     "dbus": "DBUS",
@@ -1872,28 +1873,28 @@
                                 "documentation": "Zanim to włączysz, odwiedź stronę z dokumentacją analityczną {link}, aby zrozumieć, co wysyłasz i jak to jest przechowywane.",
                                 "header": "Analityka",
                                 "instance_id": "Identyfikator instancji: {huuid}",
-                                "introduction": "Udostępniaj dane analityczne ze swojej instancji. Te dane będą publicznie dostępne pod adresem {link}",
-                                "learn_more": "Dowiedz się więcej, jak Twoje dane będą przetwarzane.",
+                                "introduction": "Udostępnij informacje o instalacji, aby ulepszyć Home Assistant i pomóż nam przekonać producentów do dodania lokalnych funkcji sterowania i prywatności.",
+                                "learn_more": "Jak przetwarzamy Twoje dane",
                                 "needs_base": "Aby ta opcja była dostępna, musisz włączyć podstawowe analityki",
                                 "preference": {
                                     "base": {
-                                        "description": "Obejmuje to identyfikator instancji, wersję i typ instalacji",
+                                        "description": "Identyfikator instancji, wersja i typ instalacji.",
                                         "title": "Podstawowe analityki"
                                     },
                                     "diagnostics": {
-                                        "description": "Udostępniaj raporty o awariach i informacje diagnostyczne",
+                                        "description": "Udostępniaj raporty o awariach, gdy wystąpią nieoczekiwane błędy.",
                                         "title": "Diagnostyka"
                                     },
                                     "statistics": {
-                                        "description": "Obejmuje to liczbę elementów w instalacji. Pełną listę można znaleźć w dokumentacji.",
+                                        "description": "Suma wykorzystanych encji, użytkowników i innych elementów.",
                                         "title": "Statystyki użycia"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Obejmuje to nazwy i możliwości twoich integracji i dodatków",
+                                        "description": "Nazwy, wersje i możliwości.",
                                         "title": "Użyte integracje i dodatki"
                                     },
                                     "usage": {
-                                        "description": "Obejmuje to nazwy twoich integracji",
+                                        "description": "Informacje o nazwie i wersji.",
                                         "title": "Używane integracje"
                                     }
                                 }
