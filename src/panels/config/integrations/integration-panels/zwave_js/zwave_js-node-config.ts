@@ -230,6 +230,9 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           .disabled=${!item.metadata.writeable}
           @value-changed=${this._numericInputChanged}
         >
+          ${item.metadata.unit
+            ? html`<span slot="suffix">${item.metadata.unit}</span>`
+            : ""}
         </paper-input> `;
     }
 
