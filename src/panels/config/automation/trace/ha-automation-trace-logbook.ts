@@ -20,19 +20,27 @@ export class HaAutomationTraceLogbook extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-logbook
-        .hass=${this.hass}
-        .entries=${this.logbookEntries}
-      ></ha-logbook>
-      <hat-logbook-note></hat-logbook-note>
+    return logbookEntries.length
+      ? html`
+          <ha-logbook
+            relative-time
+            .hass=${this.hass}
+            .entries=${logbookEntries}
+            .narrow=${this.narrow}
+          ></ha-logbook>
+          <hat-logbook-note></hat-logbook-note>
+        `
+      : html`<div class="padded-box">
+          No Logbook entries found for this step.
+        </div>`;
+  }
     `;
   }
 
   static get styles(): CSSResult[] {
     return [
       css`
-        :host {
-          display: block;
+        .padded-box {
           padding: 16px;
         }
       `,
