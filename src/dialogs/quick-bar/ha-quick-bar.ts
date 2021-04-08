@@ -238,7 +238,6 @@ export class QuickBar extends LitElement {
       <mwc-list-item
         .twoline=${Boolean(item.altText)}
         .item=${item}
-        hasMeta
         index=${ifDefined(index)}
         graphic="icon"
       >
@@ -268,10 +267,10 @@ export class QuickBar extends LitElement {
   private _renderCommandItem(item: CommandItem, index?: number) {
     return html`
       <mwc-list-item
-        .twoline=${Boolean(item.altText)}
         .item=${item}
         index=${ifDefined(index)}
         class="command-item"
+        hasMeta
       >
         <span>
           <ha-chip
