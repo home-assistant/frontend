@@ -40,6 +40,7 @@ import {
   mdiDownload,
 } from "@mdi/js";
 import "./ha-automation-trace-blueprint-config";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -378,11 +379,13 @@ export class HaAutomationTrace extends LitElement {
       this.automationId,
       this._runId!
     );
-    this._logbookEntries = await getLogbookDataForContext(
-      this.hass,
-      trace.timestamp.start,
-      trace.context.id
-    );
+    this._logbookEntries = isComponentLoaded(this.hass, "logbook")
+      ? await getLogbookDataForContext(
+          this.hass,
+          trace.timestamp.start,
+          trace.context.id
+        )
+      : [];
 
     this._trace = trace;
   }
