@@ -118,6 +118,8 @@ export class HaDateInput extends LitElement {
       !this.value ||
       (this._inited && !this._compareStringDates(ev.detail.value, this.value))
     ) {
+      this.value = ev.detail.value;
+      fireEvent(this, "change");
       fireEvent(this, "value-changed", { value: ev.detail.value });
     }
   }
