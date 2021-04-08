@@ -473,6 +473,7 @@
                 "unhealthy_title": "La teva instal·lació no és bona",
                 "unsupported_description": "A continuació es mostra una llista de problemes relacionats amb la instal·lació, fes clic als enllaços per obtenir informació sobre com resoldre'ls.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor no està habilitat a l'amfitrió",
                     "container": "Els contenidors són coneguts per causar problemes",
                     "content-trust": "Validació de continguts de confiança desactivada",
                     "dbus": "DBUS",
@@ -1872,28 +1873,28 @@
                                 "documentation": "Abans d'activar això, revisa't la documentació d'anàlisi a {link}, per entendre el què s'enviarà i com s'emmagatzemarà.",
                                 "header": "Dades analítiques",
                                 "instance_id": "ID de la instància: {huuid}",
-                                "introduction": "Comparteix dades analítiques de la teva instància. Aquestes dades estaran disponibles públicament a {link}",
-                                "learn_more": "Més informació sobre com les teves dades es processaran.",
+                                "introduction": "Comparteix informació de la teva instal·lació per ajudar a millorar Home Assistant i ajudar-nos a convèncer als fabricants perquè afegeixin control local i funcions centrades en la privadesa.",
+                                "learn_more": "Com processem les teves dades",
                                 "needs_base": "Has d'habilitar l'anàlisi bàsica perquè aquesta opció estigui disponible",
                                 "preference": {
                                     "base": {
-                                        "description": "Inclou l'ID de la instància, la versió i el tipus d'instal·lació",
+                                        "description": "ID de la instància, versió i tipus d'instal·lació.",
                                         "title": "Anàlisi bàsica"
                                     },
                                     "diagnostics": {
-                                        "description": "Comparteix informes d'errors i informació de diagnòstic",
+                                        "description": "Comparteix informes d'error quan es produeixin errors inesperats.",
                                         "title": "Diagnòstics"
                                     },
                                     "statistics": {
-                                        "description": "Això inclou un seguit d'elements de la teva instal·lació. Per obtenir-ne una llista completa, consulta la documentació",
+                                        "description": "Nombre total d'entitats utilitzades, usuaris i altres elements.",
                                         "title": "Estadístiques d’ús"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Inclou els noms i funcionalitats de les teves integracions i complements",
+                                        "description": "Noms, versions i funcionalitats.",
                                         "title": "Integracions i complements utilitzats"
                                     },
                                     "usage": {
-                                        "description": "Inclou els noms de les teves integracions",
+                                        "description": "Noms i informació de versió.",
                                         "title": "Integracions utilitzades"
                                     }
                                 }
@@ -2259,7 +2260,7 @@
                         "debug": "DEPURACIÓ",
                         "error": "ERROR",
                         "info": "INFO",
-                        "warning": "ADVERTÈNCIA"
+                        "warning": "ALERTA"
                     },
                     "load_full_log": "Carrega el registre complet de Home Assistant",
                     "loading_log": "Carregant el registre d'errors...",
@@ -3874,7 +3875,7 @@
                 },
                 "number_format": {
                     "description": "Trieu el format dels números.",
-                    "dropdown_label": "Format de número",
+                    "dropdown_label": "Format dels números",
                     "formats": {
                         "comma_decimal": "1,234,567.89",
                         "decimal_comma": "1.234.567,89",
@@ -3883,7 +3884,7 @@
                         "space_comma": "1 234 567,89",
                         "system": "Utilitza la configuració regional del sistema"
                     },
-                    "header": "Format de número"
+                    "header": "Format dels números"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

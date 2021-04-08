@@ -473,6 +473,7 @@
                 "unhealthy_title": "Paigaldus on vigane",
                 "unsupported_description": "Allpool on loend paigaldusel leitud probleemidest. Klõpsa linkidel, et saada teada, kuidas saad probleeme lahendada.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor pole hostis lubatud",
                     "container": "Konteinerid mis teadaolevalt põhjustavad probleeme",
                     "content-trust": "Sisu usaldatavuse kontroll on keelatud",
                     "dbus": "DBUS",
@@ -1872,28 +1873,28 @@
                                 "documentation": "Enne selle lubamist külasta kindlasti olekuteabe dokumentatsiooni lehte {link} et aru saada, mida saadetakse ja kuidas see talletatakse.",
                                 "header": "Olekuteave",
                                 "instance_id": "Eksemplari ID: {huuid}",
-                                "introduction": "Jaga oma Home Assistanti oleku teavet. Need andmed on avalikult saadaval aadressil {link}",
-                                "learn_more": "Uuri lisateavet andmete töötlemise kohta.",
+                                "introduction": "Jaga oma paigalduse teavet, et muuta Home Assistant paremaks ja aidata meil veenda tootjaid lisama kohalikku juhtimist ja privaatsusele keskendunud funktsioone.",
+                                "learn_more": "Uuri lisateavet andmete töötlemise kohta",
                                 "needs_base": "Selle suvandi kasutamiseks pead lubama põhilise olekuteabe",
                                 "preference": {
                                     "base": {
-                                        "description": "See hõlmab eksemplari ID-d, versiooni ja paigalduse tüüpi",
+                                        "description": "Eksemplari ID, versioon ja paigalduse tüüp.",
                                         "title": "Põhiline olekuteave"
                                     },
                                     "diagnostics": {
-                                        "description": "Jaga krahhiaruandeid ja diagnostikateavet",
+                                        "description": "Ootamatute vigade ilmnemisel jaga krahhiaruandeid.",
                                         "title": "Diagnostika"
                                     },
                                     "statistics": {
-                                        "description": "See hõlmab paigalduse elementide arvu, täieliku loendi saamiseks vaata dokumentatsiooni",
+                                        "description": "Kasutatud olemid, kasutajad ja muud elemendid kokku.",
                                         "title": "Kasutusstatistika"
                                     },
                                     "usage_supervisor": {
-                                        "description": "See hõlmab sidumiste ja lisandmoodulite nimesid ja võimalusi",
+                                        "description": "Nimed, versioonid ja võimalused.",
                                         "title": "Kasutusel olevad sidumised ja lisandmoodulid"
                                     },
                                     "usage": {
-                                        "description": "See hõlmab kasutusel olevate sidumiste nimesid",
+                                        "description": "Nimed ja teave versiooni kohta.",
                                         "title": "Kasutusel olevad sidumised"
                                     }
                                 }

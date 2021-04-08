@@ -473,6 +473,7 @@
                 "unhealthy_title": "安裝版本不健康",
                 "unsupported_description": "執行不健康的安裝版本可能會導致問題。下方列表為安裝問題清單，點選連結以了解如何解決問題。",
                 "unsupported_reason": {
+                    "apparmor": "主機端未啟用 AppArmor",
                     "container": "已知造成問題的 Container",
                     "content-trust": "內容認證已關閉",
                     "dbus": "DBUS",
@@ -1213,6 +1214,14 @@
                 "key_wrong_type": "視覺化編輯器不支援所提供的 \"{key}\" 數值。支援 ({type_correct}) 但卻收到 ({type_wrong})。",
                 "no_template_editor_support": "視覺化編輯器不支援模版",
                 "no_type_provided": "未提供類型。"
+            },
+            "supervisor": {
+                "ask": "尋求協助",
+                "observer": "檢查 Observer",
+                "reboot": "嘗試重啟主機",
+                "system_health": "檢查系統健康狀態",
+                "title": "無法載入 Supervisor 面板！",
+                "wait": "假如為剛剛啟動，請確認已經給予 Supervisor 足夠時間進行啟動。"
             }
         },
         "login-form": {
@@ -1864,28 +1873,28 @@
                                 "documentation": "於開啟前，請先確定您已經瀏覽分析資料文件頁面 {link}、並了解所要傳送的資料及相關資料如何儲存。",
                                 "header": "分析資料",
                                 "instance_id": "實例 ID：{huuid}",
-                                "introduction": "分享實例分析資料，資料將可透過 {link} 連結公開取得",
-                                "learn_more": "詳細了解資料會如何處理。",
+                                "introduction": "分享安裝資訊將有助於協助 Home Assistant 改善、並協助說服更多製造廠商包含本地端控制與隱私權相關功能。",
+                                "learn_more": "資料會如何處理。",
                                 "needs_base": "需要開啟基本分析、方能使用此選項",
                                 "preference": {
                                     "base": {
-                                        "description": "將包含實例 ID、版本與安裝類型",
+                                        "description": "實例 ID、版本與安裝類型。",
                                         "title": "基本分析"
                                     },
                                     "diagnostics": {
-                                        "description": "分享當機回報與診斷資訊",
+                                        "description": "當發生位預期錯誤時，分享當機回報。",
                                         "title": "診斷資料"
                                     },
                                     "statistics": {
-                                        "description": "將包含安裝的元件總數，完整列表、請參閱文件",
+                                        "description": "已使用實體、使用者與其他元素總數。",
                                         "title": "統計資訊"
                                     },
                                     "usage_supervisor": {
-                                        "description": "將包含整合與附加元件的名稱與功能",
+                                        "description": "名稱、版本與功能。",
                                         "title": "已使用整合與附加元件"
                                     },
                                     "usage": {
-                                        "description": "將包含整合名稱",
+                                        "description": "名稱與版本資訊。",
                                         "title": "已使用整合"
                                     }
                                 }
