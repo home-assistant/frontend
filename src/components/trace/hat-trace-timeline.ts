@@ -475,7 +475,7 @@ export class HaAutomationTracer extends LitElement {
       let extra: TemplateResult | undefined;
 
       switch (this.trace.script_execution) {
-        case "failed_condition":
+        case "failed_conditions":
           reason = "a condition failed";
           break;
         case "failed_single":
