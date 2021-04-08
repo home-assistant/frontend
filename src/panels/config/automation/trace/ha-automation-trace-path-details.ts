@@ -9,6 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import {
   ActionTraceStep,
   AutomationTraceExtended,
@@ -18,11 +19,11 @@ import {
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-code-editor";
 import type { NodeInfo } from "../../../../components/trace/hat-graph";
+import "../../../../components/trace/hat-logbook-note";
 import { HomeAssistant } from "../../../../types";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { LogbookEntry } from "../../../../data/logbook";
 import { traceTabStyles } from "./styles";
-import { classMap } from "lit-html/directives/class-map";
 import "../../../logbook/ha-logbook";
 
 @customElement("ha-automation-trace-path-details")
@@ -205,12 +206,15 @@ ${safeDump(trace.changed_variables).trimRight()}</pre
     }
 
     return entries.length
-      ? html`<ha-logbook
-          relative-time
-          .hass=${this.hass}
-          .entries=${entries}
-          .narrow=${this.narrow}
-        ></ha-logbook>`
+      ? html`
+          <ha-logbook
+            relative-time
+            .hass=${this.hass}
+            .entries=${entries}
+            .narrow=${this.narrow}
+          ></ha-logbook>
+          <hat-logbook-note></hat-logbook-note>
+        `
       : html`<div class="padded-box">
           No Logbook entries found for this step.
         </div>`;

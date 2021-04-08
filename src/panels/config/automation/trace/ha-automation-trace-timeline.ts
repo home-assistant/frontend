@@ -7,19 +7,20 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { AutomationTraceExtended } from "../../../../data/trace";
-import { HomeAssistant } from "../../../../types";
-import { LogbookEntry } from "../../../../data/logbook";
+import type { AutomationTraceExtended } from "../../../../data/trace";
+import type { HomeAssistant } from "../../../../types";
+import type { LogbookEntry } from "../../../../data/logbook";
 import "../../../../components/trace/hat-trace-timeline";
-import { NodeInfo } from "../../../../components/trace/hat-graph";
+import type { NodeInfo } from "../../../../components/trace/hat-graph";
+import "../../../../components/trace/hat-logbook-note";
 
 @customElement("ha-automation-trace-timeline")
 export class HaAutomationTraceTimeline extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trace!: AutomationTraceExtended;
+  @property({ attribute: false }) public trace!: AutomationTraceExtended;
 
-  @property() public logbookEntries!: LogbookEntry[];
+  @property({ attribute: false }) public logbookEntries!: LogbookEntry[];
 
   @property() public selected!: NodeInfo;
 
@@ -33,6 +34,7 @@ export class HaAutomationTraceTimeline extends LitElement {
         allowPick
       >
       </hat-trace-timeline>
+      <hat-logbook-note></hat-logbook-note>
     `;
   }
 
