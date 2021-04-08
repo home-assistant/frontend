@@ -115,7 +115,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         ? html`
             <ha-icon-button
               icon=${this._computeControlIcon(stateObj)}
-              @click=${this._playPause}
+              @click=${this._playPauseStop}
             ></ha-icon-button>
           `
         : ""}
@@ -256,8 +256,17 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     );
   }
 
-  private _playPause(): void {
-    this.hass!.callService("media_player", "media_play_pause", {
+  private _playPauseStop(): void {
+    const stateObj = this.hass!.states[this._config!.entity];
+
+    const service =
+      stateObj.state !== "playing"
+        ? "media_play"
+        : supportsFeature(stateObj, SUPPORT_PAUSE)
+        ? "media_pause"
+        : "media_stop";
+
+    this.hass!.callService("media_player", service, {
       entity_id: this._config!.entity,
     });
   }
