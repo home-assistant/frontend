@@ -143,7 +143,7 @@ class HatScriptGraph extends LitElement {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
     const trace_path = trace?.[0].result
       ? trace[0].result.choice === "default"
-        ? [config.choose.length]
+        ? [config.choose?.length || 0]
         : [trace[0].result.choice]
       : [];
     return html`
@@ -167,7 +167,7 @@ class HatScriptGraph extends LitElement {
           nofocus
         ></hat-graph-node>
 
-        ${config.choose.map((branch, i) => {
+        ${config.choose?.map((branch, i) => {
           const branch_path = `${path}/choose/${i}`;
           const track_this =
             trace !== undefined && trace[0].result?.choice === i;
@@ -466,6 +466,10 @@ class HatScriptGraph extends LitElement {
         </div>
       `;
     } catch (err) {
+      if (__DEV__) {
+        // eslint-disable-next-line no-console
+        console.log("Error creating script graph:", err);
+      }
       return html`
         <div class="error">
           Error rendering graph. Please download trace and share with the
