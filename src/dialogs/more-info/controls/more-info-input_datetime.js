@@ -16,7 +16,6 @@ class DatetimeInput extends PolymerElement {
           <div>
             <ha-date-input
               id="dateInput"
-              on-value-changed="dateTimeChanged"
               label="Date"
               value="{{selectedDate}}"
             ></ha-date-input>
