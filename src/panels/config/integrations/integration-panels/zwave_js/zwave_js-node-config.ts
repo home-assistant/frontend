@@ -232,7 +232,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         >
           ${item.metadata.unit
             ? html`<span slot="suffix">${item.metadata.unit}</span>`
-            : ``}
+            : ""}
         </paper-input> `;
     }
 
