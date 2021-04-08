@@ -1,4 +1,6 @@
-import { fuzzyScore } from "./filter";
+import { html, TemplateResult } from "lit-html";
+import { createMatches, FuzzyScore, fuzzyScore } from "./filter";
+import { unsafeHTML } from "lit-html/directives/unsafe-html";
 
 /**
  * Determine whether a sequence of letters exists in another string,
@@ -15,6 +17,7 @@ export const fuzzySequentialMatch = (
   item: ScorableTextItem
 ) => {
   let topScore = Number.NEGATIVE_INFINITY;
+  const decoratedWords: TemplateResult[][] = [];
 
   for (const word of item.strings) {
     const scores = fuzzyScore(
@@ -26,6 +29,8 @@ export const fuzzySequentialMatch = (
       0,
       true
     );
+
+    decoratedWords.push(decorateMatch(word, scores));
 
     if (!scores) {
       continue;
@@ -45,7 +50,11 @@ export const fuzzySequentialMatch = (
     return undefined;
   }
 
-  return topScore;
+  return {
+    score: topScore,
+    strings: item.strings,
+    decoratedWords,
+  };
 };
 
 /**
@@ -64,6 +73,7 @@ export const fuzzySequentialMatch = (
 export interface ScorableTextItem {
   score?: number;
   strings: string[];
+  decoratedWords?: TemplateResult[][];
 }
 
 type FuzzyFilterSort = <T extends ScorableTextItem>(
@@ -74,11 +84,46 @@ type FuzzyFilterSort = <T extends ScorableTextItem>(
 export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
   return items
     .map((item) => {
-      item.score = fuzzySequentialMatch(filter, item);
+      const match = fuzzySequentialMatch(filter, item);
+
+      item.score = match?.score;
+      item.decoratedWords = match?.decoratedWords;
+
       return item;
     })
     .filter((item) => item.score !== undefined)
     .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
       scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
     );
+};
+
+type MatchDecorator = (word: string, scores?: FuzzyScore) => TemplateResult[];
+export const decorateMatch: MatchDecorator = (word, scores) => {
+  if (!scores) {
+    return [html`${word}`];
+  }
+
+  const decoratedText: TemplateResult[] = [];
+  const matches = createMatches(scores);
+  let pos = 0;
+
+  let actualWord = "";
+  for (const match of matches) {
+    actualWord += word.substring(pos, match.start);
+    actualWord += `<span class="highlight-letter">${word.substring(
+      match.start,
+      match.end
+    )}</span>`;
+    pos = match.end;
+  }
+  actualWord += word.substring(pos);
+
+  const fragments = actualWord.split("::");
+
+  for (let i = 0; i < fragments.length; i++) {
+    const fragment = fragments[i];
+    decoratedText.push(html`${unsafeHTML(fragment)}`);
+  }
+
+  return decoratedText;
 };
