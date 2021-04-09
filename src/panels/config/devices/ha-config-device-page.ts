@@ -728,7 +728,7 @@ export class HaConfigDevicePage extends LitElement {
           }
 
           if (!newName && !newEntityId) {
-            return new Promise((resolve) => resolve());
+            return undefined;
           }
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
