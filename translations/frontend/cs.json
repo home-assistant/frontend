@@ -29,7 +29,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Automatika",
+                "auto": "Auto",
                 "off": "Neaktivní",
                 "on": "Aktivní"
             },
@@ -54,7 +54,7 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "Automatika",
+                "auto": "Auto",
                 "away": "Pryč",
                 "baby": "Dítě",
                 "boost": "Boost",
@@ -792,7 +792,7 @@
                     "was_unplugged": "bylo odpojeno",
                     "was_unsafe": "bylo v nebezpečí"
                 },
-                "show_trace": "Zobrazit stopu"
+                "show_trace": "Zobrazit trasu"
             },
             "media-browser": {
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
@@ -1496,7 +1496,7 @@
                         "move_down": "Posunout dolů",
                         "move_up": "Posunout nahoru",
                         "save": "Uložit",
-                        "show_trace": "Zobrazit trasování",
+                        "show_trace": "Zobrazit trasu",
                         "triggers": {
                             "add": "Přidat spouštěč",
                             "delete": "Smazat",
@@ -2042,7 +2042,7 @@
                         },
                         "enable_selected": {
                             "button": "Povolit vybrané",
-                            "confirm_text": "Pokud budou nyní deaktivovány, budou opět k dispozici v Home Assistant.",
+                            "confirm_text": "Tím se znovu zpřístupní v Home Assistant, pokud jsou nyní deaktivované.",
                             "confirm_title": "Chcete povolit {number} {number, plural,\n  one {entitu}\n  few {entity}\n  other {entit}\n}?"
                         },
                         "filter": {
