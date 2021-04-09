@@ -550,6 +550,7 @@ export class HaSceneEditor extends SubscribeMixin(
       }
     }
   }
+
   private _pickEntity(entityId: string) {
     if (this._entities.includes(entityId)) {
       return;
