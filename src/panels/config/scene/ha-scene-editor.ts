@@ -497,6 +497,7 @@ export class HaSceneEditor extends SubscribeMixin(
   private _showMoreInfo(ev: Event) {
     const entityId = (ev.currentTarget as any).entityId;
     fireEvent(this, "hass-more-info", { entityId });
+    this._pickEntity(entityId);
   }
 
   private async _loadConfig() {
@@ -549,10 +550,7 @@ export class HaSceneEditor extends SubscribeMixin(
       }
     }
   }
-
-  private _entityPicked(ev: CustomEvent) {
-    const entityId = ev.detail.value;
-    (ev.target as any).value = "";
+  private _pickEntity(entityId: string) {
     if (this._entities.includes(entityId)) {
       return;
     }
@@ -571,6 +569,12 @@ export class HaSceneEditor extends SubscribeMixin(
     }
 
     this._dirty = true;
+  }
+
+  private _entityPicked(ev: CustomEvent) {
+    const entityId = ev.detail.value;
+    (ev.target as any).value = "";
+    this._pickEntity(entityId);
   }
 
   private _deleteEntity(ev: Event) {
