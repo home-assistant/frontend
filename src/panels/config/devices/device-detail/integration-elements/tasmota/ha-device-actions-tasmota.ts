@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -39,7 +39,7 @@ export class HaDeviceActionsTasmota extends LitElement {
     await removeTasmotaDeviceEntry(this.hass!, this.device.id);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

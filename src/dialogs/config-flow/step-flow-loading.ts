@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -22,7 +22,7 @@ class StepFlowLoading extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .init-spinner {
         padding: 50px 100px;

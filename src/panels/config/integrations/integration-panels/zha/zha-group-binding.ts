@@ -4,10 +4,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -45,15 +45,15 @@ export class ZHAGroupBindingControl extends LitElement {
 
   @property() public selectedDevice?: ZHADevice;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _bindTargetIndex = -1;
+  @state() private _bindTargetIndex = -1;
 
-  @internalProperty() private groups: ZHAGroup[] = [];
+  @state() private groups: ZHAGroup[] = [];
 
-  @internalProperty() private _selectedClusters: string[] = [];
+  @state() private _selectedClusters: string[] = [];
 
-  @internalProperty() private _clusters: Cluster[] = [];
+  @state() private _clusters: Cluster[] = [];
 
   private _groupToBind?: ZHAGroup;
 
@@ -250,7 +250,7 @@ export class ZHAGroupBindingControl extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

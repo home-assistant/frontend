@@ -2,7 +2,7 @@ import "@material/mwc-dialog";
 import type { Dialog } from "@material/mwc-dialog";
 import { style } from "@material/mwc-dialog/mwc-dialog-css";
 import { mdiClose } from "@mdi/js";
-import { css, CSSResult, customElement, html } from "lit-element";
+import { css, CSSResultGroup, customElement, html } from "lit-element";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import type { Constructor, HomeAssistant } from "../types";
 import "./ha-icon-button";
@@ -31,7 +31,7 @@ export class HaDialog extends MwcDialog {
     return html`<slot name="heading"> ${super.renderHeading()} </slot>`;
   }
 
-  protected static get styles(): CSSResult[] {
+  protected static get styles(): CSSResultGroup {
     return [
       style,
       css`

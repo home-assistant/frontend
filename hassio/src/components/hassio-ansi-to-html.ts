@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -25,7 +25,7 @@ class HassioAnsiToHtml extends LitElement {
     return html`${this._parseTextToColoredPre(this.content)}`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       pre {
         overflow-x: auto;

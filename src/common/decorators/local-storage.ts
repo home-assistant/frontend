@@ -1,5 +1,5 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { PropertyDeclaration, UpdatingElement } from "lit-element";
+import { PropertyDeclaration, ReactiveElement } from "lit-element";
 import type { ClassElement } from "../../types";
 
 type Callback = (oldValue: any, newValue: any) => void;
@@ -86,42 +86,69 @@ export const LocalStorage = (
   storageKey?: string,
   property?: boolean,
   propertyOptions?: PropertyDeclaration
-): any => (clsElement: ClassElement) => {
-  const key = String(clsElement.key);
-  storageKey = storageKey || String(clsElement.key);
-  const initVal = clsElement.initializer ? clsElement.initializer() : undefined;
+): any => {
+  return (clsElement: ClassElement) => {
+    const key = String(clsElement.key);
+    storageKey = storageKey || String(clsElement.key);
+    const initVal = clsElement.initializer
+      ? clsElement.initializer()
+      : undefined;
 
-  storage.addFromStorage(storageKey);
+    storage.addFromStorage(storageKey);
 
-  const subscribe = (el: UpdatingElement): UnsubscribeFunc =>
-    storage.subscribeChanges(storageKey!, (oldValue) => {
-      el.requestUpdate(clsElement.key, oldValue);
-    });
+    const subscribe = (el: ReactiveElement): UnsubscribeFunc =>
+      storage.subscribeChanges(storageKey!, (oldValue) => {
+        el.requestUpdate(clsElement.key, oldValue);
+      });
 
-  const getValue = (): any =>
-    storage.hasKey(storageKey!) ? storage.getValue(storageKey!) : initVal;
+    const getValue = (): any => {
+      return storage.hasKey(storageKey!)
+        ? storage.getValue(storageKey!)
+        : initVal;
+    };
 
-  const setValue = (el: UpdatingElement, value: any) => {
-    let oldValue: unknown | undefined;
-    if (property) {
-      oldValue = getValue();
-    }
-    storage.setValue(storageKey!, value);
-    if (property) {
-      el.requestUpdate(clsElement.key, oldValue);
-    }
-  };
+    const setValue = (el: ReactiveElement, value: any) => {
+      let oldValue: unknown | undefined;
+      if (property) {
+        oldValue = getValue();
+      }
+      storage.setValue(storageKey!, value);
+      if (property) {
+        el.requestUpdate(clsElement.key, oldValue);
+      }
+    };
 
-  return {
-    kind: "method",
-    placement: "prototype",
-    key: clsElement.key,
-    descriptor: {
-      set(this: UpdatingElement, value: unknown) {
-        setValue(this, value);
+    return {
+      kind: "method",
+      placement: "prototype",
+      key: clsElement.key,
+      descriptor: {
+        set(this: ReactiveElement, value: unknown) {
+          setValue(this, value);
+        },
+        get() {
+          return getValue();
+        },
+        enumerable: true,
+        configurable: true,
       },
-      get() {
-        return getValue();
+      finisher(cls: typeof ReactiveElement) {
+        if (property) {
+          const connectedCallback = cls.prototype.connectedCallback;
+          const disconnectedCallback = cls.prototype.disconnectedCallback;
+          cls.prototype.connectedCallback = function () {
+            connectedCallback.call(this);
+            this[`__unbsubLocalStorage${key}`] = subscribe(this);
+          };
+          cls.prototype.disconnectedCallback = function () {
+            disconnectedCallback.call(this);
+            this[`__unbsubLocalStorage${key}`]();
+          };
+          cls.createProperty(clsElement.key, {
+            noAccessor: true,
+            ...propertyOptions,
+          });
+        }
       },
       enumerable: true,
       configurable: true,

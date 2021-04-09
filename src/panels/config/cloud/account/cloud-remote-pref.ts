@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -156,7 +156,7 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .preparing {
         padding: 0 16px 16px;

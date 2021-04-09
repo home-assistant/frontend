@@ -3,9 +3,9 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -45,9 +45,9 @@ export class ZHAClusters extends LitElement {
 
   @property() public showHelp = false;
 
-  @internalProperty() private _selectedClusterIndex = -1;
+  @state() private _selectedClusterIndex = -1;
 
-  @internalProperty() private _clusters: Cluster[] = [];
+  @state() private _clusters: Cluster[] = [];
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
@@ -132,7 +132,7 @@ export class ZHAClusters extends LitElement {
     this.showHelp = !this.showHelp;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

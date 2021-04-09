@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -59,7 +59,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureEntityCardConfig;
+  @state() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
     return 3;
@@ -174,7 +174,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         min-height: 75px;

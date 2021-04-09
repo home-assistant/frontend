@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -58,7 +58,7 @@ class HaConfigAreaPage extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _related?: RelatedResult;
+  @state() private _related?: RelatedResult;
 
   private _area = memoizeOne((areaId: string, areas: AreaRegistryEntry[]):
     | AreaRegistryEntry
@@ -399,7 +399,7 @@ class HaConfigAreaPage extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

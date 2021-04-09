@@ -1,7 +1,7 @@
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -32,7 +32,7 @@ export class HaSettingsRow extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

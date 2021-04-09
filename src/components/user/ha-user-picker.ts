@@ -5,7 +5,7 @@ import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -96,7 +96,7 @@ class HaUserPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

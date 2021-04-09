@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -26,7 +26,7 @@ export class HaDeviceActionsZha extends LitElement {
 
   @property() public device!: DeviceRegistryEntry;
 
-  @internalProperty() private _zhaDevice?: ZHADevice;
+  @state() private _zhaDevice?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
@@ -145,7 +145,7 @@ export class HaDeviceActionsZha extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

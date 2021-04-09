@@ -3,10 +3,10 @@ import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -44,17 +44,17 @@ import { EditViewDialogParams } from "./show-edit-view-dialog";
 export class HuiDialogEditView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _params?: EditViewDialogParams;
+  @state() private _params?: EditViewDialogParams;
 
-  @internalProperty() private _config?: LovelaceViewConfig;
+  @state() private _config?: LovelaceViewConfig;
 
-  @internalProperty() private _badges?: LovelaceBadgeConfig[];
+  @state() private _badges?: LovelaceBadgeConfig[];
 
-  @internalProperty() private _cards?: LovelaceCardConfig[];
+  @state() private _cards?: LovelaceCardConfig[];
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
-  @internalProperty() private _curTab?: string;
+  @state() private _curTab?: string;
 
   private _curTabIndex = 0;
 
@@ -347,7 +347,7 @@ export class HuiDialogEditView extends LitElement {
     return this._params!.viewIndex === undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

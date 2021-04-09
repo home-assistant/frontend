@@ -1,8 +1,8 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  internalProperty,
+  CSSResultGroup,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -23,9 +23,9 @@ class MoreInfoGroup extends LitElement {
 
   @property() public stateObj?: GroupEntity;
 
-  @internalProperty() private _groupDomainStateObj?: HassEntity;
+  @state() private _groupDomainStateObj?: HassEntity;
 
-  @internalProperty() private _moreInfoType?: string;
+  @state() private _moreInfoType?: string;
 
   protected updated(changedProperties: PropertyValues) {
     if (
@@ -93,7 +93,7 @@ class MoreInfoGroup extends LitElement {
     })}`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       state-card-content {
         display: block;

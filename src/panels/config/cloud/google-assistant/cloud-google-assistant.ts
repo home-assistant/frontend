@@ -8,10 +8,10 @@ import {
 } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -64,7 +64,7 @@ class CloudGoogleAssistant extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _entities?: GoogleEntity[];
+  @state() private _entities?: GoogleEntity[];
 
   @property()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
@@ -486,7 +486,7 @@ class CloudGoogleAssistant extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

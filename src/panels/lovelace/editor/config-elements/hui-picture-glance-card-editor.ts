@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -52,9 +52,9 @@ export class HuiPictureGlanceCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureGlanceCardConfig;
+  @state() private _config?: PictureGlanceCardConfig;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: PictureGlanceCardConfig): void {
     assert(config, cardConfigStruct);
@@ -260,7 +260,7 @@ export class HuiPictureGlanceCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

@@ -1,10 +1,10 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -31,7 +31,7 @@ export class HuiMarkdownCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: MarkdownCardConfig;
+  @state() private _config?: MarkdownCardConfig;
 
   public setConfig(config: MarkdownCardConfig): void {
     assert(config, cardConfigStruct);
@@ -119,7 +119,7 @@ export class HuiMarkdownCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

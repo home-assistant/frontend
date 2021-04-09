@@ -3,7 +3,7 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -220,7 +220,7 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

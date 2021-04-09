@@ -10,7 +10,7 @@ import {
 } from "leaflet";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -304,7 +304,7 @@ export class HaLocationsEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

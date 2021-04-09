@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -33,7 +33,7 @@ interface SensorEntityConfig extends EntitiesCardEntityConfig {
 class HuiSensorEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SensorEntityConfig;
+  @state() private _config?: SensorEntityConfig;
 
   public setConfig(config: SensorEntityConfig): void {
     if (!config) {
@@ -95,7 +95,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         text-align: right;

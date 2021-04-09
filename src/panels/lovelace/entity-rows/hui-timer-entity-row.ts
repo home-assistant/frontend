@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -20,9 +20,9 @@ import { EntityConfig } from "./types";
 class HuiTimerEntityRow extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
-  @internalProperty() private _timeRemaining?: number;
+  @state() private _timeRemaining?: number;
 
   private _interval?: number;
 

@@ -1,7 +1,7 @@
 import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -129,7 +129,7 @@ class HassioAddonRepositoryEl extends LitElement {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       hassioStyle,
       css`

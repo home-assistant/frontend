@@ -4,10 +4,10 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -39,9 +39,9 @@ class PanelCalendar extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @internalProperty() private _calendars: Calendar[] = [];
+  @state() private _calendars: Calendar[] = [];
 
-  @internalProperty() private _events: CalendarEvent[] = [];
+  @state() private _events: CalendarEvent[] = [];
 
   @LocalStorage("deSelectedCalendars", true)
   private _deSelectedCalendars: string[] = [];
@@ -175,7 +175,7 @@ class PanelCalendar extends LitElement {
     );
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -58,7 +58,7 @@ class HassErrorScreen extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       css`
         :host {

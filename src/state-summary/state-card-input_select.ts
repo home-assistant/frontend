@@ -4,7 +4,7 @@ import type { PaperItemElement } from "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -61,7 +61,7 @@ class StateCardInputSelect extends LitElement {
     await setInputSelectOption(this.hass, this.stateObj.entity_id, option);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

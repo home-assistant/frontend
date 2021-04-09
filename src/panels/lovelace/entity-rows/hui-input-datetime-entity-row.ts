@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -24,7 +24,7 @@ import type { EntityConfig, LovelaceRow } from "./types";
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   @query("paper-time-input") private _timeInputEl?: PaperTimeInput;
 

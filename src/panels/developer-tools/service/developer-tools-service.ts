@@ -3,9 +3,9 @@ import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { safeLoad } from "js-yaml";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -42,7 +42,7 @@ class HaPanelDevService extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _uiAvailable = true;
+  @state() private _uiAvailable = true;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
@@ -381,7 +381,7 @@ class HaPanelDevService extends LitElement {
     this._yamlEditor?.setValue(this._serviceData);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

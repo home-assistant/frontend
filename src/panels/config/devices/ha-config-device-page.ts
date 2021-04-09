@@ -1,10 +1,10 @@
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -75,7 +75,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _related?: RelatedResult;
+  @state() private _related?: RelatedResult;
 
   private _device = memoizeOne(
     (
@@ -748,7 +748,7 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -36,7 +36,7 @@ class UserBadge extends LitElement {
 
   @property({ attribute: false }) public user?: User | CurrentUser;
 
-  @internalProperty() private _personPicture?: string;
+  @state() private _personPicture?: string;
 
   private _personEntityId?: string;
 
@@ -102,7 +102,7 @@ class UserBadge extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: contents;

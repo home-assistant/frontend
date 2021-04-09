@@ -8,10 +8,10 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -62,13 +62,13 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @internalProperty() private _storageItems?: Zone[];
+  @state() private _storageItems?: Zone[];
 
-  @internalProperty() private _stateItems?: HassEntity[];
+  @state() private _stateItems?: HassEntity[];
 
-  @internalProperty() private _activeEntry = "";
+  @state() private _activeEntry = "";
 
-  @internalProperty() private _canEditCore = false;
+  @state() private _canEditCore = false;
 
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
 
@@ -462,7 +462,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hass-loading-screen {
         --app-header-background-color: var(--sidebar-background-color);

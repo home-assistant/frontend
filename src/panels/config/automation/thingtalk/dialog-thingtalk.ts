@@ -4,10 +4,10 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -40,15 +40,15 @@ export interface PlaceholderContainer {
 class DialogThingtalk extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: ThingtalkDialogParams;
+  @state() private _params?: ThingtalkDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _placeholders?: PlaceholderContainer;
+  @state() private _placeholders?: PlaceholderContainer;
 
   @query("#input") private _input?: PaperInputElement;
 
@@ -257,7 +257,7 @@ class DialogThingtalk extends LitElement {
     this._input!.value = (ev.target as HTMLAnchorElement).innerText;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

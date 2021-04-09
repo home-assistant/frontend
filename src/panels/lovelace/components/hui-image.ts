@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -50,9 +50,9 @@ export class HuiImage extends LitElement {
 
   @property() public darkModeFilter?: string;
 
-  @internalProperty() private _loadError?: boolean;
+  @state() private _loadError?: boolean;
 
-  @internalProperty() private _cameraImageSrc?: string;
+  @state() private _cameraImageSrc?: string;
 
   @query("img") private _image!: HTMLImageElement;
 
@@ -237,7 +237,7 @@ export class HuiImage extends LitElement {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       img {
         display: block;

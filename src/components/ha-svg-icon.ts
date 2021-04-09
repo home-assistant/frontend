@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   LitElement,
   property,
@@ -26,7 +26,7 @@ export class HaSvgIcon extends LitElement {
     </svg>`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: var(--ha-icon-display, inline-flex);

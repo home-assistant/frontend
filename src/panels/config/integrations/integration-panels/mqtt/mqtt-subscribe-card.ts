@@ -2,10 +2,10 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -19,11 +19,11 @@ import { HomeAssistant } from "../../../../../types";
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _topic = "";
+  @state() private _topic = "";
 
-  @internalProperty() private _subscribed?: () => void;
+  @state() private _subscribed?: () => void;
 
-  @internalProperty() private _messages: Array<{
+  @state() private _messages: Array<{
     id: number;
     message: MQTTMessage;
     payload: string;
@@ -129,7 +129,7 @@ class MqttSubscribeCard extends LitElement {
     ];
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       form {
         display: block;

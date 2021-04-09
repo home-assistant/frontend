@@ -8,7 +8,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -43,7 +43,7 @@ export class HaConfigHelpers extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _stateItems: HassEntity[] = [];
+  @state() private _stateItems: HassEntity[] = [];
 
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => {

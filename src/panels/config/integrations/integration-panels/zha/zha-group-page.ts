@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -46,16 +46,16 @@ export class ZHAGroupPage extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @internalProperty() private _processingAdd = false;
+  @state() private _processingAdd = false;
 
-  @internalProperty() private _processingRemove = false;
+  @state() private _processingRemove = false;
 
-  @internalProperty()
+  @state()
   private _filteredDeviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @internalProperty() private _selectedDevicesToAdd: string[] = [];
+  @state() private _selectedDevicesToAdd: string[] = [];
 
-  @internalProperty() private _selectedDevicesToRemove: string[] = [];
+  @state() private _selectedDevicesToRemove: string[] = [];
 
   @query("#addMembers", true)
   private _zhaAddMembersDataTable!: ZHADeviceEndpointDataTable;
@@ -285,7 +285,7 @@ export class ZHAGroupPage extends LitElement {
     navigate(this, `/config/zha/groups`, true);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         hass-subpage {

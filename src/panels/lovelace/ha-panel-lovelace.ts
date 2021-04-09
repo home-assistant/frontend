@@ -1,12 +1,6 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
-import {
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, state, LitElement, property, TemplateResult } from "lit-element";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -55,9 +49,9 @@ class LovelacePanel extends LitElement {
   @property()
   private _state?: "loading" | "loaded" | "error" | "yaml-editor" = "loading";
 
-  @internalProperty() private _errorMsg?: string;
+  @state() private _errorMsg?: string;
 
-  @internalProperty() private lovelace?: Lovelace;
+  @state() private lovelace?: Lovelace;
 
   private _ignoreNextUpdateEvent = false;
 

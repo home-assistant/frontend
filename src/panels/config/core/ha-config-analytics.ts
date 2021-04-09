@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -28,9 +28,9 @@ import type { HomeAssistant } from "../../../types";
 class ConfigAnalytics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _analyticsDetails?: Analytics;
+  @state() private _analyticsDetails?: Analytics;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   protected render(): TemplateResult {
     const error = this._error
@@ -101,7 +101,7 @@ class ConfigAnalytics extends LitElement {
     };
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

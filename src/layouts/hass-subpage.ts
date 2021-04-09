@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   eventOptions,
   html,
@@ -62,7 +62,7 @@ class HassSubpage extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

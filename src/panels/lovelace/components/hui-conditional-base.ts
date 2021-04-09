@@ -2,7 +2,7 @@ import {
   customElement,
   property,
   PropertyValues,
-  UpdatingElement,
+  ReactiveElement,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";
@@ -14,7 +14,7 @@ import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 
 @customElement("hui-conditional-base")
-export class HuiConditionalBase extends UpdatingElement {
+export class HuiConditionalBase extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public editMode?: boolean;

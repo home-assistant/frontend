@@ -1,9 +1,4 @@
-import {
-  internalProperty,
-  property,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
+import { state, property, PropertyValues, ReactiveElement } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { evaluateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -12,10 +7,10 @@ import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceBadge } from "../types";
 import { EntityFilterBadgeConfig } from "./types";
 
-class EntityFilterBadge extends UpdatingElement implements LovelaceBadge {
+class EntityFilterBadge extends ReactiveElement implements LovelaceBadge {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _config?: EntityFilterBadgeConfig;
+  @state() private _config?: EntityFilterBadgeConfig;
 
   private _elements?: LovelaceBadge[];
 

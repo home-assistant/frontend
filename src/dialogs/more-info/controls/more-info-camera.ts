@@ -2,9 +2,9 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -27,9 +27,9 @@ class MoreInfoCamera extends LitElement {
 
   @property() public stateObj?: CameraEntity;
 
-  @internalProperty() private _cameraPrefs?: CameraPreferences;
+  @state() private _cameraPrefs?: CameraPreferences;
 
-  @internalProperty() private _attached = false;
+  @state() private _attached = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -113,7 +113,7 @@ class MoreInfoCamera extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-checkbox {
         position: absolute;

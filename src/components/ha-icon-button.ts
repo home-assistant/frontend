@@ -1,7 +1,7 @@
 import "@material/mwc-icon-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -30,7 +30,7 @@ export class HaIconButton extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

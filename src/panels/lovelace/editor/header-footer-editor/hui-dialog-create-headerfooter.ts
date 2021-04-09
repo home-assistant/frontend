@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -25,7 +25,7 @@ export class HuiCreateDialogHeaderFooter
   implements HassDialog<CreateHeaderFooterDialogParams> {
   @property({ attribute: false }) protected hass!: HomeAssistant;
 
-  @internalProperty() private _params?: CreateHeaderFooterDialogParams;
+  @state() private _params?: CreateHeaderFooterDialogParams;
 
   public async showDialog(
     params: CreateHeaderFooterDialogParams
@@ -117,7 +117,7 @@ export class HuiCreateDialogHeaderFooter
     this.closeDialog();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

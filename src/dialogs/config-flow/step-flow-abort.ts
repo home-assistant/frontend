@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -47,7 +47,7 @@ class StepFlowAbort extends LitElement {
     fireEvent(this, "flow-update", { step: undefined });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configFlowContentStyles;
   }
 }

@@ -8,7 +8,7 @@ import {
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   property,
   PropertyValues,
   TemplateResult,
@@ -66,13 +66,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   public translationFragment = "page-onboarding";
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _restoring = false;
+  @state() private _restoring = false;
 
-  @internalProperty() private _supervisor?: boolean;
+  @state() private _supervisor?: boolean;
 
-  @internalProperty() private _steps?: OnboardingStep[];
+  @state() private _steps?: OnboardingStep[];
 
   protected render(): TemplateResult {
     const step = this._curStep()!;

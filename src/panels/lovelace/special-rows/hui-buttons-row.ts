@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -25,7 +25,7 @@ export class HuiButtonsRow extends LitElement implements LovelaceRow {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: ButtonsRowConfig): void {
     this._configEntities = processConfigEntities(config.entities).map(

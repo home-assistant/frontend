@@ -15,11 +15,11 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   eventOptions,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -171,15 +171,15 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public editMode = false;
 
-  @internalProperty() private _externalConfig?: ExternalConfig;
+  @state() private _externalConfig?: ExternalConfig;
 
-  @internalProperty() private _notifications?: PersistentNotification[];
+  @state() private _notifications?: PersistentNotification[];
 
   // property used only in css
   // @ts-ignore
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
-  @internalProperty() private _renderEmptySortable = false;
+  @state() private _renderEmptySortable = false;
 
   private _mouseLeaveTimeout?: number;
 
@@ -524,7 +524,7 @@ class HaSidebar extends LitElement {
       ]);
 
       const style = document.createElement("style");
-      style.innerHTML = sortStylesImport.sortableStyles.cssText;
+      style.innerHTML = (sortStylesImport.sortableStyles as CSSResult).cssText;
       this.shadowRoot!.appendChild(style);
 
       Sortable = sortableImport.Sortable;
@@ -741,7 +741,7 @@ class HaSidebar extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
       css`

@@ -2,10 +2,10 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -70,7 +70,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AlarmPanelCardConfig;
+  @state() private _config?: AlarmPanelCardConfig;
 
   @query("#alarmCode") private _input?: PaperInputElement;
 
@@ -269,7 +269,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         padding-bottom: 16px;

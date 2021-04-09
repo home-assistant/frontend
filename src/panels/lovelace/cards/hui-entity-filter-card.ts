@@ -1,9 +1,4 @@
-import {
-  internalProperty,
-  property,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
+import { state, property, PropertyValues, ReactiveElement } from "lit-element";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
@@ -15,7 +10,7 @@ import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { EntityFilterCardConfig } from "./types";
 
-class EntityFilterCard extends UpdatingElement implements LovelaceCard {
+class EntityFilterCard extends ReactiveElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
@@ -46,7 +41,7 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
 
   @property() public editMode = false;
 
-  @internalProperty() private _config?: EntityFilterCardConfig;
+  @state() private _config?: EntityFilterCardConfig;
 
   private _element?: LovelaceCard;
 

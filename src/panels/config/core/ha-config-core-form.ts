@@ -5,10 +5,10 @@ import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -25,15 +25,15 @@ import type { HomeAssistant } from "../../../types";
 class ConfigCoreForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _working = false;
+  @state() private _working = false;
 
-  @internalProperty() private _location!: [number, number];
+  @state() private _location!: [number, number];
 
-  @internalProperty() private _elevation!: string;
+  @state() private _elevation!: string;
 
-  @internalProperty() private _unitSystem!: ConfigUpdateValues["unit_system"];
+  @state() private _unitSystem!: ConfigUpdateValues["unit_system"];
 
-  @internalProperty() private _timeZone!: string;
+  @state() private _timeZone!: string;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
@@ -224,7 +224,7 @@ class ConfigCoreForm extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .row {
         display: flex;

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { UpdatingElement } from "lit-element";
+import { ReactiveElement } from "lit-element";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import {
   closeDialog,
@@ -13,7 +13,7 @@ import { Constructor } from "../types";
 const DEBUG = false;
 
 export const urlSyncMixin = <
-  T extends Constructor<UpdatingElement & ProvideHassElement>
+  T extends Constructor<ReactiveElement & ProvideHassElement>
 >(
   superClass: T
 ) =>

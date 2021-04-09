@@ -3,7 +3,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -134,7 +134,7 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

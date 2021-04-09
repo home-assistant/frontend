@@ -6,7 +6,7 @@ import {
   css,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -39,7 +39,7 @@ export class HaFileUpload extends LitElement {
   @property({ type: Boolean, attribute: "auto-open-file-dialog" })
   private autoOpenFileDialog = false;
 
-  @internalProperty() private _drag = false;
+  @state() private _drag = false;
 
   @query("#input") private _input?: HTMLInputElement;
 

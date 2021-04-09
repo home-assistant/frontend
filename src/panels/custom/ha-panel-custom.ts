@@ -1,4 +1,4 @@
-import { property, PropertyValues, UpdatingElement } from "lit-element";
+import { property, PropertyValues, ReactiveElement } from "lit-element";
 import { navigate } from "../../common/navigate";
 import { CustomPanelInfo } from "../../data/panel_custom";
 import { HomeAssistant, Route } from "../../types";
@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-export class HaPanelCustom extends UpdatingElement {
+export class HaPanelCustom extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;

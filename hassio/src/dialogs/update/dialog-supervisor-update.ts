@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -27,15 +27,15 @@ import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
 class DialogSupervisorUpdate extends LitElement {
   public hass!: HomeAssistant;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _createSnapshot = true;
+  @state() private _createSnapshot = true;
 
-  @internalProperty() private _action: "snapshot" | "update" | null = null;
+  @state() private _action: "snapshot" | "update" | null = null;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty()
+  @state()
   private _dialogParams?: SupervisorDialogSupervisorUpdateParams;
 
   public async showDialog(
@@ -173,7 +173,7 @@ class DialogSupervisorUpdate extends LitElement {
     this.closeDialog();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

@@ -8,7 +8,7 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -312,7 +312,7 @@ class HaBlueprintOverview extends LitElement {
     fireEvent(this, "reload-blueprints");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

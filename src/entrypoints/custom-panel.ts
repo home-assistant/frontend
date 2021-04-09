@@ -101,7 +101,7 @@ function initialize(
         }
 
         const errorStyle = document.createElement("style");
-        errorStyle.innerHTML = baseEntrypointStyles.cssText;
+        errorStyle.innerHTML = (baseEntrypointStyles as CSSResult).cssText;
         document.body.appendChild(errorStyle);
 
         errorScreen.hass = properties.hass;

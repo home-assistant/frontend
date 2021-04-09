@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -28,15 +28,15 @@ import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry
 class DialogConfigEntrySystemOptions extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _disableNewEntities!: boolean;
+  @state() private _disableNewEntities!: boolean;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: ConfigEntrySystemOptionsDialogParams;
+  @state() private _params?: ConfigEntrySystemOptionsDialogParams;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public async showDialog(
     params: ConfigEntrySystemOptionsDialogParams
@@ -154,7 +154,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -2,10 +2,10 @@ import { mdiHelpCircle } from "@mdi/js";
 import { HassService, HassServiceTarget } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -57,7 +57,7 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
 
-  @internalProperty() private _checkedKeys = new Set();
+  @state() private _checkedKeys = new Set();
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -395,7 +395,7 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-settings-row {
         padding: var(--service-control-padding, 0 16px);

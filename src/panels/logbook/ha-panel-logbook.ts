@@ -5,7 +5,7 @@ import {
   css,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -49,13 +49,13 @@ export class HaPanelLogbook extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @internalProperty() private _ranges?: DateRangePickerRanges;
+  @state() private _ranges?: DateRangePickerRanges;
 
   private _fetchUserDone?: Promise<unknown>;
 
-  @internalProperty() private _userIdToName = {};
+  @state() private _userIdToName = {};
 
-  @internalProperty() private _traceContexts: TraceContexts = {};
+  @state() private _traceContexts: TraceContexts = {};
 
   public constructor() {
     super();

@@ -1,7 +1,7 @@
 import { mdiChevronDown } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -59,7 +59,7 @@ class HaExpansionPanel extends LitElement {
     fireEvent(this, "expanded-changed", { expanded: this.expanded });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

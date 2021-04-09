@@ -3,7 +3,7 @@ import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -19,7 +19,7 @@ export class HaIconButtonArrowPrev extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _icon = mdiArrowLeft;
+  @state() private _icon = mdiArrowLeft;
 
   public connectedCallback() {
     super.connectedCallback();

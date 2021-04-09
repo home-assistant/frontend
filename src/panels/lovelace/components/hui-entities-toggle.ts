@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -22,7 +22,7 @@ class HuiEntitiesToggle extends LitElement {
 
   @property({ attribute: false }) protected hass?: HomeAssistant;
 
-  @internalProperty() private _toggleEntities?: string[];
+  @state() private _toggleEntities?: string[];
 
   public updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -54,7 +54,7 @@ class HuiEntitiesToggle extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         width: 38px;

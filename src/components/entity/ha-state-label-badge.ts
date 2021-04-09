@@ -1,10 +1,10 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -35,7 +35,7 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
-  @internalProperty() private _timerTimeRemaining?: number;
+  @state() private _timerTimeRemaining?: number;
 
   private _connected?: boolean;
 
@@ -209,7 +209,7 @@ export class HaStateLabelBadge extends LitElement {
     this._timerTimeRemaining = timerTimeRemaining(stateObj);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         cursor: pointer;

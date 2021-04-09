@@ -3,10 +3,10 @@ import { mdiMenu } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -25,7 +25,7 @@ class HaMenuButton extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _hasNotifications = false;
+  @state() private _hasNotifications = false;
 
   private _alwaysVisible = false;
 
@@ -125,7 +125,7 @@ class HaMenuButton extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         position: relative;

@@ -5,7 +5,7 @@ import { PaperListboxElement } from "@polymer/paper-listbox";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   LitElement,
   property,
@@ -317,7 +317,7 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

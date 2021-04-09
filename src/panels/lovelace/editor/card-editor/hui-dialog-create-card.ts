@@ -2,10 +2,10 @@ import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -45,13 +45,13 @@ export class HuiCreateDialogCard
   implements HassDialog<CreateCardDialogParams> {
   @property({ attribute: false }) protected hass!: HomeAssistant;
 
-  @internalProperty() private _params?: CreateCardDialogParams;
+  @state() private _params?: CreateCardDialogParams;
 
-  @internalProperty() private _viewConfig!: LovelaceViewConfig;
+  @state() private _viewConfig!: LovelaceViewConfig;
 
-  @internalProperty() private _selectedEntities: string[] = [];
+  @state() private _selectedEntities: string[] = [];
 
-  @internalProperty() private _currTabIndex = 0;
+  @state() private _currTabIndex = 0;
 
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
@@ -151,7 +151,7 @@ export class HuiCreateDialogCard
     ev.stopPropagation();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

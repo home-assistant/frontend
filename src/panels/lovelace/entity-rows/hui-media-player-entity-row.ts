@@ -1,10 +1,10 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -42,11 +42,11 @@ import type { EntityConfig, LovelaceRow } from "./types";
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
-  @internalProperty() private _narrow?: boolean = false;
+  @state() private _narrow?: boolean = false;
 
-  @internalProperty() private _veryNarrow?: boolean = false;
+  @state() private _veryNarrow?: boolean = false;
 
   private _resizeObserver?: ResizeObserver;
 
@@ -308,7 +308,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

@@ -1,9 +1,9 @@
 import {
   customElement,
-  internalProperty,
+  state,
   property,
   PropertyValues,
-  UpdatingElement,
+  ReactiveElement,
 } from "lit-element";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
@@ -39,7 +39,7 @@ declare global {
 }
 
 @customElement("hui-view")
-export class HUIView extends UpdatingElement {
+export class HUIView extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
@@ -48,9 +48,9 @@ export class HUIView extends UpdatingElement {
 
   @property({ type: Number }) public index!: number;
 
-  @internalProperty() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+  @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
-  @internalProperty() private _badges: LovelaceBadge[] = [];
+  @state() private _badges: LovelaceBadge[] = [];
 
   private _layoutElementType?: string;
 

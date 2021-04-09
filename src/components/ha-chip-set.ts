@@ -2,7 +2,7 @@
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -48,7 +48,7 @@ export class HaChipSet extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
 

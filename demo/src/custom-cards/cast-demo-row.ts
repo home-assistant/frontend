@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -20,7 +20,7 @@ import { HomeAssistant } from "../../../src/types";
 class CastDemoRow extends LitElement implements LovelaceRow {
   public hass!: HomeAssistant;
 
-  @internalProperty() private _castManager?: CastManager | null;
+  @state() private _castManager?: CastManager | null;
 
   public setConfig(_config: CastConfig): void {
     // No config possible.
@@ -73,7 +73,7 @@ class CastDemoRow extends LitElement implements LovelaceRow {
     this.style.display = this._castManager ? "" : "none";
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -27,7 +27,7 @@ import { showThingtalkDialog } from "./thingtalk/show-dialog-thingtalk";
 class DialogNewAutomation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
   public showDialog(): void {
     this._opened = true;
@@ -125,7 +125,7 @@ class DialogNewAutomation extends LitElement {
     this.closeDialog();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

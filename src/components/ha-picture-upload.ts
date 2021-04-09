@@ -5,7 +5,7 @@ import "@polymer/paper-input/paper-input-container";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -36,7 +36,7 @@ export class HaPictureUpload extends LitElement {
 
   @property({ type: Number }) public size = 512;
 
-  @internalProperty() private _uploading = false;
+  @state() private _uploading = false;
 
   public render(): TemplateResult {
     return html`

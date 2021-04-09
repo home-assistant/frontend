@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -67,7 +67,7 @@ class HassioSupervisorInfo extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _metrics?: HassioStats;
+  @state() private _metrics?: HassioStats;
 
   protected render(): TemplateResult | void {
     const metrics = [
@@ -504,7 +504,7 @@ class HassioSupervisorInfo extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

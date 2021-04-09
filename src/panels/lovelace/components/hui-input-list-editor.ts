@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -97,7 +97,7 @@ export class HuiInputListEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-icon-button {
         --mdc-icon-button-size: 24px;

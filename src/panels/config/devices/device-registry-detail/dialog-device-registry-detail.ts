@@ -5,10 +5,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -27,17 +27,17 @@ import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-
 class DialogDeviceRegistryDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _nameByUser!: string;
+  @state() private _nameByUser!: string;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: DeviceRegistryDetailDialogParams;
+  @state() private _params?: DeviceRegistryDetailDialogParams;
 
-  @internalProperty() private _areaId?: string | null;
+  @state() private _areaId?: string | null;
 
-  @internalProperty() private _disabledBy!: string | null;
+  @state() private _disabledBy!: string | null;
 
-  @internalProperty() private _submitting?: boolean;
+  @state() private _submitting?: boolean;
 
   public async showDialog(
     params: DeviceRegistryDetailDialogParams
@@ -159,7 +159,7 @@ class DialogDeviceRegistryDetail extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

@@ -8,10 +8,10 @@ import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -99,11 +99,11 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _warnings?: string[];
+  @state() private _warnings?: string[];
 
-  @internalProperty() private _uiModeAvailable = true;
+  @state() private _uiModeAvailable = true;
 
-  @internalProperty() private _yamlMode = false;
+  @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -339,7 +339,7 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

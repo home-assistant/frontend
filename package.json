@@ -115,8 +115,8 @@
     "js-yaml": "^3.13.1",
     "leaflet": "^1.4.0",
     "leaflet-draw": "^1.0.4",
-    "lit-element": "^2.5.0",
-    "lit-html": "^1.4.0",
+    "lit-element": "3.0.0-pre.4",
+    "lit-html": "2.0.0-pre.7",
     "lit-virtualizer": "^0.4.2",
     "marked": "2.0.0",
     "mdn-polyfills": "^5.16.0",
@@ -241,8 +241,8 @@
   "resolutions": {
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@polymer/polymer": "3.1.0",
-    "lit-html": "1.4.0",
-    "lit-element": "2.5.0"
+    "lit-html": "2.0.0-pre.7",
+    "lit-element": "3.0.0-pre.4"
   },
   "main": "src/home-assistant.js",
   "husky": {

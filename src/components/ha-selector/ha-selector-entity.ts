@@ -1,11 +1,5 @@
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { customElement, html, state, LitElement, property } from "lit-element";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
 import { EntitySelector } from "../../data/selector";
@@ -19,7 +13,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
 
   @property() public selector!: EntitySelector;
 
-  @internalProperty() private _entityPlaformLookup?: Record<string, string>;
+  @state() private _entityPlaformLookup?: Record<string, string>;
 
   @property() public value?: any;
 

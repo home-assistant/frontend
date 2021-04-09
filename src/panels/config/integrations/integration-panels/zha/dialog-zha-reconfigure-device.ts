@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -34,22 +34,22 @@ import { createCloseHeading } from "../../../../../components/ha-dialog";
 class DialogZHAReconfigureDevice extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _status?: string;
+  @state() private _status?: string;
 
-  @internalProperty() private _stages?: string[];
+  @state() private _stages?: string[];
 
-  @internalProperty() private _clusterConfigurationStatuses?: Map<
+  @state() private _clusterConfigurationStatuses?: Map<
     number,
     ClusterConfigurationStatus
   > = new Map();
 
-  @internalProperty() private _params:
+  @state() private _params:
     | ZHAReconfigureDeviceDialogParams
     | undefined = undefined;
 
-  @internalProperty() private _allSuccessful = true;
+  @state() private _allSuccessful = true;
 
-  @internalProperty() private _showDetails = false;
+  @state() private _showDetails = false;
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
@@ -397,7 +397,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._showDetails = !this._showDetails;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

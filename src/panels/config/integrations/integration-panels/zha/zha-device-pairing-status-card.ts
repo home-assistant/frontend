@@ -2,10 +2,10 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -36,7 +36,7 @@ class ZHADevicePairingStatusCard extends LitElement {
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
   protected render(): TemplateResult {
     if (!this.hass || !this.device) {
@@ -102,7 +102,7 @@ class ZHADevicePairingStatusCard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

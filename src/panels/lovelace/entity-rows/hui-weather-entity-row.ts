@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -41,7 +41,7 @@ import type { LovelaceRow } from "./types";
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntitiesCardEntityConfig;
+  @state() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config?.entity) {
@@ -133,7 +133,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       weatherSVGStyles,
       css`

@@ -4,7 +4,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -109,7 +109,7 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

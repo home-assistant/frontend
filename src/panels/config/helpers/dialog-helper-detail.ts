@@ -3,10 +3,10 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -49,15 +49,15 @@ const HELPERS = {
 export class DialogHelperDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _item?: Helper;
+  @state() private _item?: Helper;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _platform?: string;
+  @state() private _platform?: string;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   @query(".form") private _form?: HTMLDivElement;
 
@@ -207,7 +207,7 @@ export class DialogHelperDetail extends LitElement {
     this._error = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

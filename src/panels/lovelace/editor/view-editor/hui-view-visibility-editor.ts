@@ -2,10 +2,10 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -40,9 +40,9 @@ export class HuiViewVisibilityEditor extends LitElement {
 
   @property() public _config!: LovelaceViewConfig;
 
-  @internalProperty() private _users!: User[];
+  @state() private _users!: User[];
 
-  @internalProperty() private _visible!: boolean | ShowViewConfig[];
+  @state() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) =>
     users.sort((a, b) => compare(a.name, b.name))
@@ -134,7 +134,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     fireEvent(this, "view-visibility-changed", { visible: this._visible });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

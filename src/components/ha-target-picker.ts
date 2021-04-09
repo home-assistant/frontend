@@ -16,10 +16,10 @@ import {
 } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -86,15 +86,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @internalProperty() private _areas?: { [areaId: string]: AreaRegistryEntry };
+  @state() private _areas?: { [areaId: string]: AreaRegistryEntry };
 
-  @internalProperty() private _devices?: {
+  @state() private _devices?: {
     [deviceId: string]: DeviceRegistryEntry;
   };
 
-  @internalProperty() private _entities?: EntityRegistryEntry[];
+  @state() private _entities?: EntityRegistryEntry[];
 
-  @internalProperty() private _addMode?: "area_id" | "entity_id" | "device_id";
+  @state() private _addMode?: "area_id" | "entity_id" | "device_id";
 
   @query("#input") private _inputElement?;
 
@@ -534,7 +534,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return true;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
       .mdc-chip {

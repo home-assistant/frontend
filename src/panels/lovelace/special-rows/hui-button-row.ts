@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -24,7 +24,7 @@ import { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
 export class HuiButtonRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ButtonRowConfig;
+  @state() private _config?: ButtonRowConfig;
 
   public setConfig(config: ButtonRowConfig): void {
     if (!config) {
@@ -81,7 +81,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

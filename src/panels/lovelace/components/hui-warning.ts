@@ -1,7 +1,7 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -27,7 +27,7 @@ export class HuiWarning extends LitElement {
     return html` <slot></slot> `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
