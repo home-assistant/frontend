@@ -53,9 +53,9 @@ class UserBadge extends LitElement {
       this.hass.states[this._personEntityId] !==
         oldHass.states[this._personEntityId]
     ) {
-      const state = this.hass.states[this._personEntityId];
-      if (state) {
-        this._personPicture = state.attributes.entity_picture;
+      const entityState = this.hass.states[this._personEntityId];
+      if (entityState) {
+        this._personPicture = entityState.attributes.entity_picture;
       } else {
         this._getPersonPicture();
       }

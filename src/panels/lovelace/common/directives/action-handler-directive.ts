@@ -6,6 +6,7 @@ import {
   directive,
   Directive,
   DirectiveParameters,
+  // eslint-disable-next-line import/extensions
 } from "lit-html/directive.js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";

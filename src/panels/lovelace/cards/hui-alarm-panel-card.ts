@@ -173,13 +173,13 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             ? this._config.states!
             : ["disarm"]
           ).map(
-            (state) => html`
+            (stateAction) => html`
               <mwc-button
-                .action="${state}"
+                .action="${stateAction}"
                 @click="${this._handleActionClick}"
                 outlined
               >
-                ${this._actionDisplay(state)}
+                ${this._actionDisplay(stateAction)}
               </mwc-button>
             `
           )}
@@ -226,22 +226,22 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _stateIconLabel(state: string): string {
-    const stateLabel = state.split("_").pop();
+  private _stateIconLabel(entityState: string): string {
+    const stateLabel = entityState.split("_").pop();
     return stateLabel === "disarmed" ||
       stateLabel === "triggered" ||
       !stateLabel
       ? ""
-      : this._stateDisplay(state);
+      : this._stateDisplay(entityState);
   }
 
-  private _actionDisplay(state: string): string {
-    return this.hass!.localize(`ui.card.alarm_control_panel.${state}`);
+  private _actionDisplay(entityState: string): string {
+    return this.hass!.localize(`ui.card.alarm_control_panel.${entityState}`);
   }
 
-  private _stateDisplay(state: string): string {
+  private _stateDisplay(entityState: string): string {
     return this.hass!.localize(
-      `component.alarm_control_panel.state._.${state}`
+      `component.alarm_control_panel.state._.${entityState}`
     );
   }
 

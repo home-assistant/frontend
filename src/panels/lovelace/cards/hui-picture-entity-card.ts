@@ -122,7 +122,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     const name = this._config.name || computeStateName(stateObj);
-    const state = computeStateDisplay(
+    const entityState = computeStateDisplay(
       this.hass!.localize,
       stateObj,
       this.hass.locale
@@ -133,13 +133,13 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       footer = html`
         <div class="footer both">
           <div>${name}</div>
-          <div>${state}</div>
+          <div>${entityState}</div>
         </div>
       `;
     } else if (this._config.show_name) {
       footer = html`<div class="footer">${name}</div>`;
     } else if (this._config.show_state) {
-      footer = html`<div class="footer state">${state}</div>`;
+      footer = html`<div class="footer state">${entityState}</div>`;
     }
 
     return html`

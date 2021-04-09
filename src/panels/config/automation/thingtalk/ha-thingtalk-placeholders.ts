@@ -198,13 +198,13 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                                       "device_id",
                                     ])
                                   )}`}
-                                  .entityFilter=${(state: HassEntity) => {
+                                  .entityFilter=${(entityState: HassEntity) => {
                                     const devId = this._placeholderValues[type][
                                       placeholder.index
                                     ][idx].device_id;
                                     return this._deviceEntityLookup[
                                       devId
-                                    ].includes(state.entity_id);
+                                    ].includes(entityState.entity_id);
                                   }}
                                 ></ha-entity-picker>
                               `

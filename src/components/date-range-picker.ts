@@ -1,5 +1,6 @@
 // @ts-nocheck
 import wrap from "@vue/web-component-wrapper";
+// eslint-disable-next-line import/extensions
 import { customElement } from "lit-element/decorators.js";
 import Vue from "vue";
 import DateRangePicker from "vue2-daterange-picker";

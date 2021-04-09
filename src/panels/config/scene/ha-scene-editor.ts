@@ -686,9 +686,9 @@ export class HaSceneEditor extends SubscribeMixin(
   private _calculateStates(): SceneEntities {
     const output: SceneEntities = {};
     this._entities.forEach((entityId) => {
-      const state = this._getCurrentState(entityId);
-      if (state) {
-        output[entityId] = state;
+      const entityState = this._getCurrentState(entityId);
+      if (entityState) {
+        output[entityId] = entityState;
       }
     });
     return output;
@@ -698,11 +698,11 @@ export class HaSceneEditor extends SubscribeMixin(
     if (entityId in this._storedStates) {
       return;
     }
-    const state = this._getCurrentState(entityId);
-    if (!state) {
+    const entityState = this._getCurrentState(entityId);
+    if (!entityState) {
       return;
     }
-    this._storedStates[entityId] = state;
+    this._storedStates[entityId] = entityState;
   }
 
   private _getCurrentState(entityId: string) {

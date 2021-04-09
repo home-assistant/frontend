@@ -5,6 +5,7 @@ import {
   ElementPart,
   PartInfo,
   PartType,
+  // eslint-disable-next-line import/extensions
 } from "lit-html/directive.js";
 
 export const dynamicElement = directive(

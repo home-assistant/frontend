@@ -38,7 +38,7 @@ class MoreInfoGroup extends LitElement {
 
     const states = this.stateObj.attributes.entity_id
       .map((entity_id) => this.hass.states[entity_id])
-      .filter((state) => state);
+      .filter((entityState) => entityState);
 
     if (!states.length) {
       this._groupDomainStateObj = undefined;
@@ -53,7 +53,9 @@ class MoreInfoGroup extends LitElement {
     // first child above the children of the current group
     if (
       groupDomain !== "group" &&
-      states.every((state) => groupDomain === computeStateDomain(state))
+      states.every(
+        (entityState) => groupDomain === computeStateDomain(entityState)
+      )
     ) {
       this._groupDomainStateObj = {
         ...baseStateObj,
@@ -80,13 +82,13 @@ class MoreInfoGroup extends LitElement {
         })
       : ""}
     ${this.stateObj.attributes.entity_id.map((entity_id) => {
-      const state = this.hass!.states[entity_id];
-      if (!state) {
+      const entityState = this.hass!.states[entity_id];
+      if (!entityState) {
         return "";
       }
       return html`
         <state-card-content
-          .stateObj=${state}
+          .stateObj=${entityState}
           .hass=${this.hass}
         ></state-card-content>
       `;

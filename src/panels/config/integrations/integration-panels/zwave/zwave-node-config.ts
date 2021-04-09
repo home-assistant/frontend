@@ -107,9 +107,9 @@ export class ZwaveNodeConfig extends LitElement {
                 @iron-select=${this._selectedConfigParameterChanged}
               >
                 ${this.config.map(
-                  (state) => html`
+                  (entityState) => html`
                     <paper-item>
-                      ${state.key}: ${state.value.label}
+                      ${entityState.key}: ${entityState.value.label}
                     </paper-item>
                   `
                 )}
@@ -135,8 +135,8 @@ export class ZwaveNodeConfig extends LitElement {
                             @iron-select=${this._configValueSelectChanged}
                           >
                             ${this._configItem.value.data_items.map(
-                              (state) => html`
-                                <paper-item>${state}</paper-item>
+                              (entityState) => html`
+                                <paper-item>${entityState}</paper-item>
                               `
                             )}
                           </paper-listbox>

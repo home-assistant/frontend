@@ -33,8 +33,7 @@ const cardConfigStruct = object({
 const includeDomains = ["alarm_control_panel"];
 
 @customElement("hui-alarm-panel-card-editor")
-export class HuiAlarmPanelCardEditor
-  extends LitElement
+export class HuiAlarmPanelCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -94,9 +93,9 @@ export class HuiAlarmPanelCardEditor
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <span>Used States</span> ${this._states.map(
-          (state, index) => html`
+          (entityState, index) => html`
             <div class="states">
-              <paper-item>${state}</paper-item>
+              <paper-item>${entityState}</paper-item>
               <ha-icon
                 class="deleteState"
                 .value="${index}"
@@ -113,7 +112,9 @@ export class HuiAlarmPanelCardEditor
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
-            ${states.map((state) => html` <paper-item>${state}</paper-item> `)}
+            ${states.map(
+              (entityState) => html` <paper-item>${entityState}</paper-item> `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
         <hui-theme-select-editor

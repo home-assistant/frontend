@@ -95,7 +95,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const state = Number(stateObj.state);
+    const entityState = Number(stateObj.state);
 
     if (stateObj.state === UNAVAILABLE) {
       return html`
@@ -109,7 +109,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (isNaN(state)) {
+    if (isNaN(entityState)) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -135,7 +135,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             .unit_of_measurement ||
           ""}
           style=${styleMap({
-            "--gauge-color": this._computeSeverity(state),
+            "--gauge-color": this._computeSeverity(entityState),
           })}
         ></ha-gauge>
         <div class="name">

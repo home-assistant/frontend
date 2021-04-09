@@ -291,8 +291,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               @iron-select=${this._dropdownSelected}
             >
               ${Object.entries(item.metadata.states).map(
-                ([key, state]) => html`
-                  <paper-item .value=${key}>${state}</paper-item>
+                ([key, entityState]) => html`
+                  <paper-item .value=${key}>${entityState}</paper-item>
                 `
               )}
             </paper-listbox>
