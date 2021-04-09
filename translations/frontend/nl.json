@@ -1433,9 +1433,9 @@
                                 },
                                 "sun": {
                                     "after": "Na:",
-                                    "after_offset": "Na offset (optioneel)",
+                                    "after_offset": "Afwijking na (optioneel)",
                                     "before": "Voor:",
-                                    "before_offset": "Voor offset (optioneel)",
+                                    "before_offset": "Afwijking voor (optioneel)",
                                     "label": "Zon",
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
@@ -1561,7 +1561,7 @@
                                 "sun": {
                                     "event": "Gebeurtenis:",
                                     "label": "Zon",
-                                    "offset": "Offset (optioneel)",
+                                    "offset": "Afwijking (optioneel)",
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
                                 },
@@ -1873,28 +1873,28 @@
                                 "documentation": "Voordat u dit inschakelt, moet u de analytics documentatie pagina {link} bezoeken om te begrijpen wat u verstuurt en hoe het wordt opgeslagen.",
                                 "header": "Analytics",
                                 "instance_id": "Instantie-ID: {huuid}",
-                                "introduction": "Deel analyses vanuit uw instantie. Deze gegevens zijn openbaar beschikbaar op {link}",
-                                "learn_more": "Lees meer over hoe uw gegevens worden verwerkt.",
+                                "introduction": "Deel uw installatie-informatie om Home Assistant te helpen verbeteren en ons te helpen fabrikanten te overtuigen om lokale controle en privacygerichte functies toe te voegen.",
+                                "learn_more": "Hoe wij uw gegevens verwerken",
                                 "needs_base": "U moet basisanalyses inschakelen om deze optie beschikbaar te maken",
                                 "preference": {
                                     "base": {
-                                        "description": "Dit bevat de instantie-ID, de versie en het installatietype",
+                                        "description": "Instantie-ID, versie en installatietype.",
                                         "title": "Basisanalyses"
                                     },
                                     "diagnostics": {
-                                        "description": "Deel crashrapporten en diagnostische informatie",
+                                        "description": "Deel crashrapporten wanneer onverwachte fouten optreden.",
                                         "title": "Diagnostiek"
                                     },
                                     "statistics": {
-                                        "description": "Dit omvat een telling van elementen in uw installatie, voor een volledige lijst zie de documentatie",
+                                        "description": "Totaal gebruikte entiteiten, gebruikers en andere elementen.",
                                         "title": "Gebruiksstatistieken"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Dit omvat de namen en mogelijkheden van uw integraties en add-ons",
+                                        "description": "Namen, versies en mogelijkheden.",
                                         "title": "Gebruikte integraties en add-ons"
                                     },
                                     "usage": {
-                                        "description": "Dit bevat de namen van uw integraties",
+                                        "description": "Namen en versie-informatie.",
                                         "title": "Gebruikte integraties"
                                     }
                                 }

@@ -473,6 +473,7 @@
                 "unhealthy_title": "系统状态不佳",
                 "unsupported_description": "以下是系统存在的问题的列表，请点击链接以了解如何解决问题。",
                 "unsupported_reason": {
+                    "apparmor": "主机上未启用AppArmor",
                     "container": "已知会导致问题的容器",
                     "content-trust": "内容信任验证已禁用",
                     "dbus": "DBUS",
@@ -1213,6 +1214,14 @@
                 "key_wrong_type": "“{key}”的值不受可视化编辑器支持。支持 ({type_correct}) 但得到 ({type_wrong})。",
                 "no_template_editor_support": "可视化编辑器不支持模板",
                 "no_type_provided": "未提供类型。"
+            },
+            "supervisor": {
+                "ask": "寻求帮助",
+                "observer": "检查 Observer",
+                "reboot": "请尝试重启主机",
+                "system_health": "检查系统健康状况",
+                "title": "无法加载 Supervisor 面板！",
+                "wait": "如果系统刚刚启动，请确保已等候足够的时间以便 Supervisor 启动完成。"
             }
         },
         "login-form": {
@@ -1864,8 +1873,8 @@
                                 "documentation": "在启用此功能之前，请确保您已阅读了分析文档页面 {link}，以了解将发送的内容及其存储方式。",
                                 "header": "分析",
                                 "instance_id": "实例ID: {huuid}",
-                                "introduction": "共享实例的分析。此数据将在 {link} 公开。",
-                                "learn_more": "详细了解您的数据将被如何处理。",
+                                "introduction": "分享您的安装信息，让 Home Assistant 变得更好，并帮助我们与厂商沟通，增加本地控制和注重隐私的功能。",
+                                "learn_more": "详细了解您的数据将被如何处理",
                                 "needs_base": "需要启用基础分析才能启用此选项",
                                 "preference": {
                                     "base": {
@@ -1873,7 +1882,7 @@
                                         "title": "基础分析"
                                     },
                                     "diagnostics": {
-                                        "description": "共享崩溃报告和诊断信息",
+                                        "description": "发生意外错误时共享崩溃报告。",
                                         "title": "诊断"
                                     },
                                     "statistics": {
@@ -1881,11 +1890,11 @@
                                         "title": "使用情况统计"
                                     },
                                     "usage_supervisor": {
-                                        "description": "包括集成和加载项的名称和能力",
+                                        "description": "名称，版本和功能。",
                                         "title": "使用的集成和加载项"
                                     },
                                     "usage": {
-                                        "description": "包括集成的名称",
+                                        "description": "名称和版本信息。",
                                         "title": "使用的集成"
                                     }
                                 }

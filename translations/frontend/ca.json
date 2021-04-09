@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Connexió perduda. Tornant a connectar...",
             "dismiss": "Omet",
+            "intergration_starting": "Iniciant {integration}, no estarà tot disponible fins que acabi.",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "started": "Home Assistant s'ha iniciat!",
             "starting": "Home Assistant està iniciant-se, no estarà tot disponible fins que acabi",
-            "triggered": "{name} disparat/ada"
+            "triggered": "{name} disparat/ada",
+            "wrapping_up_startup": "Finalitzant l'arrencada, no estarà tot disponible fins que acabi."
         },
         "panel": {
             "config": {
@@ -1606,7 +1608,7 @@
                         "delete_automation": "Elimina l'automatització",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
                         "dev_automation": "Depurar automatització",
-                        "dev_only_editable": "Només es poden depurar les automatitzacions definides al fitxer automations.yaml.",
+                        "dev_only_editable": "Només es poden depurar les automatitzacions que tinguin un identificador únic.",
                         "duplicate": "Duplica",
                         "duplicate_automation": "Duplica l'automatització",
                         "edit_automation": "Edita automatització",
