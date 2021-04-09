@@ -66,7 +66,7 @@ export interface AutomationTrace {
   };
   script_execution:
     | // The script was not executed because the automation's condition failed
-    "failed_condition"
+    "failed_conditions"
     // The script was not executed because the run mode is single
     | "failed_single"
     // The script was not executed because max parallel runs would be exceeded
@@ -80,8 +80,7 @@ export interface AutomationTrace {
     | "error"
     // The exception is in the trace itself or in the last element of the trace
     // Script execution stopped by async_stop called on the script run because home assistant is shutting down, script mode is SCRIPT_MODE_RESTART etc:
-    | "cancelled"
-    | string;
+    | "cancelled";
   // Automation only, should become it's own type when we support script in frontend
   trigger: string;
 }
