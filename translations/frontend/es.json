@@ -768,7 +768,7 @@
                 "messages": {
                     "became_unavailable": "dejó de estar disponible",
                     "changed_to_state": "cambiado a {state}",
-                    "cleared_device_class": "borrado (no se detecta {device_class})",
+                    "cleared_device_class": "despejado (no se detecta {device_class})",
                     "detected_device_class": "detectado {device_class}",
                     "is_closing": "se está cerrando",
                     "is_opening": "se está abriendo",
@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Conexión perdida. Reconectando...",
             "dismiss": "Descartar",
+            "intergration_starting": "Iniciando {integration}, no estará todo disponible hasta que finalice.",
             "service_call_failed": "Error al llamar al servicio {service}.",
             "started": "¡Home Assistant se ha iniciado!",
             "starting": "Home Assistant se está iniciando, no estará todo disponible hasta que finalice.",
-            "triggered": "Activado {name}"
+            "triggered": "Activado {name}",
+            "wrapping_up_startup": "Completando el inicio, no estará todo disponible hasta que finalice."
         },
         "panel": {
             "config": {
@@ -1606,7 +1608,7 @@
                         "delete_automation": "Eliminar la automatización",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta automatización?",
                         "dev_automation": "Depurar automatización",
-                        "dev_only_editable": "Solo las automatizaciones definidas en automations.yaml se pueden depurar",
+                        "dev_only_editable": "Solo las automatizaciones que tienen un ID único asignado se pueden depurar.",
                         "duplicate": "Duplicar",
                         "duplicate_automation": "Duplicar la automatización",
                         "edit_automation": "Editar automatización",

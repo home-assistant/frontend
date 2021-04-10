@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
             "dismiss": "Avvis",
+            "intergration_starting": "Fra og med {integration} vil ikke alt være tilgjengelig før den er ferdig.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
             "started": "Home Assistant har startet!",
             "starting": "Home Assistant starter, alt er ikke tilgjengelig før starten er fullført.",
-            "triggered": "Utløst {name}"
+            "triggered": "Utløst {name}",
+            "wrapping_up_startup": "Ved oppstart, vil ikke alt være tilgjengelig før den er ferdig."
         },
         "panel": {
             "config": {
@@ -1606,7 +1608,7 @@
                         "delete_automation": "Slett automasjon",
                         "delete_confirm": "Er du sikker på at du vil slette denne automasjonen?",
                         "dev_automation": "Feilsøk automatisering",
-                        "dev_only_editable": "Bare automatiseringer definert i automations.yaml kan feilsøkes.",
+                        "dev_only_editable": "Bare automatisering som har en unik ID tildelt, kan feilsøkes.",
                         "duplicate": "Dupliser",
                         "duplicate_automation": "Dupliser automasjon",
                         "edit_automation": "Rediger automasjon",

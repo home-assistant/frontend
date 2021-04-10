@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "連線中斷。重新連線中...",
             "dismiss": "關閉",
+            "intergration_starting": "{integration} 正在啟動，在完成載入前、可能無法顯示所有功能。",
             "service_call_failed": "服務 {service} 執行失敗。",
             "started": "Home Assistant 已啟動！",
             "starting": "Home Assistant 正在啟動，在完成載入前、可能無法顯示所有功能。",
-            "triggered": "觸發 {name}"
+            "triggered": "觸發 {name}",
+            "wrapping_up_startup": "啟動完成中，在完成載入前、可能無法顯示所有功能。"
         },
         "panel": {
             "config": {
@@ -1606,7 +1608,7 @@
                         "delete_automation": "刪除自動化",
                         "delete_confirm": "確定要刪除此自動化？",
                         "dev_automation": "自動化除錯",
-                        "dev_only_editable": "僅有於 automations.yaml 內定義的自動化、方能進行除錯。",
+                        "dev_only_editable": "僅有具有唯一 ID 指派的自動化、方能進行除錯。",
                         "duplicate": "複製",
                         "duplicate_automation": "複製自動化",
                         "edit_automation": "編輯自動化",
